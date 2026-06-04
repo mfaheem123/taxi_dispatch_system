@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,13 +16,11 @@ import '../dashboard_view/models/users_phone_numbers_model.dart';
 import '../dashboard_view/widgets/via_location.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
 import '../locations_view/controller/locations_controller.dart';
-
 class BookingFormScreen extends StatefulWidget {
   const BookingFormScreen({super.key});
   @override
   State<BookingFormScreen> createState() => _BookingFormScreenState();
 }
-
 class _BookingFormScreenState extends State<BookingFormScreen> {
   // ────────── palette
   static const _purple = Color(0xFF312E81);
@@ -34,60 +30,47 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   static const _surface = Color(0xFFF5F6FA);
   static const _red = Color(0xFFEF4444);
   static const _green = Color(0xFF22C55E);
-
   // ────────── font sizes (compact)
   static const _fsLabel = 11.0;
   static const _fsField = 12.0;
   static const _fsSection = 12.0;
   static const _fsTab = 12.0;
-
   // ────────── state
   String? driver;
   ZoneObject? dashboardZoneValue, dropZone;
-
   // String? account = 'DEMO';
   // String? vehicleType = 'Saloon';
   // bool quotation = true;
-
   AllAddressesModel? _selectedPickup;
   AllAddressesModel? _selectedDrop;
-
   // ────────── return-journey state
   ZoneObject? returnDropZone;
   DashboardVehicleTypeObject? returnVehicleValue;
   DashboardDriverObject? returnDriverValue;
-
   // late final _rDropoff = TextEditingController();
-  late final _rDate = TextEditingController(text: '19 / 05 / 2026');
+  // DateTime? returnDate = DateTime.now();
   // late final _rTime = TextEditingController(text: '15:03');
   // late final _rLead = TextEditingController();
   // late final _rFare = TextEditingController(text: '4.9');
-
   bool get _isReturnJourney {
     final j =
-        controller.selectJourneyTypeValue?.journeyType?.toUpperCase().trim();
+    controller.selectJourneyTypeValue?.journeyType?.toUpperCase().trim();
     return j == 'R/N' || j == 'RETURN';
   }
-
-  late final _date = TextEditingController(text: '25 / 04 / 2026');
   // late final _pass = TextEditingController(text: '0');
   // late final _lugg = TextEditingController(text: '0');
   // late final _slugg = TextEditingController(text: '0');
-
   void _onMultiReservation() => debugPrint('F8 / Multi Reservation tapped');
   void _onAddVehicles() => debugPrint('F9 / Vehicles tapped');
   void _onVia() => debugPrint('Via tapped');
   void _onSub() => debugPrint('Sub tapped');
   void _onClear() => debugPrint('F7 / Clear tapped');
-
   final DashboardController controller = Get.isRegistered<DashboardController>()
       ? Get.find<DashboardController>()
       : Get.put(DashboardController());
-
   final LocationController _controller = Get.isRegistered<LocationController>()
       ? Get.find<LocationController>()
       : Get.put(LocationController());
-
   // @override
   // void dispose() {
   //   for (final c in [
@@ -116,7 +99,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   //   }
   //   super.dispose();
   // }
-
   @override
   void initState() {
     super.initState();
@@ -124,7 +106,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       controller.dashboardData();
     }
   }
-
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
@@ -132,9 +113,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     final isTablet = w >= 640 && w < 1024;
     final isDesktop = w >= 1024;
     final cols = isMobile ? 1 : (isTablet ? 2 : 4);
-
     final formWidth = isDesktop ? w * 0.5 : double.infinity;
-
     return CallbackShortcuts(
       bindings: <ShortcutActivator, VoidCallback>{
         const SingleActivator(LogicalKeyboardKey.f7): () {
@@ -199,11 +178,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   _controller.updateLocationValue.value == true
                                       ? []
                                       : _controller
-                                          .locationtypezoneModel!.zonesList!,
-                                  (v) => setState(
-                                      () => controller.dashboardZoneValue = v),
+                                      .locationtypezoneModel!.zonesList!,
+                                      (v) => setState(
+                                          () => controller.dashboardZoneValue = v),
                                   isMobile,
-                                  (value) {
+                                      (value) {
                                     WidgetsBinding.instance
                                         .addPostFrameCallback((_) {
                                       if (value.isEmpty) {
@@ -216,7 +195,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                           searchingText: value);
                                     });
                                   },
-                                  (addr) =>
+                                      (addr) =>
                                       setState(() => _selectedPickup = addr),
                                   1,
                                   zoneLabel: (z) => z.name!,
@@ -225,9 +204,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   },
                                   onPressed: () {
                                     DashboardController _controller =
-                                        Get.find();
+                                    Get.find();
                                     int index = _controller.markers.indexWhere(
-                                        (test) => test.type == "pickup");
+                                            (test) => test.type == "pickup");
                                     FocusScope.of(Get.context!).requestFocus(
                                         _controller.pickupTextFieldFocusNode);
                                     _controller.markers.clear();
@@ -244,6 +223,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     // controller.clear();
                                     // onChanged?.call('');
                                   },
+                                  notesController: controller.pickUpNoteController,
                                   onCurrentLocation: () {
                                     debugPrint('Use current location → PICKUP');
                                   },
@@ -258,11 +238,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   _controller.updateLocationValue.value == true
                                       ? []
                                       : _controller
-                                          .locationtypezoneModel!.zonesList!,
-                                  (v) => setState(
-                                      () => controller.dashboardDZoneValue = v),
+                                      .locationtypezoneModel!.zonesList!,
+                                      (v) => setState(
+                                          () => controller.dashboardDZoneValue = v),
                                   isMobile,
-                                  (value) {
+                                      (value) {
                                     WidgetsBinding.instance
                                         .addPostFrameCallback((_) {
                                       if (value.isEmpty) {
@@ -275,17 +255,18 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                           searchingText: value);
                                     });
                                   },
-                                  (addr) =>
+                                      (addr) =>
                                       setState(() => _selectedDrop = addr),
                                   4,
                                   zoneLabel: (z) => z.name!,
                                   onPickIndex: (index) =>
                                       controller.tapSelect(index),
+                                  notesController: controller.dropUpNoteController,
                                   onCurrentLocation: () {
                                     debugPrint('Use current location → DROP');
                                   },
                                 ),
-                                const Divider(height: 20),
+                                const Divider(height: 10),
                                 _sectionHeader(Icons.person,
                                     'PASSENGER & BOOKING DETAILS'),
                                 _grid(cols, [
@@ -300,7 +281,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     tab: 10,
                                     controller: controller.mobileController,
                                     customers: controller.customerPhoneNumber
-                                            ?.customerInfo ??
+                                        ?.customerInfo ??
                                         const [],
                                     onChanged: (q) {
                                       if (q.trim().isEmpty) return;
@@ -327,22 +308,22 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       controller: controller.telController),
                                 ]),
                                 _grid(cols, [
-                                  _field('Date',
+                                  _dateField('Date',
                                       tab: 12,
-                                      prefix: Icons.calendar_today,
-                                      controller: _date,
-                                      onPrefixTap: () => _pickDate(_date)),
+                                      value: controller.pickUpDate,
+                                      onChanged: (d) =>
+                                          setState(() => controller.pickUpDate = d)),
                                   _timeField('Time',
                                       tab: 13,
                                       controller:
-                                          controller.pickUpTimeController),
+                                      controller.pickUpTimeController),
                                   _dropdown<JourneyTypeObject>(
                                     'Journey Type'.toUpperCase(),
                                     controller.selectJourneyTypeValue,
                                     controller.dashboardAllData!.journeyTypes ??
                                         const [],
-                                    (v) => setState(() =>
-                                        controller.selectJourneyTypeValue = v),
+                                        (v) => setState(() =>
+                                    controller.selectJourneyTypeValue = v),
                                     14,
                                     itemLabel: (p) => p.journeyType!,
                                   ),
@@ -364,7 +345,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.selectAccountValue,
                                     controller.dashboardAccountData?.accounts ??
                                         const [],
-                                    (v) {
+                                        (v) {
                                       setState(() {
                                         controller.selectAccountValue = v;
                                         controller.selectDepartmentData = null;
@@ -376,7 +357,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                 ]),
                                 if (_isReturnJourney)
                                   _returnJourneySection(isMobile, cols),
-                                const Divider(height: 20),
+                                const Divider(height: 10),
                                 _sectionHeader(
                                     Icons.directions_car, 'VEHICLE & PAYMENT'),
                                 const SizedBox(height: 4),
@@ -386,8 +367,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.selectPaymentTypeValue,
                                     controller.dashboardAllData!.paymentTypes ??
                                         const [],
-                                    (v) => setState(() =>
-                                        controller.selectPaymentTypeValue = v),
+                                        (v) => setState(() =>
+                                    controller.selectPaymentTypeValue = v),
                                     19,
                                     itemLabel: (p) => p.name!,
                                   ),
@@ -395,7 +376,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     'Vehicle Type',
                                     controller.selectVehicleValue,
                                     controller.dashboardAllData!.vehicleTypes!,
-                                    (v) => setState(() {
+                                        (v) => setState(() {
                                       controller.selectVehicleValue = v;
                                       controller.getFaresCalculation();
                                     }),
@@ -408,8 +389,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.selectAccountValue == null
                                         ? []
                                         : controller
-                                            .selectAccountValue!.departments!,
-                                    (v) => setState(() {
+                                        .selectAccountValue!.departments!,
+                                        (v) => setState(() {
                                       controller.selectDepartmentData = v;
                                       controller.update();
                                     }),
@@ -439,7 +420,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ),
     );
   }
-
   // ────────── RETURN JOURNEY SECTION
   Widget _returnJourneySection(bool isMobile, int cols) {
     return Column(
@@ -457,15 +437,15 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           _controller.updateLocationValue.value == true
               ? []
               : _controller.locationtypezoneModel!.zonesList!,
-          (v) => setState(() => _controller.RNzoneValue = v),
+              (v) => setState(() => _controller.RNzoneValue = v),
           isMobile,
-          (value) {
+              (value) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               controller.onChangeHandler(
                   fieldName: "PICKUP LOCATION", searchingText: value);
             });
           },
-          (addr) {},
+              (addr) {},
           30,
           zoneLabel: (z) => z.name!,
           onPickIndex: (index) => controller.tapSelect(index),
@@ -481,13 +461,13 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           _controller.updateLocationValue.value == true
               ? []
               : _controller.locationtypezoneModel!.zonesList!,
-          (v) => setState(() => _controller.RN1zoneValue = v),
+              (v) => setState(() => _controller.RN1zoneValue = v),
           isMobile,
-          (value) {
+              (value) {
             controller.onChangeHandler(
                 fieldName: "DROP LOCATION", searchingText: value);
           },
-          (addr) {},
+              (addr) {},
           33,
           zoneLabel: (z) => z.name!,
           onPickIndex: (index) => controller.tapSelect(index),
@@ -495,11 +475,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         ),
         const SizedBox(height: 8),
         _grid(cols, [
-          _field('R/Date',
+          _dateField('R/Date',
               tab: 36,
-              prefix: Icons.calendar_today,
-              controller: _rDate,
-              onPrefixTap: () => _pickDate(_rDate)),
+              value: controller.pickUpDateReturn,
+              onChanged: (d) => setState(() => controller.pickUpDateReturn = d)),
           _timeField('R/Time',
               tab: 37, controller: controller.pickUpTimeControllerReturn),
           _field('R/Lead', tab: 38, controller: controller.minControllerReturn),
@@ -511,55 +490,54 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         const SizedBox(height: 6),
         isMobile
             ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                _addReturnFareCheckbox(),
-                const SizedBox(height: 8),
-                _dropdown<DashboardVehicleTypeObject>(
-                  'Return/VEH',
-                  returnVehicleValue,
-                  controller.dashboardAllData!.vehicleTypes!,
-                  (v) => setState(() => returnVehicleValue = v),
-                  40,
-                  itemLabel: (p) => p.name!,
-                ),
-                const SizedBox(height: 8),
-                _dropdown<DashboardDriverObject>(
-                  'Return/DRV',
-                  returnDriverValue,
-                  controller.dashboardAllData!.drivers ?? const [],
-                  (v) => setState(() => returnDriverValue = v),
-                  41,
-                  itemLabel: (p) => p.name ?? '',
-                ),
-              ])
+          _addReturnFareCheckbox(),
+          const SizedBox(height: 8),
+          _dropdown<DashboardVehicleTypeObject>(
+            'Return/VEH',
+            returnVehicleValue,
+            controller.dashboardAllData!.vehicleTypes!,
+                (v) => setState(() => returnVehicleValue = v),
+            40,
+            itemLabel: (p) => p.name!,
+          ),
+          const SizedBox(height: 8),
+          _dropdown<DashboardDriverObject>(
+            'Return/DRV',
+            returnDriverValue,
+            controller.dashboardAllData!.drivers ?? const [],
+                (v) => setState(() => returnDriverValue = v),
+            41,
+            itemLabel: (p) => p.name ?? '',
+          ),
+        ])
             : Row(children: [
-                _addReturnFareCheckbox(),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _dropdown<DashboardVehicleTypeObject>(
-                    'Return/VEH',
-                    returnVehicleValue,
-                    controller.dashboardAllData!.vehicleTypes!,
-                    (v) => setState(() => returnVehicleValue = v),
-                    40,
-                    itemLabel: (p) => p.name!,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _dropdown<DashboardDriverObject>(
-                    'Return/DRV',
-                    returnDriverValue,
-                    controller.dashboardAllData!.drivers ?? const [],
-                    (v) => setState(() => returnDriverValue = v),
-                    41,
-                    itemLabel: (p) => p.name ?? '',
-                  ),
-                ),
-              ]),
+          _addReturnFareCheckbox(),
+          const SizedBox(width: 16),
+          Expanded(
+            child: _dropdown<DashboardVehicleTypeObject>(
+              'Return/VEH',
+              returnVehicleValue,
+              controller.dashboardAllData!.vehicleTypes!,
+                  (v) => setState(() => returnVehicleValue = v),
+              40,
+              itemLabel: (p) => p.name!,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: _dropdown<DashboardDriverObject>(
+              'Return/DRV',
+              returnDriverValue,
+              controller.dashboardAllData!.drivers ?? const [],
+                  (v) => setState(() => returnDriverValue = v),
+              41,
+              itemLabel: (p) => p.name ?? '',
+            ),
+          ),
+        ]),
       ],
     );
   }
-
   Widget _addReturnFareCheckbox() =>
       Row(mainAxisSize: MainAxisSize.min, children: [
         SizedBox(
@@ -577,7 +555,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         const Text('ADD RETURN FARE',
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: _fsField)),
       ]);
-
   // ────────── top tabs (Subsidiary dd → tab 1)
   Widget _topTabs(bool isMobile) {
     Widget tab(String label, {bool active = false, VoidCallback? onTap}) =>
@@ -591,7 +568,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               mouseCursor: SystemMouseCursors.click,
               child: Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                 decoration: BoxDecoration(
                   color: active ? _purple : Colors.white,
                   border: Border.all(color: active ? _purple : _border),
@@ -609,7 +586,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             ),
           ),
         );
-
     return Container(
       padding: EdgeInsets.symmetric(horizontal: isMobile ? 8 : 12, vertical: 8),
       // decoration: const BoxDecoration(
@@ -619,7 +595,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         children: [
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: Row(children: [
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
               tab('Booking', active: true, onTap: () {}),
               tab('+ Multi Reservation (F8)', onTap: () {
                 if (controller.pickupController.text.isNotEmpty &&
@@ -644,7 +622,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   null,
                   controller.selectSubsidiariesValue,
                   controller.dashboardAllData?.subsidiaries ?? const [],
-                  (v) {
+                      (v) {
                     if (v == null) return;
                     setState(() {
                       controller.selectSubsidiariesValue = v;
@@ -662,34 +640,32 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ),
     );
   }
-
 // ────────── location row
   Widget _locationRow<T>(
-    String label,
-    Color dot,
-    TextEditingController controller,
-    List<AllAddressesModel> addresses,
-    T? zone,
-    List<T> zoneItems,
-    ValueChanged<T?> onZone,
-    bool isMobile,
-    ValueChanged<String>? onChanged,
-    ValueChanged<AllAddressesModel>? onAddressSelected,
-    int tabBase, {
-    String Function(T)? zoneLabel,
-    VoidCallback? onCurrentLocation,
-    ValueChanged<int>? onPickIndex,
-    TextEditingController? notesController, // ← notes field controller
-    VoidCallback? onPressed,
-  }) {
+      String label,
+      Color dot,
+      TextEditingController controller,
+      List<AllAddressesModel> addresses,
+      T? zone,
+      List<T> zoneItems,
+      ValueChanged<T?> onZone,
+      bool isMobile,
+      ValueChanged<String>? onChanged,
+      ValueChanged<AllAddressesModel>? onAddressSelected,
+      int tabBase, {
+        String Function(T)? zoneLabel,
+        VoidCallback? onCurrentLocation,
+        ValueChanged<int>? onPickIndex,
+        TextEditingController? notesController, // ← notes field controller
+        VoidCallback? onPressed,
+      }) {
     final tag = Row(mainAxisSize: MainAxisSize.min, children: [
       Icon(Icons.circle, size: 9, color: dot),
       const SizedBox(width: 6),
       Text(label,
           style:
-              const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsLabel)),
+          const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsLabel)),
     ]);
-
     final address = FocusTraversalOrder(
       order: NumericFocusOrder((tabBase + 1).toDouble()),
       child: _AddressModelAutocomplete(
@@ -700,30 +676,30 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         onPickIndex: onPickIndex,
         decoration: _inputDecoration().copyWith(
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+          const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
           suffixIconConstraints:
-              const BoxConstraints(minWidth: 60, minHeight: 32),
+          const BoxConstraints(minWidth: 60, minHeight: 32),
           suffixIcon: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
             children: [
               controller.text.isNotEmpty
                   ? IconButton(
-                      tooltip: 'Clear',
-                      onPressed: onPressed,
-                      icon:
-                          const Icon(Icons.close, size: 16, color: Colors.grey),
-                      padding: EdgeInsets.zero,
-                      constraints:
-                          const BoxConstraints(minWidth: 28, minHeight: 28),
-                      splashRadius: 16,
-                    )
+                tooltip: 'Clear',
+                onPressed: onPressed,
+                icon:
+                const Icon(Icons.close, size: 16, color: Colors.grey),
+                padding: EdgeInsets.zero,
+                constraints:
+                const BoxConstraints(minWidth: 28, minHeight: 28),
+                splashRadius: 16,
+              )
                   : const SizedBox.shrink(),
               IconButton(
                 tooltip: 'Use current location',
                 onPressed: onCurrentLocation,
                 icon:
-                    const Icon(Icons.my_location, size: 16, color: Colors.grey),
+                const Icon(Icons.my_location, size: 16, color: Colors.grey),
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
                 splashRadius: 16,
@@ -734,7 +710,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         ),
       ),
     );
-
     final zoneDd = _dropdown<T>(
       null,
       zone,
@@ -744,7 +719,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       itemLabel: zoneLabel,
       hint: 'New Zone',
     );
-
     // Notes is now an editable text field instead of a button.
     final noteHint =
         '${label[0]}${label.substring(1).toLowerCase().trim()} Notes';
@@ -758,12 +732,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           decoration: _inputDecoration().copyWith(
             hintText: noteHint,
             hintStyle:
-                const TextStyle(fontSize: _fsField, color: Colors.black45),
+            const TextStyle(fontSize: _fsField, color: Colors.black45),
           ),
         ),
       ),
     );
-
     if (isMobile) {
       return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         tag,
@@ -777,7 +750,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         ]),
       ]);
     }
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -791,7 +763,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ],
     );
   }
-
   // ────────── comms + luggage (PASS=22, LUGG=23, SLUGG=24)
   Widget _commsAndLuggageRow(bool isMobile) {
     Widget checkbox(String label, bool value, ValueChanged<bool?> onChanged) =>
@@ -811,16 +782,15 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               style: const TextStyle(
                   fontWeight: FontWeight.w500, fontSize: _fsField)),
         ]);
-
     Widget luggageField(String label, IconData icon,
-            TextEditingController controller, int tab) =>
+        TextEditingController controller, int tab) =>
         SizedBox(
           width: 80,
           child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(label,
                 style:
-                    const TextStyle(fontSize: _fsLabel, color: Colors.black)),
+                const TextStyle(fontSize: _fsLabel, color: Colors.black)),
             const SizedBox(height: 2),
             FocusTraversalOrder(
               order: NumericFocusOrder(tab.toDouble()),
@@ -829,11 +799,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   controller: controller,
                   style: const TextStyle(fontSize: _fsField),
                   keyboardType:
-                      const TextInputType.numberWithOptions(decimal: false),
+                  const TextInputType.numberWithOptions(decimal: false),
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: _inputDecoration().copyWith(
                     prefixIconConstraints:
-                        const BoxConstraints(minWidth: 26, minHeight: 0),
+                    const BoxConstraints(minWidth: 26, minHeight: 0),
                     prefixIcon: Padding(
                       padding: const EdgeInsets.only(left: 6, right: 2),
                       child: Icon(icon, size: 13, color: Colors.grey),
@@ -844,36 +814,33 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             ),
           ]),
         );
-
     Widget iconBtn(IconData icon, {VoidCallback? onPressed}) => Container(
-          margin: const EdgeInsets.only(left: 6),
-          decoration: BoxDecoration(
-            color: _purpleSoft,
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: _border),
-          ),
-          child: IconButton(
-            onPressed: onPressed,
-            icon: Icon(icon, size: 17, color: Colors.black),
-            splashRadius: 18,
-          ),
-        );
-
+      margin: const EdgeInsets.only(left: 6),
+      decoration: BoxDecoration(
+        color: _purpleSoft,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: _border),
+      ),
+      child: IconButton(
+        onPressed: onPressed,
+        icon: Icon(icon, size: 17, color: Colors.black),
+        splashRadius: 18,
+      ),
+    );
     final left = Wrap(
       spacing: 12,
       runSpacing: 8,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         checkbox('SMS', controller.smsCheckbox.value,
-            (v) => setState(() => controller.smsCheckbox.value = v ?? false)),
+                (v) => setState(() => controller.smsCheckbox.value = v ?? false)),
         checkbox('EMAIL', controller.emailCheckbox.value,
-            (v) => setState(() => controller.emailCheckbox.value = v ?? false)),
+                (v) => setState(() => controller.emailCheckbox.value = v ?? false)),
         luggageField('PASS', Icons.work, controller.passController, 22),
         luggageField('LUGG', Icons.luggage, controller.luggController, 23),
         luggageField('SLUGG', Icons.luggage, controller.sluggController, 24),
       ],
     );
-
     final right = Row(mainAxisSize: MainAxisSize.min, children: [
       iconBtn(Icons.person, onPressed: () {
         showDialog(context: context, builder: (_) => RestrictDriversAlert());
@@ -898,7 +865,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         );
       }),
     ]);
-
     if (isMobile) {
       return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         left,
@@ -908,7 +874,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     }
     return Row(children: [Expanded(child: left), right]);
   }
-
   // ────────── status cards
   Widget _statusCards(bool isMobile) {
     Widget card({
@@ -949,7 +914,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         ]),
       );
     }
-
     final cards = [
       card(
           icon: Icons.schedule,
@@ -964,10 +928,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           icon: Icons.payments_outlined,
           label: 'FARE',
           value:
-              '£ ${double.parse(controller.fixedFare.value).toStringAsFixed(1)}',
+          '£ ${double.parse(controller.fixedFare.value).toStringAsFixed(1)}',
           emphasized: true),
     ];
-
     if (isMobile) {
       return Column(
         children: [
@@ -985,19 +948,17 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ],
     ]);
   }
-
   // ────────── driver row (Driver dd → tab 25)
   Widget _driverRow(bool isMobile) {
     final dd = _dropdown<DashboardDriverObject>(
       null,
       controller.selectDriverValue,
       controller.dashboardAllData!.drivers ?? const [],
-      (v) => setState(() => controller.selectDriverValue = v),
+          (v) => setState(() => controller.selectDriverValue = v),
       25,
       itemLabel: (p) => p.name ?? '',
       hint: 'Select Driver',
     );
-
     final clear = ElevatedButton(
       onPressed: () {
         controller.refreshPostAllFields();
@@ -1008,11 +969,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
         textStyle:
-            const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsField),
+        const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsField),
       ),
       child: Text('CLEAR [F7]'.toUpperCase()),
     );
-
     final home = ElevatedButton.icon(
       onPressed: () {
         if (controller.jourValue == 'W/R' &&
@@ -1025,8 +985,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             id: controller.jobDetails == null
                 ? null
                 : controller.cliJobHit == true
-                    ? null
-                    : int.parse(controller.jobDetails!.id!));
+                ? null
+                : int.parse(controller.jobDetails!.id!));
       },
       icon: const Icon(Icons.home_outlined, size: 16),
       label: const Text('SAVE[HOME]'),
@@ -1036,10 +996,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
         textStyle:
-            const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsField),
+        const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsField),
       ),
     );
-
     if (isMobile) {
       return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         const Text('Driver',
@@ -1054,7 +1013,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         ]),
       ]);
     }
-
     return Row(children: [
       const SizedBox(
         width: 70,
@@ -1068,24 +1026,22 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       home,
     ]);
   }
-
   // ────────── shared primitives
   Widget _sectionHeader(IconData icon, String title) => Row(children: [
-        Icon(icon, size: 16, color: _purple),
-        const SizedBox(width: 6),
-        Text(title.toUpperCase(),
-            style: const TextStyle(
-                color: _purple,
-                fontWeight: FontWeight.w700,
-                fontSize: _fsSection)),
-      ]);
-
+    Icon(icon, size: 16, color: _purple),
+    const SizedBox(width: 6),
+    Text(title.toUpperCase(),
+        style: const TextStyle(
+            color: _purple,
+            fontWeight: FontWeight.w700,
+            fontSize: _fsSection)),
+  ]);
   Widget _grid(int cols, List<Widget> children) {
     final rows = <Widget>[];
     for (var i = 0; i < children.length; i += cols) {
       final slice = children.sublist(i, (i + cols).clamp(0, children.length));
       rows.add(Padding(
-        padding: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.only(bottom: 4),
         child: Row(children: [
           for (var j = 0; j < slice.length; j++) ...[
             Expanded(child: slice[j]),
@@ -1100,16 +1056,15 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     }
     return Column(children: rows);
   }
-
   Widget _customerAutocompleteField(
-    String label, {
-    required int tab,
-    required TextEditingController controller,
-    required List<CustomerObject> customers,
-    required ValueChanged<CustomerObject> onPicked,
-    ValueChanged<String>? onChanged,
-    IconData? prefix,
-  }) {
+      String label, {
+        required int tab,
+        required TextEditingController controller,
+        required List<CustomerObject> customers,
+        required ValueChanged<CustomerObject> onPicked,
+        ValueChanged<String>? onChanged,
+        IconData? prefix,
+      }) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(label.toUpperCase(),
           style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
@@ -1123,46 +1078,44 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           onChanged: onChanged,
           decoration: _inputDecoration().copyWith(
             prefixIconConstraints:
-                const BoxConstraints(minWidth: 28, minHeight: 0),
+            const BoxConstraints(minWidth: 28, minHeight: 0),
             prefixIcon: prefix != null
                 ? Padding(
-                    padding: const EdgeInsets.only(left: 8, right: 4),
-                    child: Icon(prefix, size: 15, color: Colors.grey),
-                  )
+              padding: const EdgeInsets.only(left: 8, right: 4),
+              child: Icon(prefix, size: 15, color: Colors.grey),
+            )
                 : null,
           ),
         ),
       ),
     ]);
   }
-
-  // ────────── date / time pickers (calendar + clock)
-  Future<void> _pickDate(TextEditingController controller) async {
-    final now = DateTime.now();
-    final first = DateTime(now.year - 5);
-    final last = DateTime(now.year + 5);
-    var initial = now;
-    final parts = controller.text.split('/').map((e) => e.trim()).toList();
-    if (parts.length == 3) {
-      final d = int.tryParse(parts[0]);
-      final m = int.tryParse(parts[1]);
-      final y = int.tryParse(parts[2]);
-      if (d != null && m != null && y != null) {
-        final parsed = DateTime(y, m, d);
-        if (!parsed.isBefore(first) && !parsed.isAfter(last)) initial = parsed;
-      }
-    }
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: initial,
-      firstDate: first,
-      lastDate: last,
-    );
-    if (picked != null) {
-      final d = picked.day.toString().padLeft(2, '0');
-      final m = picked.month.toString().padLeft(2, '0');
-      controller.text = '$d / $m / ${picked.year}';
-    }
+  // Read-only date field backed by a [DateTime?] value (no TextEditingController).
+  // • Tab focuses it (icon + border turn purple, date text shows the selection color).
+  // • Enter / Space opens a React-datepicker-style dropdown calendar (anchored
+  //   under the field) with month / year navigation, arrow-key day navigation,
+  //   and the purple selection palette.
+  Widget _dateField(String label,
+      {required int tab,
+      required DateTime? value,
+      required ValueChanged<DateTime> onChanged}) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text(label.toUpperCase(),
+          style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
+      const SizedBox(height: 2),
+      FocusTraversalOrder(
+        order: NumericFocusOrder(tab.toDouble()),
+        child: _CalendarDropdownField(
+          value: value,
+          onChanged: onChanged,
+          decoration: _inputDecoration(),
+          textStyle: const TextStyle(fontSize: _fsField, color: Colors.black87),
+          accent: _purple,
+          accentSoft: _purpleSoft,
+          idleColor: Colors.grey,
+        ),
+      ),
+    ]);
   }
 
   Widget _timeField(String label,
@@ -1182,12 +1135,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ),
     ]);
   }
-
   Widget _field(String label,
       {required int tab,
-      IconData? prefix,
-      VoidCallback? onPrefixTap,
-      TextEditingController? controller}) {
+        IconData? prefix,
+        VoidCallback? onPrefixTap,
+        TextEditingController? controller}) {
     Widget? prefixWidget;
     if (prefix != null) {
       final iconPadding = Padding(
@@ -1196,10 +1148,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       );
       prefixWidget = onPrefixTap != null
           ? InkWell(
-              onTap: onPrefixTap,
-              borderRadius: BorderRadius.circular(4),
-              child: iconPadding,
-            )
+        onTap: onPrefixTap,
+        borderRadius: BorderRadius.circular(4),
+        child: iconPadding,
+      )
           : iconPadding;
     }
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -1216,7 +1168,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             onSubmitted: (_) => onPrefixTap?.call(),
             decoration: _inputDecoration().copyWith(
               prefixIconConstraints:
-                  const BoxConstraints(minWidth: 28, minHeight: 0),
+              const BoxConstraints(minWidth: 28, minHeight: 0),
               prefixIcon: prefixWidget,
             ),
           ),
@@ -1224,19 +1176,17 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ),
     ]);
   }
-
   Widget _dropdown<T>(
-    String? label,
-    T? value,
-    List<T> items,
-    ValueChanged<T?> onChanged,
-    int tab, {
-    String Function(T item)? itemLabel,
-    String? hint,
-    bool isExpanded = true,
-  }) {
+      String? label,
+      T? value,
+      List<T> items,
+      ValueChanged<T?> onChanged,
+      int tab, {
+        String Function(T item)? itemLabel,
+        String? hint,
+        bool isExpanded = true,
+      }) {
     String labelOf(T item) => itemLabel?.call(item) ?? item.toString();
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1256,8 +1206,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               style: const TextStyle(fontSize: _fsField, color: Colors.black87),
               hint: hint != null
                   ? Text(hint,
-                      style: const TextStyle(
-                          fontSize: _fsField, color: Colors.black))
+                  style: const TextStyle(
+                      fontSize: _fsField, color: Colors.black))
                   : null,
               decoration: _inputDecoration().copyWith(
                 isDense: true,
@@ -1268,14 +1218,14 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               ),
               items: items
                   .map((e) => DropdownMenuItem<T>(
-                        value: e,
-                        child: Text(
-                          labelOf(e),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontSize: _fsField),
-                        ),
-                      ))
+                value: e,
+                child: Text(
+                  labelOf(e),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: _fsField),
+                ),
+              ))
                   .toList(),
               onChanged: onChanged,
             ),
@@ -1284,7 +1234,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ],
     );
   }
-
   Widget _quotationToggle() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       const SizedBox(height: 16),
@@ -1297,10 +1246,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           },
           child: Focus(
             child: Obx(() => Switch(
-                  value: controller.dropDownShow.value,
-                  onChanged: (v) => controller.dropDownShow.value = v,
-                  activeColor: _purple,
-                )),
+              value: controller.dropDownShow.value,
+              onChanged: (v) => controller.dropDownShow.value = v,
+              activeColor: _purple,
+            )),
           ),
         ),
         const SizedBox(width: 4),
@@ -1309,23 +1258,21 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ]),
     ]);
   }
-
   InputDecoration _inputDecoration() => InputDecoration(
-        isDense: true,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(6),
-            borderSide: const BorderSide(color: _border)),
-        enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(6),
-            borderSide: const BorderSide(color: _border)),
-        focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(6),
-            borderSide: const BorderSide(color: _purple, width: 1.8)),
-      );
+    isDense: true,
+    contentPadding:
+    const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
+    border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(6),
+        borderSide: const BorderSide(color: _border)),
+    enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(6),
+        borderSide: const BorderSide(color: _border)),
+    focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(6),
+        borderSide: const BorderSide(color: _purple, width: 1.8)),
+  );
 }
-
 // ════════════════════════════════════════════════════════════════════
 // Autocomplete: backed by AllAddressesModel (name + postcode + lat/lon)
 // ════════════════════════════════════════════════════════════════════
@@ -1338,19 +1285,16 @@ class _AddressModelAutocomplete extends StatefulWidget {
     this.onSelected,
     this.onPickIndex,
   });
-
   final TextEditingController controller;
   final List<AllAddressesModel> items;
   final InputDecoration decoration;
   final ValueChanged<String>? onChanged;
   final ValueChanged<AllAddressesModel>? onSelected;
   final ValueChanged<int>? onPickIndex;
-
   @override
   State<_AddressModelAutocomplete> createState() =>
       _AddressModelAutocompleteState();
 }
-
 class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
   final _layerLink = LayerLink();
   final _focusNode = FocusNode();
@@ -1359,9 +1303,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
   List<AllAddressesModel> _filtered = const [];
   int _highlighted = -1;
   bool _userTyped = false;
-
   late final ScrollController _scrollController;
-
   static String _display(AllAddressesModel a) {
     final n = a.name ?? '';
     final p = a.postcode ?? '';
@@ -1369,7 +1311,6 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     if (p.isEmpty) return n;
     return '$n, $p';
   }
-
   @override
   void initState() {
     super.initState();
@@ -1377,7 +1318,6 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     _focusNode.addListener(_onFocus);
     widget.controller.addListener(_onText);
   }
-
   @override
   void didUpdateWidget(covariant _AddressModelAutocomplete oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -1388,7 +1328,6 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
       });
     }
   }
-
   @override
   void dispose() {
     _hide();
@@ -1398,11 +1337,9 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     _scrollController.dispose();
     super.dispose();
   }
-
   void _onFocus() {
     if (!_focusNode.hasFocus) _hide();
   }
-
   void _onText() {
     if (!_focusNode.hasFocus) return;
     final text = widget.controller.text.trim();
@@ -1415,7 +1352,6 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     _filter(widget.controller.text);
     _show();
   }
-
   void _filter(String q) {
     final query = q.trim().toLowerCase();
     if (query.isEmpty) {
@@ -1430,18 +1366,15 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     _highlighted = _filtered.isEmpty ? -1 : 0;
     _entry?.markNeedsBuild();
   }
-
   void _show() {
     if (_entry != null) return;
     _entry = OverlayEntry(builder: _buildPanel);
     Overlay.of(context).insert(_entry!);
   }
-
   void _hide() {
     _entry?.remove();
     _entry = null;
   }
-
   void _pick(AllAddressesModel a) {
     final text = _display(a);
     _userTyped = false;
@@ -1449,11 +1382,9 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     widget.controller.selection = TextSelection.collapsed(offset: text.length);
     final idx = widget.items.indexOf(a);
     if (idx >= 0) widget.onPickIndex?.call(idx);
-
     widget.onSelected?.call(a);
     _focusNode.unfocus();
   }
-
   void _moveHighlight(int delta) {
     if (_filtered.isEmpty) return;
     final next = (_highlighted + delta).clamp(0, _filtered.length - 1);
@@ -1462,13 +1393,11 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     _entry?.markNeedsBuild();
     _scrollHighlightedIntoView();
   }
-
   void _scrollHighlightedIntoView() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final c = _scrollController;
       if (!c.hasClients || _highlighted < 0) return;
-
       const itemHeight = 48.0;
       const panelHeight = 260.0;
       final itemTop = _highlighted * itemHeight;
@@ -1476,7 +1405,6 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
       final viewTop = c.offset;
       final viewBottom = viewTop + panelHeight;
       final maxScroll = c.position.maxScrollExtent;
-
       if (itemTop < viewTop) {
         c.jumpTo(itemTop.clamp(0.0, maxScroll));
       } else if (itemBottom > viewBottom) {
@@ -1484,13 +1412,11 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
       }
     });
   }
-
   KeyEventResult _handleKey(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
       return KeyEventResult.ignored;
     }
     final key = event.logicalKey;
-
     if (key == LogicalKeyboardKey.arrowDown) {
       if (_entry != null) _moveHighlight(1);
       return KeyEventResult.handled;
@@ -1517,7 +1443,6 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     }
     return KeyEventResult.ignored;
   }
-
   Widget _buildPanel(BuildContext context) {
     final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     final width = box?.size.width ?? 280;
@@ -1542,63 +1467,62 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
               ),
               child: _filtered.isEmpty
                   ? const Padding(
-                      padding: EdgeInsets.all(12),
-                      child: Text('No data',
-                          style: TextStyle(color: Colors.black, fontSize: 12)),
-                    )
+                padding: EdgeInsets.all(12),
+                child: Text('No data',
+                    style: TextStyle(color: Colors.black, fontSize: 12)),
+              )
                   : ListView.builder(
-                      controller: _scrollController,
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      itemCount: _filtered.length,
-                      itemBuilder: (_, i) {
-                        final a = _filtered[i];
-                        final active = _highlighted == i;
-                        return MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          onEnter: (_) {
-                            if (_highlighted == i) return;
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (!mounted) return;
-                              _highlighted = i;
-                              _entry?.markNeedsBuild();
-                            });
-                          },
-                          child: InkWell(
-                            onTap: () => _pick(a),
-                            child: Container(
-                              width: double.infinity,
-                              height: 48,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
-                              color: active
-                                  ? const Color(0xFFEEF2FF)
-                                  : Colors.white,
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                "${a.name} ${a.postcode}",
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: active
-                                      ? FontWeight.w600
-                                      : FontWeight.w500,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ),
+                controller: _scrollController,
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: _filtered.length,
+                itemBuilder: (_, i) {
+                  final a = _filtered[i];
+                  final active = _highlighted == i;
+                  return MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    onEnter: (_) {
+                      if (_highlighted == i) return;
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (!mounted) return;
+                        _highlighted = i;
+                        _entry?.markNeedsBuild();
+                      });
+                    },
+                    child: InkWell(
+                      onTap: () => _pick(a),
+                      child: Container(
+                        width: double.infinity,
+                        height: 48,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        color: active
+                            ? const Color(0xFFEEF2FF)
+                            : Colors.white,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "${a.name} ${a.postcode}",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: active
+                                ? FontWeight.w600
+                                : FontWeight.w500,
+                            color: Colors.black87,
                           ),
-                        );
-                      },
+                        ),
+                      ),
                     ),
+                  );
+                },
+              ),
             ),
           ),
         ),
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
@@ -1619,7 +1543,6 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     );
   }
 }
-
 // ════════════════════════════════════════════════════════════════════
 // String-based autocomplete (kept for Mobile field)
 // ════════════════════════════════════════════════════════════════════
@@ -1630,16 +1553,13 @@ class _StringAutocomplete extends StatefulWidget {
     required this.decoration,
     this.onChanged,
   });
-
   final TextEditingController controller;
   final List<String> suggestions;
   final InputDecoration decoration;
   final ValueChanged<String>? onChanged;
-
   @override
   State<_StringAutocomplete> createState() => _StringAutocompleteState();
 }
-
 class _StringAutocompleteState extends State<_StringAutocomplete> {
   final _layerLink = LayerLink();
   final _focusNode = FocusNode();
@@ -1648,7 +1568,6 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
   List<String> _filtered = const [];
   int _highlighted = -1;
   late final ScrollController _scrollController;
-
   @override
   void initState() {
     super.initState();
@@ -1657,7 +1576,6 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
     widget.controller.addListener(_onText);
     _filtered = widget.suggestions;
   }
-
   @override
   void dispose() {
     _hide();
@@ -1667,7 +1585,6 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
     _scrollController.dispose();
     super.dispose();
   }
-
   void _onFocus() {
     if (_focusNode.hasFocus) {
       _filter(widget.controller.text);
@@ -1676,40 +1593,34 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
       _hide();
     }
   }
-
   void _onText() {
     _filter(widget.controller.text);
     if (_focusNode.hasFocus) _show();
   }
-
   void _filter(String q) {
     final query = q.trim().toLowerCase();
     _filtered = query.isEmpty
         ? widget.suggestions
         : widget.suggestions
-            .where((s) => s.toLowerCase().contains(query))
-            .toList();
+        .where((s) => s.toLowerCase().contains(query))
+        .toList();
     _highlighted = _filtered.isEmpty ? -1 : 0;
     _entry?.markNeedsBuild();
   }
-
   void _show() {
     if (_entry != null) return;
     _entry = OverlayEntry(builder: _buildPanel);
     Overlay.of(context).insert(_entry!);
   }
-
   void _hide() {
     _entry?.remove();
     _entry = null;
   }
-
   void _pick(String value) {
     widget.controller.text = value;
     widget.controller.selection = TextSelection.collapsed(offset: value.length);
     _focusNode.unfocus();
   }
-
   void _moveHighlight(int delta) {
     if (_filtered.isEmpty) return;
     final next = (_highlighted + delta).clamp(0, _filtered.length - 1);
@@ -1717,13 +1628,11 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
     _highlighted = next;
     _entry?.markNeedsBuild();
   }
-
   KeyEventResult _handleKey(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
       return KeyEventResult.ignored;
     }
     final key = event.logicalKey;
-
     if (key == LogicalKeyboardKey.arrowDown) {
       if (_entry == null) _show();
       _moveHighlight(1);
@@ -1752,7 +1661,6 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
     }
     return KeyEventResult.ignored;
   }
-
   Widget _buildPanel(BuildContext context) {
     final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     final width = box?.size.width ?? 280;
@@ -1777,70 +1685,69 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
               ),
               child: _filtered.isEmpty
                   ? const Padding(
-                      padding: EdgeInsets.all(12),
-                      child: Text('No matches',
-                          style: TextStyle(color: Colors.black, fontSize: 12)),
-                    )
+                padding: EdgeInsets.all(12),
+                child: Text('No matches',
+                    style: TextStyle(color: Colors.black, fontSize: 12)),
+              )
                   : ListView.builder(
-                      controller: _scrollController,
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      itemCount: _filtered.length,
-                      itemBuilder: (_, i) {
-                        final s = _filtered[i];
-                        final active = _highlighted == i;
-                        return MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          onEnter: (_) {
-                            if (_highlighted == i) return;
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (!mounted) return;
-                              _highlighted = i;
-                              _entry?.markNeedsBuild();
-                            });
-                          },
-                          child: InkWell(
-                            onTap: () => _pick(s),
-                            child: Container(
-                              width: double.infinity,
-                              height: 34,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 12),
+                controller: _scrollController,
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: _filtered.length,
+                itemBuilder: (_, i) {
+                  final s = _filtered[i];
+                  final active = _highlighted == i;
+                  return MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    onEnter: (_) {
+                      if (_highlighted == i) return;
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (!mounted) return;
+                        _highlighted = i;
+                        _entry?.markNeedsBuild();
+                      });
+                    },
+                    child: InkWell(
+                      onTap: () => _pick(s),
+                      child: Container(
+                        width: double.infinity,
+                        height: 34,
+                        padding:
+                        const EdgeInsets.symmetric(horizontal: 12),
+                        color: active
+                            ? const Color(0xFFEEF2FF)
+                            : Colors.white,
+                        alignment: Alignment.centerLeft,
+                        child: Row(children: [
+                          Icon(Icons.place_outlined,
+                              size: 14,
                               color: active
-                                  ? const Color(0xFFEEF2FF)
-                                  : Colors.white,
-                              alignment: Alignment.centerLeft,
-                              child: Row(children: [
-                                Icon(Icons.place_outlined,
-                                    size: 14,
-                                    color: active
-                                        ? const Color(0xFF4F46E5)
-                                        : Colors.grey),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(s,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: active
-                                            ? FontWeight.w600
-                                            : FontWeight.w400,
-                                      )),
-                                ),
-                              ]),
-                            ),
+                                  ? const Color(0xFF4F46E5)
+                                  : Colors.grey),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(s,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: active
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                )),
                           ),
-                        );
-                      },
+                        ]),
+                      ),
                     ),
+                  );
+                },
+              ),
             ),
           ),
         ),
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
@@ -1861,7 +1768,6 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
     );
   }
 }
-
 // ════════════════════════════════════════════════════════════════════
 // Autocomplete: backed by CustomerObject (mobile + name + email)
 // ════════════════════════════════════════════════════════════════════
@@ -1873,18 +1779,15 @@ class _CustomerModelAutocomplete extends StatefulWidget {
     this.onChanged,
     this.onSelected,
   });
-
   final TextEditingController controller;
   final List<CustomerObject> items;
   final InputDecoration decoration;
   final ValueChanged<String>? onChanged;
   final ValueChanged<CustomerObject>? onSelected;
-
   @override
   State<_CustomerModelAutocomplete> createState() =>
       _CustomerModelAutocompleteState();
 }
-
 class _CustomerModelAutocompleteState
     extends State<_CustomerModelAutocomplete> {
   final _layerLink = LayerLink();
@@ -1894,9 +1797,7 @@ class _CustomerModelAutocompleteState
   List<CustomerObject> _filtered = const [];
   int _highlighted = -1;
   bool _userTyped = false;
-
   late final ScrollController _scrollController;
-
   @override
   void initState() {
     super.initState();
@@ -1904,7 +1805,6 @@ class _CustomerModelAutocompleteState
     _focusNode.addListener(_onFocus);
     widget.controller.addListener(_onText);
   }
-
   @override
   void didUpdateWidget(covariant _CustomerModelAutocomplete oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -1915,7 +1815,6 @@ class _CustomerModelAutocompleteState
       });
     }
   }
-
   @override
   void dispose() {
     _hide();
@@ -1925,11 +1824,9 @@ class _CustomerModelAutocompleteState
     _scrollController.dispose();
     super.dispose();
   }
-
   void _onFocus() {
     if (!_focusNode.hasFocus) _hide();
   }
-
   void _onText() {
     if (!_focusNode.hasFocus) return;
     final text = widget.controller.text.trim();
@@ -1942,7 +1839,6 @@ class _CustomerModelAutocompleteState
     _filter(widget.controller.text);
     _show();
   }
-
   void _filter(String q) {
     final query = q.trim().toLowerCase();
     if (query.isEmpty) {
@@ -1958,18 +1854,15 @@ class _CustomerModelAutocompleteState
     _highlighted = _filtered.isEmpty ? -1 : 0;
     _entry?.markNeedsBuild();
   }
-
   void _show() {
     if (_entry != null) return;
     _entry = OverlayEntry(builder: _buildPanel);
     Overlay.of(context).insert(_entry!);
   }
-
   void _hide() {
     _entry?.remove();
     _entry = null;
   }
-
   void _pick(CustomerObject c) {
     final text = c.mobile ?? '';
     _userTyped = false;
@@ -1978,7 +1871,6 @@ class _CustomerModelAutocompleteState
     widget.onSelected?.call(c);
     _focusNode.unfocus();
   }
-
   void _moveHighlight(int delta) {
     if (_filtered.isEmpty) return;
     final next = (_highlighted + delta).clamp(0, _filtered.length - 1);
@@ -1987,13 +1879,11 @@ class _CustomerModelAutocompleteState
     _entry?.markNeedsBuild();
     _scrollHighlightedIntoView();
   }
-
   void _scrollHighlightedIntoView() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final c = _scrollController;
       if (!c.hasClients || _highlighted < 0) return;
-
       const itemHeight = 48.0;
       const panelHeight = 260.0;
       final itemTop = _highlighted * itemHeight;
@@ -2001,7 +1891,6 @@ class _CustomerModelAutocompleteState
       final viewTop = c.offset;
       final viewBottom = viewTop + panelHeight;
       final maxScroll = c.position.maxScrollExtent;
-
       if (itemTop < viewTop) {
         c.jumpTo(itemTop.clamp(0.0, maxScroll));
       } else if (itemBottom > viewBottom) {
@@ -2009,13 +1898,11 @@ class _CustomerModelAutocompleteState
       }
     });
   }
-
   KeyEventResult _handleKey(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
       return KeyEventResult.ignored;
     }
     final key = event.logicalKey;
-
     if (key == LogicalKeyboardKey.arrowDown) {
       if (_entry != null) _moveHighlight(1);
       return KeyEventResult.handled;
@@ -2042,7 +1929,6 @@ class _CustomerModelAutocompleteState
     }
     return KeyEventResult.ignored;
   }
-
   Widget _buildPanel(BuildContext context) {
     final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     final width = box?.size.width ?? 280;
@@ -2067,90 +1953,89 @@ class _CustomerModelAutocompleteState
               ),
               child: _filtered.isEmpty
                   ? const Padding(
-                      padding: EdgeInsets.all(12),
-                      child: Text('No data',
-                          style: TextStyle(color: Colors.black, fontSize: 12)),
-                    )
+                padding: EdgeInsets.all(12),
+                child: Text('No data',
+                    style: TextStyle(color: Colors.black, fontSize: 12)),
+              )
                   : ListView.builder(
-                      controller: _scrollController,
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      itemCount: _filtered.length,
-                      itemBuilder: (_, i) {
-                        final c = _filtered[i];
-                        final active = _highlighted == i;
-                        return MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          onEnter: (_) {
-                            if (_highlighted == i) return;
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (!mounted) return;
-                              _highlighted = i;
-                              _entry?.markNeedsBuild();
-                            });
-                          },
-                          child: InkWell(
-                            onTap: () => _pick(c),
-                            child: Container(
-                              width: double.infinity,
-                              height: 48,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
+                controller: _scrollController,
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: _filtered.length,
+                itemBuilder: (_, i) {
+                  final c = _filtered[i];
+                  final active = _highlighted == i;
+                  return MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    onEnter: (_) {
+                      if (_highlighted == i) return;
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (!mounted) return;
+                        _highlighted = i;
+                        _entry?.markNeedsBuild();
+                      });
+                    },
+                    child: InkWell(
+                      onTap: () => _pick(c),
+                      child: Container(
+                        width: double.infinity,
+                        height: 48,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        color: active
+                            ? const Color(0xFFEEF2FF)
+                            : Colors.white,
+                        alignment: Alignment.centerLeft,
+                        child: Row(children: [
+                          Icon(Icons.person_outline,
+                              size: 16,
                               color: active
-                                  ? const Color(0xFFEEF2FF)
-                                  : Colors.white,
-                              alignment: Alignment.centerLeft,
-                              child: Row(children: [
-                                Icon(Icons.person_outline,
-                                    size: 16,
-                                    color: active
-                                        ? const Color(0xFF4F46E5)
-                                        : Colors.grey),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        c.mobile ?? '',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: active
-                                              ? FontWeight.w600
-                                              : FontWeight.w500,
-                                          color: Colors.black87,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        c.name ?? '',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontSize: 10,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ],
+                                  ? const Color(0xFF4F46E5)
+                                  : Colors.grey),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  c.mobile ?? '',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: active
+                                        ? FontWeight.w600
+                                        : FontWeight.w500,
+                                    color: Colors.black87,
                                   ),
                                 ),
-                              ]),
+                                const SizedBox(height: 2),
+                                Text(
+                                  c.name ?? '',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        );
-                      },
+                        ]),
+                      ),
                     ),
+                  );
+                },
+              ),
             ),
           ),
         ),
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
@@ -2172,7 +2057,6 @@ class _CustomerModelAutocompleteState
     );
   }
 }
-
 // ════════════════════════════════════════════════════════════════════
 // Time field — inline dropdown panel (HOURS + MINUTES + OK) below field
 // ════════════════════════════════════════════════════════════════════
@@ -2184,30 +2068,23 @@ class _TimePickerField extends StatefulWidget {
     required this.controller,
     required this.decoration,
   });
-
   final TextEditingController controller;
   final InputDecoration decoration;
-
   @override
   State<_TimePickerField> createState() => _TimePickerFieldState();
 }
-
 class _TimePickerFieldState extends State<_TimePickerField> {
   final _layerLink = LayerLink();
   final _fieldKey = GlobalKey();
   OverlayEntry? _entry;
-
   // Focus handling for the open panel so Tab can move between HOURS/MINUTES.
   final _panelScope = FocusScopeNode();
   final _hoursFocus = FocusNode();
   final _minutesFocus = FocusNode();
-
   int _hour = 0;
   int _minute = 0;
-
   static const _accent = Color(0xFF4F46E5);
   static const _border = Color(0xFFE5E7EB);
-
   @override
   void dispose() {
     _hide();
@@ -2216,7 +2093,6 @@ class _TimePickerFieldState extends State<_TimePickerField> {
     _minutesFocus.dispose();
     super.dispose();
   }
-
   void _seedFromText() {
     final now = TimeOfDay.now();
     _hour = now.hour;
@@ -2229,7 +2105,6 @@ class _TimePickerFieldState extends State<_TimePickerField> {
       if (m != null && m >= 0 && m < 60) _minute = m;
     }
   }
-
   void _toggle() {
     if (_entry != null) {
       _hide();
@@ -2243,19 +2118,16 @@ class _TimePickerFieldState extends State<_TimePickerField> {
       if (_entry != null) _hoursFocus.requestFocus();
     });
   }
-
   void _hide() {
     _entry?.remove();
     _entry = null;
   }
-
   void _apply() {
     final hh = _hour.toString().padLeft(2, '0');
     final mm = _minute.toString().padLeft(2, '0');
     widget.controller.text = '$hh:$mm';
     _hide();
   }
-
   KeyEventResult _handleKey(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
       return KeyEventResult.ignored;
@@ -2275,13 +2147,11 @@ class _TimePickerFieldState extends State<_TimePickerField> {
     }
     return KeyEventResult.ignored;
   }
-
   Widget _buildPanel(BuildContext context) {
     final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     final fieldWidth = box?.size.width ?? 240.0;
     final fieldHeight = box?.size.height ?? 40.0;
     final panelWidth = fieldWidth < 250.0 ? 250.0 : fieldWidth;
-
     return Positioned(
       width: panelWidth,
       child: CompositedTransformFollower(
@@ -2321,7 +2191,6 @@ class _TimePickerFieldState extends State<_TimePickerField> {
                     ),
                   );
                 }
-
                 return Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -2371,7 +2240,6 @@ class _TimePickerFieldState extends State<_TimePickerField> {
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
@@ -2388,7 +2256,7 @@ class _TimePickerFieldState extends State<_TimePickerField> {
           onTap: _toggle,
           decoration: widget.decoration.copyWith(
             prefixIconConstraints:
-                const BoxConstraints(minWidth: 28, minHeight: 0),
+            const BoxConstraints(minWidth: 28, minHeight: 0),
             prefixIcon: const Padding(
               padding: EdgeInsets.only(left: 8, right: 4),
               child: Icon(Icons.access_time, size: 15, color: Colors.grey),
@@ -2399,7 +2267,6 @@ class _TimePickerFieldState extends State<_TimePickerField> {
     );
   }
 }
-
 // ════════════════════════════════════════════════════════════════════
 // Web-style number dropdown — custom overlay list (no native Material
 // menu). Used for HOURS / MINUTES inside the time picker panel.
@@ -2412,43 +2279,35 @@ class _TimeNumberDropdown extends StatefulWidget {
     this.focusNode,
     this.autofocus = false,
   });
-
   final int value;
   final int count;
   final ValueChanged<int> onChanged;
   final FocusNode? focusNode;
   final bool autofocus;
-
   @override
   State<_TimeNumberDropdown> createState() => _TimeNumberDropdownState();
 }
-
 class _TimeNumberDropdownState extends State<_TimeNumberDropdown> {
   final _layerLink = LayerLink();
   final _fieldKey = GlobalKey();
-
   // Use the focus node passed by the parent if provided, otherwise own one.
   late final FocusNode _focusNode = widget.focusNode ?? FocusNode();
   late final bool _ownsFocusNode = widget.focusNode == null;
-
   OverlayEntry? _entry;
   late final ScrollController _scrollController;
   int _highlighted = 0;
   bool _focused = false;
-
   static const _accent = Color(0xFF4F46E5);
   static const _purple = Color(0xFF312E81);
   static const _border = Color(0xFFE5E7EB);
   static const _itemHeight = 36.0;
   static const _panelHeight = 220.0;
-
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
     _focusNode.addListener(_onFocusChange);
   }
-
   @override
   void dispose() {
     _hide();
@@ -2457,13 +2316,11 @@ class _TimeNumberDropdownState extends State<_TimeNumberDropdown> {
     _scrollController.dispose();
     super.dispose();
   }
-
   void _onFocusChange() {
     if (mounted && _focused != _focusNode.hasFocus) {
       setState(() => _focused = _focusNode.hasFocus);
     }
   }
-
   void _toggle() {
     if (_entry != null) {
       _hide();
@@ -2471,7 +2328,6 @@ class _TimeNumberDropdownState extends State<_TimeNumberDropdown> {
       _open();
     }
   }
-
   void _open() {
     if (_entry != null) return;
     _highlighted = widget.value;
@@ -2480,12 +2336,10 @@ class _TimeNumberDropdownState extends State<_TimeNumberDropdown> {
     _focusNode.requestFocus();
     _scrollToSelected();
   }
-
   void _hide() {
     _entry?.remove();
     _entry = null;
   }
-
   void _scrollToSelected() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_scrollController.hasClients) return;
@@ -2496,7 +2350,6 @@ class _TimeNumberDropdownState extends State<_TimeNumberDropdown> {
       );
     });
   }
-
   void _moveHighlight(int delta) {
     final next = (_highlighted + delta).clamp(0, widget.count - 1);
     if (next == _highlighted) return;
@@ -2504,7 +2357,6 @@ class _TimeNumberDropdownState extends State<_TimeNumberDropdown> {
     _entry?.markNeedsBuild();
     _scrollHighlightedIntoView();
   }
-
   void _scrollHighlightedIntoView() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_scrollController.hasClients) return;
@@ -2521,13 +2373,11 @@ class _TimeNumberDropdownState extends State<_TimeNumberDropdown> {
       }
     });
   }
-
   KeyEventResult _handleKey(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
       return KeyEventResult.ignored;
     }
     final key = event.logicalKey;
-
     if (key == LogicalKeyboardKey.arrowDown) {
       if (_entry == null) {
         _open();
@@ -2560,12 +2410,10 @@ class _TimeNumberDropdownState extends State<_TimeNumberDropdown> {
     }
     return KeyEventResult.ignored;
   }
-
   void _pick(int v) {
     _hide();
     widget.onChanged(v);
   }
-
   Widget _buildPanel(BuildContext context) {
     final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     final width = box?.size.width ?? 110.0;
@@ -2615,7 +2463,7 @@ class _TimeNumberDropdownState extends State<_TimeNumberDropdown> {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight:
-                                active ? FontWeight.w700 : FontWeight.w500,
+                            active ? FontWeight.w700 : FontWeight.w500,
                             color: active ? _accent : Colors.black87,
                           ),
                         ),
@@ -2630,7 +2478,6 @@ class _TimeNumberDropdownState extends State<_TimeNumberDropdown> {
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
@@ -2674,7 +2521,6 @@ class _TimeNumberDropdownState extends State<_TimeNumberDropdown> {
     );
   }
 }
-
 // ════════════════════════════════════════════════════════════════════
 // Focus glow — soft animated "shining" purple halo shown around whichever
 // field currently holds keyboard focus (reached via Tab / Shift+Tab).
@@ -2685,9 +2531,573 @@ class _TimeNumberDropdownState extends State<_TimeNumberDropdown> {
 // ════════════════════════════════════════════════════════════════════
 class _GlowFocus extends StatelessWidget {
   const _GlowFocus({required this.child});
-
   final Widget child;
-
   @override
   Widget build(BuildContext context) => child;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// React-datepicker-style date field.
+// • Single Tab focus stop → icon + border + date text take the accent color.
+// • Enter / Space / Down (or click) opens a dropdown calendar anchored under
+//   the field (an Overlay popup, NOT a Material dialog).
+// • In the calendar: ‹ › navigate months, the title toggles month / year
+//   pickers, arrow keys move the day selection, Enter confirms, Esc closes.
+// • Selected day, today, headers and chips all use the accent (purple) palette.
+// ════════════════════════════════════════════════════════════════════
+class _CalendarDropdownField extends StatefulWidget {
+  const _CalendarDropdownField({
+    required this.value,
+    required this.onChanged,
+    required this.decoration,
+    required this.textStyle,
+    required this.accent,
+    required this.accentSoft,
+    required this.idleColor,
+  });
+
+  final DateTime? value;
+  final ValueChanged<DateTime> onChanged;
+  final InputDecoration decoration;
+  final TextStyle textStyle;
+  final Color accent;
+  final Color accentSoft;
+  final Color idleColor;
+
+  @override
+  State<_CalendarDropdownField> createState() => _CalendarDropdownFieldState();
+}
+
+class _CalendarDropdownFieldState extends State<_CalendarDropdownField> {
+  static const _months = [
+    'January', 'February', 'March', 'April', 'May', 'June', //
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  static const _weekdays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+
+  // 0 = days, 1 = months, 2 = years
+  static const _viewDays = 0;
+  static const _viewMonths = 1;
+  static const _viewYears = 2;
+
+  final LayerLink _link = LayerLink();
+  final FocusNode _fieldFocus = FocusNode(debugLabel: 'dateField');
+  final FocusNode _calendarFocus = FocusNode(debugLabel: 'dateCalendar');
+  final GlobalKey _fieldKey = GlobalKey();
+  // Shared so a tap on the field is NOT treated as "outside" the calendar
+  // (otherwise the field click closes via TapRegion AND reopens via InkWell).
+  final Object _tapGroupId = Object();
+  OverlayEntry? _entry;
+
+  bool _focused = false;
+  int _view = _viewDays;
+  late DateTime _visibleMonth; // first-of-month being displayed
+  DateTime? _selected;
+  late int _yearPageStart;
+
+  @override
+  void initState() {
+    super.initState();
+    _fieldFocus.addListener(_onFocusChange);
+    _selected = widget.value;
+    final base = widget.value ?? DateTime.now();
+    _visibleMonth = DateTime(base.year, base.month);
+  }
+
+  @override
+  void didUpdateWidget(covariant _CalendarDropdownField old) {
+    super.didUpdateWidget(old);
+    if (old.value != widget.value) {
+      _selected = widget.value;
+      if (widget.value != null) {
+        _visibleMonth = DateTime(widget.value!.year, widget.value!.month);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _closeCalendar();
+    _fieldFocus.removeListener(_onFocusChange);
+    _fieldFocus.dispose();
+    _calendarFocus.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    if (_focused != _fieldFocus.hasFocus) {
+      setState(() => _focused = _fieldFocus.hasFocus);
+    }
+  }
+
+  bool get _isOpen => _entry != null;
+
+  void _toggleCalendar() => _isOpen ? _closeCalendar() : _openCalendar();
+
+  void _openCalendar() {
+    if (_isOpen) return;
+    _view = _viewDays;
+    final base = _selected ?? DateTime.now();
+    _visibleMonth = DateTime(base.year, base.month);
+    _entry = OverlayEntry(builder: _buildCalendarPanel);
+    Overlay.of(context).insert(_entry!);
+    setState(() {}); // refresh field chrome (arrow / accent)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _calendarFocus.requestFocus();
+    });
+  }
+
+  void _closeCalendar() {
+    _entry?.remove();
+    _entry = null;
+    if (mounted) setState(() {});
+  }
+
+  void _rebuildPanel() => _entry?.markNeedsBuild();
+
+  void _setView(int v) {
+    if (v == _viewYears) _yearPageStart = _visibleMonth.year - 5;
+    _view = v;
+    _rebuildPanel();
+  }
+
+  void _navPrev() {
+    if (_view == _viewDays) {
+      _visibleMonth = DateTime(_visibleMonth.year, _visibleMonth.month - 1);
+    } else if (_view == _viewMonths) {
+      _visibleMonth = DateTime(_visibleMonth.year - 1, _visibleMonth.month);
+    } else {
+      _yearPageStart -= 12;
+    }
+    _rebuildPanel();
+  }
+
+  void _navNext() {
+    if (_view == _viewDays) {
+      _visibleMonth = DateTime(_visibleMonth.year, _visibleMonth.month + 1);
+    } else if (_view == _viewMonths) {
+      _visibleMonth = DateTime(_visibleMonth.year + 1, _visibleMonth.month);
+    } else {
+      _yearPageStart += 12;
+    }
+    _rebuildPanel();
+  }
+
+  void _pick(DateTime day) {
+    _selected = DateTime(day.year, day.month, day.day);
+    widget.onChanged(_selected!);
+    _closeCalendar();
+    _fieldFocus.requestFocus();
+  }
+
+  void _moveSelection(int days) {
+    final base = _selected ?? _visibleMonth;
+    final next = DateTime(base.year, base.month, base.day + days);
+    _selected = next;
+    _visibleMonth = DateTime(next.year, next.month);
+    _view = _viewDays;
+    _rebuildPanel();
+  }
+
+  static bool _sameDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
+
+  String _format(DateTime? v) {
+    if (v == null) return '';
+    final d = v.day.toString().padLeft(2, '0');
+    final m = v.month.toString().padLeft(2, '0');
+    return '$d / $m / ${v.year}';
+  }
+
+  // ── field key handling: open the calendar
+  KeyEventResult _onFieldKey(FocusNode node, KeyEvent e) {
+    if (e is! KeyDownEvent) return KeyEventResult.ignored;
+    final k = e.logicalKey;
+    if (k == LogicalKeyboardKey.enter ||
+        k == LogicalKeyboardKey.numpadEnter ||
+        k == LogicalKeyboardKey.space ||
+        k == LogicalKeyboardKey.arrowDown) {
+      _openCalendar();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
+  // ── calendar key handling: navigate / confirm / close
+  KeyEventResult _onCalendarKey(FocusNode node, KeyEvent e) {
+    if (e is! KeyDownEvent && e is! KeyRepeatEvent) {
+      return KeyEventResult.ignored;
+    }
+    final k = e.logicalKey;
+    if (k == LogicalKeyboardKey.arrowLeft) {
+      _moveSelection(-1);
+      return KeyEventResult.handled;
+    }
+    if (k == LogicalKeyboardKey.arrowRight) {
+      _moveSelection(1);
+      return KeyEventResult.handled;
+    }
+    if (k == LogicalKeyboardKey.arrowUp) {
+      _moveSelection(-7);
+      return KeyEventResult.handled;
+    }
+    if (k == LogicalKeyboardKey.arrowDown) {
+      _moveSelection(7);
+      return KeyEventResult.handled;
+    }
+    if (k == LogicalKeyboardKey.pageUp) {
+      _navPrev();
+      return KeyEventResult.handled;
+    }
+    if (k == LogicalKeyboardKey.pageDown) {
+      _navNext();
+      return KeyEventResult.handled;
+    }
+    if (k == LogicalKeyboardKey.enter || k == LogicalKeyboardKey.numpadEnter) {
+      _pick(_selected ?? _visibleMonth);
+      return KeyEventResult.handled;
+    }
+    if (k == LogicalKeyboardKey.escape) {
+      _closeCalendar();
+      _fieldFocus.requestFocus();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
+  // ──────────────────────────────── field
+  @override
+  Widget build(BuildContext context) {
+    final highlight = _focused || _isOpen;
+    final iconColor = highlight ? widget.accent : widget.idleColor;
+
+    final decoration = widget.decoration.copyWith(
+      prefixIconConstraints: const BoxConstraints(minWidth: 28, minHeight: 0),
+      prefixIcon: Padding(
+        padding: const EdgeInsets.only(left: 8, right: 4),
+        child: Icon(Icons.calendar_today, size: 15, color: iconColor),
+      ),
+      suffixIconConstraints: const BoxConstraints(minWidth: 28, minHeight: 0),
+      suffixIcon: Icon(
+        _isOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+        size: 20,
+        color: highlight ? widget.accent : widget.idleColor,
+      ),
+    );
+
+    return TapRegion(
+      groupId: _tapGroupId,
+      child: CompositedTransformTarget(
+        link: _link,
+        child: Focus(
+          focusNode: _fieldFocus,
+          onKeyEvent: _onFieldKey,
+          child: InkWell(
+            key: _fieldKey,
+            canRequestFocus: false,
+            borderRadius: BorderRadius.circular(6),
+            onTap: () {
+              _fieldFocus.requestFocus();
+              _toggleCalendar();
+            },
+          child: InputDecorator(
+            isFocused: highlight,
+            decoration: decoration,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              decoration: highlight
+                  ? BoxDecoration(
+                      color: widget.accent.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(3),
+                    )
+                  : null,
+              child: Text(
+                _format(widget.value),
+                style: widget.textStyle.copyWith(
+                  color: highlight ? widget.accent : widget.textStyle.color,
+                  fontWeight: highlight ? FontWeight.w600 : FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+      ),
+    );
+  }
+
+  // ──────────────────────────────── calendar popup
+  Widget _buildCalendarPanel(BuildContext context) {
+    final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
+    final fieldWidth = box?.size.width ?? 280.0;
+    final fieldHeight = box?.size.height ?? 40.0;
+    final panelWidth = fieldWidth < 300 ? 300.0 : fieldWidth;
+
+    return Positioned(
+      width: panelWidth,
+      child: CompositedTransformFollower(
+        link: _link,
+        showWhenUnlinked: false,
+        offset: Offset(0, fieldHeight + 4),
+        child: TapRegion(
+          groupId: _tapGroupId,
+          onTapOutside: (_) => _closeCalendar(),
+          child: Focus(
+            focusNode: _calendarFocus,
+            onKeyEvent: _onCalendarKey,
+            child: Material(
+              elevation: 8,
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: const Color(0xFFE5E7EB)),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _header(),
+                    const SizedBox(height: 8),
+                    if (_view == _viewDays) ...[
+                      _weekdayRow(),
+                      const SizedBox(height: 4),
+                      _daysGrid(),
+                    ] else if (_view == _viewMonths)
+                      _monthsGrid()
+                    else
+                      _yearsGrid(),
+                    const SizedBox(height: 6),
+                    _footer(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _header() {
+    final String title = _view == _viewYears
+        ? '$_yearPageStart - ${_yearPageStart + 11}'
+        : '${_months[_visibleMonth.month - 1]} ${_visibleMonth.year}';
+    return Row(
+      children: [
+        _navButton(Icons.chevron_left, _navPrev),
+        Expanded(
+          child: InkWell(
+            borderRadius: BorderRadius.circular(6),
+            onTap: () => _setView(_view == _viewDays ? _viewYears : _viewDays),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Center(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: widget.accent,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        _navButton(Icons.chevron_right, _navNext),
+      ],
+    );
+  }
+
+  Widget _navButton(IconData icon, VoidCallback onTap) => InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(6),
+          child: Icon(icon, size: 18, color: widget.accent),
+        ),
+      );
+
+  Widget _weekdayRow() => Row(
+        children: [
+          for (final w in _weekdays)
+            Expanded(
+              child: Center(
+                child: Text(
+                  w,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: widget.accent.withValues(alpha: 0.7),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      );
+
+  Widget _daysGrid() {
+    final firstOfMonth = DateTime(_visibleMonth.year, _visibleMonth.month, 1);
+    final daysInMonth =
+        DateTime(_visibleMonth.year, _visibleMonth.month + 1, 0).day;
+    final leadingBlanks = firstOfMonth.weekday % 7; // Sunday = 0
+    final today = DateTime.now();
+
+    final cells = <Widget>[];
+    for (var i = 0; i < leadingBlanks; i++) {
+      cells.add(const SizedBox.shrink());
+    }
+    for (var d = 1; d <= daysInMonth; d++) {
+      final day = DateTime(_visibleMonth.year, _visibleMonth.month, d);
+      final isSelected = _selected != null && _sameDay(_selected!, day);
+      final isToday = _sameDay(today, day);
+      cells.add(_dayCell(d, isSelected, isToday, () => _pick(day)));
+    }
+
+    return GridView.count(
+      crossAxisCount: 7,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      mainAxisSpacing: 2,
+      crossAxisSpacing: 2,
+      childAspectRatio: 1.1,
+      children: cells,
+    );
+  }
+
+  Widget _dayCell(int day, bool selected, bool today, VoidCallback onTap) {
+    Color bg = Colors.transparent;
+    Color fg = Colors.black87;
+    if (selected) {
+      bg = widget.accent;
+      fg = Colors.white;
+    } else if (today) {
+      bg = widget.accentSoft;
+      fg = widget.accent;
+    }
+    return InkWell(
+      borderRadius: BorderRadius.circular(8),
+      onTap: onTap,
+      child: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(8),
+          border: today && !selected
+              ? Border.all(color: widget.accent, width: 1)
+              : null,
+        ),
+        child: Text(
+          '$day',
+          style: TextStyle(
+            fontSize: 12,
+            color: fg,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _monthsGrid() => GridView.count(
+        crossAxisCount: 3,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        mainAxisSpacing: 6,
+        crossAxisSpacing: 6,
+        childAspectRatio: 1.8,
+        children: [
+          for (var m = 1; m <= 12; m++)
+            _chip(
+              _months[m - 1].substring(0, 3),
+              m == _visibleMonth.month,
+              () {
+                _visibleMonth = DateTime(_visibleMonth.year, m);
+                _setView(_viewDays);
+              },
+            ),
+        ],
+      );
+
+  Widget _yearsGrid() => GridView.count(
+        crossAxisCount: 3,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        mainAxisSpacing: 6,
+        crossAxisSpacing: 6,
+        childAspectRatio: 1.8,
+        children: [
+          for (var i = 0; i < 12; i++)
+            _chip(
+              '${_yearPageStart + i}',
+              (_yearPageStart + i) == _visibleMonth.year,
+              () {
+                _visibleMonth =
+                    DateTime(_yearPageStart + i, _visibleMonth.month);
+                _setView(_viewMonths);
+              },
+            ),
+        ],
+      );
+
+  Widget _chip(String label, bool selected, VoidCallback onTap) => InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: onTap,
+        child: Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: selected ? widget.accent : widget.accentSoft,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: selected ? Colors.white : widget.accent,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      );
+
+  Widget _footer() => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          TextButton(
+            onPressed: () => _pick(DateTime.now()),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              minimumSize: const Size(0, 32),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Text(
+              'Today',
+              style: TextStyle(
+                  color: widget.accent,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              _closeCalendar();
+              _fieldFocus.requestFocus();
+            },
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              minimumSize: const Size(0, 32),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: const Text(
+              'Close',
+              style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700),
+            ),
+          ),
+        ],
+      );
 }
