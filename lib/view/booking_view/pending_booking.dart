@@ -283,14 +283,14 @@ class _PendingBookingState extends State<PendingBooking> {
                                 }),
                             TableColumnConfig(
                                 title: "ACC",
-                                sizeType: ColumnSizeType.medium,
+                                sizeType: ColumnSizeType.small,
                                 onChanged: (v) {
                                   controller.pendingaccountName.text = v;
                                   controller.pendingBookingonSearch();
                                 }),
                             TableColumnConfig(
                                 title: "DRV",
-                                sizeType: ColumnSizeType.medium,
+                                sizeType: ColumnSizeType.small,
                                 onChanged: (v) {
                                   controller.pendingdriverName.text = v;
                                   controller.pendingBookingonSearch();
@@ -346,7 +346,7 @@ class _PendingBookingState extends State<PendingBooking> {
                                 }),
                             TableColumnConfig(
                                 title: "ACTIONS",
-                                sizeType: ColumnSizeType.fixed,
+                                sizeType: ColumnSizeType.small,
                                 fixedWidth: 70.0,
                                 removeSearching: true),
                           ],
