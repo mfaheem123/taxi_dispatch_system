@@ -565,5 +565,3 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
     );
   }
 }
-
-
