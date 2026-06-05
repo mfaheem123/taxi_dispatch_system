@@ -96,7 +96,10 @@ class _ResponsiveDataTableWidgetState extends State<ResponsiveDataTableWidget> {
             ),
             columns: widget.columnConfigs.map((config) {
               return buildHeaderWithSearch(
-                widhtss: calculatedWidths[config.title]!,
+                // widhtss: calculatedWidths[config.title]!,
+                widhtss: calculatedWidths[config.title]! > 120
+                    ? 120
+                    : calculatedWidths[config.title]!,
                 title: config.title,
                 onChanged: config.onChanged,
                 removeSearching: config.removeSearching,

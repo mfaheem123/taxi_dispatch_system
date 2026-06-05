@@ -9,6 +9,7 @@ import '../../component/color.dart';
 import '../../component/customButton.dart';
 import '../../component/datatable_widget.dart';
 import '../../component/pagination.dart';
+import '../../component/responsive_datatable_widget.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
 import '../../component/text_widget.dart';
@@ -64,10 +65,13 @@ class _WebBookingState extends State<WebBooking> {
                     ? maxWidth / 2
                     : maxWidth / 4;
 
+                final double totalAvailableWidth = constraints.maxWidth;
+
                 return
                   controller.webBookingLoad == true? Center(child: CircularProgressIndicator(),):
                   Container(
                   color: const Color(0xFFF7F9FC),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -282,175 +286,361 @@ class _WebBookingState extends State<WebBooking> {
                       // ),
 
                       // 📋 Data Table
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child:
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          child: DatatableWidget(
-                            columns: [
-                              buildHeaderWithSearch(title: "REF #",
-                                onChanged: (v) {
-                                  controller.webreferenceNumber.text = v;
-                                  controller.onSearchpreBooking();
-                                },
+                      // SingleChildScrollView(
+                      //   scrollDirection: Axis.horizontal,
+                      //   child:
+                      //   SizedBox(
+                      //     width: MediaQuery.of(context).size.width,
+                      //     child: DatatableWidget(
+                      //       columns: [
+                      //         buildHeaderWithSearch(title: "REF #",
+                      //           onChanged: (v) {
+                      //             controller.webreferenceNumber.text = v;
+                      //             controller.onSearchpreBooking();
+                      //           },
+                      //         ),
+                      //         buildHeaderWithSearch(title: "DATETIME",
+                      //           onChanged: (v) {
+                      //             controller.webpickupDate.text = v;
+                      //             controller.onSearchpreBooking();
+                      //           },
+                      //         ),
+                      //         buildHeaderWithSearch(title: "CUSTOMER",
+                      //           onChanged: (v) {
+                      //             controller.webname.text = v;
+                      //             controller.onSearchpreBooking();
+                      //           },
+                      //         ),
+                      //         buildHeaderWithSearch(title: "PICKUP",
+                      //           onChanged: (v) {
+                      //             controller.webpickup.text = v;
+                      //             controller.onSearchpreBooking();
+                      //           },
+                      //         ),
+                      //         buildHeaderWithSearch(title: "DROPOFF",
+                      //           onChanged: (v) {
+                      //             controller.webdropOff.text = v;
+                      //             controller.onSearchpreBooking();
+                      //           },
+                      //         ),
+                      //         buildHeaderWithSearch(title: "ACC",
+                      //           onChanged: (v) {
+                      //             controller.webaccountName.text = v;
+                      //             controller.onSearchpreBooking();
+                      //           },
+                      //         ),
+                      //         buildHeaderWithSearch(title: "DRV",
+                      //           onChanged: (v) {
+                      //             controller.webdriverName.text = v;
+                      //             controller.onSearchpreBooking();
+                      //           },
+                      //         ),
+                      //         buildHeaderWithSearch(title: "P/T",
+                      //           onChanged: (v) {
+                      //             controller.webpaymentType.text = v;
+                      //             controller.onSearchpreBooking();
+                      //           },
+                      //         ),
+                      //         buildHeaderWithSearch(title: "VEH",
+                      //           onChanged: (v) {
+                      //             controller.webvehicleTypeName.text = v;
+                      //             controller.onSearchpreBooking();
+                      //           },
+                      //         ),
+                      //         buildHeaderWithSearch(title: "NOTE",
+                      //           onChanged: (v) {
+                      //             controller.webnotes.text = v;
+                      //             controller.onSearchpreBooking();
+                      //           },
+                      //         ),
+                      //         buildHeaderWithSearch(title: "FARE",
+                      //           onChanged: (v) {
+                      //             controller.webfares.text = v;
+                      //             controller.onSearchpreBooking();
+                      //           },
+                      //         ),
+                      //         buildHeaderWithSearch(title: "STATUS",
+                      //           onChanged: (v) {
+                      //             controller.webbookingStatus.text = v;
+                      //             controller.onSearchpreBooking();
+                      //           },
+                      //         ),
+                      //         buildHeaderWithSearch(title: "J/T",
+                      //           onChanged: (v) {
+                      //             controller.webjourneyType.text = v;
+                      //             controller.onSearchpreBooking();
+                      //           },
+                      //         ),
+                      //         buildHeaderWithSearch(title: "SUBS",
+                      //
+                      //           onChanged: (v) {
+                      //             controller.websubsidiary.text = v;
+                      //             controller.onSearchpreBooking();
+                      //           },
+                      //         ),
+                      //
+                      //         buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
+                      //       ],
+                      //       totalRow: listToShow.length,
+                      //       rows: listToShow.map((item) {
+                      //         return DataRow(
+                      //           cells: [
+                      //             DataCell(Center(child: Text(item.referenceNumber ?? ''))),
+                      //             DataCell(Center(child: Text("${DateFormat('dd-MM-yyyy').format(item.pickupDate!)} ${item.pickupTime}"))),
+                      //             DataCell(Center(child: Text((item.name ?? '').toUpperCase()))),
+                      //             DataCell(Center(child: Text((item.pickup ?? '').toUpperCase()))),
+                      //             DataCell(Center(child: Text((item.dropoff ?? '').toUpperCase()))),
+                      //             DataCell(Center(child: Text((item.account?.name ?? '').toUpperCase()))),
+                      //             DataCell(Center(child: Text((item.driver?.name ?? '').toUpperCase()))),
+                      //             DataCell(Center(child: Text((item.paymentType?.name ?? '').toUpperCase()))),
+                      //             DataCell(Center(child: Text((item.vehicleType?.name ?? '').toUpperCase()))),
+                      //             // DataCell(Center(child: Text(item.notes.toString() ?? ''))),
+                      //             DataCell(Center(child: Text(
+                      //                 ((item.notes != null && item.notes!.isNotEmpty)
+                      //                     ? item.notes!.first.note ?? ''
+                      //                     : ''
+                      //                 ).toUpperCase()))),
+                      //             DataCell(Center(child: Text(item.fares?.toString() ?? ''))),
+                      //
+                      //             DataCell(Center(child:
+                      //
+                      //             Container(
+                      //               width: double.infinity,
+                      //               height: double.infinity,
+                      //               alignment: Alignment.center,
+                      //
+                      //               // APPLY YOUR COLOR HERE
+                      //               decoration: BoxDecoration(
+                      //                 color: DynamicColors.statusColor,
+                      //                 // Optional: borderRadius: BorderRadius.circular(2),
+                      //               ),
+                      //               child: Text((
+                      //                 item.bookingStatus?.bookingStatus.toString() ?? '').toUpperCase(),
+                      //                 style: TextStyle(color: DynamicColors.whiteClr),
+                      //               ),
+                      //             ),
+                      //
+                      //             )),
+                      //             DataCell(Center(child: Text((item.journeyType?.journeyType ?? '').toUpperCase()))),
+                      //             DataCell(Center(child: Text(item.subsidiary?.name ?? ''))),
+                      //             DataCell(
+                      //               Center(
+                      //                 child: Row(
+                      //                   mainAxisAlignment: MainAxisAlignment.center,
+                      //                   children: [
+                      //                     OutlinedButton(
+                      //                       style: OutlinedButton.styleFrom(side: BorderSide(color: Colors.transparent),),
+                      //                       onPressed: () {
+                      //                       },
+                      //                       child: Icon(Icons.edit_calendar,
+                      //                           size: 28),
+                      //                     ),
+                      //                     Text("|"),
+                      //                     OutlinedButton(
+                      //                       style: OutlinedButton.styleFrom(
+                      //                         side: BorderSide(color: Colors.transparent),
+                      //                       ),
+                      //                       onPressed: () {
+                      //
+                      //                       },
+                      //                       child: Icon(Icons.delete_forever,
+                      //                           size: 28),
+                      //                     ),
+                      //                   ],
+                      //                 ),
+                      //               ),
+                      //             ),
+                      //           ],
+                      //         );
+                      //       }).toList(),
+                      //     ),
+                      //   ),
+                      // ),
+                      ResponsiveDataTableWidget(
+                        totalWidth: totalAvailableWidth,
+                        items: listToShow,
+                        columnConfigs: [
+                          TableColumnConfig(
+                              title: "REF #",
+                              sizeType: ColumnSizeType.small,
+                              onChanged: (v) {
+                                controller.pendingreferenceNumber.text = v;
+                                controller.pendingBookingonSearch();
+                              }),
+                          TableColumnConfig(
+                              title: "DATETIME",
+                              sizeType: ColumnSizeType.medium,
+                              onChanged: (v) {
+                                controller.pendingpickupDate.text = v;
+                                controller.pendingBookingonSearch();
+                              }),
+                          TableColumnConfig(
+                              title: "CUSTOMER",
+                              sizeType: ColumnSizeType.medium,
+                              onChanged: (v) {
+                                controller.pendingname.text = v;
+                                controller.pendingBookingonSearch();
+                              }),
+                          TableColumnConfig(
+                              title: "PICKUP",
+                              sizeType: ColumnSizeType.large,
+                              onChanged: (v) {
+                                controller.pendingpickup.text = v;
+                                controller.pendingBookingonSearch();
+                              }),
+                          TableColumnConfig(
+                              title: "DROPOFF",
+                              sizeType: ColumnSizeType.large,
+                              onChanged: (v) {
+                                controller.pendingdropOff.text = v;
+                                controller.pendingBookingonSearch();
+                              }),
+                          TableColumnConfig(
+                              title: "ACC",
+                              sizeType: ColumnSizeType.small,
+                              onChanged: (v) {
+                                controller.pendingaccountName.text = v;
+                                controller.pendingBookingonSearch();
+                              }),
+                          TableColumnConfig(
+                              title: "DRV",
+                              sizeType: ColumnSizeType.small,
+                              onChanged: (v) {
+                                controller.pendingdriverName.text = v;
+                                controller.pendingBookingonSearch();
+                              }),
+                          TableColumnConfig(
+                              title: "P/T",
+                              sizeType: ColumnSizeType.small,
+                              onChanged: (v) {
+                                controller.pendingpaymentType.text = v;
+                                controller.pendingBookingonSearch();
+                              }),
+                          TableColumnConfig(
+                              title: "VEH",
+                              sizeType: ColumnSizeType.small,
+                              onChanged: (v) {
+                                controller.pendingvehicleTypeName.text = v;
+                                controller.pendingBookingonSearch();
+                              }),
+                          TableColumnConfig(
+                              title: "NOTE",
+                              sizeType: ColumnSizeType.medium,
+                              onChanged: (v) {
+                                controller.pendingnotes.text = v;
+                                controller.pendingBookingonSearch();
+                              }),
+                          TableColumnConfig(
+                              title: "FARE",
+                              sizeType: ColumnSizeType.small,
+                              onChanged: (v) {
+                                controller.pendingfares.text = v;
+                                controller.pendingBookingonSearch();
+                              }),
+                          TableColumnConfig(
+                              title: "STATUS",
+                              sizeType: ColumnSizeType.fixed,
+                              onChanged: (v) {
+                                controller.pendingbookingStatus.text = v;
+                                controller.pendingBookingonSearch();
+                              }),
+                          TableColumnConfig(
+                              title: "J/T",
+                              sizeType: ColumnSizeType.small,
+                              onChanged: (v) {
+                                controller.pendingjourneyType.text = v;
+                                controller.pendingBookingonSearch();
+                              }),
+                          TableColumnConfig(
+                              title: "SUBS",
+                              sizeType: ColumnSizeType.small,
+                              onChanged: (v) {
+                                controller.pendingsubsidiary.text = v;
+                                controller.pendingBookingonSearch();
+                              }),
+                          TableColumnConfig(
+                              title: "ACTIONS",
+                              sizeType: ColumnSizeType.small,
+                              fixedWidth: 70.0,
+                              removeSearching: true),
+                        ],
+                        rowBuilder: (item, widths) {
+                          String formattedDateTime = "-";
+                          if (item.pickupDate != null) {
+                            formattedDateTime =
+                                "${DateFormat('dd-MM-yyyy').format(item.pickupDate!)} ${item.pickupTime ?? ''}"
+                                    .trim();
+                          }
+                          String firstNote =
+                          (item.notes != null && item.notes!.isNotEmpty)
+                              ? item.notes!.first.note ?? ''
+                              : '';
+                          return [
+                            item.referenceNumber ?? '',
+                            formattedDateTime,
+                            (item.name ?? '').toUpperCase(),
+                            (item.pickup ?? '').toUpperCase(),
+                            (item.dropoff ?? '').toUpperCase(),
+                            (item.account?.name ?? '').toUpperCase(),
+                            (item.driver?.name ?? '').toUpperCase(),
+                            (item.paymentType?.name ?? '').toUpperCase(),
+                            (item.vehicleType?.name ?? '').toUpperCase(),
+                            firstNote.toUpperCase(),
+                            "£${item.fares?.toString() ?? ''}",
+                            Container(
+                              width: widths["STATUS"]!,
+                              height: double.infinity,
+                              alignment: Alignment.center,
+                              color: DynamicColors.statusColor,
+                              child: Text(
+                                (item.bookingStatus?.bookingStatus
+                                    .toString() ??
+                                    '')
+                                    .toUpperCase(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: DynamicColors.whiteClr,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                              buildHeaderWithSearch(title: "DATETIME",
-                                onChanged: (v) {
-                                  controller.webpickupDate.text = v;
-                                  controller.onSearchpreBooking();
-                                },
-                              ),
-                              buildHeaderWithSearch(title: "CUSTOMER",
-                                onChanged: (v) {
-                                  controller.webname.text = v;
-                                  controller.onSearchpreBooking();
-                                },
-                              ),
-                              buildHeaderWithSearch(title: "PICKUP",
-                                onChanged: (v) {
-                                  controller.webpickup.text = v;
-                                  controller.onSearchpreBooking();
-                                },
-                              ),
-                              buildHeaderWithSearch(title: "DROPOFF",
-                                onChanged: (v) {
-                                  controller.webdropOff.text = v;
-                                  controller.onSearchpreBooking();
-                                },
-                              ),
-                              buildHeaderWithSearch(title: "ACC",
-                                onChanged: (v) {
-                                  controller.webaccountName.text = v;
-                                  controller.onSearchpreBooking();
-                                },
-                              ),
-                              buildHeaderWithSearch(title: "DRV",
-                                onChanged: (v) {
-                                  controller.webdriverName.text = v;
-                                  controller.onSearchpreBooking();
-                                },
-                              ),
-                              buildHeaderWithSearch(title: "P/T",
-                                onChanged: (v) {
-                                  controller.webpaymentType.text = v;
-                                  controller.onSearchpreBooking();
-                                },
-                              ),
-                              buildHeaderWithSearch(title: "VEH",
-                                onChanged: (v) {
-                                  controller.webvehicleTypeName.text = v;
-                                  controller.onSearchpreBooking();
-                                },
-                              ),
-                              buildHeaderWithSearch(title: "NOTE",
-                                onChanged: (v) {
-                                  controller.webnotes.text = v;
-                                  controller.onSearchpreBooking();
-                                },
-                              ),
-                              buildHeaderWithSearch(title: "FARE",
-                                onChanged: (v) {
-                                  controller.webfares.text = v;
-                                  controller.onSearchpreBooking();
-                                },
-                              ),
-                              buildHeaderWithSearch(title: "STATUS",
-                                onChanged: (v) {
-                                  controller.webbookingStatus.text = v;
-                                  controller.onSearchpreBooking();
-                                },
-                              ),
-                              buildHeaderWithSearch(title: "J/T",
-                                onChanged: (v) {
-                                  controller.webjourneyType.text = v;
-                                  controller.onSearchpreBooking();
-                                },
-                              ),
-                              buildHeaderWithSearch(title: "SUBS",
-
-                                onChanged: (v) {
-                                  controller.websubsidiary.text = v;
-                                  controller.onSearchpreBooking();
-                                },
-                              ),
-
-                              buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
-                            ],
-                            totalRow: listToShow.length,
-                            rows: listToShow.map((item) {
-                              return DataRow(
-                                cells: [
-                                  DataCell(Center(child: Text(item.referenceNumber ?? ''))),
-                                  DataCell(Center(child: Text("${DateFormat('dd-MM-yyyy').format(item.pickupDate!)} ${item.pickupTime}"))),
-                                  DataCell(Center(child: Text((item.name ?? '').toUpperCase()))),
-                                  DataCell(Center(child: Text((item.pickup ?? '').toUpperCase()))),
-                                  DataCell(Center(child: Text((item.dropoff ?? '').toUpperCase()))),
-                                  DataCell(Center(child: Text((item.account?.name ?? '').toUpperCase()))),
-                                  DataCell(Center(child: Text((item.driver?.name ?? '').toUpperCase()))),
-                                  DataCell(Center(child: Text((item.paymentType?.name ?? '').toUpperCase()))),
-                                  DataCell(Center(child: Text((item.vehicleType?.name ?? '').toUpperCase()))),
-                                  // DataCell(Center(child: Text(item.notes.toString() ?? ''))),
-                                  DataCell(Center(child: Text(
-                                      ((item.notes != null && item.notes!.isNotEmpty)
-                                          ? item.notes!.first.note ?? ''
-                                          : ''
-                                      ).toUpperCase()))),
-                                  DataCell(Center(child: Text(item.fares?.toString() ?? ''))),
-
-                                  DataCell(Center(child:
-
-                                  Container(
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                    alignment: Alignment.center,
-
-                                    // APPLY YOUR COLOR HERE
-                                    decoration: BoxDecoration(
-                                      color: DynamicColors.statusColor,
-                                      // Optional: borderRadius: BorderRadius.circular(2),
+                            ),
+                            (item.journeyType?.journeyType ?? '')
+                                .toUpperCase(),
+                            (item.subsidiary?.name ?? '').toUpperCase(),
+                            Center(
+                              child: SizedBox(
+                                width: widths["ACTIONS"]!,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    IconButton(
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(),
+                                      icon: Icon(Icons.edit_calendar,
+                                          size: 16, color: DynamicColors.primaryClr),
+                                      onPressed: () {},
                                     ),
-                                    child: Text((
-                                      item.bookingStatus?.bookingStatus.toString() ?? '').toUpperCase(),
-                                      style: TextStyle(color: DynamicColors.whiteClr),
+                                    const SizedBox(width: 2),
+                                    const Text("|",
+                                        style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 12)),
+                                    const SizedBox(width: 2),
+                                    IconButton(
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(),
+                                      icon: Icon(Icons.delete_forever,
+                                          size: 16, color: DynamicColors.primaryClr),
+                                      onPressed: () {},
                                     ),
-                                  ),
-
-                                  )),
-                                  DataCell(Center(child: Text((item.journeyType?.journeyType ?? '').toUpperCase()))),
-                                  DataCell(Center(child: Text(item.subsidiary?.name ?? ''))),
-                                  DataCell(
-                                    Center(
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          OutlinedButton(
-                                            style: OutlinedButton.styleFrom(side: BorderSide(color: Colors.transparent),),
-                                            onPressed: () {
-                                            },
-                                            child: Icon(Icons.edit_calendar,
-                                                size: 28),
-                                          ),
-                                          Text("|"),
-                                          OutlinedButton(
-                                            style: OutlinedButton.styleFrom(
-                                              side: BorderSide(color: Colors.transparent),
-                                            ),
-                                            onPressed: () {
-
-                                            },
-                                            child: Icon(Icons.delete_forever,
-                                                size: 28),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }).toList(),
-                          ),
-                        ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ];
+                        },
                       ),
                       PaginationWidget(
                           currentPage: controller.webBookingCurrentPage.value,

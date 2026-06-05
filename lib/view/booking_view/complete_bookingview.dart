@@ -42,6 +42,17 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
       },
       builder: (controller) {
         return LayoutBuilder(builder: (context, constraints) {
+          final double maxWidth = constraints.maxWidth;
+          final bool isMobile = maxWidth < 600;
+          final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+
+          // Instead of fixed width, we calculate flexible field widths
+          final double fieldWidth = isMobile
+              ? maxWidth // full width
+              : isTablet
+              ? maxWidth / 2
+              : maxWidth / 4;
+
           final double totalAvailableWidth = constraints.maxWidth;
 
           return controller.completedBookingLoad.value == true

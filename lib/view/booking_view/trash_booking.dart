@@ -57,6 +57,7 @@ class _TrashBookingState extends State<TrashBooking> {
 
         return Container(
           color: const Color(0xFFF7F9FC),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
