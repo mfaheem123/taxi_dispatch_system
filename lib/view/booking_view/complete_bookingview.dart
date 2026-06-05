@@ -129,14 +129,14 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                                 }),
                             TableColumnConfig(
                                 title: "ACC",
-                                sizeType: ColumnSizeType.medium,
+                                sizeType: ColumnSizeType.small,
                                 onChanged: (v) {
                                   controller.completedaccountName.text = v;
                                   controller.completedBookingonSearch();
                                 }),
                             TableColumnConfig(
                                 title: "DRV",
-                                sizeType: ColumnSizeType.medium,
+                                sizeType: ColumnSizeType.small,
                                 onChanged: (v) {
                                   controller.completeddriverName.text = v;
                                   controller.completedBookingonSearch();
@@ -157,7 +157,7 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                                 }),
                             TableColumnConfig(
                                 title: "NOTE",
-                                sizeType: ColumnSizeType.large,
+                                sizeType: ColumnSizeType.medium,
                                 onChanged: (v) {
                                   controller.completednotes.text = v;
                                   controller.completedBookingonSearch();
@@ -193,7 +193,7 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                                 }),
                             TableColumnConfig(
                                 title: "ACTIONS",
-                                sizeType: ColumnSizeType.fixed,
+                                sizeType: ColumnSizeType.small,
                                 fixedWidth: 70.0,
                                 removeSearching: true),
                           ],
@@ -221,7 +221,7 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                               (item.paymentType?.name ?? '').toUpperCase(),
                               (item.vehicleType?.name ?? '').toUpperCase(),
                               firstNote.toUpperCase(),
-                              item.fares?.toString() ?? '',
+                              "£${item.fares?.toString() ?? ''}",
                               Container(
                                 width: widths["STATUS"]!,
                                 height: double.infinity,
@@ -253,8 +253,8 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                                       IconButton(
                                         padding: EdgeInsets.zero,
                                         constraints: const BoxConstraints(),
-                                        icon: const Icon(Icons.edit_calendar,
-                                            size: 16, color: Colors.blue),
+                                        icon: Icon(Icons.edit_calendar,
+                                            size: 16, color: DynamicColors.primaryClr),
                                         onPressed: () {},
                                       ),
                                       const SizedBox(width: 2),
@@ -266,8 +266,8 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                                       IconButton(
                                         padding: EdgeInsets.zero,
                                         constraints: const BoxConstraints(),
-                                        icon: const Icon(Icons.delete_forever,
-                                            size: 16, color: Colors.red),
+                                        icon: Icon(Icons.delete_forever,
+                                            size: 16, color: DynamicColors.primaryClr),
                                         onPressed: () {},
                                       ),
                                     ],
