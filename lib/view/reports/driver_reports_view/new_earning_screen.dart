@@ -1,562 +1,601 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_state.dart';
-import 'package:fl_chart/fl_chart.dart';
-
-import '../../../component/color.dart';
-import '../../../component/customButton.dart';
-import '../../../component/dropdown_button.dart';
-import '../../../component/radio_button_widget.dart';
-import '../../../component/textStyle.dart';
-import '../../../component/text_widget.dart';
-import '../../customer/model/restricDriver.dart';
-import '../../dashboard_view/widgets/time_picker_widget.dart';
-import '../../dashboard_view/widgets/user_info_widget.dart';
-import '../controller/report_controller.dart';
-
-class EarningScreen extends StatefulWidget {
-  const EarningScreen({super.key});
-
-  @override
-  State<EarningScreen> createState() => _EarningScreenState();
-}
-
-class _EarningScreenState extends State<EarningScreen> {
-  int selectedRowIndex = 0;
-  final int totalRows = 50;
-
-  ReportController controller = Get.isRegistered<ReportController>()
-      ? Get.find<ReportController>()
-      : Get.put(ReportController());
-
-  DateTime? fromDate;
-  DateTime? toDate;
-  bool isDataLoaded = false;
-
-  String selectedPeriod = "daily";
-
-  // List to maintain vertically added drivers from dropdown
-  List<DriverObject> selectedDriversList = [];
-  DriverObject? activeRadioDriver;
-
-  void handleView() {
-    if (fromDate == null || toDate == null) {
-      return;
-    }
-    controller.getAllDriverEarnings();
-    setState(() {
-      isDataLoaded = true;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GetBuilder<ReportController>(
-      initState: (state) {
-        controller.selectDriverObject = null;
-        controller.getFilteredDrivers(status: "all");
-      },
-      builder: (controller) {
-        return LayoutBuilder(builder: (context, constraints) {
-          final double maxWidth = constraints.maxWidth;
-          final bool isMobile = maxWidth < 600;
-
-          double totalAmount = controller.earningInfoListModel?.data?.totalAmount ?? 0.0;
-          int totalBookings = int.tryParse(controller.earningInfoListModel?.data?.totalBookings.toString() ?? "0") ?? 0;
-          double averagePerTrip = totalBookings > 0 ? (totalAmount / totalBookings) : 0.0;
-
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 15),
-
-                // MAIN CONTAINER
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 15),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: DynamicColors.gryClr.withOpacity(0.5)),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        height: 50,
-                        width: double.infinity,
-                        color: DynamicColors.gryClr,
-                        padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
-                        child: Text(
-                          "DRIVER EARNING REPORT",
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-
-                      // --- CONTENT SECTION ---
-                      Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.only(bottom: 25),
-                              decoration: BoxDecoration(
-                                  border: Border(
-                                      bottom: BorderSide(color: Colors.grey.shade200, width: 1)
-                                  )
-                              ),
-                              child: Wrap(
-                                spacing: 24,
-                                runSpacing: 20,
-                                alignment: WrapAlignment.spaceBetween,
-                                crossAxisAlignment: WrapCrossAlignment.end,
-                                children: [
-                                  // SELECT DRIVER DROPDOWN
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "SELECT DRIVER",
-                                        style: mozillaTextSemiBoldText(context: context, fontSize: 12),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      CustomDropdownField<DriverObject>(
-                                        label: "SELECT DRIVERS",
-                                        width: 240,
-                                        height: 42,
-                                        items: controller.filteredDriverList,
-                                        value: null,
-                                        itemLabel: (driver) => (driver.name ?? "").toUpperCase(),
-                                        onChanged: (val) {
-                                          if (val != null && !selectedDriversList.contains(val)) {
-                                            setState(() {
-                                              selectedDriversList.add(val);
-                                              if (activeRadioDriver == null) {
-                                                activeRadioDriver = val;
-                                              }
-                                              isDataLoaded = true;
-                                            });
-                                            controller.selectDriverObject = val;
-                                            controller.update();
-                                          }
-                                        },
-                                      ),
-                                    ],
-                                  ),
-
-                                  // PERIOD BUTTONS
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "View",
-                                        style: mozillaTextSemiBoldText(context: context, fontSize: 12),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          CustomButton(
-                                            verticalPadding: 0.0,
-                                            width: 115,
-                                            height: 42,
-                                            borderRadius: 4,
-                                            fontSize: 14,
-                                            btnText: "DAILY",
-                                            btnColor: selectedPeriod == "daily" ? DynamicColors.primaryClr : Colors.grey.shade500,
-                                            onTap: () => setState(() => selectedPeriod = "daily"),
-                                          ),
-                                          const SizedBox(width: 6),
-                                          CustomButton(
-                                            verticalPadding: 0.0,
-                                            width: 115,
-                                            height: 42,
-                                            borderRadius: 4,
-                                            fontSize: 14,
-                                            btnText: "WEEKLY",
-                                            btnColor: selectedPeriod == "weekly" ? DynamicColors.primaryClr : Colors.grey.shade500,
-                                            onTap: () => setState(() => selectedPeriod = "weekly"),
-                                          ),
-                                          const SizedBox(width: 6),
-                                          CustomButton(
-                                            verticalPadding: 0.0,
-                                            width: 115,
-                                            height: 42,
-                                            borderRadius: 4,
-                                            fontSize: 14,
-                                            btnText: "MONTHLY",
-                                            btnColor: selectedPeriod == "monthly" ? DynamicColors.primaryClr : Colors.grey.shade500,
-                                            onTap: () => setState(() => selectedPeriod = "monthly"),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      labeledField(
-                                        context: context,
-                                        isMobile: isMobile,
-                                        label: AppText.from,
-                                        column: true,
-                                        width: 150,
-                                        child: SizedBox(
-                                          height: 40,
-                                          child: KeyboardDatePicker(
-                                            initialDate: fromDate ?? DateTime.now(),
-                                            onChanged: (date) {
-                                              setState(() => fromDate = date);
-                                              controller.fromDate.value = date;
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      labeledField(
-                                        context: context,
-                                        isMobile: isMobile,
-                                        label: AppText.to,
-                                        column: true,
-                                        width: 150,
-                                        child: SizedBox(
-                                          height: 40,
-                                          child: KeyboardDatePicker(
-                                            initialDate: toDate ?? DateTime.now(),
-                                            onChanged: (date) {
-                                              setState(() => toDate = date);
-                                              controller.toDate.value = date;
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-
-                                  // VIEW BUTTON
-                                  CustomButton(
-                                    verticalPadding: 0.0,
-                                    width: 100,
-                                    height: 42,
-                                    borderRadius: 4,
-                                    fontSize: 13,
-                                    btnText: AppText.view,
-                                    onTap: () {
-                                      handleView();
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            const SizedBox(height: 25),
-
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-
-                                SizedBox(
-                                  width: 300,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      if (selectedDriversList.isNotEmpty) ...[
-                                        Container(
-                                          height: 420,
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.shade50,
-                                            borderRadius: BorderRadius.circular(6),
-                                            border: Border.all(color: Colors.grey.shade200),
-                                          ),
-                                          child: SingleChildScrollView(
-                                            physics: const BouncingScrollPhysics(),
-                                            child: ListView.builder(
-                                              shrinkWrap: true,
-                                              physics: const NeverScrollableScrollPhysics(),
-                                              itemCount: selectedDriversList.length,
-                                              itemBuilder: (context, index) {
-                                                final driver = selectedDriversList[index];
-                                                final bool isSelected = activeRadioDriver == driver;
-
-                                                return InkWell(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      activeRadioDriver = driver;
-                                                      controller.selectDriverObject = driver;
-                                                      controller.update();
-                                                    });
-                                                  },
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
-                                                    child: Row(
-                                                      children: [
-                                                        Icon(
-                                                          isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-                                                          color: isSelected ? DynamicColors.primaryClr : Colors.grey,
-                                                          size: 18,
-                                                        ),
-                                                        const SizedBox(width: 12),
-                                                        Expanded(
-                                                          child: Text(
-                                                            (driver.name ?? "").toUpperCase(),
-                                                            style: TextStyle(
-                                                              fontSize: 13,
-                                                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                                              color: isSelected ? Colors.black : Colors.grey.shade700,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                ),
-
-                                const SizedBox(width: 24),
-
-                                Expanded(
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        width: double.infinity,
-                                        padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
-                                        decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(8),
-                                            border: Border.all(color: Colors.grey.shade200),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey.withOpacity(0.05),
-                                                spreadRadius: 2,
-                                                blurRadius: 5,
-                                              )
-                                            ]),
-                                        child: controller.isLoadingEarning
-                                            ? const Center(child: CircularProgressIndicator())
-                                            : Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            _buildStatCard(
-                                              label: "TOTAL EARNINGS",
-                                              value: isDataLoaded ? "£ ${totalAmount.toStringAsFixed(2)}" : "£ 0.00",
-                                              icon: Icons.currency_pound,
-                                              iconColor: Colors.green,
-                                              bgColor: Colors.green.withOpacity(0.1),
-                                            ),
-                                            _buildStatCard(
-                                              label: "TOTAL TRIPS",
-                                              value: isDataLoaded ? "$totalBookings" : "-",
-                                              icon: Icons.location_on_outlined,
-                                              iconColor: Colors.blue,
-                                              bgColor: Colors.blue.withOpacity(0.1),
-                                            ),
-                                            _buildStatCard(
-                                              label: "AVERAGE PER TRIP",
-                                              value: isDataLoaded ? "£ ${averagePerTrip.toStringAsFixed(2)}" : "£ 0.00",
-                                              icon: Icons.bar_chart_rounded,
-                                              iconColor: Colors.orange,
-                                              bgColor: Colors.orange.withOpacity(0.1),
-                                            ),
-                                            _buildStatCard(
-                                              label: "CASH COLLECTED",
-                                              value: isDataLoaded ? "£ 0.00" : "£ 0.00",
-                                              icon: Icons.account_balance_wallet_outlined,
-                                              iconColor: Colors.purple,
-                                              bgColor: Colors.purple.withOpacity(0.1),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-
-                                      const SizedBox(height: 20),
-
-                                      // GRAPH SECTION
-                                      Container(
-                                        height: 320,
-                                        width: double.infinity,
-                                        padding: const EdgeInsets.all(20),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(8),
-                                          border: Border.all(color: Colors.grey.shade200),
-                                        ),
-                                        child: controller.isLoadingEarning
-                                            ? const Center(child: CircularProgressIndicator())
-                                            : (isDataLoaded && activeRadioDriver != null)
-                                            ? _buildEarningChart()
-                                            : Center(
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              Icon(Icons.insert_chart_outlined, size: 65, color: Colors.grey.shade300),
-                                              const SizedBox(height: 10),
-                                              Text(
-                                                "SELECT A DRIVER TO VIEW EARNINGS GRAPH",
-                                                style: TextStyle(color: Colors.grey.shade500, fontSize: 13, fontWeight: FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ],
-            ),
-          );
-        });
-      },
-    );
-  }
-
-  Widget _buildEarningChart() {
-    return LineChart(
-      LineChartData(
-        gridData: FlGridData(
-          show: true,
-          drawVerticalLine: true,
-          horizontalInterval: 20,
-          verticalInterval: 1,
-          getDrawingHorizontalLine: (value) => FlLine(color: Colors.grey.shade100, strokeWidth: 1),
-          getDrawingVerticalLine: (value) => FlLine(color: Colors.grey.shade100, strokeWidth: 1),
-        ),
-        titlesData: FlTitlesData(
-          show: true,
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 30,
-              interval: 1,
-              getTitlesWidget: (value, meta) {
-                switch (value.toInt()) {
-                  case 1: return const Text('Mon', style: TextStyle(fontSize: 10));
-                  case 2: return const Text('Tue', style: TextStyle(fontSize: 10));
-                  case 3: return const Text('Wed', style: TextStyle(fontSize: 10));
-                  case 4: return const Text('Thu', style: TextStyle(fontSize: 10));
-                  case 5: return const Text('Fri', style: TextStyle(fontSize: 10));
-                  case 6: return const Text('Sat', style: TextStyle(fontSize: 10));
-                  case 7: return const Text('Sun', style: TextStyle(fontSize: 10));
-                }
-                return const Text('');
-              },
-            ),
-          ),
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              interval: 20,
-              getTitlesWidget: (value, meta) => Text('£${value.toInt()}', style: const TextStyle(fontSize: 10)),
-              reservedSize: 42,
-            ),
-          ),
-        ),
-        borderData: FlBorderData(show: true, border: Border.all(color: Colors.grey.shade200, width: 1)),
-        minX: 1,
-        maxX: 7,
-        minY: 0,
-        maxY: 100,
-        lineBarsData: [
-          LineChartBarData(
-            spots: const [
-              FlSpot(1, 35),
-              FlSpot(2, 50),
-              FlSpot(3, 42),
-              FlSpot(4, 75),
-              FlSpot(5, 60),
-              FlSpot(6, 90),
-              FlSpot(7, 80),
-            ],
-            isCurved: false,
-            gradient: LinearGradient(colors: [DynamicColors.primaryClr, Colors.blueAccent]),
-            barWidth: 3.5,
-            isStrokeCapRound: true,
-            dotData: const FlDotData(
-              show: true,
-            ),
-            belowBarData: BarAreaData(
-              show: true,
-              gradient: LinearGradient(
-                colors: [DynamicColors.primaryClr.withOpacity(0.15), Colors.blueAccent.withOpacity(0.01)],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatCard({
-    required String label,
-    required String value,
-    required IconData icon,
-    required Color iconColor,
-    required Color bgColor,
-  }) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          width: 38,
-          height: 38,
-          decoration: BoxDecoration(
-            color: bgColor,
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            icon,
-            color: iconColor,
-            size: 18,
-          ),
-        ),
-        const SizedBox(width: 10),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              "$label: ",
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontWeight: FontWeight.w700,
-                fontSize: 12,
-              ),
-            ),
-            Text(
-              value,
-              style: const TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-            ),
-          ],
-        )
-      ],
-    );
-  }
-}
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+// import 'package:get/get_state_manager/src/simple/get_state.dart';
+// import 'package:fl_chart/fl_chart.dart';
+//
+// import '../../../component/color.dart';
+// import '../../../component/customButton.dart';
+// import '../../../component/dropdown_button.dart';
+// import '../../../component/radio_button_widget.dart';
+// import '../../../component/textStyle.dart';
+// import '../../../component/text_widget.dart';
+// import '../../customer/model/restricDriver.dart';
+// import '../../dashboard_view/widgets/time_picker_widget.dart';
+// import '../../dashboard_view/widgets/user_info_widget.dart';
+// import '../controller/report_controller.dart';
+// import 'earning_and_info_screen/driver_statistics_chart.dart';
+// import 'earning_and_info_screen/vehicel_info.dart';
+//
+// class EarningScreen extends StatefulWidget {
+//   const EarningScreen({super.key});
+//
+//   @override
+//   State<EarningScreen> createState() => _EarningScreenState();
+// }
+//
+// class _EarningScreenState extends State<EarningScreen> {
+//   int selectedRowIndex = 0;
+//   final int totalRows = 50;
+//
+//   ReportController controller = Get.isRegistered<ReportController>()
+//       ? Get.find<ReportController>()
+//       : Get.put(ReportController());
+//
+// DateTime? fromDate;
+// DateTime? toDate;
+//
+// bool isDataLoaded = false;
+// int rightSideTab = 1;
+//
+// void handleView() {
+//   if (fromDate == null || toDate == null) {
+//     return;
+//   }
+//   controller.getAllDriverEarnings();
+//   setState(() {
+//     isDataLoaded = true;
+//     rightSideTab = 0;
+//   });
+// }
+//
+// @override
+// Widget build(BuildContext context) {
+//   return GetBuilder<ReportController>(
+//     initState: (state) {
+//       controller.selectDriverObject = null;
+//       controller.getFilteredDrivers(status: "all");
+//     },
+//     builder: (controller) {
+//       return LayoutBuilder(builder: (context, constraints) {
+//         final double maxWidth = constraints.maxWidth;
+//         final bool isMobile = maxWidth < 600;
+//
+//         return SingleChildScrollView(
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 const SizedBox(height: 10),
+//
+//                 // MAIN CONTAINER
+//                 Container(
+//                     margin: const EdgeInsets.symmetric(horizontal: 15),
+//                     decoration: BoxDecoration(
+//                       border: Border.all(
+//                           color: DynamicColors.gryClr.withOpacity(0.5)),
+//                       borderRadius: BorderRadius.circular(8),
+//                     ),
+//                     child: Column(mainAxisSize: MainAxisSize.min, children: [
+//                       // --- UPDATED HEADING ROW ---
+//                       Container(
+//                         height: 50,
+//                         child: Row(
+//                           children: [
+//                             // Left Heading
+//                             Expanded(
+//                               flex: 5,
+//                               child: Container(
+//                                 color: DynamicColors.gryClr,
+//                                 padding: const EdgeInsets.symmetric(
+//                                     horizontal: 18.0, vertical: 12),
+//                                 child: Text(
+//                                   AppText.driverEarning,
+//                                   style: const TextStyle(
+//                                       fontSize: 16, fontWeight: FontWeight.bold),
+//                                 ),
+//                               ),
+//                             ),
+//                             const VerticalDivider(
+//                                 width: 1, thickness: 1, color: Colors.grey),
+//                             Expanded(
+//                               flex: 5,
+//                               child: Container(
+//                                 color: DynamicColors.gryClr,
+//                                 padding: const EdgeInsets.symmetric(
+//                                     horizontal: 18.0, vertical: 12),
+//                                 child: Text(
+//                                   "DRIVER INFORMATION",
+//                                   style: const TextStyle(
+//                                       fontSize: 16, fontWeight: FontWeight.bold),
+//                                 ),
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+//                       ),
+//
+//                       Stack(
+//                         children: [
+//                           Positioned(
+//                             top: 0,
+//                             bottom: 0,
+//                             left: MediaQuery.of(context).size.width / 2 - 15,
+//                             child: Container(
+//                               width: 1,
+//                               color: Colors.grey.withOpacity(0.5),
+//                             ),
+//                           ),
+//                           // --- CONTENT ROW ---
+//                           Row(
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: [
+//                               // LEFT SIDE CONTENT
+//                               Expanded(
+//                                 flex: 5,
+//                                 child: Padding(
+//                                   padding: const EdgeInsets.all(15.0),
+//                                   child: Column(
+//                                     crossAxisAlignment: CrossAxisAlignment.start,
+//                                     children: [
+//                                       Wrap(
+//                                         spacing: 12,
+//                                         runSpacing: 15,
+//                                         crossAxisAlignment:
+//                                         WrapCrossAlignment.end,
+//                                         children: [
+//                                           labeledField(
+//                                             context: context,
+//                                             isMobile: isMobile,
+//                                             label: AppText.from,
+//                                             column: true,
+//                                             width: 130,
+//                                             child: SizedBox(
+//                                                 height: 30,
+//                                                 child: KeyboardDatePicker(
+//                                                   initialDate: fromDate ?? DateTime.now(),
+//                                                   onChanged: (date) {
+//                                                     setState(() => fromDate = date);
+//                                                     controller.fromDate.value = date;
+//                                                   },
+//                                                 )),
+//                                           ),
+//                                           labeledField(
+//                                             context: context,
+//                                             isMobile: isMobile,
+//                                             label: AppText.to,
+//                                             column: true,
+//                                             width: 130,
+//                                             child: SizedBox(
+//                                                 height: 30,
+//                                                 child: KeyboardDatePicker(
+//                                                   initialDate: toDate ?? DateTime.now(),
+//                                                   onChanged: (date) {
+//                                                     setState(() => toDate = date);
+//                                                     controller.toDate.value = date;
+//                                                   },
+//                                                 )),
+//                                           ),
+//                                           CustomButton(
+//                                             verticalPadding: 0.0,
+//                                             width: 60,
+//                                             height: 32,
+//                                             borderRadius: 4,
+//                                             fontSize: 12,
+//                                             btnText: AppText.all,
+//                                             btnColor: controller.selectedDriverType == "all" ? DynamicColors.primaryClr : Colors.grey.shade500,
+//                                             onTap: () {
+//                                               controller.selectedDriverType = "all";
+//                                               controller.update();
+//                                             },
+//                                           ),
+//                                           CustomButton(
+//                                             verticalPadding: 0.0,
+//                                             width: 60,
+//                                             height: 32,
+//                                             borderRadius: 4,
+//                                             fontSize: 12,
+//                                             btnText: AppText.login,
+//                                             btnColor: controller.selectedDriverType == "login" ? DynamicColors.primaryClr : Colors.grey.shade500,
+//                                             onTap: () {
+//                                               controller.selectedDriverType = "login";
+//                                               controller.update();
+//                                             },
+//                                           ),
+//                                           CustomButton(
+//                                             verticalPadding: 0.0,
+//                                             width: 60,
+//                                             height: 32,
+//                                             borderRadius: 4,
+//                                             fontSize: 12,
+//                                             btnText: "LOGOUT",
+//                                             btnColor: controller.selectedDriverType == "logout" ? DynamicColors.primaryClr : Colors.grey.shade500,
+//                                             onTap: () {
+//                                               controller.selectedDriverType = "logout";
+//                                               controller.update();
+//                                             },
+//                                           ),
+//                                           SizedBox(width: 10),
+//                                           CustomButton(
+//                                             verticalPadding: 0.0,
+//                                             width: 60,
+//                                             height: 32,
+//                                             borderRadius: 4,
+//                                             fontSize: 12,
+//                                             btnText: AppText.view,
+//                                             onTap: () {
+//                                               handleView();
+//                                             },
+//                                           ),
+//                                           const SizedBox(height: 20),
+//                                           if (isDataLoaded) ...[
+//                                             // --- NEW SUMMARY ROW ---
+//                                             Container(
+//                                               padding: const EdgeInsets.symmetric(
+//                                                   vertical: 10, horizontal: 15),
+//                                               margin: const EdgeInsets.only(
+//                                                   bottom: 15),
+//                                               decoration: BoxDecoration(
+//                                                 color:
+//                                                 Colors.blue.withOpacity(0.05),
+//                                                 borderRadius:
+//                                                 BorderRadius.circular(4),
+//                                                 border: Border.all(
+//                                                     color: Colors.blue
+//                                                         .withOpacity(0.2)),
+//                                               ),
+//                                               child: controller.isLoadingEarning
+//                                                   ? const Center(
+//                                                   child:
+//                                                   CircularProgressIndicator())
+//                                                   : Row(
+//                                                 mainAxisAlignment:
+//                                                 MainAxisAlignment
+//                                                     .spaceAround,
+//                                                 children: [
+//                                                   _summaryItem(
+//                                                       "TOTAL BOOKINGS",
+//                                                       "${controller.earningInfoListModel?.data?.totalBookings ?? 0}"),
+//                                                   _summaryItem(
+//                                                       "TOTAL AMOUNT",
+//                                                       "£ ${controller.earningInfoListModel?.data?.totalAmount?.toStringAsFixed(2) ?? '0.00'}"),
+//                                                 ],
+//                                               ),
+//                                             ),
+//                                           ],
+//                                         ],
+//                                       ),
+//                                       const SizedBox(height: 20),
+//                                       (controller.earningInfoListModel?.data?.drivers != null &&
+//                                           controller.earningInfoListModel!.data!.drivers!.isNotEmpty &&
+//                                           !controller.isLoadingEarning)
+//                                           ? Container(
+//                                         decoration: BoxDecoration(
+//                                           border: Border.all(color: Colors.grey.shade300),
+//                                           borderRadius: BorderRadius.circular(4),
+//                                         ),
+//                                         child: Table(
+//                                           border: TableBorder.symmetric(
+//                                               inside: BorderSide(color: Colors.grey.shade300, width: 0.5)),
+//                                           columnWidths: const {
+//                                             0: FlexColumnWidth(1),   // Username
+//                                             1: FlexColumnWidth(1.5), // Driver Name
+//                                             2: FlexColumnWidth(1),   // Total Bookings
+//                                             3: FlexColumnWidth(1),   // Total Earnings
+//                                           },
+//                                           children: [
+//                                             // Table Header
+//                                             TableRow(
+//                                               decoration: BoxDecoration(color: Colors.grey.shade100),
+//                                               children: [
+//                                                 _tableHeader("USERNAME"),
+//                                                 _tableHeader("DRIVER"),
+//                                                 _tableHeader("TOTAL BOOKINGS"),
+//                                                 _tableHeader("TOTAL EARNINGS"),
+//                                               ],
+//                                             ),
+//                                             // if (!controller.isLoadingEarning && controller.earningInfoListModel?.data?.drivers != null)
+//                                             ...controller.earningInfoListModel!.data!.drivers!.map((driver) {
+//                                               return TableRow(
+//                                                 children: [
+//                                                   _tableCell((driver.username ?? "-").toUpperCase()),
+//                                                   _tableCell((driver.name ?? "-").toUpperCase()),
+//                                                   _tableCell(driver.totalBookings ?? "0"),
+//                                                   _tableCell("£ ${driver.totalEarnings ?? "0.00"}"),
+//                                                 ],
+//                                               );
+//                                             }).toList(),
+//                                           ],
+//                                         ),
+//                                       )
+//                                           : Center(
+//                                         child: Padding(
+//                                           padding: const EdgeInsets.only(top: 50.0),
+//                                           child: Column(
+//                                             children: [
+//                                               controller.isLoadingEarning
+//                                                   ? const CircularProgressIndicator()
+//                                                   : Icon(
+//                                                 Icons.block,
+//                                                 size: 120,
+//                                                 color: Colors.grey.withOpacity(0.3),
+//                                               ),
+//                                             ],
+//                                           ),
+//                                         ),
+//                                       ),
+//                                     ],
+//                                   ),
+//                                 ),
+//                               ),
+//                               // RIGHT SIDE CONTENT
+//                               Expanded(
+//                                   flex: 5,
+//                                   child: Padding(
+//                                     padding: const EdgeInsets.all(15.0),
+//                                     child: Column(
+//                                         mainAxisAlignment:
+//                                         MainAxisAlignment.start,
+//                                         crossAxisAlignment:
+//                                         CrossAxisAlignment.start,
+//                                         children: [
+//                                           if (isDataLoaded) ...[
+//                                             Row(
+//                                               children: [
+//                                                 CustomButton(
+//                                                   btnText: "STATISTICS",
+//                                                   borderRadius: 4,
+//                                                   verticalPadding: 0.0,
+//                                                   width: 130,
+//                                                   height: 30,
+//                                                   fontSize: 14,
+//                                                   btnColor: rightSideTab == 0
+//                                                       ? DynamicColors.primaryClr
+//                                                       : Colors.grey.shade500,
+//                                                   onTap: () => setState(
+//                                                           () => rightSideTab = 0),
+//                                                 ),
+//                                                 const SizedBox(width: 10),
+//                                                 CustomButton(
+//                                                   btnText: "DRIVER INFORMATION",
+//                                                   borderRadius: 4,
+//                                                   verticalPadding: 0.0,
+//                                                   width: 250,
+//                                                   height: 30,
+//                                                   fontSize: 14,
+//                                                   btnColor: rightSideTab == 1
+//                                                       ? DynamicColors.primaryClr
+//                                                       : Colors.grey.shade500,
+//                                                   onTap: () => setState(
+//                                                           () => rightSideTab = 1),
+//                                                 ),
+//                                               ],
+//                                             ),
+//                                             const SizedBox(height: 20),
+//                                           ],
+//                                           if (isDataLoaded && rightSideTab == 0)
+//                                             Column(
+//                                               children: [
+//                                                 const SizedBox(height: 10),
+//                                                 // Chart Container
+//                                                 Container(
+//                                                   height: 400,
+//                                                   padding:
+//                                                   const EdgeInsets.all(10),
+//                                                   decoration: BoxDecoration(
+//                                                     color: Colors.white,
+//                                                     borderRadius:
+//                                                     BorderRadius.circular(8),
+//                                                     border: Border.all(
+//                                                         color:
+//                                                         Colors.grey.shade200),
+//                                                   ),
+//                                                   child: DriverBookingChart(
+//                                                     chartData: controller.earningInfoListModel?.data?.drivers?.map((d) =>
+//                                                         DriverChartData(
+//                                                             d.username ?? "N/A",
+//                                                             int.tryParse(d.totalBookings ?? "0") ?? 0
+//                                                         )
+//                                                     ).toList() ?? [],
+//                                                   ),
+//                                                   // child: DriverBookingChart(
+//                                                   //   chartData: [
+//                                                   //     DriverChartData(
+//                                                   //         "user_01", 45),
+//                                                   //     DriverChartData(
+//                                                   //         "user_02", 32),
+//                                                   //     DriverChartData(
+//                                                   //         "user_03", 58),
+//                                                   //     DriverChartData(
+//                                                   //         "user_04", 20),
+//                                                   //     DriverChartData(
+//                                                   //         "user_05", 38),
+//                                                   //   ],
+//                                                   // ),
+//                                                 ),
+//                                               ],
+//                                             )
+//                                           else
+//                                             Column(
+//                                               crossAxisAlignment:
+//                                               CrossAxisAlignment.start,
+//                                               children: [
+//                                                 Wrap(
+//                                                   spacing: 20,
+//                                                   runSpacing: 15,
+//                                                   crossAxisAlignment:
+//                                                   WrapCrossAlignment.end,
+//                                                   children: [
+//                                                     Column(
+//                                                       mainAxisAlignment:
+//                                                       MainAxisAlignment.start,
+//                                                       crossAxisAlignment:
+//                                                       CrossAxisAlignment
+//                                                           .start,
+//                                                       children: [
+//                                                         Text(AppText.driver,
+//                                                             style:
+//                                                             mozillaTextSemiBoldText(
+//                                                                 context:
+//                                                                 context,
+//                                                                 fontSize:
+//                                                                 12)),
+//                                                         const SizedBox(height: 5),
+//                                                         CustomDropdownField<
+//                                                             DriverObject>(
+//                                                           label: "SELECT DRIVERS",
+//                                                           width: 200,
+//                                                           height: 35,
+//                                                           items: controller.filteredDriverList,
+//                                                           value: controller.filteredDriverList.contains(controller.selectDriverObject)
+//                                                               ? controller.selectDriverObject
+//                                                               : null,
+//                                                           itemLabel: (driver) =>
+//                                                               (driver.name ?? "").toUpperCase(),
+//                                                           onChanged: (val) {
+//                                                             controller
+//                                                                 .selectDriverObject =
+//                                                                 val;
+//                                                             controller.update();
+//                                                           },
+//                                                         ),
+//                                                         // RestrictedDrivers(
+//                                                         //   width: 200,
+//                                                         //   padding: 0.0,
+//                                                         //   border: Border.all(color: DynamicColors.gryClr),
+//                                                         //   titleText: AppText.selectDriver,
+//                                                         //   driversList: const ["Driver 01", "Driver 02", "Driver 03"],
+//                                                         // ),
+//                                                       ],
+//                                                     ),
+//                                                     Column(
+//                                                       crossAxisAlignment:
+//                                                       CrossAxisAlignment
+//                                                           .start,
+//                                                       children: [
+//                                                         Text(AppText.driverStatus,
+//                                                             style:
+//                                                             mozillaTextSemiBoldText(
+//                                                                 context:
+//                                                                 context,
+//                                                                 fontSize:
+//                                                                 12)),
+//                                                         const SizedBox(height: 5),
+//                                                         Row(
+//                                                           mainAxisSize:
+//                                                           MainAxisSize.min,
+//                                                           children: [
+//                                                             CustomButton(
+//                                                               verticalPadding:
+//                                                               0.0,
+//                                                               width: 90,
+//                                                               height: 32,
+//                                                               borderRadius: 4,
+//                                                               fontSize: 12,
+//                                                               btnText:
+//                                                               AppText.active,
+//                                                               btnColor: controller.selectedStatus == "active"
+//                                                                   ? DynamicColors.primaryClr
+//                                                                   : Colors.grey.shade500,
+//                                                               onTap: () {
+//                                                                 controller.getFilteredDrivers(status: "active");
+//                                                               },
+//                                                             ),
+//                                                             const SizedBox(
+//                                                                 width: 8),
+//                                                             CustomButton(
+//                                                               verticalPadding:
+//                                                               0.0,
+//                                                               width: 90,
+//                                                               height: 32,
+//                                                               borderRadius: 4,
+//                                                               fontSize: 12,
+//                                                               btnText:
+//                                                               "IN ACTIVE",
+//                                                               btnColor: controller.selectedStatus == "inactive"
+//                                                                   ? DynamicColors.primaryClr
+//                                                                   : Colors.grey.shade500,
+//                                                               onTap: () {
+//                                                                 controller.getFilteredDrivers(status: "inactive");
+//                                                               },
+//                                                             ),
+//                                                           ],
+//                                                         ),
+//                                                       ],
+//                                                     ),
+//                                                   ],
+//                                                 ),
+//                                                 const SizedBox(height: 60),
+//                                                 controller.selectDriverObject !=
+//                                                     null
+//                                                     ? VehiclesScreen(
+//                                                     driverName: controller
+//                                                         .selectDriverObject!
+//                                                         .name ??
+//                                                         "")
+//                                                     : Center(
+//                                                   child: Column(
+//                                                     mainAxisAlignment:
+//                                                     MainAxisAlignment
+//                                                         .center,
+//                                                     children: [
+//                                                       Icon(
+//                                                         Icons.folder_open,
+//                                                         size: 120,
+//                                                         color: Colors.grey
+//                                                             .withOpacity(
+//                                                             0.3),
+//                                                       ),
+//                                                     ],
+//                                                   ),
+//                                                 ),
+//                                               ],
+//                                             )
+//                                         ]),
+//                                   ))
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ])),
+//
+//                 const SizedBox(height: 20),
+//               ],
+//             ));
+//       });
+//     },
+//   );
+// }
+//
+// Widget _tableHeader(String label) {
+//   return Padding(
+//     padding: const EdgeInsets.all(8.0),
+//     child: Text(
+//       label,
+//       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+//       textAlign: TextAlign.center,
+//     ),
+//   );
+// }
+//
+// Widget _tableCell(String value) {
+//   return Padding(
+//     padding: const EdgeInsets.all(8.0),
+//     child: Text(
+//       value,
+//       style: const TextStyle(fontSize: 14),
+//       textAlign: TextAlign.center,
+//     ),
+//   );
+// }
+//
+// Widget _summaryItem(String label, String value) {
+//   return Row(
+//     children: [
+//       Text("$label: ",
+//           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+//       Text(value,
+//           style: const TextStyle(
+//               color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 14)),
+//     ],
+//   );
+// }
+// }

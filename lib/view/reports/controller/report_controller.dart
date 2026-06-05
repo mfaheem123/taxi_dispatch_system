@@ -145,72 +145,119 @@ class ReportController extends GetxController {
   }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver logs functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver earning and info functionality
+  var earningFromDate = Rxn<DateTime>(DateTime.now());
+  var earningToDate = Rxn<DateTime>(DateTime.now());
 
-  List<DriverObject> filteredDriverList = [];
-  String selectedStatus = "all";
-  getFilteredDrivers({String status = "all"}) async {
-    isLoadingDriver = true;
-    selectedStatus = status;
-    selectDriverObject = null;
-    update();
+  var selectedDate = Rxn<DateTime>(DateTime.now());
 
-    try{
-      var response = await Api().get(
-        "drivers/get",
-        queryParameters: {
-          if (status == "active") "active": "true",
-          if (status == "inactive") "active": "false",
-        },
-      );
-      if (response.statusCode == 200) {
-        var data = RestricDriverModel.fromJson(response.data);
-        filteredDriverList = data.drivers ?? [];
-      }
-    } catch (e) {
-      print("Error fetching filtered drivers: $e");
-    } finally {
-      isLoadingDriver = false;
-      update();
-    }
-  }
-
-  String selectedDriverType = "all";
-
+  String selectedPeriod = "daily";
   EarningInfoListModel? earningInfoListModel;
   bool isLoadingEarning = false;
 
-  getAllDriverEarnings() async {
+  getAllDriversEarnings({String? period}) async {
     isLoadingEarning = true;
     update();
 
-    try{
-        String formattedFromDate = fromDate.value != null
-            ? DateFormat('yyyy-MM-dd').format(fromDate.value!)
-            : "";
-
-        String formattedToDate = toDate.value != null
-            ? DateFormat('yyyy-MM-dd').format(toDate.value!)
-            : "";
-
-    var response = await Api().get("bookings/booking-driver-statistics",
-      queryParameters: {
-        "from_date": formattedFromDate,
-        "to_date": formattedToDate,
-        "driver_type": selectedDriverType,
-        if (selectDriverObject != null) "driver_id": selectDriverObject?.id.toString(),
-      },
-    );
-    if (response.statusCode == 200) {
-      earningInfoListModel = EarningInfoListModel.fromJson(response.data);
-      print("Driver Earning Data: ${response.data}");
+    if (period != null) {
+      selectedPeriod = period;
     }
-  } catch (e) {
-      print("Error: $e");
+
+    try {
+      String formattedFromDate = earningFromDate.value != null
+                ? DateFormat('yyyy-MM-dd').format(earningFromDate.value!)
+                : "";
+
+            String formattedToDate = earningToDate.value != null
+                ? DateFormat('yyyy-MM-dd').format(earningToDate.value!)
+                : "";
+      
+      var response = await Api().get("bookings/booking-driver-statistics",
+      queryParameters: {
+        "driver_id": selectDriverObject?.id.toString(),
+        "view": selectedPeriod,
+        // "date": formattedFromDate,
+      });
+
+      if(response.statusCode == 200) {
+        earningInfoListModel = EarningInfoListModel.fromJson(response.data);
+        print("Driver Earning Data Loaded Successfully");
+      }
+    } catch (e) {
+      print("Error fetching statistics: $e");
     } finally {
       isLoadingEarning = false;
       update();
     }
   }
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver earning and info functionality
+
+  // List<DriverObject> filteredDriverList = [];
+  // String selectedStatus = "all";
+  // getFilteredDrivers({String status = "all"}) async {
+  //   isLoadingDriver = true;
+  //   selectedStatus = status;
+  //   selectDriverObject = null;
+  //   update();
+  //
+  //   try{
+  //     var response = await Api().get(
+  //       "drivers/get",
+  //       queryParameters: {
+  //         if (status == "active") "active": "true",
+  //         if (status == "inactive") "active": "false",
+  //       },
+  //     );
+  //     if (response.statusCode == 200) {
+  //       var data = RestricDriverModel.fromJson(response.data);
+  //       filteredDriverList = data.drivers ?? [];
+  //     }
+  //   } catch (e) {
+  //     print("Error fetching filtered drivers: $e");
+  //   } finally {
+  //     isLoadingDriver = false;
+  //     update();
+  //   }
+  // }
+
+  // String selectedDriverType = "all";
+  //
+  // EarningInfoListModel? earningInfoListModel;
+  // bool isLoadingEarning = false;
+  //
+  // getAllDriverEarnings() async {
+  //   isLoadingEarning = true;
+  //   update();
+  //
+  //   try{
+  //       String formattedFromDate = fromDate.value != null
+  //           ? DateFormat('yyyy-MM-dd').format(fromDate.value!)
+  //           : "";
+  //
+  //       String formattedToDate = toDate.value != null
+  //           ? DateFormat('yyyy-MM-dd').format(toDate.value!)
+  //           : "";
+  //
+  //   var response = await Api().get("bookings/booking-driver-statistics",
+  //     queryParameters: {
+  //       "from_date": formattedFromDate,
+  //       "to_date": formattedToDate,
+  //       "driver_type": selectedDriverType,
+  //       if (selectDriverObject != null) "driver_id": selectDriverObject?.id.toString(),
+  //     },
+  //   );
+  //   if (response.statusCode == 200) {
+  //     earningInfoListModel = EarningInfoListModel.fromJson(response.data);
+  //     print("Driver Earning Data: ${response.data}");
+  //   }
+  // } catch (e) {
+  //     print("Error: $e");
+  //   } finally {
+  //     isLoadingEarning = false;
+  //     update();
+  //   }
+  // }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver earning and info functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report booking functionality

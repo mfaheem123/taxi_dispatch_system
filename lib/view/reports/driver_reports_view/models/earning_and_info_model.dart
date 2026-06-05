@@ -10,88 +10,72 @@ String earningInfoListModelToJson(EarningInfoListModel data) => json.encode(data
 
 class EarningInfoListModel {
   bool? success;
-  String? message;
   Data? data;
 
   EarningInfoListModel({
     this.success,
-    this.message,
     this.data,
   });
 
   factory EarningInfoListModel.fromJson(Map<String, dynamic> json) => EarningInfoListModel(
     success: json["success"],
-    message: json["message"],
     data: json["data"] == null ? null : Data.fromJson(json["data"]),
   );
 
   Map<String, dynamic> toJson() => {
     "success": success,
-    "message": message,
     "data": data?.toJson(),
   };
 }
 
 class Data {
-  int? totalBookings;
-  double? totalAmount;
-  List<Driver>? drivers;
+  int? totalTrips;
+  double? totalEarnings;
+  double? averagePerTrip;
+  double? cashCollected;
+  List<ChartDatum>? chartData;
 
   Data({
-    this.totalBookings,
-    this.totalAmount,
-    this.drivers,
+    this.totalTrips,
+    this.totalEarnings,
+    this.averagePerTrip,
+    this.cashCollected,
+    this.chartData,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-    totalBookings: json["total_bookings"],
-    totalAmount: json["total_amount"]?.toDouble(),
-    drivers: json["drivers"] == null ? [] : List<Driver>.from(json["drivers"]!.map((x) => Driver.fromJson(x))),
+    totalTrips: json["total_trips"],
+    totalEarnings: json["total_earnings"]?.toDouble(),
+    averagePerTrip: json["average_per_trip"]?.toDouble(),
+    cashCollected: json["cash_collected"]?.toDouble(),
+    chartData: json["chart_data"] == null ? [] : List<ChartDatum>.from(json["chart_data"]!.map((x) => ChartDatum.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
-    "total_bookings": totalBookings,
-    "total_amount": totalAmount,
-    "drivers": drivers == null ? [] : List<dynamic>.from(drivers!.map((x) => x.toJson())),
+    "total_trips": totalTrips,
+    "total_earnings": totalEarnings,
+    "average_per_trip": averagePerTrip,
+    "cash_collected": cashCollected,
+    "chart_data": chartData == null ? [] : List<dynamic>.from(chartData!.map((x) => x.toJson())),
   };
 }
 
-class Driver {
-  int? driverId;
-  String? username;
-  String? name;
-  String? driverStatus;
-  String? sessionStatus;
-  String? totalBookings;
-  String? totalEarnings;
+class ChartDatum {
+  String? label;
+  String? earnings;
 
-  Driver({
-    this.driverId,
-    this.username,
-    this.name,
-    this.driverStatus,
-    this.sessionStatus,
-    this.totalBookings,
-    this.totalEarnings,
+  ChartDatum({
+    this.label,
+    this.earnings,
   });
 
-  factory Driver.fromJson(Map<String, dynamic> json) => Driver(
-    driverId: json["driver_id"],
-    username: json["username"],
-    name: json["name"],
-    driverStatus: json["driver_status"],
-    sessionStatus: json["session_status"],
-    totalBookings: json["total_bookings"],
-    totalEarnings: json["total_earnings"],
+  factory ChartDatum.fromJson(Map<String, dynamic> json) => ChartDatum(
+    label: json["label"],
+    earnings: json["earnings"],
   );
 
   Map<String, dynamic> toJson() => {
-    "driver_id": driverId,
-    "username": username,
-    "name": name,
-    "driver_status": driverStatus,
-    "session_status": sessionStatus,
-    "total_bookings": totalBookings,
-    "total_earnings": totalEarnings,
+    "label": label,
+    "earnings": earnings,
   };
 }
