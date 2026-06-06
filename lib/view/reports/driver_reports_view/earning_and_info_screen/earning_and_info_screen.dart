@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
@@ -28,25 +29,26 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
       : Get.put(ReportController());
 
   bool isDataLoaded = false;
-
-  String selectedPeriod = "daily";
-
   List<DriverObject> selectedDriversList = [];
   DriverObject? activeRadioDriver;
 
   void handleView() {
-    controller.getAllDriversEarnings();
-    setState(() {
-      isDataLoaded = true;
-    });
+    if (controller.selectDriverObject != null) {
+      controller.getAllDriversEarnings();
+      setState(() {
+        isDataLoaded = true;
+      });
+    } else {
+      BotToast.showText(text: "Please select a driver first");
+    }
   }
-  void updateDriverData(DriverObject driver, String period) {
+  void updateDriverData(DriverObject driver, String viewType) {
     setState(() {
       activeRadioDriver = driver;
       isDataLoaded = true;
     });
     controller.selectDriverObject = driver;
-    controller.getAllDriversEarnings(period: period);
+    controller.getAllDriversEarnings(viewType: viewType);
   }
 
   @override
@@ -138,14 +140,14 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                             if (!selectedDriversList.contains(val)) {
                                               selectedDriversList.add(val);
                                             }
-                                            updateDriverData(val, controller.selectedPeriod);
+                                            updateDriverData(val, controller.reportViewType);
                                           }
                                         },
                                       ),
                                     ],
                                   ),
 
-                                  // PERIOD BUTTONS
+                                  // VIEW TYPE BUTTONS
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -164,12 +166,13 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                             borderRadius: 4,
                                             fontSize: 14,
                                             btnText: "DAILY",
-                                            btnColor: selectedPeriod == "daily" ? DynamicColors.primaryClr : Colors.grey.shade500,
+                                            btnColor: controller.reportViewType == "daily" ? DynamicColors.primaryClr : Colors.grey.shade500,
                                             onTap: () {
                                               if (activeRadioDriver != null) {
                                                 updateDriverData(activeRadioDriver!, "daily");
                                               } else {
-                                                setState(() => controller.selectedPeriod = "daily");
+                                                controller.reportViewType = "daily";
+                                                controller.update();
                                               }
                                             },
                                           ),
@@ -181,12 +184,13 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                             borderRadius: 4,
                                             fontSize: 14,
                                             btnText: "WEEKLY",
-                                            btnColor: controller.selectedPeriod == "weekly" ? DynamicColors.primaryClr : Colors.grey.shade500,
+                                            btnColor: controller.reportViewType == "weekly" ? DynamicColors.primaryClr : Colors.grey.shade500,
                                             onTap: () {
                                               if (activeRadioDriver != null) {
                                                 updateDriverData(activeRadioDriver!, "weekly");
                                               } else {
-                                                setState(() => controller.selectedPeriod = "weekly");
+                                                controller.reportViewType = "weekly";
+                                                controller.update();
                                               }
                                             },
                                           ),
@@ -198,12 +202,13 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                             borderRadius: 4,
                                             fontSize: 14,
                                             btnText: "MONTHLY",
-                                            btnColor: controller.selectedPeriod == "monthly" ? DynamicColors.primaryClr : Colors.grey.shade500,
+                                            btnColor: controller.reportViewType == "monthly" ? DynamicColors.primaryClr : Colors.grey.shade500,
                                             onTap: () {
                                               if (activeRadioDriver != null) {
                                                 updateDriverData(activeRadioDriver!, "monthly");
                                               } else {
-                                                setState(() => controller.selectedPeriod = "monthly");
+                                                controller.reportViewType = "monthly";
+                                                controller.update();
                                               }
                                             },
                                           ),
@@ -226,8 +231,13 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                           height: 40,
                                           child: KeyboardDatePicker(
                                             initialDate: controller.earningFromDate.value,
-                                            onChanged: (date) =>
-                                                setState(() => controller.earningFromDate.value = date),
+                                            onChanged: (date) {
+                                              controller.earningFromDate.value = date;
+                                              controller.update();
+                                              if (controller.selectDriverObject != null) {
+                                                controller.getAllDriversEarnings();
+                                              }
+                                            },
                                           ),
                                         ),
                                       ),
@@ -242,8 +252,13 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                           height: 40,
                                           child: KeyboardDatePicker(
                                             initialDate: controller.earningToDate.value,
-                                            onChanged: (date) =>
-                                                setState(() => controller.earningToDate.value = date),
+                                            onChanged: (date) {
+                                              controller.earningToDate.value = date;
+                                              controller.update();
+                                              // if(activeRadioDriver != null) {
+                                              //   updateDriverData(activeRadioDriver!, controller.reportViewType);
+                                              // }
+                                            },
                                           ),
                                         ),
                                       ),
@@ -265,13 +280,10 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                 ],
                               ),
                             ),
-
                             const SizedBox(height: 25),
-
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-
                                 SizedBox(
                                   width: 300,
                                   child: Column(
@@ -285,51 +297,47 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                             borderRadius: BorderRadius.circular(6),
                                             border: Border.all(color: Colors.grey.shade200),
                                           ),
-                                          child: SingleChildScrollView(
+                                          child: ListView.builder(
+                                            shrinkWrap: true,
                                             physics: const BouncingScrollPhysics(),
-                                            child: ListView.builder(
-                                              shrinkWrap: true,
-                                              physics: const NeverScrollableScrollPhysics(),
-                                              itemCount: selectedDriversList.length,
-                                              itemBuilder: (context, index) {
-                                                final driver = selectedDriversList[index];
-                                                final bool isSelected = activeRadioDriver == driver;
+                                            itemCount: selectedDriversList.length,
+                                            itemBuilder: (context, index) {
+                                              final driver = selectedDriversList[index];
+                                              final bool isSelected = activeRadioDriver == driver;
 
-                                                return InkWell(
-                                                  onTap: () => updateDriverData(driver, controller.selectedPeriod),
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
-                                                    child: Row(
-                                                      children: [
-                                                        Icon(
-                                                          isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-                                                          color: isSelected ? DynamicColors.primaryClr : Colors.grey,
-                                                          size: 18,
-                                                        ),
-                                                        const SizedBox(width: 12),
-                                                        Expanded(
-                                                          child: Text(
-                                                            (driver.name ?? "").toUpperCase(),
-                                                            style: TextStyle(
-                                                              fontSize: 13,
-                                                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                                              color: isSelected ? Colors.black : Colors.grey.shade700,
-                                                            ),
+                                              return InkWell(
+                                                onTap: () => updateDriverData(driver, controller.reportViewType),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(
+                                                        isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+                                                        color: isSelected ? DynamicColors.primaryClr : Colors.grey,
+                                                        size: 18,
+                                                      ),
+                                                      const SizedBox(width: 12),
+                                                      Expanded(
+                                                        child: Text(
+                                                          (driver.name ?? "").toUpperCase(),
+                                                          style: TextStyle(
+                                                            fontSize: 13,
+                                                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                                            color: isSelected ? Colors.black : Colors.grey.shade700,
                                                           ),
                                                         ),
-                                                      ],
-                                                    ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                );
-                                              },
-                                            ),
+                                                ),
+                                              );
+                                            },
                                           ),
                                         ),
                                       ],
                                     ],
                                   ),
                                 ),
-
                                 const SizedBox(width: 24),
 
                                 Expanded(
@@ -356,28 +364,28 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                           children: [
                                             _buildStatCard(
                                               label: "TOTAL EARNINGS",
-                                              value: isDataLoaded ? "£ ${totalEarnings.toStringAsFixed(2)}" : "£ 0.00",
+                                              value: isDataLoaded ? "£ ${totalEarnings.toStringAsFixed(2)}" : "",
                                               icon: Icons.currency_pound,
                                               iconColor: Colors.green,
                                               bgColor: Colors.green.withOpacity(0.1),
                                             ),
                                             _buildStatCard(
                                               label: "TOTAL TRIPS",
-                                              value: isDataLoaded ? "$totalTrips" : "-",
+                                              value: isDataLoaded ? "$totalTrips" : "",
                                               icon: Icons.location_on_outlined,
                                               iconColor: Colors.blue,
                                               bgColor: Colors.blue.withOpacity(0.1),
                                             ),
                                             _buildStatCard(
                                               label: "AVERAGE PER TRIP",
-                                              value: isDataLoaded ? "£ ${averagePerTrip.toStringAsFixed(2)}" : "£ 0.00",
+                                              value: isDataLoaded ? "£ ${averagePerTrip.toStringAsFixed(2)}" : "",
                                               icon: Icons.bar_chart_rounded,
                                               iconColor: Colors.orange,
                                               bgColor: Colors.orange.withOpacity(0.1),
                                             ),
                                             _buildStatCard(
                                               label: "CASH COLLECTED",
-                                              value: isDataLoaded ? "£ ${cashCollected.toStringAsFixed(2)}" : "£ 0.00",
+                                              value: isDataLoaded ? "£ ${cashCollected.toStringAsFixed(2)}" : "",
                                               icon: Icons.account_balance_wallet_outlined,
                                               iconColor: Colors.purple,
                                               bgColor: Colors.purple.withOpacity(0.1),
@@ -437,34 +445,313 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
     );
   }
 
-// DYNAMIC CHART METHOD
+  // Widget _buildEarningChart(List<ChartDatum> chartData) {
+  //   List<FlSpot> spots = [];
+  //   double maxEarningsValue = 60.0;
+  //   double yInterval = 10.0;
+  //
+  //   Map<double, String> spotDates = {};
+  //
+  //   final List<String> dailyLabels = List.generate(24, (i) => "${i.toString().padLeft(2, '0')}:00");
+  //   final List<String> weeklyLabels = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+  //   final List<String> monthlyLabels = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+  //
+  //   List<String> activeLabels = dailyLabels;
+  //   double xBottomInterval = 4.0;
+  //
+  //   if (controller.reportViewType == "weekly") {
+  //     maxEarningsValue = 200.0;
+  //     yInterval = 50.0;
+  //     activeLabels = weeklyLabels;
+  //     xBottomInterval = 1.0;
+  //   } else if (controller.reportViewType == "monthly") {
+  //     maxEarningsValue = 1000.0;
+  //     yInterval = 250.0;
+  //     activeLabels = monthlyLabels;
+  //     xBottomInterval = 1.0;
+  //   }
+  //
+  //   if (chartData.isNotEmpty) {
+  //     for (var data in chartData) {
+  //       double earningValue = double.tryParse(data.earnings ?? "0") ?? 0.0;
+  //       if (earningValue <= 0) continue;
+  //
+  //       if (earningValue > maxEarningsValue) {
+  //         maxEarningsValue = earningValue;
+  //       }
+  //
+  //       String apiLabel = (data.label ?? "").trim().toUpperCase();
+  //       int targetIndex = activeLabels.indexWhere((element) => element == apiLabel);
+  //
+  //       if (targetIndex == -1) {
+  //         int? numericIndex = int.tryParse(apiLabel);
+  //         if (numericIndex != null) {
+  //           if (controller.reportViewType == "daily") {
+  //             targetIndex = numericIndex;
+  //           } else {
+  //             targetIndex = numericIndex - 1;
+  //           }
+  //         }
+  //       }
+  //
+  //       if (targetIndex >= 0 && targetIndex < activeLabels.length) {
+  //         spots.add(FlSpot(targetIndex.toDouble(), earningValue));
+  //       }
+  //     }
+  //
+  //     // X-axis mapping sequence sort
+  //     spots.sort((a, b) => a.x.compareTo(b.x));
+  //
+  //     if (spots.isNotEmpty && spots.first.x > 0) {
+  //       spots.insert(0, const FlSpot(0, 0));
+  //     }
+  //
+  //     // Dynamic Y-Interval Calculations
+  //     if (maxEarningsValue > 60.0 && controller.reportViewType == "daily") {
+  //       yInterval = (maxEarningsValue / 5).roundToDouble();
+  //     } else if (maxEarningsValue > 200.0 && controller.reportViewType == "weekly") {
+  //       yInterval = (maxEarningsValue / 4).roundToDouble();
+  //     } else if (maxEarningsValue > 1000.0 && controller.reportViewType == "monthly") {
+  //       yInterval = (maxEarningsValue / 4).roundToDouble();
+  //     }
+  //   }
+  //
+  //   double graphMaxY = maxEarningsValue;
+  //
+  //   return LineChart(
+  //     LineChartData(
+  //       lineTouchData: LineTouchData(
+  //         touchTooltipData: LineTouchTooltipData(
+  //           getTooltipColor: (touchedSpot) => Colors.black.withOpacity(0.8),
+  //           getTooltipItems: (touchedSpots) {
+  //             return touchedSpots.map((touchedSpot) {
+  //               return LineTooltipItem(
+  //                 '£${touchedSpot.y.toStringAsFixed(2)}',
+  //                 const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+  //               );
+  //             }).toList();
+  //           },
+  //         ),
+  //
+  //         getTouchedSpotIndicator: (LineChartBarData barData, List<int> spotIndexes) {
+  //           return spotIndexes.map((spotIndex) {
+  //             return TouchedSpotIndicatorData(
+  //               const FlLine(color: Colors.transparent, strokeWidth: 0),
+  //               FlDotData(show: true, getDotPainter: (spot, percent, bar, index) {
+  //                 return FlDotCirclePainter(
+  //                   radius: 5,
+  //                   color: DynamicColors.primaryClr,
+  //                   strokeColor: Colors.white,
+  //                   strokeWidth: 2,
+  //                 );
+  //               }),
+  //             );
+  //           }).toList();
+  //         },
+  //       ),
+  //       gridData: FlGridData(
+  //         show: true,
+  //         drawVerticalLine: true,
+  //         horizontalInterval: yInterval,
+  //         verticalInterval: xBottomInterval,
+  //         getDrawingHorizontalLine: (value) => FlLine(color: Colors.grey.shade100, strokeWidth: 1),
+  //         getDrawingVerticalLine: (value) => FlLine(color: Colors.grey.shade100, strokeWidth: 1),
+  //       ),
+  //       titlesData: FlTitlesData(
+  //         show: true,
+  //         rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+  //         topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+  //         bottomTitles: AxisTitles(
+  //           sideTitles: SideTitles(
+  //             showTitles: true,
+  //             reservedSize: 35,
+  //             interval: xBottomInterval,
+  //             getTitlesWidget: (value, meta) {
+  //               if (controller.reportViewType == "daily") {
+  //                 return const Text('');
+  //               }
+  //
+  //               int index = value.toInt();
+  //               if (index >= 0 && index < activeLabels.length) {
+  //                 return Padding(
+  //                   padding: const EdgeInsets.only(top: 10.0),
+  //                   child: Text(
+  //                       activeLabels[index],
+  //                       style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black54)
+  //                   ),
+  //                 );
+  //               }
+  //               return const Text('');
+  //             },
+  //           ),
+  //         ),
+  //         leftTitles: AxisTitles(
+  //           sideTitles: SideTitles(
+  //             showTitles: true,
+  //             interval: yInterval,
+  //             getTitlesWidget: (value, meta) => Text('£${value.toInt()}', style: const TextStyle(fontSize: 10, color: Colors.black54)),
+  //             reservedSize: 50,
+  //           ),
+  //         ),
+  //       ),
+  //       borderData: FlBorderData(show: true, border: Border.all(color: Colors.grey.shade200, width: 1)),
+  //       minX: 0,
+  //       maxX: (activeLabels.length - 1).toDouble(),
+  //       minY: 0,
+  //       maxY: graphMaxY,
+  //       lineBarsData: [
+  //         if (spots.isNotEmpty)
+  //           LineChartBarData(
+  //             spots: spots,
+  //             isCurved: false,
+  //             gradient: LinearGradient(colors: [DynamicColors.primaryClr, Colors.blueAccent]),
+  //             barWidth: 4,
+  //             isStrokeCapRound: true,
+  //             dotData: const FlDotData(show: true),
+  //             belowBarData: BarAreaData(
+  //               show: true,
+  //               gradient: LinearGradient(
+  //                 colors: [DynamicColors.primaryClr.withOpacity(0.15), Colors.blueAccent.withOpacity(0.01)],
+  //                 begin: Alignment.topCenter,
+  //                 end: Alignment.bottomCenter,
+  //               ),
+  //             ),
+  //           ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildEarningChart(List<ChartDatum> chartData) {
     List<FlSpot> spots = [];
-    double maxEarningsValue = 100.0;
+    double maxEarningsValue = 60.0;
+    double yInterval = 10.0;
+    Map<double, String> spotDates = {};
 
+    final List<String> dailyLabels = List.generate(24, (i) => "${i.toString().padLeft(2, '0')}:00");
+    final List<String> weeklyLabels = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+    final List<String> monthlyLabels = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
+    List<String> activeLabels = dailyLabels;
+    double xBottomInterval = 4.0;
+
+    if (controller.reportViewType == "weekly") {
+      maxEarningsValue = 200.0;
+      yInterval = 50.0;
+      activeLabels = weeklyLabels;
+      xBottomInterval = 1.0;
+    } else if (controller.reportViewType == "monthly") {
+      maxEarningsValue = 1000.0;
+      yInterval = 250.0;
+      activeLabels = monthlyLabels;
+      xBottomInterval = 1.0;
+    }
     if (chartData.isNotEmpty) {
-      for (int i = 0; i < chartData.length; i++) {
-        double earningValue = double.tryParse(chartData[i].earnings ?? "0") ?? 0.0;
-        spots.add(FlSpot(i.toDouble(), earningValue));
+      for (var data in chartData) {
+        double earningValue = double.tryParse(data.earnings ?? "0") ?? 0.0;
+        if (earningValue <= 0) continue;
+
         if (earningValue > maxEarningsValue) {
           maxEarningsValue = earningValue;
         }
+
+        String apiLabel = (data.label ?? "").trim().toUpperCase();
+        int targetIndex = activeLabels.indexWhere((element) => element == apiLabel);
+
+        if (targetIndex == -1) {
+          int? numericIndex = int.tryParse(apiLabel);
+          if (numericIndex != null) {
+            if (controller.reportViewType == "daily") {
+              targetIndex = numericIndex;
+            } else {
+              targetIndex = numericIndex - 1;
+            }
+          }
+        }
+
+        if (targetIndex >= 0 && targetIndex < activeLabels.length) {
+          double xValue = targetIndex.toDouble();
+          spots.add(FlSpot(xValue, earningValue));
+
+
+          String exactDateText = "";
+          DateTime baseFromDate = controller.earningFromDate.value ?? DateTime.now();
+
+          if (controller.reportViewType == "weekly") {
+            DateTime calculatedDate = baseFromDate.add(Duration(days: targetIndex));
+            exactDateText = "${calculatedDate.day.toString().padLeft(2, '0')}-${calculatedDate.month.toString().padLeft(2, '0')}-${calculatedDate.year}";
+          } else if (controller.reportViewType == "monthly") {
+            exactDateText = "${activeLabels[targetIndex]} ${baseFromDate.year}";
+          } else {
+            exactDateText = "Time: ${activeLabels[targetIndex]}";
+          }
+
+          spotDates[xValue] = exactDateText;
+        }
       }
-    } else {
-      spots = const [FlSpot(0, 0), FlSpot(1, 0), FlSpot(2, 0), FlSpot(3, 0)];
+
+      spots.sort((a, b) => a.x.compareTo(b.x));
+
+      if (spots.isNotEmpty && spots.first.x > 0) {
+        spots.insert(0, const FlSpot(0, 0));
+        spotDates[0.0] = "Start";
+      }
+
+      if (maxEarningsValue > 60.0 && controller.reportViewType == "daily") {
+        yInterval = (maxEarningsValue / 5).roundToDouble();
+      } else if (maxEarningsValue > 200.0 && controller.reportViewType == "weekly") {
+        yInterval = (maxEarningsValue / 4).roundToDouble();
+      } else if (maxEarningsValue > 1000.0 && controller.reportViewType == "monthly") {
+        yInterval = (maxEarningsValue / 4).roundToDouble();
+      }
     }
 
-    double graphMaxY = maxEarningsValue + (maxEarningsValue * 0.15);
-    double yInterval = (graphMaxY / 4) > 0 ? (graphMaxY / 4).roundToDouble() : 20.0;
+    double graphMaxY = maxEarningsValue;
 
     return LineChart(
       LineChartData(
+        lineTouchData: LineTouchData(
+          touchTooltipData: LineTouchTooltipData(
+            getTooltipColor: (touchedSpot) => Colors.black.withOpacity(0.85),
+
+            maxContentWidth: 120,
+            getTooltipItems: (touchedSpots) {
+              return touchedSpots.map((touchedSpot) {
+                String dateText = spotDates[touchedSpot.x] ?? "";
+
+                return LineTooltipItem(
+                  '$dateText\n£${touchedSpot.y.toStringAsFixed(2)}',
+                  const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                      height: 1.4
+                  ),
+                );
+              }).toList();
+            },
+          ),
+          getTouchedSpotIndicator: (LineChartBarData barData, List<int> spotIndexes) {
+            return spotIndexes.map((spotIndex) {
+              return TouchedSpotIndicatorData(
+                const FlLine(color: Colors.transparent, strokeWidth: 0),
+                FlDotData(show: true, getDotPainter: (spot, percent, bar, index) {
+                  return FlDotCirclePainter(
+                    radius: 5,
+                    color: DynamicColors.primaryClr,
+                    strokeColor: Colors.white,
+                    strokeWidth: 2,
+                  );
+                }),
+              );
+            }).toList();
+          },
+        ),
         gridData: FlGridData(
           show: true,
           drawVerticalLine: true,
           horizontalInterval: yInterval,
-          verticalInterval: 1,
+          verticalInterval: xBottomInterval,
           getDrawingHorizontalLine: (value) => FlLine(color: Colors.grey.shade100, strokeWidth: 1),
           getDrawingVerticalLine: (value) => FlLine(color: Colors.grey.shade100, strokeWidth: 1),
         ),
@@ -476,15 +763,19 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 35,
-              interval: 1,
+              interval: xBottomInterval,
               getTitlesWidget: (value, meta) {
+                if (controller.reportViewType == "daily") {
+                  return const Text('');
+                }
+
                 int index = value.toInt();
-                if (chartData.isNotEmpty && index >= 0 && index < chartData.length) {
+                if (index >= 0 && index < activeLabels.length) {
                   return Padding(
                     padding: const EdgeInsets.only(top: 10.0),
                     child: Text(
-                        chartData[index].label ?? '',
-                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black54)
+                        activeLabels[index],
+                        style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black54)
                     ),
                   );
                 }
@@ -503,28 +794,42 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
         ),
         borderData: FlBorderData(show: true, border: Border.all(color: Colors.grey.shade200, width: 1)),
         minX: 0,
-        maxX: chartData.isNotEmpty ? (chartData.length - 1).toDouble() : 3,
+        maxX: (activeLabels.length - 1).toDouble(),
         minY: 0,
         maxY: graphMaxY,
         lineBarsData: [
-          LineChartBarData(
-            spots: spots,
-            isCurved: true,
-            gradient: LinearGradient(colors: [DynamicColors.primaryClr, Colors.blueAccent]),
-            barWidth: 4,
-            isStrokeCapRound: true,
-            dotData: const FlDotData(
-              show: true,
-            ),
-            belowBarData: BarAreaData(
-              show: true,
-              gradient: LinearGradient(
-                colors: [DynamicColors.primaryClr.withOpacity(0.2), Colors.blueAccent.withOpacity(0.01)],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+          if (spots.isNotEmpty)
+            LineChartBarData(
+              spots: spots,
+              isCurved: false,
+              gradient: LinearGradient(colors: [DynamicColors.primaryClr, Colors.blueAccent]),
+              barWidth: 4,
+              isStrokeCapRound: true,
+              dotData: FlDotData(
+                show: true,
+                getDotPainter: (spot, percent, barData, index) {
+
+                  if (spot.x == 0 && spot.y == 0 && index == 0) {
+                    return FlDotCirclePainter(radius: 0, color: Colors.transparent, strokeWidth: 0);
+                  }
+
+                  return FlDotCirclePainter(
+                    radius: 5,
+                    color: DynamicColors.primaryClr,
+                    strokeColor: Colors.white,
+                    strokeWidth: 2,
+                  );
+                },
+              ),
+              belowBarData: BarAreaData(
+                show: true,
+                gradient: LinearGradient(
+                  colors: [DynamicColors.primaryClr.withOpacity(0.15), Colors.blueAccent.withOpacity(0.01)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
               ),
             ),
-          ),
         ],
       ),
     );

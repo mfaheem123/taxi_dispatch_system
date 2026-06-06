@@ -147,35 +147,35 @@ class ReportController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver earning and info functionality
   var earningFromDate = Rxn<DateTime>(DateTime.now());
   var earningToDate = Rxn<DateTime>(DateTime.now());
-
   var selectedDate = Rxn<DateTime>(DateTime.now());
-
-  String selectedPeriod = "daily";
+  String reportViewType = "daily";
   EarningInfoListModel? earningInfoListModel;
   bool isLoadingEarning = false;
 
-  getAllDriversEarnings({String? period}) async {
+  getAllDriversEarnings({String? viewType}) async {
+    if (selectDriverObject == null) {
+      print("No driver selected");
+      return;
+    }
     isLoadingEarning = true;
     update();
 
-    if (period != null) {
-      selectedPeriod = period;
+    if (viewType != null) {
+      reportViewType = viewType;
     }
 
     try {
-      String formattedFromDate = earningFromDate.value != null
-                ? DateFormat('yyyy-MM-dd').format(earningFromDate.value!)
-                : "";
+      String formattedDate = earningFromDate.value != null
+          ? DateFormat('yyyy-MM-dd').format(earningFromDate.value!)
+          : DateFormat('yyyy-MM-dd').format(DateTime.now());
 
-            String formattedToDate = earningToDate.value != null
-                ? DateFormat('yyyy-MM-dd').format(earningToDate.value!)
-                : "";
+      print("Fetching earnings for Driver ID: ${selectDriverObject?.id}, View: $reportViewType, Date: $formattedDate");
       
       var response = await Api().get("bookings/booking-driver-statistics",
       queryParameters: {
         "driver_id": selectDriverObject?.id.toString(),
-        "view": selectedPeriod,
-        // "date": formattedFromDate,
+        "view": reportViewType,
+        "date": formattedDate,
       });
 
       if(response.statusCode == 200) {
