@@ -152,7 +152,7 @@ class ReportController extends GetxController {
   EarningInfoListModel? earningInfoListModel;
   bool isLoadingEarning = false;
 
-  getAllDriversEarnings({String? viewType}) async {
+  getAllDriversEarnings({String? viewType, String? specificDate}) async {
     if (selectDriverObject == null) {
       print("No driver selected");
       return;
@@ -189,76 +189,6 @@ class ReportController extends GetxController {
       update();
     }
   }
-
-
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver earning and info functionality
-
-  // List<DriverObject> filteredDriverList = [];
-  // String selectedStatus = "all";
-  // getFilteredDrivers({String status = "all"}) async {
-  //   isLoadingDriver = true;
-  //   selectedStatus = status;
-  //   selectDriverObject = null;
-  //   update();
-  //
-  //   try{
-  //     var response = await Api().get(
-  //       "drivers/get",
-  //       queryParameters: {
-  //         if (status == "active") "active": "true",
-  //         if (status == "inactive") "active": "false",
-  //       },
-  //     );
-  //     if (response.statusCode == 200) {
-  //       var data = RestricDriverModel.fromJson(response.data);
-  //       filteredDriverList = data.drivers ?? [];
-  //     }
-  //   } catch (e) {
-  //     print("Error fetching filtered drivers: $e");
-  //   } finally {
-  //     isLoadingDriver = false;
-  //     update();
-  //   }
-  // }
-
-  // String selectedDriverType = "all";
-  //
-  // EarningInfoListModel? earningInfoListModel;
-  // bool isLoadingEarning = false;
-  //
-  // getAllDriverEarnings() async {
-  //   isLoadingEarning = true;
-  //   update();
-  //
-  //   try{
-  //       String formattedFromDate = fromDate.value != null
-  //           ? DateFormat('yyyy-MM-dd').format(fromDate.value!)
-  //           : "";
-  //
-  //       String formattedToDate = toDate.value != null
-  //           ? DateFormat('yyyy-MM-dd').format(toDate.value!)
-  //           : "";
-  //
-  //   var response = await Api().get("bookings/booking-driver-statistics",
-  //     queryParameters: {
-  //       "from_date": formattedFromDate,
-  //       "to_date": formattedToDate,
-  //       "driver_type": selectedDriverType,
-  //       if (selectDriverObject != null) "driver_id": selectDriverObject?.id.toString(),
-  //     },
-  //   );
-  //   if (response.statusCode == 200) {
-  //     earningInfoListModel = EarningInfoListModel.fromJson(response.data);
-  //     print("Driver Earning Data: ${response.data}");
-  //   }
-  // } catch (e) {
-  //     print("Error: $e");
-  //   } finally {
-  //     isLoadingEarning = false;
-  //     update();
-  //   }
-  // }
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver earning and info functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report booking functionality
 
@@ -563,59 +493,6 @@ class ReportController extends GetxController {
   final RxnInt editingRowIndex = RxnInt();
   final TextEditingController fareController = TextEditingController();
 
-  //booking graph
-  // bool isLoadingGraph = false;
-  // int totalGraphBookings = 0;
-  // double totalGraphFares = 0.0;
-  //
-  // BookingGraph? bookingGraphModel;
-  // getBookingStatisticsGraph({String? statusId}) async {
-  //   try{
-  //     isLoadingGraph = true;
-  //     update();
-  //
-  //     String formattedFromDate = DateFormat('yyyy-MM-dd').format(bookingFromDate.value);
-  //     String formattedToDate = DateFormat('yyyy-MM-dd').format(bookingToDate.value);
-  //
-  //     var response = await Api().get("bookings/booking-statistics-graph",
-  //     queryParameters: {
-  //       "booking_status_id": statusId ?? "",
-  //       "from_date": formattedFromDate,
-  //       "to_date": formattedToDate,
-  //     });
-  //
-  //     if (response.statusCode == 200) {
-  //       bookingGraphModel = BookingGraph.fromJson(response.data);
-  //
-  //       int tempBookings = 0;
-  //       double tempFares = 0.0;
-  //
-  //       if (bookingGraphModel?.data != null) {
-  //         for (var datum in bookingGraphModel!.data!) {
-  //           if (datum.payments != null) {
-  //             for (var payment in datum.payments!) {
-  //               tempBookings += payment.totalBookings ?? 0;
-  //               tempFares += (payment.totalFares ?? 0).toDouble();
-  //             }
-  //           }
-  //         }
-  //       }
-  //
-  //       totalGraphBookings = tempBookings;
-  //       totalGraphFares = tempFares;
-  //     } else {
-  //       print("Server Error Graph API: ${response.statusCode}");
-  //     }
-  //   }catch (e, stackTrace) {
-  //     print("=================== GRAPH API ERROR LOG ===================");
-  //     print("Error fetching booking statistics graph: $e");
-  //     print("Detailed StackTrace: $stackTrace");
-  //     print("=====================================================");
-  //   } finally {
-  //     isLoadingGraph = false;
-  //     update();
-  //   }
-  // }
   // booking graph
   bool isLoadingGraph = false;
   int totalGraphBookings = 0;
@@ -990,25 +867,7 @@ class ReportController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report company income functionality
 
-  // var totalBookings = 0.obs;
-  // var totalEarnings = 0.0.obs;
-  // var totalAccountEarnings = 0.0.obs;
-  // RxBool isFiltered = false.obs;
-
-  // int selectedValue = 0;
-  // RxBool ptValue = false.obs;
-  // RxBool cashValue = false.obs;
-  // RxBool accountValue = false.obs;
-  // RxBool creditCardValue = false.obs;
   RxBool creditCardPaidValue = false.obs;
-
-
   /// booking in reports
   String? selectBookingDriver;
-  // String? selectEmployee;
-  // String? selectSubsidiary;
-  // // String? selectRefNumber;
-  // // String? selectAscending;
-  // String? selectAccount;
-  // String? selectDepartment;
 }

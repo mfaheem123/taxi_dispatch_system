@@ -5,6 +5,7 @@ import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../../../../component/dropdown_button.dart';
 import '../../../../component/text_widget.dart';
 import '../../../customer/model/restricDriver.dart';
@@ -445,188 +446,13 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
     );
   }
 
-  // Widget _buildEarningChart(List<ChartDatum> chartData) {
-  //   List<FlSpot> spots = [];
-  //   double maxEarningsValue = 60.0;
-  //   double yInterval = 10.0;
-  //
-  //   Map<double, String> spotDates = {};
-  //
-  //   final List<String> dailyLabels = List.generate(24, (i) => "${i.toString().padLeft(2, '0')}:00");
-  //   final List<String> weeklyLabels = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
-  //   final List<String> monthlyLabels = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-  //
-  //   List<String> activeLabels = dailyLabels;
-  //   double xBottomInterval = 4.0;
-  //
-  //   if (controller.reportViewType == "weekly") {
-  //     maxEarningsValue = 200.0;
-  //     yInterval = 50.0;
-  //     activeLabels = weeklyLabels;
-  //     xBottomInterval = 1.0;
-  //   } else if (controller.reportViewType == "monthly") {
-  //     maxEarningsValue = 1000.0;
-  //     yInterval = 250.0;
-  //     activeLabels = monthlyLabels;
-  //     xBottomInterval = 1.0;
-  //   }
-  //
-  //   if (chartData.isNotEmpty) {
-  //     for (var data in chartData) {
-  //       double earningValue = double.tryParse(data.earnings ?? "0") ?? 0.0;
-  //       if (earningValue <= 0) continue;
-  //
-  //       if (earningValue > maxEarningsValue) {
-  //         maxEarningsValue = earningValue;
-  //       }
-  //
-  //       String apiLabel = (data.label ?? "").trim().toUpperCase();
-  //       int targetIndex = activeLabels.indexWhere((element) => element == apiLabel);
-  //
-  //       if (targetIndex == -1) {
-  //         int? numericIndex = int.tryParse(apiLabel);
-  //         if (numericIndex != null) {
-  //           if (controller.reportViewType == "daily") {
-  //             targetIndex = numericIndex;
-  //           } else {
-  //             targetIndex = numericIndex - 1;
-  //           }
-  //         }
-  //       }
-  //
-  //       if (targetIndex >= 0 && targetIndex < activeLabels.length) {
-  //         spots.add(FlSpot(targetIndex.toDouble(), earningValue));
-  //       }
-  //     }
-  //
-  //     // X-axis mapping sequence sort
-  //     spots.sort((a, b) => a.x.compareTo(b.x));
-  //
-  //     if (spots.isNotEmpty && spots.first.x > 0) {
-  //       spots.insert(0, const FlSpot(0, 0));
-  //     }
-  //
-  //     // Dynamic Y-Interval Calculations
-  //     if (maxEarningsValue > 60.0 && controller.reportViewType == "daily") {
-  //       yInterval = (maxEarningsValue / 5).roundToDouble();
-  //     } else if (maxEarningsValue > 200.0 && controller.reportViewType == "weekly") {
-  //       yInterval = (maxEarningsValue / 4).roundToDouble();
-  //     } else if (maxEarningsValue > 1000.0 && controller.reportViewType == "monthly") {
-  //       yInterval = (maxEarningsValue / 4).roundToDouble();
-  //     }
-  //   }
-  //
-  //   double graphMaxY = maxEarningsValue;
-  //
-  //   return LineChart(
-  //     LineChartData(
-  //       lineTouchData: LineTouchData(
-  //         touchTooltipData: LineTouchTooltipData(
-  //           getTooltipColor: (touchedSpot) => Colors.black.withOpacity(0.8),
-  //           getTooltipItems: (touchedSpots) {
-  //             return touchedSpots.map((touchedSpot) {
-  //               return LineTooltipItem(
-  //                 '£${touchedSpot.y.toStringAsFixed(2)}',
-  //                 const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
-  //               );
-  //             }).toList();
-  //           },
-  //         ),
-  //
-  //         getTouchedSpotIndicator: (LineChartBarData barData, List<int> spotIndexes) {
-  //           return spotIndexes.map((spotIndex) {
-  //             return TouchedSpotIndicatorData(
-  //               const FlLine(color: Colors.transparent, strokeWidth: 0),
-  //               FlDotData(show: true, getDotPainter: (spot, percent, bar, index) {
-  //                 return FlDotCirclePainter(
-  //                   radius: 5,
-  //                   color: DynamicColors.primaryClr,
-  //                   strokeColor: Colors.white,
-  //                   strokeWidth: 2,
-  //                 );
-  //               }),
-  //             );
-  //           }).toList();
-  //         },
-  //       ),
-  //       gridData: FlGridData(
-  //         show: true,
-  //         drawVerticalLine: true,
-  //         horizontalInterval: yInterval,
-  //         verticalInterval: xBottomInterval,
-  //         getDrawingHorizontalLine: (value) => FlLine(color: Colors.grey.shade100, strokeWidth: 1),
-  //         getDrawingVerticalLine: (value) => FlLine(color: Colors.grey.shade100, strokeWidth: 1),
-  //       ),
-  //       titlesData: FlTitlesData(
-  //         show: true,
-  //         rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-  //         topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-  //         bottomTitles: AxisTitles(
-  //           sideTitles: SideTitles(
-  //             showTitles: true,
-  //             reservedSize: 35,
-  //             interval: xBottomInterval,
-  //             getTitlesWidget: (value, meta) {
-  //               if (controller.reportViewType == "daily") {
-  //                 return const Text('');
-  //               }
-  //
-  //               int index = value.toInt();
-  //               if (index >= 0 && index < activeLabels.length) {
-  //                 return Padding(
-  //                   padding: const EdgeInsets.only(top: 10.0),
-  //                   child: Text(
-  //                       activeLabels[index],
-  //                       style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black54)
-  //                   ),
-  //                 );
-  //               }
-  //               return const Text('');
-  //             },
-  //           ),
-  //         ),
-  //         leftTitles: AxisTitles(
-  //           sideTitles: SideTitles(
-  //             showTitles: true,
-  //             interval: yInterval,
-  //             getTitlesWidget: (value, meta) => Text('£${value.toInt()}', style: const TextStyle(fontSize: 10, color: Colors.black54)),
-  //             reservedSize: 50,
-  //           ),
-  //         ),
-  //       ),
-  //       borderData: FlBorderData(show: true, border: Border.all(color: Colors.grey.shade200, width: 1)),
-  //       minX: 0,
-  //       maxX: (activeLabels.length - 1).toDouble(),
-  //       minY: 0,
-  //       maxY: graphMaxY,
-  //       lineBarsData: [
-  //         if (spots.isNotEmpty)
-  //           LineChartBarData(
-  //             spots: spots,
-  //             isCurved: false,
-  //             gradient: LinearGradient(colors: [DynamicColors.primaryClr, Colors.blueAccent]),
-  //             barWidth: 4,
-  //             isStrokeCapRound: true,
-  //             dotData: const FlDotData(show: true),
-  //             belowBarData: BarAreaData(
-  //               show: true,
-  //               gradient: LinearGradient(
-  //                 colors: [DynamicColors.primaryClr.withOpacity(0.15), Colors.blueAccent.withOpacity(0.01)],
-  //                 begin: Alignment.topCenter,
-  //                 end: Alignment.bottomCenter,
-  //               ),
-  //             ),
-  //           ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   Widget _buildEarningChart(List<ChartDatum> chartData) {
     List<FlSpot> spots = [];
     double maxEarningsValue = 60.0;
     double yInterval = 10.0;
-    Map<double, String> spotDates = {};
+
+    Map<double, String> spotDisplayDates = {};
+    Map<double, String> spotApiDates = {};
 
     final List<String> dailyLabels = List.generate(24, (i) => "${i.toString().padLeft(2, '0')}:00");
     final List<String> weeklyLabels = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
@@ -646,6 +472,7 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
       activeLabels = monthlyLabels;
       xBottomInterval = 1.0;
     }
+
     if (chartData.isNotEmpty) {
       for (var data in chartData) {
         double earningValue = double.tryParse(data.earnings ?? "0") ?? 0.0;
@@ -673,20 +500,29 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
           double xValue = targetIndex.toDouble();
           spots.add(FlSpot(xValue, earningValue));
 
-
           String exactDateText = "";
+          String exactApiDateText = "";
           DateTime baseFromDate = controller.earningFromDate.value ?? DateTime.now();
 
           if (controller.reportViewType == "weekly") {
-            DateTime calculatedDate = baseFromDate.add(Duration(days: targetIndex));
+            int baseWeekday = baseFromDate.weekday;
+            int daysDifference = targetIndex - (baseWeekday - 1);
+            DateTime calculatedDate = baseFromDate.add(Duration(days: daysDifference));
+
             exactDateText = "${calculatedDate.day.toString().padLeft(2, '0')}-${calculatedDate.month.toString().padLeft(2, '0')}-${calculatedDate.year}";
+            exactApiDateText = DateFormat('yyyy-MM-dd').format(calculatedDate);
           } else if (controller.reportViewType == "monthly") {
             exactDateText = "${activeLabels[targetIndex]} ${baseFromDate.year}";
+            DateTime calculatedDate = DateTime(baseFromDate.year, targetIndex + 1, 1);
+            exactApiDateText = DateFormat('yyyy-MM-dd').format(calculatedDate);
           } else {
-            exactDateText = "Time: ${activeLabels[targetIndex]}";
+            String formattedCurrentDate = "${baseFromDate.day.toString().padLeft(2, '0')}-${baseFromDate.month.toString().padLeft(2, '0')}-${baseFromDate.year}";
+            exactDateText = "Time: ${activeLabels[targetIndex]} ($formattedCurrentDate)";
+            exactApiDateText = DateFormat('yyyy-MM-dd').format(baseFromDate);
           }
 
-          spotDates[xValue] = exactDateText;
+          spotDisplayDates[xValue] = exactDateText;
+          spotApiDates[xValue] = exactApiDateText;
         }
       }
 
@@ -694,7 +530,8 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
 
       if (spots.isNotEmpty && spots.first.x > 0) {
         spots.insert(0, const FlSpot(0, 0));
-        spotDates[0.0] = "Start";
+        spotDisplayDates[0.0] = "Start";
+        spotApiDates[0.0] = DateFormat('yyyy-MM-dd').format(controller.earningFromDate.value ?? DateTime.now());
       }
 
       if (maxEarningsValue > 60.0 && controller.reportViewType == "daily") {
@@ -711,13 +548,27 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
     return LineChart(
       LineChartData(
         lineTouchData: LineTouchData(
+          touchCallback: (FlTouchEvent event, LineTouchResponse? touchResponse) {
+            if (!event.isInterestedForInteractions || touchResponse == null || touchResponse.lineBarSpots == null) {
+              return;
+            }
+            if (event is FlTapUpEvent) {
+              final touchedSpot = touchResponse.lineBarSpots!.first;
+              final double xVal = touchedSpot.x;
+              String? targetApiDate = spotApiDates[xVal];
+
+              if (targetApiDate != null && !controller.isLoadingEarning) {
+                print("Graph point clicked! Date: $targetApiDate");
+                controller.getAllDriversEarnings(specificDate: targetApiDate);
+              }
+            }
+          },
           touchTooltipData: LineTouchTooltipData(
             getTooltipColor: (touchedSpot) => Colors.black.withOpacity(0.85),
-
-            maxContentWidth: 120,
+            maxContentWidth: 150,
             getTooltipItems: (touchedSpots) {
               return touchedSpots.map((touchedSpot) {
-                String dateText = spotDates[touchedSpot.x] ?? "";
+                String dateText = spotDisplayDates[touchedSpot.x] ?? "";
 
                 return LineTooltipItem(
                   '$dateText\n£${touchedSpot.y.toStringAsFixed(2)}',
@@ -808,11 +659,9 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
               dotData: FlDotData(
                 show: true,
                 getDotPainter: (spot, percent, barData, index) {
-
                   if (spot.x == 0 && spot.y == 0 && index == 0) {
                     return FlDotCirclePainter(radius: 0, color: Colors.transparent, strokeWidth: 0);
                   }
-
                   return FlDotCirclePainter(
                     radius: 5,
                     color: DynamicColors.primaryClr,
@@ -834,7 +683,6 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
       ),
     );
   }
-
   Widget _buildStatCard({
     required String label,
     required String value,
