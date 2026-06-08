@@ -26,18 +26,18 @@ import '../controller/account_controller.dart';
 
 
 
-class CreateCustomerinvoice extends StatefulWidget {
-  const CreateCustomerinvoice({super.key});
+class CreateCustomerInvoice extends StatefulWidget {
+  const CreateCustomerInvoice({super.key});
 
   @override
-  State<CreateCustomerinvoice> createState() => _CreateCustomerinvoiceState();
+  State<CreateCustomerInvoice> createState() => _CreateCustomerInvoiceState();
 }
 
 /// ye screen Customer invoice ki hai   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-class _CreateCustomerinvoiceState extends State<CreateCustomerinvoice> {
-  int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
+class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
+  int selectedRowIndex = 0;
+  final int totalRows = 5;
 
   AccountController controller = Get.isRegistered<AccountController>()
       ? Get.find<AccountController>()
@@ -47,7 +47,7 @@ class _CreateCustomerinvoiceState extends State<CreateCustomerinvoice> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    shortCutKeyValue.value = "CreateCustomerinvoice";
+    shortCutKeyValue.value = "CreateCustomerInvoice";
   }
 
   List permissions = [];
@@ -97,7 +97,7 @@ class _CreateCustomerinvoiceState extends State<CreateCustomerinvoice> {
               isMobile: isMobile,
               label: AppText.invoiceDate,
               column: true,
-              width: fieldWidth,
+              width: fieldWidth / 1.8,
               child: SizedBox(height: 30, child: KeyboardDatePicker()),
             ),
             labeledField(
@@ -105,7 +105,7 @@ class _CreateCustomerinvoiceState extends State<CreateCustomerinvoice> {
               isMobile: isMobile,
               label: AppText.invoiceDueDate,
               column: true,
-              width: fieldWidth,
+              width: fieldWidth / 1.8,
               child: SizedBox(height: 30, child: KeyboardDatePicker()),
             ),
             Padding(
