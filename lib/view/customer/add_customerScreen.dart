@@ -171,11 +171,12 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                                 ),
                               ],
                             ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
+                  //         ],
+                  //       );
+                  //     },
+                  //   ),
+                  // ),
+                            SizedBox(height: 15),
                   Container(
                     color: DynamicColors.secondaryClr,
                     padding: const EdgeInsets.all(12),
@@ -233,6 +234,11 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                         ],
                       ),
                     ],
+                  ),
+                          ],
+                        );
+                      },
+                    ),
                   ),
                   SizedBox(
                     height: 10,
