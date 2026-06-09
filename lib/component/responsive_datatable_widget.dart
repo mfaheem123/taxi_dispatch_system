@@ -10,6 +10,7 @@ class TableColumnConfig {
   final double? fixedWidth;
   final Function(String)? onChanged;
   final bool removeSearching;
+  final Widget? customHeader;
 
   TableColumnConfig({
     required this.title,
@@ -17,6 +18,7 @@ class TableColumnConfig {
     this.fixedWidth,
     this.onChanged,
     this.removeSearching = false,
+    this.customHeader,
   });
 }
 
@@ -94,9 +96,28 @@ class _ResponsiveDataTableWidgetState extends State<ResponsiveDataTableWidget> {
               right: BorderSide(width: 1, color: DynamicColors.textClr.withOpacity(0.5)),
               bottom: BorderSide(width: 1, color: DynamicColors.textClr.withOpacity(0.5)),
             ),
+            // columns: widget.columnConfigs.map((config) {
+            //   return buildHeaderWithSearch(
+            //     // widhtss: calculatedWidths[config.title]!,
+            //     widhtss: calculatedWidths[config.title]! > 120
+            //         ? 120
+            //         : calculatedWidths[config.title]!,
+            //     title: config.title,
+            //     onChanged: config.onChanged,
+            //     removeSearching: config.removeSearching,
+            //   );
+            // }).toList(),
             columns: widget.columnConfigs.map((config) {
+              if (config.customHeader != null) {
+                return DataColumn(
+                  label: SizedBox(
+                    width: calculatedWidths[config.title]!,
+                    child: Center(child: config.customHeader!),
+                  ),
+                );
+              }
+
               return buildHeaderWithSearch(
-                // widhtss: calculatedWidths[config.title]!,
                 widhtss: calculatedWidths[config.title]! > 120
                     ? 120
                     : calculatedWidths[config.title]!,
