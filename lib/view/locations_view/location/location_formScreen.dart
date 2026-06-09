@@ -20,6 +20,9 @@ class LocationForm extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         bool isMobile = constraints.maxWidth < 600;
+        double dropdownWidth = (MediaQuery.of(context).devicePixelRatio >= 1.25 || constraints.maxWidth < 750)
+            ? (Get.width / 4.2)
+            : (Get.width / 5);
         return GetBuilder<LocationController>(
             initState: (v) {
                   permissions = Api().sp.read('all_permissions') ?? [];
@@ -116,7 +119,8 @@ class LocationForm extends StatelessWidget {
                             CustomDropdownField<ZoneObject>(
                               text: "SELECT ZONE",
                               label: "SELECT ZONE",
-                              width: Get.width / 5,
+                              // width: Get.width / 5,
+                              width: dropdownWidth,
                               height: 38,
                               items: controller.locationtypezoneModel!
                                   .zonesList!,
@@ -168,7 +172,8 @@ class LocationForm extends StatelessWidget {
                           CustomDropdownField<LocationTypeObject>(
                             text: "LOCATION TYPE",
                             label: "LOCATION TYPE",
-                            width: Get.width / 5,
+                            // width: Get.width / 5,
+                            width: dropdownWidth,
                             height: 38,
                             items: controller.locationtypezoneModel!.locationTypesList!,
                             value: controller.locationTypeValue,
@@ -194,7 +199,8 @@ class LocationForm extends StatelessWidget {
                             text: "LOCATION TYPE",
                             label: "Location Type",
 
-                            width: Get.width / 5,
+                            // width: Get.width / 5,
+                            width: dropdownWidth,
                             height: 40,
                             items: controller.locationtypezoneModel!
                                 .locationTypesList!,

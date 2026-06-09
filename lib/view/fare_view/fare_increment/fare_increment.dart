@@ -60,7 +60,7 @@ class _FareIncrementState extends State<FareIncrement> {
               return Column(
                 children: [
                   Container(
-                    width: Get.width / 1.5,
+                    width: Get.width / 1.4,
                     decoration: BoxDecoration(
                         border: Border.all(color: DynamicColors.gryClr)),
                     child: Column(

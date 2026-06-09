@@ -104,7 +104,8 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                             context: context, fontSize: 13)),
                                     CustomDropdownField<VehicleTypeFixed>(
                                       label: "SELECT VEHICLE TYPE",
-                                      width: Get.width / 5,
+                                      // width: Get.width / 5,
+                                      width: fieldWidth,
                                       height: 35,
                                       items: controller
                                           .fixedFareVehicleLocationTypeModel!
@@ -162,7 +163,8 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                             context: context, fontSize: 13)),
                                     CustomDropdownField<LocationType>(
                                       label: "SELECT LOCATION TYPE",
-                                      width: Get.width / 5,
+                                      // width: Get.width / 5,
+                                      width: fieldWidth,
                                       height: 35,
                                       items: controller
                                           .fixedFareVehicleLocationTypeModel!
@@ -189,7 +191,8 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                             context: context, fontSize: 13)),
                                     CustomDropdownField<LocationType>(
                                       label: "SELECT LOCATION TYPE",
-                                      width: Get.width / 5,
+                                      // width: Get.width / 5,
+                                      width: fieldWidth,
                                       height: 35,
                                       items: controller
                                           .fixedFareVehicleLocationTypeModel!
@@ -326,7 +329,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                     OutlinedButton(
                                         style: OutlinedButton.styleFrom(
                                           minimumSize: const Size(
-                                              43, 42), // width & height
+                                              40, 42), // width & height
                                           padding: EdgeInsets.zero,
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(
@@ -345,7 +348,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                     OutlinedButton(
                                         style: OutlinedButton.styleFrom(
                                           minimumSize: const Size(
-                                              43, 42), // width & height
+                                              40, 42), // width & height
                                           padding: EdgeInsets.zero,
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(
@@ -474,7 +477,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                     OutlinedButton(
                                         style: OutlinedButton.styleFrom(
                                           minimumSize: const Size(
-                                              43, 42), // width & height
+                                              40, 42), // width & height
                                           padding: EdgeInsets.zero,
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(
@@ -494,7 +497,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                     OutlinedButton(
                                         style: OutlinedButton.styleFrom(
                                           minimumSize: const Size(
-                                              43, 42),
+                                              40, 42),
                                           padding: EdgeInsets.zero,
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(
