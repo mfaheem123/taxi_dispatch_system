@@ -21,7 +21,7 @@ import '../../../component/suggestion_widget/suggestion_controller.dart';
 import '../../../component/time_duration_method.dart';
 import '../../../tabbarview.dart';
 import '../../cli_Screen.dart';
-import '../../locations_view/Model/location_types_zoneModel.dart';
+import '../../locations_view/Model/location_types_zoneModel.dart' hide Center;
 import '../../locations_view/controller/locations_controller.dart';
 import '../../setting/company_configuration_view/alert_createbooking.dart';
 import '../models/account_darshboard_model.dart';
@@ -744,6 +744,18 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     }
   }
 
+  void updateZoom(bool zoomIn) {
+    double currentZoom = mapController.camera.zoom;
+    double newZoom = zoomIn ? currentZoom + 1 : currentZoom - 1;
+
+    if (newZoom >= 3.0 && newZoom <= 18.0) {
+      mapController.move(mapController.camera.center, newZoom);
+    }
+  }
+
+
+
+
   AllAddressesModel? selectedModel;
   late final MapController mapController;
   MapController? mapTrackingController;
@@ -792,6 +804,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
   String? tempStoreMils;
   String? tempStoreReturnMils;
+  bool viaMiles = false;
 
 // your updated fetchRouteFromOSRM
   Future<void> fetchRouteFromOSRM() async {
@@ -800,56 +813,194 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     polylinePointsCoordinate.clear();
     List<LatLng> tempPoints = [];
 
-    // add via points as markers
+    // // add via points as markers
+    // for (var item in viaPoints) {
+    //   viaMiles=true;
+    //   final p = LatLng(item.lat, item.lng);
+    //   tempPoints.add(p);
+    //   markers.add(
+    //     CustomMarker(
+    //       withReturnType:
+    //           item.withReturnWay == "via" ? "via" : 'via with return',
+    //       child: Icon(Icons.location_pin,
+    //           color: item.withReturnWay == "via"
+    //               ? DynamicColors.primaryClr
+    //               : Colors.pink,
+    //           size: 30),
+    //       type: "via",
+    //       point: p,
+    //       width: 30,
+    //       height: 30,
+    //     ),
+    //   );
+    // }
+    //
+    // // add other marker info (pickup / drop / create booking ...)
+    // if (polyLineMarkerInfo.isNotEmpty) {
+    //   for (var item in polyLineMarkerInfo) {
+    //     final p = LatLng(item.lat, item.lng);
+    //
+    //     if (item.markerType == "PICKUP LOCATION" ||
+    //         item.markerType == "Create Booking PICKUP") {
+    //       tempPoints.add(p);
+    //       markers.add(
+    //         CustomMarker(
+    //           type: "pickup",
+    //           point: p,
+    //           child: Icon(Icons.location_pin,
+    //               color: DynamicColors.greenClr, size: 30),
+    //           width: 30,
+    //           height: 30,
+    //         ),
+    //       );
+    //     } else if (item.markerType == "DROP LOCATION" ||
+    //         item.markerType == "Create Booking DROP LOCATION") {
+    //       tempPoints.add(p);
+    //       markers.add(
+    //         CustomMarker(
+    //           type: "dropOff",
+    //           point: p,
+    //           child: Icon(Icons.location_pin,
+    //               color: DynamicColors.redClr, size: 30),
+    //           width: 30,
+    //           height: 30,
+    //         ),
+    //       );
+    //     } else if (item.markerType == "PICKUP TWO WAY LOCATION") {
+    //       tempPoints.add(p);
+    //       markers.add(
+    //         CustomMarker(
+    //           type: "pickup two way",
+    //           point: p,
+    //           child:
+    //               Icon(Icons.location_pin, color: Colors.amberAccent, size: 30),
+    //           width: 30,
+    //           height: 30,
+    //         ),
+    //       );
+    //     } else if (item.markerType == "DROP TWO WAY LOCATION") {
+    //       tempPoints.add(p);
+    //       markers.add(
+    //         CustomMarker(
+    //           type: "dropOff two way",
+    //           point: p,
+    //           child: Icon(Icons.location_pin,
+    //               color: DynamicColors.textClr, size: 30),
+    //           width: 30,
+    //           height: 30,
+    //         ),
+    //       );
+    //     }
+    //   }
+    // }
+    //
+    // ///  jab hum ek address enter karte hai tu polyline banane k lye neche wala api hit nahe hogha yaha per ruk jaygha
+    // if (polyLineMarkerInfo.length == 1) {
+    //   return;
+    // }
+// add via points as markers
     for (var item in viaPoints) {
+      viaMiles = true;
       final p = LatLng(item.lat, item.lng);
       tempPoints.add(p);
+
+      // Fixed color for via points
+      final viaColor = item.withReturnWay == "via" ? DynamicColors.primaryClr : Colors.pink;
+
       markers.add(
         CustomMarker(
-          withReturnType:
-              item.withReturnWay == "via" ? "via" : 'via with return',
-          child: Icon(Icons.location_pin,
-              color: item.withReturnWay == "via"
-                  ? DynamicColors.primaryClr
-                  : Colors.pink,
-              size: 30),
+          withReturnType: item.withReturnWay == "via" ? "via" : 'via with return',
           type: "via",
           point: p,
-          width: 30,
+          width: 30,  // Size thoda bada kiya hai taake text fit aaye
           height: 30,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Icon(Icons.location_on, color: viaColor, size: 30),
+              Positioned(
+                top: 6,
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                  constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                  child: Center(
+                    child: Text(
+                      "V", // Via points ke liye 'V'
+                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: viaColor),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
 
-    // add other marker info (pickup / drop / create booking ...)
+// add other marker info (pickup / drop / create booking ...)
     if (polyLineMarkerInfo.isNotEmpty) {
       for (var item in polyLineMarkerInfo) {
         final p = LatLng(item.lat, item.lng);
 
-        if (item.markerType == "PICKUP LOCATION" ||
-            item.markerType == "Create Booking PICKUP") {
+        if (item.markerType == "PICKUP LOCATION" || item.markerType == "Create Booking PICKUP") {
           tempPoints.add(p);
           markers.add(
             CustomMarker(
               type: "pickup",
               point: p,
-              child: Icon(Icons.location_pin,
-                  color: DynamicColors.greenClr, size: 30),
               width: 30,
               height: 30,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(Icons.location_on, color: DynamicColors.greenClr, size: 30),
+                  Positioned(
+                    top: 6,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                      constraints: const BoxConstraints(minWidth: 12, minHeight: 12),
+                      child: Center(
+                        child: Text(
+                          "A", // Pickup point ke liye hamesha 'A'
+                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: DynamicColors.greenClr),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
-        } else if (item.markerType == "DROP LOCATION" ||
-            item.markerType == "Create Booking DROP LOCATION") {
+        } else if (item.markerType == "DROP LOCATION" || item.markerType == "Create Booking DROP LOCATION") {
           tempPoints.add(p);
           markers.add(
             CustomMarker(
               type: "dropOff",
               point: p,
-              child: Icon(Icons.location_pin,
-                  color: DynamicColors.redClr, size: 30),
               width: 30,
               height: 30,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(Icons.location_on, color: DynamicColors.redClr, size: 30),
+                  Positioned(
+                    top: 6,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                      constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                      child: Center(
+                        child: Text(
+                          "B", // Dropoff point ke liye hamesha 'B'
+                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: DynamicColors.redClr),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         } else if (item.markerType == "PICKUP TWO WAY LOCATION") {
@@ -858,10 +1009,28 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
             CustomMarker(
               type: "pickup two way",
               point: p,
-              child:
-                  Icon(Icons.location_pin, color: Colors.amberAccent, size: 30),
               width: 30,
               height: 30,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(Icons.location_on, color: DynamicColors.greenClr, size: 30),
+                  Positioned(
+                    top: 6,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                      constraints: const BoxConstraints(minWidth: 12, minHeight: 12),
+                      child: Center(
+                        child: Text(
+                          "C", // Pickup point ke liye hamesha 'A'
+                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: DynamicColors.greenClr),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         } else if (item.markerType == "DROP TWO WAY LOCATION") {
@@ -870,21 +1039,38 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
             CustomMarker(
               type: "dropOff two way",
               point: p,
-              child: Icon(Icons.location_pin,
-                  color: DynamicColors.textClr, size: 30),
               width: 30,
               height: 30,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(Icons.location_on, color: DynamicColors.redClr, size: 30),
+                  Positioned(
+                    top: 6,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                      constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                      child: Center(
+                        child: Text(
+                          "D", // Dropoff point ke liye hamesha 'B'
+                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: DynamicColors.redClr),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         }
       }
     }
 
-    ///  jab hum ek address enter karte hai tu polyline banane k lye neche wala api hit nahe hogha yaha per ruk jaygha
+    /// jab hum ek address enter karte hai tu polyline banane k lye neche wala api hit nahe hogha yaha per ruk jaygha
     if (polyLineMarkerInfo.length == 1) {
       return;
     }
-
     update();
 
     // --------- MULTI-POINT: request route from OSRM ----------
@@ -950,17 +1136,25 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
             CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
         mapController.fitCamera(cameraFit);
       }
-      if(tempStoreMils == null){
+      if(tempStoreMils == null || viaMiles == true){
         tempStoreMils = totalDistance.value;
         if(tempStoreReturnMils != null){
           tempStoreMils = (double.parse(totalDistance.value)-double.parse(tempStoreReturnMils.toString())).toString();
+          print("one way hit");
         }/*else{
           tempStoreMils = (double.parse(totalDistance.value)-double.parse(tempStoreReturnMils.toString())).toString();
         }*/
-      }else{
+      } else {
+        print("retrun hit");
         tempStoreReturnMils = (double.parse(totalDistance.value)-double.parse(tempStoreMils.toString())).toString();
       }
+      viaMiles = false;
+      print("one way mils :- $tempStoreMils");
+      print("retrun mils :- $tempStoreReturnMils");
 
+      // if(viaPoints.isNotEmpty){
+      //   tempStoreMils  = (double.parse(tempStoreMils.toString()) +double.parse(viaMiles.toString())).toString();
+      // }
 
       final storedTemFare = await getFares(
           // day: ,

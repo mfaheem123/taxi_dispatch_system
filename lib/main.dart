@@ -470,10 +470,10 @@ Future<void> setupWebNotifications() async {
   if (settings.authorizationStatus == AuthorizationStatus.authorized) {
     print('User granted permission');
 
-    String? token = await messaging.getToken(
-        vapidKey: "BNc4Q8vMx5Fnne8D5AiO-MX3nNSIdGTZoXn-8TdNYg448Wx32S8SIVIKJcaDMnY9Jy7cOvZ-by_tyZ7X3tdgp2c"
-    );
-    print("FCM Token: $token");
+    // String? token = await messaging.getToken(
+    //     vapidKey: "BNc4Q8vMx5Fnne8D5AiO-MX3nNSIdGTZoXn-8TdNYg448Wx32S8SIVIKJcaDMnY9Jy7cOvZ-by_tyZ7X3tdgp2c"
+    // );
+    // print("FCM Token: $token");
 
     // --- Foreground Messages ---
     // FirebaseMessaging.onMessage.listen((RemoteMessage message) {

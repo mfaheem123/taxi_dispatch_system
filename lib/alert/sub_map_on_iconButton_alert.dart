@@ -176,6 +176,15 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
     }
   }
 
+  void _updateZoom(bool zoomIn) {
+    double currentZoom = mapController.camera.zoom;
+    double newZoom = zoomIn ? currentZoom + 1 : currentZoom - 1;
+
+    if (newZoom >= 3.0 && newZoom <= 18.0) {
+      mapController.move(mapController.camera.center, newZoom);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -263,7 +272,40 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                       ],
                     ),
                   ),
+                  /// ➕➖ ZOOM BUTTONS
+                  Positioned(
+                    left: 15, // Map ke left side par show hoga
+                    bottom: 20, // Bottom se thoda upar
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Zoom In (+) Button
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: FloatingActionButton.small(
+                            heroTag: "zoom_in_btn",
+                            backgroundColor: Colors.white,
+                            onPressed: ()=>_updateZoom(true),
+                            child: const Icon(Icons.add, color: Colors.black87,  size: 20,),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        // Zoom Out (-) Button
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: FloatingActionButton.small(
+                            heroTag: "zoom_out_btn",
+                            backgroundColor: Colors.white,
+                            onPressed: ()=>_updateZoom(false),
 
+                            child: const Icon(Icons.remove, color: Colors.black87, size: 20,),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   /// 🔥 DRIVER LIST (ONLY THIS uses GetBuilder)
                   Container(
                     height: Get.height,
@@ -765,6 +807,7 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
     //   ),
     // );
   }
+
 
   // Baki widgets (_actionButton, _driverTile) wese hi rahen ge...
   Widget _actionButton(String label, Color color) {
