@@ -491,6 +491,33 @@ Future<void> setupWebNotifications() async {
           NewBookingAlert(
             bookingId: bookingId,
             bookingMode: bookingMode,
+            bookingType: 'APP', // Pass APP type
+          ),
+          barrierColor: Colors.black54,
+          barrierDismissible: false,
+        );
+
+        if (isForeground) {
+          BotToast.showSimpleNotification(
+            title: message.notification?.title ?? " New Booking Received",
+            subTitle: message.notification?.body ?? "Booking ID: $bookingId",
+            backgroundColor: Colors.blue,
+            titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            duration: const Duration(seconds: 15),
+          );
+        }
+      }
+
+      // 4. NEW_WEB_BOOKING
+      else if (type == 'NEW_WEB_BOOKING') {
+        String bookingId = message.data['booking_id'] ?? "";
+        String bookingMode = message.data['booking_mode'] ?? "N/A";
+
+        Get.dialog(
+          NewBookingAlert(
+            bookingId: bookingId,
+            bookingMode: bookingMode,
+            bookingType: 'WEB', // Pass WEB type
           ),
           barrierColor: Colors.black54,
           barrierDismissible: false,
@@ -524,15 +551,17 @@ Future<void> setupWebNotifications() async {
   }
 }
 
-// --- Stateful Custom Dialog with Dynamic Driver List ---
+
 class NewBookingAlert extends StatefulWidget {
   final String bookingId;
   final String bookingMode;
+  final String bookingType; // Naya parameter (APP ya WEB save karne k liye)
 
   const NewBookingAlert({
     super.key,
     required this.bookingId,
     required this.bookingMode,
+    required this.bookingType, // Required parameter
   });
 
   @override
@@ -542,10 +571,10 @@ class NewBookingAlert extends StatefulWidget {
 class _NewBookingAlertState extends State<NewBookingAlert> {
   bool isLoading = true;
   bool isDriversLoading = false;
+  bool isDispatching = false;
   Map<String, dynamic>? booking;
   String? errorMessage;
 
-  // Driver states
   List<dynamic> activeDrivers = [];
   String? selectedDriverId;
 
@@ -553,7 +582,6 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
   void initState() {
     super.initState();
     getBookingDetails();
-    // Agar mode ASAP hai to initial level par bhi list fetch karwa dete hain
     if (widget.bookingMode.toUpperCase() == 'ASAP') {
       fetchActiveDrivers();
     }
@@ -588,7 +616,6 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
     }
   }
 
-  // Real-time Drivers load karne ki API call
   Future<void> fetchActiveDrivers() async {
     setState(() {
       isDriversLoading = true;
@@ -603,7 +630,6 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body) as Map<String, dynamic>;
         setState(() {
-          // Khali login_drivers ki list filter out karni thi
           activeDrivers = data['login_drivers'] ?? [];
           isDriversLoading = false;
         });
@@ -617,9 +643,55 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
     }
   }
 
+  Future<void> dispatchBooking() async {
+    if (selectedDriverId == null) {
+      BotToast.showText(text: "Please select a driver first!");
+      return;
+    }
+
+    setState(() {
+      isDispatching = true;
+    });
+    EasyLoading.show(status: 'Dispatching booking...');
+
+    try {
+      final String dispatchUrl = "${Urls.baseUrl}bookings/assign-driver";
+
+      var request = http.MultipartRequest('POST', Uri.parse(dispatchUrl));
+      request.fields['booking_id'] = widget.bookingId;
+      request.fields['driver_id'] = selectedDriverId!;
+
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseData = json.decode(response.body);
+        BotToast.showText(
+          text: responseData['message'] ?? "Booking Dispatched Successfully",
+          backgroundColor: Colors.green,
+        );
+        Get.back();
+      } else {
+        final responseData = json.decode(response.body);
+        BotToast.showText(
+          text: responseData['message'] ?? "Failed to dispatch booking (${response.statusCode})",
+        );
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      print("Exception during dispatch: $e");
+      BotToast.showText(text: "Connection error while dispatching");
+    } finally {
+      setState(() {
+        isDispatching = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // API data extraction mapping
     String referenceNumber = booking?['reference_number'] ?? "N/A";
     String pickup = booking?['pickup'] ?? "Unknown Pickup";
     String dropoff = booking?['dropoff'] ?? "Unknown Dropoff";
@@ -628,8 +700,12 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
     String pickupTime = booking?['pickup_time'] ?? "N/A";
     String fares = booking?['fares']?.toString() ?? "0.00";
 
-    // Dynamic mode conditions check
     bool isAsapMode = widget.bookingMode.toUpperCase() == 'ASAP';
+
+    // Title ko dynamic karne ke liye string check lagayi hai
+    String alertTitle = widget.bookingType == 'WEB'
+        ? "New WEB Booking Alert ($referenceNumber)"
+        : "New APP Booking Alert ($referenceNumber)";
 
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -639,7 +715,7 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              "New APP Booking Alert ($referenceNumber)",
+              alertTitle, // Dynamic Title call ho raha hai yahan
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               overflow: TextOverflow.ellipsis,
             ),
@@ -703,7 +779,7 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
               ),
               const SizedBox(height: 15),
 
-              // Date & Time Row
+              // Date & Time
               Row(
                 children: [
                   const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
@@ -719,18 +795,17 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
                 child: Divider(),
               ),
 
-              // Pickup Info
+              // Locations
               const Text("📍 PICKUP LOCATION", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.green)),
               const SizedBox(height: 4),
               Text(pickup, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black)),
               const SizedBox(height: 15),
 
-              // Dropoff Info
               const Text("🏁 DROPOFF LOCATION", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.red)),
               const SizedBox(height: 4),
               Text(dropoff, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black)),
 
-              // --- ASAP Dynamic Dropdown Widget Placement ---
+              // Driver Dropdown
               if (isAsapMode) ...[
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
@@ -755,12 +830,11 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
                     )
                         : null,
                   ),
-                  // Tap Event: Dropdown open hotay waqt real-time data fetch karega
                   onTap: () => fetchActiveDrivers(),
                   items: activeDrivers.map<DropdownMenuItem<String>>((driver) {
                     return DropdownMenuItem<String>(
                       value: driver['id'].toString(),
-                      child: Text("${driver['name']} (${driver['username']}) - [${driver['vehicle_type']}]"),
+                      child: Text("${driver['name']} (${driver['username']})"),
                     );
                   }).toList(),
                   onChanged: (value) {
@@ -776,7 +850,7 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
                 child: Divider(),
               ),
 
-              // Price Details
+              // Price
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -789,23 +863,17 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
       ),
       actions: [
         TextButton(
-          onPressed: () => Get.back(),
+          onPressed: isDispatching ? null : () => Get.back(),
           child: const Text("CLOSE", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
         ),
         if (!isLoading && errorMessage == null)
           isAsapMode
               ? ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
-            onPressed: () {
-              if (selectedDriverId == null) {
-                BotToast.showText(text: "Please select a driver first!");
-                return;
-              }
-              Get.back();
-              // Yahan aap accept aur dispatch dono handles trigger karwa sakte hain
-              BotToast.showText(text: "Booking #${widget.bookingId} Dispatched Successfully");
-            },
-            child: const Text("DISPATCH", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            onPressed: isDispatching ? null : () => dispatchBooking(),
+            child: isDispatching
+                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                : const Text("DISPATCH", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           )
               : ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
@@ -872,3 +940,302 @@ void disableInspect() {
     print("Error disabling inspect: $e");
   }
 }
+
+
+
+// --- Stateful Custom Dialog with Dynamic Driver List ---
+// class NewBookingAlert extends StatefulWidget {
+//   final String bookingId;
+//   final String bookingMode;
+//
+//   const NewBookingAlert({
+//     super.key,
+//     required this.bookingId,
+//     required this.bookingMode,
+//   });
+//
+//   @override
+//   State<NewBookingAlert> createState() => _NewBookingAlertState();
+// }
+//
+// class _NewBookingAlertState extends State<NewBookingAlert> {
+//   bool isLoading = true;
+//   bool isDriversLoading = false;
+//   Map<String, dynamic>? booking;
+//   String? errorMessage;
+//
+//   // Driver states
+//   List<dynamic> activeDrivers = [];
+//   String? selectedDriverId;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     getBookingDetails();
+//     // Agar mode ASAP hai to initial level par bhi list fetch karwa dete hain
+//     if (widget.bookingMode.toUpperCase() == 'ASAP') {
+//       fetchActiveDrivers();
+//     }
+//   }
+//
+//   Future<void> getBookingDetails() async {
+//     try {
+//       final String apiUrl = "${Urls.baseUrl}bookings/getbyid/${widget.bookingId}";
+//
+//       final response = await http.get(
+//         Uri.parse(apiUrl),
+//         headers: {'Content-Type': 'application/json'},
+//       );
+//
+//       if (response.statusCode == 200) {
+//         final decodedData = json.decode(response.body) as Map<String, dynamic>;
+//         setState(() {
+//           booking = decodedData['booking'];
+//           isLoading = false;
+//         });
+//       } else {
+//         setState(() {
+//           errorMessage = "Failed to load data (Status: ${response.statusCode})";
+//           isLoading = false;
+//         });
+//       }
+//     } catch (e) {
+//       setState(() {
+//         errorMessage = "Error connecting to server";
+//         isLoading = false;
+//       });
+//     }
+//   }
+//
+//   // Real-time Drivers load karne ki API call
+//   Future<void> fetchActiveDrivers() async {
+//     setState(() {
+//       isDriversLoading = true;
+//     });
+//     try {
+//       final String driversApiUrl = "${Urls.baseUrl}drivers/login-busy";
+//       final response = await http.get(
+//         Uri.parse(driversApiUrl),
+//         headers: {'Content-Type': 'application/json'},
+//       );
+//
+//       if (response.statusCode == 200) {
+//         final data = json.decode(response.body) as Map<String, dynamic>;
+//         setState(() {
+//           // Khali login_drivers ki list filter out karni thi
+//           activeDrivers = data['login_drivers'] ?? [];
+//           isDriversLoading = false;
+//         });
+//       } else {
+//         print("Drivers API error status code: ${response.statusCode}");
+//         setState(() => isDriversLoading = false);
+//       }
+//     } catch (e) {
+//       print("Exception while fetching drivers: $e");
+//       setState(() => isDriversLoading = false);
+//     }
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     // API data extraction mapping
+//     String referenceNumber = booking?['reference_number'] ?? "N/A";
+//     String pickup = booking?['pickup'] ?? "Unknown Pickup";
+//     String dropoff = booking?['dropoff'] ?? "Unknown Dropoff";
+//     String journeyType = booking?['journey_type']?['journey_type'] ?? "N/A";
+//     String pickupDate = booking?['pickup_date'] ?? "N/A";
+//     String pickupTime = booking?['pickup_time'] ?? "N/A";
+//     String fares = booking?['fares']?.toString() ?? "0.00";
+//
+//     // Dynamic mode conditions check
+//     bool isAsapMode = widget.bookingMode.toUpperCase() == 'ASAP';
+//
+//     return AlertDialog(
+//       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+//       title: Row(
+//         children: [
+//           const Icon(Icons.local_taxi, color: Colors.blue, size: 28),
+//           const SizedBox(width: 10),
+//           Expanded(
+//             child: Text(
+//               "New APP Booking Alert ($referenceNumber)",
+//               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+//               overflow: TextOverflow.ellipsis,
+//             ),
+//           ),
+//         ],
+//       ),
+//       content: SizedBox(
+//         width: 450,
+//         child: isLoading
+//             ? const SizedBox(
+//           height: 150,
+//           child: Center(
+//             child: CircularProgressIndicator(color: Colors.blue),
+//           ),
+//         )
+//             : errorMessage != null
+//             ? SizedBox(
+//           height: 100,
+//           child: Center(
+//             child: Text(
+//               errorMessage!,
+//               style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+//             ),
+//           ),
+//         )
+//             : SingleChildScrollView(
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             mainAxisSize: MainAxisSize.min,
+//             children: [
+//               Row(
+//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                 children: [
+//                   Container(
+//                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+//                     decoration: BoxDecoration(
+//                       color: isAsapMode ? Colors.red.shade50 : Colors.blue.shade50,
+//                       borderRadius: BorderRadius.circular(5),
+//                     ),
+//                     child: Text(
+//                       "Mode: ${widget.bookingMode}",
+//                       style: TextStyle(
+//                           color: isAsapMode ? Colors.red : Colors.blue,
+//                           fontWeight: FontWeight.bold,
+//                           fontSize: 14
+//                       ),
+//                     ),
+//                   ),
+//                   Container(
+//                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+//                     decoration: BoxDecoration(
+//                       color: Colors.purple.shade50,
+//                       borderRadius: BorderRadius.circular(5),
+//                     ),
+//                     child: Text(
+//                       "Journey: ${journeyType.toUpperCase()}",
+//                       style: const TextStyle(color: Colors.purple, fontWeight: FontWeight.bold, fontSize: 12),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//               const SizedBox(height: 15),
+//
+//               // Date & Time Row
+//               Row(
+//                 children: [
+//                   const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
+//                   const SizedBox(width: 5),
+//                   Text(
+//                     "$pickupDate at $pickupTime",
+//                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black87),
+//                   ),
+//                 ],
+//               ),
+//               const Padding(
+//                 padding: EdgeInsets.symmetric(vertical: 8.0),
+//                 child: Divider(),
+//               ),
+//
+//               // Pickup Info
+//               const Text("📍 PICKUP LOCATION", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.green)),
+//               const SizedBox(height: 4),
+//               Text(pickup, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black)),
+//               const SizedBox(height: 15),
+//
+//               // Dropoff Info
+//               const Text("🏁 DROPOFF LOCATION", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.red)),
+//               const SizedBox(height: 4),
+//               Text(dropoff, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black)),
+//
+//               // --- ASAP Dynamic Dropdown Widget Placement ---
+//               if (isAsapMode) ...[
+//                 const Padding(
+//                   padding: EdgeInsets.symmetric(vertical: 8.0),
+//                   child: Divider(),
+//                 ),
+//                 const Text(
+//                     "🚖 SELECT LOGIN DRIVER",
+//                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.blueGrey)
+//                 ),
+//                 const SizedBox(height: 6),
+//                 DropdownButtonFormField<String>(
+//                   value: selectedDriverId,
+//                   hint: Text(isDriversLoading ? "Refreshing drivers list..." : "Choose Active Driver"),
+//                   isExpanded: true,
+//                   decoration: InputDecoration(
+//                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+//                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+//                     suffixIcon: isDriversLoading
+//                         ? const Padding(
+//                       padding: EdgeInsets.all(12.0),
+//                       child: SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+//                     )
+//                         : null,
+//                   ),
+//                   // Tap Event: Dropdown open hotay waqt real-time data fetch karega
+//                   onTap: () => fetchActiveDrivers(),
+//                   items: activeDrivers.map<DropdownMenuItem<String>>((driver) {
+//                     return DropdownMenuItem<String>(
+//                       value: driver['id'].toString(),
+//                       child: Text("${driver['name']} (${driver['username']})"),
+//                     );
+//                   }).toList(),
+//                   onChanged: (value) {
+//                     setState(() {
+//                       selectedDriverId = value;
+//                     });
+//                   },
+//                 ),
+//               ],
+//
+//               const Padding(
+//                 padding: EdgeInsets.symmetric(vertical: 10),
+//                 child: Divider(),
+//               ),
+//
+//               // Price Details
+//               Row(
+//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                 children: [
+//                   Text("Fare: £$fares", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green)),
+//                 ],
+//               )
+//             ],
+//           ),
+//         ),
+//       ),
+//       actions: [
+//         TextButton(
+//           onPressed: () => Get.back(),
+//           child: const Text("CLOSE", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+//         ),
+//         if (!isLoading && errorMessage == null)
+//           isAsapMode
+//               ? ElevatedButton(
+//             style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+//             onPressed: () {
+//               if (selectedDriverId == null) {
+//                 BotToast.showText(text: "Please select a driver first!");
+//                 return;
+//               }
+//               Get.back();
+//               // Yahan aap accept aur dispatch dono handles trigger karwa sakte hain
+//               BotToast.showText(text: "Booking #${widget.bookingId} Dispatched Successfully");
+//             },
+//             child: const Text("DISPATCH", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+//           )
+//               : ElevatedButton(
+//             style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+//             onPressed: () {
+//               Get.back();
+//               BotToast.showText(text: "Booking Accepted");
+//             },
+//             child: const Text("SAVE", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+//           ),
+//       ],
+//     );
+//   }
+// }
+// --- Stateful Custom Dialog with Dynamic Driver List & Dispatch API ---
