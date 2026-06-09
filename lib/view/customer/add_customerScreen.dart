@@ -31,8 +31,6 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
     shortCutKeyValue.value = "customerFormScreen";
   }
 
-// Example API se data aaya
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -59,18 +57,40 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
     //       alignment: Alignment.center,
     return GetBuilder<CustomerController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
+        // final double maxWidth = constraints.maxWidth;
+        // final bool isMobile = maxWidth < 600;
+        // final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+        //
+        // // 125% scale checker
+        // final bool isHighScale = MediaQuery.of(context).devicePixelRatio >= 1.25;
+        //
+        // final double fieldWidth = isMobile
+        //     ? maxWidth
+        //     : isTablet
+        //     ? (isHighScale ? maxWidth / 1.8 : maxWidth / 2) // Tablet
+        //     : (isHighScale ? maxWidth / 3.8 : maxWidth / 4); // Desktop/Web
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
+        // Laptop aur Desktop ko alag alag handle karne ke liye check
+        final bool isLaptop = maxWidth >= 1024 && maxWidth < 1400;
+        final bool isLargeDesktop = maxWidth >= 1400;
+
         // 125% scale checker
         final bool isHighScale = MediaQuery.of(context).devicePixelRatio >= 1.25;
 
-        final double fieldWidth = isMobile
-            ? maxWidth
-            : isTablet
-            ? (isHighScale ? maxWidth / 1.8 : maxWidth / 2) // Tablet
-            : (isHighScale ? maxWidth / 3.8 : maxWidth / 4); // Desktop/Web
+        double fieldWidth;
+
+        if (isMobile) {
+          fieldWidth = maxWidth;
+        } else if (isTablet) {
+          fieldWidth = isHighScale ? maxWidth / 1.8 : maxWidth / 2;
+        } else if (isLaptop) {
+          fieldWidth = isHighScale ? maxWidth / 3 : maxWidth / 3.4;
+        } else {
+          fieldWidth = isHighScale ? maxWidth / 3.8 : maxWidth / 4;
+        }
 
         return Container(
           color: Colors.grey[200],
