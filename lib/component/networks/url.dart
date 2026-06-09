@@ -80,9 +80,9 @@ class Environment {
   BaseConfig _getConfig(String environment) {
     switch (environment) {
       case Environment.production:
-        return DevConfig();
+        return ProductionConfig();
       default:
-        return DevConfig();
+        return ProductionConfig();
     }
   }
 }
