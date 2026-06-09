@@ -41,18 +41,36 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
+    // return GetBuilder<CustomerController>(builder: (controller) {
+    //   return LayoutBuilder(builder: (context, constraints) {
+    //     final double maxWidth = constraints.maxWidth;
+    //     final bool isMobile = maxWidth < 600;
+    //     final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+    //
+    //     // Instead of fixed width, we calculate flexible field widths
+    //     final double fieldWidth = isMobile
+    //         ? maxWidth // full width
+    //         : isTablet
+    //             ? maxWidth / 2
+    //             : maxWidth / 4;
+    //
+    //     return Container(
+    //       color: Colors.grey[200],
+    //       alignment: Alignment.center,
     return GetBuilder<CustomerController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-        // Instead of fixed width, we calculate flexible field widths
+        // 125% scale checker
+        final bool isHighScale = MediaQuery.of(context).devicePixelRatio >= 1.25;
+
         final double fieldWidth = isMobile
-            ? maxWidth // full width
+            ? maxWidth
             : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
+            ? (isHighScale ? maxWidth / 1.8 : maxWidth / 2) // Tablet
+            : (isHighScale ? maxWidth / 3.8 : maxWidth / 4); // Desktop/Web
 
         return Container(
           color: Colors.grey[200],
