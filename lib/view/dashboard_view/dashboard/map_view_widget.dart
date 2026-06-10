@@ -317,7 +317,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
   Widget build(BuildContext context) {
     return GetBuilder<DashboardController>(
       builder: (controller) {
-        final List<LatLng> polylinePoints = controller.polylinePoints.isNotEmpty
+        final List<LatLng> polylinePoints =  controller.polylinePoints.isNotEmpty
             ? controller.polylinePointsCoordinate
             : [LatLng(51.2709722, 0.1893883)];
 
@@ -340,7 +340,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                   child: FlutterMap(
                     mapController: controller.mapController,
                     options: MapOptions(
-                      initialCenter: polylinePoints.first,
+                      initialCenter:polylinePoints.isEmpty?LatLng(51.2709722, 0.1893883): polylinePoints.first,
                       initialZoom: 13.0,
                       interactionOptions: const InteractionOptions(
                         flags: InteractiveFlag.all,
