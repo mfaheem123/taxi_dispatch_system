@@ -26,7 +26,8 @@ class _FareMeterState extends State<FareMeter> {
       : Get.put(FareController());
 
   int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 50; // total rows (dynamic list ke hisaab se change hoga)
+  final int totalRows =
+  50; // total rows (dynamic list ke hisaab se change hoga)
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -37,22 +38,37 @@ class _FareMeterState extends State<FareMeter> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<FareController>(
-        initState: (v){
-          controller.getAllFareMeterRate();
-        },
-        builder: (controller) {
+    return GetBuilder<FareController>(initState: (v) {
+      controller.getAllFareMeterRate();
+    }, builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+        final bool isLaptop = maxWidth >= 1024 && maxWidth < 1400;
 
-        // Instead of fixed width, we calculate flexible field widths
-        final double fieldWidth = isMobile
-            ? maxWidth // full width
+        final double dynamicColumnSpacing = isMobile
+            ? 10.0
             : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
+            ? 15.0
+            : isLaptop
+            ? 14.0
+            : 30.0;
+
+        // Flexible field widths based on layout size
+        final double fieldWidth = isMobile
+            ? maxWidth
+            : isTablet
+            ? maxWidth / 2
+            : isLaptop
+            ? maxWidth / 4.8
+            : maxWidth / 4;
+
+        // final double fieldWidth = isMobile
+        //     ? maxWidth // full width
+        //     : isTablet
+        //         ? maxWidth / 2
+        //         : maxWidth / 4;
 
         return Column(
           children: [
@@ -62,26 +78,33 @@ class _FareMeterState extends State<FareMeter> {
               color: DynamicColors.gryClr.withOpacity(0.5),
               child: Text(AppText.fareMeterConfiguration, style: titleDesign()),
             ),
-            controller.getAllFareMeterRateModel == null? CircularProgressIndicator(): Scrollbar(
+            controller.getAllFareMeterRateModel == null
+                ? CircularProgressIndicator()
+                : Scrollbar(
               controller: _scrollController,
               thumbVisibility: true, // 👈 hamesha visible
               trackVisibility: true,
               interactive: true,
               child: SingleChildScrollView(
-                controller: _scrollController, // 👈 yahan bhi same controller
+                controller:
+                _scrollController, // 👈 yahan bhi same controller
                 scrollDirection: Axis.horizontal,
+                physics: (!isMobile && !isTablet && !isLaptop)
+                    ? const NeverScrollableScrollPhysics()
+                    : const BouncingScrollPhysics(),
                 child: DataTable(
-                  headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+                  headingRowColor:
+                  MaterialStateProperty.all(Colors.grey[200]),
                   dataRowMinHeight: 48,
                   dataRowMaxHeight: 56,
-                  columnSpacing: 30.0,
+                  columnSpacing: dynamicColumnSpacing,
                   border: TableBorder.all(
                     color: DynamicColors.gryClr,
                     width: 0.5,
                   ),
-                  headingTextStyle: const TextStyle(
+                  headingTextStyle: TextStyle(
                     fontWeight: FontWeight.w800,
-                    fontSize: 13,
+                    fontSize: isLaptop ? 11 : 13,
                   ),
                   dataTextStyle: const TextStyle(
                     fontSize: 10,
@@ -94,64 +117,74 @@ class _FareMeterState extends State<FareMeter> {
                   ),
                   columns: [
                     buildHeaderWithSearch(
-                        title: " VEHICLES ",
-                        removeSearching: true,
-                        fontSize: 13),
+                      title: " VEHICLES ",
+                      removeSearching: true,
+                      fontSize: isLaptop ? 11 : 13,),
                     buildHeaderWithSearch(
-                        title: " METERED ",
-                        removeSearching: true,
-                        fontSize: 13),
+                      title: " METERED ",
+                      removeSearching: true,
+                      fontSize: isLaptop ? 11 : 13,),
                     buildHeaderWithSearch(
-                        title: " AUTO WAIT ",
-                        removeSearching: true,
-                        fontSize: 13),
+                      title: " AUTO WAIT ",
+                      removeSearching: true,
+                      fontSize: isLaptop ? 11 : 13,),
                     buildHeaderWithSearch(
-                        title: " ACTIVATE WAITING ON SPEED ",
-                        removeSearching: true,
-                        fontSize: 13),
+                      title: " ACTIVATE WAITING ON SPEED ",
+                      removeSearching: true,
+                      fontSize: isLaptop ? 11 : 13,),
                     buildHeaderWithSearch(
-                        title: " INITIATE WAITING AFTER ",
-                        removeSearching: true,
-                        fontSize: 13),
+                      title: " INITIATE WAITING AFTER ",
+                      removeSearching: true,
+                      fontSize: isLaptop ? 11 : 13,),
                     buildHeaderWithSearch(
-                        title: " SUSPEND WAITING ON SPEED ",
-                        removeSearching: true,
-                        fontSize: 13),
+                      title: " SUSPEND WAITING ON SPEED ",
+                      removeSearching: true,
+                      fontSize: isLaptop ? 11 : 13,),
                     buildHeaderWithSearch(
-                        title: " WAITING CHAREGES/INTERVAL ",
-                        removeSearching: true,
-                        fontSize: 13),
+                      title: " WAITING CHAREGES/INTERVAL ",
+                      removeSearching: true,
+                      fontSize: isLaptop ? 11 : 13,),
                     buildHeaderWithSearch(
-                        title: " INTERVALS ",
-                        removeSearching: true,
-                        fontSize: 13),
-
+                      title: " INTERVALS ",
+                      removeSearching: true,
+                      fontSize: isLaptop ? 11 : 13,),
                     buildHeaderWithSearch(
-                        title: " ACTIONS ",
-                        removeSearching: true,
-                        fontSize: 13),
+                      title: " ACTIONS ",
+                      removeSearching: true,
+                      fontSize: isLaptop ? 11 : 13,),
                   ],
-                  rows: List.generate(controller.getAllFareMeterRateModel!.fareMeters!.length, (index) {
-
-
-
+                  rows: List.generate(
+                      controller.getAllFareMeterRateModel!.fareMeters!
+                          .length, (index) {
                     return DataRow(
                       cells: [
-                        DataCell(Center(child: Text(controller.getAllFareMeterRateModel!.fareMeters![index].vehicleType!.name!))),
+                        DataCell(Center(
+                            child: Text(controller
+                                .getAllFareMeterRateModel!
+                                .fareMeters![index]
+                                .vehicleType!
+                                .name!))),
                         DataCell(Center(
                           child: DynamicSwitch(
-                            controller: ValueNotifier(controller.getAllFareMeterRateModel!.fareMeters![index].hasMeter),
+                            controller: ValueNotifier(controller
+                                .getAllFareMeterRateModel!
+                                .fareMeters![index]
+                                .hasMeter),
                             activeColor: DynamicColors.primaryClr,
                             inactiveColor: DynamicColors.gryClr,
                             focusScale: 1.5,
-                            onChanged: (v){
-                              controller.getAllFareMeterRateModel!.fareMeters![index].autostartWait =
-                              !controller.getAllFareMeterRateModel!.fareMeters![index].autostartWait;
+                            onChanged: (v) {
+                              controller.getAllFareMeterRateModel!
+                                  .fareMeters![index].autostartWait =
+                              !controller.getAllFareMeterRateModel!
+                                  .fareMeters![index].autostartWait;
                               controller.update();
                             },
                             onToggle: () {
-                              controller.getAllFareMeterRateModel!.fareMeters![index].hasMeter =
-                              !controller.getAllFareMeterRateModel!.fareMeters![index].hasMeter;
+                              controller.getAllFareMeterRateModel!
+                                  .fareMeters![index].hasMeter =
+                              !controller.getAllFareMeterRateModel!
+                                  .fareMeters![index].hasMeter;
                               controller.update();
                               print(
                                   "Switch toggled: ${controller.getAllFareMeterRateModel!.fareMeters![index].hasMeter}");
@@ -160,18 +193,25 @@ class _FareMeterState extends State<FareMeter> {
                         )),
                         DataCell(Center(
                           child: DynamicSwitch(
-                            controller: ValueNotifier(controller.getAllFareMeterRateModel!.fareMeters![index].autostartWait),
+                            controller: ValueNotifier(controller
+                                .getAllFareMeterRateModel!
+                                .fareMeters![index]
+                                .autostartWait),
                             activeColor: DynamicColors.primaryClr,
                             inactiveColor: DynamicColors.gryClr,
                             focusScale: 1.5,
-                            onChanged: (v){
-                              controller.getAllFareMeterRateModel!.fareMeters![index].autostartWait =
-                              !controller.getAllFareMeterRateModel!.fareMeters![index].autostartWait;
+                            onChanged: (v) {
+                              controller.getAllFareMeterRateModel!
+                                  .fareMeters![index].autostartWait =
+                              !controller.getAllFareMeterRateModel!
+                                  .fareMeters![index].autostartWait;
                               controller.update();
-                              },
+                            },
                             onToggle: () {
-                              controller.getAllFareMeterRateModel!.fareMeters![index].autostartWait =
-                              !controller.getAllFareMeterRateModel!.fareMeters![index].autostartWait;
+                              controller.getAllFareMeterRateModel!
+                                  .fareMeters![index].autostartWait =
+                              !controller.getAllFareMeterRateModel!
+                                  .fareMeters![index].autostartWait;
                               controller.update();
                               print(
                                   "Switch toggled: ${controller.getAllFareMeterRateModel!.fareMeters![index].autostartWait}");
@@ -181,40 +221,51 @@ class _FareMeterState extends State<FareMeter> {
                         DataCell(Center(
                           child: customRow(
                             icons: Icons.speed,
-                            controller.getAllFareMeterRateModel!.fareMeters![index].activeWaitingController,
-                            width: fieldWidth / 3.9,
+                            controller
+                                .getAllFareMeterRateModel!
+                                .fareMeters![index]
+                                .activeWaitingController,
+                            width: isLaptop ? 45 : (fieldWidth / 3.9),
                             unitText: "MPH",
                           ),
                         )),
                         DataCell(Center(
                           child: customRow(
                             icons: Icons.alarm,
-                            controller.getAllFareMeterRateModel!.fareMeters![index].autostartWaitingTimeController,
-                            width: fieldWidth / 3.9,
+                            controller
+                                .getAllFareMeterRateModel!
+                                .fareMeters![index]
+                                .autostartWaitingTimeController,
+                            width: isLaptop ? 45 : (fieldWidth / 3.9),
                             unitText: "SECS",
                           ),
                         )),
                         DataCell(Center(
                           child: customRow(
                             icons: Icons.speed,
-                            controller.getAllFareMeterRateModel!.fareMeters![index].suspendWaitingSpeedController,
-                            width: fieldWidth / 3.9,
+                            controller
+                                .getAllFareMeterRateModel!
+                                .fareMeters![index]
+                                .suspendWaitingSpeedController,
+                            width: isLaptop ? 45 : (fieldWidth / 3.9),
                             unitText: "MPH",
                           ),
                         )),
                         DataCell(Center(
                           child: CustomButton(
-                            width: fieldWidth / 1.9,
+                            width: isLaptop ? 130 : (fieldWidth / 1.9),
                             onTap: () {
                               WaitingConfigurationAlert.show(
-                                  waitingCharges: controller.getAllFareMeterRateModel!.fareMeters![index].waitingCharges
-                              );
+                                  waitingCharges: controller
+                                      .getAllFareMeterRateModel!
+                                      .fareMeters![index]
+                                      .waitingCharges);
                             },
                             height: 30,
                             verticalPadding: 0.0,
                             btnText: "WAITING CONFIGURATION",
                             style: mozillaTextRegularText(
-                              fontSize: 10,
+                              fontSize: isLaptop ? 9 : 10,
                               color: DynamicColors.whiteClr,
                             ),
                             borderRadius: 4,
@@ -223,8 +274,11 @@ class _FareMeterState extends State<FareMeter> {
                         DataCell(Center(
                           child: customRow(
                             icons: Icons.alarm,
-                            controller.getAllFareMeterRateModel!.fareMeters![index].waitingIntervalsController,
-                            width: fieldWidth / 3.9,
+                            controller
+                                .getAllFareMeterRateModel!
+                                .fareMeters![index]
+                                .waitingIntervalsController,
+                            width: isLaptop ? 45 : (fieldWidth / 3.9),
                             unitText: "SEC",
                           ),
                         )),
@@ -232,7 +286,10 @@ class _FareMeterState extends State<FareMeter> {
                           child: CustomButton(
                             width: 60,
                             onTap: () {
-                             controller.editFareMeterRate(fareMeterObj: controller.getAllFareMeterRateModel!.fareMeters![index]);
+                              controller.editFareMeterRate(
+                                  fareMeterObj: controller
+                                      .getAllFareMeterRateModel!
+                                      .fareMeters![index]);
                             },
                             height: 30,
                             verticalPadding: 0.0,
@@ -257,13 +314,14 @@ class _FareMeterState extends State<FareMeter> {
   }
 
   Widget customRow(
-    TextEditingController controller, {
-    double? width,
-    String? unitText,
-    IconData? icons,
-    double borderRadius = 4,
-  }) {
+      TextEditingController controller, {
+        double? width,
+        String? unitText,
+        IconData? icons,
+        double borderRadius = 4,
+      }) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           height: 30,
@@ -288,10 +346,7 @@ class _FareMeterState extends State<FareMeter> {
         ),
         CustomTextField(
           borderRadius: 0,
-          inputFormatters: [
-            FilteringTextInputFormatter
-                .digitsOnly
-          ],
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           keyboardType: TextInputType.number,
           controller: controller,
           width: width,
