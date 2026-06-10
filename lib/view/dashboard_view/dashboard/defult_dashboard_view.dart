@@ -1077,7 +1077,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                               .map((journey) => DropdownMenuItem<JourneyTypeObject>(
                                                                                             value: journey,
                                                                                             child: Text(
-                                                                                              journey.journeyType ?? "",
+                                                                                              (journey.journeyType ?? "").toUpperCase(),
                                                                                               style: mozillaTextRegularText(
                                                                                                 fontSize: 12,
                                                                                                 color: DynamicColors.textClr,
