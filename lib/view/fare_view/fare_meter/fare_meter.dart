@@ -141,7 +141,7 @@ class _FareMeterState extends State<FareMeter> {
                       removeSearching: true,
                       fontSize: isLaptop ? 11 : 13,),
                     buildHeaderWithSearch(
-                      title: " WAITING CHAREGES/INTERVAL ",
+                      title: " WAITING CHARGES/INTERVAL ",
                       removeSearching: true,
                       fontSize: isLaptop ? 11 : 13,),
                     buildHeaderWithSearch(
