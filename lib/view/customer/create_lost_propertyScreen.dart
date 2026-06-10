@@ -50,12 +50,30 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
-        // Instead of fixed width, we calculate flexible field widths
-        final double fieldWidth = isMobile
-            ? maxWidth // full width
-            : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
+
+        final bool isLaptop = maxWidth >= 1024 && maxWidth < 1400;
+        double mainContainerWidth;
+        double fieldWidth;
+
+        if (isMobile) {
+          mainContainerWidth = maxWidth;
+          fieldWidth = maxWidth;
+        } else if (isTablet) {
+          mainContainerWidth = (maxWidth - 20) / 2;
+          fieldWidth = (mainContainerWidth - 40) / 2;
+        } else if (isLaptop) {
+          mainContainerWidth = (maxWidth - 25) / 2;
+          fieldWidth = (mainContainerWidth - 50) / 2;
+        } else {
+          mainContainerWidth = (maxWidth - 30) / 2;
+          fieldWidth = (mainContainerWidth - 60) / 2;
+        }
+
+        // final double fieldWidth = isMobile
+        //     ? maxWidth // full width
+        //     : isTablet
+        //         ? maxWidth / 2
+        //         : maxWidth / 4;
 
         return Stack(
           children: [
@@ -63,9 +81,12 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                 child: Column(
               children: [
                 Wrap(
+                  spacing: 20,
+                  runSpacing: 20,
                   children: [
                     Container(
-                      width: fieldWidth * 2.0,
+                      // width: fieldWidth * 2.0,
+                      width: mainContainerWidth,
                       constraints: const BoxConstraints(minHeight: 200),
                       decoration: BoxDecoration(
                           border: Border.all(
@@ -85,15 +106,15 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                           Padding(
                             padding: const EdgeInsets.all(15.0),
                             child: Wrap(
-                              runSpacing: 25,
-                              spacing: 25,
+                              runSpacing: 20,
+                              spacing: 15,
                               alignment: WrapAlignment.start,
                               children: [
                                 labeledField(
                                   context: context,
                                   isMobile: isMobile,
                                   label: AppText.reportDate,
-                                  width: fieldWidth * 0.92,
+                                  width: fieldWidth,
                                   column: true,
                                   child: SizedBox(
                                     height: 32,
@@ -126,7 +147,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                   context: context,
                                   isMobile: isMobile,
                                   label: AppText.foundDate,
-                                  width: fieldWidth * 0.92,
+                                  width: fieldWidth,
                                   column: true,
                                   child: SizedBox(
                                     height: 32,
@@ -157,7 +178,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                   borderRadius: 4,
                                   controller:
                                       controller.detailOfPropertyController,
-                                  width: fieldWidth * 0.92,
+                                  width: fieldWidth,
                                   hintText: AppText.detailOfProperty,
                                   columnText: true,
                                   contentPadding:
@@ -172,7 +193,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                   borderRadius: 4,
                                   controller:
                                       controller.methodOfDespositionController,
-                                  width: fieldWidth * 0.92,
+                                  width: fieldWidth,
                                   hintText: AppText.methodOfDesposition,
                                   columnText: true,
                                   contentPadding:
@@ -191,7 +212,8 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                       ),
                     ),
                     Container(
-                      width: fieldWidth * 2.0,
+                      // width: fieldWidth * 2.0,
+                      width: mainContainerWidth,
                       constraints: const BoxConstraints(minHeight: 280),
                       decoration: BoxDecoration(
                           border: Border.all(color: DynamicColors.gryClr)),
@@ -210,13 +232,13 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                           Padding(
                             padding: const EdgeInsets.all(15.0),
                             child: Wrap(
-                              runSpacing: 25,
-                              spacing: 25,
+                              runSpacing: 20,
+                              spacing: 15,
                               children: [
                                 CustomTextField(
                                   borderRadius: 4,
                                   controller: controller.nameController,
-                                  width: fieldWidth * 0.92,
+                                  width: fieldWidth,
                                   hintText: AppText.name,
                                   columnText: true,
                                   inputFormatters: [
@@ -326,7 +348,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                       child: CustomTextField(
                                         borderRadius: 4,
                                         controller: controller.mobileController,
-                                        width: fieldWidth * 0.92,
+                                        width: fieldWidth,
                                         hintText: AppText.mobileNo,
                                         columnText: true,
                                         inputFormatters: [
@@ -382,7 +404,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                 CustomTextField(
                                   borderRadius: 4,
                                   controller: controller.address1Controller,
-                                  width: fieldWidth * 0.92,
+                                  width: fieldWidth,
                                   hintText: AppText.address,
                                   columnText: true,
                                   contentPadding:
@@ -427,29 +449,11 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                 DataRow(
                                   cells: [
                                     DataCell(Center(
-                                        child: Text((controller
-                                                .selectedBookingForLostProperty
-                                                .referenceNumber ??
-                                            "-").toUpperCase()))),
-                                    DataCell(Center(
-                                        child: Text(
-                                            "${controller.selectedBookingForLostProperty.pickupDate ?? ''} ${controller.selectedBookingForLostProperty.pickupTime ?? ''}".toUpperCase()))),
-                                    DataCell(Center(
-                                        child: Text((controller
-                                                .selectedBookingForLostProperty
-                                                .vehicleType
-                                                ?.name ??
-                                            "-").toUpperCase()))),
-                                    DataCell(Center(
-                                        child: Text((controller
-                                                .selectedBookingForLostProperty
-                                                .pickup ??
-                                            "-").toUpperCase()))),
-                                    DataCell(Center(
-                                        child: Text((controller
-                                                .selectedBookingForLostProperty
-                                                .dropoff ??
-                                            "-").toUpperCase()))),
+                                        child: Text((controller.selectedBookingForLostProperty.referenceNumber ??"-").toUpperCase()))),
+                                    DataCell(Center(child: Text("${controller.selectedBookingForLostProperty.pickupDate ?? ''} ${controller.selectedBookingForLostProperty.pickupTime ?? ''}".toUpperCase()))),
+                                    DataCell(Center(child: Text((controller.selectedBookingForLostProperty.vehicleType?.name ?? "-").toUpperCase()))),
+                                    DataCell(Center(child: Text((controller.selectedBookingForLostProperty.pickup ?? "-").toUpperCase()))),
+                                    DataCell(Center(child: Text((controller.selectedBookingForLostProperty.dropoff ?? "-").toUpperCase()))),
                                   ],
                                 ),
                               ]),
@@ -485,7 +489,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                           CustomTextField(
                             borderRadius: 4,
                             controller: controller.checkedByController,
-                            width: fieldWidth * 0.92,
+                            width: fieldWidth,
                             hintText: AppText.checkedBy,
                             columnText: true,
                             inputFormatters: [
@@ -496,7 +500,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                           CustomTextField(
                             borderRadius: 4,
                             controller: controller.enquiryController,
-                            width: fieldWidth * 0.92,
+                            width: fieldWidth,
                             hintText: AppText.enquiry,
                             columnText: true,
                             contentPadding: EdgeInsets.only(left: 10, top: 20),
@@ -511,7 +515,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                       CustomTextField(
                         borderRadius: 4,
                         controller: controller.resultController,
-                        width: fieldWidth * 0.92,
+                        width: fieldWidth,
                         hintText: AppText.result,
                         columnText: true,
                         contentPadding: EdgeInsets.only(left: 10, top: 20),
@@ -552,17 +556,22 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                 // top: 120,
                 top: isMobile ? 250 : (isTablet ? 400 : 120),
                 // left: (fieldWidth * 2) + (fieldWidth * 0.92) + 50,
+                // left: isMobile
+                //     ? 15
+                //     : isTablet
+                //         ? (fieldWidth * 1.02)
+                //         : (fieldWidth * 2) + (fieldWidth * 0.92) + 50,
                 left: isMobile
                     ? 15
                     : isTablet
-                        ? (fieldWidth * 1.02)
-                        : (fieldWidth * 2) + (fieldWidth * 0.92) + 50,
+                    ? (mainContainerWidth + 30)
+                    : (mainContainerWidth + fieldWidth + 50),
                 child: Material(
                   elevation: 15,
                   borderRadius: BorderRadius.circular(8),
                   color: Colors.grey.shade200,
                   child: Container(
-                    width: fieldWidth * 0.92,
+                    width: fieldWidth,
                     constraints: const BoxConstraints(maxHeight: 300),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
