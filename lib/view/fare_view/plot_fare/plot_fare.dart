@@ -167,8 +167,11 @@ class _PlotFareState extends State<PlotFare> {
                                 ),
                                 OutlinedButton(
                                     style: OutlinedButton.styleFrom(
-                                      minimumSize:
-                                          const Size(40, 42), // width & height
+                                      minimumSize: constraints.maxWidth >= 1024 && constraints.maxWidth < 1400
+                                          ? const Size(33, 42)
+                                          : const Size(40, 42),
+                                      // minimumSize:
+                                      //     const Size(40, 42), // width & height
                                       padding: EdgeInsets.zero,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(
@@ -205,8 +208,11 @@ class _PlotFareState extends State<PlotFare> {
                                     child: Icon(Icons.add)),
                                 OutlinedButton(
                                     style: OutlinedButton.styleFrom(
-                                      minimumSize:
-                                          const Size(40, 42), // width & height
+                                      minimumSize: constraints.maxWidth >= 1024 && constraints.maxWidth < 1400
+                                          ? const Size(33, 42)
+                                          : const Size(40, 42),
+                                      // minimumSize:
+                                      //     const Size(40, 42), // width & height
                                       padding: EdgeInsets.zero,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(
@@ -262,8 +268,11 @@ class _PlotFareState extends State<PlotFare> {
                                 ),
                                 OutlinedButton(
                                     style: OutlinedButton.styleFrom(
-                                      minimumSize:
-                                          const Size(40, 42), // width & height
+                                      minimumSize: constraints.maxWidth >= 1024 && constraints.maxWidth < 1400
+                                          ? const Size(33, 42)
+                                          : const Size(40, 42),
+                                      // minimumSize:
+                                      //     const Size(40, 42), // width & height
                                       padding: EdgeInsets.zero,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(
@@ -302,8 +311,11 @@ class _PlotFareState extends State<PlotFare> {
                                     child: Icon(Icons.add)),
                                 OutlinedButton(
                                     style: OutlinedButton.styleFrom(
-                                      minimumSize:
-                                          const Size(40, 42), // width & height
+                                      minimumSize: constraints.maxWidth >= 1024 && constraints.maxWidth < 1400
+                                          ? const Size(33, 42)
+                                          : const Size(40, 42),
+                                      // minimumSize:
+                                      //     const Size(40, 42), // width & height
                                       padding: EdgeInsets.zero,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(
