@@ -389,160 +389,91 @@ class _DriversViewState extends State<DriversView> {
                                   index: index);
                             },
                             child: Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8)),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                               color: Colors.white,
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,),
+                                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1.0),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Container(
-                                      width: 50,
-                                      // height: 20,
-                                      decoration: BoxDecoration(
-                                        color: DynamicColors.primaryClr,
-                                        borderRadius: const BorderRadius.all(
-                                            Radius.circular(4)),
-                                      ),
-                                      child: Center(
+                                    // Driver Name
+                                    Expanded(
+                                      flex: 3,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                                        decoration: BoxDecoration(
+                                          color: DynamicColors.primaryClr,
+                                          borderRadius: const BorderRadius.all(Radius.circular(4)),
+                                        ),
                                         child: Text(
-                                          (driver.username ?? "").maxLength(6),
-                                          style:
-
-                                          mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr, fontWeight: FontWeight.bold),
+                                          (driver.username ?? "").maxLength(6).toUpperCase(),
+                                          style: mozillaTextRegularText(
+                                              fontSize: 10,
+                                              color: DynamicColors.whiteClr,
+                                              fontWeight: FontWeight.bold),
                                           overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.center,
                                         ),
                                       ),
                                     ),
-                                    SizedBox(
-                                      width: 2,
-                                    ),
-                                    Text(
-                                      (driver.vehicleType ?? "").maxLength(6),
-                                      style:
-                                          mozillaTextRegularText(fontSize: 10),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    SizedBox(
-                                      width: 2,
-                                    ),
-                                    IconButton(
-                                        padding: EdgeInsets.zero,       // Removes internal padding
-                                        constraints: BoxConstraints(),
-                                        onPressed: () {},
-                                        icon: Icon(
-                                          Icons.mobile_screen_share,
-                                          size: 15,
-                                        )),
-                                    SizedBox(
-                                      width: 2,
-                                    ),
-                                    Text(
-                                      (timeOnline ?? ""),
-                                      style:
-                                          mozillaTextRegularText(fontSize: 10),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    Container(
-                                      width: 50,
-                                      height: 20,
-                                      decoration: BoxDecoration(
-                                        color: DynamicColors.secondaryClr,
-                                        borderRadius: const BorderRadius.all(
-                                            Radius.circular(4)),
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          Expanded(
-                                            child: Center(
-                                              child:      Text(
-                                                ("POSTCODE").maxLength(6),
-                                                style:
+                                    const SizedBox(width: 4),
 
-                                                mozillaTextRegularText(fontSize: 10, color: DynamicColors.primaryClr, fontWeight: FontWeight.bold),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                                    // Vehicle Type
+                                    Expanded(
+                                      flex: 2,
+                                      child: Text(
+                                        (driver.vehicleType ?? "").maxLength(6).toUpperCase(),
+                                        style: mozillaTextRegularText(fontSize: 10),
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.center,
                                       ),
                                     ),
-                                    //     SizedBox(
-                                    //       width: 50,
-                                    //       child: Container(
-                                    //         height: 32,
-                                    //         decoration: BoxDecoration(
-                                    //           borderRadius: BorderRadius.circular(4),
-                                    //           color: DynamicColors.primaryClr
-                                    //         ),
-                                    //         child: Center(
-                                    //           child: Text("X1",
-                                    //             style: mozillaTextRegularText(
-                                    //               fontSize: 14,
-                                    //               color: DynamicColors.whiteClr,
-                                    //             ),
-                                    //
-                                    //           ),
-                                    //         ),
-                                    //       ),
-                                    //
-                                    //
-                                    //       // CustomButton(
-                                    //       //   height: 28,
-                                    //       //   borderRadius: 4,
-                                    //       //   verticalPadding: 0,
-                                    //       //   btnText: "X1",
-                                    //       //   style: mozillaTextRegularText(
-                                    //       //     fontSize: 14,
-                                    //       //     color: DynamicColors.whiteClr,
-                                    //       //   ),
-                                    //       // ),
-                                    //     ),
-                                    //     const SizedBox(width: 10),
-                                    //     Expanded(
-                                    //       child: Text(
-                                    //         "SALOON",
-                                    //         style:
-                                    //         mozillaTextRegularText(fontSize: 13),
-                                    //         overflow: TextOverflow.ellipsis,
-                                    //       ),
-                                    //     ),
-                                    //     const SizedBox(width: 10),
-                                    //     const Icon(Icons.phone_android_rounded,
-                                    //         size: 18),
-                                    //     const SizedBox(width: 10),
-                                    //     Expanded(
-                                    //       child: Text(
-                                    //         "1133Hr 01Min -",
-                                    //         style:
-                                    //         mozillaTextRegularText(fontSize: 13),
-                                    //         overflow: TextOverflow.ellipsis,
-                                    //         maxLines: 1,
-                                    //       ),
-                                    //     ),
-                                    //     const SizedBox(width: 10),
-                                    // SizedBox(
-                                    //   width: 48,
-                                    //   child: Container(
-                                    //     height: 32,
-                                    //     decoration: BoxDecoration(
-                                    //         borderRadius: BorderRadius.circular(4),
-                                    //         color: DynamicColors.secondaryClr
-                                    //     ),
-                                    //     child: Center(
-                                    //       child: Text("-",
-                                    //         style: mozillaTextRegularText(
-                                    //           fontSize: 14,
-                                    //           color: DynamicColors.whiteClr,
-                                    //         ),
-                                    //
-                                    //       ),
-                                    //     ),
-                                    //   ),
-                                    //
-                                    //     ),
+                                    const SizedBox(width: 4),
+
+                                    //  Share Icon
+                                    IconButton(
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(),
+                                      onPressed: () {},
+                                      icon: const Icon(
+                                        Icons.mobile_screen_share,
+                                        size: 15,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+
+                                    //  Online Time
+                                    Expanded(
+                                      flex: 2,
+                                      child: Text(
+                                        timeOnline,
+                                        style: mozillaTextRegularText(fontSize: 10),
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+
+                                    //  Zone
+                                    Expanded(
+                                      flex: 3,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                                        decoration: BoxDecoration(
+                                          color: DynamicColors.secondaryClr,
+                                          borderRadius: const BorderRadius.all(Radius.circular(4)),
+                                        ),
+                                        child: Text(
+                                          (driver.zone ?? "-").maxLength(6),
+                                          style: mozillaTextRegularText(
+                                              fontSize: 10,
+                                              color: DynamicColors.primaryClr,
+                                              fontWeight: FontWeight.bold),
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+
                                   ],
                                 ),
                               ),
