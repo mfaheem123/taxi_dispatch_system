@@ -574,27 +574,42 @@ class _DriversViewState extends State<DriversView> {
         PopupMenuItem(
           value: 1,
           height: 12,
-          child: Text("TRACK"),
+          child: Text("TRACK",
+              style:
+                    mozillaTextRegularText(fontSize: 13),
+          ),
         ),
         PopupMenuItem(
           value: 2,
           height: 12,
-          child: Text("SINBIN"),
+          child: Text("SINBIN",
+          style:
+          mozillaTextRegularText(fontSize: 13),
+          ),
         ),
         PopupMenuItem(
           value: 3,
           height: 12,
-          child: Text("FORCE BREAK"),
+          child: Text("FORCE BREAK",
+            style:
+            mozillaTextRegularText(fontSize: 13),
+          ),
         ),
         PopupMenuItem(
           value: 4,
           height: 12,
-          child: Text("LOGOUT"),
+          child: Text("LOGOUT",
+            style:
+            mozillaTextRegularText(fontSize: 13),
+          ),
         ),
         PopupMenuItem(
           value: 5,
           height: 12,
-          child: Text("CALL DRIVER"),
+          child: Text("CALL DRIVER",
+            style:
+            mozillaTextRegularText(fontSize: 13),
+          ),
         ),
       ],
       elevation: 8.0,

@@ -846,28 +846,31 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                                   }
                                                                                                 }
                                                                                               },
-                                                                                              child: CustomTextField(
-                                                                                                focusNode: controller.phoneNumberFieldKey,
-                                                                                                controller: controller.mobileController,
-                                                                                                // hintText: AppText.mobile,
-                                                                                                borderRadius: 3,
-                                                                                                inputFormatters: [
-                                                                                                  FilteringTextInputFormatter.digitsOnly
-                                                                                                ],
-
-                                                                                                onTap: () {
-                                                                                                  controller.dropDownShow.value = true;
-                                                                                                },
-                                                                                                onChanged: (v) {
-                                                                                                  if (v.isNotEmpty) {
+                                                                                              child: CompositedTransformTarget(
+                                                                                                link: controller.mobileFieldLayerLink,
+                                                                                                child: CustomTextField(
+                                                                                                  focusNode: controller.phoneNumberFieldKey,
+                                                                                                  controller: controller.mobileController,
+                                                                                                  // hintText: AppText.mobile,
+                                                                                                  borderRadius: 3,
+                                                                                                  inputFormatters: [
+                                                                                                    FilteringTextInputFormatter.digitsOnly
+                                                                                                  ],
+                                                                                                
+                                                                                                  onTap: () {
                                                                                                     controller.dropDownShow.value = true;
-                                                                                                    FocusScope.of(Get.context!).requestFocus(controller.phoneNumberFieldKey);
-                                                                                                    controller.onPhoneNoChangeHandler(fieldName: "Phone Number", searchingText: v);
-                                                                                                  } else {
-                                                                                                    controller.dropDownShow.value = false;
-                                                                                                  }
-                                                                                                },
-                                                                                                width: fieldWidthh / 12,
+                                                                                                  },
+                                                                                                  onChanged: (v) {
+                                                                                                    if (v.isNotEmpty) {
+                                                                                                      controller.dropDownShow.value = true;
+                                                                                                      FocusScope.of(Get.context!).requestFocus(controller.phoneNumberFieldKey);
+                                                                                                      controller.onPhoneNoChangeHandler(fieldName: "Phone Number", searchingText: v);
+                                                                                                    } else {
+                                                                                                      controller.dropDownShow.value = false;
+                                                                                                    }
+                                                                                                  },
+                                                                                                  width: fieldWidthh / 12,
+                                                                                                ),
                                                                                               )),
                                                                                         ),
                                                                                       ],
@@ -1687,72 +1690,75 @@ SizedBox(width: 17,),
                                                                                           context: context,
                                                                                           isMobile: isMobile,
                                                                                           label: "R/${AppText.veh} ",
-                                                                                          width: fieldWidth / 3,
+                                                                                          width: fieldWidth / 2.9,
                                                                                           heights: 32,
-                                                                                          child: Container(
-                                                                                            decoration: BoxDecoration(
-                                                                                              borderRadius: BorderRadius.circular(6),
-                                                                                              border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
-                                                                                            ),
-                                                                                            child: DropdownButtonFormField<DashboardVehicleTypeObject>(
-                                                                                              // 1. isExpanded true karne se text katega nahi aur icon aakhir me chala jayega
-                                                                                              isExpanded: true,
-                                                                                              decoration: const InputDecoration(
-                                                                                                // 2. Internal border ko none kiya taake double border issue na ho aur text ko jagah mile
-                                                                                                border: InputBorder.none,
-                                                                                                isDense: true,
-                                                                                                // 3. Padding thodi kam ki taake text vertical ya horizontal kooch na kate
-                                                                                                contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                                                                                          child: Padding(
+                                                                                            padding: const EdgeInsets.only(left: 4.0),
+                                                                                            child: Container(
+                                                                                              decoration: BoxDecoration(
+                                                                                                borderRadius: BorderRadius.circular(6),
+                                                                                                border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                                                                                               ),
-                                                                                              // 4. Dropdown icon ki padding aur size adjust ki
-                                                                                              icon: const Icon(Icons.arrow_drop_down, size: 20),
-                                                                                              value: controller.selectVehicleValueReturn,
-                                                                                              items: controller.dashboardAllData!.vehicleTypes!
-                                                                                                  .map((vehicle) => DropdownMenuItem<DashboardVehicleTypeObject>(
-                                                                                                        value: vehicle,
-                                                                                                        child: Text(
-                                                                                                          vehicle.name ?? "",
-                                                                                                          // Agar ab bhi text bada ho, to maxLines aur overflow handle karein
-                                                                                                          maxLines: 1,
-                                                                                                          overflow: TextOverflow.ellipsis,
-                                                                                                          style: mozillaTextRegularText(
-                                                                                                            fontSize: 12,
-                                                                                                            // Font size 12 standard hai, aap 10 bhi rakh sakte hain
-                                                                                                            color: DynamicColors.textClr,
+                                                                                              child: DropdownButtonFormField<DashboardVehicleTypeObject>(
+                                                                                                // 1. isExpanded true karne se text katega nahi aur icon aakhir me chala jayega
+                                                                                                isExpanded: true,
+                                                                                                decoration: const InputDecoration(
+                                                                                                  // 2. Internal border ko none kiya taake double border issue na ho aur text ko jagah mile
+                                                                                                  border: InputBorder.none,
+                                                                                                  isDense: true,
+                                                                                                  // 3. Padding thodi kam ki taake text vertical ya horizontal kooch na kate
+                                                                                                  contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                                                                                                ),
+                                                                                                // 4. Dropdown icon ki padding aur size adjust ki
+                                                                                                icon: const Icon(Icons.arrow_drop_down, size: 20),
+                                                                                                value: controller.selectVehicleValueReturn,
+                                                                                                items: controller.dashboardAllData!.vehicleTypes!
+                                                                                                    .map((vehicle) => DropdownMenuItem<DashboardVehicleTypeObject>(
+                                                                                                          value: vehicle,
+                                                                                                          child: Text(
+                                                                                                            vehicle.name ?? "",
+                                                                                                            // Agar ab bhi text bada ho, to maxLines aur overflow handle karein
+                                                                                                            maxLines: 1,
+                                                                                                            overflow: TextOverflow.ellipsis,
+                                                                                                            style: mozillaTextRegularText(
+                                                                                                              fontSize: 12,
+                                                                                                              // Font size 12 standard hai, aap 10 bhi rakh sakte hain
+                                                                                                              color: DynamicColors.textClr,
+                                                                                                            ),
                                                                                                           ),
-                                                                                                        ),
-                                                                                                      ))
-                                                                                                  .toList(),
-                                                                                              onChanged: (v) async {
-                                                                                                controller.selectVehicleValueReturn = v;
-                                                                                                controller.dropDownShow.value = false;
+                                                                                                        ))
+                                                                                                    .toList(),
+                                                                                                onChanged: (v) async {
+                                                                                                  controller.selectVehicleValueReturn = v;
+                                                                                                  controller.dropDownShow.value = false;
 
-                                                                                                // Note: Yahan aapne 'controller.selectVehicleValue!.id!' likha tha,
-                                                                                                // agar ye Return vehicle ke liye hai to shayad yahan 'v!.id!' ya 'controller.selectVehicleValueReturn!.id!' hona chahiye.
-                                                                                                final fare = await getActiveFareForVehicle(
-                                                                                                  controller.dashboardAllData!.fareConfigurations!,
-                                                                                                  v?.id ?? controller.selectVehicleValue!.id!,
-                                                                                                );
-
-                                                                                                if (fare != null) {
-                                                                                                  print(
-                                                                                                    'Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}',
+                                                                                                  // Note: Yahan aapne 'controller.selectVehicleValue!.id!' likha tha,
+                                                                                                  // agar ye Return vehicle ke liye hai to shayad yahan 'v!.id!' ya 'controller.selectVehicleValueReturn!.id!' hona chahiye.
+                                                                                                  final fare = await getActiveFareForVehicle(
+                                                                                                    controller.dashboardAllData!.fareConfigurations!,
+                                                                                                    v?.id ?? controller.selectVehicleValue!.id!,
                                                                                                   );
 
-                                                                                                  double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+                                                                                                  if (fare != null) {
+                                                                                                    print(
+                                                                                                      'Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}',
+                                                                                                    );
 
-                                                                                                  controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
-                                                                                                } else {
-                                                                                                  print('No active fare found for this vehicle');
-                                                                                                }
-                                                                                                controller.update();
-                                                                                              },
+                                                                                                    double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+
+                                                                                                    controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+                                                                                                  } else {
+                                                                                                    print('No active fare found for this vehicle');
+                                                                                                  }
+                                                                                                  controller.update();
+                                                                                                },
+                                                                                              ),
                                                                                             ),
                                                                                           ),
                                                                                         ),
                                                                                       ),
                                                                                    ),
-                                                                                  SizedBox(width: 12.0,),
+                                                                                  SizedBox(width: 10.0,),
 
                                                                                   SizedBox(
                                                                                     width: fieldWidthh / 8.5,
@@ -1838,7 +1844,7 @@ SizedBox(width: 17,),
                                                                                       child: SizedBox(
                                                                                         height: 35,
                                                                                         child: CustomTextField(
-                                                                                          hintText: "Fare",
+                                                                                          hintText: ("Fare").toUpperCase(),
                                                                                           controller: controller.slugController,
                                                                                           borderRadius: 6,
                                                                                           inputFormatters: [
@@ -1953,7 +1959,7 @@ SizedBox(width: 17,),
                                                                                             return DropdownMenuItem<PaymentTypeObject>(
                                                                                               value: payment,
                                                                                               child: Text(
-                                                                                                payment.name ?? "",
+                                                                                                (payment.name ?? "").toUpperCase(),
                                                                                                 overflow: TextOverflow.ellipsis,
                                                                                                 maxLines: 1,
                                                                                                 softWrap: false,

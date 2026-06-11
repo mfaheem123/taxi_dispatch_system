@@ -1830,7 +1830,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
    ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get phone numbers
 
-
+   final LayerLink mobileFieldLayerLink = LayerLink();
 
    Timer? _phoneNumberBebounce;
 // 👇 ye function har baar text change hone par call hoga
@@ -1856,7 +1856,9 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
  final Rx<FocusNode> suggestionPhoneFocusNode = FocusNode().obs;
 getPhoneNumberOfUSers({fieldsName, searchingText}) async {
      dashboardDataLoader(true);
-     var response = await Api().get("customers/search?mobile=$searchingText");
+     var response = await Api().get("customers/search?mobile=$searchingText",
+     sendCompanyId: true,
+     );
      if (response.statusCode == 200) {
        if (response.data['customer'].isNotEmpty) {
          dropDownShow.value = true;

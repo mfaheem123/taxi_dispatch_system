@@ -71,6 +71,12 @@ class CustomTextField extends StatelessWidget {
               width: width?? Get.width/2.5,
             height: height?? 30,
               child: TextField(
+                onTapOutside: (event) {
+                  FocusManager.instance.primaryFocus?.unfocus();
+
+                  Get.find<DashboardController>().dropDownShow.value = false;
+                  Get.find<DashboardController>().update();
+                },
                 textCapitalization: TextCapitalization.characters,
                 controller: controller,
                 focusNode: focusNode,

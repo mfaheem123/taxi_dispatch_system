@@ -432,7 +432,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         ),
       
-                        SizedBox(width: screenWidth * 0.31),
+                        SizedBox(width: screenWidth * 0.29),
                         // 4. Copyright Text
                         Text(
                           "NEXUS © 2026",
