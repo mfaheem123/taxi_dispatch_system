@@ -694,7 +694,7 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
         final responseData = json.decode(response.body);
         BotToast.showText(
           text: responseData['message'] ?? "Booking Dispatched Successfully",
-          backgroundColor: Colors.green,
+          // backgroundColor: Colors.green,
         );
         Get.back();
       } else {

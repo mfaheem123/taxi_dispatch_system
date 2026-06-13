@@ -597,7 +597,7 @@ double widthss = MediaQuery.of(context).size.width;
                                     // Optional: borderRadius: BorderRadius.circular(2),
                                   ),
                                   child: Text(
-                                    "${item.bookingStatus!.bookingStatus}",
+                                    "${item.bookingStatus!.bookingStatus}".toUpperCase(),
                                     style: TextStyle(color: DynamicColors.whiteClr,
                                       fontSize: widthss/140,
                                     ),
@@ -616,7 +616,7 @@ double widthss = MediaQuery.of(context).size.width;
                                   onRightClick: () {
                                     print("RIGHT CLICK JOURNEY TYPE");
                                   },
-                                  child: Text(item.journeyType?.journeyType ?? "-",
+                                  child: Text((item.journeyType?.journeyType ?? "-").toUpperCase(),
                                     style: TextStyle(
                                       fontSize: widthss/140,
                                     ),
@@ -644,7 +644,7 @@ double widthss = MediaQuery.of(context).size.width;
                                       color: DynamicColors.primaryClr,
                                       // Optional: borderRadius: BorderRadius.circular(2),
                                     ),
-                                    child: Text(item.paymentType?.name ?? "-",
+                                    child: Text((item.paymentType?.name ?? "-").toUpperCase(),
                                       style: TextStyle(
                                           color: DynamicColors.whiteClr,
                                         fontSize: widthss/140,

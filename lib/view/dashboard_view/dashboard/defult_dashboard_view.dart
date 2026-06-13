@@ -2570,7 +2570,7 @@ SizedBox(width: 17,),
                                                                                       width: 60,
                                                                                       height: 30,
                                                                                       child: CustomTextField(
-                                                                                        hintText: "Pass",
+                                                                                        hintText: "Pass".toUpperCase(),
                                                                                         inputFormatters: [
                                                                                           FilteringTextInputFormatter.digitsOnly,
                                                                                           LengthLimitingTextInputFormatter(2),
@@ -2592,7 +2592,7 @@ SizedBox(width: 17,),
                                                                                       width: 60,
                                                                                       height: 30,
                                                                                       child: CustomTextField(
-                                                                                        hintText: "Lugg",
+                                                                                        hintText: "Lugg".toUpperCase(),
                                                                                         inputFormatters: [
                                                                                           FilteringTextInputFormatter.digitsOnly,
                                                                                           LengthLimitingTextInputFormatter(2),
@@ -2614,7 +2614,7 @@ SizedBox(width: 17,),
                                                                                       width: 60,
                                                                                       height: 30,
                                                                                       child: CustomTextField(
-                                                                                        hintText: "Slugg",
+                                                                                        hintText: "Slugg".toUpperCase(),
                                                                                         inputFormatters: [
                                                                                           FilteringTextInputFormatter.digitsOnly,
                                                                                           LengthLimitingTextInputFormatter(2),
