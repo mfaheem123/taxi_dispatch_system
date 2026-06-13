@@ -56,13 +56,27 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
         final bool isLaptop = maxWidth >= 1024 && maxWidth < 1440;
         final bool isLargeScreen = maxWidth >= 1440;
 
-        final double fieldWidth = isMobile
-            ? maxWidth * 0.9 // almost full width on mobile
-            : isTablet
-                ? 200 // smaller fixed size on tablet
-                : isLaptop
-                    ? 250 // medium size on laptop
-                    : 330; // larger on LCD
+        final bool isHighScale = MediaQuery.of(context).devicePixelRatio >= 1.25;
+
+        // Responsive field width calculation according to screen and scale
+        double fieldWidth;
+        if (isMobile) {
+          fieldWidth = maxWidth * 0.9;
+        } else if (isTablet) {
+          fieldWidth = isHighScale ? maxWidth / 2.3 : 200;
+        } else if (isLaptop) {
+          fieldWidth = isHighScale ? maxWidth / 4.5 : 220;
+        } else {
+          fieldWidth = isHighScale ? maxWidth / 4.6 : 330;
+        }
+
+        // final double fieldWidth = isMobile
+        //     ? maxWidth * 0.9 // almost full width on mobile
+        //     : isTablet
+        //         ? 200 // smaller fixed size on tablet
+        //         : isLaptop
+        //             ? 250 // medium size on laptop
+        //             : 330; // larger on LCD
         print(fieldWidth);
         return Column(
           children: [
@@ -86,8 +100,11 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: Wrap(
-                      runSpacing: 20,
-                      spacing: 50,
+                      // runSpacing: 20,
+                      // spacing: 50,
+                      runSpacing: 16,
+                      spacing: isHighScale ? 16 : 24,
+                      crossAxisAlignment: WrapCrossAlignment.end,
                       children: [
                         SizedBox(
                           width: fieldWidth,
@@ -151,9 +168,10 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                             Text(AppText.transactionDate,
                                 style: mozillaTextSemiBoldText(
                                     context: context, fontSize: 13)),
+                            const SizedBox(height: 5),
                             SizedBox(
                               width: fieldWidth,
-                              height: 30,
+                              height: 35,
                               child: KeyboardDatePicker(
                                 initialDate: DateTime.now(),
                                 onChanged: (date) {
@@ -174,6 +192,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                           borderRadius: 4,
                           controller: controller.commissionController,
                           width: fieldWidth,
+                          height: 35,
                           hintText: AppText.commission,
                           columnText: true,
                           keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -185,6 +204,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                           borderRadius: 4,
                           controller: controller.pdaRentController,
                           width: fieldWidth,
+                          height: 35,
                           hintText: AppText.pdaRent,
                           columnText: true,
                           keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -204,92 +224,260 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
             SizedBox(
               height: 10,
             ),
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              alignment: WrapAlignment.start,
-              runAlignment: WrapAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Text(AppText.from,
-                      style: mozillaTextSemiBoldText(
-                          context: context, fontSize: 13)
+            // Wrap(
+            //   crossAxisAlignment: WrapCrossAlignment.center,
+            //   alignment: WrapAlignment.start,
+            //   runAlignment: WrapAlignment.start,
+            //   children: [
+            //     Padding(
+            //       padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            //       child: Text(AppText.from,
+            //           style: mozillaTextSemiBoldText(
+            //               context: context, fontSize: 13)
+            //       ),
+            //     ),
+            //     SizedBox(
+            //       width: fieldWidth / 1.2,
+            //       height: 30,
+            //       child: KeyboardDatePicker(
+            //         initialDate: DateTime.now(),
+            //         onChanged: (date) {
+            //           controller.filterFromDate =
+            //               date.toIso8601String().split("T").first;
+            //           controller.update();
+            //         },
+            //         onSubmitted: (date) {
+            //           controller.filterFromDate =
+            //               date.toIso8601String().split("T").first;
+            //           controller.update();
+            //         },
+            //       ),
+            //     ),
+            //     SizedBox(width: 20),
+            //     Padding(
+            //       padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            //       child: Text(AppText.to,
+            //           style: mozillaTextSemiBoldText(
+            //               context: context, fontSize: 13)
+            //       ),
+            //     ),
+            //     SizedBox(
+            //       width: fieldWidth / 1.2,
+            //       height: 30,
+            //       child: KeyboardDatePicker(
+            //         initialDate: DateTime.now(),
+            //         onChanged: (date) {
+            //           controller.filterToDate =
+            //               date.toIso8601String().split("T").first;
+            //           controller.update();
+            //         },
+            //         onSubmitted: (date) {
+            //           controller.filterToDate =
+            //               date.toIso8601String().split("T").first;
+            //           controller.update();
+            //         },
+            //       ),
+            //     ),
+            //     Padding(
+            //       padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            //       child: Text(AppText.pt,
+            //           style: mozillaTextSemiBoldText(
+            //               context: context,
+            //               fontSize: 15,
+            //               fontWeight: FontWeight.bold,
+            //               color: DynamicColors.primaryClr)),
+            //     ),
+            //     if (controller.isLoadingPayments)
+            //       const Padding(
+            //         padding: EdgeInsets.symmetric(horizontal: 20),
+            //         child: SizedBox(
+            //             width: 20,
+            //             height: 20,
+            //             child: CircularProgressIndicator(strokeWidth: 2)),
+            //       )
+            //     else
+            //       ...?controller.paymentTypesModel?.paymentTypes
+            //           ?.map((payment) {
+            //         return InkWell(
+            //           onTap: () {
+            //             if (controller.selectedPaymentTypeIds
+            //                 .contains(payment.id)) {
+            //               controller.selectedPaymentTypeIds.remove(payment.id);
+            //             } else {
+            //               controller.selectedPaymentTypeIds.add(payment.id!);
+            //             }
+            //             controller.update();
+            //           },
+            //           child: Padding(
+            //             padding: const EdgeInsets.only(right: 20.0),
+            //             child: Row(
+            //               mainAxisSize: MainAxisSize.min,
+            //               children: [
+            //                 Checkbox(
+            //                   visualDensity: VisualDensity.compact,
+            //                   value: controller.selectedPaymentTypeIds
+            //                       .contains(payment.id),
+            //                   onChanged: (v) {
+            //                     if (v == true) {
+            //                       controller.selectedPaymentTypeIds
+            //                           .add(payment.id!);
+            //                     } else {
+            //                       controller.selectedPaymentTypeIds
+            //                           .remove(payment.id);
+            //                     }
+            //                     controller.update();
+            //                   },
+            //                 ),
+            //                 Padding(
+            //                   padding: const EdgeInsets.only(left: 5.0),
+            //                   child: Text(
+            //                     payment.name?.toUpperCase() ?? "",
+            //                     style: mozillaTextSemiBoldText(
+            //                       context: context,
+            //                       fontSize: 15,
+            //                       fontWeight: FontWeight.bold,
+            //                       color: DynamicColors.primaryClr,
+            //                     ),
+            //                   ),
+            //                 ),
+            //               ],
+            //             ),
+            //           ),
+            //         );
+            //       }).toList(),
+            //     SizedBox(
+            //       width: 50,
+            //     ),
+            //     Padding(
+            //       padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            //       child: CustomButton(
+            //         height: 30,
+            //         borderRadius: 6,
+            //         width: 80,
+            //         verticalPadding: 0.0,
+            //         btnText: AppText.filter,
+            //         btnColor: DynamicColors.primaryClr,
+            //         style: mozillaTextSemiBoldText(
+            //             fontSize: 13, color: DynamicColors.whiteClr),
+            //         onTap: () {
+            //           controller.getDriverCommissionByFilter();
+            //         },
+            //       ),
+            //     ),
+            //     SizedBox(width: 20),
+            //     CustomButton(
+            //       height: 30,
+            //       borderRadius: 6,
+            //       width: 80,
+            //       verticalPadding: 0.0,
+            //       btnText: AppText.save,
+            //       btnColor: DynamicColors.primaryClr,
+            //       style: mozillaTextSemiBoldText(
+            //           fontSize: 13, color: DynamicColors.whiteClr),
+            //       onTap: () {
+            //         controller.saveDriverCommission();
+            //       },
+            //     ),
+            //   ],
+            // ),
+            // SizedBox(
+            //   height: 10,
+            // ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                alignment: WrapAlignment.start,
+                runAlignment: WrapAlignment.start,
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(AppText.from,
+                          style: mozillaTextSemiBoldText(
+                              context: context, fontSize: 13)
+                      ),
+                      const SizedBox(width: 8),
+                      SizedBox(
+                        width: isMobile ? 120 : fieldWidth / 1.5,
+                        height: 30,
+                        child: KeyboardDatePicker(
+                          initialDate: DateTime.now(),
+                          onChanged: (date) {
+                            controller.filterFromDate =
+                                date.toIso8601String().split("T").first;
+                            controller.update();
+                          },
+                          onSubmitted: (date) {
+                            controller.filterFromDate =
+                                date.toIso8601String().split("T").first;
+                            controller.update();
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                SizedBox(
-                  width: fieldWidth / 1.2,
-                  height: 30,
-                  child: KeyboardDatePicker(
-                    initialDate: DateTime.now(),
-                    onChanged: (date) {
-                      controller.filterFromDate =
-                          date.toIso8601String().split("T").first;
-                      controller.update();
-                    },
-                    onSubmitted: (date) {
-                      controller.filterFromDate =
-                          date.toIso8601String().split("T").first;
-                      controller.update();
-                    },
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(AppText.to,
+                          style: mozillaTextSemiBoldText(
+                              context: context, fontSize: 13)
+                      ),
+                      const SizedBox(width: 8),
+                      SizedBox(
+                        width: isMobile ? 120 : fieldWidth / 1.5,
+                        height: 30,
+                        child: KeyboardDatePicker(
+                          initialDate: DateTime.now(),
+                          onChanged: (date) {
+                            controller.filterToDate =
+                                date.toIso8601String().split("T").first;
+                            controller.update();
+                          },
+                          onSubmitted: (date) {
+                            controller.filterToDate =
+                                date.toIso8601String().split("T").first;
+                            controller.update();
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                SizedBox(width: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Text(AppText.to,
-                      style: mozillaTextSemiBoldText(
-                          context: context, fontSize: 13)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(AppText.pt,
+                          style: mozillaTextSemiBoldText(
+                              context: context,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: DynamicColors.primaryClr)),
+                    ],
                   ),
-                ),
-                SizedBox(
-                  width: fieldWidth / 1.2,
-                  height: 30,
-                  child: KeyboardDatePicker(
-                    initialDate: DateTime.now(),
-                    onChanged: (date) {
-                      controller.filterToDate =
-                          date.toIso8601String().split("T").first;
-                      controller.update();
-                    },
-                    onSubmitted: (date) {
-                      controller.filterToDate =
-                          date.toIso8601String().split("T").first;
-                      controller.update();
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Text(AppText.pt,
-                      style: mozillaTextSemiBoldText(
-                          context: context,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: DynamicColors.primaryClr)),
-                ),
-                if (controller.isLoadingPayments)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2)),
-                  )
-                else
-                  ...?controller.paymentTypesModel?.paymentTypes
-                      ?.map((payment) {
-                    return InkWell(
-                      onTap: () {
-                        if (controller.selectedPaymentTypeIds
-                            .contains(payment.id)) {
-                          controller.selectedPaymentTypeIds.remove(payment.id);
-                        } else {
-                          controller.selectedPaymentTypeIds.add(payment.id!);
-                        }
-                        controller.update();
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 20.0),
+                  if (controller.isLoadingPayments)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2)),
+                    )
+                  else
+                    ...?controller.paymentTypesModel?.paymentTypes
+                        ?.map((payment) {
+                      return InkWell(
+                        onTap: () {
+                          if (controller.selectedPaymentTypeIds
+                              .contains(payment.id)) {
+                            controller.selectedPaymentTypeIds.remove(payment.id);
+                          } else {
+                            controller.selectedPaymentTypeIds.add(payment.id!);
+                          }
+                          controller.update();
+                        },
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -309,12 +497,12 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                               },
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(left: 5.0),
+                              padding: const EdgeInsets.only(left: 4.0, right: 8.0),
                               child: Text(
                                 payment.name?.toUpperCase() ?? "",
                                 style: mozillaTextSemiBoldText(
                                   context: context,
-                                  fontSize: 15,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                   color: DynamicColors.primaryClr,
                                 ),
@@ -322,15 +510,11 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                             ),
                           ],
                         ),
-                      ),
-                    );
-                  }).toList(),
-                SizedBox(
-                  width: 50,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: CustomButton(
+                      );
+                    }).toList(),
+
+                  // Action Buttons grouped properly
+                  CustomButton(
                     height: 30,
                     borderRadius: 6,
                     width: 80,
@@ -343,22 +527,21 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                       controller.getDriverCommissionByFilter();
                     },
                   ),
-                ),
-                SizedBox(width: 20),
-                CustomButton(
-                  height: 30,
-                  borderRadius: 6,
-                  width: 80,
-                  verticalPadding: 0.0,
-                  btnText: AppText.save,
-                  btnColor: DynamicColors.primaryClr,
-                  style: mozillaTextSemiBoldText(
-                      fontSize: 13, color: DynamicColors.whiteClr),
-                  onTap: () {
-                    controller.saveDriverCommission();
-                  },
-                ),
-              ],
+                  CustomButton(
+                    height: 30,
+                    borderRadius: 6,
+                    width: 80,
+                    verticalPadding: 0.0,
+                    btnText: AppText.save,
+                    btnColor: DynamicColors.primaryClr,
+                    style: mozillaTextSemiBoldText(
+                        fontSize: 13, color: DynamicColors.whiteClr),
+                    onTap: () {
+                      controller.saveDriverCommission();
+                    },
+                  ),
+                ],
+              ),
             ),
             SizedBox(
               height: 10,
