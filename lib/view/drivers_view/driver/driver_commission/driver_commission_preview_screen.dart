@@ -126,7 +126,7 @@ class DriverCommissionViewScreen extends StatelessWidget {
                   flex: 3,
                   child: _buildUIInfoColumn("", [
                     "DRIVER: (${data?.driver?.id ?? ""})",
-                    "${(data?.driver?.name ?? "").toUpperCase()}",
+                    ((data?.driver?.name ?? "").toUpperCase()),
                     "COMMISSION: ${data?.driver?.driverCommission ?? ""}%",
                     "DATE: ${controller.updateTransactionDateController}",
                   ], ),
@@ -139,7 +139,7 @@ class DriverCommissionViewScreen extends StatelessWidget {
             Table(
               border: tableBorder,
               columnWidths: const {
-                0: FlexColumnWidth(1.2), 1: FlexColumnWidth(1.2),
+                0: FlexColumnWidth(1.2), 1: FlexColumnWidth(1.5),
                 2: FlexColumnWidth(3), 3: FlexColumnWidth(3),
                 13: FlexColumnWidth(1),
               },
@@ -159,12 +159,19 @@ class DriverCommissionViewScreen extends StatelessWidget {
                 ),
                 ...items.map((item) {
                   final b = item.booking;
+                  String cleanDate = (b?.pickupDate ?? "").toString().split(' ')[0];
+                  String cleanTime = (b?.pickupTime ?? "").toString().split('.')[0];
+                  if (cleanTime.contains(":")) {
+                    var parts = cleanTime.split(":");
+                    cleanTime = "${parts[0]}:${parts[1]}";
+                  }
+                  String formattedDateTime = "$cleanDate\n$cleanTime".trim();
                   return TableRow(
                     children: [
-                      _buildTableCell(b?.referenceNumber ?? ""), _buildTableCell("${b?.pickupDate ?? ''}\n${b?.pickupTime ?? ''}"),
-                      _buildTableCell((b?.pickup ?? "").toUpperCase()), _buildTableCell((b?.dropoff ?? "").toUpperCase()),
-                      _buildTableCell((b?.vehicleType?.name ?? "").toUpperCase()), _buildTableCell((b?.account?.name ?? "").toUpperCase()),
-                      _buildTableCell((b?.journeyType?.journeyType ?? "").toUpperCase()), _buildTableCell((b?.paymentType?.name ?? "").toUpperCase()),
+                      _buildTableCell(b?.referenceNumber ?? "", hasEllipsis: true), _buildTableCell(formattedDateTime.isEmpty ? "-" : formattedDateTime),
+                      _buildTableCell((b?.pickup ?? "").toUpperCase(), hasEllipsis: true), _buildTableCell((b?.dropoff ?? "").toUpperCase(), hasEllipsis: true),
+                      _buildTableCell((b?.vehicleType?.name ?? "").toUpperCase(), hasEllipsis: true), _buildTableCell((b?.account?.name ?? "").toUpperCase(), hasEllipsis: true),
+                      _buildTableCell((b?.journeyType?.journeyType ?? "").toUpperCase(), hasEllipsis: true), _buildTableCell((b?.paymentType?.name ?? "").toUpperCase(), hasEllipsis: true),
                       _buildTableCell("£${b?.fares ?? '0'}"), _buildTableCell("£${b?.parkingCharges ?? '0'}"),
                       _buildTableCell("£${b?.waitingCharges ?? '0'}"), _buildTableCell("£${b?.extraDropCharges ?? '0'}"),
                       _buildTableCell("£${b?.congestionCharges ?? '0'}"),
@@ -182,25 +189,25 @@ class DriverCommissionViewScreen extends StatelessWidget {
               children: [
                 const Spacer(flex: 8),
                 Expanded(
-                  flex: 2,
+                  flex: 3,
                   child: Column(
                     children: [
-                      _buildFooterRowPlain("CASH TOTAL", controller.updateCashTotalValue),
-                      _buildFooterRowPlain("COMMISSION TOTAL", controller.updateTotalCommissionVar),
-                      _buildFooterRowPlain("OWED", controller.updateOwedVar),
-                      _buildFooterRowPlain("TOTAL", controller.updateGrandTotalVar, isBold: true),
+                      _buildFooterRowPlain("CASH TOTAL:", controller.updateCashTotalValue),
+                      _buildFooterRowPlain("COMMISSION TOTAL:", controller.updateTotalCommissionVar),
+                      _buildFooterRowPlain("OWED:", controller.updateOwedVar),
+                      _buildFooterRowPlain("TOTAL:", controller.updateGrandTotalVar, isBold: true),
                     ],
                   ),
                 ),
 
                 const SizedBox(width: 50),
                 Expanded(
-                  flex: 2,
+                  flex: 3,
                   child: Column(
                     children: [
-                      _buildFooterRowPlain("ACCOUNT W/COMM TOTAL", controller.updateAccountFareTotalVar),
-                      _buildFooterRowPlain("ACCOUNT WO/COMM TOTAL", controller.updateAccountWOCmmVar),
-                      _buildFooterRowPlain("PARKING & CONGESTION CHARGES", controller.updateParkingCongestionVar),
+                      _buildFooterRowPlain("ACCOUNT W/COMM TOTAL:", controller.updateAccountFareTotalVar),
+                      _buildFooterRowPlain("ACCOUNT WO/COMM TOTAL:", controller.updateAccountWOCmmVar),
+                      _buildFooterRowPlain("PARKING & CONGESTION CHARGES:", controller.updateParkingCongestionVar),
                     ],
                   ),
                 ),
@@ -215,36 +222,95 @@ class DriverCommissionViewScreen extends StatelessWidget {
   }
 
   // Helper for footer row
+  // Widget _buildFooterRowPlain(String label, double value, {bool isBold = false}) {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(vertical: 4),
+  //     child: Row(
+  //       children: [
+  //         Expanded(
+  //           flex: 2,
+  //           child: Text(label, style: TextStyle(fontSize: 15, fontWeight: isBold ? FontWeight.bold : FontWeight.w600)),
+  //         ),
+  //         Text("£${value.toStringAsFixed(2)}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+  //       ],
+  //     ),
+  //   );
+  // }
   Widget _buildFooterRowPlain(String label, double value, {bool isBold = false}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 2,
-            child: Text(label, style: TextStyle(fontSize: 15, fontWeight: isBold ? FontWeight.bold : FontWeight.w600)),
-          ),
-          Text("£${value.toStringAsFixed(2)}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-        ],
-      ),
+    return Builder(
+        builder: (context) {
+          bool isLaptop = MediaQuery.of(context).size.width <= 1366;
+
+          double labelFontSize = isBold ? (isLaptop ? 12.0 : 15.0) : (isLaptop ? 11.0 : 14.0);
+          double valueFontSize = isLaptop ? 11.0 : 14.0;
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          fontSize: labelFontSize,
+                          fontWeight: isBold ? FontWeight.bold : FontWeight.w600
+                      )
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                    "£${value.toStringAsFixed(2)}",
+                    style: TextStyle(
+                        fontSize: valueFontSize,
+                        fontWeight: FontWeight.bold
+                    )
+                ),
+              ],
+            ),
+          );
+        }
     );
   }
 
-  Widget _buildTableCell(String text, {bool isHeader = false, bool isBold = false}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-      child: Text(text, textAlign: TextAlign.center, style: TextStyle(fontSize: isHeader ? 15 : 13, fontWeight: (isHeader || isBold) ? FontWeight.bold : FontWeight.normal, color: isHeader ? Colors.white : Colors.black)),
-    );
-  }
+  Widget _buildTableCell(String text, {bool isHeader = false, bool isBold = false, bool hasEllipsis = false}) {
+    return Builder(
+        builder: (context) {
+          bool isLaptop = MediaQuery.of(context).size.width <= 1366;
 
-  TableRow _buildFooterRow(String label, double value, {bool isBold = false, bool isRed = false}) {
-    return TableRow(
-      children: [
-        Container(alignment: Alignment.centerRight, padding: const EdgeInsets.only(right: 15, top: 6, bottom: 6), child: Text(label, style: TextStyle(fontSize: 14, fontWeight: isBold ? FontWeight.bold : FontWeight.w500))),
-        Container(alignment: Alignment.center, padding: const EdgeInsets.symmetric(vertical: 6), child: Text("£${value.toStringAsFixed(2)}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: isRed ? Colors.red : Colors.black))),
-      ],
+          double finalFontSize = isHeader ? (isLaptop ? 11.0 : 14.0) : (isLaptop ? 10.0 : 12.0);
+          double vPadding = isLaptop ? 4.0 : 8.0;
+          double hPadding = isLaptop ? 2.0 : 4.0;
+
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: vPadding, horizontal: hPadding),
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              maxLines: isHeader ? 2 : (hasEllipsis ? 1 : 3),
+              overflow: hasEllipsis ? TextOverflow.ellipsis : TextOverflow.clip,
+              style: TextStyle(
+                  fontSize: finalFontSize,
+                  fontWeight: (isHeader || isBold) ? FontWeight.bold : FontWeight.normal,
+                  color: isHeader ? Colors.white : Colors.black
+              ),
+            ),
+          );
+        }
     );
   }
+  // Widget _buildTableCell(String text, {bool isHeader = false, bool isBold = false, bool hasEllipsis = false}) {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+  //     child: Text(text, textAlign: TextAlign.center,
+  //         maxLines: isHeader ? 2 : (hasEllipsis ? 1 : 3),
+  //         overflow: hasEllipsis ? TextOverflow.ellipsis : TextOverflow.clip,
+  //         style: TextStyle(fontSize: isHeader ? 15 : 13, fontWeight: (isHeader || isBold) ? FontWeight.bold : FontWeight.normal, color: isHeader ? Colors.white : Colors.black)),
+  //   );
+  // }
 
   Widget _buildUIInfoColumn(String title, List<String> lines, {bool alignEnd = false}) {
     return Column(

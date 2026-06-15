@@ -184,8 +184,9 @@ class _DriverCommissionState extends State<DriverCommission> {
                           (c) => c.driverId == driverItem.driverId,
                           orElse: () => Count(lastModified: "-"),
                         );
+                        String cleanLastModified = (countItem.lastModified ?? "-").toString().split(' ')[0].split('T')[0];
                         return DataCell(
-                          Center(child: Text(countItem.lastModified ?? "-")),
+                          Center(child: Text(cleanLastModified.isEmpty ? "-" : cleanLastModified)),
                           onTap: () async {
                             await controller.getDriverCommissionDetails(driverItem.driverId);
                             DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
