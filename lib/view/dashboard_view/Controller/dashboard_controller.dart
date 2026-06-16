@@ -898,45 +898,92 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     // if (polyLineMarkerInfo.length == 1) {
     //   return;
     // }
-// add via points as markers
-    for (var item in viaPoints) {
-      viaMiles = true;
-      final p = LatLng(item.lat, item.lng);
-      tempPoints.add(p);
+// // add via points as markers
+//     for (var item in viaPoints) {
+//       viaMiles = true;
+//       final p = LatLng(item.lat, item.lng);
+//       tempPoints.add(p);
 
-      // Fixed color for via points
-      final viaColor = item.withReturnWay == "via" ? DynamicColors.primaryClr : Colors.pink;
+//       // Fixed color for via points
+//       final viaColor = item.withReturnWay == "via" ? DynamicColors.primaryClr : Colors.pink;
 
-      markers.add(
-        CustomMarker(
-          withReturnType: item.withReturnWay == "via" ? "via" : 'via with return',
-          type: "via",
-          point: p,
-          width: 30,  // Size thoda bada kiya hai taake text fit aaye
-          height: 30,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Icon(Icons.location_on, color: viaColor, size: 30),
-              Positioned(
-                top: 6,
-                child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                  constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
-                  child: Center(
-                    child: Text(
-                      "V", // Via points ke liye 'V'
-                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: viaColor),
-                    ),
-                  ),
+      // markers.add(
+      //   CustomMarker(
+      //     withReturnType: item.withReturnWay == "via" ? "via" : 'via with return',
+      //     type: "via",
+      //     point: p,
+      //     width: 30,  // Size thoda bada kiya hai taake text fit aaye
+      //     height: 30,
+      //     child: Stack(
+      //       alignment: Alignment.center,
+      //       children: [
+      //         Icon(Icons.location_on, color: viaColor, size: 30),
+      //         Positioned(
+      //           top: 6,
+      //           child: Container(
+      //             padding: const EdgeInsets.all(2),
+      //             decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+      //             constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+      //             child: Center(
+      //               child: Text(
+      //                 "V${index + 1}" , // Via points ke liye 'V'
+      //                 style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: viaColor),
+      //               ),
+      //             ),
+      //           ),
+      //         ),
+      //       ],
+      //     ),
+      //   ),
+      // );
+for (var entry in viaPoints.asMap().entries) {
+  int index = entry.key;
+  var item = entry.value;
+
+  viaMiles = true;
+
+  final p = LatLng(item.lat, item.lng);
+  tempPoints.add(p);
+
+  final viaColor =
+      item.withReturnWay == "via" ? DynamicColors.primaryClr : Colors.pink;
+
+  markers.add(
+    CustomMarker(
+      withReturnType:
+          item.withReturnWay == "via" ? "via" : 'via with return',
+      type: "via",
+      point: p,
+      width: 30,
+      height: 30,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Icon(Icons.location_on, color: viaColor, size: 30),
+          Positioned(
+            top: 6,
+            child: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              child: Text(
+                "V${index + 1}", // ✅ V1, V2, V3 FIXED
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: viaColor,
                 ),
               ),
-            ],
+            ),
           ),
-        ),
-      );
-    }
+        ],
+      ),
+    ),
+  );
+}
+    
 
 // add other marker info (pickup / drop / create booking ...)
     if (polyLineMarkerInfo.isNotEmpty) {
