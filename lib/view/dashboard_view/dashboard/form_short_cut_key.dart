@@ -150,6 +150,10 @@ class FormShortCutKey extends StatelessWidget {
                           opaque: true,
                           child: GestureDetector(
                             onTap: () {
+                              controller.dropDownShow.value = true;
+                              controller.selectedTextFieldsValue
+                                  .value =
+                                  "via";
                               showDialog(
                                   context: context,
                                   builder: (_) =>

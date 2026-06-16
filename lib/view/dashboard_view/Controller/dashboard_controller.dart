@@ -1148,6 +1148,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
         print("retrun hit");
         tempStoreReturnMils = (double.parse(totalDistance.value)-double.parse(tempStoreMils.toString())).toString();
       }
+
       viaMiles = false;
       print("one way mils :- $tempStoreMils");
       print("retrun mils :- $tempStoreReturnMils");
