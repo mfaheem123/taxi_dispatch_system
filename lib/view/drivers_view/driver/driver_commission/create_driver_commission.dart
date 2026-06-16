@@ -74,12 +74,12 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
         }
 
         // final double fieldWidth = isMobile
-        //     ? maxWidth * 0.9 // almost full width on mobile
+        //     ? maxWidth * 0.9
         //     : isTablet
-        //         ? 200 // smaller fixed size on tablet
+        //         ? 200
         //         : isLaptop
-        //             ? 250 // medium size on laptop
-        //             : 330; // larger on LCD
+        //             ? 250
+        //             : 330;
         print(fieldWidth);
         return Column(
           children: [
@@ -119,7 +119,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                                       context: context, fontSize: 13)),
                               const SizedBox(height: 5),
                               Container(
-                                height: 35,
+                                height: 30,
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 10),
                                 decoration: BoxDecoration(
@@ -174,7 +174,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                             const SizedBox(height: 5),
                             SizedBox(
                               width: fieldWidth,
-                              height: 35,
+                              height: 30,
                               child: KeyboardDatePicker(
                                 initialDate: DateTime.now(),
                                 onChanged: (date) {
@@ -195,7 +195,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                           borderRadius: 4,
                           controller: controller.commissionController,
                           width: fieldWidth,
-                          height: 35,
+                          height: 30,
                           hintText: AppText.commission,
                           columnText: true,
                           keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -207,7 +207,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                           borderRadius: 4,
                           controller: controller.pdaRentController,
                           width: fieldWidth,
-                          height: 35,
+                          height: 30,
                           hintText: AppText.pdaRent,
                           columnText: true,
                           keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -793,7 +793,9 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
             //           ),
             //         ),
             //       ),
-            SingleChildScrollView(
+        controller.isFilterLoading
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: ResponsiveDataTableWidget(
                 totalWidth: totalAvailableWidth,
