@@ -507,6 +507,30 @@ Future<void> setupWebNotifications() async {
           );
         }
       }
+      else if (type == 'NEW_IVR_BOOKING') {
+        String bookingId = message.data['booking_id'] ?? "";
+        String bookingMode = message.data['booking_mode'] ?? "N/A";
+
+        Get.dialog(
+          NewBookingAlert(
+            bookingId: bookingId,
+            bookingMode: bookingMode,
+            bookingType: 'IVR', // Pass APP type
+          ),
+          barrierColor: Colors.black54,
+          barrierDismissible: false,
+        );
+
+        if (isForeground) {
+          BotToast.showSimpleNotification(
+            title: message.notification?.title ?? " New Booking Received",
+            subTitle: message.notification?.body ?? "Booking ID: $bookingId",
+            backgroundColor: Colors.blue,
+            titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            duration: const Duration(seconds: 15),
+          );
+        }
+      }
 
       // 4. NEW_WEB_BOOKING
       else if (type == 'NEW_WEB_BOOKING') {
@@ -670,7 +694,7 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
         final responseData = json.decode(response.body);
         BotToast.showText(
           text: responseData['message'] ?? "Booking Dispatched Successfully",
-          backgroundColor: Colors.green,
+          // backgroundColor: Colors.green,
         );
         Get.back();
       } else {
@@ -703,8 +727,13 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
     bool isAsapMode = widget.bookingMode.toUpperCase() == 'ASAP';
 
     // Title ko dynamic karne ke liye string check lagayi hai
+    // String alertTitle = widget.bookingType == 'WEB'
+    //     ? "New WEB Booking Alert ($referenceNumber)"
+    //     : "New APP Booking Alert ($referenceNumber)";
     String alertTitle = widget.bookingType == 'WEB'
         ? "New WEB Booking Alert ($referenceNumber)"
+        : widget.bookingType == 'IVR'
+        ? "New IVR Booking Alert ($referenceNumber)"
         : "New APP Booking Alert ($referenceNumber)";
 
     return AlertDialog(

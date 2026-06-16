@@ -863,6 +863,7 @@ class DriverController extends GetxController {
           waitingAfterArrivalValue.value = feat.waitingAfterArrival ?? false;
           disablePanicButtonValue.value = feat.disablePanicButon ?? false;
           showNavigationValue.value = feat.showNavigation ?? false;
+          showSwipeArriveValue.value = feat.showStaNear500Yards ?? false;
           shawFareValue.value = feat.showFare ?? false;
           hasCompanyCarValue.value = feat.hasCompanyCar ?? false;
           hidePaymentTypeValue.value = feat.hidePaymentType ?? false;
@@ -915,6 +916,7 @@ class DriverController extends GetxController {
       "waiting_after_arrival": waitingAfterArrivalValue.value,
       "disable_panic_buton": disablePanicButtonValue.value,
       "show_navigation": showNavigationValue.value,
+      "show_sta_near_500_yards" :showSwipeArriveValue.value,
       "show_fare": shawFareValue.value,
       "has_company_car": hasCompanyCarValue.value,
       "hide_payment_type": hidePaymentTypeValue.value,
