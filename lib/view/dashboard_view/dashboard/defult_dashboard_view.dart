@@ -535,7 +535,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.returnFareValue = "0";
                                                                       controller.slugController.clear();
                                                                       controller.slugControllerReturn.clear();
-                                                                      controller.tempStoreMils = null;
+                                                                      // controller.tempStoreMils = null;
 
                                                                       controller.fetchRouteFromOSRM();
                                                                       FocusScope.of(Get.context!).requestFocus(controller.pickupTextFieldFocusNode);
@@ -952,15 +952,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       if (dropOffMarkerIndex >= 0) {
                                                                         controller.markers.removeAt(dropOffMarkerIndex);
                                                                       }
-
-                                                                      // int index = controller.markers.indexWhere((test) => test.type == "pickup");
-                                                                      // int index2 = controller.markers.indexWhere((test) => test.type == "dropOff");
-                                                                      // int indexx = controller.polyLineMarkerInfo.indexWhere(((element) => element.markerType == "pickup"));
-                                                                      // int indexx2 = controller.polyLineMarkerInfo.indexWhere(((element) => element.markerType == "dropOff"));
-                                                                      // controller.polyLineMarkerInfo.remove(controller.polyLineMarkerInfo[indexx]);
-                                                                      // controller.polyLineMarkerInfo.remove(controller.polyLineMarkerInfo[indexx2]);
-                                                                      // controller.markers.remove(controller.markers[index]);
-                                                                      // controller.markers.remove(controller.markers[index2]);
                                                                       controller.pickupController.clear();
                                                                       controller.dropOffController.clear();
                                                                       controller.dropDownShow.value = false;
@@ -1352,6 +1343,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.pickUpDate = date;
                                                                       controller.getFaresCalculation();
                                                                       controller.dropDownShow.value = false;
+
                                                                     },
                                                                     onSubmitted: (date) {
                                                                       print("User pressed enter: $date");
@@ -1759,7 +1751,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             // controller.tempStoreMils = null;
 
                                                                             // 4. Route ko recalculate karein (Yeh ab bache hue 1st pickup/dropoff ka route banayega)
-                                                                            controller.fetchRouteFromOSRM();
+                                                                            // controller.fetchRouteFromOSRM();
 
                                                                             controller.update();
                                                                           },
@@ -2098,7 +2090,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             // }
 
                                                                             // 3. Fares aur temporaries reset
-                                                                            // controller.tempStoreMils = null;
+                                                                            controller.tempStoreMils = null;
                                                                             // // controller.fixedFare.value = "0";
                                                                             controller.returnFareValue = "";
                                                                             controller.tempStoreReturnMils = null;

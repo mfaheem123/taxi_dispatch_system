@@ -151,7 +151,7 @@ class _SuggestionViewState extends State<SuggestionView> {
 }
 
 
-//
+
 // class _SuggestionViewState extends State<SuggestionView> {
 //
 //   SuggestionController controller = Get.isRegistered<SuggestionController>()

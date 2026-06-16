@@ -940,8 +940,14 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
 // add other marker info (pickup / drop / create booking ...)
     if (polyLineMarkerInfo.isNotEmpty) {
+
       for (var item in polyLineMarkerInfo) {
         final p = LatLng(item.lat, item.lng);
+        print("===== ROUTE CALLED =====");
+        for (var e in polyLineMarkerInfo) {
+          print(e.markerType);
+        }
+        print("========================");
 
         if (item.markerType == "PICKUP LOCATION" || item.markerType == "Create Booking PICKUP") {
           tempPoints.add(p);
@@ -1064,6 +1070,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
             ),
           );
         }
+
       }
     }
 
@@ -1136,7 +1143,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
             CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
         mapController.fitCamera(cameraFit);
       }
-      if(tempStoreMils == null || viaMiles == true){
+      if(tempStoreMils == null  ){
         tempStoreMils = totalDistance.value;
         if(tempStoreReturnMils != null){
           tempStoreMils = (double.parse(totalDistance.value)-double.parse(tempStoreReturnMils.toString())).toString();
@@ -1148,6 +1155,25 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
         print("retrun hit");
         tempStoreReturnMils = (double.parse(totalDistance.value)-double.parse(tempStoreMils.toString())).toString();
       }
+      // bool isReturnJourney =
+      //     pickupTwoWayController.text.isNotEmpty &&
+      //         dropOffTwoWayController.text.isNotEmpty;
+      //
+      // if (tempStoreMils == null || !isReturnJourney) {
+      //
+      //   tempStoreMils = totalDistance.value;
+      //
+      // } else {
+      //
+      //   print("RETURN HIT");
+      //
+      //   tempStoreReturnMils =
+      //       (double.parse(totalDistance.value) -
+      //           double.parse(tempStoreMils!))
+      //           .toString();
+      //
+      //   print("Return Miles = $tempStoreReturnMils");
+      // }
 
       viaMiles = false;
       print("one way mils :- $tempStoreMils");
@@ -1158,7 +1184,6 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       // }
 
       final storedTemFare = await getFares(
-          // day: ,
           journeyTypeId: selectJourneyTypeValue!.id,
           multiReservationList: multiReservationList,
           pickup: pickupController.text,
@@ -1171,16 +1196,32 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           vehicleTypeId: selectVehicleValue!.id,
           withReturnPickUp: pickupTwoWayController.text.isEmpty?null: pickupTwoWayController.text,
           withReturnDropOff: dropOffTwoWayController.text.isEmpty?null: dropOffTwoWayController.text,
-          returnMiles: dropOffTwoWayController.text.isNotEmpty && dropOffTwoWayController.text.isNotEmpty? (double.parse(totalDistance.value)-double.parse(tempStoreMils.toString())).toString() : null,
+          // returnMiles: tempStoreReturnMils,
+          returnMiles: dropOffTwoWayController.text.isNotEmpty && pickupTwoWayController.text.isNotEmpty? (double.parse(totalDistance.value)-double.parse(tempStoreMils.toString())).toString() : null,
       );
       var fareValue = jsonDecode(storedTemFare);
       fixedFare.value = fareValue== null?"0": fareValue['total_fare'].toString();
       returnFareValue = fareValue== null?"0": fareValue['return_fare'].toString();
       slugControllerReturn.text = fareValue== null?"0": fareValue['return_fare'].toString();
       slugController.text = fareValue== null?"0": fareValue['fare'].toString();
-      update();
-    } else {
-      print("❌ OSRM error: ${res.statusCode}");
+      // var fareValue = jsonDecode(storedTemFare);
+//
+//       fixedFare.value =
+//           fareValue?['total_fare']?.toString() ?? "0";
+//
+//       returnFareValue =
+//           fareValue?['return_fare']?.toString() ?? "0";
+//
+// // R/Fare field
+//       slugControllerReturn.text =
+//           returnFareValue ?? "0";
+//
+// // Fare field
+//       slugController.text =
+//           fareValue?['fare']?.toString() ?? "0";
+//       update();
+//     } else {
+//       print("❌ OSRM error: ${res.statusCode}");
     }
   }
 
@@ -1883,7 +1924,12 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get Fare API
   getFaresCalculation() async{
-
+    print("====== BEFORE GET FARE ======");
+    print("viaPoints = ${viaPoints.length}");
+    print("viaMiles = $viaMiles");
+    print("tempStoreMils = $tempStoreMils");
+    print("tempStoreReturnMils = $tempStoreReturnMils");
+    print("=============================");
    final storedTemFare = await getFares(
       // day: ,
       journeyTypeId: selectJourneyTypeValue!.id,
@@ -1916,7 +1962,7 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
         // selectVehicleValueReturn
         returnCompanyPrice: companyPriceController.text.isEmpty?null: companyPriceController.text,
       returnParkingCharges: returnCompanyPriceController.text.isEmpty?null: returnCompanyPriceController.text,
-     returnMiles: dropOffTwoWayController.text.isNotEmpty && dropOffTwoWayController.text.isNotEmpty? (double.parse(totalDistance.value)-double.parse(tempStoreMils.toString())).toString() : null,
+     returnMiles: dropOffTwoWayController.text.isNotEmpty && pickupTwoWayController.text.isNotEmpty? (double.parse(totalDistance.value)-double.parse(tempStoreMils.toString())).toString() : null,
    );
     var fareValue = jsonDecode(storedTemFare);
     fixedFare.value = fareValue['total_fare'].toString();
