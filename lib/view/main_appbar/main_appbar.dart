@@ -432,14 +432,53 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         ),
       
-                        SizedBox(width: screenWidth * 0.31),
+                        SizedBox(width: screenWidth * 0.18),
                         // 4. Copyright Text
                         Text(
                           "NEXUS © 2026",
                           style: mozillaTextRegularText(
                               color: Colors.grey, fontSize: 12),
                         ),
-                        SizedBox(width: screenWidth * 0.3),
+                        SizedBox(width: screenWidth * 0.02),
+                        GestureDetector(
+                          onTap: () {
+                            controller.currentPage.value =
+                                const ChatWithDriverAndPassenger();
+                            controller.menuBarRefresh(
+                              title: "MESSAGES",
+                              pageName: const ChatWithDriverAndPassenger(),
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE8F2EF),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  color: const Color(0xFFC4D9D4),
+                                  width: 1),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.message,
+                                  size: 16,
+                                  color: Color(0xff424899),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  "MESSAGES",
+                                  style: mozillaTextRegularText(
+                                      color: const Color(0xFF4A4A4A),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: screenWidth * 0.18),
       
                         // 3. Date & Time
                         Text(
