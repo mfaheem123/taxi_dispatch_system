@@ -989,12 +989,12 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       print("via is $tempStoreViaMils");
       print("one way is $tempStoreMils");
       print("with return is $tempStoreReturnMils");
-      final double returnMils =
+      final double oneWayMils =
           double.tryParse(tempStoreMils ?? '') ?? 0.0;
 
-      final double storeMils =
+      final double storeViaMils =
           double.tryParse(tempStoreViaMils ?? '') ?? 0.0;
-      String postMils = (returnMils + storeMils).toString();
+      String postMils = (oneWayMils + storeViaMils).toString();
 
       print("postMils$postMils");
 

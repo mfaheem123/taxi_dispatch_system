@@ -2,6 +2,7 @@
 
 
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -150,16 +151,20 @@ class FormShortCutKey extends StatelessWidget {
                           opaque: true,
                           child: GestureDetector(
                             onTap: () {
-                              controller.viaMilsCondition = true;
-                              controller.dropDownShow.value = true;
-                              controller.selectedTextFieldsValue
-                                  .value =
-                                  "via";
-
-                              showDialog(
-                                  context: context,
-                                  builder: (_) =>
-                                      ViaLocation());
+                              if(controller.pickupController.text.isNotEmpty &&
+                                  controller.dropOffController.text.isNotEmpty){
+                                controller.viaMilsCondition = true;
+                                controller.dropDownShow.value = true;
+                                controller.selectedTextFieldsValue
+                                    .value =
+                                "via";
+                                showDialog(
+                                    context: context,
+                                    builder: (_) =>
+                                        ViaLocation());
+                              }else{
+                                BotToast.showText(text: "Please enter pickup and dropoff location");
+                              }
                             },
                             child: Container(
                               // margin: EdgeInsets.symmetric(
