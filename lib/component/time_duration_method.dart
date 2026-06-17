@@ -1,5 +1,3 @@
-
-
 import 'dart:convert';
 
 import 'package:bot_toast/bot_toast.dart';
@@ -28,7 +26,6 @@ String formatCreatedAt(DateTime dateTime) {
   return DateFormat('dd-MM-yy HH:mm').format(dateTime);
 }
 
-
 String formatDurationss(Duration duration) {
   int hours = duration.inHours;
   int minutes = duration.inMinutes % 60;
@@ -38,7 +35,6 @@ String formatDurationss(Duration duration) {
       "${minutes.toString().padLeft(2, '0')}:"
       "${seconds.toString().padLeft(2, '0')}";
 }
-
 
 Future<String> getFares({
   dynamic miles,
@@ -63,7 +59,6 @@ Future<String> getFares({
   String? companyPrice,
   List<MultiReservation>? multiReservationList,
   int? journeyTypeId,
-
   String? withReturnPickUp,
   String? withReturnDropOff,
   String? returnPickupDate,
@@ -83,7 +78,7 @@ Future<String> getFares({
     return "0";
   }
 
-  if(pickupTime == null){
+  if (pickupTime == null) {
     BotToast.showText(text: "Please select time");
     return "0";
   }
@@ -96,7 +91,8 @@ Future<String> getFares({
       if (element.startDate != null) {
         try {
           // Parse and format date safely
-          DateTime parsedDate = DateFormat('yyyy-M-d').parse(element.startDate!);
+          DateTime parsedDate =
+              DateFormat('yyyy-M-d').parse(element.startDate!);
           String tempDateStore = DateFormat('yyyy-MM-dd').format(parsedDate);
 
           multiReservationTemp.add({
@@ -111,7 +107,8 @@ Future<String> getFares({
       }
     }
   }
-  String tempMiles = journeyTypeId ==2?double.parse(miles.toString())*2: miles;
+  String tempMiles =
+      journeyTypeId == 2 ? double.parse(miles.toString()) * 2 : miles;
   // 3. Constructing Request Body
   // Using a Map<String, dynamic> and filtering nulls
   var formData = {
@@ -119,16 +116,17 @@ Future<String> getFares({
     if (pickupDate != null) "pickup_date": pickupDate,
     if (pickupTime != null) "pickup_time": pickupTime,
     if (vehicleTypeId != null) "vehicle_type_id": vehicleTypeId,
-    if (returnVehicleTypeId != null) "return_vehicle_type_id": returnVehicleTypeId,
+    if (returnVehicleTypeId != null)
+      "return_vehicle_type_id": returnVehicleTypeId,
     if (day != null) "day": day,
     if (pickUpPlotId != null) "pickup_plot_id": pickUpPlotId,
     if (returnpickUpPlotId != null) "return_pickup_plot_id": returnpickUpPlotId,
     if (dropoffPlotId != null) "dropoff_plot_id": dropoffPlotId,
-    if (returndropoffPlotId != null) "return_dropoff_plot_id": returndropoffPlotId,
+    if (returndropoffPlotId != null)
+      "return_dropoff_plot_id": returndropoffPlotId,
     if (pickup != null) "pickup": pickup,
     if (dropOff != null) "dropoff": dropOff,
     "journey_type_id": journeyTypeId,
-
 
     // Priority: Use multiReservationList if processed, otherwise fallback to multiReservation parameter
     if (multiReservationTemp.isNotEmpty)
@@ -145,22 +143,48 @@ Future<String> getFares({
     if (companyPrice != null) "company_price": companyPrice,
 
     /// waiting return fares
-    if(withReturnPickUp != null) "return_pickup": withReturnPickUp,
-    if(withReturnDropOff != null) "return_dropoff": withReturnDropOff,
-    if(withReturnPickUp != null && withReturnDropOff != null) "return_pickup_date": returnPickupDate,
-    if(withReturnPickUp != null && withReturnDropOff != null) "return_pickup_time": returnPickupTime,
-    if(withReturnPickUp != null && withReturnDropOff != null) "return_pickup_time": returnPickupTime,
-    if(withReturnPickUp != null && withReturnDropOff != null) "return_miles": returnMiles,
-    if(withReturnPickUp != null && withReturnDropOff != null && returnParkingCharges != null) "return_parking_charges": returnParkingCharges,
-    if(withReturnPickUp != null && withReturnDropOff != null && returnWaitingCharges != null) "return_waiting_charges": returnWaitingCharges,
-    if(withReturnPickUp != null && withReturnDropOff != null && returnMeetAndGreet != null) "return_meet_and_greet": returnMeetAndGreet,
-    if(withReturnPickUp != null && withReturnDropOff != null && returnCongestionCharges != null) "return_congestion_charges": returnCongestionCharges,
-    if(withReturnPickUp != null && withReturnDropOff != null && returnExtraDropCharges != null) "return_extra_drop_charges": returnExtraDropCharges,
-    if(withReturnPickUp != null && withReturnDropOff != null && returnCreditCardCharges != null) "return_credit_card_charges": returnCreditCardCharges,
-    if(withReturnPickUp != null && withReturnDropOff != null && returnCompanyPrice != null) "return_company_price": returnCompanyPrice,
+    if (withReturnPickUp != null) "return_pickup": withReturnPickUp,
+    if (withReturnDropOff != null) "return_dropoff": withReturnDropOff,
+    if (withReturnPickUp != null && withReturnDropOff != null)
+      "return_pickup_date": returnPickupDate,
+    if (withReturnPickUp != null && withReturnDropOff != null)
+      "return_pickup_time": returnPickupTime,
+    if (withReturnPickUp != null && withReturnDropOff != null)
+      "return_pickup_time": returnPickupTime,
+    if (withReturnPickUp != null && withReturnDropOff != null)
+      "return_miles": returnMiles,
+    if (withReturnPickUp != null &&
+        withReturnDropOff != null &&
+        returnParkingCharges != null)
+      "return_parking_charges": returnParkingCharges,
+    if (withReturnPickUp != null &&
+        withReturnDropOff != null &&
+        returnWaitingCharges != null)
+      "return_waiting_charges": returnWaitingCharges,
+    if (withReturnPickUp != null &&
+        withReturnDropOff != null &&
+        returnMeetAndGreet != null)
+      "return_meet_and_greet": returnMeetAndGreet,
+    if (withReturnPickUp != null &&
+        withReturnDropOff != null &&
+        returnCongestionCharges != null)
+      "return_congestion_charges": returnCongestionCharges,
+    if (withReturnPickUp != null &&
+        withReturnDropOff != null &&
+        returnExtraDropCharges != null)
+      "return_extra_drop_charges": returnExtraDropCharges,
+    if (withReturnPickUp != null &&
+        withReturnDropOff != null &&
+        returnCreditCardCharges != null)
+      "return_credit_card_charges": returnCreditCardCharges,
+    if (withReturnPickUp != null &&
+        withReturnDropOff != null &&
+        returnCompanyPrice != null)
+      "return_company_price": returnCompanyPrice,
   };
-print(pickUpPlotId);
+  print(pickUpPlotId);
   print(formData);
+  print("tempMiles-- ${tempMiles}");
 
   try {
     var response = await Api().post(formData, "fares/calculate-fare");

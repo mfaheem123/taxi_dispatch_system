@@ -528,6 +528,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                                       // Sirf 1st Pickup wale markers remove honge
                                                                       // controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "PICKUP LOCATION" || item.markerType == "Create Booking PICKUP");
+                                                                      controller.viaPoints.clear();
 
                                                                       controller.totalDistance.value = "0.00";
                                                                       controller.totalTimeDuration.value = "0 min";
@@ -959,7 +960,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                                       // Sirf 1st Dropoff wale markers remove honge
                                                                       // controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "DROP LOCATION" || item.markerType == "Create Booking DROP LOCATION");
-
+                                                                      controller.viaPoints.clear();
                                                                       controller.totalDistance.value = "0.00";
                                                                       controller.totalTimeDuration.value = "0 min";
                                                                       controller.fixedFare.value = "0";
@@ -1479,7 +1480,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.dropDownShow.value = false;
                                                                       controller.jourValue = (v!.journeyType == "r/n") ? 'W/R' : null;
                                                                       controller.selectJourneyTypeValue = v;
-                                                                      controller.getFaresCalculation();
+                                                                      // controller.getFaresCalculation();
                                                                     },
                                                                   ),
                                                                 ),
