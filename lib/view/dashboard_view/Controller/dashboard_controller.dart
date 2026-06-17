@@ -1014,6 +1014,7 @@ class DashboardController extends GetxController {
       print("one way is $tempStoreMils");
       print("with return is $tempStoreReturnMils");
 
+
       // final double returnMils = double.tryParse(tempStoreMils ?? '') ?? 0.0;
       //
       // final double storeMils = double.tryParse(tempStoreViaMils ?? '') ?? 0.0;
@@ -1022,6 +1023,7 @@ class DashboardController extends GetxController {
       // print("postMils$postMils");
       double oneWayMiles =
           double.tryParse(tempStoreMils ?? "0") ?? 0;
+
 
       double viaMiles =
           double.tryParse(tempStoreViaMils ?? "0") ?? 0;

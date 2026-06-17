@@ -517,6 +517,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       if (dropOffMarkerIndex >= 0) {
                                                                         controller.markers.removeAt(dropOffMarkerIndex);
                                                                       }
+
                                                                       controller.markers.removeWhere((marker) => marker.type == "via");
                                                                       controller.viaPoints.clear();
                                                                       controller.viaTextEditingController.clear();
@@ -534,6 +535,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.totalTimeDuration.value = "0 min";
                                                                       controller.fixedFare.value = "0";
                                                                       controller.returnFareValue = "0";
+                                                                      controller.tempStoreViaMils = "0";
                                                                       controller.slugController.clear();
                                                                       controller.slugControllerReturn.clear();
                                                                       // controller.tempStoreMils = null;
@@ -953,11 +955,13 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       if (dropOffMarkerIndex >= 0) {
                                                                         controller.markers.removeAt(dropOffMarkerIndex);
                                                                       }
+                                                                      controller.markers.removeWhere((marker) => marker.type == "via");
+                                                                      controller.viaPoints.clear();
+                                                                      controller.viaTextEditingController.clear();
                                                                       controller.pickupController.clear();
                                                                       controller.dropOffController.clear();
                                                                       controller.dropDownShow.value = false;
                                                                       controller.suggestions.clear();
-
                                                                       // Sirf 1st Dropoff wale markers remove honge
                                                                       // controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "DROP LOCATION" || item.markerType == "Create Booking DROP LOCATION");
                                                                       controller.viaPoints.clear();
@@ -965,6 +969,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.totalTimeDuration.value = "0 min";
                                                                       controller.fixedFare.value = "0";
                                                                       controller.returnFareValue = "0";
+                                                                      controller.tempStoreViaMils = "0";
                                                                       controller.slugController.clear();
                                                                       controller.slugControllerReturn.clear();
                                                                       controller.tempStoreMils = null;
