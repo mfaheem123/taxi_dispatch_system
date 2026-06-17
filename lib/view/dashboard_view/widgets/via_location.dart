@@ -105,7 +105,10 @@ class _ViaLocationState extends State<ViaLocation> {
                             ),
                             IconButton(
                               icon: Icon(Icons.close),
-                              onPressed: () => Navigator.pop(context),
+                              onPressed: () {
+                                controller.viaMilsCondition = false;
+                                Navigator.pop(context);
+                              },
                             ),
                           ],
                         ),
@@ -608,7 +611,10 @@ class _ViaLocationState extends State<ViaLocation> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(4)),
                               ),
-                              onPressed: () => Navigator.pop(context),
+                              onPressed: () {
+                                controller.viaMilsCondition = false;
+                                Navigator.pop(context);
+                              },
                               child: Text(
                                 "Cancel",
                                 style: TextStyle(color: Colors.white),
@@ -627,6 +633,8 @@ class _ViaLocationState extends State<ViaLocation> {
                               ),
 
                               onPressed: () {
+
+                                controller.viaMilsCondition = true;
                                 int len = controller.viaPoints.length;
 
                                 for (int a = 0; a < len && a < controller.viaTextEditingController.length; a++) {

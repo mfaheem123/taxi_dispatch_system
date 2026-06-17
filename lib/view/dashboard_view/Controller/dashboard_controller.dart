@@ -792,6 +792,8 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
   String? tempStoreMils;
   String? tempStoreReturnMils;
+  String? tempStoreViaMils;
+  bool viaMilsCondition = false;
 
 // your updated fetchRouteFromOSRM
   Future<void> fetchRouteFromOSRM() async {
@@ -957,10 +959,44 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
         }/*else{
           tempStoreMils = (double.parse(totalDistance.value)-double.parse(tempStoreReturnMils.toString())).toString();
         }*/
-      }else{
+      }else if (viaMilsCondition == true){
+        final double returnMils =
+            double.tryParse(tempStoreReturnMils ?? '') ?? 0.0;
+
+        final double storeMils =
+            double.tryParse(tempStoreMils ?? '') ?? 0.0;
+
+        final double distance =
+            double.tryParse(totalDistance.value) ?? 0.0;
+
+
+        final double viaMils =
+        ((returnMils + storeMils) - distance).abs();
+
+        tempStoreViaMils = viaMils.toString();
+
+        // tempStoreMils = (viaMils + storeMils).toString();
+
+        viaMilsCondition = false;
+
+        print('tempStoreViaMils: $tempStoreViaMils');
+        print('total distance: ${totalDistance.value}');
+        print('tempStoreMils: $tempStoreMils');
+      } else{
         tempStoreReturnMils = (double.parse(totalDistance.value)-double.parse(tempStoreMils.toString())).toString();
       }
 
+      print("via is $tempStoreViaMils");
+      print("one way is $tempStoreMils");
+      print("with return is $tempStoreReturnMils");
+      final double returnMils =
+          double.tryParse(tempStoreMils ?? '') ?? 0.0;
+
+      final double storeMils =
+          double.tryParse(tempStoreViaMils ?? '') ?? 0.0;
+      String postMils = (returnMils + storeMils).toString();
+
+      print("postMils$postMils");
 
       final storedTemFare = await getFares(
           // day: ,
@@ -968,7 +1004,8 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           multiReservationList: multiReservationList,
           pickup: pickupController.text,
           dropOff: dropOffController.text,
-          miles: tempStoreMils,
+          miles: postMils,
+          // miles: tempStoreMils,
           pickUpPlotId: dashboardDZoneValue != null ? dashboardDZoneValue!.id : null,
           dropoffPlotId: dashboardZoneValue != null ? dashboardZoneValue!.id : null,
           pickupDate: "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
@@ -1475,10 +1512,10 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       selectedTabId = tableId;
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
       dashboardTableTotalPages.value = dashboardTableModelData!.total!;
-      _timer?.cancel();
-      _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-         getDashboardTableData(tableId: selectedTabId);
-      });
+      // _timer?.cancel();
+      // _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      //    getDashboardTableData(tableId: selectedTabId);
+      // });
 
       update();
     }

@@ -150,6 +150,7 @@ class FormShortCutKey extends StatelessWidget {
                           opaque: true,
                           child: GestureDetector(
                             onTap: () {
+                              controller.viaMilsCondition = true;
                               showDialog(
                                   context: context,
                                   builder: (_) =>
