@@ -19,10 +19,14 @@ class DriverRentAlt {
 
     Get.dialog(
       Dialog(
-        insetPadding: const EdgeInsets.only(top: 40, left: 60, right: 60),
+        insetPadding: const EdgeInsets.only(top: 40, left: 20, right: 20),
         backgroundColor: Colors.transparent,
         child: GetBuilder<DriverController>(
             builder: (controller) {
+              bool isLaptop = Get.width <= 1400;
+              double headerFontSize = isLaptop ? 12 : 16;
+              double cellFontSize = isLaptop ? 11 : 14;
+              double iconSize = isLaptop ? 15 : 18;
           return Align(
             alignment: Alignment.topCenter,
             child: Container(
@@ -70,42 +74,42 @@ class DriverRentAlt {
                                         label: Text("    TRANSACTION #",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 18))),
+                                                fontSize: headerFontSize))),
                                     DataColumn(
                                         label: Text("    TRANSACTION DATE",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 18))),
+                                                fontSize: headerFontSize))),
                                     DataColumn(
                                         label: Text("    DRIVER",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 18))),
+                                                fontSize: headerFontSize))),
                                     DataColumn(
                                         label: Text("    JOB TOTAL",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 18))),
+                                                fontSize: headerFontSize))),
                                     DataColumn(
                                         label: Text("    RENT TOTAL",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 18))),
+                                                fontSize: headerFontSize))),
                                     DataColumn(
                                         label: Text("    PREVIOUS BALANCE",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 18))),
+                                                fontSize: headerFontSize))),
                                     DataColumn(
                                         label: Text("    CURRENT BALANCE",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 18))),
+                                                fontSize: headerFontSize))),
                                     DataColumn(
                                         label: Text("    ACTIONS",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 18))),
+                                                fontSize: headerFontSize))),
                                   ],
                                   totalRow: controller.driverRentAlert!
                                       .driverRents?.length,
@@ -117,27 +121,27 @@ class DriverRentAlt {
                                         DataCell(Center(
                                             child: Text((
                                                 item.transactionNumber ??
-                                                    "-").toUpperCase()))),
+                                                    "-").toUpperCase(), style: TextStyle(fontSize: cellFontSize)))),
                                         DataCell(Center(
                                             child: Text(item.transactionDate
                                                 ?.toIso8601String()
                                                 .split('T')[0] ??
-                                                "-"))),
+                                                "-", style: TextStyle(fontSize: cellFontSize)))),
                                         DataCell(Center(
                                             child: Text(
-                                                item.driverId.toString() ?? "-"))),
+                                                item.driverId.toString() ?? "-", style: TextStyle(fontSize: cellFontSize)))),
                                         DataCell(Center(
                                             child: Text(
-                                                "£${item.jobsTotal ?? "0"}"))),
+                                                "£${item.jobsTotal ?? "0"}", style: TextStyle(fontSize: cellFontSize)))),
                                         DataCell(Center(
                                             child: Text(
-                                                "£${item.rentTotal ?? "0"}"))),
+                                                "£${item.rentTotal ?? "0"}", style: TextStyle(fontSize: cellFontSize)))),
                                         DataCell(Center(
                                             child: Text(
-                                                "£${item.oldBalance ?? "0"}"))),
+                                                "£${item.oldBalance ?? "0"}", style: TextStyle(fontSize: cellFontSize)))),
                                         DataCell(Center(
                                             child: Text(
-                                                "£${item.currentBalance ?? "0"}"))),
+                                                "£${item.currentBalance ?? "0"}", style: TextStyle(fontSize: cellFontSize)))),
                                         DataCell(Center(
                                             child: Row(
                                           mainAxisSize: MainAxisSize.min,
@@ -147,7 +151,7 @@ class DriverRentAlt {
                                             IconButton(
                                               padding: EdgeInsets.zero,
                                               icon: Icon(Icons.edit,
-                                                  size: 18,
+                                                  size: iconSize,
                                                   color: Color(0xFF43489A)),
                                               onPressed: () {
                                                 Get.back();
@@ -183,7 +187,7 @@ class DriverRentAlt {
                                             IconButton(
                                                 padding: EdgeInsets.zero,
                                                 icon: Icon(Icons.delete,
-                                                    size: 18,
+                                                    size: iconSize,
                                                     color: Colors.red),
                                                 onPressed: () {
                                                   Get.back();
@@ -195,7 +199,7 @@ class DriverRentAlt {
                                             IconButton(
                                                 padding: EdgeInsets.zero,
                                                 icon: Icon(Icons.picture_as_pdf,
-                                                    size: 18,
+                                                    size: iconSize,
                                                     color: Colors.black),
                                                 onPressed: () {
                                                   // Get.back();
@@ -205,7 +209,7 @@ class DriverRentAlt {
                                             IconButton(
                                                 padding: EdgeInsets.zero,
                                                 icon: Icon(Icons.mail,
-                                                    size: 18,
+                                                    size: iconSize,
                                                     color: Colors.black),
                                                 onPressed: () {
                                                   EmailDriverRentAlt.show();
