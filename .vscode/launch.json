@@ -5,21 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "taxi_dispatch_system",
+            "type": "chrome",
             "request": "launch",
-            "type": "dart"
-        },
-        {
-            "name": "taxi_dispatch_system (profile mode)",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "profile"
-        },
-        {
-            "name": "taxi_dispatch_system (release mode)",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "release"
+            "name": "Launch Chrome against localhost",
+            "url": "http://localhost:8080",
+            "webRoot": "${workspaceFolder}"
         }
     ]
 }

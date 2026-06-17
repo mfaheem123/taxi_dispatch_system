@@ -345,7 +345,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
       width: widget.createBooking == true
           ? Get.width
           : width >= 1270
-          ? screenWidth / 2.95
+          ? screenWidth / 3.5
           : screenWidth / 1.2,
       height: containerFormHeight/*widget.createBooking == true
           ? Get.height / 1.4
@@ -535,6 +535,45 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                     ),
                   ),
                 ),
+                ///  ZOOM BUTTONS ON map
+                Positioned(
+                  right: 15,
+                  bottom: 10,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Zoom (+) Button
+                      SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: FloatingActionButton.small(
+                          heroTag: "zoom_in_btn",
+                          backgroundColor: Colors.white,
+
+                          onPressed: () {
+                            // controller.updateZoom(true);
+                            },
+                          child: const Icon(Icons.add, color: Colors.black87,  size: 20,),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      // Zoom (-) Button
+                      SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: FloatingActionButton.small(
+                          heroTag: "zoom_out_btn",
+                          backgroundColor: Colors.white,
+                          onPressed: () {
+                            // controller.updateZoom(false);
+                            },
+                          child: const Icon(Icons.remove, color: Colors.black87, size: 20,),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
               ],
             ),
           );

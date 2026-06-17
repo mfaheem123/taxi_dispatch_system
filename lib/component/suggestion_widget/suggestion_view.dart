@@ -131,7 +131,7 @@ class _SuggestionViewState extends State<SuggestionView> {
                           fontWeight: isHighlighted ? FontWeight.bold : FontWeight.normal,
                           color: isHighlighted ? Colors.blue : Colors.black,
                         ),
-                        child: Text("${item.mobile}"),
+                        child: Text("${item.name} -  ${item.mobile}"),
                       ),
                         onTap: () async {
                           final data = await controller.tapSelect(index);
@@ -149,3 +149,116 @@ class _SuggestionViewState extends State<SuggestionView> {
     });
   }
 }
+
+
+
+// class _SuggestionViewState extends State<SuggestionView> {
+//
+//   SuggestionController controller = Get.isRegistered<SuggestionController>()
+//       ? Get.find<SuggestionController>()
+//       : Get.put(SuggestionController());
+//
+//   DashboardController dashboardController = Get.isRegistered<DashboardController>()
+//       ? Get.find<DashboardController>()
+//       : Get.put(DashboardController());
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     controller.allListData = widget.allListData;
+//     controller.updateKeys();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final screenWidth = MediaQuery.of(context).size.width;
+//     final screenHeight = MediaQuery.of(context).size.height;
+//
+//     return Obx(() {
+//       if (controller.allListData.isEmpty) {
+//         return const SizedBox();
+//       }
+//
+//       // TextField ki width auto-calculate karne ke liye
+//       final activeKey = controller.activeFieldKey.value;
+//       final fieldBox = activeKey?.currentContext?.findRenderObject() as RenderBox?;
+//       double calculatedWidth = fieldBox?.size.width ?? (screenWidth * 0.12);
+//
+//       // Positioned aur Stack calculation ki jagah CompositedTransformFollower use kiya hai
+//       return CompositedTransformFollower(
+//         link: dashboardController.mobileFieldLayerLink,
+//         showWhenUnlinked: false,
+//         targetAnchor: Alignment.bottomLeft,
+//         followerAnchor: Alignment.topLeft,
+//         offset: const Offset(0, 5), // Field ke bilkul 5 pixels neeche chipka rahega
+//         child: Material(
+//           color: Colors.transparent,
+//           child: RawKeyboardListener(
+//             focusNode: dashboardController.suggestionPhoneFocusNode.value,
+//             onKey: (RawKeyEvent event) async {
+//               if (event is RawKeyDownEvent) {
+//                 if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+//                   controller.moveHighlightDown();
+//                 } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+//                   controller.moveHighlightUp();
+//                 } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+//                   final data = await controller.tapSelect(controller.highlightedIndex.value);
+//                   widget.onSelect(data);
+//                 }
+//               }
+//             },
+//             child: Container(
+//               height: screenHeight * 0.3,
+//               width: calculatedWidth, // Auto width adjustment according to textfield
+//               decoration: BoxDecoration(
+//                 color: const Color(0xFFEFF0F2),
+//                 borderRadius: BorderRadius.circular(5),
+//                 boxShadow: const [
+//                   BoxShadow(color: Colors.black12, blurRadius: 5, offset: Offset(0, 2)),
+//                 ],
+//               ),
+//               child: ListView.builder(
+//                 key: controller.suggestionListKey,
+//                 controller: controller.suggestionScrollController,
+//                 itemCount: controller.allListData.length,
+//                 padding: const EdgeInsets.only(top: 15),
+//                 itemBuilder: (context, index) {
+//                   final item = controller.allListData[index];
+//
+//                   return Obx(() {
+//                     final isHighlighted = controller.highlightedIndex.value == index;
+//                     return Container(
+//                       key: controller.suggestionItemKeys[index],
+//                       color: isHighlighted ? const Color(0xffA0DCFF) : Colors.transparent,
+//                       width: calculatedWidth,
+//                       child: ListTile(
+//                           dense: true,
+//                           visualDensity: VisualDensity.compact,
+//                           title: AnimatedDefaultTextStyle(
+//                             duration: const Duration(milliseconds: 120),
+//                             style: TextStyle(
+//                               fontSize: 13,
+//                               fontWeight: isHighlighted ? FontWeight.bold : FontWeight.normal,
+//                               color: isHighlighted ? Colors.blue : Colors.black,
+//                             ),
+//                             child: Text("${item.name} -  ${item.mobile}"),
+//                           ),
+//                           onTap: () async {
+//                             final data = await controller.tapSelect(index);
+//                             widget.onSelect(data);
+//                             print("Selected value --> $data");
+//                           }
+//                       ),
+//                     );
+//                   });
+//                 },
+//               ),
+//             ),
+//           ),
+//         ),
+//       );
+//     });
+//   }
+// }
+
+

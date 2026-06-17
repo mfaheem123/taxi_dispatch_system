@@ -8,6 +8,8 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
+import 'package:dashboard_new1/component/suggestion_widget/suggestion_controller.dart';
+import 'package:dashboard_new1/view/fare_view/controller/controller.dart';
 
 class CustomTextField extends StatelessWidget {
   CustomTextField({super.key,
@@ -71,6 +73,50 @@ class CustomTextField extends StatelessWidget {
               width: width?? Get.width/2.5,
             height: height?? 30,
               child: TextField(
+                onTapOutside: (event) {
+                  bool isTapInsideKey(GlobalKey key) {
+                    final RenderBox? renderBox = key.currentContext?.findRenderObject() as RenderBox?;
+                    if (renderBox != null) {
+                      final position = renderBox.localToGlobal(Offset.zero);
+                      final size = renderBox.size;
+                      final rect = position & size;
+                      return rect.contains(event.position);
+                    }
+                    return false;
+                  }
+
+                  if (Get.isRegistered<DashboardController>()) {
+                    final dashboardController = Get.find<DashboardController>();
+                    if (dashboardController.dropDownShow.value) {
+                      if (isTapInsideKey(dashboardController.suggestionListKey) ||
+                          isTapInsideKey(dashboardController.suggestionListKeyVia)) {
+                        return;
+                      }
+                    }
+                  }
+
+                  if (Get.isRegistered<SuggestionController>()) {
+                    final sugController = Get.find<SuggestionController>();
+                    if (isTapInsideKey(sugController.suggestionListKey)) {
+                      return;
+                    }
+                  }
+
+                  if (Get.isRegistered<FareController>()) {
+                    final fareController = Get.find<FareController>();
+                    if (isTapInsideKey(fareController.suggestionListKey) ||
+                        isTapInsideKey(fareController.suggestionListKeyVia)) {
+                      return;
+                    }
+                  }
+
+                  FocusManager.instance.primaryFocus?.unfocus();
+
+                  if (Get.isRegistered<DashboardController>()) {
+                    Get.find<DashboardController>().dropDownShow.value = false;
+                    Get.find<DashboardController>().update();
+                  }
+                },
                 textCapitalization: TextCapitalization.characters,
                 controller: controller,
                 focusNode: focusNode,
