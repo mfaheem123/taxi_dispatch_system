@@ -970,6 +970,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
             double.tryParse(totalDistance.value) ?? 0.0;
 
 
+        print("total distance $distance");
         final double viaMils =
         ((returnMils + storeMils) - distance).abs();
 
@@ -1013,7 +1014,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           vehicleTypeId: selectVehicleValue!.id,
           withReturnPickUp: pickupTwoWayController.text.isEmpty?null: pickupTwoWayController.text,
           withReturnDropOff: dropOffTwoWayController.text.isEmpty?null: dropOffTwoWayController.text,
-          returnMiles: dropOffTwoWayController.text.isNotEmpty && dropOffTwoWayController.text.isNotEmpty? (double.parse(totalDistance.value)-double.parse(tempStoreMils.toString())).toString() : null,
+          returnMiles: dropOffTwoWayController.text.isNotEmpty && dropOffTwoWayController.text.isNotEmpty? (double.parse(totalDistance.value)-double.parse(postMils.toString())).toString() : null,
       );
       var fareValue = jsonDecode(storedTemFare);
       fixedFare.value = fareValue== null?"0": fareValue['total_fare'].toString();
