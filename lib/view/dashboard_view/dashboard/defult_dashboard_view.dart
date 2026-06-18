@@ -960,7 +960,18 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       if (dropOffMarkerIndex >= 0) {
                                                                         controller.markers.removeAt(dropOffMarkerIndex);
                                                                       }
+                                                                      // ✅ FIX: Sirf One-Way (via) wale markers list se remove honge
                                                                       controller.markers.removeWhere((marker) => marker.type == "via");
+
+                                                                      // ✅ FIX: Sirf One-Way wale via points aur text fields remove honge (withReturnWay == "via")
+                                                                      for (int i = controller.viaPoints.length - 1; i >= 0; i--) {
+                                                                        if (controller.viaPoints[i].withReturnWay == "via") {
+                                                                          controller.viaPoints.removeAt(i);
+                                                                          if (i < controller.viaTextEditingController.length) {
+                                                                            controller.viaTextEditingController.removeAt(i);
+                                                                          }
+                                                                        }
+                                                                      }
                                                                       controller.viaPoints.clear();
                                                                       controller.viaTextEditingController.clear();
                                                                       controller.pickupController.clear();
@@ -1746,11 +1757,18 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                                             // 2. POORI list clear karne ke bajaye, sirf TWO WAY waale markers remove karein
                                                                             controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "PICKUP TWO WAY LOCATION");
-
-                                                                            // Agar aap `controller.markers` alag se use kar rahe hain (CustomMarker waala)
-                                                                            // toh usme se bhi sirf Two-Way waale filters nikalein:
                                                                             if (controller.markers is List<CustomMarker>) {
                                                                               controller.markers.removeWhere((marker) => marker.type == "PICKUP TWO WAY LOCATION");
+                                                                            }
+                                                                            controller.markers.removeWhere((marker) => marker.type == "via with return");
+
+                                                                             for (int i = controller.viaPoints.length - 1; i >= 0; i--) {
+                                                                              if (controller.viaPoints[i].withReturnWay == "via with return") {
+                                                                                controller.viaPoints.removeAt(i);
+                                                                                if (i < controller.viaTextEditingController.length) {
+                                                                                  controller.viaTextEditingController.removeAt(i);
+                                                                                }
+                                                                              }
                                                                             }
                                                                             controller.tempStoreReturnMils = null;
                                                                             // 3. Baki states ko reset karein
@@ -2088,7 +2106,16 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             if (dropOffMarkerIndex >= 0) {
                                                                               controller.markers.removeAt(dropOffMarkerIndex);
                                                                             }
+                                                                            controller.markers.removeWhere((marker) => marker.type == "via with return");
 
+                                                                            for (int i = controller.viaPoints.length - 1; i >= 0; i--) {
+                                                                              if (controller.viaPoints[i].withReturnWay == "via with return") {
+                                                                                controller.viaPoints.removeAt(i);
+                                                                                if (i < controller.viaTextEditingController.length) {
+                                                                                  controller.viaTextEditingController.removeAt(i);
+                                                                                }
+                                                                              }
+                                                                            }
                                                                             // 1. Only Two-Way controllers clear karein
                                                                             controller.pickupTwoWayController.clear();
                                                                             controller.dropOffTwoWayController.clear();

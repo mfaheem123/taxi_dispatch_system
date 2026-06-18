@@ -792,6 +792,17 @@ class DashboardController extends GetxController {
   String? oneWayMiles;
   String? viaMiles;
   String? returnMiles;
+
+
+
+  void updateZoom(bool zoomIn) {
+    double currentZoom = mapController.camera.zoom;
+    double newZoom = zoomIn ? currentZoom + 1 : currentZoom - 1;
+
+    if (newZoom >= 3.0 && newZoom <= 18.0) {
+      mapController.move(mapController.camera.center, newZoom);
+    }
+  }
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // BUSINESS RULE IMPLEMENTATION: DETACHED OUTBOUND & RETURN SEGMENT ROUTES WITH SEQUENTIAL VIAS
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -927,7 +938,7 @@ class DashboardController extends GetxController {
                   top: 3,
                   child: Text(
                     "V$outboundViaCount",
-                    style: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                   ),
             ),
           ],
@@ -950,7 +961,21 @@ class DashboardController extends GetxController {
         final p = LatLng(item.lat, item.lng);
         returnSequence.add(p);
         totalMapLayoutFocusPoints.add(p);
-        markers.add(CustomMarker(withReturnType: "via with return", child: Icon(Icons.location_pin, color: Colors.pink, size: 30), type: "via", point: p, width: 30, height: 30));
+        markers.add(CustomMarker(withReturnType: "via with return", child:
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            Icon(Icons.location_pin, color: DynamicColors.primaryClr, size: 30),
+            Positioned(
+              top: 3,
+              child: Text(
+                "V$outboundViaCount",
+                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+            type: "via", point: p, width: 30, height: 30));
       }
     }
     if (returnDropOff != null) {

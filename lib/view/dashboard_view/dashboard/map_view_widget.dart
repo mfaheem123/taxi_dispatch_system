@@ -551,7 +551,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                           backgroundColor: Colors.white,
 
                           onPressed: () {
-                            // controller.updateZoom(true);
+                            controller.updateZoom(true);
                             },
                           child: const Icon(Icons.add, color: Colors.black87,  size: 20,),
                         ),
@@ -565,7 +565,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                           heroTag: "zoom_out_btn",
                           backgroundColor: Colors.white,
                           onPressed: () {
-                            // controller.updateZoom(false);
+                            controller.updateZoom(false);
                             },
                           child: const Icon(Icons.remove, color: Colors.black87, size: 20,),
                         ),
