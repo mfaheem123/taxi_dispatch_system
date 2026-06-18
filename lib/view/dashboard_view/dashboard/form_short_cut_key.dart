@@ -151,8 +151,7 @@ class FormShortCutKey extends StatelessWidget {
                           opaque: true,
                           child: GestureDetector(
                             onTap: () {
-                              if(controller.pickupController.text.isNotEmpty &&
-                                  controller.dropOffController.text.isNotEmpty){
+                              if(controller.pickupController.text.isNotEmpty || controller.pickupTwoWayController.text.isNotEmpty ){
                                 controller.viaMilsCondition = true;
                                 controller.dropDownShow.value = true;
                                 controller.selectedTextFieldsValue
@@ -163,7 +162,7 @@ class FormShortCutKey extends StatelessWidget {
                                     builder: (_) =>
                                         ViaLocation());
                               }else{
-                                BotToast.showText(text: "Please enter pickup and dropoff location");
+                                BotToast.showText(text: "Please enter any pickup");
                               }
                             },
                             child: Container(

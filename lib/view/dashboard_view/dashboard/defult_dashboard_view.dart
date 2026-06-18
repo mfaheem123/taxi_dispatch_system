@@ -118,10 +118,14 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
         WidgetsBinding.instance.addPostFrameCallback((_) {
           final context = _containerKey.currentContext;
-          final box = context?.findRenderObject() as RenderBox;
-          setState(() {
-            containerFormHeight = box.size.height;
-          });
+          if (context != null) {
+            final renderObject = context.findRenderObject();
+            if (renderObject is RenderBox) {
+              setState(() {
+                containerFormHeight = renderObject.size.height;
+              });
+            }
+          }
         });
 
         // Instead of fixed width, we calculate flexible field widths
@@ -492,44 +496,45 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     onActivate: () {
                                                                       final pickupPolylineIndex = controller.polyLineMarkerInfo
                                                                           .indexWhere((e) => e.markerType == "PICKUP LOCATION");
-
                                                                       if (pickupPolylineIndex >= 0) {
                                                                         controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
                                                                       }
 
                                                                       final dropPolylineIndex = controller.polyLineMarkerInfo
                                                                           .indexWhere((e) => e.markerType == "DROP LOCATION");
-
                                                                       if (dropPolylineIndex >= 0) {
                                                                         controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
                                                                       }
 
                                                                       final pickupMarkerIndex =
                                                                       controller.markers.indexWhere((e) => e.type == "pickup");
-
                                                                       if (pickupMarkerIndex >= 0) {
                                                                         controller.markers.removeAt(pickupMarkerIndex);
                                                                       }
 
                                                                       final dropOffMarkerIndex =
                                                                       controller.markers.indexWhere((e) => e.type == "dropOff");
-
                                                                       if (dropOffMarkerIndex >= 0) {
                                                                         controller.markers.removeAt(dropOffMarkerIndex);
                                                                       }
 
+                                                                      // ✅ FIX: Sirf One-Way (via) wale markers list se remove honge
                                                                       controller.markers.removeWhere((marker) => marker.type == "via");
-                                                                      controller.viaPoints.clear();
-                                                                      controller.viaTextEditingController.clear();
+
+                                                                      // ✅ FIX: Sirf One-Way wale via points aur text fields remove honge (withReturnWay == "via")
+                                                                      for (int i = controller.viaPoints.length - 1; i >= 0; i--) {
+                                                                        if (controller.viaPoints[i].withReturnWay == "via") {
+                                                                          controller.viaPoints.removeAt(i);
+                                                                          if (i < controller.viaTextEditingController.length) {
+                                                                            controller.viaTextEditingController.removeAt(i);
+                                                                          }
+                                                                        }
+                                                                      }
 
                                                                       controller.pickupController.clear();
                                                                       controller.dropOffController.clear();
                                                                       controller.dropDownShow.value = false;
                                                                       controller.suggestions.clear();
-
-                                                                      // Sirf 1st Pickup wale markers remove honge
-                                                                      // controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "PICKUP LOCATION" || item.markerType == "Create Booking PICKUP");
-                                                                      controller.viaPoints.clear();
 
                                                                       controller.totalDistance.value = "0.00";
                                                                       controller.totalTimeDuration.value = "0 min";
@@ -538,10 +543,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.tempStoreViaMils = "0";
                                                                       controller.slugController.clear();
                                                                       controller.slugControllerReturn.clear();
-                                                                      // controller.tempStoreMils = null;
+                                                                      controller.tempStoreMils = null;
 
                                                                       controller.fetchRouteFromOSRM();
-                                                                      FocusScope.of(Get.context!).requestFocus(controller.pickupTextFieldFocusNode);
+                                                                      FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
                                                                       controller.update();
                                                                     },
                                                                     child: Icon(Icons.close, color: DynamicColors.redClr, size: 15),
@@ -3362,7 +3367,14 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                     FittedBox(
                                                       fit: BoxFit.scaleDown,
                                                       child: Text(
-                                                        "FARE: \£  ${double.parse(controller.fixedFare.value).toStringAsFixed(1)}",
+                                                        "FARE: \£ ${
+                                                            ((double.tryParse(controller.fixedFare.value) ?? 0.0) +
+                                                                (controller.pickupTwoWayController.text.isNotEmpty
+                                                                    ? (double.tryParse(controller.returnFareValue.toString()) ?? 0.0)
+                                                                    : 0.0))
+                                                                .toStringAsFixed(1)
+                                                        }",
+                                                        // "FARE: \£  ${double.parse(controller.fixedFare.value).toStringAsFixed(1)}",
                                                         style: TextStyle(
                                                           fontWeight: FontWeight.bold,
                                                           color: Colors.black,
