@@ -10,6 +10,7 @@ import '../../../../component/color.dart';
 import '../../../../component/customButton.dart';
 import '../../../../component/datatable_widget.dart';
 import '../../../../component/networks/api.dart';
+import '../../../../component/responsive_datatable_widget.dart';
 import '../../../../component/textStyle.dart';
 import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../../dashboard_view/booking_table.dart';
@@ -37,24 +38,24 @@ class _DriverFormState extends State<DriverForm> {
     super.initState();
     shortCutKeyValue.value = "createDriver";
   }
-
   List permissions = [];
-
 
   @override
   Widget build(BuildContext context) {
     double maxWidth = MediaQuery.of(context).size.width;
     bool isMobile = maxWidth < 600;
     bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+    bool isLaptop = maxWidth >= 1100 && maxWidth <= 1400;
+
 
     double fieldWidth = isMobile
         ? maxWidth
         : isTablet
             ? maxWidth / 2
             : maxWidth / 4;
-    double width = WidgetsBinding
-            .instance.platformDispatcher.views.first.physicalSize.width /
-        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    // double width = WidgetsBinding
+    //         .instance.platformDispatcher.views.first.physicalSize.width /
+    //     WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
     return FocusTraversalGroup(
       policy: OrderedTraversalPolicy(),
       // ensures NumericFocusOrder works globally
@@ -70,14 +71,16 @@ class _DriverFormState extends State<DriverForm> {
           }
       },
           builder: (controller) {
-        return controller.getCombineVehicleLoading.value == true?Center(
+        return controller.getCombineVehicleLoading.value == true
+            ?Center(
           child: CircularProgressIndicator(color: DynamicColors.primaryClr,),
-        ):
-        SingleChildScrollView(
-          padding: const EdgeInsets.all(12),
+        )
+            : SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
           child: Form(
             key: _formKey,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -91,7 +94,8 @@ class _DriverFormState extends State<DriverForm> {
                     ),
                     Row(
                       children: [
-                        if(permissions.contains('read_driver_shift')) CustomButton(
+                        if(permissions.contains('read_driver_shift'))
+                          CustomButton(
                           width: 80,
                           height: 35,
                           verticalPadding: 0.0,
@@ -120,9 +124,11 @@ class _DriverFormState extends State<DriverForm> {
                     ),
                   ],
                 ),
+                SizedBox(height: 10),
                 Wrap(
-                  runSpacing: 5,
-                  spacing: 5,
+                  runSpacing: 12,
+                  spacing: 12,
+                  crossAxisAlignment: WrapCrossAlignment.start,
                   children: [
                     GestureDetector(
                       onTap: () {
@@ -135,19 +141,22 @@ class _DriverFormState extends State<DriverForm> {
                           border: Border.all(
                               color: Colors.grey.shade400, width: 1),
                         ),
-                        margin: const EdgeInsets.only(bottom: 12),
+                        width: isMobile ? maxWidth : (isTablet ? maxWidth * 0.3 : maxWidth / 6),
+                        height: 495,
+                        // margin: const EdgeInsets.only(bottom: 12),
                         child: Padding(
-                          padding: const EdgeInsets.all(14),
+                          padding: const EdgeInsets.all(10),
                           child: Container(
-                            height: 345,
-                            width: Get.width/5.5,
+                            // height: 345,
+                            // width: Get.width/5.5,
                             // width: double.infinity,
                             // color: Colors.grey[200],
                             alignment: Alignment.center,
                             child: controller.profileImg != null
                                 ? Image.memory(
                               controller.profileImg!.bytes,
-                              fit: BoxFit.fill,
+                              // fit: BoxFit.fill,
+                              fit: BoxFit.cover,
                             ):
                             ((controller.singleDriverData != null) && (controller.singleDriverData!.driver!.image != null ))?
                             Image(image: NetworkImage(controller.singleDriverData!.driver!.image!))
@@ -161,94 +170,142 @@ class _DriverFormState extends State<DriverForm> {
                         ),
                       ),
                     ),
-                    DriverPersonalInfo(),
-                    VehicleInformation(),
+                    SizedBox(
+                      height: 505,
+                      child: DriverPersonalInfo(),
+                    ),
+                    SizedBox(
+                      height: 505,
+                      child: VehicleInformation(),
+                    ),
                   ],
                 ),
                 SizedBox(height: 20),
-                Wrap(
-                  children: [
-                    DatatableWidget(
-                      columns: [
-                        buildHeaderWithSearch(title: "EXPIRY DATE", removeSearching: true),
-                        buildHeaderWithSearch(title: "EXPIRY TIME", removeSearching: true),
-                        buildHeaderWithSearch(title: "BATCH #", removeSearching: true),
-                        buildHeaderWithSearch(title: "DOCUMENT TITLE", removeSearching: true),
-                        buildHeaderWithSearch(title: "FILE", removeSearching: true),
-                        buildHeaderWithSearch(title: "DOCUMENT", removeSearching: true),
-                      ],
-                      totalRow: 7,
-                      rows: List.generate(controller.rows.length, (index) {
-                        final row = controller.rows[index];
-                        return DataRow(
-                          cells: [
-                            DataCell(
-                              KeyboardDatePicker(
-                                initialDate: row.expiryDate ?? DateTime.now(),
-                                onChanged: (date) {
-                                  controller.updateExpiryDate(index, date);
-                                },
-                              ),
-                            ),
-                            DataCell(
+                LayoutBuilder(
+                    builder: (context, tableConstraints) {
+                      double leftTableWidth = isMobile
+                          ? tableConstraints.maxWidth
+                          : isLaptop
+                          ? tableConstraints.maxWidth * 0.58
+                          : tableConstraints.maxWidth * 0.59;
 
-                        CustomTimePicker(
-                          readOnly: true,
-                        controller: row.expiryTime, // optional
-                        onTimeSelected: (time) {
-                        controller.updateExpiryTime(index, time);
-                        },
-                        )
-                            ),
-                            DataCell(
-                              CustomTextField(
-                                width: 150,
-                                borderRadius: 4,
-                                // readOnly: controller.vehicleInformation.value,
-                                controller: row.batchNo,
-                                hintText: "${row.documentTitle}",
-                                onChanged: (val) {
-                                  // row.batchNo.text = val;
-                                  // controller.update();
-                                  },
-                              ),
-                            ),
-                            DataCell(Text(row.documentTitle ?? "PHC VEHICLE")),
-                            DataCell(
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(color: DynamicColors.primaryClr),
-                                ),
-                                onPressed: () {
-                                  controller.addDocument(index);
-                                },
-                                child: Text(
-                                  row.fileName != null? "DOCUMENTS (1)": "DOCUMENTS",
-                                  style: TextStyle(color: DynamicColors.primaryClr),
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Container(
-                                child:
-                                row.fileName == null?SizedBox.shrink():
-                                row.fileName!.bytes.isNotEmpty
-                                    ? Image.memory(row.fileName!.bytes,
-                                  fit: BoxFit.fill,
-                                )
-                                    : Image(
-                                  image: NetworkImage(row.fileName!.name),
-                                ),
-                              ),
-                            ),
+                      double rightTableWidth = isMobile
+                          ? tableConstraints.maxWidth
+                          : isLaptop
+                          ? tableConstraints.maxWidth * 0.38
+                          : tableConstraints.maxWidth * 0.37;
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: leftTableWidth,
+                        child: ResponsiveDataTableWidget(
+                          totalWidth: leftTableWidth,
+                          columnConfigs: [
+                            TableColumnConfig(title: "EXPIRY DATE", sizeType: ColumnSizeType.medium, removeSearching: true),
+                            TableColumnConfig(title: "EXPIRY TIME", sizeType: ColumnSizeType.medium, removeSearching: true),
+                            TableColumnConfig(title: "BATCH #", sizeType: ColumnSizeType.medium, removeSearching: true),
+                            TableColumnConfig(title: "DOCUMENT TITLE", sizeType: ColumnSizeType.large, removeSearching: true),
+                            TableColumnConfig(title: "FILE", sizeType: ColumnSizeType.small, removeSearching: true),
+                            TableColumnConfig(title: "DOCUMENT", sizeType: ColumnSizeType.small, removeSearching: true),
                           ],
-                        );
-                      }),
-                    ),
-                    _buildValidityTable(),
-                  ],
-                ),
-             /*   // TABLES SECTION
+                          items: controller.rows,
+                            rowBuilder: (item, widths) {
+                            final row = item as DocumentRow;
+                            return [
+                                  KeyboardDatePicker(
+                                    initialDate: row.expiryDate ??
+                                        DateTime.now(),
+                                    onChanged: (date) {
+                                      controller.updateExpiryDate(controller.rows.indexOf(row), date);
+                                    }),
+                                    CustomTimePicker(
+                                      readOnly: true,
+                                      controller: row.expiryTime,
+                                      onTimeSelected: (time) {
+                                        controller.updateExpiryTime(
+                                            controller.rows.indexOf(row), time);
+                                      }),
+                                    CustomTextField(
+                                        width: widths["BATCH #"] ?? 110,
+                                        borderRadius: 4,
+                                        controller: row.batchNo,
+                                        hintText: "${row.documentTitle}",
+                                        onChanged: (val) {}),
+                              Center(
+                              child: Text(row.documentTitle ?? "PHC VEHICLE")),
+                              Container(
+                                width: widths["FILE"] != null ? (widths["FILE"]! + 20) : 130,
+                                alignment: Alignment.center,
+                                child: OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                    side: BorderSide(color: DynamicColors.primaryClr),
+                                  ),
+                                  onPressed: () {
+                                    controller.addDocument(controller.rows.indexOf(row));
+                                  },
+                                  child: Text(
+                                    row.fileName != null ? "DOCUMENTS (1)" : "DOCUMENTS",
+                                    style: TextStyle(
+                                      color: DynamicColors.primaryClr,
+                                      fontSize: 11,
+                                    ),
+                                    maxLines: 1,
+                                  ),
+                                ),
+                              ),
+                                  Container(
+                                    width: 60,
+                                    height: 40,
+                                    child: row.fileName == null
+                                        ? SizedBox.shrink()
+                                        : row.fileName!.bytes.isNotEmpty
+                                        ? Image.memory(
+                                        row.fileName!.bytes, fit: BoxFit.fill)
+                                        : Image(image: NetworkImage(
+                                        row.fileName!.name)),
+                                ),
+                              ];
+                            }),
+                          ),
+                        const SizedBox(width: 16),
+                      Container(
+                        width: rightTableWidth,
+                        child: ResponsiveDataTableWidget(
+                          totalWidth: rightTableWidth,
+                          columnConfigs: [
+                            TableColumnConfig(title: "START DATE", sizeType: ColumnSizeType.medium, removeSearching: true),
+                            TableColumnConfig(title: "END DATE", sizeType: ColumnSizeType.medium, removeSearching: true),
+                          ],
+                          items: [1],
+                          rowBuilder: (item, widths) {
+                            return [
+                            Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                child: KeyboardDatePicker(
+                                initialDate: controller.startDate ?? DateTime.now(),
+                                onChanged: (date) {
+                                  controller.startDate = date;
+                                  controller.update();
+                                },
+                              )),
+                            Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: KeyboardDatePicker(
+                                initialDate: controller.endDate ?? DateTime.now(),
+                                onChanged: (date) {
+                                  controller.endDate = date;
+                                  controller.update();
+                                },
+                              )),
+                            ];
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                  /*   // TABLES SECTION
                 width < 1920
                     ? Column(
                         children: [
@@ -267,6 +324,7 @@ class _DriverFormState extends State<DriverForm> {
                           Expanded(flex: 5, child: _buildValidityTable()),
                         ],
                       ),*/
+                }),
               ],
             ),
           ),
@@ -276,52 +334,52 @@ class _DriverFormState extends State<DriverForm> {
   }
 
   // RIGHT TABLE
-  Widget _buildValidityTable() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.grey.shade400, width: 1),
-      ),
-      margin: const EdgeInsets.only(bottom: 12),
-      child: DataTable(
-        headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-        dataRowMinHeight: 48,
-        dataRowMaxHeight: 56,
-        headingTextStyle: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 14,
-          color: Colors.black,
-        ),
-        columns: const [
-          DataColumn(label: Text("START DATE")),
-          DataColumn(label: Text("END DATE")),
-        ],
-        rows: [
-          DataRow(
-            cells: [
-              DataCell( KeyboardDatePicker(
-                initialDate: controller.startDate ?? DateTime.now(),
-                onChanged: (date) {
-                  controller.startDate = date;
-                  controller.update();
-                },
-              ),),
-              DataCell(KeyboardDatePicker(
-                initialDate: controller.endDate ?? DateTime.now(),
-                onChanged: (date) {
-                  controller.endDate = date;
-                  controller.update();
-                },
-              )
-              ),
-
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildValidityTable() {
+  //   return Container(
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       borderRadius: BorderRadius.circular(6),
+  //       border: Border.all(color: Colors.grey.shade400, width: 1),
+  //     ),
+  //     margin: const EdgeInsets.only(bottom: 12),
+  //     child: DataTable(
+  //       headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+  //       dataRowMinHeight: 48,
+  //       dataRowMaxHeight: 56,
+  //       headingTextStyle: const TextStyle(
+  //         fontWeight: FontWeight.bold,
+  //         fontSize: 14,
+  //         color: Colors.black,
+  //       ),
+  //       columns: const [
+  //         DataColumn(label: Text("START DATE")),
+  //         DataColumn(label: Text("END DATE")),
+  //       ],
+  //       rows: [
+  //         DataRow(
+  //           cells: [
+  //             DataCell( KeyboardDatePicker(
+  //               initialDate: controller.startDate ?? DateTime.now(),
+  //               onChanged: (date) {
+  //                 controller.startDate = date;
+  //                 controller.update();
+  //               },
+  //             ),),
+  //             DataCell(KeyboardDatePicker(
+  //               initialDate: controller.endDate ?? DateTime.now(),
+  //               onChanged: (date) {
+  //                 controller.endDate = date;
+  //                 controller.update();
+  //               },
+  //             )
+  //             ),
+  //
+  //           ],
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
 }
 
