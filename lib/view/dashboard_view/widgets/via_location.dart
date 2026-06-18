@@ -384,6 +384,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                                         controller.viaPoints.removeAt(index);
                                                         controller.update();
                                                       });
+
                                                     },
                                                     // onPressed: () async {
                                                     //

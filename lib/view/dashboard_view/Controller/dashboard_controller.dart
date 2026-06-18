@@ -1106,6 +1106,7 @@ class DashboardController extends GetxController {
       LatLngBounds bounds = focusPoints.length == 1 ? LatLngBounds.fromPoints([focusPoints.first, focusPoints.first]) : calculateBounds(focusPoints);
       final cameraFit = CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
       mapController.fitCamera(cameraFit);
+
     }
     update();
   }

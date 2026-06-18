@@ -72,6 +72,8 @@ Future<String> getFares({
   String? returnCompanyPrice,
   String? returnMiles,
 }) async {
+  print("one way mils $miles");
+  print("two way mils $returnMiles");
   // 1. Validation: Return "0" instead of null to match Future<String>
   if (pickup == null || dropOff == null) {
     BotToast.showText(text: "Please add pickup and drop off location");
