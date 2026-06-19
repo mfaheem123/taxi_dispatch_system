@@ -155,8 +155,8 @@ class _DriverFormState extends State<DriverForm> {
                             child: controller.profileImg != null
                                 ? Image.memory(
                               controller.profileImg!.bytes,
-                              // fit: BoxFit.fill,
-                              fit: BoxFit.cover,
+                              fit: BoxFit.fill,
+                              // fit: BoxFit.cover,
                             ):
                             ((controller.singleDriverData != null) && (controller.singleDriverData!.driver!.image != null ))?
                             Image(image: NetworkImage(controller.singleDriverData!.driver!.image!))
