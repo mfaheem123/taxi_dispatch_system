@@ -787,7 +787,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     Widget luggageField(String label, IconData icon,
         TextEditingController controller, int tab) =>
         SizedBox(
-          width: 80,
+          width: 120,
           child:
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(label,
@@ -838,9 +838,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 (v) => setState(() => controller.smsCheckbox.value = v ?? false)),
         checkbox('EMAIL', controller.emailCheckbox.value,
                 (v) => setState(() => controller.emailCheckbox.value = v ?? false)),
-        luggageField('PASS', Icons.work, controller.passController, 22),
-        luggageField('LUGG', Icons.luggage, controller.luggController, 23),
-        luggageField('SLUGG', Icons.luggage, controller.sluggController, 24),
+        luggageField('Passenger'.toUpperCase(), Icons.work, controller.passController, 22),
+        luggageField('luggage'.toUpperCase(), Icons.luggage, controller.luggController, 23),
+        luggageField('small luggage'.toUpperCase(), Icons.luggage, controller.sluggController, 24),
       ],
     );
     final right = Row(mainAxisSize: MainAxisSize.min, children: [
@@ -2655,7 +2655,7 @@ class _CalendarDropdownFieldState extends State<_CalendarDropdownField> {
 
   @override
   void dispose() {
-    _closeCalendar();
+    _closeCalendar(notify: false);
     _fieldFocus.removeListener(_onFocusChange);
     _fieldFocus.dispose();
     _calendarFocus.dispose();
@@ -2685,10 +2685,12 @@ class _CalendarDropdownFieldState extends State<_CalendarDropdownField> {
     });
   }
 
-  void _closeCalendar() {
+  void _closeCalendar({bool notify = true}) {
     _entry?.remove();
     _entry = null;
-    if (mounted) setState(() {});
+    if (notify && mounted) {
+      setState(() {});
+    }
   }
 
   void _rebuildPanel() => _entry?.markNeedsBuild();

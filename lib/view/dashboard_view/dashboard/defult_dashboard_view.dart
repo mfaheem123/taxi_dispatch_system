@@ -241,7 +241,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                   padding:
                   const EdgeInsets.only(right: 6.0),
                   child: CustomButton(
-                    width: 120,
+                    width: 135,
                     height: 35,
                     borderRadius: 6,
                     verticalPadding: 0,
@@ -256,8 +256,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                     },
                     btnText:
                     controller.hideDashBoard.value
-                        ? "HIDE DASHBOARD"
-                        : "SHOW DASHBOARD",
+                        ? "HIDE DASHBOARD[F12]"
+                        : "SHOW DASHBOARD[F12]",
                   ),
                 ),
               ],

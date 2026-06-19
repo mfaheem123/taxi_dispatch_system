@@ -116,19 +116,19 @@ class ChatWithDriverAndPassengerState
                                 },
                               ),
 
-                              const SizedBox(height: 15),
+                              // const SizedBox(height: 15),
 
                               // Checkbox (Send to all)
-                              KeyboardCheckbox(
-                                onChanged: (v) {
-                                  controller.sendToAllValue.value = v;
-                                  controller.update();
-                                },
-                                label: AppText.sendAll,
-                                value: controller.sendToAllValue.value,
-                                focusNode: controller.sendToAllNode,
-                                width: 200,
-                              ),
+                              // KeyboardCheckbox(
+                              //   onChanged: (v) {
+                              //     controller.sendToAllValue.value = v;
+                              //     controller.update();
+                              //   },
+                              //   label: AppText.sendAll,
+                              //   value: controller.sendToAllValue.value,
+                              //   focusNode: controller.sendToAllNode,
+                              //   width: 200,
+                              // ),
 
                               const SizedBox(height: 10),
 
@@ -212,7 +212,16 @@ class ChatWithDriverAndPassengerState
           //   color: selected ? DynamicColors.primaryClr : Colors.grey.shade300,
           // ),
         ),
-        child: Row(
+        child:
+        Text(
+          title,
+          style: TextStyle(
+            fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+            color:
+            selected ? DynamicColors.whiteClr : DynamicColors.textClr,
+          ),
+        )
+        /*Row(
           children: [
             Checkbox(
               checkColor: Colors.white,
@@ -231,7 +240,7 @@ class ChatWithDriverAndPassengerState
               ),
             ),
           ],
-        ),
+        )*/,
       ),
     );
   }
