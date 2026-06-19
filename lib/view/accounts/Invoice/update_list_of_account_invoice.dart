@@ -571,7 +571,7 @@ class _UpdateAccountInvoiceScreenState
                         for (var i = 0; i < 6; i++) DataCell.empty,
                         DataCell(Center(
                           child: Text(
-                              "£${controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.account?.adminFees ?? "0"}",
+                              "£${controller.adminFees.toStringAsFixed(2)}",
                               style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900)),
                         )),
                         DataCell.empty,
