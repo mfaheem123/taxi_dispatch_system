@@ -411,6 +411,7 @@ class AccountController extends GetxController {
   ListOfAccountModel? listofAccount;
 
   ///--------------------- Pagination
+  ///
   var currentPage = 1.obs;
   var totalPages = 1.obs;
   final int limit = 5;
