@@ -426,13 +426,13 @@ class InvoiceController extends GetxController {
 
     // Admin fees from API (agar amount type AMOUNT hai)
     // Naya Logic (Direct API/Model se)
-    double adminFees = double.tryParse(accountData?.adminFees?.toString() ?? "0") ?? 0.0;
-    // double adminFees = 0;
-    // if (accountData?.adminFeesType == "AMOUNT") {
-    //   adminFees = (accountData?.adminFees ?? 0).toDouble();
-    // } else if (accountData?.adminFeesType == "PERCENTAGE") {
-    //   adminFees = (grandTotal * (accountData?.adminFees ?? 0) / 100);
-    // }
+    // double adminFees = double.tryParse(accountData?.adminFees?.toString() ?? "0") ?? 0.0;
+    double adminFees = 0;
+    if (accountData?.adminFeesType == "AMOUNT") {
+      adminFees = (accountData?.adminFees ?? 0).toDouble();
+    } else if (accountData?.adminFeesType == "PERCENTAGE") {
+      adminFees = (grandTotal * (accountData?.adminFees ?? 0) / 100);
+    }
 
     double finalTotal = grandTotal + adminFees;
 
@@ -660,6 +660,7 @@ CC: CONGESTION CHARGES
       totalMG = 0,
       totalCC = 0,
       subTotal = 0;
+  double adminFees = 0.0;
 
   void recalculateRowTotal(dynamic lineItem) {
     final booking = lineItem.booking;
@@ -700,11 +701,20 @@ CC: CONGESTION CHARGES
         subTotal += (b?.totalCharges ?? 0.0);
       }
 
-      double adminFees = double.tryParse(updateInvoiceByIdModel
-                  ?.accountInvoice?.accountInvoice?.account?.adminFees
-                  ?.toString() ??
-              "0") ??
-          0.0;
+      var accountData = updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.account;
+
+
+      double rawAdminFees = double.tryParse(accountData?.adminFees?.toString() ?? "0") ?? 0.0;
+      if (accountData?.adminFeesType == "AMOUNT") {
+        adminFees = rawAdminFees;
+      } else if (accountData?.adminFeesType == "PERCENTAGE") {
+        adminFees = (subTotal * rawAdminFees) / 100;
+      }
+      // double adminFees = double.tryParse(updateInvoiceByIdModel
+      //             ?.accountInvoice?.accountInvoice?.account?.adminFees
+      //             ?.toString() ??
+      //         "0") ??
+      //     0.0;
       updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.amount =
           (subTotal + adminFees).toStringAsFixed(2);
 
