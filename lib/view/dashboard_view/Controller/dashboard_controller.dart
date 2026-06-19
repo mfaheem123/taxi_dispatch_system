@@ -951,7 +951,7 @@ class DashboardController extends GetxController {
       outboundSequence.add(outboundDropOff);
     }
 
-    // 3. BUILD RETURN SEQUENCE (C -> VIA -> D)
+    // RETURN SEQUENCE (C -> VIA -> D)
     if (returnPickup != null) {
       returnSequence.add(returnPickup);
     }
@@ -1025,7 +1025,43 @@ class DashboardController extends GetxController {
       }
     }
 
-    ///>>>>>>>>>>  C to D ROUTE
+    ///>>>>>>>>>>  B to C CONNECTING ROUTE (Only for visual road-wise map line)
+
+    if (outboundDropOff != null && returnPickup != null) {
+      // B aur C ke coordinates ko join kiya
+      final coordsConnect = "${outboundDropOff.longitude},${outboundDropOff.latitude};${returnPickup.longitude},${returnPickup.latitude}";
+      final urlConnect = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsConnect?overview=full');
+
+      try {
+        final resConnect = await Dio().getUri(urlConnect);
+        if (resConnect.statusCode == 200 && resConnect.data['routes'] != null && resConnect.data['routes'].isNotEmpty) {
+          final dataConnect = resConnect.data['routes'][0];
+
+          // NOTA BENE: Yahan hum koi miles ya duration calculate/add nahi kar rahe hain.
+          // Is se aapka fare aur total distance bilkul accurate rahega (Sirf A->B aur C->D ka).
+
+          String encodedPoly = dataConnect['geometry'];
+          List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPoly);
+          List<LatLng> decodedSegmentPoints = result.map((p) => LatLng(p.latitude, p.longitude)).toList();
+
+          // Map ke automatic focus/bounds ke liye points add kar dete hain
+          polylinePointsCoordinate.addAll(decodedSegmentPoints);
+
+          // Map par street-wise line draw karne ke liye
+          polylines.add(Polyline(
+
+            points: decodedSegmentPoints,
+            color: Colors.grey.withOpacity(0.8), // Isko grey ya koi bhi alag color de dein taake transition lagay
+            strokeWidth: 2.5,
+          ));
+        }
+      } catch (e) {
+        print("B to C Connecting Route Generation Error: $e");
+      }
+    }
+
+
+    /// C to D ROUTE
 
     // Return Route Polyline (C to D via any Return Vias)
     if (returnSequence.length >= 2) {
@@ -1048,7 +1084,7 @@ class DashboardController extends GetxController {
 
           polylines.add(Polyline(
             points: decodedSegmentPoints,
-            color: Colors.purple, // Alag return polyline color
+            color: DynamicColors.pink, // Alag return polyline color
             strokeWidth: 2.5,
           ));
         }
