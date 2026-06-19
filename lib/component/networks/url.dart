@@ -29,7 +29,7 @@ class DevConfig implements BaseConfig {
   @override
   // String get socketUrl => "ws://192.168.5.251:8086/com";
 String get socketUrl => "wss://www.nexustechnologys.com/websocket";
-
+  // String get socketUrl => "ws://158.220.92.206:5000/websocket";
 }
 
 class ProductionConfig implements BaseConfig {

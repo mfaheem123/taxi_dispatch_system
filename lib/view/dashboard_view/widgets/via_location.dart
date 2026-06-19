@@ -105,7 +105,10 @@ class _ViaLocationState extends State<ViaLocation> {
                             ),
                             IconButton(
                               icon: Icon(Icons.close),
-                              onPressed: () => Navigator.pop(context),
+                              onPressed: () {
+                                controller.viaMilsCondition = false;
+                                Navigator.pop(context);
+                              },
                             ),
                           ],
                         ),
@@ -381,7 +384,20 @@ class _ViaLocationState extends State<ViaLocation> {
                                                         controller.viaPoints.removeAt(index);
                                                         controller.update();
                                                       });
+
                                                     },
+                                                    // onPressed: () async {
+                                                    //
+                                                    //   controller.viaPoints.removeAt(index);
+                                                    //
+                                                    //   controller.tempStoreViaMils = "0";
+                                                    //
+                                                    //   controller.viaMilsCondition = true;
+                                                    //
+                                                    //   await controller.fetchRouteFromOSRM();
+                                                    //
+                                                    //   controller.update();
+                                                    // },
                                                     style: ElevatedButton.styleFrom(
                                                       backgroundColor: Colors.red,
                                                       padding: EdgeInsets.zero,
@@ -422,7 +438,9 @@ class _ViaLocationState extends State<ViaLocation> {
                             ),
 
                             Visibility(
-                              visible: controller.jourValue == 'W/R'?true:false,
+                              visible: // BUSINESS RULE CHECK: Jab tak dono controller text empty na hon tab tak return logic true rahega
+                             controller.pickupTwoWayController.text.isNotEmpty &&
+                            controller.jourValue == 'W/R'  ?true:false,
                               child: SizedBox(
                                 width: 280,
                                 child: Column(
@@ -608,7 +626,10 @@ class _ViaLocationState extends State<ViaLocation> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(4)),
                               ),
-                              onPressed: () => Navigator.pop(context),
+                              onPressed: () {
+                                controller.viaMilsCondition = false;
+                                Navigator.pop(context);
+                              },
                               child: Text(
                                 "Cancel",
                                 style: TextStyle(color: Colors.white),
@@ -627,6 +648,8 @@ class _ViaLocationState extends State<ViaLocation> {
                               ),
 
                               onPressed: () {
+
+                                controller.viaMilsCondition = true;
                                 int len = controller.viaPoints.length;
 
                                 for (int a = 0; a < len && a < controller.viaTextEditingController.length; a++) {

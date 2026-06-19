@@ -375,7 +375,7 @@ double widthss = MediaQuery.of(context).size.width;
                                   onRightClick: () {
                                     print("RIGHT CLICK CUSTOMER: ${item.name}");
                                   },
-                                  child: Text(item.name ?? "-",
+                                  child: Text((item.name ?? "-").toUpperCase(),
                                     style: TextStyle(
                                       fontSize: widthss/140,
                                     ),
@@ -420,7 +420,7 @@ double widthss = MediaQuery.of(context).size.width;
                                     // Optional: borderRadius: BorderRadius.circular(2),
                                   ),
                                   child: Text(
-                                    item.pickup ?? "-",
+                                    (item.pickup ?? "-").toUpperCase(),
                                     style: mozillaTextRegularText(
                                       fontSize: widthss/140,
                                       color: item.airport!.pickup!.locationType!.foregroundColor == null?DynamicColors.black:
@@ -452,7 +452,7 @@ double widthss = MediaQuery.of(context).size.width;
                                     // Optional: borderRadius: BorderRadius.circular(2),
                                   ),
                                   child: Text(
-                                    item.dropoff ?? "-",
+                                    (item.dropoff ?? "-").toUpperCase(),
                                     style: mozillaTextRegularText(
                                       fontSize: widthss/140,
                                       color: item.airport!.dropoff!.locationType!.foregroundColor == null?DynamicColors.black:
@@ -482,7 +482,7 @@ double widthss = MediaQuery.of(context).size.width;
                                       color: item.account!.backgroundColor == null?Colors.transparent: Color(int.parse("0xFF${item.account!.backgroundColor}")),
                                       // Optional: borderRadius: BorderRadius.circular(2),
                                     ),
-                                    child: Text(item.account?.name ?? "",
+                                    child: Text((item.account?.name ?? "").toUpperCase(),
                                       style: mozillaTextRegularText(
                                         fontSize: widthss/140,
                                         color: item.account!.foregroundColor == null?DynamicColors.black: Color(int.parse("0xFF${item.account!.foregroundColor}")),
@@ -501,7 +501,7 @@ double widthss = MediaQuery.of(context).size.width;
                                   onRightClick: () {
                                     print("RIGHT CLICK DRIVER: ${item.driver?.name}");
                                   },
-                                  child: Text(item.driver?.name ?? "",
+                                  child: Text((item.driver?.name ?? "").toUpperCase(),
                                     style: TextStyle(
                                       fontSize: widthss/140,
                                     ),
@@ -528,7 +528,7 @@ double widthss = MediaQuery.of(context).size.width;
                                     color: item.vehicleType!.backgroundColor == null?Colors.transparent: Color(int.parse("0xFF${item.vehicleType!.backgroundColor}")),
                                     // Optional: borderRadius: BorderRadius.circular(2),
                                   ),
-                                  child: Text(item.vehicleType?.name ?? "-",
+                                  child: Text((item.vehicleType?.name ?? "-").toUpperCase(),
                                     style: mozillaTextRegularText(
                                       fontSize: widthss/140,
                                       color: item.vehicleType!.foregroundColor == null?DynamicColors.black: Color(int.parse("0xFF${item.vehicleType!.foregroundColor}")),
@@ -549,7 +549,7 @@ double widthss = MediaQuery.of(context).size.width;
                                 child: SizedBox(
                                   width: widthss/20.5,
                                   child: Text(
-                                    item.notes!.isEmpty ? "" : item.notes![0].note ?? "-",
+                                    (item.notes!.isEmpty ? "" : item.notes![0].note ?? "-").toUpperCase(),
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontSize: widthss/140,

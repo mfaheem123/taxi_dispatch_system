@@ -124,7 +124,7 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                   alignment: Alignment.center,
                   children: [
                     Icon(Icons.directions_car,
-                      size: 70,
+                      size: 10,
                       color: objectData.bookingStatus == "Accepted"?Colors.orange:
                       objectData.bookingStatus == "Arrived"?Colors.yellow:
                       objectData.bookingStatus == "On Route"?Colors.red:
@@ -272,7 +272,7 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                       ],
                     ),
                   ),
-                  /// ➕➖ ZOOM BUTTONS
+                  /// ZOOM BUTTONS
                   Positioned(
                     left: 15, // Map ke left side par show hoga
                     bottom: 20, // Bottom se thoda upar
@@ -306,7 +306,7 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                       ],
                     ),
                   ),
-                  /// 🔥 DRIVER LIST (ONLY THIS uses GetBuilder)
+                  ///  DRIVER LIST (ONLY THIS uses GetBuilder)
                   Container(
                     height: Get.height,
                     width: 250,
