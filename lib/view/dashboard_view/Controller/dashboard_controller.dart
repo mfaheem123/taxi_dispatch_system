@@ -805,7 +805,7 @@ class DashboardController extends GetxController {
   }
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // BUSINESS RULE IMPLEMENTATION: DETACHED OUTBOUND & RETURN SEGMENT ROUTES WITH SEQUENTIAL VIAS
-// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   Future<void> fetchRouteFromOSRM() async {
     markers.clear();
     polylines.clear();
@@ -836,10 +836,10 @@ class DashboardController extends GetxController {
               children: [
                 Icon(Icons.location_pin, color: DynamicColors.greenClr, size: 30),
                 const Positioned(
-                  top: 3, // Text ko pin ke rounded part me center karne ke liye
+                  top: 3,
                   child: Text(
                     "A",
-                    style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -861,7 +861,7 @@ class DashboardController extends GetxController {
                   top: 3,
                   child: Text(
                     "B",
-                    style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -883,7 +883,7 @@ class DashboardController extends GetxController {
                   top: 3,
                   child: Text(
                     "C",
-                    style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold), // Amber par black text behtar dikhega
+                    style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold), // Amber par black text behtar dikhega
                   ),
                 ),
               ],
@@ -905,7 +905,7 @@ class DashboardController extends GetxController {
                   top: 3,
                   child: Text(
                     "D",
-                    style: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -917,11 +917,10 @@ class DashboardController extends GetxController {
       }
     }
 
-    // 2. BUILD OUTBOUND SEQUENCE (A -> VIA -> B)
+    ///  (A -> VIA -> B)
     if (outboundPickup != null) {
       outboundSequence.add(outboundPickup);
     }
-    // Agr A ka via add ho tw sirf A me aye
     int outboundViaCount = 1;
     for (var item in viaPoints) {
       if (item.withReturnWay == "via") {
@@ -933,12 +932,12 @@ class DashboardController extends GetxController {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                Icon(Icons.location_pin, color: DynamicColors.primaryClr, size: 30),
+                Icon(Icons.location_pin, color: DynamicColors.textClr, size: 30),
                 Positioned(
                   top: 3,
                   child: Text(
                     "V$outboundViaCount",
-                    style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                   ),
             ),
           ],
@@ -951,11 +950,10 @@ class DashboardController extends GetxController {
       outboundSequence.add(outboundDropOff);
     }
 
-    // RETURN SEQUENCE (C -> VIA -> D)
+    ///  (C -> VIA -> D)
     if (returnPickup != null) {
       returnSequence.add(returnPickup);
     }
-    // Agr C ka via add ho tw sirf C me aya
     for (var item in viaPoints) {
       if (item.withReturnWay != "via") {
         final p = LatLng(item.lat, item.lng);
@@ -965,7 +963,7 @@ class DashboardController extends GetxController {
         Stack(
           alignment: Alignment.center,
           children: [
-            Icon(Icons.location_pin, color: DynamicColors.primaryClr, size: 30),
+            Icon(Icons.location_pin, color: DynamicColors.textClr, size: 30),
             Positioned(
               top: 3,
               child: Text(
@@ -1028,7 +1026,6 @@ class DashboardController extends GetxController {
     ///>>>>>>>>>>  B to C CONNECTING ROUTE (Only for visual road-wise map line)
 
     if (outboundDropOff != null && returnPickup != null) {
-      // B aur C ke coordinates ko join kiya
       final coordsConnect = "${outboundDropOff.longitude},${outboundDropOff.latitude};${returnPickup.longitude},${returnPickup.latitude}";
       final urlConnect = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsConnect?overview=full');
 
@@ -1036,17 +1033,10 @@ class DashboardController extends GetxController {
         final resConnect = await Dio().getUri(urlConnect);
         if (resConnect.statusCode == 200 && resConnect.data['routes'] != null && resConnect.data['routes'].isNotEmpty) {
           final dataConnect = resConnect.data['routes'][0];
-
-          // NOTA BENE: Yahan hum koi miles ya duration calculate/add nahi kar rahe hain.
-          // Is se aapka fare aur total distance bilkul accurate rahega (Sirf A->B aur C->D ka).
-
           String encodedPoly = dataConnect['geometry'];
           List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPoly);
           List<LatLng> decodedSegmentPoints = result.map((p) => LatLng(p.latitude, p.longitude)).toList();
-
-          // Map ke automatic focus/bounds ke liye points add kar dete hain
           polylinePointsCoordinate.addAll(decodedSegmentPoints);
-
           // Map par street-wise line draw karne ke liye
           polylines.add(Polyline(
 
@@ -1062,8 +1052,6 @@ class DashboardController extends GetxController {
 
 
     /// C to D ROUTE
-
-    // Return Route Polyline (C to D via any Return Vias)
     if (returnSequence.length >= 2) {
       final coordsRet = returnSequence.map((p) => "${p.longitude},${p.latitude}").join(";");
       final urlRet = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsRet?overview=full');
