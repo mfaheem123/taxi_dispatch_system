@@ -251,9 +251,10 @@ class _MyHomePageState extends State<MyHomePage> {
             // alignment: Alignment.bottomCenter,
             alignment: Alignment.topCenter,
             children: [
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: SingleChildScrollView(
+              // Align(
+              //   alignment: Alignment.bottomCenter,
+              //   child:
+                SingleChildScrollView(
                   child: Column(
                     children: [
                       Container(
@@ -354,7 +355,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   ),
                 ),
-              ),
+              // ),
               Obx(
                 ()=> Visibility(
                   visible: messagesShow.value,
