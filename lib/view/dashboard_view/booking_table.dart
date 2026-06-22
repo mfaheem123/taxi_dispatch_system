@@ -415,7 +415,7 @@ class _BookingTableState extends State<BookingTable> {
                                       onRightClick: () {
                                         print("RIGHT CLICK CUSTOMER: ${item.name}");
                                       },
-                                      child: Text(item.name ?? "-",
+                                      child: Text(item.name?.toUpperCase() ?? "-".toUpperCase(),
                                         style: TextStyle(
                                           fontSize: widthss/140,
                                         ),
@@ -460,7 +460,7 @@ class _BookingTableState extends State<BookingTable> {
                                         // Optional: borderRadius: BorderRadius.circular(2),
                                       ),
                                       child: Text(
-                                        item.pickup ?? "-",
+                                        item.pickup?.toUpperCase() ?? "-".toUpperCase(),
                                         style: mozillaTextRegularText(
                                           fontSize: widthss/140,
                                           color: item.airport!.pickup!.locationType!.foregroundColor == null?DynamicColors.black:
@@ -492,7 +492,7 @@ class _BookingTableState extends State<BookingTable> {
                                         // Optional: borderRadius: BorderRadius.circular(2),
                                       ),
                                       child: Text(
-                                        item.dropoff ?? "-",
+                                        item.dropoff?.toUpperCase() ?? "-".toUpperCase(),
                                         style: mozillaTextRegularText(
                                           fontSize: widthss/140,
                                           color: item.airport!.dropoff!.locationType!.foregroundColor == null?DynamicColors.black:
@@ -522,7 +522,7 @@ class _BookingTableState extends State<BookingTable> {
                                           color: item.account!.backgroundColor == null?Colors.transparent: Color(int.parse("0xFF${item.account!.backgroundColor}")),
                                           // Optional: borderRadius: BorderRadius.circular(2),
                                         ),
-                                        child: Text(item.account?.name ?? "",
+                                        child: Text(item.account?.name?.toUpperCase() ?? "".toUpperCase(),
                                           style: mozillaTextRegularText(
                                             fontSize: widthss/140,
                                             color: item.account!.foregroundColor == null?DynamicColors.black: Color(int.parse("0xFF${item.account!.foregroundColor}")),
@@ -541,7 +541,7 @@ class _BookingTableState extends State<BookingTable> {
                                       onRightClick: () {
                                         print("RIGHT CLICK DRIVER: ${item.driver?.name}");
                                       },
-                                      child: Text(item.driver?.name ?? "",
+                                      child: Text(item.driver?.name?.toUpperCase() ?? "",
                                         style: TextStyle(
                                           fontSize: widthss/140,
                                         ),
@@ -568,7 +568,7 @@ class _BookingTableState extends State<BookingTable> {
                                         color: item.vehicleType!.backgroundColor == null?Colors.transparent: Color(int.parse("0xFF${item.vehicleType!.backgroundColor}")),
                                         // Optional: borderRadius: BorderRadius.circular(2),
                                       ),
-                                      child: Text(item.vehicleType?.name ?? "-",
+                                      child: Text(item.vehicleType?.name?.toUpperCase() ?? "-".toUpperCase(),
                                         style: mozillaTextRegularText(
                                           fontSize: widthss/140,
                                           color: item.vehicleType!.foregroundColor == null?DynamicColors.black: Color(int.parse("0xFF${item.vehicleType!.foregroundColor}")),
@@ -589,7 +589,7 @@ class _BookingTableState extends State<BookingTable> {
                                     child: SizedBox(
                                       width: widthss/20.5,
                                       child: Text(
-                                        item.notes!.isEmpty ? "" : item.notes![0].note ?? "-",
+                                        item.notes!.isEmpty ? "".toUpperCase() : item.notes![0].note?.toUpperCase() ?? "-",
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           fontSize: widthss/140,
@@ -637,7 +637,7 @@ class _BookingTableState extends State<BookingTable> {
                                         // Optional: borderRadius: BorderRadius.circular(2),
                                       ),
                                       child: Text(
-                                        "${item.bookingStatus!.bookingStatus}",
+                                        "${item.bookingStatus!.bookingStatus}".toUpperCase(),
                                         style: TextStyle(color: DynamicColors.whiteClr,
                                           fontSize: widthss/140,
                                         ),
@@ -656,7 +656,7 @@ class _BookingTableState extends State<BookingTable> {
                                       onRightClick: () {
                                         print("RIGHT CLICK JOURNEY TYPE");
                                       },
-                                      child: Text(item.journeyType?.journeyType ?? "-",
+                                      child: Text(item.journeyType?.journeyType?.toUpperCase() ?? "-",
                                         style: TextStyle(
                                           fontSize: widthss/140,
                                         ),
@@ -684,7 +684,7 @@ class _BookingTableState extends State<BookingTable> {
                                           color: DynamicColors.primaryClr,
                                           // Optional: borderRadius: BorderRadius.circular(2),
                                         ),
-                                        child: Text(item.paymentType?.name ?? "-",
+                                        child: Text(item.paymentType?.name?.toUpperCase() ?? "-",
                                           style: TextStyle(
                                             color: DynamicColors.whiteClr,
                                             fontSize: widthss/140,
