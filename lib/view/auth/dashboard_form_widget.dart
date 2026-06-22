@@ -6,6 +6,7 @@ import '../../../alert/restrict_drivers_alert.dart';
 import '../../alert/child_seats_alert.dart';
 import '../../alert/extra_fares_alert.dart';
 import '../../alert/extra_info_alert.dart';
+import '../../component/text_field.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/dashboard/F8_widget_alert.dart';
 import '../dashboard_view/dashboard/F9_widget_alert.dart';
@@ -16,6 +17,8 @@ import '../dashboard_view/models/users_phone_numbers_model.dart';
 import '../dashboard_view/widgets/via_location.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
 import '../locations_view/controller/locations_controller.dart';
+
+
 class BookingFormScreen extends StatefulWidget {
   const BookingFormScreen({super.key});
   @override
@@ -729,6 +732,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       child: _GlowFocus(
         child: TextField(
           controller: notesController,
+          textCapitalization: TextCapitalization.characters,
+          inputFormatters: [
+            UpperCaseTextFormatter(),
+          ],
           style: const TextStyle(fontSize: _fsField),
           textInputAction: TextInputAction.next,
           decoration: _inputDecoration().copyWith(
@@ -1165,6 +1172,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         child: _GlowFocus(
           child: TextField(
             controller: controller,
+            textCapitalization: TextCapitalization.characters,
+            inputFormatters: [
+              UpperCaseTextFormatter(),
+            ],
             style: const TextStyle(fontSize: _fsField),
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => onPrefixTap?.call(),
@@ -1207,7 +1218,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               // itemHeight: 40, // default is around 48
               style: const TextStyle(fontSize: _fsField, color: Colors.black87),
               hint: hint != null
-                  ? Text(hint,
+                  ? Text(hint.toUpperCase(),
                   style: const TextStyle(
                       fontSize: _fsField, color: Colors.black))
                   : null,
@@ -1222,7 +1233,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   .map((e) => DropdownMenuItem<T>(
                 value: e,
                 child: Text(
-                  labelOf(e),
+                  labelOf(e).toUpperCase(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: _fsField),
@@ -1551,6 +1562,10 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
         child: Focus(
           onKeyEvent: _handleKey,
           child: TextField(
+            textCapitalization: TextCapitalization.characters,
+            inputFormatters: [
+              UpperCaseTextFormatter(),
+            ],
             key: _fieldKey,
             onChanged: widget.onChanged,
             controller: widget.controller,
