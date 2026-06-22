@@ -944,6 +944,7 @@ class DashboardController extends GetxController {
         ),
 
             type: "via", point: p, width: 30, height: 30));
+        outboundViaCount++;
       }
     }
     if (outboundDropOff != null) {
@@ -954,6 +955,7 @@ class DashboardController extends GetxController {
     if (returnPickup != null) {
       returnSequence.add(returnPickup);
     }
+    int viaNumber = 1;
     for (var item in viaPoints) {
       if (item.withReturnWay != "via") {
         final p = LatLng(item.lat, item.lng);
@@ -967,13 +969,14 @@ class DashboardController extends GetxController {
             Positioned(
               top: 3,
               child: Text(
-                "V$outboundViaCount",
+                "V$viaNumber",
                 style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
           ],
         ),
             type: "via", point: p, width: 30, height: 30));
+        viaNumber++ ;
       }
     }
     if (returnDropOff != null) {
