@@ -235,6 +235,7 @@ sendCompanyId: true,
         listScrollController.animateTo(
           targetOffset - 20,
           duration: const Duration(milliseconds: 200),
+
           curve: Curves.easeOut,
         );
       }
@@ -479,4 +480,61 @@ sendCompanyId: true,
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo list of lost property functionality
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   Working on create complain
+
+
+  final customerMobileController = TextEditingController();
+  final customerNameController = TextEditingController();
+  late var incidentedController = TextEditingController();
+  final customerNoteController = TextEditingController();
+  final customerRefNoController = TextEditingController();
+
+  SearchCustomerByMobileModel? complaintPhoneNumbersModel;
+  int complaintSelectedIndex = -1;
+
+  var selectedBookingForComplaint;
+
+  getComplaintCustomerNumbers(String mobile) async {
+    var response = await Api().get(
+      "customers/search-data?mobile=$mobile",
+      sendCompanyId: true,
+    );
+
+    if (response.statusCode == 200) {
+      complaintPhoneNumbersModel =
+          SearchCustomerByMobileModel.fromJson(response.data);
+
+      update();
+    }
+  }
+
+  void fillComplaintFromBooking(dynamic booking) {
+    if (booking == null) return;
+
+    // 👇 Customer Info
+    customerNameController.text = booking.name ?? "";
+    customerMobileController.text = booking.mobile ?? "";
+
+    // 👇 Booking Info
+    refNoController.text = booking.referenceNumber ?? "";
+    regController.text = booking.regNumber ?? "";
+
+    // // 👇 Route
+    // complaintController.text =
+    // "Pickup: ${booking.pickup ?? ''}\nDropoff: ${booking.dropoff ?? ''}";
+
+    // 👇 Date mapping
+    // incident date = pickup date
+    // complain date = today (optional)
+    incidentedController = booking.pickupDate ?? "";
+
+    // 👇 Notes / default fill (optional)
+    customerNoteController.text = booking.notes ?? "";
+
+    // store selected booking
+    selectedBookingForComplaint = booking;
+
+    update();
+  }
+
 }
