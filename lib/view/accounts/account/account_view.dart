@@ -344,19 +344,16 @@ class _AccountViewState extends State<AccountView> {
                                 //     ),
                                 //   ],
                                 // )
-
-                                // FEE SECTION CONTAINER WALI ROW KO IS SE REPLACE KAREIN
                                 Row(
-                                  spacing: 8, // Thoda sa gap components ke beech me
-                                  crossAxisAlignment: CrossAxisAlignment.end, // Taake text upar na chipke, niche se align ho
+                                  spacing: 8,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    // 1. Admin Fee Type Dropdown
                                     Expanded(
                                       flex: 3,
                                       child: _buildDropdown(
                                           AppText.adminFeeType,
-                                          "SELECT ADMIN FEES TYPE",
-                                          double.infinity, // Yeh khud hi Expanded ki poori width le lega, alag se multiply nahi karna padega
+                                          "SELECT TYPE",
+                                          double.infinity,
                                           dropDownHeight,
                                           ["PERCENTAGE", "AMOUNT"],
                                           controller.adminFeesDropDown,
@@ -365,18 +362,16 @@ class _AccountViewState extends State<AccountView> {
                                       ),
                                     ),
 
-                                    // 2. Admin Fee Text Field
                                     Expanded(
                                       flex: 2,
                                       child: _buildTextField(controller.accountAdminFeeController, AppText.adminFee, double.infinity, fieldHeight, [FilteringTextInputFormatter.digitsOnly]),
                                     ),
 
-                                    // 3. Account Fee Type Dropdown
                                     Expanded(
                                       flex: 3,
                                       child: _buildDropdown(
                                           AppText.accountFeeType,
-                                          "SELECT ACCOUNT TYPE",
+                                          "SELECT TYPE",
                                           double.infinity,
                                           dropDownHeight,
                                           ["PERCENTAGE", "AMOUNT"],
@@ -385,8 +380,6 @@ class _AccountViewState extends State<AccountView> {
                                               (item) => item
                                       ),
                                     ),
-
-                                    // 4. Account Fee Text Field
                                     Expanded(
                                       flex: 2,
                                       child: _buildTextField(controller.accountAccountFeeController, AppText.accountFee, double.infinity, fieldHeight, [FilteringTextInputFormatter.digitsOnly]),
