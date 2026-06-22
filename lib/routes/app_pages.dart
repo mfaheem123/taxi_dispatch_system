@@ -66,6 +66,7 @@ class AppPages {
     GetPage(
       name: _Paths.viewDriversMap,
       page: () => ViewDriversMap(),
+      binding: DashBoardBindings(),
     ),
     GetPage(
       name: _Paths.createVehicle,

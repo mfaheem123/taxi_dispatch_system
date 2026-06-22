@@ -308,6 +308,21 @@ Future<void> setupWebNotifications() async {
   }
 }
 
+/// Checks the browser URL hash for a valid deep link route.
+/// If the URL is e.g. http://localhost/#/ViewDriversMap, returns '/ViewDriversMap'.
+/// Otherwise falls back to the default login screen.
+String _getInitialRoute() {
+  final fragment = Uri.base.fragment; // everything after '#'
+  if (fragment.isNotEmpty) {
+    // Check if this hash matches any registered GetX route
+    final isValidRoute = AppPages.routes.any((page) => page.name == fragment);
+    if (isValidRoute) {
+      return fragment;
+    }
+  }
+  return AppPages.initial;
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -316,7 +331,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: "Nexus Tech",
       theme: ThemeData(),
-      initialRoute: AppPages.initial,
+      initialRoute: _getInitialRoute(),
       debugShowCheckedModeBanner: false,
       builder: (context, child) {
         if (child == null) return const SizedBox.shrink();
