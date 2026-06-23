@@ -231,7 +231,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   // setUrlStrategy(const HashUrlStrategy());
-  setUrlStrategy(const HashUrlStrategy());
+ // setUrlStrategy(const HashUrlStrategy());
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
 

@@ -1,13 +1,10 @@
-
-
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-
+import '../../Model/driver_models/driver_model.dart'as hide;
+import 'package:dashboard_new1/view/customer/controller/get_driver_dropdown.dart';
 import '../../alert/customer_complaint_alert.dart';
-import '../../alert/lost_property_booking_alert.dart';
 import '../../component/color.dart';
 import '../../component/customButton.dart';
 import '../../component/datatable_widget.dart';
@@ -21,6 +18,8 @@ import '../dashboard_view/widgets/time_picker_widget.dart';
 import '../dashboard_view/widgets/user_info_widget.dart';
 import 'controller/customer_controller.dart';
 
+
+
 class CreateComplaint extends StatefulWidget {
   const CreateComplaint({super.key});
 
@@ -33,7 +32,21 @@ class _CreateComplaintState extends State<CreateComplaint> {
   CustomerController controller = Get.isRegistered<CustomerController>()
       ? Get.find<CustomerController>()
       : Get.put(CustomerController());
+  DateTime safeParseDate(String date) {
+    try {
+      List<String> parts = date.split('-');
 
+      if (parts.length == 3) {
+        return DateTime.parse(
+          "${parts[0]}-${parts[1].padLeft(2, '0')}-${parts[2].padLeft(2, '0')}",
+        );
+      }
+
+      return DateTime.now();
+    } catch (e) {
+      return DateTime.now();
+    }
+  }
 
   @override
   void initState() {
@@ -41,6 +54,7 @@ class _CreateComplaintState extends State<CreateComplaint> {
 
     super.initState();
     shortCutKeyValue.value = "createComplaint";
+    controller.getDriversDropdown(); // ✅ add this
   }
 
   int selectedRowIndex = 0; // currently selected row
@@ -106,29 +120,31 @@ class _CreateComplaintState extends State<CreateComplaint> {
                                   context: context,
                                   isMobile: isMobile,
                                   label: AppText.incidentDate,
-                                  width: fieldWidth/1.5,
+                                  width: fieldWidth / 1.5,
                                   column: true,
-                                  child: SizedBox(height: 30,   child: KeyboardDatePicker(
-                                    initialDate:
-                                    controller.incidentedController != ""
-                                        ? DateTime.parse(
-                                        controller.incidentedController as String)
-                                        : DateTime.now(),
-                                    onChanged: (date) {
-                                      controller.incidentedController = date
-                                          .toIso8601String()
-                                          .split("T")
-                                          .first as TextEditingController;
-                                      controller.update();
-                                    },
-                                    onSubmitted: (date) {
-                                      controller.incidentedController = date
-                                          .toIso8601String()
-                                          .split("T")
-                                          .first as TextEditingController;
-                                      controller.update();
-                                    },
-                                  ),),
+                                  child: SizedBox(
+                                    height: 30,
+                                    child: KeyboardDatePicker(
+                                      key: ValueKey(controller.incidentedController.text),
+                                      initialDate: controller.incidentedController.text.isNotEmpty
+                                          ? safeParseDate(controller.incidentedController.text)
+                                          : DateTime.now(),
+
+                                      onChanged: (date) {
+                                        controller.incidentedController.text =
+                                            date.toIso8601String().split("T").first;
+
+                                        controller.update();
+                                      },
+
+                                      onSubmitted: (date) {
+                                        controller.incidentedController.text =
+                                            date.toIso8601String().split("T").first;
+
+                                        controller.update();
+                                      },
+                                    )
+                                  ),
                                 ),
                               ),
                               Padding(
@@ -219,8 +235,10 @@ class _CreateComplaintState extends State<CreateComplaint> {
                                               if (result != null) {
                                                 controller.selectedBookingForComplaint = result;
 
-
                                                 controller.update();
+                                              }
+                                              if (result != null) {
+                                                controller.fillComplaintFromBooking(result);
                                               }
                                             } else {
                                               BotToast.showText(
@@ -302,117 +320,9 @@ class _CreateComplaintState extends State<CreateComplaint> {
                                   ],
                                 ),
                               ),
-                              // Padding(
-                              //   padding: const EdgeInsets.symmetric(horizontal:8.0),
-                              //   child: KeyboardListener(
-                              //     focusNode: FocusNode(),
-                              //     onKeyEvent: (event) {
-                              //       if (controller.getPhoneNumbersModel
-                              //           ?.customer !=
-                              //           null) {
-                              //         int listLength = controller
-                              //             .getPhoneNumbersModel!
-                              //             .customer!
-                              //             .length;
-                              //         if (event is KeyDownEvent) {
-                              //           if (event.logicalKey ==
-                              //               LogicalKeyboardKey.arrowDown) {
-                              //             controller.selectedIndex =
-                              //                 (controller.selectedIndex +
-                              //                     1) %
-                              //                     listLength;
-                              //             controller.scrollToIndex(
-                              //                 controller.selectedIndex);
-                              //             controller.update();
-                              //           } else if (event.logicalKey ==
-                              //               LogicalKeyboardKey.arrowUp) {
-                              //             controller.selectedIndex =
-                              //                 (controller.selectedIndex -
-                              //                     1 +
-                              //                     listLength) %
-                              //                     listLength;
-                              //             controller.scrollToIndex(
-                              //                 controller.selectedIndex);
-                              //             controller.update();
-                              //           } else if (event.logicalKey ==
-                              //               LogicalKeyboardKey.enter &&
-                              //               controller.selectedIndex !=
-                              //                   -1) {
-                              //             var selectedUser = controller
-                              //                 .getPhoneNumbersModel!
-                              //                 .customer![
-                              //             controller.selectedIndex];
-                              //             controller.nameController.text =
-                              //                 (selectedUser.name ?? "").toUpperCase();
-                              //             controller.mobileController.text =
-                              //                 selectedUser.mobile ?? "";
-                              //             controller
-                              //                 .address1Controller.text =
-                              //                 (selectedUser.address1 ?? "").toUpperCase();
-                              //             controller.getPhoneNumbersModel =
-                              //             null;
-                              //             controller.selectedIndex = -1;
-                              //             controller.update();
-                              //           }
-                              //         }
-                              //       }
-                              //     },
-                              //     child: CustomTextField(
-                              //       borderRadius: 4,
-                              //       controller: controller.mobileController,
-                              //       width: fieldWidth/1.5,
-                              //       hintText: AppText.mobileNo,
-                              //       columnText: true,
-                              //       inputFormatters: [
-                              //         FilteringTextInputFormatter.digitsOnly,
-                              //       ],
-                              //       onChanged: (val) {
-                              //         controller.selectedIndex = -1;
-                              //         if (val.isNotEmpty) {
-                              //           controller.getCustomerNumbers(val);
-                              //         } else {
-                              //           controller.getPhoneNumbersModel =
-                              //           null;
-                              //           controller.update();
-                              //         }
-                              //       },
-                              //       suffixIcon: GestureDetector(
-                              //         onTap: () async {
-                              //           if (controller.mobileController.text
-                              //               .isNotEmpty) {
-                              //             var result = await Get.dialog(
-                              //               LostPropertyBookingAlert(
-                              //                   searchQuery: controller
-                              //                       .mobileController.text),
-                              //             );
-                              //             if (result != null) {
-                              //               controller
-                              //                   .selectedBookingForLostProperty =
-                              //                   result;
-                              //               controller.update();
-                              //             }
-                              //           } else {
-                              //             BotToast.showText(
-                              //                 text:
-                              //                 "Please enter mobile first!");
-                              //           }
-                              //         },
-                              //         child: Container(
-                              //           decoration: BoxDecoration(
-                              //             color: Colors.grey.shade300,
-                              //             border: Border.all(
-                              //                 color: DynamicColors.gryClr),
-                              //             borderRadius:
-                              //             BorderRadius.circular(4),
-                              //           ),
-                              //           child: const Icon(Icons.search,
-                              //               size: 25, color: Colors.black),
-                              //         ),
-                              //       ),
-                              //     ),
-                              //   ),
-                              //
-                              // ),
+
+                              SizedBox(height: 10,),
+
                             ],
                           ),
                         ),
@@ -465,26 +375,38 @@ class _CreateComplaintState extends State<CreateComplaint> {
                                   width: fieldWidth/1.5,
                                   hintText: AppText.refNo,
                                   columnText: true,
-                                  suffixIcon: Icon(Icons.search),
+                                 // suffixIcon: Icon(Icons.search),
                                 ),
                               ),
-                              CustomDropdownField<String>(
+                              CustomDropdownField<Driver>(
                                 text: AppText.driver,
-                                width: fieldWidth/2.5,
-                                label: "SELECT DRIVER", items:[
-                                "25 GEORGE HAMPTON",
-                                "25 GEORGE HAMPTON",
-                                "25 GEORGE HAMPTON",
-                                "25 GEORGE HAMPTON",
-                                "25 GEORGE HAMPTON",
-                                "25 GEORGE HAMPTON",],
-                                value: controller.selectDriver,
-                                itemLabel: (val) => val, // just show the string
-                                onChanged: (val) {
-                                  controller.selectDriver = val;
+                                width: fieldWidth / 2.5,
+                                label: "SELECT DRIVER",
+                                items: controller.driverList,
+                                itemLabel: (Driver d) => d.name ?? "No Name",
+                                value: controller.selectedDriver,
+                                onChanged: (Driver? val) {
+                                  controller.selectedDriver = val;
                                   controller.update();
                                 },
                               ),
+                              // CustomDropdownField<String>(
+                              //   text: AppText.driver,
+                              //   width: fieldWidth/2.5,
+                              //   label: "SELECT DRIVER", items:[
+                              //   "25 GEORGE HAMPTON",
+                              //   "25 GEORGE HAMPTON",
+                              //   "25 GEORGE HAMPTON",
+                              //   "25 GEORGE HAMPTON",
+                              //   "25 GEORGE HAMPTON",
+                              //   "25 GEORGE HAMPTON",],
+                              //  // value: controller.selectDriver,
+                              //   itemLabel: (val) => val, // just show the string
+                              //   onChanged: (val) {
+                              //    // controller.selectDriver = val;
+                              //     controller.update();
+                              //   },
+                              // ),
 
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -500,7 +422,7 @@ class _CreateComplaintState extends State<CreateComplaint> {
                                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                 child: CustomTextField(
                                   borderRadius: 4,
-                                  controller: controller.noteController,
+                                  controller: controller.customerNoteController,
                                   width: fieldWidth/1.5,
                                   hintText: AppText.note,
                                   columnText: true,
@@ -562,8 +484,25 @@ class _CreateComplaintState extends State<CreateComplaint> {
                           ],
                           totalRow: totalRows,
                           cells: [
-                            const DataCell(Text("FLAT 10 BLANDFORD COURT 4-6 BRONDESBURY PARK LONDON NW6 7BP")),
-                            const DataCell(Text("10 WARRIOR GARDENS ST. LEONARDS-ON-SEA TN37 6EB")),
+                            DataCell(
+                              Center(
+                                child: Text(
+                                  controller.pickupAddress.isEmpty
+                                      ? "-"
+                                      : controller.pickupAddress,
+                                ),
+                              ),
+                            ),
+
+                            DataCell(
+                              Center(
+                                child: Text(
+                                  controller. dropoffAddress.isEmpty
+                                      ? "-"
+                                      : controller.dropoffAddress,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),

@@ -1,14 +1,12 @@
 import 'dart:convert';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dashboard_new1/view/customer/controller/get_driver_dropdown.dart';
 import 'package:dashboard_new1/view/customer/model/getCustomer.dart';
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-
-import '../../dashboard_view/models/users_phone_numbers_model.dart';
-import '../model/get_customer_booking_model.dart';
+import '../model/get_customer_booking_model.dart' hide Driver;
 import '../model/get_lost_property_model.dart';
 import '../model/lost_property_getById__model.dart';
 import '../model/search_customer_by_mobile.dart';
@@ -204,7 +202,7 @@ sendCompanyId: true,
   int bookingRadio = 0;
 
   /// String variables
-  String? selectDriver;
+  //String? selectDriver;
 
   /// text fields controllers
   final refNoController = TextEditingController();
@@ -485,9 +483,11 @@ sendCompanyId: true,
 
   final customerMobileController = TextEditingController();
   final customerNameController = TextEditingController();
-  late var incidentedController = TextEditingController();
+  final incidentedController = TextEditingController();
   final customerNoteController = TextEditingController();
   final customerRefNoController = TextEditingController();
+  String pickupAddress = "";
+  String dropoffAddress = "";
 
   SearchCustomerByMobileModel? complaintPhoneNumbersModel;
   int complaintSelectedIndex = -1;
@@ -507,34 +507,93 @@ sendCompanyId: true,
       update();
     }
   }
-
   void fillComplaintFromBooking(dynamic booking) {
     if (booking == null) return;
 
-    // 👇 Customer Info
-    customerNameController.text = booking.name ?? "";
-    customerMobileController.text = booking.mobile ?? "";
+    final Booking b = booking as Booking;
 
-    // 👇 Booking Info
-    refNoController.text = booking.referenceNumber ?? "";
-    regController.text = booking.regNumber ?? "";
+    customerNameController.text = b.name ?? "";
+    customerMobileController.text = b.mobile ?? "";
+    customerRefNoController.text = b.referenceNumber ?? "";
 
-    // // 👇 Route
-    // complaintController.text =
-    // "Pickup: ${booking.pickup ?? ''}\nDropoff: ${booking.dropoff ?? ''}";
+    // ✅ FIXED VEHICLE PATH
+    regController.text = b.driver?.vehicle?.vehicleNumber ?? "";
 
-    // 👇 Date mapping
-    // incident date = pickup date
-    // complain date = today (optional)
-    incidentedController = booking.pickupDate ?? "";
+    if (b.notes != null && b.notes is List) {
+      customerNoteController.text =
+          (b.notes as List).map((e) => e.toString()).join(", ");
+    } else {
+      customerNoteController.text = "";
+    }
 
-    // 👇 Notes / default fill (optional)
-    customerNoteController.text = booking.notes ?? "";
+    incidentedController.text = b.pickupDate ?? "";
 
-    // store selected booking
-    selectedBookingForComplaint = booking;
+    pickupAddress = b.pickup ?? "";
+    dropoffAddress = b.dropoff ?? "";
+
+    selectedBookingForComplaint = b;
 
     update();
   }
+  GetDriverDropdown? getDriverDropdownModel;
+  List<Driver> driverList = [];
+
+  Driver? selectedDriver;
+
+  bool driverLoader = false;
+
+  getDriversDropdown() async {
+    driverLoader = true;
+    update();
+
+    try {
+      var response = await Api().get(
+        "drivers/get",
+        sendCompanyId: true,
+      );
+
+      if (response.statusCode == 200) {
+        getDriverDropdownModel =
+            GetDriverDropdown.fromJson(response.data);
+
+        driverList = getDriverDropdownModel?.drivers ?? [];
+
+        print("Drivers loaded: ${driverList.length}");
+      } else {
+        driverList = [];
+      }
+    } catch (e) {
+      print("Driver API error: $e");
+      driverList = [];
+    }
+
+    driverLoader = false;
+    update();
+  }
+
+  // getDriversDropdown() async {
+  //   driverLoader = true;
+  //   update();
+  //
+  //   var response = await Api().get(
+  //     "drivers/get?company_id=1", sendCompanyId: true,
+  //   );
+  //
+  //   if (response.statusCode == 200) {
+  //     getDriverDropdownModel =
+  //         GetDriverDropdown.fromJson(response.data);
+  //
+  //     driverList = getDriverDropdownModel?.drivers ?? [];
+  //
+  //     print("Drivers length: ${driverList.length}");
+  //
+  //
+  //     driverLoader = false;
+  //     update();
+  //   } else {
+  //     driverLoader = false;
+  //     update();
+  //   }
+  // }
 
 }
