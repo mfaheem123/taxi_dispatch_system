@@ -341,6 +341,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
         .physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
+    double initailCameraZoom = 13.0;
     return SizedBox(
       width: widget.createBooking == true
           ? Get.width
@@ -352,6 +353,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
           : screenHeight >= 940
           ? screenHeight * 0.51
           : screenHeight * 0.80*/,
+
       child: GetBuilder<DashboardController>(
         builder: (controller) {
           return Container(
@@ -374,7 +376,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                         initialCenter: polylinePoints.isEmpty
                             ? LatLng(50.5, 30.51)
                             : polylinePoints.first,
-                        initialZoom: 13.0,
+                        initialZoom: initailCameraZoom,
                         interactionOptions: const InteractionOptions(
                           flags: InteractiveFlag.all,
                           enableMultiFingerGestureRace: true,
@@ -542,6 +544,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+
                       // Zoom (+) Button
                       SizedBox(
                         height: 20,
@@ -570,6 +573,23 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                           child: const Icon(Icons.remove, color: Colors.black87, size: 20,),
                         ),
                       ),
+                      const SizedBox(height: 10),
+                      // Camera fouces
+                      SizedBox(
+                        height: 30,
+                        width: 30,
+                        child: FloatingActionButton.small(
+                          backgroundColor: Colors.black26,
+                          onPressed: () {
+                            controller.mapController.move(
+                              polylinePoints.first,
+                              13.0,
+                            );
+                          },
+                          child: const Icon(Icons.center_focus_strong, color: Colors.black87, size: 20,),
+                        ),
+                      ),
+
                     ],
                   ),
                 ),

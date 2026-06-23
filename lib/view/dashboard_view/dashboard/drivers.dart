@@ -401,7 +401,19 @@ class _DriversViewState extends State<DriversView> {
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                                         decoration: BoxDecoration(
-                                          color: DynamicColors.primaryClr,
+                                            color:
+                                            driver.bookingStatus == "Accepted"?Colors.orange:
+                                            driver.bookingStatus == "Arrived"?Colors.yellow:
+                                            driver.bookingStatus == "On Route"?Colors.red:
+                                            driver.bookingStatus == "STC"?Colors.blue:
+                                            driver.driverStatus == "On Break"
+                                                ? Colors.red
+                                                : Colors.green,
+
+
+
+
+
                                           borderRadius: const BorderRadius.all(Radius.circular(4)),
                                         ),
                                         child: Text(

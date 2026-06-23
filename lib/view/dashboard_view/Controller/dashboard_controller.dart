@@ -102,7 +102,24 @@ class DashboardController extends GetxController {
             dashboardAllData!.drivers!.add(driver);
             onlineDriversList.add(driver);
             update();
-          } else if (data['event'] != "DRIVER_LIST") {
+          }else if (data['event'] == "DRIVER_BREAK_STATUS_UPDATE") {
+
+            final driverData = data['data'];
+
+            int index = onlineDriversList.indexWhere(
+                  (e) => e.id.toString() == driverData['id'].toString(),
+            );
+
+            if (index != -1) {
+              onlineDriversList[index].driverStatus =
+              driverData['driver_status'];
+
+              onlineDriversList[index].bookingStatus =
+              driverData['booking_status'];
+
+              update();
+            }
+          }  else if (data['event'] != "DRIVER_LIST") {
             int index = onlineDriversList.indexWhere(
               (test) =>
                   test.id.toString() == data['data']['driverId'].toString(),
@@ -146,50 +163,137 @@ class DashboardController extends GetxController {
     try {
       _channel = WebSocketChannel.connect(url);
 
+      // _channel!.stream.listen(
+      //   (message) {
+      //     final data = jsonDecode(message);
+      //
+      //     print(data['event']);
+      //     if (data['event'] == "BUSY_DRIVER_UPDATE") {
+      //       if (onlineDriversList
+      //           .any((e) => e.id.toString() == data['data']['id'].toString())) {
+      //         onlineDriversList.removeWhere(
+      //           (e) => e.id.toString() == data['data']['id'].toString(),
+      //         );
+      //       }
+      //
+      //       print(dashboardAllData!.drivers);
+      //       print(selectDriverValue);
+      //
+      //       if (dashboardAllData!.drivers!
+      //           .any((e) => e.id.toString() == data['data']['id'].toString())) {
+      //         dashboardAllData!.drivers!.removeWhere(
+      //           (e) => e.id.toString() == data['data']['id'].toString(),
+      //         );
+      //         selectDriverValue = null;
+      //       }
+      //
+      //       print(dashboardAllData!.drivers);
+      //
+      //       final driver = DashboardDriverObject.fromJson(
+      //         Map<String, dynamic>.from(data['data']),
+      //       );
+      //       busyDriversList.add(driver);
+      //       update();
+      //     } else {
+      //       busyDriversList.removeWhere(
+      //         (e) => e.id.toString() == data['data']['id'].toString(),
+      //       );
+      //       update();
+      //     }
+      //   },
+      //   onError: (error) => print("Connection Error: $error"),
+      //   onDone: () {
+      //     connectToBusyDriver();
+      //     print("🔌 Socket Disconnected");
+      //     print("Close Code: ${_channel?.closeCode}");
+      //     print("Close Reason: ${_channel?.closeReason}");
+      //   },
+      // );
       _channel!.stream.listen(
-        (message) {
+            (message) {
           final data = jsonDecode(message);
+          print("EVENT => ${data['event']}");
+          print("DATA => ${data['data']}");
+          print("EVENT => ${data['event']}");
 
-          print(data['event']);
-          if (data['event'] == "BUSY_DRIVER_UPDATE") {
-            if (onlineDriversList
-                .any((e) => e.id.toString() == data['data']['id'].toString())) {
+          // ==========================
+          // DRIVER STATUS UPDATE
+          // ==========================
+          if (data['event'] == "DRIVER_BOOKING_STATUS_WEB_UPDATE") {
+
+            final driverId = data['data']['id'];
+
+            // Online Drivers
+            final onlineIndex = onlineDriversList.indexWhere(
+                  (e) => e.id == driverId,
+            );
+
+            if (onlineIndex != -1) {
+              onlineDriversList[onlineIndex].bookingStatus =
+              data['data']['booking_status'];
+
+              onlineDriversList[onlineIndex].driverStatus =
+              data['data']['driver_status'];
+            }
+
+            // Busy Drivers
+            final busyIndex = busyDriversList.indexWhere(
+                  (e) => e.id == driverId,
+            );
+
+            if (busyIndex != -1) {
+              busyDriversList[busyIndex].bookingStatus =
+              data['data']['booking_status'];
+
+              busyDriversList[busyIndex].driverStatus =
+              data['data']['driver_status'];
+            }
+
+            update();
+          }
+
+          // ==========================
+          // BUSY DRIVER UPDATE
+          // ==========================
+          else if (data['event'] == "BUSY_DRIVER_UPDATE") {
+
+            if (onlineDriversList.any(
+                  (e) => e.id.toString() == data['data']['id'].toString(),
+            )) {
               onlineDriversList.removeWhere(
-                (e) => e.id.toString() == data['data']['id'].toString(),
+                    (e) => e.id.toString() == data['data']['id'].toString(),
               );
             }
 
-            print(dashboardAllData!.drivers);
-            print(selectDriverValue);
-
-            if (dashboardAllData!.drivers!
-                .any((e) => e.id.toString() == data['data']['id'].toString())) {
+            if (dashboardAllData!.drivers!.any(
+                  (e) => e.id.toString() == data['data']['id'].toString(),
+            )) {
               dashboardAllData!.drivers!.removeWhere(
-                (e) => e.id.toString() == data['data']['id'].toString(),
+                    (e) => e.id.toString() == data['data']['id'].toString(),
               );
+
               selectDriverValue = null;
             }
-
-            print(dashboardAllData!.drivers);
 
             final driver = DashboardDriverObject.fromJson(
               Map<String, dynamic>.from(data['data']),
             );
+
             busyDriversList.add(driver);
-            update();
-          } else {
-            busyDriversList.removeWhere(
-              (e) => e.id.toString() == data['data']['id'].toString(),
-            );
+
             update();
           }
-        },
-        onError: (error) => print("Connection Error: $error"),
-        onDone: () {
-          connectToBusyDriver();
-          print("🔌 Socket Disconnected");
-          print("Close Code: ${_channel?.closeCode}");
-          print("Close Reason: ${_channel?.closeReason}");
+
+          // ==========================
+          // REMOVE BUSY DRIVER
+          // ==========================
+          else {
+            busyDriversList.removeWhere(
+                  (e) => e.id.toString() == data['data']['id'].toString(),
+            );
+
+            update();
+          }
         },
       );
     } catch (e) {

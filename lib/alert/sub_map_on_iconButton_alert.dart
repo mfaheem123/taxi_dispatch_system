@@ -303,9 +303,25 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                             child: const Icon(Icons.remove, color: Colors.black87, size: 20,),
                           ),
                         ),
+                        // Camera fouces
+                        SizedBox(
+                          height: 30,
+                          width: 30,
+                          child: FloatingActionButton.small(
+                            backgroundColor: Colors.black26,
+                            onPressed: () {
+                              mapController.move(
+                                LatLng(50.5, 30.51),
+                                12,
+                              );
+                            },
+                            child: const Icon(Icons.center_focus_strong, color: Colors.black87, size: 20,),
+                          ),
+                        ),
                       ],
                     ),
                   ),
+
                   ///  DRIVER LIST (ONLY THIS uses GetBuilder)
                   Container(
                     height: Get.height,
