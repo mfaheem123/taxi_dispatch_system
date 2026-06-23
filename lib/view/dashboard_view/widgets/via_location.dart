@@ -162,9 +162,6 @@ class _ViaLocationState extends State<ViaLocation> {
                                         focusNode: controller.viaFieldFocusNode,
                                         controller: addressController,
                                         onTap: (){
-                                          print("hubaib");
-                                          print(controller.selectedTextFieldsValue.value);
-                                          print('Khan');
                                           if(controller.selectedTextFieldsValue.value != "via"){
                                             controller.selectedTextFieldsValue.value = "via";
                                           }
