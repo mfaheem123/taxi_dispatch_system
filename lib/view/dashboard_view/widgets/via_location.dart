@@ -162,7 +162,12 @@ class _ViaLocationState extends State<ViaLocation> {
                                         focusNode: controller.viaFieldFocusNode,
                                         controller: addressController,
                                         onTap: (){
-                                          _controller.selectedTextFieldsValue.value = "VIA";
+                                          print("hubaib");
+                                          print(controller.selectedTextFieldsValue.value);
+                                          print('Khan');
+                                          if(controller.selectedTextFieldsValue.value != "via"){
+                                            controller.selectedTextFieldsValue.value = "via";
+                                          }
                                         },
                                         onChanged: (v){
                                           controller.onChangeHandler(
@@ -671,6 +676,7 @@ class _ViaLocationState extends State<ViaLocation> {
                   ),
 
                   Obx(() {
+                    // controller.selectedTextFieldsValue.value = "VIA";
                     if (controller.selectedTextFieldsValue.value !=
                         "via") {
                       return SizedBox.shrink();
