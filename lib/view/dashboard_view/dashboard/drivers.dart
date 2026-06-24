@@ -406,14 +406,8 @@ class _DriversViewState extends State<DriversView> {
                                             driver.bookingStatus == "Arrived"?Colors.yellow:
                                             driver.bookingStatus == "On Route"?Colors.red:
                                             driver.bookingStatus == "STC"?Colors.blue:
-                                            driver.driverStatus == "On Break"
-                                                ? Colors.red
-                                                : Colors.green,
-
-
-
-
-
+                                            // driver.driverStatus == "On Break"? Colors.red:
+                                            Colors.green,
                                           borderRadius: const BorderRadius.all(Radius.circular(4)),
                                         ),
                                         child: Text(
