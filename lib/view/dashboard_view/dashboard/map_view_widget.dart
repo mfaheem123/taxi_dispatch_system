@@ -520,18 +520,20 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                         padding: EdgeInsets.zero,
                         icon: const Icon(Icons.crop_square_outlined),
                         onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (_) => DriversMapAlert(),);
-                          print("Map Alert Open");
-                          // final newTabUrl = Uri.base.origin +
-                          //     '/#' +
-                          //     Routes.viewDriversMap;
-                          // html.window.open(
-                          //   newTabUrl,
-                          //   '_blank',
-                          //   'width=1200,height=800,noopener,noreferrer',
-                          // );
+                          final newTabUrl = Uri.base.origin + '/#' + Routes.viewDriversMap;
+                          html.window.open(newTabUrl, '_blank');
+                          // showDialog(
+                          //     context: context,
+                          //     builder: (_) => DriversMapAlert(),);
+                          // print("Map Alert Open");
+                          // // final newTabUrl = Uri.base.origin +
+                          // //     '/#' +
+                          // //     Routes.viewDriversMap;
+                          // // html.window.open(
+                          // //   newTabUrl,
+                          // //   '_blank',
+                          // //   'width=1200,height=800,noopener,noreferrer',
+                          // // );
                         },
                       ),
                     ),
