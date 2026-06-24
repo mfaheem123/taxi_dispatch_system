@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dashboard_new1/view/customer/controller/get_complaint_model.dart' hide Booking, Customer;
 import 'package:dashboard_new1/view/customer/controller/get_driver_dropdown.dart';
 import 'package:dashboard_new1/view/customer/model/getCustomer.dart';
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
@@ -478,6 +479,9 @@ sendCompanyId: true,
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo list of lost property functionality
+
+
+
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   Working on create complain
 
 
@@ -486,6 +490,7 @@ sendCompanyId: true,
   final incidentedController = TextEditingController();
   final customerNoteController = TextEditingController();
   final customerRefNoController = TextEditingController();
+  final complainDateController = TextEditingController(  text: DateTime.now().toIso8601String().split("T").first,);
   String pickupAddress = "";
   String dropoffAddress = "";
 
@@ -541,7 +546,7 @@ sendCompanyId: true,
   Driver? selectedDriver;
 
   bool driverLoader = false;
-
+//driver dropdown api
   getDriversDropdown() async {
     driverLoader = true;
     update();
@@ -571,29 +576,216 @@ sendCompanyId: true,
     update();
   }
 
-  // getDriversDropdown() async {
-  //   driverLoader = true;
+  bool complaintLoader = false;
+
+  postComplaintLoad(bool value) {
+    complaintLoader = value;
+    update();
+  }
+
+  postComplaint() async {
+    postComplaintLoad(true);
+
+    var formData = {
+      "complain_date": complainDateController.text,
+      "incident_date": incidentedController.text,
+
+      "customer_id": selectedBookingForComplaint?.customerId,
+      "booking_id": selectedBookingForComplaint?.id,
+
+      "complaint": complaintController.text,
+      "dealt_with": howDealWithController.text,
+      "result": resultController.text,
+
+      "driver_id": selectedDriver?.id,
+    };
+
+    print(formData);
+
+    var response = await Api().post(
+      formData,
+      "complaint/add",
+      auth: true,
+      sendCompanyId: true,
+    );
+
+    if (response!.statusCode == 201) {
+      BotToast.showText(
+        text: "COMPLAINT ADDED SUCCESSFULLY",
+      );
+
+      print("✅ COMPLAINT ADDED SUCCESSFULLY");
+      print(response.data);
+
+      // Clear fields
+      complainDateController.text =
+          DateTime.now().toIso8601String().split("T").first;
+
+      incidentedController.clear();
+      customerNameController.clear();
+      customerMobileController.clear();
+      customerRefNoController.clear();
+      customerNoteController.clear();
+
+      complaintController.clear();
+      howDealWithController.clear();
+      resultController.clear();
+
+      pickupAddress = "";
+      dropoffAddress = "";
+
+      selectedBookingForComplaint = null;
+      selectedDriver = null;
+
+      update();
+    } else {
+      BotToast.showText(text: "FAILED TO ADD COMPLAINT");
+
+      print("ERROR ADDING COMPLAINT");
+      print(response.data);
+    }
+
+    postComplaintLoad(false);
+  }
+
+  // get Customer  complaint
+  GetCustomerComplainsModel? getCustomerComplainsModel;
+  RxBool complaintsLoader = false.obs;
+
+  /// Search Work
+  RxList<Complaint> complaintsAll = <Complaint>[].obs;
+  RxList<Complaint> filteredComplaints = <Complaint>[].obs;
+
+  RxString searchReferenceNumber = ''.obs;
+  RxString searchComplainDate = ''.obs;
+  RxString searchCustomerName = ''.obs;
+  RxString searchComplaint = ''.obs;
+
+  /// Pagination
+  var currentPageComplaints = 1.obs;
+  var totalPagesComplaints = 1.obs;
+  final int limitComplaints = 10;
+
+  Future<void> getCustomerComplaints() async {
+    complaintsLoader(true);
+
+    try {
+      var response = await Api().get(
+        "complaints/get",
+        // queryParameters: {
+        //   "reference_number": searchReferenceNumber.value,
+        //   "complain_date": searchComplainDate.value,
+        //   "name": searchCustomerName.value,
+        //   "complaint": searchComplaint.value,
+        // },
+       // sendCompanyId: true,
+      );
+
+      print("Status Code => ${response.statusCode}");
+      print("Response => ${response.data}");
+
+      if (response.statusCode == 200) {
+        getCustomerComplainsModel = GetCustomerComplainsModel.fromJson(response.data);
+
+        complaintsAll.value = getCustomerComplainsModel?.complaints ?? [];
+
+        filteredComplaints.value = List<Complaint>.from(complaintsAll);
+
+        print("Total Complaints => ${filteredComplaints.length}");
+
+        update();
+      }
+    } catch (e, s) {
+      print("Get Complaints Error => $e");
+      print(s);
+    } finally {
+      complaintsLoader(false);
+      update();
+    }
+  }
+
+
+
+
+
+
+
+
+  void searchComplaints() {
+    filteredComplaints.value = complaintsAll.where((item) {
+      final ref = item.referenceNumber?.toLowerCase() ?? "";
+      final date = item.complainDate?.toString().toLowerCase() ?? "";
+      final customer = item.customer?.name?.toLowerCase() ?? "";
+      final complaint = item.complaint?.toLowerCase() ?? "";
+
+      return ref.contains(searchReferenceNumber.value.toLowerCase()) &&
+          date.contains(searchComplainDate.value.toLowerCase()) &&
+          customer.contains(searchCustomerName.value.toLowerCase()) &&
+          complaint.contains(searchComplaint.value.toLowerCase());
+    }).toList();
+
+    update();
+  }
+
+  void clearComplaintsSearch() {
+    searchReferenceNumber.value = "";
+    searchComplainDate.value = "";
+    searchCustomerName.value = "";
+    searchComplaint.value = "";
+
+    filteredComplaints.value =
+    List<Complaint>.from(complaintsAll);
+
+    update();
+  }
+
+  // GetCustomerComplainsModel? getCustomerComplainsModel;
+  // bool customerComplaintLoader = false;
+
+  // getCustomerComplaints() async {
+  //   customerComplaintLoader = true;
   //   update();
   //
   //   var response = await Api().get(
-  //     "drivers/get?company_id=1", sendCompanyId: true,
+  //     "complaint/get",
+  //     sendCompanyId: true,
   //   );
   //
   //   if (response.statusCode == 200) {
-  //     getDriverDropdownModel =
-  //         GetDriverDropdown.fromJson(response.data);
+  //     getCustomerComplainsModel =
+  //         GetCustomerComplainsModel.fromJson(response.data);
   //
-  //     driverList = getDriverDropdownModel?.drivers ?? [];
-  //
-  //     print("Drivers length: ${driverList.length}");
-  //
-  //
-  //     driverLoader = false;
+  //     customerComplaintLoader = false;
   //     update();
   //   } else {
-  //     driverLoader = false;
+  //     customerComplaintLoader = false;
   //     update();
   //   }
   // }
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

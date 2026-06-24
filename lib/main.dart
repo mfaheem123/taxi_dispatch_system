@@ -252,7 +252,7 @@ void main() async {
     await setupWebNotifications();
   }
 
-  disableInspect();
+ disableInspect();
 
   Get.put(ZoneController(), permanent: true);
   Get.put(AuthController(), permanent: true);
