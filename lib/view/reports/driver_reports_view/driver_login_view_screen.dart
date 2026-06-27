@@ -25,7 +25,9 @@ class _DriverLoginViewWindow extends State<DriverLoginViewWindow> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: isFullScreen ? BorderRadius.zero : BorderRadius.circular(12),
+
             boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 15)],
+
           ),
           child: Column(
             children: [
@@ -33,7 +35,9 @@ class _DriverLoginViewWindow extends State<DriverLoginViewWindow> {
                 height: 45,
                 decoration: BoxDecoration(
                   color: DynamicColors.primaryClr,
+
                   borderRadius: isFullScreen ? BorderRadius.zero : const BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Row(
@@ -63,6 +67,7 @@ class _DriverLoginViewWindow extends State<DriverLoginViewWindow> {
     );
   }
 }
+
 class DriverLoginReportContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
