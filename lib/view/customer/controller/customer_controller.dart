@@ -671,14 +671,7 @@ sendCompanyId: true,
 
     try {
       var response = await Api().get(
-        "complaints/get",
-        // queryParameters: {
-        //   "reference_number": searchReferenceNumber.value,
-        //   "complain_date": searchComplainDate.value,
-        //   "name": searchCustomerName.value,
-        //   "complaint": searchComplaint.value,
-        // },
-       // sendCompanyId: true,
+        "complaint/get",
       );
 
       print("Status Code => ${response.statusCode}");
@@ -763,19 +756,6 @@ sendCompanyId: true,
   //   }
   // }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

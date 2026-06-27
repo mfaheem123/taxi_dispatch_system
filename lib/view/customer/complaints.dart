@@ -102,132 +102,231 @@ class _ComplaintsViewState extends State<ComplaintsView> {
                 scrollDirection: Axis.horizontal,
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width,
-                  child: DatatableWidget(
-                      columns: [
-                        buildHeaderWithSearch(title: "REF #"),
-                        buildHeaderWithSearch(title: "COMPLAIN DATE"),
-                        buildHeaderWithSearch(title: "NAME"),
-                        buildHeaderWithSearch(
-                            title: "ACTIONS",
-                            customWidget: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    side: BorderSide(
-                                      color: Colors.transparent,
-                                    ), // border color & thickness
-                                  ),
-                                  onPressed: () {
-                                     controller.searchComplaints();
-                                  },
-                                  child: Icon(
-                                    Icons.search,
-                                    size: 28,
-                                  ),
-                                ),
-                                Text("|"),
-                                OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    side: BorderSide(
-                                      color: Colors.transparent,
-                                    ), // border color & thickness
-                                  ),
-                                  onPressed: () {
-                                    controller.clearComplaintsSearch();
-                                  },
-                                  child: Icon(
-                                    Icons.close,
-                                    size: 28,
-                                    color: DynamicColors.redClr,
-                                  ),
-                                ),
-                              ],
-                            )),
-                      ],
-                      // totalRow: totalRows,
-                    totalRow: controller.filteredComplaints.length, // <-- ye add karo
-                    cells: controller.filteredComplaints.isEmpty
-                        ? []
-                        : List.generate(
-                      controller.filteredComplaints.length,
-                          (index) {
-                        final complaint = controller.filteredComplaints[index];
+                   child:DatatableWidget(
+                     columns: [
+                       buildHeaderWithSearch(title: "REF #"),
+                       buildHeaderWithSearch(title: "COMPLAIN DATE"),
+                       buildHeaderWithSearch(title: "NAME"),
+                       buildHeaderWithSearch(
+                         title: "ACTIONS",
+                         customWidget: Row(
+                           mainAxisAlignment: MainAxisAlignment.center,
+                           children: [
+                             OutlinedButton(
+                               style: OutlinedButton.styleFrom(
+                                 side: const BorderSide(color: Colors.transparent),
+                               ),
+                               onPressed: controller.searchComplaints,
+                               child: const Icon(Icons.search, size: 28),
+                             ),
+                             const Text("|"),
+                             OutlinedButton(
+                               style: OutlinedButton.styleFrom(
+                                 side: const BorderSide(color: Colors.transparent),
+                               ),
+                               onPressed: controller.clearComplaintsSearch,
+                               child: Icon(
+                                 Icons.close,
+                                 size: 28,
+                                 color: DynamicColors.redClr,
+                               ),
+                             ),
+                           ],
+                         ),
+                       ),
+                     ],
 
-                        return [
-                          DataCell(
-                            Center(
-                              child: Text(
-                                complaint.referenceNumber ?? "",
-                              ),
-                            ),
-                          ),
+                     rows: controller.filteredComplaints.map((complaint) {
+                       return DataRow(
+                         cells: [
 
-                          DataCell(
-                            Center(
-                              child: Text(
-                                complaint.complainDate != null
-                                    ? "${complaint.complainDate!.day}/${complaint.complainDate!.month}/${complaint.complainDate!.year}"
-                                    : "",
-                              ),
-                            ),
-                          ),
+                           DataCell(
+                             Center(
+                               child: Text(complaint.referenceNumber ?? ""),
+                             ),
+                           ),
 
-                          DataCell(
-                            Center(
-                              child: Text(
-                                complaint.customer?.name ?? "",
-                              ),
-                            ),
-                          ),
+                           DataCell(
+                             Center(
+                               child: Text(
+                                 complaint.complainDate != null
+                                     ? "${complaint.complainDate!.day}/${complaint.complainDate!.month}/${complaint.complainDate!.year}"
+                                     : "",
+                               ),
+                             ),
+                           ),
 
-                          DataCell(
-                            Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  if (permissions.contains('update_complaint'))
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: const BorderSide(
-                                          color: Colors.transparent,
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        // Edit Complaint
-                                      },
-                                      child: const Icon(
-                                        Icons.edit_calendar,
-                                        size: 28,
-                                      ),
-                                    ),
+                           DataCell(
+                             Center(
+                               child: Text(
+                                 complaint.customer?.name ?? "",
+                               ),
+                             ),
+                           ),
 
-                                  const Text("|"),
+                           DataCell(
+                             Center(
+                               child: Row(
+                                 mainAxisAlignment: MainAxisAlignment.center,
+                                 children: [
 
-                                  if (permissions.contains('delete_complaint'))
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: const BorderSide(
-                                          color: Colors.transparent,
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        // Delete Complaint
-                                      },
-                                      child: Icon(
-                                        Icons.delete_forever,
-                                        size: 28,
-                                        color: DynamicColors.redClr,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ];
-                      },
-                    ).expand((e) => e).toList(),
-                  ),
+                                   if (permissions.contains('update_complaint'))
+                                     OutlinedButton(
+                                       style: OutlinedButton.styleFrom(
+                                         side: const BorderSide(color: Colors.transparent),
+                                       ),
+                                       onPressed: () {},
+                                       child: const Icon(Icons.edit_calendar, size: 28),
+                                     ),
+
+                                   const Text("|"),
+
+                                   if (permissions.contains('delete_complaint'))
+                                     OutlinedButton(
+                                       style: OutlinedButton.styleFrom(
+                                         side: const BorderSide(color: Colors.transparent),
+                                       ),
+                                       onPressed: () {},
+                                       child: Icon(
+                                         Icons.delete_forever,
+                                         size: 28,
+                                         color: DynamicColors.redClr,
+                                       ),
+                                     ),
+                                 ],
+                               ),
+                             ),
+                           ),
+                         ],
+                       );
+                     }).toList(),
+                   ),
+                  // DatatableWidget(
+                  //     columns: [
+                  //       buildHeaderWithSearch(title: "REF #"),
+                  //       buildHeaderWithSearch(title: "COMPLAIN DATE"),
+                  //       buildHeaderWithSearch(title: "NAME"),
+                  //       buildHeaderWithSearch(
+                  //           title: "ACTIONS",
+                  //           customWidget: Row(
+                  //             mainAxisAlignment: MainAxisAlignment.center,
+                  //             children: [
+                  //               OutlinedButton(
+                  //                 style: OutlinedButton.styleFrom(
+                  //                   side: BorderSide(
+                  //                     color: Colors.transparent,
+                  //                   ), // border color & thickness
+                  //                 ),
+                  //                 onPressed: () {
+                  //                    controller.searchComplaints();
+                  //                 },
+                  //                 child: Icon(
+                  //                   Icons.search,
+                  //                   size: 28,
+                  //                 ),
+                  //               ),
+                  //               Text("|"),
+                  //               OutlinedButton(
+                  //                 style: OutlinedButton.styleFrom(
+                  //                   side: BorderSide(
+                  //                     color: Colors.transparent,
+                  //                   ), // border color & thickness
+                  //                 ),
+                  //                 onPressed: () {
+                  //                   controller.clearComplaintsSearch();
+                  //                 },
+                  //                 child: Icon(
+                  //                   Icons.close,
+                  //                   size: 28,
+                  //                   color: DynamicColors.redClr,
+                  //                 ),
+                  //               ),
+                  //             ],
+                  //           )),
+                  //     ],
+                  //     // totalRow: totalRows,
+                  //   totalRow: controller.filteredComplaints.length, // <-- ye add karo
+                  //   cells: controller.filteredComplaints.isEmpty
+                  //       ? []
+                  //       : List.generate(
+                  //     controller.filteredComplaints.length,
+                  //         (index) {
+                  //       final complaint = controller.filteredComplaints[index];
+                  //
+                  //       return [
+                  //         DataCell(
+                  //           Center(
+                  //             child: Text(
+                  //               complaint.referenceNumber ?? "",
+                  //             ),
+                  //           ),
+                  //         ),
+                  //
+                  //         DataCell(
+                  //           Center(
+                  //             child: Text(
+                  //               complaint.complainDate != null
+                  //                   ? "${complaint.complainDate!.day}/${complaint.complainDate!.month}/${complaint.complainDate!.year}"
+                  //                   : "",
+                  //             ),
+                  //           ),
+                  //         ),
+                  //
+                  //         DataCell(
+                  //           Center(
+                  //             child: Text(
+                  //               complaint.customer?.name ?? "",
+                  //             ),
+                  //           ),
+                  //         ),
+                  //
+                  //         DataCell(
+                  //           Center(
+                  //             child: Row(
+                  //               mainAxisAlignment: MainAxisAlignment.center,
+                  //               children: [
+                  //                 if (permissions.contains('update_complaint'))
+                  //                   OutlinedButton(
+                  //                     style: OutlinedButton.styleFrom(
+                  //                       side: const BorderSide(
+                  //                         color: Colors.transparent,
+                  //                       ),
+                  //                     ),
+                  //                     onPressed: () {
+                  //                       // Edit Complaint
+                  //                     },
+                  //                     child: const Icon(
+                  //                       Icons.edit_calendar,
+                  //                       size: 28,
+                  //                     ),
+                  //                   ),
+                  //
+                  //                 const Text("|"),
+                  //
+                  //                 if (permissions.contains('delete_complaint'))
+                  //                   OutlinedButton(
+                  //                     style: OutlinedButton.styleFrom(
+                  //                       side: const BorderSide(
+                  //                         color: Colors.transparent,
+                  //                       ),
+                  //                     ),
+                  //                     onPressed: () {
+                  //                       // Delete Complaint
+                  //                     },
+                  //                     child: Icon(
+                  //                       Icons.delete_forever,
+                  //                       size: 28,
+                  //                       color: DynamicColors.redClr,
+                  //                     ),
+                  //                   ),
+                  //               ],
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       ];
+                  //     },
+                  //   ).expand((e) => e).toList(),
+                  // ),
                 ),
               ),
               SizedBox(
