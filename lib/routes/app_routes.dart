@@ -21,7 +21,7 @@ abstract class _Paths {
   static const createBooking = '/CreateBooking';
   static const updateBooking = '/UpdateBooking';
   static const viewDriversMap = '/ViewDriversMap';
-  static const createVehicle = '/ViewDriversMap';
+  static const createVehicle = '/CreateVehicleTypes';
   static const ResponsivePassengerScreen = '/ResponsivePassengerScreen';
   static const completeBookingsScreen = '/CompleteBookingsScreen';
   static const CustomerFormScreen = '/CustomerFormScreen';

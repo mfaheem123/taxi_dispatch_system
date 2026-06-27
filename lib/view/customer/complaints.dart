@@ -1,7 +1,6 @@
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../component/color.dart';
 import '../../component/datatable_widget.dart';
 import '../../component/networks/api.dart';
@@ -27,12 +26,13 @@ class _ComplaintsViewState extends State<ComplaintsView> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    shortCutKeyValue.value = "lostProperty";
+    controller.getCustomerComplaints();
+    permissions = Api().sp.read('all_permissions') ?? [];
+    //shortCutKeyValue.value = "lostProperty";
   }
 
   int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
-
+   final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
   List permissions = [];
 
   @override
@@ -41,9 +41,9 @@ class _ComplaintsViewState extends State<ComplaintsView> {
     final screenHeight = MediaQuery.of(context).size.height;
     double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
     return GetBuilder<CustomerController>(
-        initState: (v){
-          permissions = Api().sp.read('all_permissions') ?? [];
-        },
+        // initState: (v){
+        //   permissions = Api().sp.read('all_permissions') ?? [];
+        // },
 
         builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
@@ -67,7 +67,7 @@ class _ComplaintsViewState extends State<ComplaintsView> {
               Row(
                 children: [
                   Text(
-                    AppText.lostProperties + " (10)",
+                   "Customer Complaints"+ " (10)",
                     style: mozillaTextSemiBoldText(
                         fontWeight: FontWeight.w800, fontSize: 17),
                   ),
@@ -118,7 +118,9 @@ class _ComplaintsViewState extends State<ComplaintsView> {
                                       color: Colors.transparent,
                                     ), // border color & thickness
                                   ),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                     controller.searchComplaints();
+                                  },
                                   child: Icon(
                                     Icons.search,
                                     size: 28,
@@ -131,7 +133,9 @@ class _ComplaintsViewState extends State<ComplaintsView> {
                                       color: Colors.transparent,
                                     ), // border color & thickness
                                   ),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    controller.clearComplaintsSearch();
+                                  },
                                   child: Icon(
                                     Icons.close,
                                     size: 28,
@@ -141,47 +145,89 @@ class _ComplaintsViewState extends State<ComplaintsView> {
                               ],
                             )),
                       ],
-                      totalRow: totalRows,
-                      cells: [
-                         DataCell(Center(child: Text("#PHC VEHICLE"))),
-                         DataCell(Center(child: Text("20/10/2025"))),
-                         DataCell(Center(child: Text("#PHC VEHICLE"))),
-                        DataCell(
-                          Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                if(permissions.contains('update_complaint')) OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    side: BorderSide(
-                                      color: Colors.transparent,
-                                    ), // border color & thickness
-                                  ),
-                                  onPressed: () {},
-                                  child: Icon(
-                                    Icons.edit_calendar,
-                                    size: 28,
-                                  ),
-                                ),
-                                Text("|"),
-                                if(permissions.contains('delete_complaint'))   OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    side: BorderSide(
-                                      color: Colors.transparent,
-                                    ), // border color & thickness
-                                  ),
-                                  onPressed: () {},
-                                  child: Icon(
-                                    Icons.delete_forever,
-                                    size: 28,
-                                    color: DynamicColors.redClr,
-                                  ),
-                                ),
-                              ],
+                      // totalRow: totalRows,
+                    totalRow: controller.filteredComplaints.length, // <-- ye add karo
+                    cells: controller.filteredComplaints.isEmpty
+                        ? []
+                        : List.generate(
+                      controller.filteredComplaints.length,
+                          (index) {
+                        final complaint = controller.filteredComplaints[index];
+
+                        return [
+                          DataCell(
+                            Center(
+                              child: Text(
+                                complaint.referenceNumber ?? "",
+                              ),
                             ),
                           ),
-                        ),
-                      ]),
+
+                          DataCell(
+                            Center(
+                              child: Text(
+                                complaint.complainDate != null
+                                    ? "${complaint.complainDate!.day}/${complaint.complainDate!.month}/${complaint.complainDate!.year}"
+                                    : "",
+                              ),
+                            ),
+                          ),
+
+                          DataCell(
+                            Center(
+                              child: Text(
+                                complaint.customer?.name ?? "",
+                              ),
+                            ),
+                          ),
+
+                          DataCell(
+                            Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  if (permissions.contains('update_complaint'))
+                                    OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        side: const BorderSide(
+                                          color: Colors.transparent,
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        // Edit Complaint
+                                      },
+                                      child: const Icon(
+                                        Icons.edit_calendar,
+                                        size: 28,
+                                      ),
+                                    ),
+
+                                  const Text("|"),
+
+                                  if (permissions.contains('delete_complaint'))
+                                    OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        side: const BorderSide(
+                                          color: Colors.transparent,
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        // Delete Complaint
+                                      },
+                                      child: Icon(
+                                        Icons.delete_forever,
+                                        size: 28,
+                                        color: DynamicColors.redClr,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ];
+                      },
+                    ).expand((e) => e).toList(),
+                  ),
                 ),
               ),
               SizedBox(

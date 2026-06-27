@@ -55,14 +55,17 @@ class _AccountViewState extends State<AccountView> {
           final double maxWidth = constraints.maxWidth;
 
 
-          final double leftWidth = maxWidth * 0.58;
-          final double rightWidth = maxWidth * 0.38;
+          final double leftWidth = maxWidth * 0.61;
+          final double rightWidth = maxWidth * 0.37;
 
-          final double leftFieldWidth = leftWidth / 6.4;
-          final double rightFieldWidth = rightWidth / 4.4;
+          final double leftFieldWidth = leftWidth / 6.7;
+          final double rightFieldWidth = rightWidth / 4.6;
 
           const double fieldHeight = 30.0;
-          const double dropDownHeight = 30.0;
+          final double dropDownHeight = maxWidth < 1300 ? 34.0 : 28.0;
+
+          final double checkboxSpacing = maxWidth < 1300 ? 10.0 : 40.0;
+          final double chargesSpacing = maxWidth < 1300 ? 8.0 : 40.0;
 
           return SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -73,8 +76,8 @@ class _AccountViewState extends State<AccountView> {
                 Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    width: leftWidth,
+                  Expanded(
+                    flex: 61,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -110,14 +113,14 @@ class _AccountViewState extends State<AccountView> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
-                                      spacing: 8,
+                                      spacing: maxWidth < 1300 ? 2 : 8,
                                       children: [
                                         _buildTextField(controller.accountNameController, AppText.name, leftFieldWidth, fieldHeight, [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')), UpperCaseTextFormatter()]),
                                         _buildTextField(controller.accountCodeController, AppText.code, leftFieldWidth, fieldHeight, [FilteringTextInputFormatter.digitsOnly]),
                                         _buildTextField(controller.accountEmailController, AppText.email, leftFieldWidth, fieldHeight, [FilteringTextInputFormatter.deny(RegExp(r'\s')), UpperCaseTextFormatter()]),
                                         _buildTextField(controller.accountPasswordController, AppText.password, leftFieldWidth, fieldHeight, [UpperCaseTextFormatter()]),
-                                        _buildDropdown(AppText.subsidiary, "SELECT SUBSIDIARY", leftFieldWidth, dropDownHeight, controller.subsidairyBankModel?.subsidiariesList ?? [], controller.subsidiaryStoreValue, (val) { controller.subsidiaryStoreValue = val; controller.update(); }, (item) => item.name!.toUpperCase()),
-                                        _buildDropdown(AppText.accountType, "SELECT ACCOUNT", leftFieldWidth, dropDownHeight, ["Cash", "Account"], controller.accountType, (val) { controller.accountType = val; controller.update(); }, (item) => item),
+                                        _buildDropdown(AppText.subsidiary, "SELECT SUBSIDIARY", MediaQuery.of(context).size.width < 1300 ? leftFieldWidth * 1.3 : leftFieldWidth * 1.1, dropDownHeight, controller.subsidairyBankModel?.subsidiariesList ?? [], controller.subsidiaryStoreValue, (val) { controller.subsidiaryStoreValue = val; controller.update(); }, (item) => item.name!.toUpperCase()),
+                                        _buildDropdown(AppText.accountType, "SELECT ACCOUNT", MediaQuery.of(context).size.width < 1300 ? leftFieldWidth * 1.1 : leftFieldWidth * 0.95, dropDownHeight, ["Cash", "Account"], controller.accountType, (val) { controller.accountType = val; controller.update(); }, (item) => item),
                                       ],
                                     ),
 
@@ -221,7 +224,7 @@ class _AccountViewState extends State<AccountView> {
                           spacing: 10,
                           children: [
                             Expanded(
-                              flex: 5,
+                              flex: 6,
                               child: Container(
                                 decoration: BoxDecoration(
                                   border: Border.all(color: DynamicColors.textClr),
@@ -239,7 +242,7 @@ class _AccountViewState extends State<AccountView> {
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Wrap(
-                                        spacing: 25, runSpacing: 6,
+                                        spacing: checkboxSpacing, runSpacing: 6,
                                         crossAxisAlignment: WrapCrossAlignment.center,
                                         children: [
                                           _buildCheckbox(controller.orderCheckBox, AppText.order),
@@ -257,7 +260,7 @@ class _AccountViewState extends State<AccountView> {
 
 
                             Expanded(
-                              flex: 4,
+                              flex: 3,
                               child: Container(
                                 decoration: BoxDecoration(
                                   border: Border.all(color: DynamicColors.textClr),
@@ -275,7 +278,7 @@ class _AccountViewState extends State<AccountView> {
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Wrap(
-                                        spacing: 50, runSpacing: 6,
+                                        spacing: chargesSpacing, runSpacing: 6,
                                         crossAxisAlignment: WrapCrossAlignment.center,
                                         children: [
                                           _buildCheckbox(controller.adminFeeCheckBox, AppText.adminFee),
@@ -294,12 +297,12 @@ class _AccountViewState extends State<AccountView> {
                     ),
                   ),
 
-                  const SizedBox(width: 15),
+                  SizedBox(width: maxWidth < 1300 ? 5 : 15),
 
-                  SizedBox(
-                    width: rightWidth,
+                  Expanded(
+                    flex: 37,
                     child: Column(
-                      spacing: 25,
+                      spacing: maxWidth < 1300 ? 17 : 25,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // FEE SECTION CONTAINER
@@ -320,27 +323,119 @@ class _AccountViewState extends State<AccountView> {
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child:
+                                // Row(
+                                //   spacing: 6,
+                                //   children: [
+                                //     Expanded(
+                                //       flex: 3,
+                                //       child: _buildDropdown(AppText.adminFeeType, "SELECT ADMIN FEES TYPE", rightFieldWidth * 1.9, dropDownHeight, ["PERCENTAGE", "AMOUNT"], controller.adminFeesDropDown, (val) { controller.adminFeesDropDown = val; controller.update(); }, (item) => item),
+                                //     ),
+                                //     Expanded(
+                                //       flex: 2,
+                                //       child: _buildTextField(controller.accountAdminFeeController, AppText.adminFee, rightFieldWidth * 1.5, fieldHeight, [FilteringTextInputFormatter.digitsOnly]),
+                                //     ),
+                                //     Expanded(
+                                //       flex: 3,
+                                //       child: _buildDropdown(AppText.accountFeeType, "SELECT ACCOUNT TYPE", rightFieldWidth * 2, dropDownHeight, ["PERCENTAGE", "AMOUNT"], controller.accountTypeDropDown, (val) { controller.accountTypeDropDown = val; controller.update(); }, (item) => item),
+                                //     ),
+                                //     Expanded(
+                                //       flex: 2,
+                                //       child: _buildTextField(controller.accountAccountFeeController, AppText.accountFee, rightFieldWidth * 1.5, fieldHeight, [FilteringTextInputFormatter.digitsOnly]),
+                                //     ),
+                                //   ],
+                                // )
                                 Row(
-                                  spacing: 6,
+                                  spacing: 8,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Expanded(
                                       flex: 3,
-                                      child: _buildDropdown(AppText.adminFeeType, "SELECT ADMIN FEES TYPE", double.infinity, dropDownHeight, ["PERCENTAGE", "AMOUNT"], controller.adminFeesDropDown, (val) { controller.adminFeesDropDown = val; controller.update(); }, (item) => item),
+                                      child: _buildDropdown(
+                                          AppText.adminFeeType,
+                                          "SELECT TYPE",
+                                          double.infinity,
+                                          dropDownHeight,
+                                          ["PERCENTAGE", "AMOUNT"],
+                                          controller.adminFeesDropDown,
+                                              (val) { controller.adminFeesDropDown = val; controller.update(); },
+                                              (item) => item
+                                      ),
                                     ),
+
                                     Expanded(
                                       flex: 2,
                                       child: _buildTextField(controller.accountAdminFeeController, AppText.adminFee, double.infinity, fieldHeight, [FilteringTextInputFormatter.digitsOnly]),
                                     ),
+
                                     Expanded(
                                       flex: 3,
-                                      child: _buildDropdown(AppText.accountFeeType, "SELECT ACCOUNT TYPE", double.infinity, dropDownHeight, ["PERCENTAGE", "AMOUNT"], controller.accountTypeDropDown, (val) { controller.accountTypeDropDown = val; controller.update(); }, (item) => item),
+                                      child: _buildDropdown(
+                                          AppText.accountFeeType,
+                                          "SELECT TYPE",
+                                          double.infinity,
+                                          dropDownHeight,
+                                          ["PERCENTAGE", "AMOUNT"],
+                                          controller.accountTypeDropDown,
+                                              (val) { controller.accountTypeDropDown = val; controller.update(); },
+                                              (item) => item
+                                      ),
                                     ),
                                     Expanded(
                                       flex: 2,
                                       child: _buildTextField(controller.accountAccountFeeController, AppText.accountFee, double.infinity, fieldHeight, [FilteringTextInputFormatter.digitsOnly]),
                                     ),
                                   ],
-                                )
+                                ),
+                                /// comments
+                                // Row(
+                                //   spacing: 6,
+                                //   crossAxisAlignment: CrossAxisAlignment.end,
+                                //   children: [
+                                //
+                                //     SizedBox(
+                                //       width: MediaQuery.of(context).size.width < 1300
+                                //           ? rightFieldWidth * 1.7
+                                //           : (MediaQuery.of(context).size.width <= 1536 ? rightFieldWidth * 1.2 : rightFieldWidth * 1.2),
+                                //       child: _buildDropdown(
+                                //           AppText.adminFeeType,
+                                //           "SELECT ADMIN FEES TYPE",
+                                //           MediaQuery.of(context).size.width < 1300 ? rightFieldWidth * 1.2 : rightFieldWidth * 1.2,
+                                //           dropDownHeight,
+                                //           ["PERCENTAGE", "AMOUNT"],
+                                //           controller.adminFeesDropDown,
+                                //               (val) { controller.adminFeesDropDown = val; controller.update(); },
+                                //               (item) => item
+                                //       ),
+                                //     ),
+                                //
+                                //     // 2. Admin Fee Text Field
+                                //     Expanded(
+                                //       flex: 2,
+                                //       child: _buildTextField(controller.accountAdminFeeController, AppText.adminFee, rightFieldWidth, fieldHeight, [FilteringTextInputFormatter.digitsOnly]),
+                                //     ),
+                                //
+                                //     // 3. Account Fee Type Dropdown
+                                //     SizedBox(
+                                //       width: MediaQuery.of(context).size.width < 1300 ? rightFieldWidth * 1.5 : rightFieldWidth,
+                                //       child: _buildDropdown(
+                                //           AppText.accountFeeType,
+                                //           "SELECT ACCOUNT TYPE",
+                                //           MediaQuery.of(context).size.width < 1300 ? rightFieldWidth * 1.2 : rightFieldWidth,
+                                //           dropDownHeight,
+                                //           ["PERCENTAGE", "AMOUNT"],
+                                //           controller.accountTypeDropDown,
+                                //               (val) { controller.accountTypeDropDown = val; controller.update(); },
+                                //               (item) => item
+                                //       ),
+                                //     ),
+                                //
+                                //     // 4. Account Fee Text Field
+                                //     Expanded(
+                                //       flex: 2,
+                                //       child: _buildTextField(controller.accountAccountFeeController, AppText.accountFee, rightFieldWidth, fieldHeight, [FilteringTextInputFormatter.digitsOnly]),
+                                //     ),
+                                //   ],
+                                // ),
                               ),
                               SizedBox(height: 15),
                             ],
@@ -368,7 +463,7 @@ class _AccountViewState extends State<AccountView> {
                                   spacing: 8,
                                   children: [
                                     SizedBox(width: 10),
-                                    _buildDropdown(AppText.agentCommissionType, "SELECT COMMISSION TYPE", rightFieldWidth * 1.5, dropDownHeight, ["PERCENTAGE", "AMOUNT"], controller.commissionDropDown, (val) { controller.commissionDropDown = val; controller.update(); }, (item) => item),
+                                    _buildDropdown(AppText.agentCommissionType, "SELECT COMMISSION TYPE", rightFieldWidth * 2, dropDownHeight, ["PERCENTAGE", "AMOUNT"], controller.commissionDropDown, (val) { controller.commissionDropDown = val; controller.update(); }, (item) => item),
                                     SizedBox(width: 10),
                                     _buildTextField(controller.accountAgentCommissionController, AppText.agentCommission, rightFieldWidth * 1.5, fieldHeight, [FilteringTextInputFormatter.digitsOnly]),
                                   ],
@@ -397,7 +492,7 @@ class _AccountViewState extends State<AccountView> {
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Wrap(
-                                  spacing: 50, runSpacing: 6,
+                                  spacing: checkboxSpacing, runSpacing: 6,
                                   crossAxisAlignment: WrapCrossAlignment.center,
                                   children: [
                                     _buildCheckbox(controller.dispatchSmsCheckBox, AppText.dispatchSms),
@@ -478,10 +573,12 @@ class _AccountViewState extends State<AccountView> {
   }
 
   Widget _buildDropdown<T>(String title, String label, double width, double height, List<T> items, T? value, ValueChanged<T?> onChanged, String Function(T) itemLabel) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double titleFontSize = screenWidth < 1300 ? 10.0 : 11.0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: mozillaTextSemiBoldText(context: context, fontSize: 11)),
+        Text(title, style: mozillaTextSemiBoldText(context: context, fontSize: titleFontSize)),
         const SizedBox(height: 2),
         CustomDropdownField<T>(
           label: label,
@@ -501,8 +598,8 @@ class _AccountViewState extends State<AccountView> {
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
-          width: 20,
-          height: 20,
+          width: 15,
+          height: 15,
           child: Checkbox(
             value: observableValue.value,
             onChanged: (v) {
