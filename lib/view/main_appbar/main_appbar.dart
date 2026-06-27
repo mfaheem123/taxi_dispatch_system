@@ -361,7 +361,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   visible: messagesShow.value,
                   child: Align(
                     alignment: Alignment.bottomCenter,
-                    child: Container(
+                    child: SizedBox(
                       height: Get.height/2,
                       width: Get.width/3,
                       child: ChatWithDriverAndPassenger(),
