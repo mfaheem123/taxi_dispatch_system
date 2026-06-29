@@ -53,13 +53,16 @@ class _AllBookingViewState extends State<AllBookingView> {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+        final bool isLaptop = maxWidth >= 1024 && maxWidth < 1440;
 
         // Instead of fixed width, we calculate flexible field widths
         final double fieldWidth = isMobile
-            ? maxWidth // full width
+            ? maxWidth
             : isTablet
                 ? maxWidth / 2
-                : maxWidth / 4;
+                : isLaptop
+                    ? maxWidth / 4.8
+                    : maxWidth / 4;
 
         // final double cellWidth = (widthss - 80) / 16;
         return SingleChildScrollView(
