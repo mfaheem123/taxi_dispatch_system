@@ -182,6 +182,7 @@ class _CreateComplaintState extends State<CreateComplaint> {
                               width: fieldWidth / 1.5,
                               hintText: AppText.name,
                               columnText: true,
+                              readOnly: true,
                             ),
                           ),
                           Padding(
@@ -509,6 +510,7 @@ class _CreateComplaintState extends State<CreateComplaint> {
                               width: fieldWidth / 1.5,
                               hintText: AppText.note,
                               columnText: true,
+                              readOnly: true,
                               contentPadding:
                                   EdgeInsets.only(left: 10, top: 20),
                               maxLines: 6,
@@ -603,7 +605,9 @@ class _CreateComplaintState extends State<CreateComplaint> {
                   verticalPadding: 0.0,
                   fontSize: 11,
                   height: 35,
-                  btnText: AppText.save,
+                  btnText: controller.complaintValue.value
+                      ? "Update"
+                      : AppText.save,
                   onTap: () {
                     controller.postComplaint();
 

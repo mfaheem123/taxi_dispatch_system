@@ -1,4 +1,5 @@
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/view/customer/controller/get_complaint_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../component/color.dart';
@@ -9,6 +10,8 @@ import '../../component/text_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
 import 'controller/customer_controller.dart';
+import 'create_complaint.dart';
+import 'create_lost_propertyScreen.dart';
 
 class ComplaintsView extends StatefulWidget {
   const ComplaintsView({super.key});
@@ -21,6 +24,7 @@ class _ComplaintsViewState extends State<ComplaintsView> {
   CustomerController controller = Get.isRegistered<CustomerController>()
       ? Get.find<CustomerController>()
       : Get.put(CustomerController());
+  final DashboardController _controller = Get.find();
 
   @override
   void initState() {
@@ -104,9 +108,32 @@ class _ComplaintsViewState extends State<ComplaintsView> {
                   width: MediaQuery.of(context).size.width,
                    child:DatatableWidget(
                      columns: [
-                       buildHeaderWithSearch(title: "REF #"),
-                       buildHeaderWithSearch(title: "COMPLAIN DATE"),
-                       buildHeaderWithSearch(title: "NAME"),
+                       buildHeaderWithSearch(
+                         title: "REF #",
+                         onChanged: (value) {
+                           controller.searchReferenceNumber.value = value;
+                           controller.searchComplaints();
+                         },
+                       ),
+
+                       buildHeaderWithSearch(
+                         title: "COMPLAIN DATE",
+                         onChanged: (value) {
+                           controller.searchComplainDate.value = value;
+                           controller.searchComplaints();
+                         },
+                       ),
+
+                       buildHeaderWithSearch(
+                         title: "NAME",
+                         onChanged: (value) {
+                           controller.searchCustomerName.value = value;
+                           controller.searchComplaints();
+                         },
+                       ),
+                       // buildHeaderWithSearch(title: "REF #"),
+                       // buildHeaderWithSearch(title: "COMPLAIN DATE"),
+                       // buildHeaderWithSearch(title: "NAME"),
                        buildHeaderWithSearch(
                          title: "ACTIONS",
                          customWidget: Row(
@@ -149,12 +176,21 @@ class _ComplaintsViewState extends State<ComplaintsView> {
                            DataCell(
                              Center(
                                child: Text(
-                                 complaint.complainDate != null
-                                     ? "${complaint.complainDate!.day}/${complaint.complainDate!.month}/${complaint.complainDate!.year}"
-                                     : "",
+                                 complaint.complainDate == null
+                                     ? ""
+                                     : "${complaint.complainDate!.day}/${complaint.complainDate!.month}/${complaint.complainDate!.year}",
                                ),
                              ),
                            ),
+                           // DataCell(
+                           //   Center(
+                           //     child: Text(
+                           //       complaint.complainDate != null
+                           //           ? "${complaint.complainDate!.day}/${complaint.complainDate!.month}/${complaint.complainDate!.year}"
+                           //           : "",
+                           //     ),
+                           //   ),
+                           // ),
 
                            DataCell(
                              Center(
@@ -175,7 +211,52 @@ class _ComplaintsViewState extends State<ComplaintsView> {
                                        style: OutlinedButton.styleFrom(
                                          side: const BorderSide(color: Colors.transparent),
                                        ),
-                                       onPressed: () {},
+                                       onPressed: () async {
+
+                                         await controller.complaintUpdate(
+                                           complaintId: complaint.id!,
+                                         );
+
+
+                                         int index = _controller.selectedMenuItems.indexWhere(
+                                                 (element) => element.title == "Create Complaint");
+
+                                         if (index != -1) {
+                                           _controller.selectedMenuItems[index].selectedItem = true;
+                                           _controller.currentPage.value = CreateComplaint();
+                                         } else {
+                                           _controller.currentPage.value = CreateComplaint();
+
+                                           _controller.menuBarRefresh(
+                                             title: "CREATE COMPLAINT",
+                                             pageName: CreateComplaint(),
+                                           );
+                                         }
+
+                                         controller.update();
+                                       },
+                                       // onPressed: () {
+                                       //   if(permissions.contains('update_lost_property')){
+                                       //     // controller.lostPropertyUpdate(
+                                       //     //     lostPropertyUpdate: item);
+                                       //     int index = _controller.selectedMenuItems
+                                       //         .indexWhere((element) =>
+                                       //     element.title == "Create Complaint");
+                                       //     if (index != -1) {
+                                       //       _controller.selectedMenuItems[index]
+                                       //           .selectedItem = true;
+                                       //       _controller.currentPage.value =
+                                       //           CreateComplaint();
+                                       //     } else {
+                                       //       _controller.currentPage.value =
+                                       //           CreateComplaint();
+                                       //       _controller.menuBarRefresh(
+                                       //           title: "CREATE COMPLAINT",
+                                       //           pageName: CreateComplaint());
+                                       //     }
+                                       //     controller.update();
+                                       //   }
+                                       // },
                                        child: const Icon(Icons.edit_calendar, size: 28),
                                      ),
 
@@ -186,7 +267,9 @@ class _ComplaintsViewState extends State<ComplaintsView> {
                                        style: OutlinedButton.styleFrom(
                                          side: const BorderSide(color: Colors.transparent),
                                        ),
-                                       onPressed: () {},
+                                       onPressed: () {
+                                         controller.deleteComplaint(complaint.id);
+                                       },
                                        child: Icon(
                                          Icons.delete_forever,
                                          size: 28,
