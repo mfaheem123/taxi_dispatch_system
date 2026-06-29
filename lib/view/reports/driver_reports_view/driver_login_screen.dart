@@ -106,7 +106,7 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                           isMobile: isMobile,
                           label: "FROM:",
                           column: false,
-                          width: 160,
+                          width: maxWidth < 1366 ? 120 : 160,
                           child: SizedBox(
                             height: 30,
                             child: KeyboardDatePicker(
@@ -135,7 +135,7 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                           isMobile: isMobile,
                           label: "TO:",
                           column: false,
-                          width: 160,
+                          width: maxWidth < 1366 ? 120 : 160,
                           child: SizedBox(
                             height: 30,
                             child: KeyboardDatePicker(
@@ -162,7 +162,7 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                         // Driver Dropdown
                         CustomDropdownField<DriverObject>(
                           label: "SELECT DRIVERS",
-                          width: 320,
+                          width: maxWidth < 1366 ? 220 : 320,
                           height: 35,
                           items: controller.allDriverData?.drivers ?? [],
                           value: controller.allDriverData?.drivers?.any((d) => d.id == controller.selectDriverObject?.id) ?? false
@@ -175,7 +175,7 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                             controller.update();
                           },
                         ),
-                        SizedBox(width: 80),
+                        SizedBox(width: maxWidth < 1366 ? 10 : 80),
                         CustomButton(
                           height: 30,
                           width: 60,
@@ -213,7 +213,7 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                           },
                         ),
                         SizedBox(
-                          width: 7,
+                          width: maxWidth < 1366 ? 0 : 7,
                         ),
                         CustomButton(
                           verticalPadding: 0.0,
