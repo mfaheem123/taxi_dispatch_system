@@ -451,7 +451,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             });
           },
               (addr) {},
-          30,
+          19,
           zoneLabel: (z) => z.name!,
           onPickIndex: (index) => controller.tapSelect(index),
           onCurrentLocation: () => debugPrint('Use current location → R/PICK'),
@@ -473,7 +473,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 fieldName: "DROP LOCATION", searchingText: value);
           },
               (addr) {},
-          33,
+          23,
           zoneLabel: (z) => z.name!,
           onPickIndex: (index) => controller.tapSelect(index),
           onCurrentLocation: () => debugPrint('Use current location → R/DROP'),
@@ -481,14 +481,14 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         const SizedBox(height: 8),
         _grid(cols, [
           _dateField('R/Date',
-              tab: 36,
+              tab: 24,
               value: controller.pickUpDateReturn,
               onChanged: (d) => setState(() => controller.pickUpDateReturn = d)),
           _timeField('R/Time',
-              tab: 37, controller: controller.pickUpTimeControllerReturn),
-          _field('R/Lead', tab: 38, controller: controller.minControllerReturn),
+              tab: 25, controller: controller.pickUpTimeControllerReturn),
+          _field('R/Lead', tab: 26, controller: controller.minControllerReturn),
           _field('R/Fare',
-              tab: 39,
+              tab: 27,
               prefix: Icons.currency_pound,
               controller: controller.slugControllerReturn),
         ]),
@@ -794,7 +794,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     Widget luggageField(String label, IconData icon,
         TextEditingController controller, int tab) =>
         SizedBox(
-          width: 120,
+          width: 100,
           child:
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(label,

@@ -53,13 +53,18 @@ class _AllBookingViewState extends State<AllBookingView> {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+        final bool isHighScale = MediaQuery.of(context).devicePixelRatio >= 1.25;
 
         // Instead of fixed width, we calculate flexible field widths
-        final double fieldWidth = isMobile
+        double fieldWidth = isMobile
             ? maxWidth // full width
             : isTablet
                 ? maxWidth / 2
                 : maxWidth / 4;
+
+        if (!isMobile && isHighScale) {
+          fieldWidth = maxWidth / 4.8;
+        }
 
         // final double cellWidth = (widthss - 80) / 16;
         return SingleChildScrollView(
@@ -222,7 +227,7 @@ class _AllBookingViewState extends State<AllBookingView> {
                           ),
                           CustomDropdownField<DriverObject>(
                             label: "SELECT DRIVERS",
-                            width: fieldWidth / 2,
+                            width: maxWidth < 1366 ? fieldWidth / 1.8 : fieldWidth / 2,
                             // height: 35,
                             items: controller.allDriverData?.drivers ?? [],
                             value: controller.allDriverData?.drivers?.any((d) =>
@@ -500,7 +505,7 @@ class _AllBookingViewState extends State<AllBookingView> {
                             );
                           })(),
                           CustomDropdownField<dynamic>(
-                            width: fieldWidth / 1.9,
+                            width: maxWidth < 1400 ? fieldWidth / 1.7 : fieldWidth / 1.9,
                             label: AppText.selectAccount,
                             items: controller.dashboardAccountModel?.accounts ??
                                 [],
@@ -520,7 +525,7 @@ class _AllBookingViewState extends State<AllBookingView> {
                             },
                           ),
                           CustomDropdownField<dynamic>(
-                            width: fieldWidth / 1.9,
+                            width: maxWidth < 1400 ? fieldWidth / 1.7 : fieldWidth / 1.9,
                             label: AppText.selectDepartment,
                             items: controller.accountDepartmentsList,
                             value: controller.apiSelectedDepartment,
