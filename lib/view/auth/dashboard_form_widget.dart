@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../alert/child_seats_alert.dart';
 import '../../alert/extra_fares_alert.dart';
@@ -374,7 +375,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                         const [],
                                         (v) => setState(() =>
                                     controller.selectPaymentTypeValue = v),
-                                    19,
+                                    _isReturnJourney?34:19,
                                     itemLabel: (p) => p.name!,
                                   ),
                                   _dropdown<DashboardVehicleTypeObject>(
@@ -385,7 +386,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       controller.selectVehicleValue = v;
                                       controller.getFaresCalculation();
                                     }),
-                                    20,
+                                    _isReturnJourney?35:20,
                                     itemLabel: (p) => p.name!,
                                   ),
                                   _dropdown<DepartmentObject>(
@@ -399,7 +400,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       controller.selectDepartmentData = v;
                                       controller.update();
                                     }),
-                                    21,
+
+                                    _isReturnJourney?36:21,
                                     itemLabel: (p) => p.name ?? "",
                                   ),
                                   _quotationToggle(),
@@ -481,14 +483,14 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         const SizedBox(height: 8),
         _grid(cols, [
           _dateField('R/Date',
-              tab: 24,
+              tab: 28,
               value: controller.pickUpDateReturn,
               onChanged: (d) => setState(() => controller.pickUpDateReturn = d)),
           _timeField('R/Time',
-              tab: 25, controller: controller.pickUpTimeControllerReturn),
-          _field('R/Lead', tab: 26, controller: controller.minControllerReturn),
+              tab: 29, controller: controller.pickUpTimeControllerReturn),
+          _field('R/Lead', tab: 30, controller: controller.minControllerReturn),
           _field('R/Fare',
-              tab: 27,
+              tab: 31,
               prefix: Icons.currency_pound,
               controller: controller.slugControllerReturn),
         ]),
@@ -502,7 +504,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             returnVehicleValue,
             controller.dashboardAllData!.vehicleTypes!,
                 (v) => setState(() => returnVehicleValue = v),
-            40,
+            32,
             itemLabel: (p) => p.name!,
           ),
           const SizedBox(height: 8),
@@ -511,7 +513,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             returnDriverValue,
             controller.dashboardAllData!.drivers ?? const [],
                 (v) => setState(() => returnDriverValue = v),
-            41,
+            33,
             itemLabel: (p) => p.name ?? '',
           ),
         ])
@@ -524,7 +526,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               returnVehicleValue,
               controller.dashboardAllData!.vehicleTypes!,
                   (v) => setState(() => returnVehicleValue = v),
-              40,
+              32,
               itemLabel: (p) => p.name!,
             ),
           ),
@@ -535,7 +537,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               returnDriverValue,
               controller.dashboardAllData!.drivers ?? const [],
                   (v) => setState(() => returnDriverValue = v),
-              41,
+              33,
               itemLabel: (p) => p.name ?? '',
             ),
           ),
@@ -543,6 +545,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ],
     );
   }
+
   Widget _addReturnFareCheckbox() =>
       Row(mainAxisSize: MainAxisSize.min, children: [
         SizedBox(
@@ -560,6 +563,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         const Text('ADD RETURN FARE',
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: _fsField)),
       ]);
+
   // ────────── top tabs (Subsidiary dd → tab 1)
   Widget _topTabs(bool isMobile) {
     Widget tab(String label, {bool active = false, VoidCallback? onTap}) =>
@@ -645,6 +649,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ),
     );
   }
+
 // ────────── location row
   Widget _locationRow<T>(
       String label,
@@ -704,7 +709,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 tooltip: 'Use current location',
                 onPressed: onCurrentLocation,
                 icon:
-                const Icon(Icons.my_location, size: 16, color: Colors.grey),
+                Icon(LucideIcons.arrowDownUp, size: 16, color: Colors.grey),
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
                 splashRadius: 16,
@@ -774,23 +779,28 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   }
   // ────────── comms + luggage (PASS=22, LUGG=23, SLUGG=24)
   Widget _commsAndLuggageRow(bool isMobile) {
-    Widget checkbox(String label, bool value, ValueChanged<bool?> onChanged) =>
-        Row(mainAxisSize: MainAxisSize.min, children: [
-          SizedBox(
-            width: 20,
-            height: 20,
-            child: Checkbox(
-              value: value,
-              onChanged: onChanged,
-              activeColor: _purple,
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
+    Widget checkbox(String label, bool value, ValueChanged<bool?> onChanged, {required int tab}) =>
+        FocusTraversalOrder(
+          order: NumericFocusOrder(tab.toDouble()),
+          child: _GlowFocus(
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              SizedBox(
+                width: 20,
+                height: 20,
+                child: Checkbox(
+                  value: value,
+                  onChanged: onChanged,
+                  activeColor: _purple,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(label,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w500, fontSize: _fsField)),
+            ]),
           ),
-          const SizedBox(width: 6),
-          Text(label,
-              style: const TextStyle(
-                  fontWeight: FontWeight.w500, fontSize: _fsField)),
-        ]);
+        );
     Widget luggageField(String label, IconData icon,
         TextEditingController controller, int tab) =>
         SizedBox(
@@ -823,51 +833,69 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             ),
           ]),
         );
-    Widget iconBtn(IconData icon, {VoidCallback? onPressed}) => Container(
-      margin: const EdgeInsets.only(left: 6),
-      decoration: BoxDecoration(
-        color: _purpleSoft,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: _border),
-      ),
-      child: IconButton(
-        onPressed: onPressed,
-        icon: Icon(icon, size: 17, color: Colors.black),
-        splashRadius: 18,
-      ),
-    );
+
+    Widget iconBtn(IconData icon, {VoidCallback? onPressed, required int tab}) =>
+        FocusTraversalOrder(
+          order: NumericFocusOrder(tab.toDouble()),
+          child: _GlowFocus(
+            child: Focus(
+              onKeyEvent: (node, event) {
+                if (event is KeyDownEvent &&
+                    (event.logicalKey == LogicalKeyboardKey.enter ||
+                        event.logicalKey == LogicalKeyboardKey.space)) {
+                  onPressed?.call();
+                  return KeyEventResult.handled;
+                }
+                return KeyEventResult.ignored;
+              },
+              child: Container(
+                margin: const EdgeInsets.only(left: 6),
+                decoration: BoxDecoration(
+                  color: _purpleSoft,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: _border),
+                ),
+                child: IconButton(
+                  onPressed: onPressed,
+                  icon: Icon(icon, size: 17, color: Colors.black),
+                  splashRadius: 18,
+                ),
+              ),
+            ),
+          ),
+        );
     final left = Wrap(
       spacing: 12,
       runSpacing: 8,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         checkbox('SMS', controller.smsCheckbox.value,
-                (v) => setState(() => controller.smsCheckbox.value = v ?? false)),
+                (v) => setState(() => controller.smsCheckbox.value = v ?? false), tab: _isReturnJourney ? 35 : 20),
         checkbox('EMAIL', controller.emailCheckbox.value,
-                (v) => setState(() => controller.emailCheckbox.value = v ?? false)),
-        luggageField('Passenger'.toUpperCase(), Icons.work, controller.passController, 22),
-        luggageField('luggage'.toUpperCase(), Icons.luggage, controller.luggController, 23),
-        luggageField('small luggage'.toUpperCase(), Icons.luggage, controller.sluggController, 24),
+                (v) => setState(() => controller.emailCheckbox.value = v ?? false), tab: _isReturnJourney ? 36 : 21),
+        luggageField('Passenger'.toUpperCase(), Icons.work, controller.passController, _isReturnJourney?37:22,),
+        luggageField('luggage'.toUpperCase(), Icons.luggage, controller.luggController,  _isReturnJourney?38:23,),
+        luggageField('small luggage'.toUpperCase(), Icons.luggage, controller.sluggController,  _isReturnJourney?39:24,),
       ],
     );
     final right = Row(mainAxisSize: MainAxisSize.min, children: [
-      iconBtn(Icons.person, onPressed: () {
+      iconBtn(Icons.person, tab: _isReturnJourney ? 40 : 25, onPressed: () {
         showDialog(context: context, builder: (_) => RestrictDriversAlert());
       }),
-      iconBtn(Icons.attach_money, onPressed: () {
+      iconBtn(Icons.attach_money, tab: _isReturnJourney ? 41 : 26, onPressed: () {
         showDialog(
           context: context,
           builder: (_) => ChildSeatsAlert(),
         );
       }),
-      iconBtn(Icons.note_add, onPressed: () {
+      iconBtn(Icons.note_add, tab: _isReturnJourney ? 42 : 27, onPressed: () {
         showDialog(
           context: context,
           barrierDismissible: false,
           builder: (_) => ExtraFaresAlert(),
         );
       }),
-      iconBtn(Icons.calculate, onPressed: () {
+      iconBtn(Icons.calculate, tab: _isReturnJourney ? 43 : 28, onPressed: () {
         showDialog(
           context: context,
           builder: (_) => ExtraInfoAlert(),
@@ -964,48 +992,58 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       controller.selectDriverValue,
       controller.dashboardAllData!.drivers ?? const [],
           (v) => setState(() => controller.selectDriverValue = v),
-      25,
+      _isReturnJourney ? 44 : 29,
       itemLabel: (p) => p.name ?? '',
       hint: 'Select Driver',
     );
-    final clear = ElevatedButton(
-      onPressed: () {
-        controller.refreshPostAllFields();
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: _red,
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-        textStyle:
-        const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsField),
+    final clear = FocusTraversalOrder(
+      order: NumericFocusOrder((_isReturnJourney ? 45 : 30).toDouble()),
+      child: _GlowFocus(
+        child: ElevatedButton(
+          onPressed: () {
+            controller.refreshPostAllFields();
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: _red,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+            textStyle:
+            const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsField),
+          ),
+          child: Text('CLEAR [F7]'.toUpperCase()),
+        ),
       ),
-      child: Text('CLEAR [F7]'.toUpperCase()),
     );
-    final home = ElevatedButton.icon(
-      onPressed: () {
-        if (controller.jourValue == 'W/R' &&
-            controller.pickupTwoWayController.text.isEmpty &&
-            controller.dropOffTwoWayController.text.isEmpty) {
-          BotToast.showText(text: "Please chose waiting return");
-          return;
-        }
-        controller.dashBoardApiValidation(
-            id: controller.jobDetails == null
-                ? null
-                : controller.cliJobHit == true
-                ? null
-                : int.parse(controller.jobDetails!.id!));
-      },
-      icon: const Icon(Icons.home_outlined, size: 16),
-      label: const Text('SAVE[HOME]'),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: _purple,
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-        textStyle:
-        const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsField),
+    final home = FocusTraversalOrder(
+      order: NumericFocusOrder((_isReturnJourney ? 46 : 31).toDouble()),
+      child: _GlowFocus(
+        child: ElevatedButton.icon(
+          onPressed: () {
+            if (controller.jourValue == 'W/R' &&
+                controller.pickupTwoWayController.text.isEmpty &&
+                controller.dropOffTwoWayController.text.isEmpty) {
+              BotToast.showText(text: "Please chose waiting return");
+              return;
+            }
+            controller.dashBoardApiValidation(
+                id: controller.jobDetails == null
+                    ? null
+                    : controller.cliJobHit == true
+                    ? null
+                    : int.parse(controller.jobDetails!.id!));
+          },
+          icon: const Icon(Icons.home_outlined, size: 16),
+          label: const Text('SAVE[HOME]'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: _purple,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+            textStyle:
+            const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsField),
+          ),
+        ),
       ),
     );
     if (isMobile) {
