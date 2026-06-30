@@ -7,6 +7,7 @@ import '../../../component/customButton.dart';
 import '../../../component/datatable_widget.dart';
 import '../../../component/dropdown_button.dart';
 import '../../../component/radio_button_widget.dart';
+import '../../../component/responsive_datatable_widget.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_widget.dart';
 import '../../customer/model/restricDriver.dart';
@@ -48,6 +49,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
           final double maxWidth = constraints.maxWidth;
           final bool isMobile = maxWidth < 600;
           final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+          final double totalAvailableWidth = constraints.maxWidth;
 
           // Instead of fixed width, we calculate flexible field widths
           final double fieldWidth = isMobile
@@ -263,55 +265,100 @@ class _IncomeScreenState extends State<IncomeScreen> {
                   SizedBox(
                     height: 10,
                   ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      child: DatatableWidget(
-                          columns: [
-                            buildHeaderWithSearch(title: "REF #"),
-                            buildHeaderWithSearch(title: "DATETIME"),
-                            buildHeaderWithSearch(title: "PICKUP"),
-                            buildHeaderWithSearch(title: "DROPOFF"),
-                            buildHeaderWithSearch(title: "VEHICLE"),
-                            buildHeaderWithSearch(title: "DRIVER"),
-                            buildHeaderWithSearch(title: "ACCOUNT"),
-                            buildHeaderWithSearch(title: "FARES"),
-                            buildHeaderWithSearch(title: "PARKING"),
-                            buildHeaderWithSearch(title: "WAITING"),
-                            buildHeaderWithSearch(title: "EXTRA DROP"),
-                            buildHeaderWithSearch(title: "TOTAL"),
-                          ],
-                          totalRow: controller.incomeModel?.bookings?.length ?? 0,
-                          rows: (controller.incomeModel?.bookings ?? []).map((item) {
+                  // SingleChildScrollView(
+                  //   scrollDirection: Axis.horizontal,
+                  //   child: SizedBox(
+                  //     width: MediaQuery.of(context).size.width,
+                  //     child: DatatableWidget(
+                  //         columns: [
+                  //           buildHeaderWithSearch(title: "REF #"),
+                  //           buildHeaderWithSearch(title: "DATETIME"),
+                  //           buildHeaderWithSearch(title: "PICKUP"),
+                  //           buildHeaderWithSearch(title: "DROPOFF"),
+                  //           buildHeaderWithSearch(title: "VEHICLE"),
+                  //           buildHeaderWithSearch(title: "DRIVER"),
+                  //           buildHeaderWithSearch(title: "ACCOUNT"),
+                  //           buildHeaderWithSearch(title: "FARES"),
+                  //           buildHeaderWithSearch(title: "PARKING"),
+                  //           buildHeaderWithSearch(title: "WAITING"),
+                  //           buildHeaderWithSearch(title: "EXTRA DROP"),
+                  //           buildHeaderWithSearch(title: "TOTAL"),
+                  //         ],
+                  //         totalRow: controller.incomeModel?.bookings?.length ?? 0,
+                  //         rows: (controller.incomeModel?.bookings ?? []).map((item) {
+                  //
+                  //           String formattedDateTime = "-";
+                  //           if (item.pickupDate != null) {
+                  //             String date = DateFormat('dd-MM-yy').format(item.pickupDate!);
+                  //             String time = item.pickupTime ?? "";
+                  //             formattedDateTime = time.isNotEmpty ? "$date $time" : date;
+                  //           }
+                  //
+                  //           return DataRow(
+                  //             cells: [
+                  //               DataCell(Center(child: Text(item.referenceNumber ?? ""))),
+                  //               DataCell(Center(child: Text(formattedDateTime))),
+                  //               DataCell(Center(child: Text((item.pickup ?? "").toUpperCase()))),
+                  //               DataCell(Center(child: Text((item.dropoff ?? "").toUpperCase()))),
+                  //               DataCell(Center(child: Text((item.vehicle ?? "").toUpperCase()))),
+                  //               DataCell(Center(child: Text((item.driverName ?? "").toUpperCase()))),
+                  //               DataCell(Center(child: Text(item.account ?? ""))),
+                  //               DataCell(Center(child: Text("£${item.fares ?? ""}"))),
+                  //               DataCell(Center(child: Text("£${item.parking ?? ""}"))),
+                  //               DataCell(Center(child: Text("£${item.waiting ?? ""}"))),
+                  //               DataCell(Center(child: Text("£${item.extraDrop ?? ""}"))),
+                  //               DataCell(Center(child: Text("£${item.total ?? ""}"))),
+                  //             ]
+                  //           );
+                  //         }).toList(),
+                  //     ),
+                  //   ),
+                  // ),
 
-                            String formattedDateTime = "-";
-                            if (item.pickupDate != null) {
-                              String date = DateFormat('dd-MM-yy').format(item.pickupDate!);
-                              String time = item.pickupTime ?? "";
-                              formattedDateTime = time.isNotEmpty ? "$date $time" : date;
-                            }
-
-                            return DataRow(
-                              cells: [
-                                DataCell(Center(child: Text(item.referenceNumber ?? ""))),
-                                DataCell(Center(child: Text(formattedDateTime))),
-                                DataCell(Center(child: Text((item.pickup ?? "").toUpperCase()))),
-                                DataCell(Center(child: Text((item.dropoff ?? "").toUpperCase()))),
-                                DataCell(Center(child: Text((item.vehicle ?? "").toUpperCase()))),
-                                DataCell(Center(child: Text((item.driverName ?? "").toUpperCase()))),
-                                DataCell(Center(child: Text(item.account ?? ""))),
-                                DataCell(Center(child: Text("£${item.fares ?? ""}"))),
-                                DataCell(Center(child: Text("£${item.parking ?? ""}"))),
-                                DataCell(Center(child: Text("£${item.waiting ?? ""}"))),
-                                DataCell(Center(child: Text("£${item.extraDrop ?? ""}"))),
-                                DataCell(Center(child: Text("£${item.total ?? ""}"))),
-                              ]
-                            );
-                          }).toList(),
-                      ),
-                    ),
-                  ),
+              // SingleChildScrollView(
+              //   scrollDirection: Axis.horizontal,
+              //   child:
+                ResponsiveDataTableWidget(
+                    totalWidth: totalAvailableWidth,
+                  columnConfigs: [
+                    TableColumnConfig(title: "REF #", sizeType: ColumnSizeType.medium),
+                    TableColumnConfig(title: "DATETIME", sizeType: ColumnSizeType.medium),
+                    TableColumnConfig(title: "PICKUP", sizeType: ColumnSizeType.large),
+                    TableColumnConfig(title: "DROPOFF", sizeType: ColumnSizeType.large),
+                    TableColumnConfig(title: "VEHICLE", sizeType: ColumnSizeType.medium),
+                    TableColumnConfig(title: "DRIVER", sizeType: ColumnSizeType.medium),
+                    TableColumnConfig(title: "ACCOUNT", sizeType: ColumnSizeType.medium),
+                    TableColumnConfig(title: "FARES", sizeType: ColumnSizeType.small),
+                    TableColumnConfig(title: "PARKING", sizeType: ColumnSizeType.small),
+                    TableColumnConfig(title: "WAITING", sizeType: ColumnSizeType.small),
+                    TableColumnConfig(title: "EXTRA DROP", sizeType: ColumnSizeType.small),
+                    TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium),
+                  ],
+                  items: controller.incomeModel?.bookings ?? [],
+                  rowBuilder: (item, widths) {
+                    String formattedDateTime = "-";
+                    if (item.pickupDate != null) {
+                      String date = DateFormat('dd-MM-yy').format(item.pickupDate!);
+                      String time = item.pickupTime ?? "";
+                      formattedDateTime = time.isNotEmpty ? "$date $time" : date;
+                    }
+                    return [
+                      item.referenceNumber ?? "",
+                      formattedDateTime,
+                      (item.pickup ?? "").toUpperCase(),
+                      (item.dropoff ?? "").toUpperCase(),
+                      (item.vehicle ?? "").toUpperCase(),
+                      (item.driverName ?? "").toUpperCase(),
+                      item.account ?? "",
+                      "£${item.fares ?? ""}",
+                      "£${item.parking ?? ""}",
+                      "£${item.waiting ?? ""}",
+                      "£${item.extraDrop ?? ""}",
+                      "£${item.total ?? ""}",
+                    ];
+                  },
+                  // )
+          ),
                 ],
               ));
         });

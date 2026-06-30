@@ -140,10 +140,10 @@ class _ActivityScreenState extends State<ActivityScreen> {
                         ),
                       ),
                       SizedBox(
-                        width: 20,
+                        width: maxWidth < 1366 ? 5 : 20,
                       ),
                       CustomButton(
-                          width: 120,
+                          width: maxWidth < 1366 ? 70 : 120,
                           height: 30,
                           borderRadius: 4,
                           verticalPadding: 0.0,
@@ -157,7 +157,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                           }
                       ),
                       CustomButton(
-                        width: 120,
+                        width: maxWidth < 1366 ? 70 : 120,
                         height: 30,
                         borderRadius: 4,
                         verticalPadding: 0.0,
