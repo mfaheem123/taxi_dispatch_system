@@ -51,7 +51,7 @@ class _CreateComplaintState extends State<CreateComplaint> {
 
     super.initState();
     shortCutKeyValue.value = "createComplaint";
-    controller.getDriversDropdown(); // ✅ add this
+    controller.getDriversDropdown(); //  add this
   }
 
   int selectedRowIndex = 0; // currently selected row
@@ -84,20 +84,23 @@ class _CreateComplaintState extends State<CreateComplaint> {
                 Wrap(
                   children: [
                     Container(
+                      //padding:  const EdgeInsets.only(left: 10),
                       width: fieldWidth * 2.0,
                       decoration: BoxDecoration(
                           border: Border.all(color: DynamicColors.gryClr)),
                       child: Wrap(
-                        runSpacing: 18,
-                        spacing: fieldWidth / 2,
+                        runSpacing: 20,
+                        spacing: fieldWidth / 15,
                         children: [
                           Container(
+                            //margin: EdgeInsets.only(top:10),
                             color: DynamicColors.secondaryClr,
-                            padding: const EdgeInsets.all(12),
+                            padding: const EdgeInsets.all(17),
                             child: Center(
                                 child: Text(AppText.customer,
                                     style: titleDesign())),
                           ),
+                          //complaint date
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 8.0),
@@ -133,6 +136,7 @@ class _CreateComplaintState extends State<CreateComplaint> {
                               ),
                             ),
                           ),
+                          // incident date
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 8.0),
@@ -173,18 +177,21 @@ class _CreateComplaintState extends State<CreateComplaint> {
                                   )),
                             ),
                           ),
+                          //name
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 8.0),
                             child: CustomTextField(
                               borderRadius: 4,
                               controller: controller.customerNameController,
+                              textCapitalization: TextCapitalization.characters,
                               width: fieldWidth / 1.5,
                               hintText: AppText.name,
                               columnText: true,
                               readOnly: true,
                             ),
                           ),
+                          // phone number field
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 8.0),
@@ -389,7 +396,7 @@ class _CreateComplaintState extends State<CreateComplaint> {
                             ),
                           ),
                           SizedBox(
-                            height: 10,
+                            height: 50,
                           ),
                         ],
                       ),
@@ -400,14 +407,14 @@ class _CreateComplaintState extends State<CreateComplaint> {
                           border: Border.all(color: DynamicColors.gryClr)),
                       child: Wrap(
                         runSpacing: 25,
-                        spacing: fieldWidth / 8,
+                        spacing: fieldWidth /15,
                         children: [
                           Container(
                             color: DynamicColors.secondaryClr,
                             padding: const EdgeInsets.all(12),
                             child: Row(
                               children: [
-                                Text(AppText.booking, style: titleDesign()),
+                                Center(child: Text(AppText.booking, style: titleDesign())),
                                 Spacer(),
                                 Radio(
                                     value: 0,
@@ -445,51 +452,50 @@ class _CreateComplaintState extends State<CreateComplaint> {
                               ],
                             ),
                           ),
+                          // ref no
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 8.0),
                             child: CustomTextField(
                               borderRadius: 4,
                               controller: controller.customerRefNoController,
+                              textCapitalization: TextCapitalization.characters,
                               width: fieldWidth / 1.5,
                               hintText: AppText.refNo,
                               columnText: true,
                               // suffixIcon: Icon(Icons.search),
                             ),
                           ),
+                         // driver dropdown
                           CustomDropdownField<Driver>(
                             text: AppText.driver,
                             width: fieldWidth / 2.5,
                             label: "SELECT DRIVER",
                             items: controller.driverList,
-                            itemLabel: (Driver d) => d.name ?? "No Name",
-                            value: controller.driverList
-                                    .contains(controller.selectedDriver)
-                                ? controller.selectedDriver
-                                : null,
+                            itemLabel: (Driver d) => controller.capitalizeWords(d.name ?? ""),
+                            value: controller.driverList.firstWhereOrNull(
+                                  (e) => e.id.toString() == controller.selectedDriver?.id.toString(),
+                            ),
                             onChanged: (Driver? val) {
                               controller.selectedDriver = val;
                               controller.update();
                             },
                           ),
-                          // CustomDropdownField<String>(
-                          //   text: AppText.driver,
-                          //   width: fieldWidth/2.5,
-                          //   label: "SELECT DRIVER", items:[
-                          //   "25 GEORGE HAMPTON",
-                          //   "25 GEORGE HAMPTON",
-                          //   "25 GEORGE HAMPTON",
-                          //   "25 GEORGE HAMPTON",
-                          //   "25 GEORGE HAMPTON",
-                          //   "25 GEORGE HAMPTON",],
-                          //  // value: controller.selectDriver,
-                          //   itemLabel: (val) => val, // just show the string
-                          //   onChanged: (val) {
-                          //    // controller.selectDriver = val;
-                          //     controller.update();
-                          //   },
-                          // ),
-
+                         //  CustomDropdownField<Driver>(
+                         //    text: AppText.driver,
+                         //    width: fieldWidth / 2.5,
+                         //    label: "SELECT DRIVER",
+                         //    items: controller.driverList,
+                         //    itemLabel: (Driver d) => d.name ?? "No Name",
+                         //    value: controller.driverList.contains(controller.selectedDriver)
+                         //        ? controller.selectedDriver
+                         //        : null,
+                         //    onChanged: (Driver? val) {
+                         //      controller.selectedDriver = val;
+                         //      controller.update();
+                         //    },
+                         //  ),
+                          // registration No
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 8.0),
@@ -501,12 +507,14 @@ class _CreateComplaintState extends State<CreateComplaint> {
                               columnText: true,
                             ),
                           ),
+                          //notes
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 8.0),
                             child: CustomTextField(
                               borderRadius: 4,
                               controller: controller.customerNoteController,
+                              textCapitalization: TextCapitalization.characters,
                               width: fieldWidth / 1.5,
                               hintText: AppText.note,
                               columnText: true,
@@ -517,14 +525,16 @@ class _CreateComplaintState extends State<CreateComplaint> {
                               height: 100,
                             ),
                           ),
+                         // complaint
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 8.0),
                             child: CustomTextField(
                               borderRadius: 4,
                               controller: controller.complaintController,
-                              width: fieldWidth / 1.5,
-                              hintText: AppText.complaint,
+                              textCapitalization: TextCapitalization.characters,
+                              width: fieldWidth / 1.15,
+                              hintText: AppText.complaint.toString().toUpperCase(),
                               columnText: true,
                               contentPadding:
                                   EdgeInsets.only(left: 10, top: 20),
@@ -532,24 +542,27 @@ class _CreateComplaintState extends State<CreateComplaint> {
                               height: 100,
                             ),
                           ),
+                          //howDealWithController
                           Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8.0, vertical: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
                             child: CustomTextField(
                               borderRadius: 4,
                               controller: controller.howDealWithController,
-                              width: fieldWidth / 1.4,
+                              textCapitalization: TextCapitalization.characters,
+                              width: fieldWidth / 1.5,
                               hintText: AppText.howDealWith,
                               columnText: true,
                             ),
                           ),
+                          //result
                           Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8.0, vertical: 4),
                             child: CustomTextField(
                               borderRadius: 4,
                               controller: controller.resultController,
-                              width: fieldWidth / 1.4,
+                              textCapitalization: TextCapitalization.characters,
+                              width: fieldWidth / 1.5,
                               hintText: AppText.result,
                               columnText: true,
                             ),

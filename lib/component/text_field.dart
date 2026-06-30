@@ -10,8 +10,9 @@ import 'package:get/get.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
 
 class CustomTextField extends StatelessWidget {
-  CustomTextField({super.key,
-  this.labelText,
+  CustomTextField({
+    super.key,
+    this.labelText,
     required this.controller,
     this.focusNode,
     this.onChanged,
@@ -33,7 +34,8 @@ class CustomTextField extends StatelessWidget {
     this.width,
     this.columnText = false,
     this.readOnly = false,
-    this.borderWidth = 2
+    this.borderWidth = 2,
+    this.textCapitalization = TextCapitalization.none,
   });
 
   String? labelText;
@@ -59,6 +61,7 @@ class CustomTextField extends StatelessWidget {
   Color? fillColor;
   bool columnText = false;
   double borderWidth = 2;
+  final TextCapitalization textCapitalization;
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +74,7 @@ class CustomTextField extends StatelessWidget {
               width: width?? Get.width/2.5,
             height: height?? 30,
               child: TextField(
-                textCapitalization: TextCapitalization.characters,
+                textCapitalization: textCapitalization,
                 controller: controller,
                 focusNode: focusNode,
                 onChanged: onChanged,

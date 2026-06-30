@@ -71,9 +71,11 @@ class _ComplaintsViewState extends State<ComplaintsView> {
               Row(
                 children: [
                   Text(
-                   "Customer Complaints"+ " (10)",
+                    "CUSTOMER COMPLAINTS (${controller.filteredComplaints.length})",
                     style: mozillaTextSemiBoldText(
-                        fontWeight: FontWeight.w800, fontSize: 17),
+                      fontWeight: FontWeight.w800,
+                      fontSize: 17,
+                    ),
                   ),
 
                   SizedBox(
@@ -82,6 +84,9 @@ class _ComplaintsViewState extends State<ComplaintsView> {
                   Padding(
                     padding: const EdgeInsets.only(top: 12),
                     child: CustomButton(
+                      onTap: ()async{
+                        await controller.getCustomerComplaints();
+                      },
                       height: 40,
                       width: 80,
                       verticalPadding: 0.0,
@@ -169,7 +174,7 @@ class _ComplaintsViewState extends State<ComplaintsView> {
 
                            DataCell(
                              Center(
-                               child: Text(complaint.referenceNumber ?? ""),
+                               child: Text((complaint.referenceNumber ?? "").toUpperCase()),
                              ),
                            ),
 
@@ -195,7 +200,7 @@ class _ComplaintsViewState extends State<ComplaintsView> {
                            DataCell(
                              Center(
                                child: Text(
-                                 complaint.customer?.name ?? "",
+                                ( complaint.customer?.name ?? "").toUpperCase(),
                                ),
                              ),
                            ),
@@ -235,28 +240,7 @@ class _ComplaintsViewState extends State<ComplaintsView> {
 
                                          controller.update();
                                        },
-                                       // onPressed: () {
-                                       //   if(permissions.contains('update_lost_property')){
-                                       //     // controller.lostPropertyUpdate(
-                                       //     //     lostPropertyUpdate: item);
-                                       //     int index = _controller.selectedMenuItems
-                                       //         .indexWhere((element) =>
-                                       //     element.title == "Create Complaint");
-                                       //     if (index != -1) {
-                                       //       _controller.selectedMenuItems[index]
-                                       //           .selectedItem = true;
-                                       //       _controller.currentPage.value =
-                                       //           CreateComplaint();
-                                       //     } else {
-                                       //       _controller.currentPage.value =
-                                       //           CreateComplaint();
-                                       //       _controller.menuBarRefresh(
-                                       //           title: "CREATE COMPLAINT",
-                                       //           pageName: CreateComplaint());
-                                       //     }
-                                       //     controller.update();
-                                       //   }
-                                       // },
+
                                        child: const Icon(Icons.edit_calendar, size: 28),
                                      ),
 
