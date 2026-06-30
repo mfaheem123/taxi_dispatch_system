@@ -414,7 +414,6 @@ class _CompanyIncomeScreenState extends State<CompanyIncomeScreen> {
                       String time = item.pickupTime ?? "";
                       formattedDateTime = time.isNotEmpty ? "$date $time" : date;
                     }
-
                     return [
                       item.referenceNumber ?? '—',
                       formattedDateTime,

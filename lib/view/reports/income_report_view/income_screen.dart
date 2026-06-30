@@ -40,10 +40,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
       controller.getAllDrivers();
       controller.getSubsidiary();
       controller.getData();
-      // if (controller.subsDiaryModel?.subsidiaries?.isNotEmpty ?? false) {
-      //   var defaultSubsidiary = controller.subsDiaryModel!.subsidiaries!.first;
-      //   controller.subsDiaryModel = defaultSubsidiary;
-      //   controller.update();
+
     }, builder: (controller) {
         return LayoutBuilder(builder: (context, constraints) {
           final double maxWidth = constraints.maxWidth;
@@ -51,9 +48,8 @@ class _IncomeScreenState extends State<IncomeScreen> {
           final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
           final double totalAvailableWidth = constraints.maxWidth;
 
-          // Instead of fixed width, we calculate flexible field widths
           final double fieldWidth = isMobile
-              ? maxWidth // full width
+              ? maxWidth
               : isTablet
               ? maxWidth / 2
               : maxWidth / 4;
