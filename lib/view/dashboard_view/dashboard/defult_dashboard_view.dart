@@ -357,38 +357,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       if (pickupPolylineIndex >= 0) {
                                                                         controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
                                                                       }
-
-                                                                      // final dropPolylineIndex = controller.polyLineMarkerInfo
-                                                                      //     .indexWhere((e) => e.markerType == "DROP LOCATION");
-                                                                      // if (dropPolylineIndex >= 0) {
-                                                                      //   controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
-                                                                      // }
-
                                                                       final pickupMarkerIndex =
                                                                       controller.markers.indexWhere((e) => e.type == "pickup");
                                                                       if (pickupMarkerIndex >= 0) {
                                                                         controller.markers.removeAt(pickupMarkerIndex);
                                                                       }
-
-                                                                      // final dropOffMarkerIndex =
-                                                                      // controller.markers.indexWhere((e) => e.type == "dropOff");
-                                                                      // if (dropOffMarkerIndex >= 0) {
-                                                                      //   controller.markers.removeAt(dropOffMarkerIndex);
-                                                                      // }
-
-                                                                      // ✅ FIX: Sirf One-Way (via) wale markers list se remove honge
-                                                                      // controller.markers.removeWhere((marker) => marker.type == "via");
-                                                                      //
-                                                                      // // ✅ FIX: Sirf One-Way wale via points aur text fields remove honge (withReturnWay == "via")
-                                                                      // for (int i = controller.viaPoints.length - 1; i >= 0; i--) {
-                                                                      //   if (controller.viaPoints[i].withReturnWay == "via") {
-                                                                      //     controller.viaPoints.removeAt(i);
-                                                                      //     if (i < controller.viaTextEditingController.length) {
-                                                                      //       controller.viaTextEditingController.removeAt(i);
-                                                                      //     }
-                                                                      //   }
-                                                                      // }
-
                                                                       controller.pickupController.clear();
                                                                       // controller.dropOffController.clear();
                                                                       controller.dropDownShow.value = false;
@@ -413,18 +386,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     onActivate: () async {
                                                                       String tempPic = controller.pickupController.text;
                                                                       String tempDrop = controller.dropOffController.text;
-
-                                                                      // Textfields values swap karein
                                                                       controller.pickupController.text = tempDrop;
                                                                       controller.dropOffController.text = tempPic;
-
-                                                                      // Dropdown visibility ko manage karein taake UI clean rahe
                                                                       controller.dropDownShow.value = false;
-
-                                                                      // Markers state swap karein
                                                                       controller.swapPickupDropMarkers();
-
-                                                                      // Map polyline calculations ko refresh karein
                                                                       await controller.fetchRouteFromOSRM();
                                                                       controller.update();
                                                                     },
@@ -677,46 +642,18 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       : KbdActivatable(
                                                                     focusNode: clearDrop,
                                                                     onActivate: () {
-
-                                                                      // final pickupPolylineIndex = controller.polyLineMarkerInfo
-                                                                      //     .indexWhere((e) => e.markerType == "PICKUP LOCATION");
-                                                                      //
-                                                                      // if (pickupPolylineIndex >= 0) {
-                                                                      //   controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
-                                                                      // }
-
                                                                       final dropPolylineIndex = controller.polyLineMarkerInfo
                                                                           .indexWhere((e) => e.markerType == "DROP LOCATION");
 
                                                                       if (dropPolylineIndex >= 0) {
                                                                         controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
                                                                       }
-
-                                                                      // final pickupMarkerIndex =
-                                                                      // controller.markers.indexWhere((e) => e.type == "pickup");
-                                                                      //
-                                                                      // if (pickupMarkerIndex >= 0) {
-                                                                      //   controller.markers.removeAt(pickupMarkerIndex);
-                                                                      // }
-
                                                                       final dropOffMarkerIndex =
                                                                       controller.markers.indexWhere((e) => e.type == "dropOff");
 
                                                                       if (dropOffMarkerIndex >= 0) {
                                                                         controller.markers.removeAt(dropOffMarkerIndex);
                                                                       }
-                                                                      // ✅ FIX: Sirf One-Way (via) wale markers list se remove honge
-                                                                      // controller.markers.removeWhere((marker) => marker.type == "via");
-
-                                                                      // // ✅ FIX: Sirf One-Way wale via points aur text fields remove honge (withReturnWay == "via")
-                                                                      // for (int i = controller.viaPoints.length - 1; i >= 0; i--) {
-                                                                      //   if (controller.viaPoints[i].withReturnWay == "via") {
-                                                                      //     controller.viaPoints.removeAt(i);
-                                                                      //     if (i < controller.viaTextEditingController.length) {
-                                                                      //       controller.viaTextEditingController.removeAt(i);
-                                                                      //     }
-                                                                      //   }
-                                                                      // }
                                                                       // controller.viaPoints.clear();
                                                                       // controller.viaTextEditingController.clear();
                                                                       // controller.pickupController.clear();
@@ -724,7 +661,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.clearViaIfNoPickupAndDrop();
                                                                       controller.dropDownShow.value = false;
                                                                       controller.suggestions.clear();
-                                                                      // Sirf 1st Dropoff wale markers remove honge
                                                                       // controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "DROP LOCATION" || item.markerType == "Create Booking DROP LOCATION");
                                                                       controller.totalDistance.value = "0.00";
                                                                       controller.totalTimeDuration.value = "0 min";
@@ -1340,61 +1276,26 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             if (pickupPolylineIndex >= 0) {
                                                                               controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
                                                                             }
-
-                                                                            // final dropPolylineIndex = controller.polyLineMarkerInfo
-                                                                            //     .indexWhere((e) => e.markerType == "DROP TWO WAY LOCATION");
-                                                                            //
-                                                                            // if (dropPolylineIndex >= 0) {
-                                                                            //   controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
-                                                                            // }
-
                                                                             final pickupMarkerIndex =
                                                                             controller.markers.indexWhere((e) => e.type == "pickup two way");
-
                                                                             if (pickupMarkerIndex >= 0) {
                                                                               controller.markers.removeAt(pickupMarkerIndex);
                                                                             }
-
-                                                                            // final dropOffMarkerIndex =
-                                                                            // controller.markers.indexWhere((e) => e.type == "dropOff two way");
-                                                                            //
-                                                                            // if (dropOffMarkerIndex >= 0) {
-                                                                            //   controller.markers.removeAt(dropOffMarkerIndex);
-                                                                            // }
-
-                                                                            // 1. Sirf Two-Way waale controllers ko clear karein
                                                                             controller.pickupTwoWayController.clear();
                                                                             controller.clearReturnViaIfNoPickupAndDrop();
                                                                             // controller.dropOffTwoWayController.clear();
-
-                                                                            // 2. POORI list clear karne ke bajaye, sirf TWO WAY waale markers remove karein
                                                                             controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "PICKUP TWO WAY LOCATION");
                                                                             if (controller.markers is List<CustomMarker>) {
                                                                               controller.markers.removeWhere((marker) => marker.type == "PICKUP TWO WAY LOCATION");
                                                                             }
-                                                                            // controller.markers.removeWhere((marker) => marker.type == "via with return");
-
-                                                                            //  for (int i = controller.viaPoints.length - 1; i >= 0; i--) {
-                                                                            //   if (controller.viaPoints[i].withReturnWay == "via with return") {
-                                                                            //     controller.viaPoints.removeAt(i);
-                                                                            //     if (i < controller.viaTextEditingController.length) {
-                                                                            //       controller.viaTextEditingController.removeAt(i);
-                                                                            //     }
-                                                                            //   }
-                                                                            // }
-
                                                                             controller.tempStoreReturnMils = null;
-                                                                            // 3. Baki states ko reset karein
                                                                             // controller.fixedFare.value = "0";
                                                                             controller.returnFareValue = "";
                                                                             // controller.slugControllerReturn.clear();
                                                                             // // controller.slugController.clear();
-                                                                            // controller.dropDownShow.value = false;
+                                                                            controller.dropDownShow.value = false;
                                                                             // controller.tempStoreMils = null;
-
-                                                                            // 4. Route ko recalculate karein (Yeh ab bache hue 1st pickup/dropoff ka route banayega)
                                                                              controller.fetchRouteFromOSRM();
-
                                                                             controller.update();
                                                                           },
                                                                           child: Icon(Icons.close, color: DynamicColors.redClr, size: 15),
@@ -1404,18 +1305,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           onActivate: () async {
                                                                             String tempPic = controller.pickupTwoWayController.text;
                                                                             String tempDrop = controller.dropOffTwoWayController.text;
-
-                                                                            // Textfields values ko swap karein
                                                                             controller.pickupTwoWayController.text = tempDrop;
                                                                             controller.dropOffTwoWayController.text = tempPic;
-
-                                                                            // Dropdown hide karein
                                                                             controller.dropDownShow.value = false;
-
-                                                                            // Markers state update karein
                                                                             controller.swapReturnPickupDropMarkers();
-
-                                                                            // Map refresh karne ke liye route call karein
                                                                             await controller.fetchRouteFromOSRM();
                                                                             controller.update();
                                                                           },
@@ -1563,27 +1456,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           onActivate: () {
                                                                             FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
 
-                                                                            // final pickupPolylineIndex = controller.polyLineMarkerInfo
-                                                                            //     .indexWhere((e) => e.markerType == "PICKUP TWO WAY LOCATION");
-                                                                            //
-                                                                            // if (pickupPolylineIndex >= 0) {
-                                                                            //   controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
-                                                                            // }
-
                                                                             final dropPolylineIndex = controller.polyLineMarkerInfo
                                                                                 .indexWhere((e) => e.markerType == "DROP TWO WAY LOCATION");
 
                                                                             if (dropPolylineIndex >= 0) {
                                                                               controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
                                                                             }
-
-                                                                            // final pickupMarkerIndex =
-                                                                            // controller.markers.indexWhere((e) => e.type == "pickup two way");
-                                                                            //
-                                                                            // if (pickupMarkerIndex >= 0) {
-                                                                            //   controller.markers.removeAt(pickupMarkerIndex);
-                                                                            // }
-
                                                                             final dropOffMarkerIndex =
                                                                             controller.markers.indexWhere((e) => e.type == "dropOff two way");
 
@@ -1591,27 +1469,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                               controller.markers.removeAt(dropOffMarkerIndex);
                                                                             }
                                                                             controller.markers.removeWhere((marker) => marker.type == "via with return");
-
-                                                                            // for (int i = controller.viaPoints.length - 1; i >= 0; i--) {
-                                                                            //   if (controller.viaPoints[i].withReturnWay == "via with return") {
-                                                                            //     controller.viaPoints.removeAt(i);
-                                                                            //     if (i < controller.viaTextEditingController.length) {
-                                                                            //       controller.viaTextEditingController.removeAt(i);
-                                                                            //     }
-                                                                            //   }
-                                                                            // }
                                                                             // 1. Only Two-Way controllers clear karein
-                                                                            // controller.pickupTwoWayController.clear();
                                                                             controller.dropOffTwoWayController.clear();
                                                                             controller.clearReturnViaIfNoPickupAndDrop();
-
-                                                                            // 2. Specific filtering lagayein pure clear ke bajaye
-                                                                            // controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "DROP TWO WAY LOCATION");
-                                                                            //
-                                                                            // if (controller.markers is List<CustomMarker>) {
-                                                                            //   controller.markers.removeWhere((marker) => marker.type == "DROP TWO WAY LOCATION");
-                                                                            // }
-
                                                                             // 3. Fares aur temporaries reset
                                                                             controller.tempStoreMils = null;
                                                                             // // controller.fixedFare.value = "0";
@@ -1621,11 +1481,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             // // controller.slugController.clear();
                                                                             // // controller.totalDistance.value = "0";
                                                                             // // controller.totalTimeDuration.value = "0";
-                                                                            // controller.dropDownShow.value = false;
-
-                                                                            // 4. Update Route
+                                                                            controller.dropDownShow.value = false;
+                                                                            //  Route API
                                                                             controller.fetchRouteFromOSRM();
-
                                                                             controller.update();
                                                                           },
                                                                           child: Icon(Icons.close, color: DynamicColors.redClr, size: 15),
@@ -1635,18 +1493,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           onActivate: () async {
                                                                             String tempPic = controller.pickupTwoWayController.text;
                                                                             String tempDrop = controller.dropOffTwoWayController.text;
-
-                                                                            // Textfields values ko swap karein
                                                                             controller.pickupTwoWayController.text = tempDrop;
                                                                             controller.dropOffTwoWayController.text = tempPic;
-
-                                                                            // Dropdown hide karein
                                                                             controller.dropDownShow.value = false;
-
-                                                                            // Markers state update karein
                                                                             controller.swapReturnPickupDropMarkers();
-
-                                                                            // Route calculation aur UI refresh
                                                                             await controller.fetchRouteFromOSRM();
                                                                             controller.update();
                                                                           },

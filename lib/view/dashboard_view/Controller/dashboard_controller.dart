@@ -1198,13 +1198,9 @@ class DashboardController extends GetxController {
     double outboundDurationMinutes = 0.0;
     double returnDurationMinutes = 0.0;
 
-// Note: Jab koi point delete ho, toh aap simply us variable ko `null` set kar dein
-// ya `viaPoints` list se remove kar ke is main routing function ko dubara call kar dein.
 
+      /// (A -> Vias -> B)
 
-/// =========================================================================
-// 1. OUTBOUND ROUTE SEQUENCE (A -> Vias -> B)
-/// =========================================================================
     if (outboundSequence.length >= 2) {
       final coordsOut = outboundSequence.map((p) => "${p.longitude},${p.latitude}").join(";");
       final urlOut = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsOut?overview=full');
@@ -1231,17 +1227,14 @@ class DashboardController extends GetxController {
       }
     }
 
-// =========================================================================
-// 2. CONNECTING ROUTE (Bridge: Outbound ka last point -> Return ka first point)
-// =========================================================================
-// FIX: Agar B delete ho gaya, toh outboundSequence ka last point automatically 'V2' ya 'A' ban jayega.
-// Agar C delete ho gaya, toh returnSequence ka first point automatically 'V1' ya 'D' ban jayega.
+
+    //  CONNECTING ROUTE (Bridge: Outbound ka last point -> Return ka first point)
+
     if (outboundSequence.isNotEmpty && returnSequence.isNotEmpty) {
 
-      final LatLng connectFrom = outboundSequence.last; // B, ya agar B nahi hai toh last Via, ya fir A
-      final LatLng connectTo = returnSequence.first;    // C, ya agar C nahi hai toh first Via, ya fir D
+      final LatLng connectFrom = outboundSequence.last;
+      final LatLng connectTo = returnSequence.first;
 
-      // Agar dono sequences aapas me jud rahi hain aur outbound ka end return ke start ke barabar nahi hai
       if (connectFrom != connectTo) {
         final coordsConnect = "${connectFrom.longitude},${connectFrom.latitude};${connectTo.longitude},${connectTo.latitude}";
         final urlConnect = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsConnect?overview=full');
@@ -1267,9 +1260,8 @@ class DashboardController extends GetxController {
       }
     }
 
-// =========================================================================
-// 3. RETURN ROUTE SEQUENCE (C -> Vias -> D)
-// =========================================================================
+    ///  RETURN (C -> Vias -> D)
+
     if (returnSequence.length >= 2) {
       final coordsRet = returnSequence.map((p) => "${p.longitude},${p.latitude}").join(";");
       final urlRet = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsRet?overview=full');
@@ -1296,108 +1288,18 @@ class DashboardController extends GetxController {
       }
     }
 
-    /// =========================================================================
-
-
-    // ///>>>>>>>>>>  A to B ROUTE
-    // if (outboundSequence.length >= 2) {
-    //   final coordsOut = outboundSequence.map((p) => "${p.longitude},${p.latitude}").join(";");
-    //   final urlOut = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsOut?overview=full');
-    //   try {
-    //     final resOut = await Dio().getUri(urlOut);
-    //     if (resOut.statusCode == 200 && resOut.data['routes'] != null && resOut.data['routes'].isNotEmpty) {
-    //       final dataOut = resOut.data['routes'][0];
-    //       computedOutboundMiles = dataOut['distance'] * 0.000621371;
-    //       totalComputedMiles += computedOutboundMiles;
-    //       outboundDurationMinutes = (dataOut['duration'] ?? 0).toDouble() / 60;
-    //       totalDurationMinutes += outboundDurationMinutes;
-    //
-    //       String encodedPoly = dataOut['geometry'];
-    //       List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPoly);
-    //       List<LatLng> decodedSegmentPoints = result.map((p) => LatLng(p.latitude, p.longitude)).toList();
-    //       polylinePointsCoordinate.addAll(decodedSegmentPoints);
-    //
-    //       polylines.add(Polyline(
-    //         points: decodedSegmentPoints,
-    //         color: DynamicColors.primaryClr, // Outbound Polyline color
-    //         strokeWidth: 2.5,
-    //       ));
-    //     }
-    //   } catch (e) {
-    //     print("Outbound Route Generation Error: $e");
-    //   }
-    // }
-    //
-    // ///>>>>>>>>>>  B to C  ROUTE
-    // if (outboundDropOff != null && returnPickup != null) {
-    //   final coordsConnect = "${outboundDropOff.longitude},${outboundDropOff.latitude};${returnPickup.longitude},${returnPickup.latitude}";
-    //   final urlConnect = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsConnect?overview=full');
-    //
-    //   try {
-    //     final resConnect = await Dio().getUri(urlConnect);
-    //     if (resConnect.statusCode == 200 && resConnect.data['routes'] != null && resConnect.data['routes'].isNotEmpty) {
-    //       final dataConnect = resConnect.data['routes'][0];
-    //       String encodedPoly = dataConnect['geometry'];
-    //       List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPoly);
-    //       List<LatLng> decodedSegmentPoints = result.map((p) => LatLng(p.latitude, p.longitude)).toList();
-    //       polylinePointsCoordinate.addAll(decodedSegmentPoints);
-    //       // Map par street-wise line draw karne ke liye
-    //       polylines.add(Polyline(
-    //
-    //         points: decodedSegmentPoints,
-    //         color: Colors.grey.withOpacity(0.8), // Isko grey ya koi bhi alag color de dein taake transition lagay
-    //         strokeWidth: 2.5,
-    //       ));
-    //     }
-    //   } catch (e) {
-    //     print("B to C Connecting Route Generation Error: $e");
-    //   }
-    // }
-    //
-    // /// C to D ROUTE
-    // if (returnSequence.length >= 2) {
-    //   final coordsRet = returnSequence.map((p) => "${p.longitude},${p.latitude}").join(";");
-    //   final urlRet = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsRet?overview=full');
-    //   try {
-    //     final resRet = await Dio().getUri(urlRet);
-    //     if (resRet.statusCode == 200 && resRet.data['routes'] != null && resRet.data['routes'].isNotEmpty) {
-    //       final dataRet = resRet.data['routes'][0];
-    //       computedReturnMiles = dataRet['distance'] * 0.000621371;
-    //       totalComputedMiles += computedReturnMiles;
-    //
-    //       returnDurationMinutes = (dataRet['duration'] ?? 0).toDouble() / 60;
-    //       totalDurationMinutes += returnDurationMinutes;
-    //
-    //       String encodedPoly = dataRet['geometry'];
-    //       List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPoly);
-    //       List<LatLng> decodedSegmentPoints = result.map((p) => LatLng(p.latitude, p.longitude)).toList();
-    //       polylinePointsCoordinate.addAll(decodedSegmentPoints);
-    //
-    //       polylines.add(Polyline(
-    //         points: decodedSegmentPoints,
-    //         color: DynamicColors.pink, // Alag return polyline color
-    //         strokeWidth: 2.5,
-    //       ));
-    //     }
-    //   } catch (e) {
-    //     print("Return Route Generation Error: $e");
-    //   }
-    // }
-
-    // Update Distance Calculations state
     totalDistance.value = totalComputedMiles.toStringAsFixed(2);
     tempStoreTotalDistance.value = totalComputedMiles.toStringAsFixed(2);
     tempStoreMils = computedOutboundMiles.toStringAsFixed(2);
     tempStoreReturnMils = computedReturnMiles.toStringAsFixed(2);
     totalTimeDuration.value = formatDuration(totalDurationMinutes);
 
-    // Calculate Outbound Segment Via deviations
+    // Calculate
     if (viaPoints.any((element) => element.withReturnWay == "via")) {
       tempStoreViaMils = computedOutboundMiles.toStringAsFixed(2);
     } else {
       tempStoreViaMils = "0.00";
     }
-
     String postMils = (computedOutboundMiles).toStringAsFixed(2);
 
     if (pickupTwoWayController.text.isNotEmpty && dropOffTwoWayController.text.isEmpty) {
@@ -1405,7 +1307,6 @@ class DashboardController extends GetxController {
       return;
     }
 
-    // Fetch matrix fare computations independently
     final storedTemFare = await getFares(
       journeyTypeId: selectJourneyTypeValue!.id,
       multiReservationList: multiReservationList,
@@ -1421,7 +1322,6 @@ class DashboardController extends GetxController {
       withReturnDropOff: dropOffTwoWayController.text.isEmpty ? null : dropOffTwoWayController.text,
       returnMiles: dropOffTwoWayController.text.isNotEmpty ? tempStoreReturnMils : null,
     );
-
     var fareValue = jsonDecode(storedTemFare);
     fixedFare.value = fareValue['fare']?.toString() ?? "0";
     slugController.text = fareValue['fare']?.toString() ?? "0";
@@ -1438,324 +1338,6 @@ class DashboardController extends GetxController {
     update();
   }
 
-// your updated fetchRouteFromOSRM
-//   Future<void> fetchRouteFromOSRM() async {
-//     markers.clear();
-//     polylines.clear();
-//     polylinePointsCoordinate.clear();
-//     List<LatLng> tempPoints = [];
-//
-//     // add via points as markers
-//     for (var item in viaPoints) {
-//       final p = LatLng(item.lat, item.lng);
-//       tempPoints.add(p);
-//       markers.add(
-//         CustomMarker(
-//           withReturnType:
-//               item.withReturnWay == "via" ? "via" : 'via with return',
-//           child: Icon(Icons.location_pin,
-//               color: item.withReturnWay == "via"
-//                   ? DynamicColors.primaryClr
-//                   : Colors.pink,
-//               size: 30),
-//           type: "via",
-//           point: p,
-//           width: 30,
-//           height: 30,
-//         ),
-//       );
-//     }
-//
-//     // add other marker info (pickup / drop / create booking ...)
-//     if (polyLineMarkerInfo.isNotEmpty) {
-//       for (var item in polyLineMarkerInfo) {
-//         final p = LatLng(item.lat, item.lng);
-//
-//         if (item.markerType == "PICKUP LOCATION" ||
-//             item.markerType == "Create Booking PICKUP") {
-//           tempPoints.add(p);
-//           markers.add(
-//             CustomMarker(
-//               type: "pickup",
-//               point: p,
-//               child: Icon(Icons.location_pin,
-//                   color: DynamicColors.greenClr, size: 30),
-//               width: 30,
-//               height: 30,
-//             ),
-//           );
-//         } else if (item.markerType == "DROP LOCATION" ||
-//             item.markerType == "Create Booking DROP LOCATION") {
-//           tempPoints.add(p);
-//           markers.add(
-//             CustomMarker(
-//               type: "dropOff",
-//               point: p,
-//               child: Icon(Icons.location_pin,
-//                   color: DynamicColors.redClr, size: 30),
-//               width: 30,
-//               height: 30,
-//             ),
-//           );
-//         } else if (item.markerType == "PICKUP TWO WAY LOCATION") {
-//           tempPoints.add(p);
-//           markers.add(
-//             CustomMarker(
-//               type: "pickup two way",
-//               point: p,
-//               child:
-//                   Icon(Icons.location_pin, color: Colors.amberAccent, size: 30),
-//               width: 30,
-//               height: 30,
-//             ),
-//           );
-//         } else if (item.markerType == "DROP TWO WAY LOCATION") {
-//           tempPoints.add(p);
-//           markers.add(
-//             CustomMarker(
-//               type: "dropOff two way",
-//               point: p,
-//               child: Icon(Icons.location_pin,
-//                   color: DynamicColors.textClr, size: 30),
-//               width: 30,
-//               height: 30,
-//             ),
-//           );
-//         }
-//       }
-//     }
-//
-//     ///  jab hum ek address enter karte hai tu polyline banane k lye neche wala api hit nahe hogha yaha per ruk jaygha
-//     if (polyLineMarkerInfo.length == 1) {
-//       return;
-//     }
-//
-//     update();
-//
-//
-//     // --------- MULTI-POINT: request route from OSRM ----------
-//     final coordinates =
-//         tempPoints.map((p) => "${p.longitude},${p.latitude}").join(";");
-//     final url = Uri.parse(
-//         'https://router.project-osrm.org/route/v1/driving/$coordinates?overview=full');
-//
-//     final res = await Dio().getUri(url);
-//
-//     if (res.statusCode == 200) {
-//       polylinePointsCoordinate.clear();
-//       final data = res.data;
-//       final encodedPolyline = data['routes'][0]['geometry'];
-//
-//       // meters → miles
-//       final distanceInMiles = data['routes'][0]['distance'] * 0.000621371;
-//
-// // seconds → minutes
-//       final durationInMinutes = data['routes'][0]['duration'] / 60;
-//
-//       // final formattedDuration = formatDuration(durationInMinutes);
-//
-// // (Optional) format nicely
-//       totalDistance.value = distanceInMiles.toStringAsFixed(2); // e.g. "0.94"
-//       tempStoreTotalDistance.value == distanceInMiles.toStringAsFixed(2);
-//       // totalTimeDuration.value = durationInMinutes.toStringAsFixed(1); // e.g. "443.3"
-//       totalTimeDuration.value = formatDuration(durationInMinutes); // e.g. "443.3"
-//       List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPolyline);
-//       List<LatLng> polylinePointss = result.map((PointLatLng point) => LatLng(point.latitude, point.longitude)).toList();
-//
-//       polylinePointsCoordinate = polylinePointss.map((p) => LatLng(p.latitude.toDouble(), p.longitude.toDouble())).toList();
-//
-//       if (polylinePointsCoordinate.isNotEmpty) {
-//         polylines.add(Polyline(
-//           points: polylinePointsCoordinate,
-//           color: DynamicColors.primaryClr,
-//           strokeWidth: 2.0,
-//         ));
-//
-//         // build bounds from the route or from markers (choose whichever you prefer)
-//
-//         final List<LatLng> focusPoints =
-//             tempPoints.isNotEmpty ? tempPoints : polylinePointsCoordinate;
-//
-//         LatLngBounds bounds;
-//
-//         if (focusPoints.length == 1) {
-//           bounds =
-//               LatLngBounds.fromPoints([focusPoints.first, focusPoints.first]);
-//         } else {
-//           bounds = calculateBounds(focusPoints); // your existing helper
-//         }
-//
-//         final cameraFit =
-//             CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
-//         mapController.fitCamera(cameraFit);
-//       }
-//       // if (tempStoreMils == null) {
-//       //   tempStoreMils = totalDistance.value;
-//       //   if (tempStoreReturnMils != null) {
-//       //     tempStoreMils = (double.parse(totalDistance.value) - double.parse(tempStoreReturnMils.toString())).toString();
-//       //   } /*else{
-//       //     tempStoreMils = (double.parse(totalDistance.value)-double.parse(tempStoreReturnMils.toString())).toString();
-//       //   }*/
-//       // } else if (viaMilsCondition == true) {
-//       //   final double returnMils = double.tryParse(tempStoreReturnMils ?? '') ?? 0.0;
-//       //
-//       //   final double storeMils = double.tryParse(tempStoreMils ?? '') ?? 0.0;
-//       //
-//       //   final double distance = double.tryParse(totalDistance.value) ?? 0.0;
-//       //
-//       //   final double viaMils = ((returnMils + storeMils) - distance).abs();
-//       //
-//       //   tempStoreViaMils = viaMils.toString();
-//       //
-//       //   // tempStoreMils = (viaMils + storeMils).toString();
-//       //
-//       //   viaMilsCondition = false;
-//       //
-//       //   print('tempStoreViaMils: $tempStoreViaMils');
-//       //   print('total distance: ${totalDistance.value}');
-//       //   print('tempStoreMils: $tempStoreMils');
-//       // } else {
-//       //   tempStoreReturnMils = (double.parse(totalDistance.value) -
-//       //           double.parse(tempStoreMils.toString()))
-//       //       .toString();
-//       // }
-//       double totalMiles =
-//           double.tryParse(totalDistance.value) ?? 0;
-//
-// // ONE WAY ROUTE
-//       if (pickupTwoWayController.text.isEmpty &&
-//           dropOffTwoWayController.text.isEmpty) {
-//
-//         tempStoreMils = totalMiles.toStringAsFixed(2);
-//
-//         tempStoreReturnMils ??= "0";
-//       }
-//
-// // RETURN ROUTE COMPLETE
-//       else if (pickupTwoWayController.text.isNotEmpty &&
-//           dropOffTwoWayController.text.isNotEmpty) {
-//
-//         double oneWayMiles =
-//             double.tryParse(tempStoreMils ?? "0") ?? 0;
-//
-//         tempStoreReturnMils =
-//             (totalMiles - oneWayMiles).toStringAsFixed(2);
-//       }
-//
-// // VIA MILES
-//       if (viaPoints.isNotEmpty) {
-//
-//         double oneWayMiles =
-//             double.tryParse(tempStoreMils ?? "0") ?? 0;
-//
-//         tempStoreViaMils =
-//             (totalMiles - oneWayMiles).abs().toStringAsFixed(2);
-//
-//       } else {
-//
-//         tempStoreViaMils = "0";
-//       }
-//       print("via is $tempStoreViaMils");
-//       print("one way is $tempStoreMils");
-//       print("with return is $tempStoreReturnMils");
-//
-//
-//       // final double returnMils = double.tryParse(tempStoreMils ?? '') ?? 0.0;
-//       //
-//       // final double storeMils = double.tryParse(tempStoreViaMils ?? '') ?? 0.0;
-//       // String postMils = (storeMils + storeMils).toString();
-//       //
-//       // print("postMils$postMils");
-//       double oneWayMiles =
-//           double.tryParse(tempStoreMils ?? "0") ?? 0;
-//
-//
-//       double viaMiles =
-//           double.tryParse(tempStoreViaMils ?? "0") ?? 0;
-//
-//       String postMils =
-//       (oneWayMiles + viaMiles).toStringAsFixed(2);
-//
-//       print("One Way Miles : $tempStoreMils");
-//       print("Via Miles : $tempStoreViaMils");
-//       print("Return Miles : $tempStoreReturnMils");
-//       print("Post Miles : $postMils");
-//
-// // TWO WAY PICKUP AA GAYA LEKIN DROPOFF ABHI NAHI AYA
-//       if (pickupTwoWayController.text.isNotEmpty &&
-//           dropOffTwoWayController.text.isEmpty) {
-//         print("Waiting for return dropoff");
-//         return;
-//       }
-//       final storedTemFare = await getFares(
-//         // day: ,
-//         journeyTypeId: selectJourneyTypeValue!.id,
-//         multiReservationList: multiReservationList,
-//         pickup: pickupController.text,
-//         dropOff: dropOffController.text,
-//         miles: postMils,
-//         // miles: tempStoreMils,
-//         pickUpPlotId:
-//             dashboardDZoneValue != null ? dashboardDZoneValue!.id : null,
-//         dropoffPlotId:
-//             dashboardZoneValue != null ? dashboardZoneValue!.id : null,
-//         pickupDate:
-//             "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
-//         pickupTime: pickUpTimeController.text,
-//         vehicleTypeId: selectVehicleValue!.id,
-//         withReturnPickUp: pickupTwoWayController.text.isEmpty
-//             ? null
-//             : pickupTwoWayController.text,
-//         withReturnDropOff: dropOffTwoWayController.text.isEmpty
-//             ? null
-//             : dropOffTwoWayController.text,
-//         // returnMiles: dropOffTwoWayController.text.isNotEmpty &&
-//         //         dropOffTwoWayController.text.isNotEmpty
-//         //     ? (double.parse(totalDistance.value) -
-//         //             double.parse(tempStoreMils.toString()))
-//         //         .toString()
-//         //     : null,
-//         returnMiles: dropOffTwoWayController.text.isNotEmpty
-//             ? tempStoreReturnMils
-//             : null,
-//       );
-//       var fareValue = jsonDecode(storedTemFare);
-//       fixedFare.value =
-//           fareValue['fare']?.toString() ?? "0";
-//
-//       slugController.text =
-//           fareValue['fare']?.toString() ?? "0";
-//
-//       returnFareValue =
-//           fareValue['return_fare']?.toString() ?? "0";
-//
-//       slugControllerReturn.text =
-//           fareValue['return_fare']?.toString() ?? "0";
-//       // final totalFareStr =
-//       //     fareValue == null ? "0" : (fareValue['total_fare'] ?? "0").toString();
-//       // final returnFareStr = fareValue == null
-//       //     ? "0"
-//       //     : (fareValue['return_fare'] ?? "0").toString();
-//       // final totalFare = double.tryParse(totalFareStr) ?? 0.0;
-//       // final returnFare = double.tryParse(returnFareStr) ?? 0.0;
-//       // final oneWayFare = (totalFare - returnFare).toStringAsFixed(2);
-//       // fixedFare.value = oneWayFare;
-//       // returnFareValue = returnFareStr;
-//       // slugControllerReturn.text = returnFareStr;
-//       // slugController.text = oneWayFare;
-//       returnFareValue =
-//           fareValue == null ? "0" : fareValue['return_fare'].toString();
-//       slugControllerReturn.text =
-//           fareValue == null ? "0" : fareValue['return_fare'].toString();
-//       slugController.text =
-//           fareValue == null ? "0" : fareValue['fare'].toString();
-//       update();
-//     } else {
-//       print("❌ OSRM error: ${res.statusCode}");
-//     }
-//   }
-
-// inside your controller
   final suggestionFocusNode = FocusNode();
   final suggestionScrollController = ScrollController();
 
@@ -1779,7 +1361,7 @@ class DashboardController extends GetxController {
     highlightedIndex.value =
         (highlightedIndex.value + 1) % allAddressesData.length;
     highlightedIndex.refresh();
-    _scrollToHighlighted(scrollDown: true); // 👈 scroll to bottom when down
+    _scrollToHighlighted(scrollDown: true);
   }
 
   void moveHighlightUp({bool viaConditionValue = false}) {
@@ -1790,7 +1372,7 @@ class DashboardController extends GetxController {
     highlightedIndex.refresh();
     _scrollToHighlighted(
         scrollDown: false,
-        viaCondition: viaConditionValue); // 👈 scroll to top when up
+        viaCondition: viaConditionValue);
   }
 
   void _scrollToHighlighted(
