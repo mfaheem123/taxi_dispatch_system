@@ -494,6 +494,8 @@ sendCompanyId: true,
   String pickupAddress = "";
   String dropoffAddress = "";
 
+
+  final FocusNode complaintFocusNode = FocusNode();
   SearchCustomerByMobileModel? complaintPhoneNumbersModel;
   int complaintSelectedIndex = -1;
 

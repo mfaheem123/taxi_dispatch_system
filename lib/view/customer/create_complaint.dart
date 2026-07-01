@@ -199,66 +199,62 @@ class _CreateComplaintState extends State<CreateComplaint> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 KeyboardListener(
-                                  focusNode: FocusNode(),
+                                  focusNode: controller.complaintFocusNode, // Controller me FocusNode bana lo
+                                  autofocus: true,
                                   onKeyEvent: (event) {
-                                    if (controller.complaintPhoneNumbersModel
-                                            ?.customer !=
-                                        null) {
-                                      int listLength = controller
-                                          .complaintPhoneNumbersModel!
-                                          .customer!
-                                          .length;
+                                    if (controller.complaintPhoneNumbersModel?.customer == null ||
+                                        controller.complaintPhoneNumbersModel!.customer!.isEmpty) {
+                                      return;
+                                    }
 
-                                      if (event is KeyDownEvent) {
-                                        if (event.logicalKey ==
-                                            LogicalKeyboardKey.arrowDown) {
-                                          controller.selectedIndex =
-                                              (controller.selectedIndex + 1) %
-                                                  listLength;
-                                          controller.scrollToIndex(
-                                              controller.selectedIndex);
-                                          controller.update();
-                                        } else if (event.logicalKey ==
-                                            LogicalKeyboardKey.arrowUp) {
-                                          controller.selectedIndex =
-                                              (controller.selectedIndex -
-                                                      1 +
-                                                      listLength) %
-                                                  listLength;
-                                          controller.scrollToIndex(
-                                              controller.selectedIndex);
-                                          controller.update();
-                                        } else if (event.logicalKey ==
-                                                LogicalKeyboardKey.enter &&
-                                            controller.selectedIndex != -1) {
-                                          var selectedUser = controller
-                                                  .getPhoneNumbersModel!
-                                                  .customer![
-                                              controller.selectedIndex];
+                                    int listLength =
+                                        controller.complaintPhoneNumbersModel!.customer!.length;
 
-                                          controller
-                                                  .customerNameController.text =
-                                              (selectedUser.name ?? "")
-                                                  .toUpperCase();
-                                          controller.customerNameController
-                                              .text = selectedUser.mobile ?? "";
-                                          controller.address1Controller.text =
-                                              (selectedUser.address1 ?? "")
-                                                  .toUpperCase();
-
-                                          controller
-                                                  .complaintPhoneNumbersModel =
-                                              null;
-                                          controller.selectedIndex = -1;
-                                          controller.update();
+                                    if (event is KeyDownEvent) {
+                                      if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                                        if (controller.complaintSelectedIndex < listLength - 1) {
+                                          controller.complaintSelectedIndex++;
+                                        } else {
+                                          controller.complaintSelectedIndex = 0;
                                         }
+
+                                        controller.scrollToIndex(controller.complaintSelectedIndex);
+                                        controller.update();
+                                      } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                                        if (controller.complaintSelectedIndex > 0) {
+                                          controller.complaintSelectedIndex--;
+                                        } else {
+                                          controller.complaintSelectedIndex = listLength - 1;
+                                        }
+
+                                        controller.scrollToIndex(controller.complaintSelectedIndex);
+                                        controller.update();
+                                      } else if (event.logicalKey == LogicalKeyboardKey.enter &&
+                                          controller.complaintSelectedIndex != -1) {
+                                        var selectedUser = controller
+                                            .complaintPhoneNumbersModel!
+                                            .customer![controller.complaintSelectedIndex];
+
+                                        controller.customerNameController.text =
+                                            (selectedUser.name ?? "").toUpperCase();
+
+                                        controller.customerMobileController.text =
+                                            selectedUser.mobile ?? "";
+
+                                        controller.address1Controller.text =
+                                            (selectedUser.address1 ?? "").toUpperCase();
+
+                                        controller.complaintPhoneNumbersModel = null;
+                                        controller.complaintSelectedIndex = -1;
+                                        controller.update();
+
+                                        FocusScope.of(context).unfocus();
                                       }
                                     }
                                   },
                                   child: CustomTextField(
                                     borderRadius: 4,
-                                    controller:
-                                        controller.customerMobileController,
+                                    controller: controller.customerMobileController,
                                     width: fieldWidth / 1.5,
                                     hintText: AppText.mobileNo,
                                     columnText: true,
@@ -269,36 +265,25 @@ class _CreateComplaintState extends State<CreateComplaint> {
                                       controller.complaintSelectedIndex = -1;
 
                                       if (val.isNotEmpty) {
-                                        controller
-                                            .getComplaintCustomerNumbers(val);
+                                        controller.getComplaintCustomerNumbers(val);
                                       } else {
-                                        controller.complaintPhoneNumbersModel =
-                                            null;
+                                        controller.complaintPhoneNumbersModel = null;
                                         controller.update();
                                       }
                                     },
                                     suffixIcon: GestureDetector(
                                       onTap: () async {
-                                        if (controller.customerMobileController
-                                            .text.isNotEmpty) {
+                                        if (controller.customerMobileController.text.isNotEmpty) {
                                           var result = await Get.dialog(
                                             ComplaintBookingAlert(
-                                              searchQuery: controller
-                                                  .customerMobileController
-                                                  .text,
+                                              searchQuery: controller.customerMobileController.text,
                                             ),
                                           );
 
                                           if (result != null) {
-                                            controller
-                                                    .selectedBookingForComplaint =
-                                                result;
-
+                                            controller.selectedBookingForComplaint = result;
+                                            controller.fillComplaintFromBooking(result);
                                             controller.update();
-                                          }
-                                          if (result != null) {
-                                            controller.fillComplaintFromBooking(
-                                                result);
                                           }
                                         } else {
                                           BotToast.showText(
@@ -309,10 +294,8 @@ class _CreateComplaintState extends State<CreateComplaint> {
                                       child: Container(
                                         decoration: BoxDecoration(
                                           color: Colors.grey.shade300,
-                                          border: Border.all(
-                                              color: DynamicColors.gryClr),
-                                          borderRadius:
-                                              BorderRadius.circular(4),
+                                          border: Border.all(color: DynamicColors.gryClr),
+                                          borderRadius: BorderRadius.circular(4),
                                         ),
                                         child: const Icon(
                                           Icons.search,
@@ -323,6 +306,132 @@ class _CreateComplaintState extends State<CreateComplaint> {
                                     ),
                                   ),
                                 ),
+                                // KeyboardListener(
+                                //   focusNode: FocusNode(),
+                                //   onKeyEvent: (event) {
+                                //     if (controller.complaintPhoneNumbersModel
+                                //             ?.customer !=
+                                //         null) {
+                                //       int listLength = controller
+                                //           .complaintPhoneNumbersModel!
+                                //           .customer!
+                                //           .length;
+                                //
+                                //       if (event is KeyDownEvent) {
+                                //         if (event.logicalKey ==
+                                //             LogicalKeyboardKey.arrowDown) {
+                                //           controller.selectedIndex =
+                                //               (controller.selectedIndex + 1) %
+                                //                   listLength;
+                                //           controller.scrollToIndex(
+                                //               controller.selectedIndex);
+                                //           controller.update();
+                                //         } else if (event.logicalKey ==
+                                //             LogicalKeyboardKey.arrowUp) {
+                                //           controller.selectedIndex =
+                                //               (controller.selectedIndex -
+                                //                       1 +
+                                //                       listLength) %
+                                //                   listLength;
+                                //           controller.scrollToIndex(
+                                //               controller.selectedIndex);
+                                //           controller.update();
+                                //         } else if (event.logicalKey ==
+                                //                 LogicalKeyboardKey.enter &&
+                                //             controller.selectedIndex != -1) {
+                                //           var selectedUser = controller
+                                //                   .getPhoneNumbersModel!
+                                //                   .customer![
+                                //               controller.selectedIndex];
+                                //
+                                //           controller
+                                //                   .customerNameController.text =
+                                //               (selectedUser.name ?? "")
+                                //                   .toUpperCase();
+                                //           controller.customerNameController
+                                //               .text = selectedUser.mobile ?? "";
+                                //           controller.address1Controller.text =
+                                //               (selectedUser.address1 ?? "")
+                                //                   .toUpperCase();
+                                //
+                                //           controller
+                                //                   .complaintPhoneNumbersModel =
+                                //               null;
+                                //           controller.selectedIndex = -1;
+                                //           controller.update();
+                                //         }
+                                //       }
+                                //     }
+                                //   },
+                                //   child: CustomTextField(
+                                //     borderRadius: 4,
+                                //     controller:
+                                //         controller.customerMobileController,
+                                //     width: fieldWidth / 1.5,
+                                //     hintText: AppText.mobileNo,
+                                //     columnText: true,
+                                //     inputFormatters: [
+                                //       FilteringTextInputFormatter.digitsOnly,
+                                //     ],
+                                //     onChanged: (val) {
+                                //       controller.complaintSelectedIndex = -1;
+                                //
+                                //       if (val.isNotEmpty) {
+                                //         controller
+                                //             .getComplaintCustomerNumbers(val);
+                                //       } else {
+                                //         controller.complaintPhoneNumbersModel =
+                                //             null;
+                                //         controller.update();
+                                //       }
+                                //     },
+                                //     suffixIcon: GestureDetector(
+                                //       onTap: () async {
+                                //         if (controller.customerMobileController
+                                //             .text.isNotEmpty) {
+                                //           var result = await Get.dialog(
+                                //             ComplaintBookingAlert(
+                                //               searchQuery: controller
+                                //                   .customerMobileController
+                                //                   .text,
+                                //             ),
+                                //           );
+                                //
+                                //           if (result != null) {
+                                //             controller
+                                //                     .selectedBookingForComplaint =
+                                //                 result;
+                                //
+                                //             controller.update();
+                                //           }
+                                //           if (result != null) {
+                                //             controller.fillComplaintFromBooking(
+                                //                 result);
+                                //           }
+                                //         } else {
+                                //           BotToast.showText(
+                                //             text: "Please enter mobile first!",
+                                //           );
+                                //         }
+                                //       },
+                                //       child: Container(
+                                //         decoration: BoxDecoration(
+                                //           color: Colors.grey.shade300,
+                                //           border: Border.all(
+                                //               color: DynamicColors.gryClr),
+                                //           borderRadius:
+                                //               BorderRadius.circular(4),
+                                //         ),
+                                //         child: const Icon(
+                                //           Icons.search,
+                                //           size: 25,
+                                //           color: Colors.black,
+                                //         ),
+                                //       ),
+                                //     ),
+                                //   ),
+                                // ),
+
                                 if (controller
                                             .complaintPhoneNumbersModel?.customer !=
                                         null &&

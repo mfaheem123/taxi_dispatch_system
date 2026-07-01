@@ -16,6 +16,7 @@ import '../../../component/networks/api.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
+import '../../customer/model/search_customer_by_mobile.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
@@ -59,12 +60,14 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
 
     return GetBuilder<CustomerInvoiceController>(initState: (v) {
       controller.getPaymentTypes();
+      controller.getCustomerInvoiceNumber();
       permissions = Api().sp.read('all_permissions') ?? [];
     }, builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+        final double totalAvailableWidth = constraints.maxWidth;
 
         // Instead of fixed width, we calculate flexible field widths
         final double fieldWidth = isMobile
@@ -110,7 +113,19 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                     SizedBox(width: 20),
                     Padding(
                         padding: EdgeInsets.only(top: 25),
-                        child: Text('INVOICE #' " AG1757501649")),
+                        child: RichText(text: TextSpan(
+                          text: 'INVOICE #',
+                          style: mozillaTextSemiBoldText(
+                              fontWeight: FontWeight.bold),
+                          children: [
+                            TextSpan(
+                              text:
+                              " ${controller.customerInvoice?.invoiceNumber}",
+                            style: mozillaTextRegularText(
+                                color: DynamicColors.redClr)),
+                          ]
+                        )),
+                    ),
                     // CustomTextField(
                     //   borderRadius: 4,
                     //   controller: controller.customerNameController,
@@ -167,14 +182,149 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                           ),
                         ),
                         SizedBox(width: 10),
+                        // Expanded(
+                        //   child: CustomTextField(
+                        //     borderRadius: 4,
+                        //     controller: controller.customerMobileController,
+                        //     width: double.infinity,
+                        //     hintText: AppText.mobile,
+                        //     columnText: true,
+                        //     height: 30,
+                        //   ),
+                        // ),
                         Expanded(
-                          child: CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.customerMobileController,
-                            width: double.infinity,
-                            hintText: AppText.mobile,
-                            columnText: true,
-                            height: 30,
+                          child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                return SizedBox(
+                                  height: 52,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                          AppText.mobile,
+                                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)
+                                      ),
+                                      const SizedBox(height: 4),
+                                      SizedBox(
+                                        height: 30,
+                                        child: RawAutocomplete<SearchCustomer>(
+                                          optionsBuilder: (TextEditingValue textEditingValue) async {
+                                            if (textEditingValue.text.length < 2) {
+                                              return const Iterable<SearchCustomer>.empty();
+                                            }
+                                            await controller.getCustomer(textEditingValue.text);
+                                            return controller.searchCustomerByMobileModel?.customer ?? const Iterable<SearchCustomer>.empty();
+                                          },
+                                          displayStringForOption: (SearchCustomer option) => option.mobile ?? '',
+
+                                          //  INPUT FIELD VIEW
+                                          fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
+                                            if (textEditingController.text.isEmpty && controller.customerMobileController.text.isNotEmpty) {
+                                              textEditingController.text = controller.customerMobileController.text;
+                                            }
+
+                                            return TextField(
+                                              controller: textEditingController,
+                                              focusNode: focusNode,
+                                              onSubmitted: (value) => onFieldSubmitted(),
+                                              decoration: InputDecoration(
+                                                contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                                                hintText: AppText.mobile,
+                                                hintStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
+                                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
+                                                enabledBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(4),
+                                                  borderSide: BorderSide(color: DynamicColors.primaryClr),
+                                                ),
+                                                focusedBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(4),
+                                                  borderSide: BorderSide(color: DynamicColors.primaryClr),
+                                                ),
+                                                suffixIcon: controller.isSearchingCustomer
+                                                    ? const Padding(
+                                                  padding: EdgeInsets.all(6.0),
+                                                  child: SizedBox(
+                                                      width: 12,
+                                                      height: 12,
+                                                      child: CircularProgressIndicator(strokeWidth: 1.5)
+                                                  ),
+                                                )
+                                                    : null,
+                                              ),
+                                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                                              onChanged: (val) {
+                                                controller.customerMobileController.text = val;
+                                              },
+                                            );
+                                          },
+
+                                          optionsViewBuilder: (context, onSelected, options) {
+                                            return Align(
+                                              alignment: Alignment.topLeft,
+                                              child: Material(
+                                                elevation: 4.0,
+                                                borderRadius: BorderRadius.circular(8),
+                                                color: Colors.white,
+                                                child: Container(
+                                                  width: constraints.maxWidth,
+                                                  height: 250,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius: BorderRadius.circular(8),
+                                                    border: Border.all(color: Colors.grey.shade200),
+                                                  ),
+                                                  child: ListView.builder(
+                                                    padding: EdgeInsets.zero,
+                                                    shrinkWrap: true,
+                                                    itemCount: options.length,
+                                                    itemBuilder: (BuildContext context, int index) {
+                                                      final SearchCustomer option = options.elementAt(index);
+
+                                                      final bool highlight = AutocompleteHighlightedOption.of(context) == index;
+
+                                                      return InkWell(
+                                                        onTap: () => onSelected(option),
+                                                        child: Container(
+                                                          color: highlight ? const Color(0xFFE1F2FE) : null,
+                                                          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                                                          child: Row(
+                                                            mainAxisSize: MainAxisSize.min,
+                                                            children: [
+                                                              Text(
+                                                                option.name ?? '',
+                                                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black),
+                                                              ),
+                                                              const SizedBox(width: 10),
+                                                              Text(
+                                                                "${option.mobile ?? ''}",
+                                                                style: const TextStyle(color: Colors.black, fontSize: 13),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+
+                                          // ACTION ON SELECTION
+                                          onSelected: (SearchCustomer selection) {
+                                            controller.customerMobileController.text = selection.mobile ?? '';
+                                            controller.customerNameController.text = selection.name ?? '';
+                                            controller.customerEmailController.text = selection.email ?? '';
+                                            controller.customerTelephoneController.text = selection.telephone ?? '';
+                                            controller.update();
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
                           ),
                         ),
                         SizedBox(width: 10),
@@ -216,12 +366,14 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                        SizedBox(width: 10),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Transform.translate(
+                              offset: const Offset(0, 4),
                           child: Text(AppText.pt,
                               style: mozillaTextSemiBoldText(
                                   context: context,
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: DynamicColors.primaryClr)),
+                                  color: DynamicColors.primaryClr))),
                         ),
                         if (controller.isLoadingPayments)
                           const Padding(
