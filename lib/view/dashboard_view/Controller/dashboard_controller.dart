@@ -1028,18 +1028,22 @@ class DashboardController extends GetxController {
           markers.add(CustomMarker(
             type: "pickup",
             point: p,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Icon(Icons.location_pin, color: DynamicColors.greenClr, size: 30),
-                const Positioned(
-                  top: 3,
-                  child: Text(
-                    "A",
-                    style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+            child: Tooltip(
+              message: pickupController.text,
+              waitDuration: Duration.zero,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(Icons.location_pin, color: DynamicColors.greenClr, size: 30),
+                  const Positioned(
+                    top: 3,
+                    child: Text(
+                      "A",
+                      style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             width: 30,
             height: 30,
@@ -1050,18 +1054,22 @@ class DashboardController extends GetxController {
           markers.add(CustomMarker(
             type: "dropOff",
             point: p,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Icon(Icons.location_pin, color: DynamicColors.greenClr, size: 30),
-                const Positioned(
-                  top: 3,
-                  child: Text(
-                    "B",
-                    style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+            child: Tooltip(
+              message: dropOffController.text, // 👈 Hover par Dropoff TextField ka text dikhega
+              waitDuration: Duration.zero,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(Icons.location_pin, color: DynamicColors.greenClr, size: 30),
+                  const Positioned(
+                    top: 3,
+                    child: Text(
+                      "B",
+                      style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             width: 30,
             height: 30,
@@ -1072,18 +1080,22 @@ class DashboardController extends GetxController {
           markers.add(CustomMarker(
             type: "pickup two way",
             point: p,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Icon(Icons.location_pin, color: Colors.red, size: 30),
-                const Positioned(
-                  top: 3,
-                  child: Text(
-                    "C",
-                    style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold), // Amber par black text behtar dikhega
+            child: Tooltip(
+              message: pickupTwoWayController.text,
+              waitDuration: Duration.zero,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(Icons.location_pin, color: Colors.red, size: 30),
+                  const Positioned(
+                    top: 3,
+                    child: Text(
+                      "C",
+                      style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             width: 30,
             height: 30,
@@ -1094,18 +1106,22 @@ class DashboardController extends GetxController {
           markers.add(CustomMarker(
             type: "dropOff two way",
             point: p,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Icon(Icons.location_pin, color: DynamicColors.redClr, size: 30),
-                const Positioned(
-                  top: 3,
-                  child: Text(
-                    "D",
-                    style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+            child: Tooltip(
+              message: dropOffTwoWayController.text,
+              waitDuration: Duration.zero,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(Icons.location_pin, color: DynamicColors.redClr, size: 30),
+                  const Positioned(
+                    top: 3,
+                    child: Text(
+                      "D",
+                      style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             width: 30,
             height: 30,
@@ -1126,25 +1142,30 @@ class DashboardController extends GetxController {
         totalMapLayoutFocusPoints.add(p);
         markers.add(CustomMarker(
             withReturnType: "via",
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Icon(Icons.location_pin, color: DynamicColors.primaryClr, size: 30),
-                Positioned(
-                  top: 5,
-                  child: Container(
-                    padding: const EdgeInsets.all(1),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Text(
-                      "V$outboundViaCount",
-                      style: TextStyle(color: DynamicColors.primaryClr, fontSize: 9, fontWeight: FontWeight.bold,),
+            child: Tooltip(
+              message: item.address ?? "Via Point",
+              waitDuration: Duration.zero,
+
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(Icons.location_pin, color: DynamicColors.primaryClr, size: 30),
+                  Positioned(
+                    top: 5,
+                    child: Container(
+                      padding: const EdgeInsets.all(1),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        "V$outboundViaCount",
+                        style: TextStyle(color: DynamicColors.primaryClr, fontSize: 9, fontWeight: FontWeight.bold,),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             type: "via", point: p, width: 30, height: 30));
         outboundViaCount++;
@@ -1165,18 +1186,29 @@ class DashboardController extends GetxController {
         returnSequence.add(p);
         totalMapLayoutFocusPoints.add(p);
         markers.add(CustomMarker(withReturnType: "via with return", child:
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            Icon(Icons.location_pin, color: DynamicColors.textClr, size: 30),
-            Positioned(
-              top: 3,
-              child: Text(
-                "V$viaNumber",
-                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+        Tooltip(
+          message: item.address ?? "Return Via Point",
+          waitDuration: Duration.zero,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Icon(Icons.location_pin, color: DynamicColors.primaryClr, size: 30),
+              Positioned(
+                top: 5,
+                child: Container(
+                  padding: const EdgeInsets.all(1),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    "RV$viaNumber",
+                    style: TextStyle(color: DynamicColors.primaryClr, fontSize: 9, fontWeight: FontWeight.bold,),
+                  ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
             type: "via", point: p, width: 30, height: 30));
         viaNumber++ ;
@@ -1199,8 +1231,7 @@ class DashboardController extends GetxController {
     double returnDurationMinutes = 0.0;
 
 
-      /// (A -> Vias -> B)
-
+    /// (A -> Vias -> B)
     if (outboundSequence.length >= 2) {
       final coordsOut = outboundSequence.map((p) => "${p.longitude},${p.latitude}").join(";");
       final urlOut = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsOut?overview=full');
@@ -1210,6 +1241,10 @@ class DashboardController extends GetxController {
           final dataOut = resOut.data['routes'][0];
           computedOutboundMiles = dataOut['distance'] * 0.000621371;
           totalComputedMiles += computedOutboundMiles;
+
+          // ADDED: Time duration added for Outbound
+          outboundDurationMinutes = (dataOut['duration'] ?? 0).toDouble() / 60;
+          totalDurationMinutes += outboundDurationMinutes;
 
           String encodedPoly = dataOut['geometry'];
           List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPoly);
@@ -1229,7 +1264,6 @@ class DashboardController extends GetxController {
 
 
     //  CONNECTING ROUTE (Bridge: Outbound ka last point -> Return ka first point)
-
     if (outboundSequence.isNotEmpty && returnSequence.isNotEmpty) {
 
       final LatLng connectFrom = outboundSequence.last;
@@ -1243,6 +1277,11 @@ class DashboardController extends GetxController {
           final resConnect = await Dio().getUri(urlConnect);
           if (resConnect.statusCode == 200 && resConnect.data['routes'] != null && resConnect.data['routes'].isNotEmpty) {
             final dataConnect = resConnect.data['routes'][0];
+
+            // ADDED: Bridge/Connecting path time calculation added
+            double connectDurationMinutes = (dataConnect['duration'] ?? 0).toDouble() / 60;
+            totalDurationMinutes += connectDurationMinutes;
+
             String encodedPoly = dataConnect['geometry'];
             List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPoly);
             List<LatLng> decodedSegmentPoints = result.map((p) => LatLng(p.latitude, p.longitude)).toList();
@@ -1261,7 +1300,6 @@ class DashboardController extends GetxController {
     }
 
     ///  RETURN (C -> Vias -> D)
-
     if (returnSequence.length >= 2) {
       final coordsRet = returnSequence.map((p) => "${p.longitude},${p.latitude}").join(";");
       final urlRet = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsRet?overview=full');
@@ -1271,6 +1309,10 @@ class DashboardController extends GetxController {
           final dataRet = resRet.data['routes'][0];
           computedReturnMiles = dataRet['distance'] * 0.000621371;
           totalComputedMiles += computedReturnMiles;
+
+          // ADDED: Time duration added for Return Route
+          returnDurationMinutes = (dataRet['duration'] ?? 0).toDouble() / 60;
+          totalDurationMinutes += returnDurationMinutes;
 
           String encodedPoly = dataRet['geometry'];
           List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPoly);
@@ -1895,80 +1937,7 @@ class DashboardController extends GetxController {
     }
   }
 
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get phone numbers
 
-  // Timer? _phoneNumberBebounce;
-  // // 👇 ye function har baar text change hone par call hoga
-  // Future<void> onPhoneNoChangeHandler(
-  //     {required String fieldName, required String searchingText}) async {
-  //   const duration = Duration(milliseconds: 800); // 800ms ka delay]
-  //   // selectedTextFieldsValue.value = "";
-  //   // 👇 Agar pehle se koi timer chal raha ho to usse cancel karo
-  //   if (_phoneNumberBebounce?.isActive ?? false) _phoneNumberBebounce!.cancel();
-  //
-  //   // 👇 Naya timer start karo
-  //   _phoneNumberBebounce = Timer(duration, () {
-  //     _stopPhoneNoTyping(fieldName: fieldName, searchingText: searchingText);
-  //   });
-  // }
-  //
-  // void _stopPhoneNoTyping(
-  //     {required String fieldName, required String searchingText}) {
-  //   // 👇 Yahan API call ya search function call karna hai
-  //   getPhoneNumberOfUSers(fieldsName: fieldName, searchingText: searchingText);
-  // }
-  //
-  // GetPhoneNumbersModel? customerPhoneNumber;
-  //
-  // final Rx<FocusNode> suggestionPhoneFocusNode = FocusNode().obs;
-  //
-  //  getPhoneNumberOfUSers({fieldsName, searchingText}) async {
-  //    dashboardDataLoader(true);
-  //    var response = await Api().get("customers/search?mobile=$searchingText");
-  //
-  //    SuggestionController suggestion_controller = Get.isRegistered<SuggestionController>()
-  //        ? Get.find<SuggestionController>()
-  //        : Get.put(SuggestionController());
-  //
-  //    if (response.statusCode == 200 && response.data['customer'] != null) {
-  //      if (response.data['customer'].isNotEmpty) {
-  //        customerPhoneNumber = GetPhoneNumbersModel.fromJson(response.data);
-  //        suggestion_controller.allListData = customerPhoneNumber!.customerInfo!;
-  //        selectedTextFieldsValue.value = fieldsName;
-  //
-  //        // Focus request tabhi karein agar suggestions dikhani hon
-  //        FocusScope.of(Get.context!).requestFocus(phoneNumberFieldKey);
-  //      } else {
-  //        // ✅ AGAR SUGGESTION NAHI HAI TW LIST KHALI KARDO
-  //        suggestion_controller.allListData.clear();
-  //        selectedTextFieldsValue.value = "";
-  //      }
-  //    } else {
-  //      // API failure par bhi clear karein
-  //      suggestion_controller.allListData.clear();
-  //    }
-  //
-  //    dashboardDataLoader(false);
-  //    update();
-  //  }
-  //
-  //  String getFinalPhoneNumber() {
-  //    SuggestionController suggestion_controller = Get.find<SuggestionController>();
-  //
-  //    // Check karo ke suggestions list mein data hai ya nahi
-  //    if (suggestion_controller.allListData.isNotEmpty) {
-  //      // Agar list hai, to jo index highlighted hai uska number uthao
-  //      int index = suggestion_controller.highlightedIndex.value;
-  //
-  //      // Safety check for index range
-  //      if (index >= 0 && index < suggestion_controller.allListData.length) {
-  //        return suggestion_controller.allListData[index].mobile ?? mobileController.text;
-  //      }
-  //    }
-  //
-  //    // Agar suggestion list khali hai ya selection nahi hui, simple textfield uthao
-  //    return mobileController.text;
-  //  }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get phone numbers
 

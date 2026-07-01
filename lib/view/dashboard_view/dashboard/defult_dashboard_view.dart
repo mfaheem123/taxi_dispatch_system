@@ -455,7 +455,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           ),
                                                         ),
                                                       ),
-                                                      const SizedBox(width: 55.0),
+                                                      const SizedBox(width: 57.0),
                                                       // (3) Pickup notes
                                                       Expanded(
                                                         flex: 3,
@@ -493,7 +493,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                   child:
                                                   Padding(
                                                     padding:
-                                                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                                    const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                                                     child:
                                                     Row(
                                                       children: [
@@ -512,7 +512,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           child: FocusTraversalOrder(
                                                             order: const NumericFocusOrder(4),
                                                             child: SizedBox(
-                                                              width: fieldWidth / 0.70,
+                                                              width: fieldWidth / 0.73,
                                                               height: 30,
                                                               child: CustomTextField(
                                                                 controller: controller.selectAirportController,
@@ -530,6 +530,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             ),
                                                           ),
                                                         ),
+                                                        SizedBox(width: 14),
                                                         Padding(
                                                           padding: const EdgeInsets.only(right: 10, left: 5),
                                                           child: Text(
@@ -540,12 +541,13 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             ),
                                                           ),
                                                         ),
+
                                                         Padding(
                                                           padding: EdgeInsets.only(left: 0),
                                                           child: FocusTraversalOrder(
                                                             order: const NumericFocusOrder(5),
                                                             child: SizedBox(
-                                                              width: fieldWidth / 3.1,
+                                                              width: fieldWidth / 3.7,
                                                               height: 30,
                                                               child: CustomTextField(
                                                                 controller: controller.arrivalTimeController,
@@ -571,9 +573,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                 // ================= DROPOFF ROW =================
                                                 Padding(
                                                   padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 10.0,
-                                                      vertical: 12.0),
+                                                      .only(left: 10.0, right: 10.0, top: 0, bottom: 5.0),
                                                   child:
                                                   Row(
                                                     children: [
