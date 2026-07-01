@@ -69,6 +69,44 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   void _onVia() => debugPrint('Via tapped');
   void _onSub() => debugPrint('Sub tapped');
   void _onClear() => debugPrint('F7 / Clear tapped');
+  void _showPickBookingAlert() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        title: Row(
+          children: [
+            Icon(Icons.search, color: _purple, size: 22),
+            const SizedBox(width: 8),
+            const Text(
+              'Pick Booking',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+                color: _purpleDark,
+              ),
+            ),
+          ],
+        ),
+        content: const Text(
+          'Please select a booking from the bookings list to pick.',
+          style: TextStyle(fontSize: 13),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(
+              'OK',
+              style: TextStyle(
+                color: _purple,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
   final DashboardController controller = Get.isRegistered<DashboardController>()
       ? Get.find<DashboardController>()
       : Get.put(DashboardController());
@@ -267,6 +305,27 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   zoneLabel: (z) => z.name!,
                                   onPickIndex: (index) =>
                                       controller.tapSelect(index),
+                                          onPressed: () {
+                                    DashboardController _controller =
+                                    Get.find();
+                                    int index = _controller.markers.indexWhere(
+                                            (test) => test.type == "pickup");
+                                    FocusScope.of(Get.context!).requestFocus(
+                                        _controller.pickupTextFieldFocusNode);
+                                    _controller.markers.clear();
+                                    _controller.dropDownShow.value = false;
+                                    _controller.polyLineMarkerInfo.clear();
+                                    _controller.pickupController.clear();
+                                    _controller.dropOffController.clear();
+                                    _controller.polylinePoints.clear();
+                                    _controller.fetchRouteFromOSRM();
+                                    _controller.fixedFare.value = "0";
+                                    _controller.totalDistance.value = "0";
+                                    _controller.totalTimeDuration.value = "0";
+                                    _controller.update();
+                                    // controller.clear();
+                                    // onChanged?.call('');
+                                  },
                                   notesController: controller.dropUpNoteController,
                                   onCurrentLocation: () {
                                     debugPrint('Use current location → DROP');
@@ -275,7 +334,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                 const Divider(height: 14),
                                 _sectionHeader(Icons.person,
                                     'PASSENGER & BOOKING DETAILS'),
-                                _grid(cols, [
+                                _grid(isMobile ? 1 : (isTablet ? 3 : 5), [
                                   _field('Name',
                                       tab: 8,
                                       controller: controller.nameController),
@@ -312,6 +371,41 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   _field('Tel.',
                                       tab: 11,
                                       controller: controller.telController),
+                                     FocusTraversalOrder(
+                                        order: const NumericFocusOrder(11.5),
+                                        child: SizedBox(
+                                            height: 32,
+                                            width: double.infinity,
+                                            child: ElevatedButton.icon(
+                                              onPressed: () {
+                                                _showPickBookingAlert();
+                                              },
+                                              icon: const Icon(Icons.search,
+                                                  size: 16, color: Colors.white),
+                                              label: const Text(
+                                                'Pick Booking',
+                                                style: TextStyle(
+                                                    fontSize: _fsField,
+                                                    color: Colors.white),
+                                              ),
+                                              style: ButtonStyle(
+                                                backgroundColor: WidgetStateProperty.all(_purple),
+                                                padding: WidgetStateProperty.all(EdgeInsets.zero),
+                                                shape: WidgetStateProperty.all(
+                                                  RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(6),
+                                                  ),
+                                                ),
+                                                side: WidgetStateProperty.resolveWith((states) {
+                                                  if (states.contains(WidgetState.focused)) {
+                                                    return const BorderSide(color: Colors.white, width: 2);
+                                                  }
+                                                  return BorderSide.none;
+                                                }),
+                                              ),
+                                            ),
+                                          ),
+                                      ),
                                 ]),
                                 _grid(cols, [
                                   _dateField('Date',
@@ -362,7 +456,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   ),
                                 ]),
                                 if (_isReturnJourney)
-                                  _returnJourneySection(isMobile, cols),
+                                  _returnJourneySection(isMobile, cols,controller),
                                 const Divider(height: 10),
                                 _sectionHeader(
                                     Icons.directions_car, 'VEHICLE & PAYMENT'),
@@ -428,7 +522,41 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     );
   }
   // ────────── RETURN JOURNEY SECTION
-  Widget _returnJourneySection(bool isMobile, int cols) {
+  /// Shared cleanup for two-way pickup/drop clear buttons.
+  void _clearTwoWayData(DashboardController ctrl, {bool recalcRoute = false}) {
+    // Remove two-way polyline markers
+    ctrl.polyLineMarkerInfo.removeWhere(
+      (e) => e.markerType == "PICKUP TWO WAY LOCATION" ||
+             e.markerType == "DROP TWO WAY LOCATION",
+    );
+    // Remove two-way map markers
+    ctrl.markers.removeWhere(
+      (m) => m.type == "pickup two way" ||
+             m.type == "dropOff two way" ||
+             m.type == "via with return",
+    );
+    // Remove via points tied to return way
+    for (int i = ctrl.viaPoints.length - 1; i >= 0; i--) {
+      if (ctrl.viaPoints[i].withReturnWay == "via with return") {
+        ctrl.viaPoints.removeAt(i);
+        if (i < ctrl.viaTextEditingController.length) {
+          ctrl.viaTextEditingController.removeAt(i);
+        }
+      }
+    }
+    // Clear two-way text controllers
+    ctrl.pickupTwoWayController.clear();
+    ctrl.dropOffTwoWayController.clear();
+    // Reset fare/temp state
+    ctrl.returnFareValue = "";
+    if (recalcRoute) {
+      ctrl.tempStoreMils = null;
+      ctrl.fetchRouteFromOSRM();
+    }
+    ctrl.update();
+  }
+
+  Widget _returnJourneySection(bool isMobile, int cols, DashboardController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -444,18 +572,23 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           _controller.updateLocationValue.value == true
               ? []
               : _controller.locationtypezoneModel!.zonesList!,
-              (v) => setState(() => _controller.RNzoneValue = v),
+          (v) => setState(() => _controller.RNzoneValue = v),
           isMobile,
-              (value) {
+          (value) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               controller.onChangeHandler(
                   fieldName: "PICKUP LOCATION", searchingText: value);
             });
           },
-              (addr) {},
+          (addr) {},
           19,
           zoneLabel: (z) => z.name!,
           onPickIndex: (index) => controller.tapSelect(index),
+          onPressed: () {
+            FocusScope.of(Get.context!)
+                .requestFocus(controller.pickupTwoTextFieldFocusNode);
+            _clearTwoWayData(controller);
+          },
           onCurrentLocation: () => debugPrint('Use current location → R/PICK'),
         ),
         const SizedBox(height: 4),
@@ -468,16 +601,21 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           _controller.updateLocationValue.value == true
               ? []
               : _controller.locationtypezoneModel!.zonesList!,
-              (v) => setState(() => _controller.RN1zoneValue = v),
+          (v) => setState(() => _controller.RN1zoneValue = v),
           isMobile,
-              (value) {
+          (value) {
             controller.onChangeHandler(
                 fieldName: "DROP LOCATION", searchingText: value);
           },
-              (addr) {},
+          (addr) {},
           23,
           zoneLabel: (z) => z.name!,
           onPickIndex: (index) => controller.tapSelect(index),
+          onPressed: () {
+            FocusScope.of(Get.context!)
+                .requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
+            _clearTwoWayData(controller, recalcRoute: true);
+          },
           onCurrentLocation: () => debugPrint('Use current location → R/DROP'),
         ),
         const SizedBox(height: 8),
@@ -485,7 +623,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           _dateField('R/Date',
               tab: 28,
               value: controller.pickUpDateReturn,
-              onChanged: (d) => setState(() => controller.pickUpDateReturn = d)),
+              onChanged: (d) =>
+                  setState(() => controller.pickUpDateReturn = d)),
           _timeField('R/Time',
               tab: 29, controller: controller.pickUpTimeControllerReturn),
           _field('R/Lead', tab: 30, controller: controller.minControllerReturn),
@@ -497,51 +636,51 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         const SizedBox(height: 6),
         isMobile
             ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          _addReturnFareCheckbox(),
-          const SizedBox(height: 8),
-          _dropdown<DashboardVehicleTypeObject>(
-            'Return/VEH',
-            returnVehicleValue,
-            controller.dashboardAllData!.vehicleTypes!,
-                (v) => setState(() => returnVehicleValue = v),
-            32,
-            itemLabel: (p) => p.name!,
-          ),
-          const SizedBox(height: 8),
-          _dropdown<DashboardDriverObject>(
-            'Return/DRV',
-            returnDriverValue,
-            controller.dashboardAllData!.drivers ?? const [],
-                (v) => setState(() => returnDriverValue = v),
-            33,
-            itemLabel: (p) => p.name ?? '',
-          ),
-        ])
-            : Row(children: [
-          _addReturnFareCheckbox(),
-          const SizedBox(width: 16),
-          Expanded(
-            child: _dropdown<DashboardVehicleTypeObject>(
-              'Return/VEH',
-              returnVehicleValue,
-              controller.dashboardAllData!.vehicleTypes!,
+                _addReturnFareCheckbox(),
+                const SizedBox(height: 8),
+                _dropdown<DashboardVehicleTypeObject>(
+                  'Return/VEH',
+                  returnVehicleValue,
+                  controller.dashboardAllData!.vehicleTypes!,
                   (v) => setState(() => returnVehicleValue = v),
-              32,
-              itemLabel: (p) => p.name!,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _dropdown<DashboardDriverObject>(
-              'Return/DRV',
-              returnDriverValue,
-              controller.dashboardAllData!.drivers ?? const [],
+                  32,
+                  itemLabel: (p) => p.name!,
+                ),
+                const SizedBox(height: 8),
+                _dropdown<DashboardDriverObject>(
+                  'Return/DRV',
+                  returnDriverValue,
+                  controller.dashboardAllData!.drivers ?? const [],
                   (v) => setState(() => returnDriverValue = v),
-              33,
-              itemLabel: (p) => p.name ?? '',
-            ),
-          ),
-        ]),
+                  33,
+                  itemLabel: (p) => p.name ?? '',
+                ),
+              ])
+            : Row(children: [
+                _addReturnFareCheckbox(),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _dropdown<DashboardVehicleTypeObject>(
+                    'Return/VEH',
+                    returnVehicleValue,
+                    controller.dashboardAllData!.vehicleTypes!,
+                    (v) => setState(() => returnVehicleValue = v),
+                    32,
+                    itemLabel: (p) => p.name!,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _dropdown<DashboardDriverObject>(
+                    'Return/DRV',
+                    returnDriverValue,
+                    controller.dashboardAllData!.drivers ?? const [],
+                    (v) => setState(() => returnDriverValue = v),
+                    33,
+                    itemLabel: (p) => p.name ?? '',
+                  ),
+                ),
+              ]),
       ],
     );
   }

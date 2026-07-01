@@ -44,7 +44,22 @@ class _BookingTableState extends State<BookingTable> {
 
   final FocusNode _tableFocusNode = FocusNode();
 
+  /// One FocusNode per table row — keeps keyboard focus in sync with selectedRowIndex.
+  List<FocusNode> _rowFocusNodes = [];
+
   List permissions = [];
+
+  /// Ensures _rowFocusNodes always matches the current data length.
+  void _syncRowFocusNodes(int length) {
+    if (_rowFocusNodes.length == length) return;
+    // Dispose extras
+    for (int i = length; i < _rowFocusNodes.length; i++) {
+      _rowFocusNodes[i].dispose();
+    }
+    _rowFocusNodes = List.generate(length, (i) {
+      return i < _rowFocusNodes.length ? _rowFocusNodes[i] : FocusNode();
+    });
+  }
 
   @override
   void initState() {
@@ -53,15 +68,14 @@ class _BookingTableState extends State<BookingTable> {
         ? Get.find<DashboardController>()
         : Get.put(DashboardController());
     permissions = Api().sp.read('all_permissions') ?? [];
-    setState(() {
-
-    });
+    setState(() {});
     super.initState();
   }
 
   @override
   void dispose() {
     _tableFocusNode.dispose();
+    for (final fn in _rowFocusNodes) fn.dispose();
     super.dispose();
   }
 
@@ -76,18 +90,18 @@ class _BookingTableState extends State<BookingTable> {
     final lastIndex = data.length - 1;
 
     if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-      setState(() {
-        selectedRowIndex =
-        selectedRowIndex < 0 ? 0 : (selectedRowIndex + 1).clamp(0, lastIndex);
-      });
+      final next = selectedRowIndex < 0 ? 0 : (selectedRowIndex + 1).clamp(0, lastIndex);
+      setState(() => selectedRowIndex = next);
+      // Move actual keyboard focus to the new row's checkbox
+      if (next < _rowFocusNodes.length) _rowFocusNodes[next].requestFocus();
       return KeyEventResult.handled;
     }
 
     if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-      setState(() {
-        selectedRowIndex =
-        selectedRowIndex <= 0 ? 0 : (selectedRowIndex - 1).clamp(0, lastIndex);
-      });
+      final prev = selectedRowIndex <= 0 ? 0 : (selectedRowIndex - 1).clamp(0, lastIndex);
+      setState(() => selectedRowIndex = prev);
+      // Move actual keyboard focus to the new row's checkbox
+      if (prev < _rowFocusNodes.length) _rowFocusNodes[prev].requestFocus();
       return KeyEventResult.handled;
     }
 
@@ -109,6 +123,9 @@ class _BookingTableState extends State<BookingTable> {
       onKeyEvent: _handleArrowKeys,
       child: GetBuilder<DashboardController>(
           builder: (controller) {
+            // Sync one FocusNode per row so arrow-key navigation keeps real focus in step.
+            _syncRowFocusNodes(
+                controller.dashboardTableModelData?.data?.length ?? 0);
             return SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -316,39 +333,66 @@ class _BookingTableState extends State<BookingTable> {
 
                               cells: [
 
-                                /// Checkbox ❌ (NO right click)
                                 DataCell(
-                                  permissions.contains('create_trash_booking')?SizedBox.shrink(): Checkbox(
-                                    value: controller.selectedDeletesItems?.contains(item) ?? false,
-                                    onChanged: (bool? value) { // Checkbox value is nullable bool
-                                      if (value == null) return;
-
-                                      setState(() {
-                                        // 2. Ensure the list exists before using it
-                                        controller.selectedDeletesItems ??= [];
-
-                                        if (value) {
-                                          // If checked, add to list
-                                          controller.selectedDeletesItems!.add(item);
-                                          selectedRowIndex = index;
-                                        } else {
-                                          // If unchecked, remove from list
-                                          controller.selectedDeletesItems!.remove(item);
-                                          selectedRowIndex = -1;
-                                        }
-                                      });
+                                  Builder(
+                                    builder: (context) {
+                                      return Focus(
+                                        focusNode: _rowFocusNodes.length > index
+                                            ? _rowFocusNodes[index]
+                                            : null,
+                                        onKeyEvent: (node, event) {
+                                          if (event is KeyDownEvent &&
+                                              (event.logicalKey == LogicalKeyboardKey.enter ||
+                                                  event.logicalKey == LogicalKeyboardKey.space)) {
+                                            final bool isCurrentlySelected =
+                                                controller.selectedDeletesItems?.contains(item) ?? false;
+                                            final value = !isCurrentlySelected;
+                                            setState(() {
+                                              controller.selectedDeletesItems ??= [];
+                                              if (value) {
+                                                controller.selectedDeletesItems!.add(item);
+                                                selectedRowIndex = index;
+                                              } else {
+                                                controller.selectedDeletesItems!.remove(item);
+                                                selectedRowIndex = -1;
+                                              }
+                                            });
+                                            return KeyEventResult.handled;
+                                          }
+                                          return KeyEventResult.ignored;
+                                        },
+                                        child: Builder(
+                                          builder: (context) {
+                                            final hasFocus = Focus.of(context).hasFocus;
+                                            return Container(
+                                              decoration: hasFocus
+                                                  ? BoxDecoration(
+                                                      border: Border.all(color: Colors.blue, width: 2),
+                                                      borderRadius: BorderRadius.circular(4),
+                                                    )
+                                                  : null,
+                                              child: Checkbox(
+                                                focusNode: FocusNode(skipTraversal: true),
+                                                value: controller.selectedDeletesItems?.contains(item) ?? false,
+                                                onChanged: (bool? value) {
+                                                  if (value == null) return;
+                                                  setState(() {
+                                                    controller.selectedDeletesItems ??= [];
+                                                    if (value) {
+                                                      controller.selectedDeletesItems!.add(item);
+                                                      selectedRowIndex = index;
+                                                    } else {
+                                                      controller.selectedDeletesItems!.remove(item);
+                                                      selectedRowIndex = -1;
+                                                    }
+                                                  });
+                                                },
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      );
                                     },
-                                    // onChanged: (value) {
-                                    //   setState(() {
-                                    //     print(item);
-                                    //     if(controller.selectedDeletesItems!.contains(item)){
-                                    //       controller.selectedDeletesItems!.remove(item);
-                                    //     }else{
-                                    //       controller.selectedDeletesItems!.add(item);
-                                    //     }
-                                    //     selectedRowIndex = value! ? index : -1;
-                                    //   });
-                                    // },
                                   ),
                                 ),
 
