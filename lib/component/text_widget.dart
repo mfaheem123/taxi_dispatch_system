@@ -8,7 +8,7 @@ class AppText {
   static get password => "PASSWORD";
   static get username => "Username";
   static get appName => "NEXUS";
-  static get booking => "Booking";
+  static get booking => "BOOKING";
   static get pick => "PICK";
   static get drop => "DROP";
   static get name => "NAME";

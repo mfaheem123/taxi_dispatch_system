@@ -568,19 +568,58 @@ sendCompanyId: true,
 
         driverList = getDriverDropdownModel?.drivers ?? [];
 
+        // 👇 IMPORTANT
+        if (selectedDriver != null) {
+          selectedDriver = driverList.firstWhereOrNull(
+                (e) => e.id.toString() == selectedDriver!.id.toString(),
+          );
+        }
+
         print("Drivers loaded: ${driverList.length}");
-      } else {
-        driverList = [];
       }
     } catch (e) {
-      print("Driver API error: $e");
-      driverList = [];
+      print(e);
     }
 
     driverLoader = false;
     update();
   }
-
+//   getDriversDropdown() async {
+//     driverLoader = true;
+//     update();
+//
+//     try {
+//       var response = await Api().get(
+//         "drivers/get",
+//         sendCompanyId: true,
+//       );
+//
+//       if (response.statusCode == 200) {
+//         getDriverDropdownModel =
+//             GetDriverDropdown.fromJson(response.data);
+//
+//         driverList = getDriverDropdownModel?.drivers ?? [];
+//
+//         print("Drivers loaded: ${driverList.length}");
+//       } else {
+//         driverList = [];
+//       }
+//     } catch (e) {
+//       print("Driver API error: $e");
+//       driverList = [];
+//     }
+//
+//     driverLoader = false;
+//     update();
+//   }
+  String capitalizeWords(String text) {
+    return text
+        .split(' ')
+        .map((word) => word.isNotEmpty
+        ? '${word[0].toUpperCase()}${word.substring(1).toUpperCase()}'
+        : '')
+        .join(' ');
+  }
   bool complaintLoader = false;
 
   postComplaintLoad(bool value) {
@@ -673,72 +712,7 @@ sendCompanyId: true,
 
     postComplaintLoad(false);
   }
-  // postComplaint() async {
-  //   postComplaintLoad(true);
-  //
-  //   var formData = {
-  //     "complain_date": complainDateController.text,
-  //     "incident_date": incidentedController.text,
-  //
-  //     "customer_id": selectedBookingForComplaint?.customerId,
-  //     "booking_id": selectedBookingForComplaint?.id,
-  //
-  //     "complaint": complaintController.text,
-  //     "dealt_with": howDealWithController.text,
-  //     "result": resultController.text,
-  //
-  //     "driver_id": selectedDriver?.id,
-  //   };
-  //
-  //   print(formData);
-  //
-  //   var response = await Api().post(
-  //     formData,
-  //     "complaint/add",
-  //     auth: true,
-  //     sendCompanyId: true,
-  //   );
-  //
-  //   if (response!.statusCode == 201) {
-  //     BotToast.showText(
-  //       text: "COMPLAINT ADDED SUCCESSFULLY",
-  //     );
-  //
-  //     print("✅ COMPLAINT ADDED SUCCESSFULLY");
-  //     print(response.data);
-  //
-  //     // Clear fields
-  //     complainDateController.text =
-  //         DateTime.now().toIso8601String().split("T").first;
-  //
-  //     incidentedController.clear();
-  //     customerNameController.clear();
-  //     customerMobileController.clear();
-  //     customerRefNoController.clear();
-  //     customerNoteController.clear();
-  //
-  //     complaintController.clear();
-  //     howDealWithController.clear();
-  //     resultController.clear();
-  //
-  //     pickupAddress = "";
-  //     dropoffAddress = "";
-  //
-  //     selectedBookingForComplaint = null;
-  //     selectedDriver = null;
-  //
-  //     update();
-  //   } else {
-  //     BotToast.showText(text: "FAILED TO ADD COMPLAINT");
-  //
-  //     print("ERROR ADDING COMPLAINT");
-  //     print(response.data);
-  //   }
-  //
-  //   postComplaintLoad(false);
-  // }
 
-  // get Customer  complaint
   GetCustomerComplainsModel? getCustomerComplainsModel;
   RxBool complaintsLoader = false.obs;
 
@@ -810,24 +784,7 @@ sendCompanyId: true,
 
 
 
-  //
-  // void searchComplaints() {
-  //   filteredComplaints.value = complaintsAll.where((item) {
-  //     final ref = item.referenceNumber?.toLowerCase() ?? "";
-  //     final date = item.complainDate == null
-  //         ? ""
-  //         : "${item.complainDate!.day}/${item.complainDate!.month}/${item.complainDate!.year}".toLowerCase();
-  //     final customer = item.customer?.name?.toLowerCase() ?? "";
-  //     final complaint = item.complaint?.toLowerCase() ?? "";
-  //
-  //     return ref.contains(searchReferenceNumber.value.toLowerCase()) &&
-  //         date.contains(searchComplainDate.value.toLowerCase()) &&
-  //         customer.contains(searchCustomerName.value.toLowerCase()) &&
-  //         complaint.contains(searchComplaint.value.toLowerCase());
-  //   }).toList();
-  //
-  //   update();
-  // }
+
 
   void clearComplaintsSearch() {
     searchReferenceNumber.value = "";
@@ -868,11 +825,17 @@ sendCompanyId: true,
   RxInt complaintUpdateId = 0.obs;
   int? updateComplainCustomerId;
   int? updateComplainBookingId;
+
   Future<void> complaintUpdate({required int complaintId}) async {
     complaintValue.value = true;
     complaintUpdateId.value = complaintId;
 
     try {
+      // Load drivers first
+      if (driverList.isEmpty) {
+        await getDriversDropdown();
+      }
+
       var response = await Api().get(
         "complaint/getbyid/?id=$complaintId",
         sendCompanyId: true,
@@ -881,48 +844,60 @@ sendCompanyId: true,
       if (response.statusCode == 200 && response.data["status"] == true) {
         final detail = response.data["complaint"];
 
-        /// Save IDs for update API
-        updateComplainCustomerId = (detail["customer_id"]);
+        updateComplainCustomerId = detail["customer_id"];
         updateComplainBookingId = detail["booking_id"];
 
         customerNameController.text =
-            detail["customer"]?["name"] ?? "";
+            (detail["customer"]?["name"] ?? "").toString().toUpperCase();
 
         customerMobileController.text =
-            detail["customer"]?["mobile"] ?? "";
+            (detail["customer"]?["mobile"] ?? "").toString().toUpperCase();
 
         customerRefNoController.text =
-            detail["booking"]?["reference_number"] ?? "";
+            (detail["booking"]?["reference_number"] ?? "")
+                .toString()
+                .toUpperCase();
 
         complainDateController.text =
-            detail["complain_date"] ?? "";
+            (detail["complain_date"] ?? "").toString().toUpperCase();
 
         incidentedController.text =
-            detail["incident_date"] ?? "";
+            (detail["incident_date"] ?? "").toString().toUpperCase();
 
         complaintController.text =
-            detail["complaint"] ?? "";
+            (detail["complaint"] ?? "").toString().toUpperCase();
 
         howDealWithController.text =
-            detail["dealt_with"] ?? "";
+            (detail["dealt_with"] ?? "").toString().toUpperCase();
 
         resultController.text =
-            detail["result"] ?? "";
+            (detail["result"] ?? "").toString().toUpperCase();
 
-        final notes = jsonDecode(detail["booking"]["notes"]);
-        customerNoteController.text = notes.isNotEmpty ? notes.first["note"] : "";
+        final notes = jsonDecode(detail["booking"]["notes"] ?? "[]");
+
+        customerNoteController.text = notes.isNotEmpty
+            ? (notes.first["note"] ?? "").toString().toUpperCase()
+            : "";
 
         pickupAddress =
-            detail["booking"]?["pickup"] ?? "";
+            (detail["booking"]?["pickup"] ?? "").toString().toUpperCase();
 
         dropoffAddress =
-            detail["booking"]?["dropoff"] ?? "";
+            (detail["booking"]?["dropoff"] ?? "").toString().toUpperCase();
 
-        if (detail["driver_id"] != null) {
-          selectedDriver = driverList.firstWhereOrNull(
-                (e) => e.id == detail["driver_id"],
-          );
-        }
+        // Driver Select
+        final driverId = detail["driver_id"];
+
+        print("Complaint Driver ID => $driverId");
+        print(
+          "Driver List => ${driverList.map((e) => "${e.id}-${e.name}").toList()}",
+        );
+
+        selectedDriver = driverList.firstWhereOrNull(
+              (e) => e.id.toString() == driverId.toString(),
+        );
+
+        print("Selected Driver => ${selectedDriver?.name}");
 
         update();
       }
@@ -930,6 +905,70 @@ sendCompanyId: true,
       print("Complaint Update Error: $e");
     }
   }
+
+
+  // Future<void> complaintUpdate({required int complaintId}) async {
+  //   complaintValue.value = true;
+  //   complaintUpdateId.value = complaintId;
+  //
+  //   try {
+  //     var response = await Api().get(
+  //       "complaint/getbyid/?id=$complaintId",
+  //       sendCompanyId: true,
+  //     );
+  //
+  //     if (response.statusCode == 200 && response.data["status"] == true) {
+  //       final detail = response.data["complaint"];
+  //
+  //       /// Save IDs for update API
+  //       updateComplainCustomerId = (detail["customer_id"]);
+  //       updateComplainBookingId = detail["booking_id"];
+  //
+  //       customerNameController.text =
+  //           detail["customer"]?["name"] ?? "";
+  //
+  //       customerMobileController.text =
+  //           detail["customer"]?["mobile"] ?? "";
+  //
+  //       customerRefNoController.text =
+  //           detail["booking"]?["reference_number"] ?? "";
+  //
+  //       complainDateController.text =
+  //           detail["complain_date"] ?? "";
+  //
+  //       incidentedController.text =
+  //           detail["incident_date"] ?? "";
+  //
+  //       complaintController.text =
+  //           detail["complaint"] ?? "";
+  //
+  //       howDealWithController.text =
+  //           detail["dealt_with"] ?? "";
+  //
+  //       resultController.text =
+  //           detail["result"] ?? "";
+  //
+  //       final notes = jsonDecode(detail["booking"]["notes"]);
+  //       customerNoteController.text = notes.isNotEmpty ? notes.first["note"] : "";
+  //
+  //       pickupAddress =
+  //           detail["booking"]?["pickup"] ?? "";
+  //
+  //       dropoffAddress =
+  //           detail["booking"]?["dropoff"] ?? "";
+  //
+  //       if (detail["driver_id"] != null) {
+  //         selectedDriver = driverList.firstWhereOrNull(
+  //               (e) => e.id == detail["driver_id"],
+  //         );
+  //       }
+  //
+  //       update();
+  //     }
+  //   } catch (e) {
+  //     print("Complaint Update Error: $e");
+  //   }
+  // }
 
 
   deleteComplaint(int? id) async {
