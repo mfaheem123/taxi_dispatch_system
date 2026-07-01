@@ -364,8 +364,9 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                                     child: Stack(
                                       alignment: Alignment.center,
                                       children: [
-                                        Icon(Icons.directions_car,
-                                          size: 70,
+                                        ImageIcon(
+                                        AssetImage("assets/tracking_car.png"),
+                                       size: 120,
                                           color: driver.bookingStatus == "Accepted"?Colors.orange:
                                           driver.bookingStatus == "Arrived"?Colors.yellow:
                                           driver.bookingStatus == "On Route"?Colors.red:

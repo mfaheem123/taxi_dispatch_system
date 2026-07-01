@@ -573,7 +573,7 @@ class _DriversViewState extends State<DriversView> {
                 //   size: 65,
                 // ),
                 Image(
-                  image: AssetImage("assets/car3.png"),
+                  image: AssetImage("assets/tracking_car.png"),
                   width: 70,
                   height: 70,
                 ),

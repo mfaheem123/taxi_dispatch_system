@@ -653,7 +653,6 @@ class _ViaLocationState extends State<ViaLocation> {
 
                                 controller.viaMilsCondition = true;
                                 int len = controller.viaPoints.length;
-
                                 for (int a = 0; a < len && a < controller.viaTextEditingController.length; a++) {
                                   controller.viaPoints[a].name = controller.viaTextEditingController[a].name.text;
                                   controller.viaPoints[a].mobile = controller.viaTextEditingController[a].mobile.text;

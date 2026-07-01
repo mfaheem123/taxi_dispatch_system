@@ -298,148 +298,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           ),
                                                         ),
                                                       ),
-
-                                                      // (1) Pickup textfield
-//                                                       FocusTraversalOrder(
-//                                                         order: const NumericFocusOrder(1),
-//                                                         child: SizedBox(
-//                                                           width: fieldWidth / 1.2,
-//                                                           height: 30,
-//                                                           child: RawKeyboardListener(
-//                                                             focusNode: controller.pickupKeyboardFocusNode,
-//                                                             onKey: (event) {
-//                                                               if (event is RawKeyDownEvent) {
-//                                                                 if (event.logicalKey == LogicalKeyboardKey.arrowDown && controller.highlightedIndex.value < controller.suggestions.length - 1) {
-//                                                                   controller.highlightedIndex.value++;
-//                                                                 } else if (event.logicalKey == LogicalKeyboardKey.arrowUp && controller.highlightedIndex.value > 0) {
-//                                                                   controller.highlightedIndex.value--;
-//                                                                 } else if (event.logicalKey == LogicalKeyboardKey.enter) {
-//                                                                   final selected = controller.suggestions[controller.highlightedIndex.value].name;
-//                                                                   controller.selectSuggestion(selected);
-//                                                                 } else if (event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.arrowUp
-//                                                                     || event.logicalKey == LogicalKeyboardKey.tab
-//                                                                 ) {
-//                                                                   FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
-//                                                                 }
-//                                                                 // }else if(event.logicalKey == LogicalKeyboardKey.tab){
-//                                                                 //   FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
-//                                                                 // }
-//                                                               }
-//                                                             },
-//                                                             child: CustomTextField(
-//                                                               key: controller.pickupFieldKey,
-//                                                               controller: controller.pickupController,
-//                                                               focusNode: controller.pickupTextFieldFocusNode,
-//                                                               inputFormatters: [
-//                                                                 UpperCaseTextFormatter(),
-//                                                               ],
-//                                                               hintText: 'PICKUP LOCATION',
-//                                                               borderRadius: 4,
-//                                                               prefixIcon: const Icon(
-//                                                                 Icons.location_pin,
-//                                                                 color: Colors.red,
-//                                                                 size: 20,
-//                                                               ),
-//                                                               textInputAction: TextInputAction.next,
-//                                                               onTap: () {
-//                                                                 shortCutKeyValue.value = "PICKUP LOCATION";
-//                                                                 controller.dropDownShow.value = true;
-//                                                               },
-//                                                               onChanged: (v) {
-//                                                                 if(v.isEmpty) {
-//                                                                   controller
-//                                                                       .dropDownShow
-//                                                                       .value =
-//                                                                   false;
-//                                                                 }else{
-//                                                                   controller.dropDownShow.value = true;
-//                                                                 }
-//                                                                 controller.onChangeHandler(fieldName: "PICKUP LOCATION", searchingText: v);
-//                                                               },
-//                                                               onSubmitted: (_) => FocusScope.of(context).nextFocus(),
-//                                                               suffixIcon: Row(
-//                                                                 mainAxisAlignment: MainAxisAlignment.end,
-//                                                                 mainAxisSize: MainAxisSize.min,
-//                                                                 children: [
-//                                                                   controller.pickupController.text.isEmpty
-//                                                                       ? SizedBox.shrink()
-//                                                                       : KbdActivatable(
-//                                                                     focusNode: clearPic,
-//                                                                     onActivate: () {
-//   // 1. Text Controller aur Dropdown clear karein
-//   controller.pickupController.clear();
-//   controller.dropDownShow.value = false;
-//   controller.suggestions.clear();
-
-//   // 2. Sirf PICKUP ya Create Booking PICKUP waale data ko list se remove karein
-//   controller.polyLineMarkerInfo.removeWhere((item) =>
-//     item.markerType == "PICKUP LOCATION" || item.markerType == "Create Booking PICKUP"
-//   );
-
-//   // 3. Fares aur distance ko reset karein
-//   controller.totalDistance.value = "0.00";
-//   controller.totalTimeDuration.value = "0 min";
-//   controller.fixedFare.value = "0";
-//   controller.returnFareValue = "0";
-//   controller.slugController.clear();
-//   controller.slugControllerReturn.clear();
-//   controller.tempStoreMils = null;
-
-//   // 4. Map aur Markers ko update karein
-//   controller.fetchRouteFromOSRM();
-
-//   // 5. Focus wapas textfield par le aayein
-//   FocusScope.of(Get.context!).requestFocus(controller.pickupTextFieldFocusNode);
-//   controller.update();
-// },
-//                                                                     // onActivate: () {
-//                                                                       int index = controller.markers.indexWhere((test) => test.type == "pickup");
-//                                                                       int indexx = controller.polyLineMarkerInfo.indexWhere(((element) => element.markerType == "PICKUP LOCATION"));
-//                                                                       controller.polyLineMarkerInfo.remove(controller.polyLineMarkerInfo[indexx]);
-//                                                                       controller.markers.remove(controller.markers[index]);
-                                                      //   FocusScope.of(Get.context!).requestFocus(controller.pickupTextFieldFocusNode);
-//                                                                     //   controller.markers.clear();
-//                                                                     //   controller.fixedFare.value = "0";
-//                                                                     //   controller.returnFareValue = "";
-//                                                                     //   controller.slugControllerReturn.clear();
-//                                                                     //   controller.slugController.clear();
-//                                                                     //   controller.dropDownShow.value = false;
-//                                                                     //   // controller.polyLineMarkerInfo.clear();
-//                                                                     //   controller.pickupController.clear();
-//                                                                     //   controller.dropOffController.clear();
-//                                                                     //   controller.polylinePoints.clear();
-//                                                                     //   controller.tempStoreMils = null;
-//                                                                     //   controller.fetchRouteFromOSRM();
-//                                                                     //   controller.fixedFare.value = "0";
-//                                                                     //   controller.totalDistance.value = "0";
-//                                                                     //   controller.totalTimeDuration.value = "0";
-//                                                                     //   controller.update();
-//                                                                     //   // controller.fetchRouteFromOSRM();
-//                                                                     // },
-//                                                                     child: Icon(
-//                                                                       Icons.close,
-//                                                                       color: DynamicColors.redClr,
-//                                                                       size: 15,
-//                                                                     ),
-//                                                                   ),
-//                                                                   KbdActivatable(
-//                                                                     focusNode: swap1FN,
-//                                                                     onActivate: () {
-//                                                                       String tempPic = controller.pickupController.text;
-//                                                                       String tempDrop = controller.dropOffController.text;
-//                                                                       controller.pickupController.text = tempDrop;
-//                                                                       controller.dropOffController.text = tempPic;
-//                                                                       controller.update();
-//                                                                     },
-//                                                                     child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
-//                                                                   ),
-//                                                                 ],
-//                                                               ),
-//                                                             ),
-//                                                           ),
-//                                                         ),
-//                                                       ),
-// (1) Pickup textfield
                                                       FocusTraversalOrder(
                                                         order: const NumericFocusOrder(1),
                                                         child: SizedBox(
@@ -500,11 +358,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                         controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
                                                                       }
 
-                                                                      final dropPolylineIndex = controller.polyLineMarkerInfo
-                                                                          .indexWhere((e) => e.markerType == "DROP LOCATION");
-                                                                      if (dropPolylineIndex >= 0) {
-                                                                        controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
-                                                                      }
+                                                                      // final dropPolylineIndex = controller.polyLineMarkerInfo
+                                                                      //     .indexWhere((e) => e.markerType == "DROP LOCATION");
+                                                                      // if (dropPolylineIndex >= 0) {
+                                                                      //   controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
+                                                                      // }
 
                                                                       final pickupMarkerIndex =
                                                                       controller.markers.indexWhere((e) => e.type == "pickup");
@@ -512,30 +370,30 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                         controller.markers.removeAt(pickupMarkerIndex);
                                                                       }
 
-                                                                      final dropOffMarkerIndex =
-                                                                      controller.markers.indexWhere((e) => e.type == "dropOff");
-                                                                      if (dropOffMarkerIndex >= 0) {
-                                                                        controller.markers.removeAt(dropOffMarkerIndex);
-                                                                      }
+                                                                      // final dropOffMarkerIndex =
+                                                                      // controller.markers.indexWhere((e) => e.type == "dropOff");
+                                                                      // if (dropOffMarkerIndex >= 0) {
+                                                                      //   controller.markers.removeAt(dropOffMarkerIndex);
+                                                                      // }
 
                                                                       // ✅ FIX: Sirf One-Way (via) wale markers list se remove honge
-                                                                      controller.markers.removeWhere((marker) => marker.type == "via");
-
-                                                                      // ✅ FIX: Sirf One-Way wale via points aur text fields remove honge (withReturnWay == "via")
-                                                                      for (int i = controller.viaPoints.length - 1; i >= 0; i--) {
-                                                                        if (controller.viaPoints[i].withReturnWay == "via") {
-                                                                          controller.viaPoints.removeAt(i);
-                                                                          if (i < controller.viaTextEditingController.length) {
-                                                                            controller.viaTextEditingController.removeAt(i);
-                                                                          }
-                                                                        }
-                                                                      }
+                                                                      // controller.markers.removeWhere((marker) => marker.type == "via");
+                                                                      //
+                                                                      // // ✅ FIX: Sirf One-Way wale via points aur text fields remove honge (withReturnWay == "via")
+                                                                      // for (int i = controller.viaPoints.length - 1; i >= 0; i--) {
+                                                                      //   if (controller.viaPoints[i].withReturnWay == "via") {
+                                                                      //     controller.viaPoints.removeAt(i);
+                                                                      //     if (i < controller.viaTextEditingController.length) {
+                                                                      //       controller.viaTextEditingController.removeAt(i);
+                                                                      //     }
+                                                                      //   }
+                                                                      // }
 
                                                                       controller.pickupController.clear();
-                                                                      controller.dropOffController.clear();
+                                                                      // controller.dropOffController.clear();
                                                                       controller.dropDownShow.value = false;
                                                                       controller.suggestions.clear();
-
+                                                                      controller.clearViaIfNoPickupAndDrop();
                                                                       controller.totalDistance.value = "0.00";
                                                                       controller.totalTimeDuration.value = "0 min";
                                                                       controller.fixedFare.value = "0";
@@ -544,7 +402,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.slugController.clear();
                                                                       controller.slugControllerReturn.clear();
                                                                       controller.tempStoreMils = null;
-
                                                                       controller.fetchRouteFromOSRM();
                                                                       FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
                                                                       controller.update();
@@ -553,23 +410,46 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   ),
                                                                   KbdActivatable(
                                                                     focusNode: swap1FN,
-                                                                    onActivate: () {
+                                                                    onActivate: () async {
                                                                       String tempPic = controller.pickupController.text;
                                                                       String tempDrop = controller.dropOffController.text;
+
+                                                                      // Textfields values swap karein
                                                                       controller.pickupController.text = tempDrop;
                                                                       controller.dropOffController.text = tempPic;
+
+                                                                      // Dropdown visibility ko manage karein taake UI clean rahe
+                                                                      controller.dropDownShow.value = false;
+
+                                                                      // Markers state swap karein
+                                                                      controller.swapPickupDropMarkers();
+
+                                                                      // Map polyline calculations ko refresh karein
+                                                                      await controller.fetchRouteFromOSRM();
                                                                       controller.update();
                                                                     },
                                                                     child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
                                                                   ),
+                                                                  // KbdActivatable(
+                                                                  //   focusNode: swap1FN,
+                                                                  //   onActivate: () async {
+                                                                  //     String tempPic = controller.pickupController.text;
+                                                                  //     String tempDrop = controller.dropOffController.text;
+                                                                  //     controller.pickupController.text = tempDrop;
+                                                                  //     controller.dropOffController.text = tempPic;
+                                                                  //     controller.swapPickupDropMarkers();
+                                                                  //     await controller.fetchRouteFromOSRM();
+                                                                  //     controller.update();
+                                                                  //   },
+                                                                  //   child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
+                                                                  // ),
                                                                 ],
                                                               ),
                                                             ),
                                                           ),
                                                         ),
                                                       ),
-                                                      // Select Zone on pick Up location line
-                                                      // (2) Pickup Zone Dropdown - (Flex: 5 aur width null ke sath)
+                                                      // (2) Pickup Zone Dropdown
                                                       Expanded(
                                                         flex: 5,
                                                         child: Obx(
@@ -610,13 +490,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           ),
                                                         ),
                                                       ),
-
-// Dono fields ke darmiyan ka fasla (Aapka original 13.0 spacing)
-                                                      const SizedBox(
-                                                        width: 55.0,
-                                                      ),
-
-// (3) Pickup notes - (Flex: 3 aur bina label ke)
+                                                      const SizedBox(width: 55.0),
+                                                      // (3) Pickup notes
                                                       Expanded(
                                                         flex: 3,
                                                         child: FocusTraversalOrder(
@@ -748,136 +623,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ),
                                                       ),
 
-                                                      // (2) Dropoff textfield
-//                                                       FocusTraversalOrder(
-//                                                         order: const NumericFocusOrder(6),
-//                                                         child: SizedBox(
-//                                                           width: fieldWidth / 1.2,
-//                                                           height: 30,
-//                                                           child: RawKeyboardListener(
-//                                                             focusNode: controller.dropOffKeyboardFocusNode,
-//                                                             onKey: (event) {
-//                                                               if (event is RawKeyDownEvent) {
-//                                                                 if (event.logicalKey == LogicalKeyboardKey.arrowDown && controller.highlightedIndex.value < controller.suggestions.length - 1) {
-//                                                                   controller.highlightedIndex.value++;
-//                                                                 } else if (event.logicalKey == LogicalKeyboardKey.arrowUp && controller.highlightedIndex.value > 0) {
-//                                                                   controller.highlightedIndex.value--;
-//                                                                 } else if (event.logicalKey == LogicalKeyboardKey.enter) {
-//                                                                   final selected = controller.suggestions[controller.highlightedIndex.value].name;
-//                                                                   controller.selectSuggestion(selected);
-//                                                                 } else if (event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.tab) {
-//                                                                   FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
-//                                                                 }
-//                                                               }
-//                                                             },
-//                                                             child: CustomTextField(
-//                                                               key: controller.dropOffFieldKey,
-//                                                               controller: controller.dropOffController,
-//                                                               focusNode: controller.dropOffTextFieldFocusNode,
-//                                                               hintText: 'DROP LOCATION',
-//                                                               inputFormatters: [
-//                                                                 UpperCaseTextFormatter(),
-//                                                               ],
-//                                                               onTap: () {
-//                                                                 shortCutKeyValue.value = "DROP LOCATION";
-//                                                                 controller.dropDownShow.value = true;
-//                                                               },
-//                                                               borderRadius: 4,
-//                                                               onChanged: (v) {
-//                                                                 if(v.isEmpty){
-//                                                                   controller.dropDownShow.value = false;
-//                                                                 }else{
-//                                                                   controller.dropDownShow.value = true;
-//                                                                 }
-//                                                                 controller.onChangeHandler(fieldName: "DROP LOCATION", searchingText: v);
-//                                                               },
-//                                                               prefixIcon: const Icon(
-//                                                                 Icons.location_pin,
-//                                                                 color: Colors.red,
-//                                                                 size: 20,
-//                                                               ),
-//                                                               textInputAction: TextInputAction.next,
-//                                                               onSubmitted: (_) => FocusScope.of(context).nextFocus(),
-//                                                               suffixIcon: Row(
-//                                                                 mainAxisSize: MainAxisSize.min,
-//                                                                 mainAxisAlignment: MainAxisAlignment.end,
-//                                                                 children: [
-//                                                                   controller.dropOffController.text.isEmpty
-//                                                                       ? SizedBox.shrink()
-//                                                                       : KbdActivatable(
-//                                                                     focusNode: clearDrop,
-//                                                                     onActivate: () {
-//   controller.dropOffController.clear();
-//   controller.dropDownShow.value = false;
-//   controller.suggestions.clear();
-
-//   // Sirf DROP waale markers remove karein
-//   controller.polyLineMarkerInfo.removeWhere((item) =>
-//     item.markerType == "DROP LOCATION" || item.markerType == "Create Booking DROP LOCATION"
-//   );
-
-//   controller.totalDistance.value = "0.00";
-//   controller.totalTimeDuration.value = "0 min";
-//   controller.fixedFare.value = "0";
-//   controller.returnFareValue = "0";
-//   controller.slugController.clear();
-//   controller.slugControllerReturn.clear();
-//   controller.tempStoreMils = null;
-
-//   controller.fetchRouteFromOSRM(); // Route aur markers update karega
-
-//   FocusScope.of(Get.context!).requestFocus(controller.dropoffFocusNode); // Dropoff focus node
-//   controller.update();
-// },
-//                                                                     // onActivate: () {
-//                                                                     //   // int index = controller.markers.indexWhere((test) => test.type == "dropOff");
-//                                                                     //   // int indexx = controller.polyLineMarkerInfo.indexWhere(((element) => element.markerType == "DROP LOCATION"));
-//                                                                     //   // controller.polyLineMarkerInfo.remove(controller.polyLineMarkerInfo[indexx]);
-//                                                                     //   // controller.markers.remove(controller.markers[index]);
-//                                                                     //   FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
-//                                                                     //   controller.dropOffController.clear();
-//                                                                     //   controller.fixedFare.value = "0";
-//                                                                     //   controller.returnFareValue = "";
-//                                                                     //   controller.slugControllerReturn.clear();
-//                                                                     //   controller.slugController.clear();
-//                                                                     //   controller.markers.clear();
-//                                                                     //   controller.polyLineMarkerInfo.clear();
-//                                                                     //   controller.pickupController.clear();
-//                                                                     //   controller.polylinePoints.clear();
-//                                                                     //   controller.tempStoreMils = null;
-//                                                                     //   controller.dropDownShow.value = false;
-//                                                                     //   controller.fetchRouteFromOSRM();
-//                                                                     //   controller.fixedFare.value = "0";
-//                                                                     //   controller.totalDistance.value = "0";
-//                                                                     //   controller.totalTimeDuration.value = "0";
-//                                                                     //   controller.update();
-//                                                                     // },
-//                                                                     child: Icon(
-//                                                                       Icons.close,
-//                                                                       color: DynamicColors.redClr,
-//                                                                       size: 15,
-//                                                                     ),
-//                                                                   ),
-//                                                                   KbdActivatable(
-//                                                                     focusNode: swap2FN,
-//                                                                     onActivate: () {
-//                                                                       String tempPic = controller.pickupController.text;
-//                                                                       String tempDrop = controller.dropOffController.text;
-//                                                                       controller.pickupController.text = tempDrop;
-//                                                                       controller.dropOffController.text = tempPic;
-//                                                                       controller.dropDownShow.value = false;
-//                                                                       controller.update();
-//                                                                     },
-//                                                                     child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
-//                                                                   ),
-//                                                                 ],
-//                                                               ),
-//                                                             ),
-//                                                           ),
-//                                                         ),
-//                                                       ),
-
-                                                      // (2) Dropoff textfield
                                                       FocusTraversalOrder(
                                                         order: const NumericFocusOrder(6),
                                                         child: SizedBox(
@@ -933,12 +678,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     focusNode: clearDrop,
                                                                     onActivate: () {
 
-                                                                      final pickupPolylineIndex = controller.polyLineMarkerInfo
-                                                                          .indexWhere((e) => e.markerType == "PICKUP LOCATION");
-
-                                                                      if (pickupPolylineIndex >= 0) {
-                                                                        controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
-                                                                      }
+                                                                      // final pickupPolylineIndex = controller.polyLineMarkerInfo
+                                                                      //     .indexWhere((e) => e.markerType == "PICKUP LOCATION");
+                                                                      //
+                                                                      // if (pickupPolylineIndex >= 0) {
+                                                                      //   controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
+                                                                      // }
 
                                                                       final dropPolylineIndex = controller.polyLineMarkerInfo
                                                                           .indexWhere((e) => e.markerType == "DROP LOCATION");
@@ -947,12 +692,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                         controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
                                                                       }
 
-                                                                      final pickupMarkerIndex =
-                                                                      controller.markers.indexWhere((e) => e.type == "pickup");
-
-                                                                      if (pickupMarkerIndex >= 0) {
-                                                                        controller.markers.removeAt(pickupMarkerIndex);
-                                                                      }
+                                                                      // final pickupMarkerIndex =
+                                                                      // controller.markers.indexWhere((e) => e.type == "pickup");
+                                                                      //
+                                                                      // if (pickupMarkerIndex >= 0) {
+                                                                      //   controller.markers.removeAt(pickupMarkerIndex);
+                                                                      // }
 
                                                                       final dropOffMarkerIndex =
                                                                       controller.markers.indexWhere((e) => e.type == "dropOff");
@@ -961,26 +706,26 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                         controller.markers.removeAt(dropOffMarkerIndex);
                                                                       }
                                                                       // ✅ FIX: Sirf One-Way (via) wale markers list se remove honge
-                                                                      controller.markers.removeWhere((marker) => marker.type == "via");
+                                                                      // controller.markers.removeWhere((marker) => marker.type == "via");
 
-                                                                      // ✅ FIX: Sirf One-Way wale via points aur text fields remove honge (withReturnWay == "via")
-                                                                      for (int i = controller.viaPoints.length - 1; i >= 0; i--) {
-                                                                        if (controller.viaPoints[i].withReturnWay == "via") {
-                                                                          controller.viaPoints.removeAt(i);
-                                                                          if (i < controller.viaTextEditingController.length) {
-                                                                            controller.viaTextEditingController.removeAt(i);
-                                                                          }
-                                                                        }
-                                                                      }
-                                                                      controller.viaPoints.clear();
-                                                                      controller.viaTextEditingController.clear();
-                                                                      controller.pickupController.clear();
+                                                                      // // ✅ FIX: Sirf One-Way wale via points aur text fields remove honge (withReturnWay == "via")
+                                                                      // for (int i = controller.viaPoints.length - 1; i >= 0; i--) {
+                                                                      //   if (controller.viaPoints[i].withReturnWay == "via") {
+                                                                      //     controller.viaPoints.removeAt(i);
+                                                                      //     if (i < controller.viaTextEditingController.length) {
+                                                                      //       controller.viaTextEditingController.removeAt(i);
+                                                                      //     }
+                                                                      //   }
+                                                                      // }
+                                                                      // controller.viaPoints.clear();
+                                                                      // controller.viaTextEditingController.clear();
+                                                                      // controller.pickupController.clear();
                                                                       controller.dropOffController.clear();
+                                                                      controller.clearViaIfNoPickupAndDrop();
                                                                       controller.dropDownShow.value = false;
                                                                       controller.suggestions.clear();
                                                                       // Sirf 1st Dropoff wale markers remove honge
                                                                       // controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "DROP LOCATION" || item.markerType == "Create Booking DROP LOCATION");
-                                                                      controller.viaPoints.clear();
                                                                       controller.totalDistance.value = "0.00";
                                                                       controller.totalTimeDuration.value = "0 min";
                                                                       controller.fixedFare.value = "0";
@@ -997,14 +742,16 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   ),
                                                                   KbdActivatable(
                                                                     focusNode: swap2FN,
-                                                                    onActivate: () {
+                                                                    onActivate: () async {
                                                                       String tempPic = controller.pickupController.text;
                                                                       String tempDrop = controller.dropOffController.text;
                                                                       controller.pickupController.text = tempDrop;
                                                                       controller.dropOffController.text = tempPic;
                                                                       controller.dropDownShow.value = false;
+                                                                      controller.swapPickupDropMarkers();
+                                                                      await controller.fetchRouteFromOSRM();
                                                                       controller.update();
-                                                                    },
+                                                                   },
                                                                     child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
                                                                   ),
                                                                 ],
@@ -1216,7 +963,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         //     ],
                                                         //   ),
                                                         // ),
-                                                        // (8) Mobile Field - (Aapka original code baseline alignment ke sath)
+                                                        /// (8) Mobile Field
                                                         Expanded(
                                                           child: Row(
                                                             children: [
@@ -1594,12 +1341,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                               controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
                                                                             }
 
-                                                                            final dropPolylineIndex = controller.polyLineMarkerInfo
-                                                                                .indexWhere((e) => e.markerType == "DROP TWO WAY LOCATION");
-
-                                                                            if (dropPolylineIndex >= 0) {
-                                                                              controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
-                                                                            }
+                                                                            // final dropPolylineIndex = controller.polyLineMarkerInfo
+                                                                            //     .indexWhere((e) => e.markerType == "DROP TWO WAY LOCATION");
+                                                                            //
+                                                                            // if (dropPolylineIndex >= 0) {
+                                                                            //   controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
+                                                                            // }
 
                                                                             final pickupMarkerIndex =
                                                                             controller.markers.indexWhere((e) => e.type == "pickup two way");
@@ -1608,32 +1355,34 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                               controller.markers.removeAt(pickupMarkerIndex);
                                                                             }
 
-                                                                            final dropOffMarkerIndex =
-                                                                            controller.markers.indexWhere((e) => e.type == "dropOff two way");
-
-                                                                            if (dropOffMarkerIndex >= 0) {
-                                                                              controller.markers.removeAt(dropOffMarkerIndex);
-                                                                            }
+                                                                            // final dropOffMarkerIndex =
+                                                                            // controller.markers.indexWhere((e) => e.type == "dropOff two way");
+                                                                            //
+                                                                            // if (dropOffMarkerIndex >= 0) {
+                                                                            //   controller.markers.removeAt(dropOffMarkerIndex);
+                                                                            // }
 
                                                                             // 1. Sirf Two-Way waale controllers ko clear karein
                                                                             controller.pickupTwoWayController.clear();
-                                                                            controller.dropOffTwoWayController.clear();
+                                                                            controller.clearReturnViaIfNoPickupAndDrop();
+                                                                            // controller.dropOffTwoWayController.clear();
 
                                                                             // 2. POORI list clear karne ke bajaye, sirf TWO WAY waale markers remove karein
                                                                             controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "PICKUP TWO WAY LOCATION");
                                                                             if (controller.markers is List<CustomMarker>) {
                                                                               controller.markers.removeWhere((marker) => marker.type == "PICKUP TWO WAY LOCATION");
                                                                             }
-                                                                            controller.markers.removeWhere((marker) => marker.type == "via with return");
+                                                                            // controller.markers.removeWhere((marker) => marker.type == "via with return");
 
-                                                                             for (int i = controller.viaPoints.length - 1; i >= 0; i--) {
-                                                                              if (controller.viaPoints[i].withReturnWay == "via with return") {
-                                                                                controller.viaPoints.removeAt(i);
-                                                                                if (i < controller.viaTextEditingController.length) {
-                                                                                  controller.viaTextEditingController.removeAt(i);
-                                                                                }
-                                                                              }
-                                                                            }
+                                                                            //  for (int i = controller.viaPoints.length - 1; i >= 0; i--) {
+                                                                            //   if (controller.viaPoints[i].withReturnWay == "via with return") {
+                                                                            //     controller.viaPoints.removeAt(i);
+                                                                            //     if (i < controller.viaTextEditingController.length) {
+                                                                            //       controller.viaTextEditingController.removeAt(i);
+                                                                            //     }
+                                                                            //   }
+                                                                            // }
+
                                                                             controller.tempStoreReturnMils = null;
                                                                             // 3. Baki states ko reset karein
                                                                             // controller.fixedFare.value = "0";
@@ -1644,7 +1393,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             // controller.tempStoreMils = null;
 
                                                                             // 4. Route ko recalculate karein (Yeh ab bache hue 1st pickup/dropoff ka route banayega)
-                                                                            // controller.fetchRouteFromOSRM();
+                                                                             controller.fetchRouteFromOSRM();
 
                                                                             controller.update();
                                                                           },
@@ -1652,12 +1401,22 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                         ),
                                                                         KbdActivatable(
                                                                           focusNode: swap1FNTwoWay,
-                                                                          onActivate: () {
+                                                                          onActivate: () async {
                                                                             String tempPic = controller.pickupTwoWayController.text;
                                                                             String tempDrop = controller.dropOffTwoWayController.text;
+
+                                                                            // Textfields values ko swap karein
                                                                             controller.pickupTwoWayController.text = tempDrop;
                                                                             controller.dropOffTwoWayController.text = tempPic;
+
+                                                                            // Dropdown hide karein
                                                                             controller.dropDownShow.value = false;
+
+                                                                            // Markers state update karein
+                                                                            controller.swapReturnPickupDropMarkers();
+
+                                                                            // Map refresh karne ke liye route call karein
+                                                                            await controller.fetchRouteFromOSRM();
                                                                             controller.update();
                                                                           },
                                                                           child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
@@ -1752,8 +1511,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 ),
                                                               ),
                                                             ),
-                                                            /// (1) Pickup textfield
-
+                                                            /// Drop Return textfield
                                                             FocusTraversalOrder(
                                                               order: const NumericFocusOrder(20),
                                                               child: SizedBox(
@@ -1805,12 +1563,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           onActivate: () {
                                                                             FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
 
-                                                                            final pickupPolylineIndex = controller.polyLineMarkerInfo
-                                                                                .indexWhere((e) => e.markerType == "PICKUP TWO WAY LOCATION");
-
-                                                                            if (pickupPolylineIndex >= 0) {
-                                                                              controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
-                                                                            }
+                                                                            // final pickupPolylineIndex = controller.polyLineMarkerInfo
+                                                                            //     .indexWhere((e) => e.markerType == "PICKUP TWO WAY LOCATION");
+                                                                            //
+                                                                            // if (pickupPolylineIndex >= 0) {
+                                                                            //   controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
+                                                                            // }
 
                                                                             final dropPolylineIndex = controller.polyLineMarkerInfo
                                                                                 .indexWhere((e) => e.markerType == "DROP TWO WAY LOCATION");
@@ -1819,12 +1577,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                               controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
                                                                             }
 
-                                                                            final pickupMarkerIndex =
-                                                                            controller.markers.indexWhere((e) => e.type == "pickup two way");
-
-                                                                            if (pickupMarkerIndex >= 0) {
-                                                                              controller.markers.removeAt(pickupMarkerIndex);
-                                                                            }
+                                                                            // final pickupMarkerIndex =
+                                                                            // controller.markers.indexWhere((e) => e.type == "pickup two way");
+                                                                            //
+                                                                            // if (pickupMarkerIndex >= 0) {
+                                                                            //   controller.markers.removeAt(pickupMarkerIndex);
+                                                                            // }
 
                                                                             final dropOffMarkerIndex =
                                                                             controller.markers.indexWhere((e) => e.type == "dropOff two way");
@@ -1834,17 +1592,18 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             }
                                                                             controller.markers.removeWhere((marker) => marker.type == "via with return");
 
-                                                                            for (int i = controller.viaPoints.length - 1; i >= 0; i--) {
-                                                                              if (controller.viaPoints[i].withReturnWay == "via with return") {
-                                                                                controller.viaPoints.removeAt(i);
-                                                                                if (i < controller.viaTextEditingController.length) {
-                                                                                  controller.viaTextEditingController.removeAt(i);
-                                                                                }
-                                                                              }
-                                                                            }
+                                                                            // for (int i = controller.viaPoints.length - 1; i >= 0; i--) {
+                                                                            //   if (controller.viaPoints[i].withReturnWay == "via with return") {
+                                                                            //     controller.viaPoints.removeAt(i);
+                                                                            //     if (i < controller.viaTextEditingController.length) {
+                                                                            //       controller.viaTextEditingController.removeAt(i);
+                                                                            //     }
+                                                                            //   }
+                                                                            // }
                                                                             // 1. Only Two-Way controllers clear karein
-                                                                            controller.pickupTwoWayController.clear();
+                                                                            // controller.pickupTwoWayController.clear();
                                                                             controller.dropOffTwoWayController.clear();
+                                                                            controller.clearReturnViaIfNoPickupAndDrop();
 
                                                                             // 2. Specific filtering lagayein pure clear ke bajaye
                                                                             // controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "DROP TWO WAY LOCATION");
@@ -1873,12 +1632,22 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                         ),
                                                                         KbdActivatable(
                                                                           focusNode: swap2FNTwoWay,
-                                                                          onActivate: () {
+                                                                          onActivate: () async {
                                                                             String tempPic = controller.pickupTwoWayController.text;
                                                                             String tempDrop = controller.dropOffTwoWayController.text;
+
+                                                                            // Textfields values ko swap karein
                                                                             controller.pickupTwoWayController.text = tempDrop;
                                                                             controller.dropOffTwoWayController.text = tempPic;
+
+                                                                            // Dropdown hide karein
                                                                             controller.dropDownShow.value = false;
+
+                                                                            // Markers state update karein
+                                                                            controller.swapReturnPickupDropMarkers();
+
+                                                                            // Route calculation aur UI refresh
+                                                                            await controller.fetchRouteFromOSRM();
                                                                             controller.update();
                                                                           },
                                                                           child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),

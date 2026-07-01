@@ -546,6 +546,7 @@ class DashboardController extends GetxController {
 
   ///Todo booking form data
 
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo alert controllers data
 
   final noOfChildren = TextEditingController();
@@ -757,8 +758,67 @@ class DashboardController extends GetxController {
     super.dispose();
   }
 
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> searching all locations hit
 
+  void updateZoom(bool zoomIn) {
+    double currentZoom = mapController.camera.zoom;
+    double newZoom = zoomIn ? currentZoom + 1 : currentZoom - 1;
+
+    if (newZoom >= 3.0 && newZoom <= 18.0) {
+      mapController.move(mapController.camera.center, newZoom);
+    }
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> searching all locations hit
+  void swapPickupDropMarkers() {
+    // Dono indexes ko alag-alag find karein
+    final pickupIndex = polyLineMarkerInfo.indexWhere((e) => e.markerType == "PICKUP LOCATION");
+    final dropIndex = polyLineMarkerInfo.indexWhere((e) => e.markerType == "DROP LOCATION");
+
+    // CASE 1: Agar dono markers maujood hain (Normal Swap)
+    if (pickupIndex != -1 && dropIndex != -1) {
+      final temp = polyLineMarkerInfo[pickupIndex];
+      polyLineMarkerInfo[pickupIndex] = polyLineMarkerInfo[dropIndex];
+      polyLineMarkerInfo[dropIndex] = temp;
+
+      polyLineMarkerInfo[pickupIndex].markerType = "PICKUP LOCATION";
+      polyLineMarkerInfo[dropIndex].markerType = "DROP LOCATION";
+    }
+    // CASE 2: Agar sirf Pickup maujood hai aur Dropoff khali hai (Move Pickup to Dropoff)
+    else if (pickupIndex != -1 && dropIndex == -1) {
+      polyLineMarkerInfo[pickupIndex].markerType = "DROP LOCATION";
+    }
+    // CASE 3: Agar sirf Dropoff maujood hai aur Pickup khali hai (Move Dropoff to Pickup)
+    else if (dropIndex != -1 && pickupIndex == -1) {
+      polyLineMarkerInfo[dropIndex].markerType = "PICKUP LOCATION";
+    }
+  }
+  void swapReturnPickupDropMarkers() {
+    final returnPickupIndex = polyLineMarkerInfo.indexWhere(
+          (e) => e.markerType == "PICKUP TWO WAY LOCATION",
+    );
+
+    final returnDropIndex = polyLineMarkerInfo.indexWhere(
+          (e) => e.markerType == "DROP TWO WAY LOCATION",
+    );
+
+    // CASE 1: Agar dono return markers list me maujood hain (Normal Swap)
+    if (returnPickupIndex != -1 && returnDropIndex != -1) {
+      final temp = polyLineMarkerInfo[returnPickupIndex];
+      polyLineMarkerInfo[returnPickupIndex] = polyLineMarkerInfo[returnDropIndex];
+      polyLineMarkerInfo[returnDropIndex] = temp;
+
+      polyLineMarkerInfo[returnPickupIndex].markerType = "PICKUP TWO WAY LOCATION";
+      polyLineMarkerInfo[returnDropIndex].markerType = "DROP TWO WAY LOCATION";
+    }
+    // CASE 2: Agar sirf Return Pickup hai aur Return Drop khali hai (Move Pickup to Drop)
+    else if (returnPickupIndex != -1 && returnDropIndex == -1) {
+      polyLineMarkerInfo[returnPickupIndex].markerType = "DROP TWO WAY LOCATION";
+    }
+    // CASE 3: Agar sirf Return Drop hai aur Return Pickup khali hai (Move Drop to Pickup)
+    else if (returnDropIndex != -1 && returnPickupIndex == -1) {
+      polyLineMarkerInfo[returnDropIndex].markerType = "PICKUP TWO WAY LOCATION";
+    }
+  }
   var isAirportResponse = false.obs;
   List<AllAddressesModel> allAddressesData = <AllAddressesModel>[].obs;
 
@@ -843,6 +903,7 @@ class DashboardController extends GetxController {
     }
   }
 
+
   AllAddressesModel? selectedModel;
   late final MapController mapController;
   MapController? mapTrackingController;
@@ -898,13 +959,45 @@ class DashboardController extends GetxController {
   String? returnMiles;
 
 
+  void clearViaIfNoPickupAndDrop() {
 
-  void updateZoom(bool zoomIn) {
-    double currentZoom = mapController.camera.zoom;
-    double newZoom = zoomIn ? currentZoom + 1 : currentZoom - 1;
+    final bool hasPickup = pickupController.text.trim().isNotEmpty;
+    final bool hasDrop = dropOffController.text.trim().isNotEmpty;
 
-    if (newZoom >= 3.0 && newZoom <= 18.0) {
-      mapController.move(mapController.camera.center, newZoom);
+    // Dono empty hon tab hi Via remove hon
+    if (!hasPickup && !hasDrop) {
+
+      // Sirf One-Way Via remove hon
+      viaPoints.removeWhere((e) => e.withReturnWay == "via");
+
+      // Unke controllers bhi remove karo
+      for (int i = viaTextEditingController.length - 1; i >= 0; i--) {
+        if (i < viaPoints.length) continue;
+        viaTextEditingController.removeAt(i);
+      }
+
+      fetchRouteFromOSRM();
+      update();
+    }
+  }
+  void clearReturnViaIfNoPickupAndDrop() {
+
+    final bool hasReturnPickup =
+        pickupTwoWayController.text.trim().isNotEmpty;
+
+    final bool hasReturnDrop =
+        dropOffTwoWayController.text.trim().isNotEmpty;
+
+    // Dono empty hon tab hi Return Via remove hon
+    if (!hasReturnPickup && !hasReturnDrop) {
+
+      // Sirf Return Via remove hon
+      viaPoints.removeWhere((e) => e.withReturnWay != "via");
+
+      // Route dobara generate karo
+      fetchRouteFromOSRM();
+
+      update();
     }
   }
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -1036,17 +1129,23 @@ class DashboardController extends GetxController {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                Icon(Icons.location_pin, color: DynamicColors.textClr, size: 30),
+                Icon(Icons.location_pin, color: DynamicColors.primaryClr, size: 30),
                 Positioned(
-                  top: 3,
-                  child: Text(
-                    "V$outboundViaCount",
-                    style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                  top: 5,
+                  child: Container(
+                    padding: const EdgeInsets.all(1),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      "V$outboundViaCount",
+                      style: TextStyle(color: DynamicColors.primaryClr, fontSize: 9, fontWeight: FontWeight.bold,),
+                    ),
                   ),
+                ),
+              ],
             ),
-          ],
-        ),
-
             type: "via", point: p, width: 30, height: 30));
         outboundViaCount++;
       }
@@ -1099,9 +1198,13 @@ class DashboardController extends GetxController {
     double outboundDurationMinutes = 0.0;
     double returnDurationMinutes = 0.0;
 
-          ///>>>>>>>>>>  A to B ROUTE
+// Note: Jab koi point delete ho, toh aap simply us variable ko `null` set kar dein
+// ya `viaPoints` list se remove kar ke is main routing function ko dubara call kar dein.
 
-    //  Outbound Route Polyline (A to B via any Outbound Vias)
+
+/// =========================================================================
+// 1. OUTBOUND ROUTE SEQUENCE (A -> Vias -> B)
+/// =========================================================================
     if (outboundSequence.length >= 2) {
       final coordsOut = outboundSequence.map((p) => "${p.longitude},${p.latitude}").join(";");
       final urlOut = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsOut?overview=full');
@@ -1111,8 +1214,6 @@ class DashboardController extends GetxController {
           final dataOut = resOut.data['routes'][0];
           computedOutboundMiles = dataOut['distance'] * 0.000621371;
           totalComputedMiles += computedOutboundMiles;
-          outboundDurationMinutes = (dataOut['duration'] ?? 0).toDouble() / 60;
-          totalDurationMinutes += outboundDurationMinutes;
 
           String encodedPoly = dataOut['geometry'];
           List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPoly);
@@ -1121,7 +1222,7 @@ class DashboardController extends GetxController {
 
           polylines.add(Polyline(
             points: decodedSegmentPoints,
-            color: DynamicColors.primaryClr, // Outbound Polyline color
+            color: DynamicColors.primaryClr,
             strokeWidth: 2.5,
           ));
         }
@@ -1130,35 +1231,45 @@ class DashboardController extends GetxController {
       }
     }
 
-    ///>>>>>>>>>>  B to C CONNECTING ROUTE (Only for visual road-wise map line)
+// =========================================================================
+// 2. CONNECTING ROUTE (Bridge: Outbound ka last point -> Return ka first point)
+// =========================================================================
+// FIX: Agar B delete ho gaya, toh outboundSequence ka last point automatically 'V2' ya 'A' ban jayega.
+// Agar C delete ho gaya, toh returnSequence ka first point automatically 'V1' ya 'D' ban jayega.
+    if (outboundSequence.isNotEmpty && returnSequence.isNotEmpty) {
 
-    if (outboundDropOff != null && returnPickup != null) {
-      final coordsConnect = "${outboundDropOff.longitude},${outboundDropOff.latitude};${returnPickup.longitude},${returnPickup.latitude}";
-      final urlConnect = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsConnect?overview=full');
+      final LatLng connectFrom = outboundSequence.last; // B, ya agar B nahi hai toh last Via, ya fir A
+      final LatLng connectTo = returnSequence.first;    // C, ya agar C nahi hai toh first Via, ya fir D
 
-      try {
-        final resConnect = await Dio().getUri(urlConnect);
-        if (resConnect.statusCode == 200 && resConnect.data['routes'] != null && resConnect.data['routes'].isNotEmpty) {
-          final dataConnect = resConnect.data['routes'][0];
-          String encodedPoly = dataConnect['geometry'];
-          List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPoly);
-          List<LatLng> decodedSegmentPoints = result.map((p) => LatLng(p.latitude, p.longitude)).toList();
-          polylinePointsCoordinate.addAll(decodedSegmentPoints);
-          // Map par street-wise line draw karne ke liye
-          polylines.add(Polyline(
+      // Agar dono sequences aapas me jud rahi hain aur outbound ka end return ke start ke barabar nahi hai
+      if (connectFrom != connectTo) {
+        final coordsConnect = "${connectFrom.longitude},${connectFrom.latitude};${connectTo.longitude},${connectTo.latitude}";
+        final urlConnect = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsConnect?overview=full');
 
-            points: decodedSegmentPoints,
-            color: Colors.grey.withOpacity(0.8), // Isko grey ya koi bhi alag color de dein taake transition lagay
-            strokeWidth: 2.5,
-          ));
+        try {
+          final resConnect = await Dio().getUri(urlConnect);
+          if (resConnect.statusCode == 200 && resConnect.data['routes'] != null && resConnect.data['routes'].isNotEmpty) {
+            final dataConnect = resConnect.data['routes'][0];
+            String encodedPoly = dataConnect['geometry'];
+            List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPoly);
+            List<LatLng> decodedSegmentPoints = result.map((p) => LatLng(p.latitude, p.longitude)).toList();
+            polylinePointsCoordinate.addAll(decodedSegmentPoints);
+
+            polylines.add(Polyline(
+              points: decodedSegmentPoints,
+              color: Colors.grey.withOpacity(0.8), // Transition line
+              strokeWidth: 2.5,
+            ));
+          }
+        } catch (e) {
+          print("Connecting Route Generation Error: $e");
         }
-      } catch (e) {
-        print("B to C Connecting Route Generation Error: $e");
       }
     }
 
-
-    /// C to D ROUTE
+// =========================================================================
+// 3. RETURN ROUTE SEQUENCE (C -> Vias -> D)
+// =========================================================================
     if (returnSequence.length >= 2) {
       final coordsRet = returnSequence.map((p) => "${p.longitude},${p.latitude}").join(";");
       final urlRet = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsRet?overview=full');
@@ -1169,9 +1280,6 @@ class DashboardController extends GetxController {
           computedReturnMiles = dataRet['distance'] * 0.000621371;
           totalComputedMiles += computedReturnMiles;
 
-          returnDurationMinutes = (dataRet['duration'] ?? 0).toDouble() / 60;
-          totalDurationMinutes += returnDurationMinutes;
-
           String encodedPoly = dataRet['geometry'];
           List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPoly);
           List<LatLng> decodedSegmentPoints = result.map((p) => LatLng(p.latitude, p.longitude)).toList();
@@ -1179,7 +1287,7 @@ class DashboardController extends GetxController {
 
           polylines.add(Polyline(
             points: decodedSegmentPoints,
-            color: DynamicColors.pink, // Alag return polyline color
+            color: DynamicColors.pink,
             strokeWidth: 2.5,
           ));
         }
@@ -1187,6 +1295,94 @@ class DashboardController extends GetxController {
         print("Return Route Generation Error: $e");
       }
     }
+
+    /// =========================================================================
+
+
+    // ///>>>>>>>>>>  A to B ROUTE
+    // if (outboundSequence.length >= 2) {
+    //   final coordsOut = outboundSequence.map((p) => "${p.longitude},${p.latitude}").join(";");
+    //   final urlOut = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsOut?overview=full');
+    //   try {
+    //     final resOut = await Dio().getUri(urlOut);
+    //     if (resOut.statusCode == 200 && resOut.data['routes'] != null && resOut.data['routes'].isNotEmpty) {
+    //       final dataOut = resOut.data['routes'][0];
+    //       computedOutboundMiles = dataOut['distance'] * 0.000621371;
+    //       totalComputedMiles += computedOutboundMiles;
+    //       outboundDurationMinutes = (dataOut['duration'] ?? 0).toDouble() / 60;
+    //       totalDurationMinutes += outboundDurationMinutes;
+    //
+    //       String encodedPoly = dataOut['geometry'];
+    //       List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPoly);
+    //       List<LatLng> decodedSegmentPoints = result.map((p) => LatLng(p.latitude, p.longitude)).toList();
+    //       polylinePointsCoordinate.addAll(decodedSegmentPoints);
+    //
+    //       polylines.add(Polyline(
+    //         points: decodedSegmentPoints,
+    //         color: DynamicColors.primaryClr, // Outbound Polyline color
+    //         strokeWidth: 2.5,
+    //       ));
+    //     }
+    //   } catch (e) {
+    //     print("Outbound Route Generation Error: $e");
+    //   }
+    // }
+    //
+    // ///>>>>>>>>>>  B to C  ROUTE
+    // if (outboundDropOff != null && returnPickup != null) {
+    //   final coordsConnect = "${outboundDropOff.longitude},${outboundDropOff.latitude};${returnPickup.longitude},${returnPickup.latitude}";
+    //   final urlConnect = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsConnect?overview=full');
+    //
+    //   try {
+    //     final resConnect = await Dio().getUri(urlConnect);
+    //     if (resConnect.statusCode == 200 && resConnect.data['routes'] != null && resConnect.data['routes'].isNotEmpty) {
+    //       final dataConnect = resConnect.data['routes'][0];
+    //       String encodedPoly = dataConnect['geometry'];
+    //       List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPoly);
+    //       List<LatLng> decodedSegmentPoints = result.map((p) => LatLng(p.latitude, p.longitude)).toList();
+    //       polylinePointsCoordinate.addAll(decodedSegmentPoints);
+    //       // Map par street-wise line draw karne ke liye
+    //       polylines.add(Polyline(
+    //
+    //         points: decodedSegmentPoints,
+    //         color: Colors.grey.withOpacity(0.8), // Isko grey ya koi bhi alag color de dein taake transition lagay
+    //         strokeWidth: 2.5,
+    //       ));
+    //     }
+    //   } catch (e) {
+    //     print("B to C Connecting Route Generation Error: $e");
+    //   }
+    // }
+    //
+    // /// C to D ROUTE
+    // if (returnSequence.length >= 2) {
+    //   final coordsRet = returnSequence.map((p) => "${p.longitude},${p.latitude}").join(";");
+    //   final urlRet = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsRet?overview=full');
+    //   try {
+    //     final resRet = await Dio().getUri(urlRet);
+    //     if (resRet.statusCode == 200 && resRet.data['routes'] != null && resRet.data['routes'].isNotEmpty) {
+    //       final dataRet = resRet.data['routes'][0];
+    //       computedReturnMiles = dataRet['distance'] * 0.000621371;
+    //       totalComputedMiles += computedReturnMiles;
+    //
+    //       returnDurationMinutes = (dataRet['duration'] ?? 0).toDouble() / 60;
+    //       totalDurationMinutes += returnDurationMinutes;
+    //
+    //       String encodedPoly = dataRet['geometry'];
+    //       List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPoly);
+    //       List<LatLng> decodedSegmentPoints = result.map((p) => LatLng(p.latitude, p.longitude)).toList();
+    //       polylinePointsCoordinate.addAll(decodedSegmentPoints);
+    //
+    //       polylines.add(Polyline(
+    //         points: decodedSegmentPoints,
+    //         color: DynamicColors.pink, // Alag return polyline color
+    //         strokeWidth: 2.5,
+    //       ));
+    //     }
+    //   } catch (e) {
+    //     print("Return Route Generation Error: $e");
+    //   }
+    // }
 
     // Update Distance Calculations state
     totalDistance.value = totalComputedMiles.toStringAsFixed(2);
@@ -2220,7 +2416,7 @@ class DashboardController extends GetxController {
 
   getPhoneNumberOfUSers({fieldsName, searchingText}) async {
     dashboardDataLoader(true);
-    var response = await Api().get("customers/search?mobile=$searchingText");
+    var response = await Api().get("customers/search?mobile=$searchingText", sendCompanyId: true);
     if (response.statusCode == 200) {
       if (response.data['customer'].isNotEmpty) {
         dropDownShow.value = true;
