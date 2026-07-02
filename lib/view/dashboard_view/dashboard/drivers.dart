@@ -27,7 +27,15 @@ class DriversView extends StatefulWidget {
 }
 
 class _DriversViewState extends State<DriversView> {
-  final FocusNode _focusNode = FocusNode();
+  // Use the shared focus node from the controller so the Home button's
+  // Tab intercept (in dashboard_form_widget.dart) can hand focus directly
+  // to this panel without going through FocusTraversalGroup.
+  late final FocusNode _focusNode =
+      Get.find<DashboardController>().driverPanelFocusNode;
+
+  // Separate focus node for the first icon so it can receive keyboard focus
+  // independently and show a visual ring.
+  final FocusNode _firstIconFocusNode = FocusNode(debugLabel: 'DriverIcon0');
 
   final List<IconData> headerIcons = [
     Icons.reset_tv_outlined,
@@ -44,14 +52,14 @@ class _DriversViewState extends State<DriversView> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _focusNode.requestFocus();
-    });
+    // Do NOT auto-request focus here — focus should arrive only via Tab
+    // navigation from the Home button, not on every widget build.
   }
 
   @override
   void dispose() {
-    _focusNode.dispose();
+    // _focusNode is owned by DashboardController — do NOT dispose it here.
+    _firstIconFocusNode.dispose();
     super.dispose();
   }
 
@@ -60,11 +68,18 @@ class _DriversViewState extends State<DriversView> {
     return GetBuilder<DashboardController>(
       builder: (controller) {
         return RawKeyboardListener(
+          // Using the shared driverPanelFocusNode lets the Home button hand
+          // focus directly here via requestFocus().
           focusNode: _focusNode,
           onKey: (event) {
             if (event is RawKeyDownEvent) {
               shortCutKeyValue.value = "driverIconSelect";
               if (shortCutKeyValue.value == "driverIconSelect") {
+                // When the panel first receives focus from the Home button,
+                // move focus to the first icon so it is visually highlighted.
+                if (!_firstIconFocusNode.hasFocus) {
+                  _firstIconFocusNode.requestFocus();
+                }
                 if (event.logicalKey == LogicalKeyboardKey.tab) {
                   setState(() {
                     isHeaderMode = !isHeaderMode;
@@ -150,22 +165,80 @@ class _DriversViewState extends State<DriversView> {
                               final isSelected =
                                   isHeaderMode && selectedHeaderIndex == index;
 
+                              void activate() {
+                                if (index == 3) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (_) => SendEmailAlert(),
+                                  );
+                                } else if (index == 4) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (_) => SendMessageAlert(),
+                                  );
+                                }
+                                debugPrint(
+                                    "Clicked on header icon index $index");
+                              }
+
+                              // The first icon is the keyboard entry-point for
+                              // the Driver panel. It owns _firstIconFocusNode so
+                              // the panel's RawKeyboardListener can still handle
+                              // arrow-key / Enter navigation while _firstIconFocusNode
+                              // shows a visual focus ring and accepts Enter/Space.
+                              if (index == 0) {
+                                return Focus(
+                                  focusNode: _firstIconFocusNode,
+                                  onKeyEvent: (node, event) {
+                                    if (event is KeyDownEvent &&
+                                        (event.logicalKey ==
+                                                LogicalKeyboardKey.enter ||
+                                            event.logicalKey ==
+                                                LogicalKeyboardKey.space)) {
+                                      activate();
+                                      return KeyEventResult.handled;
+                                    }
+                                    return KeyEventResult.ignored;
+                                  },
+                                  child: Builder(
+                                    builder: (ctx) {
+                                      final hasFocus =
+                                          Focus.of(ctx).hasFocus;
+                                      return GestureDetector(
+                                        onTap: activate,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: isSelected
+                                                ? Colors.blue.shade200
+                                                : Colors.transparent,
+                                            // Visible focus ring when focused
+                                            // via keyboard.
+                                            border: hasFocus
+                                                ? Border.all(
+                                                    color: Colors.blue,
+                                                    width: 2,
+                                                  )
+                                                : null,
+                                          ),
+                                          padding: const EdgeInsets.all(4),
+                                          margin: const EdgeInsets.symmetric(
+                                              horizontal: 2),
+                                          child: Icon(
+                                            icon,
+                                            size: 18,
+                                            color: DynamicColors.primaryClr,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                );
+                              }
+
+                              // All other icons remain plain GestureDetectors.
                               return GestureDetector(
-                                onTap: () {
-                                  if (index == 3) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (_) => SendEmailAlert(),
-                                    );
-                                  } else if (index == 4) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (_) => SendMessageAlert(),
-                                    );
-                                  }
-                                  debugPrint(
-                                      "Clicked on header icon index $index");
-                                },
+                                onTap: activate,
                                 child: Container(
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,

@@ -64,6 +64,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   // late final _pass = TextEditingController(text: '0');
   // late final _lugg = TextEditingController(text: '0');
   // late final _slugg = TextEditingController(text: '0');
+  //_isReturnJourney ? 46 : 31
   void _onMultiReservation() => debugPrint('F8 / Multi Reservation tapped');
   void _onAddVehicles() => debugPrint('F9 / Vehicles tapped');
   void _onVia() => debugPrint('Via tapped');
@@ -334,6 +335,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                 const Divider(height: 14),
                                 _sectionHeader(Icons.person,
                                     'PASSENGER & BOOKING DETAILS'),
+                                const SizedBox(height: 4),
                                 _grid(isMobile ? 1 : (isTablet ? 3 : 5), [
                                   _field('Name',
                                       tab: 8,
@@ -1157,30 +1159,45 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     final home = FocusTraversalOrder(
       order: NumericFocusOrder((_isReturnJourney ? 46 : 31).toDouble()),
       child: _GlowFocus(
-        child: ElevatedButton.icon(
-          onPressed: () {
-            if (controller.jourValue == 'W/R' &&
-                controller.pickupTwoWayController.text.isEmpty &&
-                controller.dropOffTwoWayController.text.isEmpty) {
-              BotToast.showText(text: "Please chose waiting return");
-              return;
+        child: Focus(
+          // Intercept Tab so focus jumps from the Home button directly to the
+          // Driver panel's first focusable item, skipping any remaining items
+          // inside this FocusTraversalGroup.
+          onKeyEvent: (node, event) {
+            if (event is KeyDownEvent &&
+                event.logicalKey == LogicalKeyboardKey.tab &&
+                !HardwareKeyboard.instance.isShiftPressed) {
+              // Hand off focus to the Driver panel.
+              controller.driverPanelFocusNode.requestFocus();
+              return KeyEventResult.handled;
             }
-            controller.dashBoardApiValidation(
-                id: controller.jobDetails == null
-                    ? null
-                    : controller.cliJobHit == true
-                    ? null
-                    : int.parse(controller.jobDetails!.id!));
+            return KeyEventResult.ignored;
           },
-          icon: const Icon(Icons.home_outlined, size: 16),
-          label: const Text('SAVE[HOME]'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: _purple,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-            textStyle:
-            const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsField),
+          child: ElevatedButton.icon(
+            onPressed: () {
+              if (controller.jourValue == 'W/R' &&
+                  controller.pickupTwoWayController.text.isEmpty &&
+                  controller.dropOffTwoWayController.text.isEmpty) {
+                BotToast.showText(text: "Please chose waiting return");
+                return;
+              }
+              controller.dashBoardApiValidation(
+                  id: controller.jobDetails == null
+                      ? null
+                      : controller.cliJobHit == true
+                      ? null
+                      : int.parse(controller.jobDetails!.id!));
+            },
+            icon: const Icon(Icons.home_outlined, size: 16),
+            label: const Text('SAVE[HOME]'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _purple,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+              textStyle:
+              const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsField),
+            ),
           ),
         ),
       ),
@@ -1252,9 +1269,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         IconData? prefix,
       }) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label.toUpperCase(),
-          style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
-      const SizedBox(height: 2),
+      // Text(label.toUpperCase(),
+      //     style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
+      // const SizedBox(height: 2),
       FocusTraversalOrder(
         order: NumericFocusOrder(tab.toDouble()),
         child: _CustomerModelAutocomplete(
@@ -1263,6 +1280,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           onSelected: onPicked,
           onChanged: onChanged,
           decoration: _inputDecoration().copyWith(
+            label: Text(label.toUpperCase(),),
+            labelStyle: TextStyle(fontSize: _fsLabel, color: Colors.black),
             prefixIconConstraints:
             const BoxConstraints(minWidth: 28, minHeight: 0),
             prefixIcon: prefix != null
@@ -1341,9 +1360,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           : iconPadding;
     }
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label.toUpperCase(),
-          style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
-      const SizedBox(height: 2),
+      // Text(label.toUpperCase(),
+      //     style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
+      // const SizedBox(height: 2),
       FocusTraversalOrder(
         order: NumericFocusOrder(tab.toDouble()),
         child: _GlowFocus(
@@ -1357,6 +1376,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => onPrefixTap?.call(),
             decoration: _inputDecoration().copyWith(
+              label:  Text(label.toUpperCase(),),
+              labelStyle: TextStyle(fontSize: _fsLabel, color: Colors.black),
               prefixIconConstraints:
               const BoxConstraints(minWidth: 28, minHeight: 0),
               prefixIcon: prefixWidget,

@@ -1281,6 +1281,11 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard data
    FocusNode driverDropdownFocusNode = FocusNode();
 
+  /// Shared focus node for the Driver panel header.
+  /// The Home/SAVE button in the booking form transfers focus here on Tab,
+  /// and the DriversView attaches this node to its RawKeyboardListener.
+  final FocusNode driverPanelFocusNode = FocusNode(debugLabel: 'DriverPanel');
+
   DashboardDataModel? dashboardAllData;
   DashboardDriverObject? selectDriverValue;
   DashboardDriverObject? selectDriverValueReturn;
@@ -2599,6 +2604,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     referenceNumberController.dispose();
     dateController.dispose();
     phoneKeyboardFocusNode.dispose();
+    driverPanelFocusNode.dispose();
     super.onClose();
   }
 
