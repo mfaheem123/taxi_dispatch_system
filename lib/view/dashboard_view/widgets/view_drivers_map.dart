@@ -122,7 +122,7 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
   Color _statusColor(String? status) {
     switch (status) {
       case "Accepted":
-        return Colors.orange;
+        return Colors.orange  ;
       case "Arrived":
         return Colors.yellow;
       case "On Route":
@@ -133,6 +133,29 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
         return Colors.green;
     }
   }
+
+
+  String _statusImage(String status) {
+    switch (status) {
+      case "Accepted":
+        return "assets/images/on_route.png";   // Orange Car
+
+      case "Arrived":
+        return "assets/images/accepted.png";   // Yellow Car
+
+      case "On Route":
+        return "assets/images/arrived.png";    // Black Car
+
+      case "STC":
+        return "assets/images/stc.png";        // Blue Car
+
+      default:
+        return "assets/images/stc.png";
+    }
+  }
+
+
+
   void _updateZoom(bool zoomIn) {
     double currentZoom = mapController.camera.zoom;
     double newZoom = zoomIn ? currentZoom + 1 : currentZoom - 1;
@@ -313,10 +336,10 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
                                       alignment: Alignment.center,
                                       children: [
                                         Icon(
-                                          Icons.directions_car,
+                                          Icons.directions_car, ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
                                           size: 70,
-                                          color: _statusColor(
-                                              driver.bookingStatus),
+                                           color: _statusColor(
+                                               driver.bookingStatus),
                                         ),
                                         Container(
                                           color: _statusColor(

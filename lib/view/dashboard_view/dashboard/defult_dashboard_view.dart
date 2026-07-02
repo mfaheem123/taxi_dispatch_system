@@ -423,7 +423,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               Padding(
                                                                 padding: const EdgeInsets.only(right: 6.0, left: 15.0),
                                                                 child: SizedBox(
-                                                                  width: 40,
+                                                                  width: 41,
                                                                   // Perfect alignment ke liye bilkul baqi rows jitna size
                                                                   child: Text(
                                                                     "ZONE",
@@ -436,7 +436,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   order: const NumericFocusOrder(2),
                                                                   child: CustomDropdownField<ZoneObject>(
                                                                     label: "SELECT ZONE",
-                                                                    width: fieldWidthh / 10.5,
+                                                                    width: fieldWidthh / 9,
                                                                     // Hardcoded width hata di taake flex perfect chale
                                                                     height: 30,
                                                                     items: _controller.updateLocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
@@ -455,7 +455,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           ),
                                                         ),
                                                       ),
-                                                      const SizedBox(width: 57.0),
+                                                      const SizedBox(width: 55.0),
                                                       // (3) Pickup notes
                                                       Expanded(
                                                         flex: 3,
@@ -1473,10 +1473,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             controller.dropOffTwoWayController.clear();
                                                                             controller.clearReturnViaIfNoPickupAndDrop();
                                                                             // 3. Fares aur temporaries reset
-                                                                            controller.tempStoreMils = null;
+                                                                            // controller.tempStoreMils = null;
                                                                             // // controller.fixedFare.value = "0";
-                                                                            controller.returnFareValue = "";
-                                                                            controller.tempStoreReturnMils = null;
+                                                                            // controller.returnFareValue = "";
+                                                                            // controller.tempStoreReturnMils = null;
                                                                             // controller.slugControllerReturn.clear();
                                                                             // // controller.slugController.clear();
                                                                             // // controller.totalDistance.value = "0";

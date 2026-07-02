@@ -1202,7 +1202,7 @@ class DashboardController extends GetxController {
                     shape: BoxShape.circle,
                   ),
                   child: Text(
-                    "RV$viaNumber",
+                    "R$viaNumber",
                     style: TextStyle(color: DynamicColors.primaryClr, fontSize: 9, fontWeight: FontWeight.bold,),
                   ),
                 ),
@@ -1344,10 +1344,10 @@ class DashboardController extends GetxController {
     }
     String postMils = (computedOutboundMiles).toStringAsFixed(2);
 
-    if (pickupTwoWayController.text.isNotEmpty && dropOffTwoWayController.text.isEmpty) {
-      print("Waiting for final return segment dropoff checkpoint.");
-      return;
-    }
+    // if (pickupTwoWayController.text.isNotEmpty && dropOffTwoWayController.text.isEmpty) {
+    //   print("Waiting for final return segment dropoff checkpoint.");
+    //   return;
+    // }
 
     final storedTemFare = await getFares(
       journeyTypeId: selectJourneyTypeValue!.id,
@@ -1362,7 +1362,11 @@ class DashboardController extends GetxController {
       vehicleTypeId: selectVehicleValue!.id,
       withReturnPickUp: pickupTwoWayController.text.isEmpty ? null : pickupTwoWayController.text,
       withReturnDropOff: dropOffTwoWayController.text.isEmpty ? null : dropOffTwoWayController.text,
-      returnMiles: dropOffTwoWayController.text.isNotEmpty ? tempStoreReturnMils : null,
+      returnMiles:
+      dropOffTwoWayController.text.isNotEmpty ?
+      tempStoreReturnMils
+          : null
+      ,
     );
     var fareValue = jsonDecode(storedTemFare);
     fixedFare.value = fareValue['fare']?.toString() ?? "0";
