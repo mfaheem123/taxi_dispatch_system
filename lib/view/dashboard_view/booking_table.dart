@@ -42,6 +42,10 @@ class _BookingTableState extends State<BookingTable> {
   int selectedRowIndex = 0; // currently selected row
   int totalRows = 10; // total rows (dynamic list ke hisaab se change hoga)
 
+  /// Set to true whenever the user navigates to a new page; cleared once
+  /// the first row's checkbox has received keyboard focus.
+  bool _pendingFocusFirstRow = false;
+
   final FocusNode _tableFocusNode = FocusNode();
 
   /// One FocusNode per table row — keeps keyboard focus in sync with selectedRowIndex.
@@ -126,6 +130,17 @@ class _BookingTableState extends State<BookingTable> {
             // Sync one FocusNode per row so arrow-key navigation keeps real focus in step.
             _syncRowFocusNodes(
                 controller.dashboardTableModelData?.data?.length ?? 0);
+
+            // After a page change, focus the first row's checkbox as soon as
+            // the new page's widgets are laid out.
+            if (_pendingFocusFirstRow && _rowFocusNodes.isNotEmpty) {
+              _pendingFocusFirstRow = false;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (_rowFocusNodes.isNotEmpty && mounted) {
+                  _rowFocusNodes[0].requestFocus();
+                }
+              });
+            }
             return SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -813,7 +828,13 @@ class _BookingTableState extends State<BookingTable> {
                   PaginationWidget(
                       currentPage: controller.dashboardTableCurrentPage.value,
                       totalPages: controller.dashboardTableTotalPages.value,
-                      onPageChange: controller.dashboardTablePageChange),
+                      onPageChange: (page) {
+                        // Mark that we need to focus the first row once the
+                        // new page data has loaded and the widget rebuilds.
+                        _pendingFocusFirstRow = true;
+                        selectedRowIndex = 0;
+                        controller.dashboardTablePageChange(page);
+                      }),
                 ],
               ),
             );
