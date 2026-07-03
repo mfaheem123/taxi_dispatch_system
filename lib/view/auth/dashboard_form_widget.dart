@@ -1699,7 +1699,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
         link: _layerLink,
         showWhenUnlinked: false,
         offset: Offset(0, height + 4),
-        child: TapRegion(
+        child: TextFieldTapRegion(
           onTapOutside: (_) => _focusNode.unfocus(),
           child: Material(
             elevation: 6,
@@ -1736,6 +1736,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
                       });
                     },
                     child: InkWell(
+                      canRequestFocus: false,
                       onTap: () => _pick(a),
                       child: Container(
                         width: double.infinity,
@@ -1958,6 +1959,7 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
                       });
                     },
                     child: InkWell(
+                      canRequestFocus: false,
                       onTap: () => _pick(s),
                       child: Container(
                         width: double.infinity,
@@ -2244,6 +2246,7 @@ class _CustomerModelAutocompleteState
                       });
                     },
                     child: InkWell(
+                      canRequestFocus: false,
                       onTap: () => _pick(c),
                       child: Container(
                         width: double.infinity,
