@@ -1362,11 +1362,7 @@ class DashboardController extends GetxController {
       vehicleTypeId: selectVehicleValue!.id,
       withReturnPickUp: pickupTwoWayController.text.isEmpty ? null : pickupTwoWayController.text,
       withReturnDropOff: dropOffTwoWayController.text.isEmpty ? null : dropOffTwoWayController.text,
-      returnMiles:
-      dropOffTwoWayController.text.isNotEmpty ?
-      tempStoreReturnMils
-          : null
-      ,
+      returnMiles: dropOffTwoWayController.text.isNotEmpty || pickupTwoWayController.text.isNotEmpty ?tempStoreReturnMils: null,
     );
     var fareValue = jsonDecode(storedTemFare);
     fixedFare.value = fareValue['fare']?.toString() ?? "0";
@@ -1994,6 +1990,10 @@ class DashboardController extends GetxController {
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get Fare API
   getFaresCalculation() async {
+
+
+
+
     final storedTemFare = await getFares(
       // day: ,
       journeyTypeId: selectJourneyTypeValue!.id,
@@ -2048,11 +2048,28 @@ class DashboardController extends GetxController {
           ? null
           : returnCompanyPriceController.text,
       returnMiles: dropOffTwoWayController.text.isNotEmpty &&
-              dropOffTwoWayController.text.isNotEmpty
+          pickupTwoWayController.text.isNotEmpty
           ? (double.parse(totalDistance.value) -
                   double.parse(tempStoreMils.toString()))
               .toString()
           : null,
+      // returnMiles: () {
+      //   if (dropOffTwoWayController.text.isNotEmpty || pickupTwoWayController.text.isNotEmpty) {
+      //     // Agar outbound pickup ya dropoff me se koi ek bhi khali ho gaya hai
+      //     if (pickupController.text.isEmpty || dropOffController.text.isEmpty) {
+      //       // Pure route (Via + Return) ka distance utha kar returnMiles me bhej do
+      //       double totalDist = double.tryParse(totalDistance.value) ?? 0.0;
+      //       return totalDist > 0 ? totalDist.toStringAsFixed(2) : null;
+      //     } else {
+      //       // Normal flow (Agar kuch delete nahi hua)
+      //       double totalDist = double.tryParse(totalDistance.value) ?? 0.0;
+      //       double mainMils = double.tryParse(tempStoreMils.toString()) ?? 0.0;
+      //       double diff = totalDist - mainMils;
+      //       return (diff > 0 ? diff : 0.0).toStringAsFixed(2);
+      //     }
+      //   }
+      //   return null;
+      // }(),
     );
     var fareValue = jsonDecode(storedTemFare);
     // Extract fares safely

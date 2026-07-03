@@ -86,11 +86,13 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  Icon(
-                    Icons.directions_car,
-                    size: 70,
-                    color: _statusColor(objectData.bookingStatus),
+                  Image.asset(
+                    _statusImage(objectData.bookingStatus ?? ""),
+                    width: 70,
+                    height: 70,
+                    fit: BoxFit.contain,
                   ),
+
                   Container(
                     color: _statusColor(objectData.bookingStatus),
                     padding: const EdgeInsets.only(
@@ -138,19 +140,19 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
   String _statusImage(String status) {
     switch (status) {
       case "Accepted":
-        return "assets/images/on_route.png";   // Orange Car
+        return "assets/c.png";   // Orange Car
 
       case "Arrived":
-        return "assets/images/accepted.png";   // Yellow Car
+        return "assets/d.png";   // Yellow Car
 
       case "On Route":
-        return "assets/images/arrived.png";    // Black Car
+        return "assets/tracking_car.png";    // Black Car
 
       case "STC":
-        return "assets/images/stc.png";        // Blue Car
+        return "assets/a.png";        // Blue Car
 
       default:
-        return "assets/images/stc.png";
+        return "assets/green.jpeg";
     }
   }
 
@@ -335,15 +337,21 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
                                     child: Stack(
                                       alignment: Alignment.center,
                                       children: [
-                                        Icon(
-                                          Icons.directions_car, ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-                                          size: 70,
-                                           color: _statusColor(
-                                               driver.bookingStatus),
+                                        Image.asset(
+                                          _statusImage(driver.bookingStatus ?? ""),
+                                          width: 70,
+                                          height: 70,
+                                          fit: BoxFit.contain,
                                         ),
+                                        // Icon(
+                                        //   Icons.directions_car, ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                                        //   size: 70,
+                                        //    color: _statusColor(
+                                        //        driver.bookingStatus),
+                                        // ),
                                         Container(
-                                          color: _statusColor(
-                                              driver.bookingStatus),
+                                          // color: _statusColor(
+                                          //     driver.bookingStatus),
                                           padding: const EdgeInsets.only(
                                               bottom: 10.0,
                                               left: 4,
@@ -351,7 +359,7 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
                                           child: Text(
                                             driver.username ?? "",
                                             style: const TextStyle(
-                                                fontSize: 12,
+                                                fontSize: 9,
                                                 color: Colors.white),
                                           ),
                                         ),

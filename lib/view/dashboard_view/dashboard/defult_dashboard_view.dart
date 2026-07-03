@@ -1288,9 +1288,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             if (controller.markers is List<CustomMarker>) {
                                                                               controller.markers.removeWhere((marker) => marker.type == "PICKUP TWO WAY LOCATION");
                                                                             }
-                                                                            controller.tempStoreReturnMils = null;
+                                                                            // controller.tempStoreReturnMils = null;
                                                                             // controller.fixedFare.value = "0";
-                                                                            controller.returnFareValue = "";
+                                                                            // controller.returnFareValue = "";
                                                                             // controller.slugControllerReturn.clear();
                                                                             // // controller.slugController.clear();
                                                                             controller.dropDownShow.value = false;
