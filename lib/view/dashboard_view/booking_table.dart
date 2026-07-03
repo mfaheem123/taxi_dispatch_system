@@ -312,13 +312,22 @@ double widthss = MediaQuery.of(context).size.width;
                               ),
                             ),
 
-                            /// TYPE ❌
+                            /// TYPE
                             DataCell(
-           Icon(
-                                item.bookingSource == "dashboard"
-                                    ? Icons.laptop_chromebook_outlined
-                                    : Icons.mobile_screen_share,
-                                color: Colors.blue,
+                              Icon(
+                                // 1. Booking source ke mutabik icon select ho rha hai
+                                switch (item.bookingSource) {
+                                  'web' => Icons.language,                 // World/Web icon
+                                  'app' => Icons.phone_android,            // Mobile icon
+                                  'ivr' => Icons.phone_in_talk,            // Telephone/IVR icon
+                                  'dashboard' => Icons.laptop_chromebook,  // Laptop/Dashboard icon
+                                  _ => Icons.help_outline,                 // Default icon (agar koi match na kare)
+                                },
+
+                                // 2. Color condition: Agar in charo ke ilawa kuch ho to Blue color
+                                color: ['web', 'app', 'ivr', 'dashboard'].contains(item.bookingSource)
+                                    ? null          // Default theme color
+                                    : Colors.blue,  // Else case mein Blue color
                               ),
                             ),
 
