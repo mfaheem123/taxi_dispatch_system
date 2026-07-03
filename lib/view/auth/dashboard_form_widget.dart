@@ -785,7 +785,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               ),
             ]),
           ),
-          Divider(height: 20),
+          Divider(height: 10),
         ],
       ),
     );
@@ -945,12 +945,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     Widget luggageField(String label, IconData icon,
         TextEditingController controller, int tab) =>
         SizedBox(
-          width: 100,
+          width: 110,
           child:
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(label,
-                style:
-                const TextStyle(fontSize: _fsLabel, color: Colors.black)),
+            // Text(label,
+            //     style:
+            //     const TextStyle(fontSize: _fsLabel, color: Colors.black)),
             const SizedBox(height: 2),
             FocusTraversalOrder(
               order: NumericFocusOrder(tab.toDouble()),
@@ -962,6 +962,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   const TextInputType.numberWithOptions(decimal: false),
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: _inputDecoration().copyWith(
+                    label:
+                    Text(label,
+                        style:
+                        const TextStyle(fontSize: _fsLabel, color: Colors.black)),
                     prefixIconConstraints:
                     const BoxConstraints(minWidth: 26, minHeight: 0),
                     prefixIcon: Padding(
@@ -998,9 +1002,15 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 ),
                 child: IconButton(
                   onPressed: onPressed,
-                  icon: Icon(icon, size: 17, color: Colors.black),
+                  padding: const EdgeInsets.all(4),
+                  visualDensity: VisualDensity.compact,
                   splashRadius: 18,
-                ),
+                  icon: Icon(
+                    icon,
+                    size: 17,
+                    color: Colors.black,
+                  ),
+                )
               ),
             ),
           ),
@@ -1271,7 +1281,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       // Text(label.toUpperCase(),
       //     style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
-      // const SizedBox(height: 2),
+      const SizedBox(height: 4),
       FocusTraversalOrder(
         order: NumericFocusOrder(tab.toDouble()),
         child: _CustomerModelAutocomplete(
@@ -1305,13 +1315,14 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       required DateTime? value,
       required ValueChanged<DateTime> onChanged}) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label.toUpperCase(),
-          style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
-      const SizedBox(height: 2),
+      // Text(label.toUpperCase(),
+      //     style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
+      const SizedBox(height: 4),
       FocusTraversalOrder(
         order: NumericFocusOrder(tab.toDouble()),
         child: _CalendarDropdownField(
           value: value,
+          label: label,
           onChanged: onChanged,
           decoration: _inputDecoration(),
           textStyle: const TextStyle(fontSize: _fsField, color: Colors.black87),
@@ -1326,15 +1337,18 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   Widget _timeField(String label,
       {required int tab, required TextEditingController controller}) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label.toUpperCase(),
-          style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
-      const SizedBox(height: 2),
+      // Text(label.toUpperCase(),
+      //     style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
+      // const SizedBox(height: 2),
       FocusTraversalOrder(
         order: NumericFocusOrder(tab.toDouble()),
         child: _GlowFocus(
           child: _TimePickerField(
             controller: controller,
-            decoration: _inputDecoration(),
+            decoration: _inputDecoration().copyWith(
+            label: Text(label.toUpperCase(),
+                style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
+            ),
           ),
         ),
       ),
@@ -1376,7 +1390,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => onPrefixTap?.call(),
             decoration: _inputDecoration().copyWith(
-              label:  Text(label.toUpperCase(),),
+              label: Text(label.toUpperCase(),),
               labelStyle: TextStyle(fontSize: _fsLabel, color: Colors.black),
               prefixIconConstraints:
               const BoxConstraints(minWidth: 28, minHeight: 0),
@@ -1402,9 +1416,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (label != null) ...[
-          Text(label.toUpperCase(),
-              style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
-          const SizedBox(height: 2),
+          // Text(label.toUpperCase(),
+          //     style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
+          // const SizedBox(height: 2),
         ],
         FocusTraversalOrder(
           order: NumericFocusOrder(tab.toDouble()),
@@ -1421,6 +1435,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                       fontSize: _fsField, color: Colors.black))
                   : null,
               decoration: _inputDecoration().copyWith(
+                label: Text(label?.toUpperCase() ?? '',
+    style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
                 isDense: true,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 12,
@@ -1447,7 +1463,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   }
   Widget _quotationToggle() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const SizedBox(height: 16),
+      // const SizedBox(height: 16),
       Row(children: [
         CallbackShortcuts(
           bindings: {
@@ -1470,6 +1486,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     ]);
   }
   InputDecoration _inputDecoration() => InputDecoration(
+
     isDense: true,
     contentPadding:
     const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
@@ -2805,6 +2822,7 @@ class _CalendarDropdownField extends StatefulWidget {
     required this.accent,
     required this.accentSoft,
     required this.idleColor,
+    required this.label
   });
 
   final DateTime? value;
@@ -2814,6 +2832,7 @@ class _CalendarDropdownField extends StatefulWidget {
   final Color accent;
   final Color accentSoft;
   final Color idleColor;
+  final String label;
 
   @override
   State<_CalendarDropdownField> createState() => _CalendarDropdownFieldState();
@@ -3026,6 +3045,8 @@ class _CalendarDropdownFieldState extends State<_CalendarDropdownField> {
 
     final decoration = widget.decoration.copyWith(
       prefixIconConstraints: const BoxConstraints(minWidth: 28, minHeight: 0),
+      label: Text(widget.label.toUpperCase(),),
+      labelStyle: TextStyle(fontSize: 13, color: Colors.black),
       prefixIcon: Padding(
         padding: const EdgeInsets.only(left: 8, right: 4),
         child: Icon(Icons.calendar_today, size: 15, color: iconColor),
