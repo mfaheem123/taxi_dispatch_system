@@ -315,19 +315,18 @@ double widthss = MediaQuery.of(context).size.width;
                             /// TYPE
                             DataCell(
                               Icon(
-                                // 1. Booking source ke mutabik icon select ho rha hai
                                 switch (item.bookingSource) {
-                                  'web' => Icons.language,                 // World/Web icon
-                                  'app' => Icons.phone_android,            // Mobile icon
-                                  'ivr' => Icons.phone_in_talk,            // Telephone/IVR icon
-                                  'dashboard' => Icons.laptop_chromebook,  // Laptop/Dashboard icon
-                                  _ => Icons.help_outline,                 // Default icon (agar koi match na kare)
+                                  'web' => Icons.language,
+                                  'app' => Icons.phone_android,
+                                  'ivr' => Icons.phone_in_talk,
+                                  'dashboard' => Icons.laptop_chromebook,
+                                  _ => Icons.help_outline,
                                 },
+                                color:
+                                // ['web', 'app', 'ivr', 'dashboard'].contains(item.bookingSource)
+                                //     ? null :
+                                Colors.blue,
 
-                                // 2. Color condition: Agar in charo ke ilawa kuch ho to Blue color
-                                color: ['web', 'app', 'ivr', 'dashboard'].contains(item.bookingSource)
-                                    ? null          // Default theme color
-                                    : Colors.blue,  // Else case mein Blue color
                               ),
                             ),
 
