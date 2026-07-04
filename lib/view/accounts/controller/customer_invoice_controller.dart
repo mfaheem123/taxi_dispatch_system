@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../../component/networks/api.dart';
 import '../../customer/model/search_customer_by_mobile.dart';
@@ -8,6 +9,7 @@ import '../../drivers_view/model/driver_commission_payment_model.dart';
 import '../model/customer_invoice_filter_model.dart';
 import '../model/customer_invoice_number_model.dart';
 import '../model/list_of_customer_invoice_model.dart';
+import '../model/update_customer_invoice_model.dart';
 
 class CustomerInvoiceController extends GetxController{
 
@@ -56,7 +58,7 @@ class CustomerInvoiceController extends GetxController{
   }
   
   /// todo invoice number
-  CustomerInvoiceModel? customerInvoice;
+  CustomerInvoiceModel? customerInvoiceModel;
   bool isCustomerInvoiceNumber = false;
   
   getCustomerInvoiceNumber() async {
@@ -64,7 +66,7 @@ class CustomerInvoiceController extends GetxController{
     update();
     var response = await Api().get("customer-invoice/invoice-number");
     if(response.statusCode == 200) {
-      customerInvoice = CustomerInvoiceModel.fromJson(response.data);
+      customerInvoiceModel = CustomerInvoiceModel.fromJson(response.data);
       isCustomerInvoiceNumber = false;
       update();
     }
@@ -138,6 +140,16 @@ class CustomerInvoiceController extends GetxController{
 
     return _calculateInvoiceListTotal(list, field);
   }
+  double getUpdateColumnTotal(String field) {
+    final updateItems = customerInvoiceByIdModel
+        ?.customerInvoice?.customerInvoiceLineitems;
+
+    if (updateItems == null || updateItems.isEmpty) return 0.0;
+    final list =
+    updateItems.map((e) => e.booking).where((b) => b != null).toList();
+
+    return _calculateInvoiceListTotal(list, field);
+  }
 
   double _calculateInvoiceListTotal(List<dynamic> list, String field) {
     return list.fold(0.0, (sum, item) {
@@ -184,7 +196,7 @@ class CustomerInvoiceController extends GetxController{
 
     var formData = {
       "customer_id": selectedCustomerId,
-      "invoice_number": customerInvoice?.invoiceNumber ?? "",
+      "invoice_number": customerInvoiceModel?.invoiceNumber ?? "",
       "invoice_date": customerInvoiceDateController,
       "invoice_due_date": customerInvoiceDueDateController,
       "from_date": filterFromDate,
@@ -217,15 +229,142 @@ class CustomerInvoiceController extends GetxController{
   ListOfCustomerInvoiceModel? listOfCustomerInvoiceModel;
   bool isLoadingList = false;
 
+  RxString searchQuery = "".obs;
+  List<CustomerInvoice> get filteredInvoices {
+    final allInvoices = listOfCustomerInvoiceModel?.customerInvoices ?? [];
+    if (searchQuery.isEmpty) {
+      return allInvoices;
+    }
+    final query = searchQuery.value.toLowerCase();
+
+    return allInvoices.where((invoice) {
+      final invNumber = (invoice.invoiceNumber ?? "").toLowerCase();
+      final custName = (invoice.customer?.name ?? "").toLowerCase();
+      final status = (invoice.status ?? "").toLowerCase();
+      // final date = (invoice.invoiceDate ?? "").toLowerCase();
+      final amount = (invoice.amount ?? "").toLowerCase();
+
+      String dateStr = "";
+      if (invoice.invoiceDate != null) {
+        dateStr = DateFormat("yyyy-MM-dd").format(invoice.invoiceDate!).toLowerCase();
+      }
+
+      return invNumber.contains(query) ||
+          custName.contains(query) ||
+          status.contains(query) ||
+          dateStr.contains(query) ||
+          amount.contains(query);
+    }).toList();
+  }
   getCustomerInvoice() async {
     isLoadingList = true;
     update();
 
-    var response = await Api().get("customer-invoice/get");
+    String statusParam = paid.value == true ? "paid" : "unpaid";
+    var response = await Api().get("customer-invoice/get", queryParameters: {
+      "status": statusParam,
+    });
     if (response.statusCode == 200) {
       listOfCustomerInvoiceModel = ListOfCustomerInvoiceModel.fromJson(response.data);
     }
     isLoadingList = false;
+    update();
+  }
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo LIST OF CUSTOMER INVOICE functionality
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo UPDATE CUSTOMER INVOICE functionality
+
+  var isPaid = false.obs;
+
+  void togglePaidStatus() {
+    isPaid.value = !isPaid.value;
+  }
+
+  CustomerInvoiceByIdModel? customerInvoiceByIdModel;
+  bool isLoadingUpdate = false;
+
+  getUpdateCustomerInvoice({selectedId}) async {
+    isLoadingUpdate = true;
+    update();
+
+    var response = await Api().get("customer-invoice/getbyid/$selectedId");
+
+    if (response.statusCode == 200) {
+      customerInvoiceByIdModel = CustomerInvoiceByIdModel.fromJson(response.data);
+      var data = customerInvoiceByIdModel?.customerInvoice;
+      isPaid.value = (data?.status?.toLowerCase() == "paid");
+      if (data?.customerInvoiceLineitems != null) {
+        for (var item in data!.customerInvoiceLineitems!) {
+          // recalculateRowTotal(item);
+        }
+      }
+      customerInvoiceDateController =
+      "${data?.invoiceDate?.year}-${data?.invoiceDate?.month}-${data?.invoiceDate?.day}";
+      customerInvoiceDueDateController =
+      "${data?.invoiceDueDate?.year}-${data?.invoiceDueDate?.month}-${data?.invoiceDueDate?.day}";
+      customerNameController.text = data?.customer?.name ?? "";
+      customerEmailController.text = data?.customer?.email ?? "";
+      customerMobileController.text = data?.customer?.mobile ?? "";
+      customerTelephoneController.text = data?.customer?.telephone ?? "";
+
+    }
+    isLoadingUpdate = false;
+    update();
+  }
+
+  /// Save Update customer Invoice
+
+
+  updateBooking(UpdateCustomerInvoice invoice) async {
+    final updateItems = customerInvoiceByIdModel
+        ?.customerInvoice?.customerInvoiceLineitems;
+
+    List<Map<String, dynamic>> lineItems = [];
+    if (updateItems != null && updateItems.isNotEmpty) {
+      lineItems = updateItems
+          .where((item) => item.booking?.id != null)
+          .map((item) => {"booking_id": item.booking!.id})
+          .toList();
+    }
+    double updatedTotalAmount = getUpdateColumnTotal('total');
+
+    var formData = {
+      if (invoice.customerId != null) "customer_id": invoice.customerId,
+      "invoice_number": customerInvoiceByIdModel?.customerInvoice?.invoiceNumber ?? "",
+      if (customerInvoiceDateController != null) "invoice_date": customerInvoiceDateController,
+      if (customerInvoiceDueDateController != null) "invoice_due_date": customerInvoiceDueDateController,
+      if (invoice.invoiceType != null) "invoice_type": invoice.invoiceType,
+      "status": isPaid.value ? "paid" : "unpaid",
+      "amount": updatedTotalAmount.toStringAsFixed(2),
+      if (invoice.fromDate != null)
+        "from_date":
+        "${invoice.fromDate!.year}-${invoice.fromDate!.month}-${invoice.fromDate!.day}",
+      if (invoice.toDate != null)
+        "to_date":
+        "${invoice.toDate!.year}-${invoice.toDate!.month}-${invoice.toDate!.day}",
+      "customer_invoice_lineitems": lineItems,
+    };
+    print("Submitting Update Payload: $formData");
+
+    var response = await Api()
+        .post(formData, "customer-invoice/update/${invoice.id}", auth: true);
+
+    if (response.statusCode == 200) {
+      BotToast.showText(text: "CUSTOMER INVOICE UPDATED SUCCESSFULLY!");
+
+      clearUpdateData();
+
+      getCustomerInvoice();
+    }
+  }
+
+  void clearUpdateData() {
+    customerInvoiceByIdModel = null;
+    customerInvoiceDateController = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+    customerInvoiceDueDateController = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+    customerNameController.clear();
+    customerEmailController.clear();
+    customerMobileController.clear();
+    customerTelephoneController.clear();
     update();
   }
 }

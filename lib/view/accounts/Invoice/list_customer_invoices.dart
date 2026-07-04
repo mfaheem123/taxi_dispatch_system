@@ -1,5 +1,6 @@
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/keyboard_checkBox_widget.dart';
+import 'package:dashboard_new1/view/accounts/Invoice/update_customer_invoice.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -24,6 +25,8 @@ class _InvoiceListState extends State<InvoiceList> {
       ? Get.find<CustomerInvoiceController>()
       : Get.put(CustomerInvoiceController());
 
+  final DashboardController _controller = Get.find();
+
   @override
   void initState() {
     super.initState();
@@ -37,11 +40,22 @@ class _InvoiceListState extends State<InvoiceList> {
         controller.getCustomerInvoice();
       },
       builder: (controller) {
-        final invoices = controller.listOfCustomerInvoiceModel?.customerInvoices ?? [];
+        final invoices = controller.filteredInvoices;
         final totalRows = invoices.length;
 
         return LayoutBuilder(builder: (context, constraints) {
+          final double maxWidth = constraints.maxWidth;
+          final bool isMobile = maxWidth < 600;
+          final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+
+          final double fieldWidth = isMobile
+              ? maxWidth // full width
+              : isTablet
+              ? maxWidth / 2
+              : maxWidth / 4;
+
           return SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
             child: Wrap(
               runSpacing: 10,
               spacing: 10,
@@ -49,7 +63,7 @@ class _InvoiceListState extends State<InvoiceList> {
                 // Header section
                 Container(
                   width: Get.width,
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                   color: DynamicColors.gryClr.withOpacity(0.5),
                   child: Row(
                     children: [
@@ -57,10 +71,11 @@ class _InvoiceListState extends State<InvoiceList> {
                           "${AppText.customerInvoices} (${controller.listOfCustomerInvoiceModel?.count ?? "0"})",
                           style: titleDesign()
                       ),
-                      const SizedBox(width: 20),
+                      const SizedBox(width: 120),
                       KeyboardCheckbox(
                         onChanged: (v) {
                           controller.paid.value = v;
+                          controller.getCustomerInvoice();
                           controller.update();
                         },
                         label: AppText.paid,
@@ -108,15 +123,39 @@ class _InvoiceListState extends State<InvoiceList> {
                     : SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: SizedBox(
-                    width: Get.width,
+                    width: constraints.maxWidth,
                     child: DatatableWidget(
                       columns: [
-                        buildHeaderWithSearch(title: "INVOICE #"),
-                        buildHeaderWithSearch(title: "CUSTOMER"),
-                        buildHeaderWithSearch(title: "DATE"),
-                        buildHeaderWithSearch(title: "DUE DATE"),
-                        buildHeaderWithSearch(title: "STATUS"),
-                        buildHeaderWithSearch(title: "AMOUNT"),
+                        buildHeaderWithSearch(title: "INVOICE #",
+                            onChanged: (value) {
+                          controller.searchQuery.value = value;
+                          controller.update();
+                        }),
+                        buildHeaderWithSearch(title: "CUSTOMER",
+                            onChanged: (value) {
+                              controller.searchQuery.value = value;
+                              controller.update();
+                            }),
+                        buildHeaderWithSearch(title: "DATE",
+                            onChanged: (value) {
+                              controller.searchQuery.value = value;
+                              controller.update();
+                            }),
+                        buildHeaderWithSearch(title: "DUE DATE",
+                            onChanged: (value) {
+                              controller.searchQuery.value = value;
+                              controller.update();
+                            }),
+                        buildHeaderWithSearch(title: "STATUS",
+                            onChanged: (value) {
+                              controller.searchQuery.value = value;
+                              controller.update();
+                            }),
+                        buildHeaderWithSearch(title: "AMOUNT",
+                            onChanged: (value) {
+                              controller.searchQuery.value = value;
+                              controller.update();
+                            }),
                         buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
                       ],
                       totalRow: totalRows,
@@ -124,32 +163,63 @@ class _InvoiceListState extends State<InvoiceList> {
                       rows: invoices.map((invoice) {
                         return DataRow(
                           cells: [
-                            DataCell(Text(invoice.invoiceNumber ?? "-")),
-                            DataCell(Text(invoice.customer?.name ?? "-")),
-                            DataCell(Text(invoice.invoiceDate ?? "-")),
-                            DataCell(Text(invoice.invoiceDueDate ?? "-")),
-                            DataCell(Text(invoice.status?.toUpperCase() ?? "-")),
-                            DataCell(Text(invoice.amount ?? "0")),
+                            DataCell(Center(child: Text(invoice.invoiceNumber ?? "-"))),
+                            DataCell(Center(child: Text((invoice.customer?.name ?? "-").toUpperCase()))),
+                            DataCell(Center(child: Text(invoice.invoiceDate != null ? invoice.invoiceDate!.toIso8601String().split('T').first : "-"))),
+                            DataCell(Center(child: Text(invoice.invoiceDueDate != null ? invoice.invoiceDueDate!.toIso8601String().split('T').first : "-"))),
+                            DataCell(Center(child: Text(invoice.status?.toUpperCase() ?? "-"))),
+                            DataCell(Center(child: Text("£ ${invoice.amount ?? "0"}"))),
                             DataCell(
-                              Row(
+                                Center(child: Row(
+                                  mainAxisSize: MainAxisSize.min,
                                 children: [
                                   OutlinedButton(
                                     style: OutlinedButton.styleFrom(
                                       side: const BorderSide(color: Colors.transparent),
+                                      padding: EdgeInsets.zero,
                                     ),
-                                    onPressed: () {},
-                                    child: Icon(Icons.search, size: 28, color: DynamicColors.primaryClr),
+                                    onPressed: () {
+                                      Get.back();
+                                      controller
+                                          .getUpdateCustomerInvoice(
+                                          selectedId: invoice.id);
+                                      int index = _controller
+                                          .selectedMenuItems
+                                          .indexWhere((element) =>
+                                      element.title ==
+                                          "CUSTOMER INVOICE UPDATE");
+                                      if (index != -1) {
+                                        _controller
+                                            .selectedMenuItems[index]
+                                            .selectedItem = true;
+                                        _controller.currentPage
+                                            .value =
+                                            UpdateCustomerInvoice();
+                                      } else {
+                                        _controller.currentPage
+                                            .value =
+                                            UpdateCustomerInvoice();
+                                        _controller.menuBarRefresh(
+                                            title:
+                                            "CUSTOMER INVOICE UPDATE",
+                                            pageName:
+                                            UpdateCustomerInvoice());
+                                      }
+                                      controller.update();
+                                    },
+                                    child: Icon(Icons.edit_calendar, size: 28, color: DynamicColors.primaryClr),
                                   ),
                                   OutlinedButton(
                                     style: OutlinedButton.styleFrom(
                                       side: const BorderSide(color: Colors.transparent),
+                                      padding: EdgeInsets.zero,
                                     ),
                                     onPressed: () {},
-                                    child: Icon(Icons.clear, size: 28, color: DynamicColors.redClr),
+                                    child: Icon(Icons.delete_forever, size: 28, color: DynamicColors.redClr),
                                   ),
                                 ],
                               ),
-                            ),
+                            )),
                           ],
                         );
                       }).toList(),

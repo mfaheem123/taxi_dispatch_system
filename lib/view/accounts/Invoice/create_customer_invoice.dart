@@ -165,7 +165,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                             children: [
                           TextSpan(
                               text:
-                                  " ${controller.customerInvoice?.invoiceNumber}",
+                                  " ${controller.customerInvoiceModel?.invoiceNumber}",
                               style: mozillaTextRegularText(
                                   color: DynamicColors.redClr)),
                         ])),

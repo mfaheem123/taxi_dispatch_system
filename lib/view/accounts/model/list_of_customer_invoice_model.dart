@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
+
 ListOfCustomerInvoiceModel listOfCustomerInvoiceModelFromJson(String str) => ListOfCustomerInvoiceModel.fromJson(json.decode(str));
 
 String listOfCustomerInvoiceModelToJson(ListOfCustomerInvoiceModel data) => json.encode(data.toJson());
@@ -36,8 +38,8 @@ class CustomerInvoice {
   int? id;
   String? invoiceNumber;
   int? customerId;
-  String? invoiceDate;
-  String? invoiceDueDate;
+  DateTime? invoiceDate;
+  DateTime? invoiceDueDate;
   DateTime? fromDate;
   DateTime? toDate;
   String? invoiceType;
@@ -67,10 +69,18 @@ class CustomerInvoice {
     id: json["id"],
     invoiceNumber: json["invoice_number"],
     customerId: json["customer_id"],
-    invoiceDate: json["invoice_date"],
-    invoiceDueDate: json["invoice_due_date"],
-    fromDate: json["from_date"] == null ? null : DateTime.parse(json["from_date"]),
-    toDate: json["to_date"] == null ? null : DateTime.parse(json["to_date"]),
+    invoiceDate: json["invoice_date"] != null
+        ? DateFormat("yyyy-M-d").parse(json["invoice_date"].toString())
+        : null,
+    invoiceDueDate: json["invoice_due_date"] != null
+        ? DateFormat("yyyy-M-d").parse(json["invoice_due_date"].toString())
+        : null,
+    fromDate: json["from_date"] != null
+        ? DateFormat("yyyy-M-d").parse(json["from_date"].toString())
+        : null,
+    toDate: json["to_date"] != null
+        ? DateFormat("yyyy-M-d").parse(json["to_date"].toString())
+        : null,
     invoiceType: json["invoice_type"],
     amount: json["amount"],
     status: json["status"],
