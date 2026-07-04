@@ -98,9 +98,9 @@ class _UpdateCustomerInvoiceState extends State<UpdateCustomerInvoice> {
                         offset: const Offset(0, 40),
                         onSelected: (value) {
                           if (value == 'pdf') {
-                            // controller.exportToPdf();
+                            controller.downloadPdfFile();
                           } else if (value == 'excel') {
-                            // controller.exportToExcel();
+                            controller.downloadExel();
                           }
                         },
                         itemBuilder: (BuildContext context) => [
