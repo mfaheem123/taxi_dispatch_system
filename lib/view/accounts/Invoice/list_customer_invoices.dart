@@ -214,7 +214,9 @@ class _InvoiceListState extends State<InvoiceList> {
                                       side: const BorderSide(color: Colors.transparent),
                                       padding: EdgeInsets.zero,
                                     ),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      controller.customerInvoiceDelete(invoice.id);
+                                    },
                                     child: Icon(Icons.delete_forever, size: 28, color: DynamicColors.redClr),
                                   ),
                                 ],

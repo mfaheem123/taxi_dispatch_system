@@ -388,17 +388,6 @@ class CustomerInvoiceController extends GetxController {
   }
 
   /// Download PDF
-  // Future<void> exportToPdf({int? selectedId}) async {
-  //   if (selectedId != null) {
-  //     await getUpdateCustomerInvoice(selectedId: selectedId);
-  //   }
-  //   if (customerInvoiceByIdModel == null) {
-  //     print("Error: No data available for PDF");
-  //     return;
-  //   }
-  // }
-
-  /// Download PDF
   Future<void> downloadPdfFile() async {
     if (customerInvoiceByIdModel?.customerInvoice == null) {
       Get.snackbar("ERROR", "NO INVOICE DATA FOUND TO EXPORT.");
@@ -603,6 +592,7 @@ CC: CONGESTION CHARGES
       "VEHICLE",
       "PICKUP",
       "DROPOFF",
+      "",
       "J/T",
       "P/T",
       "FARE",
@@ -670,6 +660,15 @@ CC: CONGESTION CHARGES
     } catch (e) {
       print("Excel Download Error: $e");
       BotToast.showText(text: "FAILED TO DOWNLOAD EXCEL FILE");
+    }
+  }
+
+  /// Delete
+  customerInvoiceDelete(int? id) async {
+    var response = await Api().delete("customer-invoice/delete/$id");
+    if (response.statusCode == 200) {
+      getCustomerInvoice();
+      BotToast.showText(text: "CUSTOMER INVOICE DELETED SUCCESSFULLY!");
     }
   }
 }

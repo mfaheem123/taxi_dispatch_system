@@ -16,6 +16,8 @@ import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../dashboard_view/widgets/user_info_widget.dart';
 import '../controller/customer_invoice_controller.dart';
+import 'account_invoice_preview_screen.dart';
+import 'customer_invoice_view_screen.dart';
 
 class UpdateCustomerInvoice extends StatefulWidget {
   const UpdateCustomerInvoice({super.key});
@@ -163,8 +165,12 @@ class _UpdateCustomerInvoiceState extends State<UpdateCustomerInvoice> {
                         btnText: "VIEW",
                         style: mozillaTextRegularText(
                             fontSize: 10, color: DynamicColors.whiteClr),
-                        onTap: ()  {
-                        },
+                          onTap: () {
+                          Get.dialog(
+                            InvoiceViewWindowWrapper(),
+                            barrierDismissible: true,
+                          );
+                        }
                       ),
                       SizedBox(width: 5),
                       CustomButton(
