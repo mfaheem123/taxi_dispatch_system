@@ -61,6 +61,10 @@ Two channels are used in parallel:
 
 The booking form implements full Tab/Shift+Tab/Enter keyboard navigation through `DashboardController.focusableWidgets` (a list of `FocusNode`s) with `focusNextWidget()` / `focusPreviousWidget()` / `handleTabNavigation()` / `handleEnterKey()` methods. Widgets opt in by wrapping with `RawKeyboardListener` + `Focus` and pulling a node from the controller's list. When adding a new focusable form element: append a `FocusNode` to `focusableWidgets` in `DashboardController`, wrap the widget with `Focus`, and (for buttons) pass an `onEnterPressed` callback. See `KEYBOARD_NAVIGATION_GUIDE.md` and `IMPLEMENTATION_SUMMARY.md` for the intended focus order and integration points.
 
+### Airport flight fields (FL/ARP)
+
+`lib/view/auth/dashboard_form_widget.dart` shows an **FL** (flight number → `DashboardController.selectAirportController`) and **ARP** (arrival time → `DashboardController.arrivalTimeController`) field pair directly below the PICKUP row, wrapped in `Visibility(visible: controller.isAirportResponse.value, ...)`. `isAirportResponse` is set in `getAddresses()` when a pickup address search resolves to `source == "airport"`; it is a plain `.obs` read inside `GetBuilder`, not `Obx`, so it only reflects new values because `getAddresses()` calls `update()` afterward. FL uses `_field` (flex 3, plain text); ARP uses `_timeField` (flex 1, narrower, backed by `_TimePickerField`) — same field used for the regular pickup Time input. Both `_field` and `_timeField` take `num tab` (not `int`) specifically so these two could be slotted in at fractional focus-order positions (`4.3`/`4.6`) between PICKUP (`tabBase: 1`) and DROP (`tabBase: 4`) without renumbering every later field's tab order — follow the same fractional-tab trick (as already used for the `Pick Booking` button at `11.5`) when inserting new fields mid-sequence elsewhere in this form.
+
 ### Persistence
 
 `GetStorage` (initialized in `main.dart` before `runApp`) holds `token`, `userData`, `userRole`, etc. Treat it as the source of truth for the current session.

@@ -273,6 +273,49 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     debugPrint('Use current location → PICKUP');
                                   },
                                 ),
+                                Visibility(
+                                  visible: controller.isAirportResponse.value,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: isMobile
+                                        ? Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.stretch,
+                                            children: [
+                                              _field('FL',
+                                                  tab: 4.3,
+                                                  controller: controller
+                                                      .selectAirportController),
+                                              const SizedBox(height: 4),
+                                              _timeField('ARP',
+                                                  tab: 4.6,
+                                                  controller: controller
+                                                      .arrivalTimeController),
+                                            ],
+                                          )
+                                        : Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Expanded(
+                                                flex: 3,
+                                                child: _field('FL',
+                                                    tab: 4.3,
+                                                    controller: controller
+                                                        .selectAirportController),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                flex: 1,
+                                                child: _timeField('ARP',
+                                                    tab: 4.6,
+                                                    controller: controller
+                                                        .arrivalTimeController),
+                                              ),
+                                            ],
+                                          ),
+                                  ),
+                                ),
                                 const SizedBox(height: 4),
                                 _locationRow<ZoneObject>(
                                   'DROP   ',
@@ -1335,7 +1378,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   }
 
   Widget _timeField(String label,
-      {required int tab, required TextEditingController controller}) {
+      {required num tab, required TextEditingController controller}) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       // Text(label.toUpperCase(),
       //     style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
@@ -1355,7 +1398,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     ]);
   }
   Widget _field(String label,
-      {required int tab,
+      {required num tab,
         IconData? prefix,
         VoidCallback? onPrefixTap,
         TextEditingController? controller}) {
