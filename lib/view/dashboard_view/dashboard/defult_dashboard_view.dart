@@ -1622,10 +1622,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     child: CustomTimePicker(
                                                                       controller: controller.pickUpTimeControllerReturn,
                                                                       // optional
-                                                                      onTimeSelected: (time) {
-                                                                        controller.dropDownShow.value = false;
+                                                                      onTimeSelected: (time) async {
                                                                         controller.pickUpTimeControllerReturn.text = time;
                                                                         controller.getFaresCalculation();
+                                                                        controller.dropDownShow.value = false;
                                                                         setState(() {});
                                                                       },
                                                                     )),

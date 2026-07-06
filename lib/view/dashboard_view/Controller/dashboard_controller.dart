@@ -1360,6 +1360,7 @@ class DashboardController extends GetxController {
       pickupDate: "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
       pickupTime: pickUpTimeController.text,
       vehicleTypeId: selectVehicleValue!.id,
+      returnVehicleTypeId : selectVehicleValueReturn!.id,
       withReturnPickUp: pickupTwoWayController.text.isEmpty ? null : pickupTwoWayController.text,
       withReturnDropOff: dropOffTwoWayController.text.isEmpty ? null : dropOffTwoWayController.text,
       returnMiles: dropOffTwoWayController.text.isNotEmpty || pickupTwoWayController.text.isNotEmpty ?tempStoreReturnMils: null,
@@ -2008,6 +2009,7 @@ class DashboardController extends GetxController {
       pickupDate: "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
       pickupTime: pickUpTimeController.text,
       vehicleTypeId: selectVehicleValue == null ? null : selectVehicleValue!.id,
+      returnVehicleTypeId :selectVehicleValueReturn == null ? null : selectVehicleValueReturn!.id,
       congestionCharges: congestionChargesController.text.isEmpty
           ? null
           : congestionChargesController.text,
@@ -2037,9 +2039,11 @@ class DashboardController extends GetxController {
           : dropOffTwoWayController.text,
       returnPickupDate:
           "${pickUpDateReturn!.year}-${pickUpDateReturn!.month}-${pickUpDateReturn!.day}",
-      returnPickupTime: pickUpTimeControllerReturn.text.isEmpty
-          ? null
-          : pickUpTimeControllerReturn.text,
+      returnPickupTime:
+      // pickUpTimeControllerReturn.text.isEmpty
+      //     ? null
+      //     :
+      pickUpTimeControllerReturn.text,
       // selectVehicleValueReturn
       returnCompanyPrice: companyPriceController.text.isEmpty
           ? null

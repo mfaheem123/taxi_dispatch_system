@@ -17,6 +17,7 @@ import '../Controller/dashboard_controller.dart';
 import 'package:flutter_map/flutter_map.dart';
 
 import '../models/dashboard_model.dart';
+import '../models/tracking_drivers_model.dart';
 import 'defult_dashboard_view.dart';
 
 class DriversView extends StatefulWidget {
@@ -56,7 +57,24 @@ class _DriversViewState extends State<DriversView> {
     _focusNode.dispose();
     super.dispose();
   }
+  String statusCarImage(String status) {
+    switch (status) {
+      case "Accepted":
+        return "assets/c.png";   // Orange Car
 
+      case "Arrived":
+        return "assets/d.png";   // Yellow Car
+
+      case "On Route":
+        return "assets/tracking_car.png";    // Black Car
+
+      case "STC":
+        return "assets/a.png";        // Blue Car
+
+      default:
+        return "assets/green.jpeg";
+    }
+  }
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -500,6 +518,7 @@ class _DriversViewState extends State<DriversView> {
 
   void _showContextMenu(
       BuildContext context, Offset offset, DashboardDriverObject? driver,
+
       {index}) async {
     double left = offset.dx;
     double top = offset.dy;
@@ -562,15 +581,18 @@ class _DriversViewState extends State<DriversView> {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                // ImageIcon(AssetImage("assets/sedan.png"),
-                // color: DynamicColors.greenClr,
-                //   size: 65,
-                // ),
-                Image(
-                  image: AssetImage("assets/tracking_car.png"),
+                Image.asset(
+                  statusCarImage(driver?.bookingStatus ?? ""),
                   width: 70,
                   height: 70,
+                  fit: BoxFit.contain,
                 ),
+                // Image(
+                //   image: AssetImage("assets/tracking_car.png"),
+                //   width: 70,
+                //   height: 70,
+                // ),
+
                 Text(
                   "${driver!.username}",
                   style: TextStyle(fontSize: 12, color: Colors.white),
