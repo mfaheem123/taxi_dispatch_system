@@ -37,6 +37,7 @@ class CreateCustomerInvoice extends StatefulWidget {
 class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
   int selectedRowIndex = 0;
   final int totalRows = 5;
+  final ScrollController _autocompleteScrollController = ScrollController();
 
   CustomerInvoiceController controller =
       Get.isRegistered<CustomerInvoiceController>()
@@ -291,8 +292,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                                   );
                                 },
 
-                                optionsViewBuilder:
-                                    (context, onSelected, options) {
+                                optionsViewBuilder: (context, onSelected, options) {
                                   return Align(
                                     alignment: Alignment.topLeft,
                                     child: Material(
@@ -304,57 +304,70 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                                         height: 250,
                                         decoration: BoxDecoration(
                                           color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          border: Border.all(
-                                              color: Colors.grey.shade200),
+                                          borderRadius: BorderRadius.circular(8),
+                                          border: Border.all(color: Colors.grey.shade200),
                                         ),
-                                        child: ListView.builder(
-                                          padding: EdgeInsets.zero,
-                                          shrinkWrap: true,
-                                          itemCount: options.length,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            final SearchCustomer option =
-                                                options.elementAt(index);
+                                        child: Builder(
+                                          builder: (context) {
+                                            final int highlightedIndex = AutocompleteHighlightedOption.of(context);
+                                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                                              if (_autocompleteScrollController.hasClients && highlightedIndex >= 0) {
+                                                final double itemHeight = 35.0;
+                                                final double targetOffset = highlightedIndex * itemHeight;
 
-                                            final bool highlight =
-                                                AutocompleteHighlightedOption
-                                                        .of(context) ==
-                                                    index;
+                                                final double currentScroll = _autocompleteScrollController.position.pixels;
+                                                final double viewportHeight = 250.0;
+                                                if (targetOffset + itemHeight > currentScroll + viewportHeight) {
+                                                  _autocompleteScrollController.animateTo(
+                                                    (targetOffset + itemHeight - viewportHeight).clamp(0.0, _autocompleteScrollController.position.maxScrollExtent),
+                                                    duration: const Duration(milliseconds: 80),
+                                                    curve: Curves.easeOut,
+                                                  );
+                                                }
+                                                else if (targetOffset < currentScroll) {
+                                                  _autocompleteScrollController.animateTo(
+                                                    targetOffset.clamp(0.0, _autocompleteScrollController.position.maxScrollExtent),
+                                                    duration: const Duration(milliseconds: 80),
+                                                    curve: Curves.easeOut,
+                                                  );
+                                                }
+                                              }
+                                            });
 
-                                            return InkWell(
-                                              onTap: () => onSelected(option),
-                                              child: Container(
-                                                color: highlight
-                                                    ? const Color(0xFFE1F2FE)
-                                                    : null,
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 8.0,
-                                                        horizontal: 12.0),
-                                                child: Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    Text(
-                                                      option.name ?? '',
-                                                      style: const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 13,
-                                                          color: Colors.black),
+                                            return ListView.builder(
+                                              controller: _autocompleteScrollController,
+                                              padding: EdgeInsets.zero,
+                                              shrinkWrap: true,
+                                              itemCount: options.length,
+                                              itemBuilder: (BuildContext context, int index) {
+                                                final SearchCustomer option = options.elementAt(index);
+                                                final bool highlight = highlightedIndex == index;
+
+                                                return InkWell(
+                                                  onTap: () => onSelected(option),
+                                                  child: Container(
+                                                    color: highlight ? const Color(0xFFE1F2FE) : null,
+                                                    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                                                    child: Row(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        Text(
+                                                          option.name ?? '',
+                                                          style: const TextStyle(
+                                                              fontWeight: FontWeight.bold,
+                                                              fontSize: 13,
+                                                              color: Colors.black),
+                                                        ),
+                                                        const SizedBox(width: 10),
+                                                        Text(
+                                                          "${option.mobile ?? ''}",
+                                                          style: const TextStyle(color: Colors.black, fontSize: 13),
+                                                        ),
+                                                      ],
                                                     ),
-                                                    const SizedBox(width: 10),
-                                                    Text(
-                                                      "${option.mobile ?? ''}",
-                                                      style: const TextStyle(
-                                                          color: Colors.black,
-                                                          fontSize: 13),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
+                                                  ),
+                                                );
+                                              },
                                             );
                                           },
                                         ),
@@ -362,6 +375,78 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                                     ),
                                   );
                                 },
+
+                                // optionsViewBuilder:
+                                //     (context, onSelected, options) {
+                                //   return Align(
+                                //     alignment: Alignment.topLeft,
+                                //     child: Material(
+                                //       elevation: 4.0,
+                                //       borderRadius: BorderRadius.circular(8),
+                                //       color: Colors.white,
+                                //       child: Container(
+                                //         width: constraints.maxWidth,
+                                //         height: 250,
+                                //         decoration: BoxDecoration(
+                                //           color: Colors.white,
+                                //           borderRadius:
+                                //               BorderRadius.circular(8),
+                                //           border: Border.all(
+                                //               color: Colors.grey.shade200),
+                                //         ),
+                                //         child: ListView.builder(
+                                //           padding: EdgeInsets.zero,
+                                //           shrinkWrap: true,
+                                //           itemCount: options.length,
+                                //           itemBuilder: (BuildContext context,
+                                //               int index) {
+                                //             final SearchCustomer option =
+                                //                 options.elementAt(index);
+                                //
+                                //             final bool highlight =
+                                //                 AutocompleteHighlightedOption
+                                //                         .of(context) ==
+                                //                     index;
+                                //
+                                //             return InkWell(
+                                //               onTap: () => onSelected(option),
+                                //               child: Container(
+                                //                 color: highlight
+                                //                     ? const Color(0xFFE1F2FE)
+                                //                     : null,
+                                //                 padding:
+                                //                     const EdgeInsets.symmetric(
+                                //                         vertical: 8.0,
+                                //                         horizontal: 12.0),
+                                //                 child: Row(
+                                //                   mainAxisSize:
+                                //                       MainAxisSize.min,
+                                //                   children: [
+                                //                     Text(
+                                //                       option.name ?? '',
+                                //                       style: const TextStyle(
+                                //                           fontWeight:
+                                //                               FontWeight.bold,
+                                //                           fontSize: 13,
+                                //                           color: Colors.black),
+                                //                     ),
+                                //                     const SizedBox(width: 10),
+                                //                     Text(
+                                //                       "${option.mobile ?? ''}",
+                                //                       style: const TextStyle(
+                                //                           color: Colors.black,
+                                //                           fontSize: 13),
+                                //                     ),
+                                //                   ],
+                                //                 ),
+                                //               ),
+                                //             );
+                                //           },
+                                //         ),
+                                //       ),
+                                //     ),
+                                //   );
+                                // },
 
                                 // ACTION ON SELECTION
                                 onSelected: (SearchCustomer selection) {
