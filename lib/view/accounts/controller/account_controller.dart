@@ -273,7 +273,7 @@ class AccountController extends GetxController {
   RxBool SubsdairyBankLoader = false.obs;
   getSubsdairyBank() async {
     SubsdairyBankLoader(true);
-    var response = await Api().get("subsidiaries/with-bank-details");
+    var response = await Api().get("subsidiaries/with-bank-details", sendCompanyId: true,);
     if (response.statusCode == 200) {
       subsidairyBankModel = SubsidairyBankModel.fromJson(response.data);
       if (accountObjectData != null) {
@@ -711,7 +711,7 @@ class AccountController extends GetxController {
   listEscort() async {
     try {
       listEscortLoding.value = true;
-      final response = await Api().get('escorts/get?',queryParameters: {
+      final response = await Api().get('escorts/get?' ,queryParameters: {
       "page": escortCurrentPage.value,
       "limit": escortLimit,
       "name": searchEscortName.value,

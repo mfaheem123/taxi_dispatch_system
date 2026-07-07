@@ -229,7 +229,7 @@ class DriverController extends GetxController {
 
   getCombineVehicle({id}) async {
     getCombineVehicleLoading(true);
-    var response = await Api().get("driver-combine/get");
+    var response = await Api().get("driver-combine/get", sendCompanyId: true);
     if (response.statusCode == 200) {
       getCombineVehicleData = DriverFormModel.fromJson(response.data);
       if (id != null) {
@@ -829,7 +829,7 @@ class DriverController extends GetxController {
   getAllDrivers() async {
     isDriversLoading = true;
     update();
-    var response = await Api().get("drivers/get");
+    var response = await Api().get("drivers/get", sendCompanyId: true);
     if (response.statusCode == 200) {
       allDriverData = RestricDriverModel.fromJson(response.data);
     }

@@ -69,7 +69,7 @@ class BookingController extends GetxController{
   final int tableId = 2;
   getDashboardTableData() async {
     preBookingLoad(true);
-    var response = await Api().get("bookings/getbytabs/${tableId}",
+    var response = await Api().get("bookings/getbytabs/${tableId}", sendCompanyId: true,
         queryParameters: {
           "page": preBookingCurrentPage.value,
           "limit": dashboardTableLimit,
@@ -143,7 +143,7 @@ class BookingController extends GetxController{
   final int webBookId = 7;
   getWebBookingData() async {
     webBookingLoad(true);
-    var response = await Api().get("bookings/getbytabs/${webBookId}",
+    var response = await Api().get("bookings/getbytabs/${webBookId}", sendCompanyId: true,
         queryParameters: {
           "page": webBookingCurrentPage.value,
           "limit": webBookingLimit,
@@ -216,7 +216,7 @@ class BookingController extends GetxController{
   final int completedBookId = 4;
   getcompletedBookingData() async {
     webBookingLoad(true);
-    var response = await Api().get("bookings/getbytabs/${completedBookId}",
+    var response = await Api().get("bookings/getbytabs/${completedBookId}", sendCompanyId: true,
         queryParameters: {
           "page": completedBookingCurrentPage.value,
           "limit": completedBookingLimit,
@@ -279,7 +279,7 @@ class BookingController extends GetxController{
   final int multiBookId = 9;
   getMultiBookingData() async {
     webBookingLoad(true);
-    var response = await Api().get("bookings/getbytabs/${multiBookId}",
+    var response = await Api().get("bookings/getbytabs/${multiBookId}", sendCompanyId: true,
         queryParameters: {
           "page": multiBookingCurrentPage.value,
           "limit": multiBookingLimit,
@@ -341,7 +341,7 @@ class BookingController extends GetxController{
   final int appBookId = 8;
   getAppBookingData() async {
     appBookingLoad(true);
-    var response = await Api().get("bookings/getbytabs/${appBookId}",
+    var response = await Api().get("bookings/getbytabs/${appBookId}", sendCompanyId: true,
         queryParameters: {
           "page": appBookingCurrentPage.value,
           "limit": appBookingLimit,
@@ -413,7 +413,7 @@ class BookingController extends GetxController{
   final int trashBookId = 11;
   getTrashBookingData() async {
     appBookingLoad(true);
-    var response = await Api().get("bookings/getbytabs/${trashBookId}",
+    var response = await Api().get("bookings/getbytabs/${trashBookId}", sendCompanyId: true,
         queryParameters: {
           "page": trashBookingCurrentPage.value,
           "limit": trashBookingLimit,
@@ -487,7 +487,7 @@ class BookingController extends GetxController{
   final int pendingBookId = 10;
   getPendingBookingData() async {
     pendingBookingLoad(true);
-    var response = await Api().get("bookings/getbytabs/${pendingBookId}",
+    var response = await Api().get("bookings/getbytabs/${pendingBookId}", sendCompanyId: true,
         queryParameters: {
           "page": pendingBookingCurrentPage.value,
           "limit": pendingBookingLimit,

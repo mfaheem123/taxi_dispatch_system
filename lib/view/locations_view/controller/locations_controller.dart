@@ -69,7 +69,7 @@ class LocationController extends GetxController {
     update(); // UI ko loader dikhane ke liye
 
     try {
-      var response = await Api().get("locationtype/zone");
+      var response = await Api().get("locationtype/zone", sendCompanyId: true);
       if (response.statusCode == 200) {
         locationtypezoneModel = LocationtypezoneModel.fromJson(response.data);
 

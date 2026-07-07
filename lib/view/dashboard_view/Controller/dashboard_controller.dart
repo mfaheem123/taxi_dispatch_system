@@ -306,7 +306,7 @@ class DashboardController extends GetxController {
   Timer? timer;
 
   getAllOnlineDrivers() async {
-    var response = await Api().get("drivers/login-busy");
+    var response = await Api().get("drivers/login-busy",sendCompanyId: true,);
     if (response.statusCode == 200) {
       print(response.data);
       if (response.data['login_drivers'].isNotEmpty) {
@@ -369,7 +369,7 @@ class DashboardController extends GetxController {
   seeZoneOnMapp() async {
     seeZoneOnMappLoader(true);
 
-    var response = await Api().get("zones/get");
+    var response = await Api().get("zones/get", sendCompanyId: true);
 
     if (response.statusCode == 200) {
       seeZoneOnMapModel = SeeZoneOnMapModel.fromJson(response.data);
@@ -389,7 +389,7 @@ class DashboardController extends GetxController {
 
   getAllDriversTracking() async {
     showDataLoader(true);
-    var response = await Api().get("drivers/tracking-drivers");
+    var response = await Api().get("drivers/tracking-drivers", sendCompanyId: true,);
     if (response.statusCode == 200) {
       onlineBusyDriversList =
           GetAllLabelsFromWidowModel.fromJson(response.data);
@@ -1698,7 +1698,7 @@ class DashboardController extends GetxController {
 
   dashboardData() async {
     dashboardDataLoader(true);
-    var response = await Api().get("enumerations/get");
+    var response = await Api().get("enumerations/get", sendCompanyId: true);
     if (response.statusCode == 200) {
       dashboardAllData = DashboardDataModel.fromJson(response.data);
       selectSubsidiariesValue = dashboardAllData!.subsidiaries![0];
@@ -1767,7 +1767,7 @@ class DashboardController extends GetxController {
   DepartmentObject? selectDepartmentData;
 
   getAccountData({subsidiariesId}) async {
-    var response = await Api().get("accounts/subsidiary/$subsidiariesId");
+    var response = await Api().get("accounts/subsidiary/$subsidiariesId", sendCompanyId: true,);
     if (response.statusCode == 200) {
       selectDepartmentData = null;
       selectAccountValue = null;
@@ -1834,7 +1834,7 @@ class DashboardController extends GetxController {
       }
     }
     var response =
-        await Api().get("bookings/getbytabs/$tableId", queryParameters: {
+        await Api().get("bookings/getbytabs/$tableId",  sendCompanyId: true, queryParameters: {
       "page": dashboardTableCurrentPage.value,
       "limit": dashboardTableLimit,
       "reference_number": referenceNumber.text,
@@ -2465,7 +2465,7 @@ class DashboardController extends GetxController {
     print(markers);
     print(formData);
     var response = await Api()
-        .post(formData, id == null ? "bookings/add" : "bookings/update/$id");
+        .post(formData, id == null ? "bookings/add" : "bookings/update/$id", sendCompanyId: true,);
     if (response.statusCode == 200) {
       if (id != null) {
         refreshPostAllFields();
@@ -3085,7 +3085,7 @@ class DashboardController extends GetxController {
   DriverObject? selectDriverObject;
 
   getAllDrivers() async {
-    var response = await Api().get("drivers/get");
+    var response = await Api().get("drivers/get",sendCompanyId: true);
     if (response.statusCode == 200) {
       allDriverData = RestricDriverModel.fromJson(response.data);
       update();

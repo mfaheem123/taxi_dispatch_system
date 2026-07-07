@@ -14,7 +14,7 @@ class DispatchController extends GetxController {
   void getDispatchDrivers() async {
     try {
       isLoading(true);
-      var response = await Api().get("drivers/session?session_status=logged_in");
+      var response = await Api().get("drivers/session?session_status=logged_in", sendCompanyId: true);
       if (response.statusCode == 200) {
         var model = DriverLoginLogoutModel.fromJson(response.data);
         drivers.value = model.drivers ?? [];

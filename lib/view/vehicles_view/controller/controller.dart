@@ -39,18 +39,18 @@ class VehicleController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo company vehicle
 
-  VehicleType? allVehicleTypeData;
-  RxBool getAllVehicleTypeLoader = false.obs;
-  getAllVehicleType() async {
-    getAllVehicleTypeLoader(true);
-    var response = await Api().get("vehicle-type");
-    if (response.statusCode == 200) {
-      allVehicleTypeData =
-          VehicleType.fromJson(response.data['vehicle_types']);
-      getAllVehicleTypeLoader(false);
-      update();
-    }
-  }
+  // VehicleType? allVehicleTypeData;
+  // RxBool getAllVehicleTypeLoader = false.obs;
+  // getAllVehicleType() async {
+  //   getAllVehicleTypeLoader(true);
+  //   var response = await Api().get("vehicle-type");
+  //   if (response.statusCode == 200) {
+  //     allVehicleTypeData =
+  //         VehicleType.fromJson(response.data['vehicle_types']);
+  //     getAllVehicleTypeLoader(false);
+  //     update();
+  //   }
+  // }
 
   /// text fields editing
   final colorController = TextEditingController();
