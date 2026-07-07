@@ -11,15 +11,15 @@ import 'package:get/get.dart';
 
 import '../../component/networks/api.dart';
 
-class ComapanyInformationScreen extends StatefulWidget {
-  const ComapanyInformationScreen({super.key});
+class CompanyInformationScreen extends StatefulWidget {
+  const CompanyInformationScreen({super.key});
 
   @override
-  State<ComapanyInformationScreen> createState() =>
-      _ComapanyInformationScreenState();
+  State<CompanyInformationScreen> createState() =>
+      _CompanyInformationScreenState();
 }
 
-class _ComapanyInformationScreenState extends State<ComapanyInformationScreen> {
+class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
   int selectedRowIndex = 0; // currently selected row
   final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
 

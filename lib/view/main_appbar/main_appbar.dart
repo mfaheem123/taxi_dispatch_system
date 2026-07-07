@@ -3281,10 +3281,10 @@ class _MyHomePageState extends State<MyHomePage> {
             print(permissions);
             setState(() {
               if(permissions.contains('read_company_information')){
-                controller.currentPage.value = ComapanyInformationScreen();
+                controller.currentPage.value = CompanyInformationScreen();
                 controller.menuBarRefresh(
                     title: "COMPANY INFORMATION",
-                    pageName: ComapanyInformationScreen());  }
+                    pageName: CompanyInformationScreen());  }
             });
 
           },
