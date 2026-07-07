@@ -6,6 +6,7 @@ import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/administration/controller/administration_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../alert/ducument_number_alert.dart';
 import '../../component/networks/api.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
@@ -18,12 +19,11 @@ class DocumentNumberScreen extends StatefulWidget {
 }
 
 class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
-  int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
+  int selectedRowIndex = 0;
+  final int totalRows = 5;
 
   AdministrationController controller =
       Get.isRegistered<AdministrationController>()
-
           ? Get.find<AdministrationController>()
           : Get.put(AdministrationController());
 
@@ -34,9 +34,7 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
     shortCutKeyValue.value = "DocumentNumberScreen";
   }
 
-
   List permissions = [];
-
 
   @override
   Widget build(BuildContext context) {
@@ -46,11 +44,9 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<AdministrationController>(
-        initState: (v){
-          permissions = Api().sp.read('all_permissions') ?? [];
-        },
-        builder: (controller) {
+    return GetBuilder<AdministrationController>(initState: (v) {
+      permissions = Api().sp.read('all_permissions') ?? [];
+    }, builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -88,11 +84,17 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
                       padding:
                           EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
                       child: Icon(
-                        Icons.refresh,
+                        Icons.add,
                         color: DynamicColors.whiteClr,
                         size: 25,
                       ),
                     ),
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const AddDocumentDialog(),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -103,12 +105,6 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
                 width: Get.width,
                 child: DatatableWidget(
                   columns: [
-                    DataColumn(
-                      label: Checkbox(
-                        value: false, // a bool you keep in state
-                        onChanged: (val) {},
-                      ),
-                    ),
                     buildHeaderWithSearch(title: "TABLE"),
                     buildHeaderWithSearch(title: "COLUMN"),
                     buildHeaderWithSearch(title: "SUBSIDIARY"),
@@ -121,50 +117,44 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
                   ],
                   totalRow: totalRows,
                   cells: [
-                    DataCell(
-                      Checkbox(
-                        value: false, // ✅ controlled by your state
-                        onChanged: (val) {
-                          // update your selected index or list here
-                        },
-                      ),
-                    ),
                     const DataCell(Text("SALOON")),
                     const DataCell(Text("NW7")),
                     const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                    const DataCell(Text("£55.00")),
+                    const DataCell(Text("55.00")),
                     const DataCell(Text("1")),
                     const DataCell(Text("45465")),
                     const DataCell(Text("5")),
                     DataCell(
                       Row(
                         children: [
-                          if(permissions.contains('update_document_number')) OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(
-                                color: Colors.transparent,
-                              ), // border color & thickness
+                          if (permissions.contains('update_document_number'))
+                            OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(
+                                  color: Colors.transparent,
+                                ), // border color & thickness
+                              ),
+                              onPressed: () {},
+                              child: Icon(
+                                Icons.edit_calendar,
+                                size: 28,
+                                color: DynamicColors.primaryClr,
+                              ),
                             ),
-                            onPressed: () {},
-                            child: Icon(
-                              Icons.search,
-                              size: 28,
-                              color: DynamicColors.primaryClr,
+                          if (permissions.contains('delete_document_number'))
+                            OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(
+                                  color: Colors.transparent,
+                                ), // border color & thickness
+                              ),
+                              onPressed: () {},
+                              child: Icon(
+                                Icons.delete_forever,
+                                size: 28,
+                                color: DynamicColors.redClr,
+                              ),
                             ),
-                          ),
-                          if(permissions.contains('delete_document_number')) OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(
-                                color: Colors.transparent,
-                              ), // border color & thickness
-                            ),
-                            onPressed: () {},
-                            child: Icon(
-                              Icons.clear,
-                              size: 28,
-                              color: DynamicColors.redClr,
-                            ),
-                          ),
                         ],
                       ),
                     ),

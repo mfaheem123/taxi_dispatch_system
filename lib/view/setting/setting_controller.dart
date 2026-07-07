@@ -247,6 +247,27 @@ class SettingController extends GetxController {
   final FocusNode deadMileageNode = FocusNode();
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo company configuration functionality
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo document number functionality
+  final TextEditingController prefixController = TextEditingController();
+  final TextEditingController startNumberController = TextEditingController(text: "0");
+  final TextEditingController incrementController = TextEditingController(text: "0");
+
+  String? selectedTable;
+  String? selectedColumn;
+  String? selectedSubsidiary;
+
+
+  void changeCounterValue(TextEditingController textController, bool isIncrement) {
+    int val = int.tryParse(textController.text) ?? 0;
+    if (isIncrement) {
+      val++;
+    } else {
+      val--;
+    }
+    textController.text = val.toString();
+    update();
+  }
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo document number functionality
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Company Information
 
