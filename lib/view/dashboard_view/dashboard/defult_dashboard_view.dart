@@ -1372,7 +1372,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   child: CustomTextField(
                                                                     width: fieldWidthh / 15.0,
                                                                     // Hardcoded width hata di taake notes field sahi se responsive ho
-                                                                    controller: controller.pickUpNoteController,
+                                                                    controller: controller.returnPickUpNoteController,
                                                                     hintText: "RETURn PICKUP NOTES",
                                                                     borderRadius: 6,
                                                                     onTap: () {
@@ -1560,8 +1560,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   child: CustomTextField(
                                                                     width: fieldWidthh / 15,
                                                                     // Hardcoded width hata di taake layout block na ho
-                                                                    controller: controller.dropUpNoteController,
-                                                                    hintText: "DROP NOTES",
+                                                                    controller: controller.returnDropUpNoteController,
+                                                                    hintText: "RETURN DROP NOTES",
                                                                     borderRadius: 6,
                                                                     onTap: () {
                                                                       controller.dropDownShow.value = false;
