@@ -41,6 +41,7 @@ class DispatchController extends GetxController {
         formData,
         "bookings/assign-driver",
         auth: true,
+        sendCompanyId: true,
       );
       if (response.statusCode == 200) {
         BotToast.showText(text: 'Driver Assigned Successfully');

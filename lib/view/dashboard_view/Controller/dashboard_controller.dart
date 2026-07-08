@@ -1857,10 +1857,10 @@ class DashboardController extends GetxController {
       selectedTabId = tableId;
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
       dashboardTableTotalPages.value = dashboardTableModelData!.total!;
-      _timer?.cancel();
-      _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-        getDashboardTableData(tableId: selectedTabId);
-      });
+      // _timer?.cancel();
+      // _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      //   getDashboardTableData(tableId: selectedTabId);
+      // });
       update();
     }
   }
@@ -2233,6 +2233,8 @@ class DashboardController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo post dashboard api
   final pickUpNoteController = TextEditingController();
   final dropUpNoteController = TextEditingController();
+  final returnPickUpNoteController = TextEditingController();
+  final returnDropUpNoteController = TextEditingController();
   ZoneObject? dashboardZoneValue;
   ZoneObject? dashboardRNZoneValue;
   ZoneObject? dashboardRN1ZoneValue;
@@ -2349,6 +2351,7 @@ class DashboardController extends GetxController {
       'pickup': pickupController.text,
       if (dashboardZoneValue != null) 'pickup_plot': dashboardZoneValue!.id,
       'pickup_door_number': pickUpNoteController.text,
+
       'pickup_latitude': pickUpLatLat,
       'pickup_longitude': pickUpLngLat,
       'dropoff': dropOffController.text,
@@ -2439,6 +2442,9 @@ class DashboardController extends GetxController {
       if (dropOffLatTwoLat != null) "return_dropoff_latitude": dropOffLatTwoLat,
       if (dropOffLngTwoLat != null)
         "return_dropoff_longitude": dropOffLngTwoLat,
+      'return_pickup_door_number': returnPickUpNoteController.text,
+      'return_dropoff_door_number': returnDropUpNoteController.text,
+
       if (pickupTwoWayController.text.isNotEmpty)
         "return_pickup_date":
             "${pickUpDateReturn!.year}-${pickUpDateReturn!.month}-${pickUpDateReturn!.day}",
@@ -2460,12 +2466,12 @@ class DashboardController extends GetxController {
         "arriving_from": arrivalTimeController.text,
       "total_charges": double.parse(fixedFare.value).toStringAsFixed(1)
 
+
       /// todo waiting return
     };
     print(markers);
-    print(formData);
-    var response = await Api()
-        .post(formData, id == null ? "bookings/add" : "bookings/update/$id", sendCompanyId: true,);
+    print("------------------------- ${formData}");
+    var response = await Api().post(formData,  id == null ? "bookings/add" : "bookings/update/$id",auth: true, sendCompanyId: true, );
     if (response.statusCode == 200) {
       if (id != null) {
         refreshPostAllFields();
@@ -2597,6 +2603,8 @@ class DashboardController extends GetxController {
     pickupController.clear();
     tempStoreMils = null;
     pickUpNoteController.clear();
+    returnPickUpNoteController.clear();
+    returnDropUpNoteController.clear();
     dropOffController.clear();
     dropUpNoteController.clear();
     nameController.clear();
@@ -2642,6 +2650,7 @@ class DashboardController extends GetxController {
     selectPaymentTypeValue = null;
     selectVehicleValue = null;
     selectDriverValue = null;
+    selectDriverValueReturn = null ;
     selectSubsidiariesValue = null;
     switchController.value = false;
     smsCheckbox.value = true;

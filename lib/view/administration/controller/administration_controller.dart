@@ -127,7 +127,7 @@ class AdministrationController extends GetxController {
   UserModel? userModel;
   Employee? employee;
   RxBool userLoading = false.obs;
-  RxBool inActive = false.obs;
+  RxBool inActive = true.obs;
   var userCurrentPage = 1.obs;
   var userTotalPage = 1.obs;
   final int userLlimit = 15;
@@ -459,7 +459,8 @@ class AdministrationController extends GetxController {
       userEmailController.clear();
       phoneController.clear();
       faxUserController.clear();
-
+      selectedRole = null;
+      selectedSubsidiary = null;
       activeValue.value = false;
       alldriversValue.value = false;
       allbookingValue.value = false;

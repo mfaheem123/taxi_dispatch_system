@@ -1,4 +1,4 @@
- import 'package:bot_toast/bot_toast.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
@@ -19,7 +19,7 @@ import '../model/list_subsDiary.dart';
 class CreateUserScreen extends StatelessWidget {
   CreateUserScreen({super.key});
 
-  AdministrationController controller = Get.isRegistered<AdministrationController>()
+  final AdministrationController controller = Get.isRegistered<AdministrationController>()
       ? Get.find<AdministrationController>()
       : Get.put(AdministrationController());
   List permissions = [];
@@ -30,42 +30,41 @@ class CreateUserScreen extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return GetBuilder<AdministrationController>(
-
-        initState: (v){
+        initState: (v) {
           permissions = Api().sp.read('all_permissions') ?? [];
+          controller.listSubsDiary();
           print(permissions);
         },
         builder: (controller) {
-      return LayoutBuilder(
-        builder: (context, constraints) {
-          bool isMobile = constraints.maxWidth < 800;
-          return SingleChildScrollView(
-            padding: EdgeInsets.all(16),
-            child: isMobile
-                ? Column(
-                    children: [
-                      _buildImageBox(isMobile, controller: controller),
-                      SizedBox(height: 20),
-                      _buildFormBox(screenHeight, screenHeight),
-                    ],
-                  )
-                : Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Flexible(
-                          flex: 1,
-                          child: _buildImageBox(isMobile, controller: controller)),
-                      SizedBox(width: 20),
-
-                      Flexible(
-                          flex: 3,
-                          child: _buildFormBox(screenHeight, screenWidth)),
-                    ],
-                  ),
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              bool isMobile = constraints.maxWidth < 800;
+              return SingleChildScrollView(
+                padding: EdgeInsets.all(16),
+                child: isMobile
+                    ? Column(
+                  children: [
+                    _buildImageBox(isMobile, controller: controller),
+                    SizedBox(height: 20),
+                    _buildFormBox(screenHeight, screenWidth, controller),
+                  ],
+                )
+                    : Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Flexible(
+                        flex: 1,
+                        child: _buildImageBox(isMobile, controller: controller)),
+                    SizedBox(width: 20),
+                    Flexible(
+                        flex: 3,
+                        child: _buildFormBox(screenHeight, screenWidth, controller)),
+                  ],
+                ),
+              );
+            },
           );
-        },
-      );
-    });
+        });
   }
 
   Widget _buildImageBox(bool isMobile, {required dynamic controller}) {
@@ -133,8 +132,28 @@ class CreateUserScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFormBox(double screenHeight, double screenWidth) {
-    String? selectedValue;
+  Widget _buildFormBox(double screenHeight, double screenWidth, AdministrationController controller) {
+    // Dropdown safety lists
+    final List<Role> roleItems = controller.getRole?.roles ?? [];
+    final List<Subsidiaries> subsidiaryItems = controller.subsDiaryModel?.subsidiaries ?? [];
+
+    // ✅ Match exact instance from list to prevent Assertion Crash during Edit mode
+    Role? currentRole;
+    if (controller.selectedRole != null && roleItems.isNotEmpty) {
+      currentRole = roleItems.firstWhere(
+            (element) => element.id == controller.selectedRole?.id,
+        orElse: () => roleItems.first,
+      );
+    }
+
+    Subsidiaries? currentSubsidiary;
+    if (controller.selectedSubsidiary != null && subsidiaryItems.isNotEmpty) {
+      currentSubsidiary = subsidiaryItems.firstWhere(
+            (element) => element.id == controller.selectedSubsidiary?.id,
+        orElse: () => subsidiaryItems.first,
+      );
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -144,7 +163,6 @@ class CreateUserScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            // height: screenHeight / 20,
             width: double.infinity,
             color: DynamicColors.gryClr,
             child: Padding(
@@ -171,12 +189,13 @@ class CreateUserScreen extends StatelessWidget {
                 _buildPasswordField("CONFIRM PASSWORD", controller.confirmController),
                 _buildTextField("PHONE", controller.phoneController, isPhone: true),
                 _buildTextField("FAX", controller.faxUserController),
+
                 CustomDropdownField<Role>(
                   text: "SELECT ROLE",
                   label: "SELECT ROLE",
-                  items: controller.getRole?.roles ?? [],   // safe
-                  value: controller.selectedRole,
-                  itemLabel: (role) {// debug
+                  items: roleItems,
+                  value: currentRole, // Safely assigned
+                  itemLabel: (role) {
                     return (role.name ?? "").toUpperCase();
                   },
                   onChanged: (val) {
@@ -184,12 +203,15 @@ class CreateUserScreen extends StatelessWidget {
                     controller.update();
                   },
                 ),
+
                 CustomDropdownField<Subsidiaries>(
                   label: "SUBSIDIARY",
                   text: "SUBSIDIARY",
-                  items: controller.subsDiaryModel?.subsidiaries ?? [],
-                  value: controller.selectedSubsidiary,
-                  itemLabel: (item) => (item.name ?? "").toUpperCase(),
+                  items: subsidiaryItems,
+                  value: currentSubsidiary, // ✅ Fixed & Safely assigned
+                  itemLabel: (subsidiary) {
+                    return (subsidiary.name ?? "").toUpperCase();
+                  },
                   onChanged: (val) {
                     controller.selectedSubsidiary = val;
                     controller.update();
@@ -198,106 +220,100 @@ class CreateUserScreen extends StatelessWidget {
               ],
             ),
           ),
-            Wrap(
-              runSpacing: 16,
-              spacing: 10,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 18),
-                  child: KeyboardCheckbox(
-                    onChanged: (v) {
-                      controller.activeValue.value = v;
-                      controller.update();
-                    },
-                    value: controller.activeValue.value,
-                    focusNode: controller.activeNode,
-                    width: 120,
-                    label: "ACTIVE",
-                  ),
-                ),
-                KeyboardCheckbox(
+          Wrap(
+            runSpacing: 16,
+            spacing: 10,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 18),
+                child: KeyboardCheckbox(
                   onChanged: (v) {
-                    print("CHECKBOX VALUE RECEIVED: $v");
-                    controller.alldriversValue.value = v;
+                    controller.activeValue.value = v;
                     controller.update();
                   },
-                  value: controller.alldriversValue.value,
-                  focusNode: controller.alldriversNode,
+                  value: controller.activeValue.value,
+                  focusNode: controller.activeNode,
                   width: 120,
-                  label: "ALL DRIVERS",
+                  label: "ACTIVE",
                 ),
-                KeyboardCheckbox(
-                  onChanged: (v) {
-                    controller.allbookingValue.value = v;
-                    controller.update();
-                  },
-                  value: controller.allbookingValue.value,
-                  focusNode: controller.allbookingNode,
-                  width: 140,
-                  label: "ALL BOOKINGS",
-                ),
-                KeyboardCheckbox(
-                  onChanged: (v) {
-                    controller.accuntValue.value = v;
-                    controller.update();
-                  },
-                  value: controller.accuntValue.value,
-                  focusNode: controller.accuntNode,
-                  width: 160,
-                  label: "ALL ACCOUNTS",
-                ),
-                KeyboardCheckbox(
-                  onChanged: (v) {
-                    controller.receviverValue.value = v;
-                    controller.update();
-                  },
-                  value: controller.receviverValue.value,
-                  focusNode: controller.receviverNode,
-                  width: 160,
-                  label: "CALL RECEIVER",
-                ),
-                KeyboardCheckbox(
-                  onChanged: (v) {
-                    controller.transferValue.value = v;
-                    controller.update();
-                  },
-                  value: controller.transferValue.value,
-                  focusNode: controller.transferNode,
-                  width: 240,
-                  label: "ALLOW TRANSFER BOOKINGS",
-                ),
-
-              ],
-            ),
+              ),
+              KeyboardCheckbox(
+                onChanged: (v) {
+                  controller.alldriversValue.value = v;
+                  controller.update();
+                },
+                value: controller.alldriversValue.value,
+                focusNode: controller.alldriversNode,
+                width: 120,
+                label: "ALL DRIVERS",
+              ),
+              KeyboardCheckbox(
+                onChanged: (v) {
+                  controller.allbookingValue.value = v;
+                  controller.update();
+                },
+                value: controller.allbookingValue.value,
+                focusNode: controller.allbookingNode,
+                width: 140,
+                label: "ALL BOOKINGS",
+              ),
+              KeyboardCheckbox(
+                onChanged: (v) {
+                  controller.accuntValue.value = v;
+                  controller.update();
+                },
+                value: controller.accuntValue.value,
+                focusNode: controller.accuntNode,
+                width: 160,
+                label: "ALL ACCOUNTS",
+              ),
+              KeyboardCheckbox(
+                onChanged: (v) {
+                  controller.receviverValue.value = v;
+                  controller.update();
+                },
+                value: controller.receviverValue.value,
+                focusNode: controller.receviverNode,
+                width: 160,
+                label: "CALL RECEIVER",
+              ),
+              KeyboardCheckbox(
+                onChanged: (v) {
+                  controller.transferValue.value = v;
+                  controller.update();
+                },
+                value: controller.transferValue.value,
+                focusNode: controller.transferNode,
+                width: 240,
+                label: "ALLOW TRANSFER BOOKINGS",
+              ),
+            ],
+          ),
           SizedBox(height: 20),
           Container(
             width: double.infinity,
             color: DynamicColors.gryClr,
             padding: EdgeInsets.symmetric(horizontal: 120, vertical: 14),
             child: Center(
-              child:
-                  CustomButton(
-                onTap: () {
-                  String email = controller.userEmailController.text.trim();
+                child: CustomButton(
+                  onTap: () {
+                    String email = controller.userEmailController.text.trim();
 
-                  if (email.isEmpty) {
-                    BotToast.showText(text: "Email is required");
-                  } else if (!email.contains('@')) {
-                    BotToast.showText(text: "Invalid Email Format");
-                  } else {
-                    controller.createUser();
-                  }
-                },
-                height: 30,
-                width: screenWidth / 4,
-                verticalPadding: 0.0,
-                borderRadius: 4,
-                style: mozillaTextSemiBoldText(
-                    fontSize: 12, color: DynamicColors.whiteClr),
-                btnText: controller.employee!=null ? "UPDATE USER" : "SAVE",
-              )
-
-            ),
+                    if (email.isEmpty) {
+                      BotToast.showText(text: "Email is required");
+                    } else if (!email.contains('@')) {
+                      BotToast.showText(text: "Invalid Email Format");
+                    } else {
+                      controller.createUser();
+                    }
+                  },
+                  height: 30,
+                  width: screenWidth / 4,
+                  verticalPadding: 0.0,
+                  borderRadius: 4,
+                  style: mozillaTextSemiBoldText(fontSize: 12, color: DynamicColors.whiteClr),
+                  btnText: controller.employee != null ? "UPDATE USER" : "SAVE",
+                )),
           ),
         ],
       ),
@@ -316,14 +332,10 @@ class CreateUserScreen extends StatelessWidget {
           if (isEmail) FilteringTextInputFormatter.deny(RegExp(r'\s')),
           if (!isPhone) UpperCaseTextFormatter(),
         ],
-        style: mozillaTextRegularText(
-          fontSize: 10,
-        ),
+        style: mozillaTextRegularText(fontSize: 10),
         decoration: InputDecoration(
           hintText: label,
-          hintStyle: mozillaTextRegularText(
-            fontSize: 10,
-          ),
+          hintStyle: mozillaTextRegularText(fontSize: 10),
           border: OutlineInputBorder(),
           isDense: true,
           contentPadding: EdgeInsets.all(12),
@@ -339,37 +351,14 @@ class CreateUserScreen extends StatelessWidget {
       child: TextField(
         controller: controller,
         obscureText: true,
-        style: mozillaTextRegularText(
-          fontSize: 10,
-        ),
+        style: mozillaTextRegularText(fontSize: 10),
         decoration: InputDecoration(
           hintText: label,
-          hintStyle: mozillaTextRegularText(
-            fontSize: 10,
-          ),
+          hintStyle: mozillaTextRegularText(fontSize: 10),
           border: OutlineInputBorder(),
           isDense: true,
           contentPadding: EdgeInsets.all(12),
         ),
-      ),
-    );
-  }
-
-  static Widget _buildCheckBox(String label,
-      {bool checkBoxValue = false,
-      ValueChanged<bool?>? onChanged,
-      required FocusNode focusNode}) {
-    return SizedBox(
-      width: 300,
-      child: Row(
-        children: [
-          KeyboardCheckbox(
-            onChanged: onChanged!,
-            value: checkBoxValue,
-            focusNode: focusNode,
-          ),
-          Text(label),
-        ],
       ),
     );
   }
