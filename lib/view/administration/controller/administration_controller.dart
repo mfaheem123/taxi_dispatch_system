@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/Model/image_model.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
@@ -8,6 +10,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import '../../setting/setting_controller.dart';
 import '../User/create_subsiDiary.dart';
 import '../model/get_role.dart';
 
@@ -16,6 +19,14 @@ class AdministrationController extends GetxController {
   RxBool subsDiarySelection = false.obs;
   RxBool subsDiaryAllSelection = false.obs;
 
+  final bankController = TextEditingController();
+  final accountTitleController = TextEditingController();
+  final accountController = TextEditingController();
+  final ibanController = TextEditingController();
+  final sortCodeController = TextEditingController();
+  final vatController = TextEditingController();
+
+  // RxList<BankDetailsAlertClass> bankDetailList = <BankDetailsAlertClass>[].obs;
 //// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Get  List subsDiary api
   RxSet<int> selectedSubsDiaryIds = <int>{}.obs;
   SubsDiaryModel? subsDiaryModel;
@@ -52,6 +63,45 @@ class AdministrationController extends GetxController {
         subsiTotalPages.value = subsDiaryModel?.totalPages ?? 1;
         subsiDiaryAll.value = subsDiaryModel?.subsidiaries ?? [];
         filteredSubsiDiary.value = subsiDiaryAll;
+
+        if (filteredSubsiDiary.isNotEmpty) {
+          var firstRecord = filteredSubsiDiary.first;
+
+          final SettingController settingController = Get.isRegistered<SettingController>()
+              ? Get.find<SettingController>()
+              : Get.put(SettingController());
+
+          settingController.nameController.text = firstRecord.name ?? '';
+          settingController.emailCompanyController.text = firstRecord.email ?? '';
+          settingController.faxController.text = firstRecord.fax ?? '';
+          settingController.telephoneController.text = firstRecord.telephoneNumber ?? '';
+          settingController.addressController.text = firstRecord.address ?? '';
+          settingController.companyController.text = firstRecord.companyNumber ?? '';
+          settingController.currencyController.text = firstRecord.currency ?? '';
+          settingController.emergencyContactController.text = firstRecord.emergencyContactNumber ?? '';
+          settingController.balanceController.text = firstRecord.balance ?? '';
+          settingController.websiteController.text = firstRecord.website ?? '';
+          Color parseHexColor(String? hex) {
+            if (hex == null || hex.isEmpty) return Colors.white;
+            final buffer = StringBuffer();
+            if (hex.length == 6 || hex.length == 7) buffer.write('ff');
+            buffer.write(hex.replaceFirst('#', ''));
+            return Color(int.parse(buffer.toString(), radix: 16));
+          }
+
+          settingController.pickerColor = parseHexColor(firstRecord.backgroundColor);
+          settingController.foregroundColor = parseHexColor(firstRecord.foregroundColor);
+
+          if (firstRecord.logo != null && firstRecord.logo!.isNotEmpty) {
+            settingController.networkLogoUrl = firstRecord.logo;
+          } else {
+            settingController.networkLogoUrl = null;
+          }
+
+
+          settingController.update();
+        }
+
         print('SubsiDiary ${SubsDiaryModel}');
         subsDiaryLoading.value = false;
         print(response.data);
@@ -89,6 +139,12 @@ class AdministrationController extends GetxController {
     currencyController.text = (data.currency ?? "").toUpperCase();
     addressController.text = (data.address ?? "").toUpperCase();
     balanceController.text = data.balance?.toString() ?? "";
+    bankController.text = data.bank ?? "";
+    accountController.text = data.accountNumber ?? "";
+    vatController.text = data.vatNumber ?? "";
+    ibanController.text = data.iban ?? "";
+    accountTitleController.text = data.accountTitle ?? "";
+    sortCodeController.text = data.sortCode ?? "";
     // --- 2. Color Binding (Hex to Color) ---
     if (data.backgroundColor != null && data.backgroundColor!.isNotEmpty) {
       // Remove '#' and parse
@@ -264,6 +320,7 @@ class AdministrationController extends GetxController {
         filename: subsidiaryImg!.name,
       );
     }
+
     final formData = dio.FormData.fromMap({
       'name': nameController.text,
       'background_color': subsiDiarypickerColor.value.toRadixString(16).substring(2),
@@ -274,13 +331,13 @@ class AdministrationController extends GetxController {
       'fax': faxController.text,
       'website': websiteController.text,
       'address': addressController.text,
-      'sort_code': '12-34-56',
-      'account_number': '12345678',
-      'account_title': 'Demo Company Ltd',
-      'bank': 'Demo Bank',
+      'sort_code': sortCodeController.text,
+      'account_number': accountController.text,
+      'account_title': accountTitleController.text,
+      'bank': bankController.text,
       'company_number': companyController.text,
-      'vat_number': 'GB123456789',
-      'iban': 'GB29NWBK60161331926819',
+      'vat_number': vatController.text,
+      'iban': ibanController.text,
       'balance': balanceController.text,
       'currency': currencyController.text,
       'web_access_token': 'web-token-demo-123',
@@ -306,6 +363,8 @@ class AdministrationController extends GetxController {
               ? "SUBSIDIARY UPDATED SUCCESSFULLY"
               : "SUBSIDIARY ADDED SUCCESSFULLY"
       );
+
+      await listSubsDiary();
       subsidiaryImg = null;
       if (subsidiaryToUpdate != null) {
         subsidiaryToUpdate!.logo = null;

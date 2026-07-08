@@ -6,10 +6,12 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:dio/dio.dart' as dio;
 import 'package:get_storage/get_storage.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:pdf/pdf.dart';
 
+import '../administration/controller/administration_controller.dart';
 import 'model/select_templete_type.dart';
 import 'model/templete_HTML_model.dart' hide TemplateType;
 import 'model/templete_by_type_model.dart';
@@ -287,7 +289,13 @@ class SettingController extends GetxController {
     }
     update();
   }
-
+  String? networkLogoUrl;
+  final bankController = TextEditingController();
+  final accountTitleController = TextEditingController();
+  final accountController = TextEditingController();
+  final ibanController = TextEditingController();
+  final sortCodeController = TextEditingController();
+  final vatController = TextEditingController();
   final nameController = TextEditingController();
   final emailCompanyController = TextEditingController();
   final faxController = TextEditingController();
@@ -301,6 +309,74 @@ class SettingController extends GetxController {
   final addressController = TextEditingController();
   final balanceController = TextEditingController();
   final abbreviationController = TextEditingController();
+
+  RxBool isLoadData = false.obs;
+
+  updateCompanyInfoFromSettings() async {
+    isLoadData.value = true;
+    update();
+
+    try {
+    var multipartFile;
+    if (profileImg != null) {
+      multipartFile = dio.MultipartFile.fromBytes(
+        profileImg!.bytes,
+        filename: profileImg!.name,
+      );
+    }
+
+    final adminCtrl = Get.find<AdministrationController>();
+
+    final formData = dio.FormData.fromMap({
+      'name': nameController.text,
+      'background_color': pickerColor.value.toRadixString(16).substring(2),
+      'foreground_color': foregroundColor.value.toRadixString(16).substring(2),
+      'telephone_number': telephoneController.text,
+      'emergency_contact_number': emergencyContactController.text,
+      'email': emailCompanyController.text,
+      'fax': faxController.text,
+      'website': websiteController.text,
+      'address': addressController.text,
+
+      'sort_code': sortCodeController.text,
+      'account_number': accountController.text,
+      'account_title': accountTitleController.text,
+      'bank': bankController.text,
+      'vat_number': vatController.text,
+      'iban': ibanController.text,
+
+      'company_number': companyController.text,
+      'balance': balanceController.text,
+      'currency': currencyController.text,
+      'web_access_token': 'web-token-demo-123',
+      'mobile_access_token': 'mobile-token-demo-456',
+      'maximum_drivers': '50',
+      'active_drivers': '10',
+      'address_latitude': '51.5074',
+      'address_longitude': '-0.1278',
+      if (multipartFile != null) "logo": multipartFile
+    });
+
+    var response = await Api().post(
+        formData,
+        "subsidiaries/edit/${adminCtrl.subsidiaryToUpdate?.id ?? adminCtrl.subsiDiaryAll.first.id}",
+        auth: true,
+        multiPart: multipartFile != null ? true : false,
+        sendCompanyId: true
+    );
+
+    if (response.statusCode == 200) {
+      BotToast.showText(text: "COMPANY INFORMATION UPDATED SUCCESSFULLY");
+      await adminCtrl.listSubsDiary();
+    }
+  } catch (e) {
+  print("Update Error: $e");
+  BotToast.showText(text: "Failed to update company information");
+  }
+
+    isLoadData.value = false;
+    update();
+  }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Company Information
 

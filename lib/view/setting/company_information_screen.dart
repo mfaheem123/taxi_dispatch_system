@@ -7,10 +7,12 @@ import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/dashboard_view/Controller/dashboard_controller.dart';
 import 'package:dashboard_new1/view/setting/setting_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../alert/bank_details_alert.dart';
 import '../../component/networks/api.dart';
+import '../administration/controller/administration_controller.dart';
 
 class CompanyInformationScreen extends StatefulWidget {
   const CompanyInformationScreen({super.key});
@@ -28,6 +30,11 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
       ? Get.find<SettingController>()
       : Get.put(SettingController());
 
+  final AdministrationController adminController = Get.isRegistered<AdministrationController>()
+      ? Get.find<AdministrationController>()
+      : Get.put(AdministrationController());
+
+
   List permissions = [];
 
   @override
@@ -44,6 +51,13 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
     return GetBuilder<SettingController>(initState: (v) {
       permissions = Api().sp.read('all_permissions') ?? [];
       print(permissions);
+      // final AdministrationController adminController = Get.isRegistered<AdministrationController>()
+      //     ? Get.find<AdministrationController>()
+      //     : Get.put(AdministrationController());
+
+      if (adminController.subsiDiaryAll.isEmpty) {
+        adminController.listSubsDiary();
+      }
     }, builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
@@ -69,10 +83,10 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                 runSpacing: 16,
                 spacing: 10,
                 children: [
-                  // LEFT SIDE: IMAGE CONTAINER
+
                   GestureDetector(
                     onTap: () {
-                      if (controller.profileImg == null) {
+                      if (controller.profileImg == null && controller.networkLogoUrl == null) {
                         controller.pickImage();
                       }
                     },
@@ -83,42 +97,46 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         border: Border.all(color: Colors.grey),
-                        image: controller.profileImg == null
-                            ? null
-                            : DecorationImage(
-                                image:
-                                    MemoryImage(controller.profileImg!.bytes),
-                                fit: BoxFit.fill,
-                              ),
+                        image: controller.profileImg != null
+                            ? DecorationImage(
+                          image: MemoryImage(controller.profileImg!.bytes),
+                          fit: BoxFit.fill,
+                        )
+                            : (controller.networkLogoUrl != null && controller.networkLogoUrl!.isNotEmpty)
+                            ? DecorationImage(
+                          image: NetworkImage(controller.networkLogoUrl!),
+                          fit: BoxFit.fill,
+                        )
+                            : null,
                       ),
-                      child: controller.profileImg != null
+                      child: (controller.profileImg != null || controller.networkLogoUrl != null)
                           ? Align(
-                              alignment: Alignment.topRight,
-                              child: GestureDetector(
-                                onTap: () {
-                                  controller.profileImg = null;
-                                  controller.update();
-                                },
-                                child: Icon(
-                                  Icons.close_rounded,
-                                  color: DynamicColors.redClr,
-                                ),
-                              ),
-                            )
+                        alignment: Alignment.topRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            controller.profileImg = null;
+                            controller.networkLogoUrl = null;
+                            controller.update();
+                          },
+                          child: Icon(
+                            Icons.close_rounded,
+                            color: DynamicColors.redClr,
+                          ),
+                        ),
+                      )
                           : const Center(
-                              child: Text(
-                                "UPLOAD IMAGE",
-                                style: TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
+                        child: Text(
+                          "UPLOAD IMAGE",
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
 
-                  // RIGHT SIDE: FORM CONTAINER
                   Container(
                     width: isDesktop ? maxWidth * 0.74 : maxWidth,
                     padding: const EdgeInsets.all(12.0),
@@ -177,6 +195,11 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                 width: formulaWidth,
                                 hintText: AppText.name,
                                 columnText: true,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[a-zA-Z\s0-9]')),
+                                  UpperCaseTextFormatter(),
+                                ],
                                 height: 35),
                             CustomTextField(
                                 borderRadius: 4,
@@ -184,6 +207,10 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                 width: formulaWidth,
                                 hintText: AppText.email,
                                 columnText: true,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                                  UpperCaseTextFormatter(),
+                                ],
                                 height: 35),
                             CustomTextField(
                                 borderRadius: 4,
@@ -191,6 +218,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                 width: formulaWidth,
                                 hintText: AppText.fax,
                                 columnText: true,
+                                inputFormatters: [UpperCaseTextFormatter()],
                                 height: 35),
                             CustomTextField(
                                 borderRadius: 4,
@@ -198,6 +226,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                 width: formulaWidth,
                                 hintText: AppText.website,
                                 columnText: true,
+                                inputFormatters: [UpperCaseTextFormatter()],
                                 height: 35),
                           ],
                         ),
@@ -213,6 +242,9 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                 width: formulaWidth,
                                 hintText: AppText.tel,
                                 columnText: true,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
                                 height: 35),
                             CustomTextField(
                                 borderRadius: 4,
@@ -221,6 +253,9 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                 width: formulaWidth,
                                 hintText: AppText.emergencyContactHash,
                                 columnText: true,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
                                 height: 35),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -272,6 +307,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                 width: formulaWidth,
                                 hintText: AppText.company,
                                 columnText: true,
+                                inputFormatters: [UpperCaseTextFormatter()],
                                 height: 35),
                             CustomTextField(
                                 borderRadius: 4,
@@ -279,6 +315,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                 width: formulaWidth,
                                 hintText: AppText.currency,
                                 columnText: true,
+                                inputFormatters: [UpperCaseTextFormatter()],
                                 height: 35),
 
                             CustomTextField(
@@ -291,6 +328,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                 width: formulaWidth,
                                 hintText: AppText.address,
                                 columnText: true,
+                                inputFormatters: [UpperCaseTextFormatter()],
                                 maxLines: 10,
                                 height: 100),
 
@@ -305,6 +343,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       width: formulaWidth,
                                       hintText: AppText.balance,
                                       columnText: true,
+                                      inputFormatters: [UpperCaseTextFormatter()],
                                       height: 35),
                                   const SizedBox(
                                       height:
@@ -316,6 +355,7 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                                       width: formulaWidth,
                                       hintText: AppText.abbreviation,
                                       columnText: true,
+                                      inputFormatters: [UpperCaseTextFormatter()],
                                       height: 35),
                                 ],
                               ),
@@ -331,6 +371,38 @@ class _CompanyInformationScreenState extends State<CompanyInformationScreen> {
                             fontSize: 12,
                             verticalPadding: 0.0,
                             borderRadius: 4,
+                            onTap: () async {
+                              final adminCtrl = Get.find<AdministrationController>();
+                              adminCtrl.nameController.text = controller.nameController.text;
+                              adminCtrl.emailController.text = controller.emailCompanyController.text;
+                              adminCtrl.faxController.text = controller.faxController.text;
+                              adminCtrl.websiteController.text = controller.websiteController.text;
+                              adminCtrl.telephoneController.text = controller.telephoneController.text;
+                              adminCtrl.emergencyContactController.text = controller.emergencyContactController.text;
+                              adminCtrl.companyController.text = controller.companyController.text;
+                              adminCtrl.currencyController.text = controller.currencyController.text;
+                              adminCtrl.addressController.text = controller.addressController.text;
+                              adminCtrl.balanceController.text = controller.balanceController.text;
+
+                              adminCtrl.bankController.text = controller.bankController.text;
+                              adminCtrl.accountController.text = controller.accountController.text;
+                              adminCtrl.accountTitleController.text = controller.accountTitleController.text;
+                              adminCtrl.sortCodeController.text = controller.sortCodeController.text;
+                              adminCtrl.ibanController.text = controller.ibanController.text;
+                              adminCtrl.vatController.text = controller.vatController.text;
+
+                              adminCtrl.subsidiaryImg = controller.profileImg;
+                              adminCtrl.subsiDiarypickerColor = controller.pickerColor;
+                              adminCtrl.subsiDiaryforegroundColor = controller.foregroundColor;
+
+                              adminCtrl.isSubsiDiaryUpdating.value = true;
+                              if (adminCtrl.subsidiaryToUpdate == null && adminCtrl.subsiDiaryAll.isNotEmpty) {
+                                adminCtrl.subsidiaryToUpdate = adminCtrl.subsiDiaryAll.first;
+                              }
+
+                              await adminCtrl.createSubsiDiary();
+                              controller.update();
+                            },
                           ),
                         )
                       ],
