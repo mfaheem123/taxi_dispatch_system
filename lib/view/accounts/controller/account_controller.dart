@@ -448,6 +448,7 @@ class AccountController extends GetxController {
           "telephone": searchTelephone.value,
           "contact_name": searchcontactName.value,
           "subsidiary": searchSubsiDiary.value,
+         "closed" : activeDrivers.value,
         },
       );
       if (response.statusCode == 200) {

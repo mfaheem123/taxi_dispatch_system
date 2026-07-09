@@ -1373,7 +1373,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     width: fieldWidthh / 15.0,
                                                                     // Hardcoded width hata di taake notes field sahi se responsive ho
                                                                     controller: controller.returnPickUpNoteController,
-                                                                    hintText: "RETURn PICKUP NOTES",
+                                                                    inputFormatters: [
+                                                                      UpperCaseTextFormatter(),
+                                                                    ],
+                                                                    hintText: "RETURN PICKUP NOTES".toUpperCase(),
                                                                     borderRadius: 6,
                                                                     onTap: () {
                                                                       controller.dropDownShow.value = false;
@@ -1561,6 +1564,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     width: fieldWidthh / 15,
                                                                     // Hardcoded width hata di taake layout block na ho
                                                                     controller: controller.returnDropUpNoteController,
+                                                                    inputFormatters: [
+                                                                      UpperCaseTextFormatter(),
+                                                                    ],
                                                                     hintText: "RETURN DROP NOTES",
                                                                     borderRadius: 6,
                                                                     onTap: () {
