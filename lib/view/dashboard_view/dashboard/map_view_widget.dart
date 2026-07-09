@@ -476,6 +476,63 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                   ),
                 ),
               ),
+
+              ///  ZOOM BUTTONS ON map
+              Positioned(
+                right: 15,
+                bottom: 10,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+
+                    // Zoom (+) Button
+                    SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: FloatingActionButton.small(
+                        heroTag: "zoom_in_btn",
+                        backgroundColor: Colors.white,
+
+                        onPressed: () {
+                          controller.updateZoom(true);
+                        },
+                        child: const Icon(Icons.add, color: Colors.black87,  size: 20,),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    // Zoom (-) Button
+                    SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: FloatingActionButton.small(
+                        heroTag: "zoom_out_btn",
+                        backgroundColor: Colors.white,
+                        onPressed: () {
+                          controller.updateZoom(false);
+                        },
+                        child: const Icon(Icons.remove, color: Colors.black87, size: 20,),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    // Camera fouces
+                    SizedBox(
+                      height: 30,
+                      width: 30,
+                      child: FloatingActionButton.small(
+                        backgroundColor: Colors.black26,
+                        onPressed: () {
+                          controller.mapController.move(
+                            polylinePoints.first,
+                            13.0,
+                          );
+                        },
+                        child: const Icon(Icons.center_focus_strong, color: Colors.black87, size: 20,),
+                      ),
+                    ),
+
+                  ],
+                ),
+              ),
             ],
           ),
         );

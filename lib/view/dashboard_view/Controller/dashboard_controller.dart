@@ -792,194 +792,392 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   }
 
   String? tempStoreMils;
+  String? tempStoreReturnMils;
+  String? tempStoreViaMils;
+  bool viaMilsCondition = false;
+  String? oneWayMiles;
+  String? viaMiles;
+  String? returnMiles;
 
-// your updated fetchRouteFromOSRM
-  Future<void> fetchRouteFromOSRM() async {
-    markers.clear();
-    polylines.clear();
-    polylinePointsCoordinate.clear();
-    List<LatLng> tempPoints = [];
+// BUSINESS RULE IMPLEMENTATION: DETACHED OUTBOUND & RETURN SEGMENT ROUTES WITH SEQUENTIAL VIAS
+   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+   Future<void> fetchRouteFromOSRM() async {
+     markers.clear();
+     polylines.clear();
+     polylinePointsCoordinate.clear();
 
-    // add via points as markers
-    for (var item in viaPoints) {
-      final p = LatLng(item.lat, item.lng);
-      tempPoints.add(p);
-      markers.add(
-        CustomMarker(
-          withReturnType:
-              item.withReturnWay == "via" ? "via" : 'via with return',
-          child: Icon(Icons.location_pin,
-              color: item.withReturnWay == "via"
-                  ? DynamicColors.primaryClr
-                  : Colors.pink,
-              size: 30),
-          type: "via",
-          point: p,
-          width: 30,
-          height: 30,
-        ),
-      );
-    }
+     // Sequential coordinates lists banayi hain taake path sahi chain me bne
+     List<LatLng> outboundSequence = [];
+     List<LatLng> returnSequence = [];
+     List<LatLng> totalMapLayoutFocusPoints = [];
 
-    // add other marker info (pickup / drop / create booking ...)
-    if (polyLineMarkerInfo.isNotEmpty) {
-      for (var item in polyLineMarkerInfo) {
-        final p = LatLng(item.lat, item.lng);
+     LatLng? outboundPickup;
+     LatLng? outboundDropOff;
+     LatLng? returnPickup;
+     LatLng? returnDropOff;
 
-        if (item.markerType == "PICKUP LOCATION" ||
-            item.markerType == "Create Booking PICKUP") {
-          tempPoints.add(p);
-          markers.add(
-            CustomMarker(
-              type: "pickup",
-              point: p,
-              child: Icon(Icons.location_pin,
-                  color: DynamicColors.greenClr, size: 30),
-              width: 30,
-              height: 30,
-            ),
-          );
-        } else if (item.markerType == "DROP LOCATION" ||
-            item.markerType == "Create Booking DROP LOCATION") {
-          tempPoints.add(p);
-          markers.add(
-            CustomMarker(
-              type: "dropOff",
-              point: p,
-              child: Icon(Icons.location_pin,
-                  color: DynamicColors.redClr, size: 30),
-              width: 30,
-              height: 30,
-            ),
-          );
-        } else if (item.markerType == "PICKUP TWO WAY LOCATION") {
-          tempPoints.add(p);
-          markers.add(
-            CustomMarker(
-              type: "pickup two way",
-              point: p,
-              child:
-                  Icon(Icons.location_pin, color: Colors.amberAccent, size: 30),
-              width: 30,
-              height: 30,
-            ),
-          );
-        } else if (item.markerType == "DROP TWO WAY LOCATION") {
-          tempPoints.add(p);
-          markers.add(
-            CustomMarker(
-              type: "dropOff two way",
-              point: p,
-              child: Icon(Icons.location_pin,
-                  color: DynamicColors.textClr, size: 30),
-              width: 30,
-              height: 30,
-            ),
-          );
-        }
-      }
-    }
+     // 1. Map Layers se coordinates extract aur markers set karein
+     if (polyLineMarkerInfo.isNotEmpty) {
+       for (var item in polyLineMarkerInfo) {
+         final p = LatLng(item.lat, item.lng);
+         if (item.markerType == "PICKUP LOCATION" || item.markerType == "Create Booking PICKUP") {
+           outboundPickup = p;
+           totalMapLayoutFocusPoints.add(p);
+           markers.add(CustomMarker(
+             type: "pickup",
+             point: p,
+             child: Tooltip(
+               message: pickupController.text,
+               waitDuration: Duration.zero,
+               child: Stack(
+                 alignment: Alignment.center,
+                 children: [
+                   Icon(Icons.location_pin, color: DynamicColors.greenClr, size: 30),
+                   const Positioned(
+                     top: 3,
+                     child: Text(
+                       "A",
+                       style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+                     ),
+                   ),
+                 ],
+               ),
+             ),
+             width: 30,
+             height: 30,
+           ));
+         } else if (item.markerType == "DROP LOCATION" || item.markerType == "Create Booking DROP LOCATION") {
+           outboundDropOff = p;
+           totalMapLayoutFocusPoints.add(p);
+           markers.add(CustomMarker(
+             type: "dropOff",
+             point: p,
+             child: Tooltip(
+               message: dropOffController.text, // 👈 Hover par Dropoff TextField ka text dikhega
+               waitDuration: Duration.zero,
+               child: Stack(
+                 alignment: Alignment.center,
+                 children: [
+                   Icon(Icons.location_pin, color: DynamicColors.greenClr, size: 30),
+                   const Positioned(
+                     top: 3,
+                     child: Text(
+                       "B",
+                       style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+                     ),
+                   ),
+                 ],
+               ),
+             ),
+             width: 30,
+             height: 30,
+           ));
+         } else if (item.markerType == "PICKUP TWO WAY LOCATION") {
+           returnPickup = p;
+           totalMapLayoutFocusPoints.add(p);
+           markers.add(CustomMarker(
+             type: "pickup two way",
+             point: p,
+             child: Tooltip(
+               message: pickupTwoWayController.text,
+               waitDuration: Duration.zero,
+               child: Stack(
+                 alignment: Alignment.center,
+                 children: [
+                   Icon(Icons.location_pin, color: Colors.red, size: 30),
+                   const Positioned(
+                     top: 3,
+                     child: Text(
+                       "C",
+                       style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+                     ),
+                   ),
+                 ],
+               ),
+             ),
+             width: 30,
+             height: 30,
+           ));
+         } else if (item.markerType == "DROP TWO WAY LOCATION") {
+           returnDropOff = p;
+           totalMapLayoutFocusPoints.add(p);
+           markers.add(CustomMarker(
+             type: "dropOff two way",
+             point: p,
+             child: Tooltip(
+               message: dropOffTwoWayController.text,
+               waitDuration: Duration.zero,
+               child: Stack(
+                 alignment: Alignment.center,
+                 children: [
+                   Icon(Icons.location_pin, color: DynamicColors.redClr, size: 30),
+                   const Positioned(
+                     top: 3,
+                     child: Text(
+                       "D",
+                       style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+                     ),
+                   ),
+                 ],
+               ),
+             ),
+             width: 30,
+             height: 30,
+           ));
+         }
+       }
+     }
 
-    ///  jab hum ek address enter karte hai tu polyline banane k lye neche wala api hit nahe hogha yaha per ruk jaygha
-    if (polyLineMarkerInfo.length == 1) {
-      return;
-    }
+     ///  (A -> VIA -> B)
+     if (outboundPickup != null) {
+       outboundSequence.add(outboundPickup);
+     }
+     int outboundViaCount = 1;
+     for (var item in viaPoints) {
+       if (item.withReturnWay == "via") {
+         final p = LatLng(item.lat, item.lng);
+         outboundSequence.add(p);
+         totalMapLayoutFocusPoints.add(p);
+         markers.add(CustomMarker(
+             withReturnType: "via",
+             child: Tooltip(
+               message: item.address ?? "Via Point",
+               waitDuration: Duration.zero,
 
-    update();
+               child: Stack(
+                 alignment: Alignment.center,
+                 children: [
+                   Icon(Icons.location_pin, color: DynamicColors.primaryClr, size: 30),
+                   Positioned(
+                     top: 5,
+                     child: Container(
+                       padding: const EdgeInsets.all(1),
+                       decoration: BoxDecoration(
+                         color: Colors.white,
+                         shape: BoxShape.circle,
+                       ),
+                       child: Text(
+                         "V$outboundViaCount",
+                         style: TextStyle(color: DynamicColors.primaryClr, fontSize: 9, fontWeight: FontWeight.bold,),
+                       ),
+                     ),
+                   ),
+                 ],
+               ),
+             ),
+             type: "via", point: p, width: 30, height: 30));
+         outboundViaCount++;
+       }
+     }
+     if (outboundDropOff != null) {
+       outboundSequence.add(outboundDropOff);
+     }
 
-    // --------- MULTI-POINT: request route from OSRM ----------
-    final coordinates =
-        tempPoints.map((p) => "${p.longitude},${p.latitude}").join(";");
-    final url = Uri.parse(
-        'https://router.project-osrm.org/route/v1/driving/$coordinates?overview=full');
+     ///  (C -> VIA -> D)
+     if (returnPickup != null) {
+       returnSequence.add(returnPickup);
+     }
+     int viaNumber = 1;
+     for (var item in viaPoints) {
+       if (item.withReturnWay != "via") {
+         final p = LatLng(item.lat, item.lng);
+         returnSequence.add(p);
+         totalMapLayoutFocusPoints.add(p);
+         markers.add(CustomMarker(withReturnType: "via with return", child:
+         Tooltip(
+           message: item.address ?? "Return Via Point",
+           waitDuration: Duration.zero,
+           child: Stack(
+             alignment: Alignment.center,
+             children: [
+               Icon(Icons.location_pin, color: DynamicColors.primaryClr, size: 30),
+               Positioned(
+                 top: 5,
+                 child: Container(
+                   padding: const EdgeInsets.all(1),
+                   decoration: BoxDecoration(
+                     color: Colors.white,
+                     shape: BoxShape.circle,
+                   ),
+                   child: Text(
+                     "R$viaNumber",
+                     style: TextStyle(color: DynamicColors.primaryClr, fontSize: 9, fontWeight: FontWeight.bold,),
+                   ),
+                 ),
+               ),
+             ],
+           ),
+         ),
+             type: "via", point: p, width: 30, height: 30));
+         viaNumber++ ;
+       }
+     }
+     if (returnDropOff != null) {
+       returnSequence.add(returnDropOff);
+     }
 
-    final res = await Dio().getUri(url);
+     if (totalMapLayoutFocusPoints.length == 1) {
+       return;
+     }
+     update();
 
-    if (res.statusCode == 200) {
-      polylinePointsCoordinate.clear();
-      final data = res.data;
-      final encodedPolyline = data['routes'][0]['geometry'];
+     double totalComputedMiles = 0.0;
+     double computedOutboundMiles = 0.0;
+     double computedReturnMiles = 0.0;
+     double totalDurationMinutes = 0.0;
+     double outboundDurationMinutes = 0.0;
+     double returnDurationMinutes = 0.0;
 
-      // meters → miles
-      final distanceInMiles = data['routes'][0]['distance'] * 0.000621371;
 
-// seconds → minutes
-      final durationInMinutes = data['routes'][0]['duration'] / 60;
+     /// (A -> Vias -> B)
+     if (outboundSequence.length >= 2) {
+       final coordsOut = outboundSequence.map((p) => "${p.longitude},${p.latitude}").join(";");
+       final urlOut = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsOut?overview=full');
+       try {
+         final resOut = await Dio().getUri(urlOut);
+         if (resOut.statusCode == 200 && resOut.data['routes'] != null && resOut.data['routes'].isNotEmpty) {
+           final dataOut = resOut.data['routes'][0];
+           computedOutboundMiles = dataOut['distance'] * 0.000621371;
+           totalComputedMiles += computedOutboundMiles;
 
-      // final formattedDuration = formatDuration(durationInMinutes);
+           // ADDED: Time duration added for Outbound
+           outboundDurationMinutes = (dataOut['duration'] ?? 0).toDouble() / 60;
+           totalDurationMinutes += outboundDurationMinutes;
 
-// (Optional) format nicely
-      totalDistance.value = distanceInMiles.toStringAsFixed(2); // e.g. "0.94"
-      tempStoreTotalDistance.value == distanceInMiles.toStringAsFixed(2);
-      // totalTimeDuration.value = durationInMinutes.toStringAsFixed(1); // e.g. "443.3"
-      totalTimeDuration.value =
-          formatDuration(durationInMinutes); // e.g. "443.3"
+           String encodedPoly = dataOut['geometry'];
+           List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPoly);
+           List<LatLng> decodedSegmentPoints = result.map((p) => LatLng(p.latitude, p.longitude)).toList();
+           polylinePointsCoordinate.addAll(decodedSegmentPoints);
 
-      List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPolyline);
+           polylines.add(Polyline(
+             points: decodedSegmentPoints,
+             color: DynamicColors.primaryClr,
+             strokeWidth: 2.5,
+           ));
+         }
+       } catch (e) {
+         print("Outbound Route Generation Error: $e");
+       }
+     }
 
-      List<LatLng> polylinePointss = result
-          .map((PointLatLng point) => LatLng(point.latitude, point.longitude))
-          .toList();
 
-      polylinePointsCoordinate = polylinePointss
-          .map((p) => LatLng(p.latitude.toDouble(), p.longitude.toDouble()))
-          .toList();
+     //  CONNECTING ROUTE (Bridge: Outbound ka last point -> Return ka first point)
+     if (outboundSequence.isNotEmpty && returnSequence.isNotEmpty) {
 
-      if (polylinePointsCoordinate.isNotEmpty) {
-        polylines.add(Polyline(
-          points: polylinePointsCoordinate,
-          color: DynamicColors.primaryClr,
-          strokeWidth: 2.0,
-        ));
+       final LatLng connectFrom = outboundSequence.last;
+       final LatLng connectTo = returnSequence.first;
 
-        // build bounds from the route or from markers (choose whichever you prefer)
+       if (connectFrom != connectTo) {
+         final coordsConnect = "${connectFrom.longitude},${connectFrom.latitude};${connectTo.longitude},${connectTo.latitude}";
+         final urlConnect = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsConnect?overview=full');
 
-        final List<LatLng> focusPoints =
-            tempPoints.isNotEmpty ? tempPoints : polylinePointsCoordinate;
+         try {
+           final resConnect = await Dio().getUri(urlConnect);
+           if (resConnect.statusCode == 200 && resConnect.data['routes'] != null && resConnect.data['routes'].isNotEmpty) {
+             final dataConnect = resConnect.data['routes'][0];
 
-        LatLngBounds bounds;
+             // ADDED: Bridge/Connecting path time calculation added
+             double connectDurationMinutes = (dataConnect['duration'] ?? 0).toDouble() / 60;
+             totalDurationMinutes += connectDurationMinutes;
 
-        if (focusPoints.length == 1) {
-          bounds =
-              LatLngBounds.fromPoints([focusPoints.first, focusPoints.first]);
-        } else {
-          bounds = calculateBounds(focusPoints); // your existing helper
-        }
+             String encodedPoly = dataConnect['geometry'];
+             List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPoly);
+             List<LatLng> decodedSegmentPoints = result.map((p) => LatLng(p.latitude, p.longitude)).toList();
+             polylinePointsCoordinate.addAll(decodedSegmentPoints);
 
-        final cameraFit =
-            CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
-        mapController.fitCamera(cameraFit);
-      }
-      if(tempStoreMils == null){
-        tempStoreMils = totalDistance.value;
-      }
+             polylines.add(Polyline(
+               points: decodedSegmentPoints,
+               color: Colors.grey.withOpacity(0.8), // Transition line
+               strokeWidth: 2.5,
+             ));
+           }
+         } catch (e) {
+           print("Connecting Route Generation Error: $e");
+         }
+       }
+     }
 
-      final storedTemFare = await getFares(
-          // day: ,
-          journeyTypeId: selectJourneyTypeValue!.id,
-          multiReservationList: multiReservationList,
-          pickup: pickupController.text,
-          dropOff: dropOffController.text,
-          miles: tempStoreMils,
-          pickUpPlotId: dashboardDZoneValue != null ? dashboardDZoneValue!.id : null,
-          dropoffPlotId: dashboardZoneValue != null ? dashboardZoneValue!.id : null,
-          pickupDate: "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
-          pickupTime: pickUpTimeController.text,
-          vehicleTypeId: selectVehicleValue!.id,
-          withReturnPickUp: pickupTwoWayController.text.isEmpty?null: pickupTwoWayController.text,
-          withReturnDropOff: dropOffTwoWayController.text.isEmpty?null: dropOffTwoWayController.text,
-          returnMiles:dropOffTwoWayController.text.isNotEmpty && dropOffTwoWayController.text.isNotEmpty? (double.parse(totalDistance.value)-(double.parse(tempStoreMils.toString()))).toString():null,
-      );
-      var fareValue = jsonDecode(storedTemFare);
-      fixedFare.value = fareValue== null?"0": fareValue['total_fare'].toString();
-      returnFareValue = fareValue== null?"0": fareValue['return_fare'].toString();
-      slugControllerReturn.text = fareValue== null?"0": fareValue['return_fare'].toString();
-      slugController.text = fareValue== null?"0": fareValue['fare'].toString();
-      update();
-    } else {
-      print("❌ OSRM error: ${res.statusCode}");
-    }
-  }
+     ///  RETURN (C -> Vias -> D)
+     if (returnSequence.length >= 2) {
+       final coordsRet = returnSequence.map((p) => "${p.longitude},${p.latitude}").join(";");
+       final urlRet = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordsRet?overview=full');
+       try {
+         final resRet = await Dio().getUri(urlRet);
+         if (resRet.statusCode == 200 && resRet.data['routes'] != null && resRet.data['routes'].isNotEmpty) {
+           final dataRet = resRet.data['routes'][0];
+           computedReturnMiles = dataRet['distance'] * 0.000621371;
+           totalComputedMiles += computedReturnMiles;
+
+           // ADDED: Time duration added for Return Route
+           returnDurationMinutes = (dataRet['duration'] ?? 0).toDouble() / 60;
+           totalDurationMinutes += returnDurationMinutes;
+
+           String encodedPoly = dataRet['geometry'];
+           List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPoly);
+           List<LatLng> decodedSegmentPoints = result.map((p) => LatLng(p.latitude, p.longitude)).toList();
+           polylinePointsCoordinate.addAll(decodedSegmentPoints);
+
+           polylines.add(Polyline(
+             points: decodedSegmentPoints,
+             color: DynamicColors.pink,
+             strokeWidth: 2.5,
+           ));
+         }
+       } catch (e) {
+         print("Return Route Generation Error: $e");
+       }
+     }
+
+     totalDistance.value = totalComputedMiles.toStringAsFixed(2);
+     tempStoreTotalDistance.value = totalComputedMiles.toStringAsFixed(2);
+     tempStoreMils = computedOutboundMiles.toStringAsFixed(2);
+     tempStoreReturnMils = computedReturnMiles.toStringAsFixed(2);
+     totalTimeDuration.value = formatDuration(totalDurationMinutes);
+
+     // Calculate
+     if (viaPoints.any((element) => element.withReturnWay == "via")) {
+       tempStoreViaMils = computedOutboundMiles.toStringAsFixed(2);
+     } else {
+       tempStoreViaMils = "0.00";
+     }
+     String postMils = (computedOutboundMiles).toStringAsFixed(2);
+
+     // if (pickupTwoWayController.text.isNotEmpty && dropOffTwoWayController.text.isEmpty) {
+     //   print("Waiting for final return segment dropoff checkpoint.");
+     //   return;
+     // }
+
+     final storedTemFare = await getFares(
+       journeyTypeId: selectJourneyTypeValue!.id,
+       multiReservationList: multiReservationList,
+       pickup: pickupController.text,
+       dropOff: dropOffController.text,
+       miles: postMils,
+       pickUpPlotId: dashboardDZoneValue != null ? dashboardDZoneValue!.id : null,
+       dropoffPlotId: dashboardZoneValue != null ? dashboardZoneValue!.id : null,
+       pickupDate: "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
+       pickupTime: pickUpTimeController.text,
+       vehicleTypeId: selectVehicleValue!.id,
+       returnVehicleTypeId : selectVehicleValueReturn!.id,
+       withReturnPickUp: pickupTwoWayController.text.isEmpty ? null : pickupTwoWayController.text,
+       withReturnDropOff: dropOffTwoWayController.text.isEmpty ? null : dropOffTwoWayController.text,
+       returnMiles: dropOffTwoWayController.text.isNotEmpty || pickupTwoWayController.text.isNotEmpty ?tempStoreReturnMils: null,
+     );
+     var fareValue = jsonDecode(storedTemFare);
+     fixedFare.value = fareValue['fare']?.toString() ?? "0";
+     slugController.text = fareValue['fare']?.toString() ?? "0";
+     returnFareValue = fareValue['return_fare']?.toString() ?? "0";
+     slugControllerReturn.text = fareValue['return_fare']?.toString() ?? "0";
+
+     if (polylinePointsCoordinate.isNotEmpty) {
+       final List<LatLng> focusPoints = totalMapLayoutFocusPoints.isNotEmpty ? totalMapLayoutFocusPoints : polylinePointsCoordinate;
+       LatLngBounds bounds = focusPoints.length == 1 ? LatLngBounds.fromPoints([focusPoints.first, focusPoints.first]) : calculateBounds(focusPoints);
+       final cameraFit = CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
+       mapController.fitCamera(cameraFit);
+
+     }
+     update();
+   }
 
 // inside your controller
   final suggestionFocusNode = FocusNode();
@@ -1278,7 +1476,17 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     update();
   }
 
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard data
+   void updateZoom(bool zoomIn) {
+     double currentZoom = mapController.camera.zoom;
+     double newZoom = zoomIn ? currentZoom + 1 : currentZoom - 1;
+
+     if (newZoom >= 3.0 && newZoom <= 18.0) {
+       mapController.move(mapController.camera.center, newZoom);
+     }
+   }
+
+
+   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard data
    FocusNode driverDropdownFocusNode = FocusNode();
 
   /// Shared focus node for the Driver panel header.

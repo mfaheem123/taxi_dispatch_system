@@ -52,6 +52,7 @@ Future<String> getFares({
   dynamic pickupDate,
   dynamic pickupTime,
   dynamic vehicleTypeId,
+  dynamic returnVehicleTypeId,
   List? multiReservation,
   dynamic day,
   dynamic pickUpPlotId,
@@ -123,6 +124,8 @@ Future<String> getFares({
     if (pickupDate != null) "pickup_date": pickupDate,
     if (pickupTime != null) "pickup_time": pickupTime,
     if (vehicleTypeId != null) "vehicle_type_id": vehicleTypeId,
+    if (returnVehicleTypeId != null)
+      "return_vehicle_type_id": returnVehicleTypeId,
     if (day != null) "day": day,
     if (pickUpPlotId != null) "pickup_plot_id": pickUpPlotId,
     if (dropoffPlotId != null) "dropoff_plot_id": dropoffPlotId,
