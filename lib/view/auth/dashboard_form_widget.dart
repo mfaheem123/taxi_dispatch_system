@@ -47,6 +47,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   // bool quotation = true;
   AllAddressesModel? _selectedPickup;
   AllAddressesModel? _selectedDrop;
+  // Kept focused (instead of a plain unfocus()) whenever the PICKUP/DROP
+  // autocomplete resigns focus, so F7/F8/F9 keep working — unfocus() moves
+  // primary focus to the ambient FocusScope *outside* CallbackShortcuts,
+  // and key events only bubble up from whichever node currently has focus.
+  final FocusNode _shortcutFocusNode = FocusNode();
   // ────────── return-journey state
   ZoneObject? returnDropZone;
   DashboardVehicleTypeObject? returnVehicleValue;
@@ -152,6 +157,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     }
   }
   @override
+  void dispose() {
+    _shortcutFocusNode.dispose();
+    super.dispose();
+  }
+  @override
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
     final isMobile = w < 640;
@@ -181,6 +191,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       },
       child: Focus(
         autofocus: true,
+        focusNode: _shortcutFocusNode,
         child: GetBuilder<DashboardController>(
           initState: (_) {
             controller.seeZoneOnMapp();
@@ -868,6 +879,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         onChanged: onChanged,
         onSelected: onAddressSelected,
         onPickIndex: onPickIndex,
+        fallbackFocusNode: _shortcutFocusNode,
         decoration: _inputDecoration().copyWith(
           contentPadding:
           const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
@@ -1555,6 +1567,7 @@ class _AddressModelAutocomplete extends StatefulWidget {
     this.onChanged,
     this.onSelected,
     this.onPickIndex,
+    this.fallbackFocusNode,
   });
   final TextEditingController controller;
   final List<AllAddressesModel> items;
@@ -1562,6 +1575,9 @@ class _AddressModelAutocomplete extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final ValueChanged<AllAddressesModel>? onSelected;
   final ValueChanged<int>? onPickIndex;
+  // Focus is redirected here instead of being dropped, so the CallbackShortcuts
+  // (F7/F8/F9) ancestor stays in the focused chain after a pick / tap-outside.
+  final FocusNode? fallbackFocusNode;
   @override
   State<_AddressModelAutocomplete> createState() =>
       _AddressModelAutocompleteState();
@@ -1672,7 +1688,11 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     final idx = widget.items.indexOf(a);
     if (idx >= 0) widget.onPickIndex?.call(idx);
     widget.onSelected?.call(a);
-    _focusNode.unfocus();
+    if (widget.fallbackFocusNode != null) {
+      widget.fallbackFocusNode!.requestFocus();
+    } else {
+      _focusNode.unfocus();
+    }
   }
   void _moveHighlight(int delta) {
     if (_filtered.isEmpty) return;
@@ -1743,7 +1763,13 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
         showWhenUnlinked: false,
         offset: Offset(0, height + 4),
         child: TextFieldTapRegion(
-          onTapOutside: (_) => _focusNode.unfocus(),
+          onTapOutside: (_) {
+            if (widget.fallbackFocusNode != null) {
+              widget.fallbackFocusNode!.requestFocus();
+            } else {
+              _focusNode.unfocus();
+            }
+          },
           child: Material(
             elevation: 6,
             borderRadius: BorderRadius.circular(8),
