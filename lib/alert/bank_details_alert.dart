@@ -14,12 +14,12 @@ import '../view/drivers_view/driver/create_driver_form/driver_form.dart';
 class BankDetailsAlert {
   static void show() {
     // final List<Map<String, String>> shifts = [];
-    final bank = TextEditingController();
-    final accountTitle = TextEditingController();
-    final account = TextEditingController();
-    final iban = TextEditingController();
-    final sortCode = TextEditingController();
-    final vat = TextEditingController();
+    // final bank = TextEditingController();
+    // final accountTitle = TextEditingController();
+    // final account = TextEditingController();
+    // final iban = TextEditingController();
+    // final sortCode = TextEditingController();
+    // final vat = TextEditingController();
 
     AdministrationController controller = Get.isRegistered<AdministrationController>()
         ? Get.find<AdministrationController>()
@@ -79,25 +79,25 @@ class BankDetailsAlert {
                           Row(
                             children: [
                               Expanded(
-                                  flex: 2, child: _buildField("BANK", bank, TextInputType.text)),
+                                  flex: 2, child: _buildField("BANK", controller.bankController, TextInputType.text)),
                               const SizedBox(width: 8),
                               Expanded(
-                                  flex: 2, child: _buildField("ACCOUNT TITLE", accountTitle,TextInputType.text )),
+                                  flex: 2, child: _buildField("ACCOUNT TITLE", controller.accountTitleController,TextInputType.text )),
                               const SizedBox(width: 8),
                               Expanded(
-                                  flex: 2, child: _buildField("ACCOUNT #", account,const TextInputType.numberWithOptions(decimal: true) )),
+                                  flex: 2, child: _buildField("ACCOUNT #", controller.accountController,const TextInputType.numberWithOptions(decimal: true) )),
                               const SizedBox(width: 8),
                               Expanded(
                                 flex: 2,
                                 // keyboardType ko badal kar TextInputType.text kar diya
-                                child: _buildField("IBAN", iban, TextInputType.text),
+                                child: _buildField("IBAN", controller.ibanController, TextInputType.text),
                               ),
                               // const SizedBox(width: 8), Expanded(
                               //     flex: 2, child: _buildField("IBAN", iban,const TextInputType.numberWithOptions(decimal: true))),
                               const SizedBox(width: 8), Expanded(
-                                  flex: 2, child: _buildField("SORT CODE", sortCode, const TextInputType.numberWithOptions(decimal: true))),
+                                  flex: 2, child: _buildField("SORT CODE", controller.sortCodeController, const TextInputType.numberWithOptions(decimal: true))),
                               const SizedBox(width: 8), Expanded(
-                                  flex: 2, child: _buildField("VAT #", vat, const TextInputType.numberWithOptions(decimal: true))),
+                                  flex: 2, child: _buildField("VAT #", controller.vatController, const TextInputType.numberWithOptions(decimal: true))),
                               const SizedBox(width: 8),
 
                               Expanded(
@@ -113,36 +113,36 @@ class BankDetailsAlert {
                                     style: mozillaTextRegularText(
                                         fontSize: 14, color: DynamicColors.whiteClr),
                                     onTap: () {
-                                      if (bank.text.isEmpty) {
+                                      if (controller.bankController.text.isEmpty) {
                                         Get.snackbar("Error", "Bank name is required");
                                         return;
                                       }
                                       if (editingIndex != null) {
                                         controller.bankDetailList[editingIndex!] = BankDetailsAlertClass(
-                                          bank: bank.text,
-                                          accountTitle: accountTitle.text,
-                                          account: account.text,
-                                          iban: iban.text,
-                                          sortCode: sortCode.text,
-                                          vat: vat.text,
+                                          bank: controller.bankController.text,
+                                          accountTitle: controller.accountTitleController.text,
+                                          account: controller.accountController.text,
+                                          iban: controller.ibanController.text,
+                                          sortCode: controller.sortCodeController.text,
+                                          vat: controller.vatController.text,
                                         );
                                         editingIndex = null;
                                       } else {
                                         controller.bankDetailList.add(BankDetailsAlertClass(
-                                          bank: bank.text,
-                                          accountTitle: accountTitle.text,
-                                          account: account.text,
-                                          iban: iban.text,
-                                          sortCode: sortCode.text,
-                                          vat: vat.text,
+                                          bank: controller.bankController.text,
+                                          accountTitle: controller.accountTitleController.text,
+                                          account: controller.accountController.text,
+                                          iban: controller.ibanController.text,
+                                          sortCode: controller.sortCodeController.text,
+                                          vat: controller.vatController.text,
                                         ));
                                       }
-                                      bank.clear();
-                                      accountTitle.clear();
-                                      account.clear();
-                                      iban.clear();
-                                      sortCode.clear();
-                                      vat.clear();
+                                      controller.bankController.clear();
+                                      controller.accountTitleController.clear();
+                                      controller.accountController.clear();
+                                      controller.ibanController.clear();
+                                      controller.sortCodeController.clear();
+                                      controller.vatController.clear();
                                       controller.update();
                                       setState(() {});
                                     },
@@ -239,12 +239,12 @@ class BankDetailsAlert {
                                           onPressed: () {
                                             setState(() {
                                               editingIndex = index;
-                                              bank.text = row.bank;
-                                              accountTitle.text = row.accountTitle ?? "";
-                                              account.text = row.account ?? "";
-                                              iban.text = row.iban ?? "";
-                                              sortCode.text = row.sortCode ?? "";
-                                              vat.text = row.vat ?? "";
+                                              controller.bankController.text = row.bank;
+                                              controller.accountTitleController.text = row.accountTitle ?? "";
+                                              controller.accountController.text = row.account ?? "";
+                                              controller.ibanController.text = row.iban ?? "";
+                                              controller.sortCodeController.text = row.sortCode ?? "";
+                                              controller.vatController.text = row.vat ?? "";
 
                                             });
                                           },
