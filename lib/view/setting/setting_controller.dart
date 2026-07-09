@@ -10,6 +10,8 @@ import 'package:get_storage/get_storage.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:pdf/pdf.dart';
 
+import '../administration/model/list_subsDiary.dart';
+import 'model/get_document_number_model.dart';
 import 'model/select_templete_type.dart';
 import 'model/templete_HTML_model.dart' hide TemplateType;
 import 'model/templete_by_type_model.dart';
@@ -254,6 +256,26 @@ class SettingController extends GetxController {
 
   String? selectedTable;
   String? selectedColumn;
+  final Map<String, List<String>> tableColumnsMap = {
+    "BOOKING": ["reference_number"],
+    "COMPLAINT": ["reference_number"],
+    "ACCOUNT INVOICE": ["invoice_number"],
+    "ACCOUNT PRE INVOICE": ["invoice_number"],
+    "CUSTOMER INVOICE": ["invoice_number"],
+    "CUSTOMER PRE INVOICE": ["invoice_number"],
+    "DRIVER COMMISSION": ["transaction_number"],
+    "LOST PROPERTY": ["lost_number"],
+  };
+
+  void onTableChanged(String? table) {
+    selectedTable = table;
+    if (table != null && tableColumnsMap.containsKey(table)) {
+      selectedColumn = tableColumnsMap[table]!.first;
+    } else {
+      selectedColumn = null;
+    }
+    update();
+  }
   String? selectedSubsidiary;
 
 
@@ -267,6 +289,92 @@ class SettingController extends GetxController {
     textController.text = val.toString();
     update();
   }
+
+  /// subsidiary api
+  SubsDiaryModel? subsDiaryModel;
+  // Subsidiaries? subsidiaries;
+  String? selectedSubsidiaryId;
+  bool isSubsidiary = false;
+
+  getDocumentSubsidiary() async {
+    isSubsidiary = true;
+        var response = await Api().get("subsidiaries/get", sendCompanyId: true);
+    if (response.statusCode == 200) {
+      subsDiaryModel = SubsDiaryModel.fromJson(response.data);
+      isSubsidiary = false;
+      update();
+    }
+  }
+
+  /// list document number
+
+  GetDocumentNumberModel? getDocumentNumberModel;
+  bool isDocumentNumber = false;
+  
+  getDocumentNumber() async {
+    isDocumentNumber = true;
+    update();
+    
+    var response = await Api().get("document/document_numbers/get", sendCompanyId: true);
+    if (response.statusCode == 200) {
+      getDocumentNumberModel = GetDocumentNumberModel.fromJson(response.data);
+    }
+    isDocumentNumber = false;
+    update();
+  }
+
+  /// save api
+
+  bool isAddNumber = false;
+  saveDocumentNumber() async {
+    isAddNumber = true;
+    update();
+
+    var formData = {
+      "subsidiary_id": int.tryParse(selectedSubsidiaryId!) ?? 0,
+      "document_table": selectedTable.toString().toLowerCase().replaceAll(" ", "_"),
+      "document_column": selectedColumn.toString().trim(),
+      "prefix": prefixController.text,
+      "start_number": int.tryParse(startNumberController.text) ?? 1,
+      "increment_value": int.tryParse(incrementController.text) ?? 1,
+      "auto_increment": true,
+      "company_id": 1,
+    };
+    try {
+      var response = await Api().post(
+          formData,
+          "document/document_numbers/add"
+      );
+
+      print("🔴 SERVER RESPONSE: ${response.statusCode} -> ${response.data}");
+
+      if (response.statusCode == 200) {
+        BotToast.showText(text: "Document Number Added Successfully!");
+        print("API Response: ${response.data}");
+        getDocumentNumber();
+        Get.back();
+      } else {
+        BotToast.showText(text: "Failed to add document number");
+      }
+    } catch (e) {
+      print("❌ CRITICAL API ERROR: $e");
+      BotToast.showText(text: "Error: $e");
+    } finally {
+      isAddNumber = false;
+      update();
+    }
+  }
+
+  /// Edit
+  bindDocumentNumber(DocumentNumber document) {
+    selectedTable = document.documentTable.toString() ?? "";
+    selectedColumn = document.documentColumn.toString() ?? "";
+    selectedSubsidiaryId = document.subsidiary.toString() ?? "";
+    prefixController.text = document.prefix ?? "";
+    startNumberController.text = document.startNumber.toString() ?? "";
+    incrementController.text = document.incrementValue.toString() ?? "";
+  }
+
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo document number functionality
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Company Information

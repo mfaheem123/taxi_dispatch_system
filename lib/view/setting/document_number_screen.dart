@@ -10,6 +10,7 @@ import '../../alert/ducument_number_alert.dart';
 import '../../component/networks/api.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
+import 'setting_controller.dart';
 
 class DocumentNumberScreen extends StatefulWidget {
   const DocumentNumberScreen({super.key});
@@ -22,10 +23,10 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
   int selectedRowIndex = 0;
   final int totalRows = 5;
 
-  AdministrationController controller =
-      Get.isRegistered<AdministrationController>()
-          ? Get.find<AdministrationController>()
-          : Get.put(AdministrationController());
+  SettingController controller =
+      Get.isRegistered<SettingController>()
+          ? Get.find<SettingController>()
+          : Get.put(SettingController());
 
   @override
   void initState() {
@@ -44,9 +45,12 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<AdministrationController>(initState: (v) {
+    return GetBuilder<SettingController>(initState: (v) {
+      controller.getDocumentNumber();
       permissions = Api().sp.read('all_permissions') ?? [];
     }, builder: (controller) {
+      final documentList = controller.getDocumentNumberModel?.documentNumbers ?? [];
+
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -72,7 +76,7 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
                   Text(
                     AppText.documentsNumber,
                     style: mozillaTextSemiBoldText(
-                        fontWeight: FontWeight.w800, fontSize: 17),
+                        fontWeight: FontWeight.w800, fontSize: 23),
                   ),
                   Spacer(),
                   CustomButton(
@@ -99,7 +103,14 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
                 ],
               ),
             ),
-            SingleChildScrollView(
+            controller.isDocumentNumber
+            ? const Center(child: CircularProgressIndicator())
+            : documentList.isEmpty
+                ? const Center(child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Text("No Data Found"),
+            ))
+            : SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: SizedBox(
                 width: Get.width,
@@ -115,56 +126,59 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
                     buildHeaderWithSearch(
                         title: "ACTIONS", removeSearching: true),
                   ],
-                  totalRow: totalRows,
-                  cells: [
-                    const DataCell(Text("SALOON")),
-                    const DataCell(Text("NW7")),
-                    const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                    const DataCell(Text("55.00")),
-                    const DataCell(Text("1")),
-                    const DataCell(Text("45465")),
-                    const DataCell(Text("5")),
-                    DataCell(
-                      Row(
-                        children: [
-                          if (permissions.contains('update_document_number'))
-                            OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                side: BorderSide(
-                                  color: Colors.transparent,
-                                ), // border color & thickness
+                  totalRow: documentList.length,
+                  rows: documentList.map((document) {
+                    return DataRow(cells: [
+                      DataCell(Center(child: Text((document.documentTable ?? "-").toUpperCase()))),
+                      DataCell(Center(child: Text((document.documentColumn ?? "-").toUpperCase()))),
+                      DataCell(Center(child: Text((document.subsidiary?.name ?? "-").toUpperCase()))),
+                      DataCell(Center(child: Text((document.prefix ?? "-").toUpperCase()))),
+                      DataCell(Center(child: Text((document.startNumber?.toString() ?? "-").toUpperCase()))),
+                      DataCell(Center(child: Text((document.endNumber?.toString() ?? "-").toUpperCase()))),
+                      DataCell(Center(child: Text((document.incrementValue?.toString() ?? "-").toUpperCase()))),
+                      DataCell(Center(child:
+                        Row(
+                          children: [
+                            if (permissions.contains('update_document_number'))
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(color: Colors.transparent),
+                                ),
+                                onPressed: () {
+                                  controller.bindDocumentNumber(document);
+                                  controller.update();
+                                },
+                                child: Icon(
+                                  Icons.edit_calendar,
+                                  size: 28,
+                                  color: DynamicColors.primaryClr,
+                                ),
                               ),
-                              onPressed: () {},
-                              child: Icon(
-                                Icons.edit_calendar,
-                                size: 28,
-                                color: DynamicColors.primaryClr,
+                            if (permissions.contains('delete_document_number'))
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(color: Colors.transparent),
+                                ),
+                                onPressed: () {},
+                                child:  Icon(
+                                  Icons.delete_forever,
+                                  size: 28,
+                                  color: DynamicColors.redClr,
+                                ),
                               ),
-                            ),
-                          if (permissions.contains('delete_document_number'))
-                            OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                side: BorderSide(
-                                  color: Colors.transparent,
-                                ), // border color & thickness
-                              ),
-                              onPressed: () {},
-                              child: Icon(
-                                Icons.delete_forever,
-                                size: 28,
-                                color: DynamicColors.redClr,
-                              ),
-                            ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                      ),
+                    ]);
+                  }).toList(),
                 ),
               ),
             ),
           ],
         );
       });
-    });
+    },
+    );
   }
 }
