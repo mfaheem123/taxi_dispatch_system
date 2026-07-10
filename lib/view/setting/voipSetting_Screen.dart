@@ -36,11 +36,13 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
         }
 
         // List of employees for dropdown
-        List<String> employeeList = controller.getManageExtentionModel!.employeeExtensions!
+        List<String> employeeList = controller
+            .getManageExtentionModel!.employeeExtensions!
             .map((e) => e.employee!.username ?? "-")
             .toList();
 
-        return Container(
+        return SingleChildScrollView(
+            child: Container(
           width: w,
           height: h,
           color: Colors.white,
@@ -48,155 +50,206 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-
-
               // ---------- TITLE ----------
 
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: const Text(
-                  "VOIP SETTINGS",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-              ),
+              // Container(
+              //   padding: const EdgeInsets.symmetric(vertical: 12),
+              //   child: const Text(
+              //     "VOIP SETTINGS",
+              //     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              //   ),
+              // ),
 
               // ---------- SERVICE + STATUS ----------
               Container(
-                width: w * 0.5,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Service
-                    Row(
-                      children: [
-                        const SizedBox(width: 10),
-                        const Text("SERVICE",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 14)),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: DropdownButtonFormField<String>(
-                            value: "YESTECH",
-                            items: const [
-                              DropdownMenuItem(
-                                  value: "YESTECH", child: Text("YESTECH")),
-                              DropdownMenuItem(
-                                  value: "OTHER", child: Text("OTHER")),
-                            ],
-                            onChanged: (v) {},
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              contentPadding:
-                              EdgeInsets.symmetric(horizontal: 10),
-                            ),
+                  width: w * 0.7,
+                  // padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Column(
+                    // crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: DynamicColors.gryClr,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(5),
+                            topRight: Radius.circular(5),
                           ),
                         ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Status
-                    Row(
-                      children: [
-                        const SizedBox(width: 10),
-                        const Text("STATUS",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 14)),
-                        const SizedBox(width: 30),
-                        Expanded(
-                          child: DropdownButtonFormField<String>(
-                            value: "RINGING",
-                            items: const [
-                              DropdownMenuItem(
-                                  value: "RINGING", child: Text("RINGING")),
-                              DropdownMenuItem(
-                                  value: "ACTIVE", child: Text("ACTIVE")),
-                            ],
-                            onChanged: (v) {},
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              contentPadding:
-                              EdgeInsets.symmetric(horizontal: 10),
-                            ),
+                        child: Text(
+                          "VOIP SETTINGS",
+                          style: mozillaTextSemiBoldText(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: DynamicColors.black,
                           ),
                         ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Save Button
-                    Center(
-                      child: CustomButton(
-                        height: 35,
-                        width: 80,
-                        verticalPadding: 0.0,
-                        borderRadius: 4,
-                        widget: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 15, vertical: 0.0),
-                          child: Text(
-                            AppText.save,
-                            style: mozillaTextRegularText(
-                                fontSize: 12, color: DynamicColors.whiteClr),
-                          ),
-                        ),
-                        onTap: () {
-                          print("VOIP settings saved");
-                        },
                       ),
-                    ),
-                  ],
-                ),
-              ),
+                      // Service
+                      Container(
+                        color: Colors.white,
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                      Text("SERVICE",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14)),
+                                      SizedBox(width: 15),
+                                      Expanded(
+                                        child: DropdownButtonFormField<String>(
+                                          value: "YESTECH",
+                                          items: const [
+                                            DropdownMenuItem(
+                                                value: "YESTECH",
+                                                child: Text("YESTECH")),
+                                            DropdownMenuItem(
+                                                value: "OTHER",
+                                                child: Text("OTHER")),
+                                          ],
+                                          onChanged: (v) {},
+                                          decoration: const InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                    horizontal: 10),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const SizedBox(width: 25),
+
+                                // Status
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                      Text("STATUS",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14)),
+                                      SizedBox(width: 15),
+                                      Expanded(
+                                        child: DropdownButtonFormField<String>(
+                                          value: "RINGING",
+                                          items: const [
+                                            DropdownMenuItem(
+                                                value: "RINGING",
+                                                child: Text("RINGING")),
+                                            DropdownMenuItem(
+                                                value: "ACTIVE",
+                                                child: Text("ACTIVE")),
+                                          ],
+                                          onChanged: (v) {},
+                                          decoration: const InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                    horizontal: 10),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            // Save Button
+                            Center(
+                              child: CustomButton(
+                                height: 35,
+                                width: 170,
+                                verticalPadding: 0.0,
+                                borderRadius: 4,
+                                widget: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 15, vertical: 0.0),
+                                  child: Text(
+                                    AppText.save,
+                                    style: mozillaTextRegularText(
+                                        fontSize: 12,
+                                        color: DynamicColors.whiteClr),
+                                  ),
+                                ),
+                                onTap: () {
+                                  print("VOIP settings saved");
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )),
 
               SizedBox(height: 20),
 
               // ---------- MANAGE EXTENSIONS + BUTTON ----------
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    "MANAGE EXTENSIONS",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(width: 15),
-                  CustomButton(
-                    height: 35,
-                    width: 100,
-                    verticalPadding: 0.0,
-                    borderRadius: 4,
-                    widget: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(Icons.add, size: 16, color: Colors.white),
-                          SizedBox(width: 5),
-                          Text("Add", style: TextStyle(color: Colors.white, fontSize: 14)),
-                        ],
-                      ),
+              Container(
+                width: w * 0.7,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                         Text(
+                          "MANAGE EXTENSIONS",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        CustomButton(
+                          height: 35,
+                          width: 50,
+                          verticalPadding: 0.0,
+                          borderRadius: 4,
+                          widget: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(Icons.add, size: 16, color: Colors.white),
+                                SizedBox(width: 5),
+                              ],
+                            ),
+                          ),
+                          onTap: () {
+                            // Add new row
+                            setState(() {
+                              newExtensions
+                                  .add({"employee": null, "extension": ""});
+                            });
+                          },
+                        ),
+                      ],
                     ),
-                    onTap: () {
-                      // Add new row
-                      setState(() {
-                        newExtensions.add({"employee": null, "extension": ""});
-                      });
-                    },
-                  ),
-                ],
-              ),
+                ),
 
               const SizedBox(height: 10),
 
               // ---------- TABLE ----------
-              Expanded(
+              Container(
+                width: w * 0.7,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade200),
+                  borderRadius: BorderRadius.circular(6),
+                ),
                 child: DatatableWidget(
                   columns: [
                     buildHeaderWithSearch(
@@ -208,36 +261,49 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                   ],
                   rows: [
                     // Existing extensions
-                    ...controller
-                        .getManageExtentionModel!.employeeExtensions!
+                    ...controller.getManageExtentionModel!.employeeExtensions!
                         .map((ext) {
                       return DataRow(
                         cells: [
-                          DataCell(Text(ext.employee!.username ?? "-")),
-                          DataCell(Text(ext.extensionNumber ?? "-")),
                           DataCell(
-                            Row(
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    print("Edit clicked");
-                                  },
-                                  icon: Icon(Icons.edit,
-                                      color: DynamicColors.primaryClr),
-                                ),
-                                IconButton(
-                                  onPressed: () {
-                                    print("Delete clicked");
-                                  },
-                                  icon: const Icon(Icons.delete, color: Colors.red),
-                                ),
-                              ],
+                            Container(
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              child: Text(ext.employee!.username ?? "-"),
+                            ),
+                          ),
+                          DataCell(
+                            Container(
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              child: Text(ext.extensionNumber ?? "-"),
+                            ),
+                          ),
+                          DataCell(
+                            Container(
+                              alignment: Alignment.center,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      print("Edit clicked");
+                                    },
+                                    icon: Icon(Icons.edit, color: DynamicColors.primaryClr, size: 20),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      print("Delete clicked");
+                                    },
+                                    icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
                       );
                     }).toList(),
-
                     // New temporary rows
                     ...newExtensions.map((row) {
                       int index = newExtensions.indexOf(row);
@@ -249,9 +315,8 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                               value: row["employee"],
                               hint: const Text("Select Employee"),
                               items: employeeList
-                                  .map((e) =>
-
-                                  DropdownMenuItem(value: e, child: Text(e)))
+                                  .map((e) => DropdownMenuItem(
+                                      value: e, child: Text(e)))
                                   .toList(),
                               onChanged: (val) {
                                 setState(() {
@@ -261,37 +326,39 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                             ),
                           ),
                           // Extension TextField
-                          DataCell(
-                              TextField(
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  hintText: "Enter Extension",
-                                ),
+                          DataCell(TextField(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: "Enter Extension",
+                            ),
 
-                                keyboardType: TextInputType.number, // Numeric keyboard
+                            keyboardType:
+                                TextInputType.number, // Numeric keyboard
 
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly, // Sirf numbers allow
-                                ],
+                            inputFormatters: [
+                              FilteringTextInputFormatter
+                                  .digitsOnly, // Sirf numbers allow
+                            ],
 
-                                onChanged: (val) {
-                                  newExtensions[index]["extension"] = val;
-                                },
-                              )
-                          ),
+                            onChanged: (val) {
+                              newExtensions[index]["extension"] = val;
+                            },
+                          )),
                           // Actions: Save / Cancel
                           DataCell(
                             Row(
                               children: [
                                 IconButton(
                                   onPressed: () {
-                                    print("Save new extension: ${row["employee"]} - ${row["extension"]}");
+                                    print(
+                                        "Save new extension: ${row["employee"]} - ${row["extension"]}");
                                     // Yahan controller ke addExtension method call kar sakte ho
                                     setState(() {
                                       newExtensions.removeAt(index);
                                     });
                                   },
-                                  icon: const Icon(Icons.check, color: Colors.green),
+                                  icon: const Icon(Icons.check,
+                                      color: Colors.green),
                                 ),
                                 IconButton(
                                   onPressed: () {
@@ -299,7 +366,8 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                                       newExtensions.removeAt(index);
                                     });
                                   },
-                                  icon: const Icon(Icons.close, color: Colors.red),
+                                  icon: const Icon(Icons.close,
+                                      color: Colors.red),
                                 ),
                               ],
                             ),
@@ -312,7 +380,7 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
               ),
             ],
           ),
-        );
+        ));
       },
     );
   }
