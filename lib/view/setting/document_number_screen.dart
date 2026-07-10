@@ -129,8 +129,8 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
                   totalRow: documentList.length,
                   rows: documentList.map((document) {
                     return DataRow(cells: [
-                      DataCell(Center(child: Text((document.documentTable ?? "-").toUpperCase()))),
-                      DataCell(Center(child: Text((document.documentColumn ?? "-").toUpperCase()))),
+                      DataCell(Center(child: Text((document.documentTable ?? "-").replaceAll("_", " ").toUpperCase()))),
+                      DataCell(Center(child: Text((document.documentColumn ?? "-").replaceAll("_", " ").toUpperCase()))),
                       DataCell(Center(child: Text((document.subsidiary?.name ?? "-").toUpperCase()))),
                       DataCell(Center(child: Text((document.prefix ?? "-").toUpperCase()))),
                       DataCell(Center(child: Text((document.startNumber?.toString() ?? "-").toUpperCase()))),
@@ -147,6 +147,11 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
                                 onPressed: () {
                                   controller.bindDocumentNumber(document);
                                   controller.update();
+
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => const AddDocumentDialog(),
+                                  );
                                 },
                                 child: Icon(
                                   Icons.edit_calendar,
@@ -159,7 +164,9 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
                                 style: OutlinedButton.styleFrom(
                                   side: const BorderSide(color: Colors.transparent),
                                 ),
-                                onPressed: () {},
+                                onPressed: () {
+                                  controller.documentNumberDelete(document.id);
+                                },
                                 child:  Icon(
                                   Icons.delete_forever,
                                   size: 28,

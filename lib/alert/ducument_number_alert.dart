@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:get/get.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
@@ -44,6 +45,8 @@ class AddDocumentDialog extends StatelessWidget {
                 final double maxWidth = constraints.maxWidth;
                 final double fieldWidth = maxWidth;
 
+                List<String> availableColumns = logic.tableColumnsMap[logic.selectedTable] ?? [];
+
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -57,8 +60,10 @@ class AddDocumentDialog extends StatelessWidget {
                             text: "DOCUMENT TABLE",
                             label: "SELECT DOCUMENT TABLE",
                             items: logic.tableColumnsMap.keys.toList(),
-                            value: logic.selectedTable,
-                            itemLabel: (val) => val,
+                            value: logic.tableColumnsMap.containsKey(logic.selectedTable)
+                                ? logic.selectedTable
+                                : null,
+                            itemLabel: (val) => val.replaceAll("_", " ").toUpperCase(),
                             onChanged: (val) {
                               logic.onTableChanged(val);
                             },
@@ -70,9 +75,11 @@ class AddDocumentDialog extends StatelessWidget {
                             width: maxWidth < 1400 ? fieldWidth / 1.7 : fieldWidth / 1.9,
                             text: "DOCUMENT COLUMN",
                             label: "SELECT DOCUMENT COLUMN",
-                            items: logic.tableColumnsMap[logic.selectedTable] ?? ["SELECT DOCUMENT COLUMN"],
-                            value: logic.selectedColumn,
-                            itemLabel: (val) => val.toUpperCase().replaceAll("_", " "),
+                            items: availableColumns.isNotEmpty ? availableColumns : ["SELECT DOCUMENT COLUMN"],
+                            value: availableColumns.contains(logic.selectedColumn)
+                                ? logic.selectedColumn
+                                : null,
+                            itemLabel: (val) => val.replaceAll("_", " ").toUpperCase(),
                             onChanged: (val) {
                               logic.selectedColumn = val;
                               logic.update();
@@ -89,7 +96,7 @@ class AddDocumentDialog extends StatelessWidget {
                             value: controller.subsDiaryModel?.subsidiaries
                                 ?.firstWhereOrNull((element) => element.id.toString() == controller.selectedSubsidiaryId.toString()),
 
-                            itemLabel: (item) => item.name ?? "",
+                            itemLabel: (item) => (item.name ?? "").toUpperCase(),
                             onChanged: (val) {
                               controller.selectedSubsidiaryId = val?.id.toString();
                               controller.update();
@@ -178,7 +185,9 @@ class AddDocumentDialog extends StatelessWidget {
               height: 20,
               child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
             )
-                : const Text("Save"),
+                : Obx(() => Text(
+              controller.updateDocumentNumber.value ? "Update" : "Save",
+            )),
           ),
         ),
       ],
@@ -198,6 +207,8 @@ class AddDocumentDialog extends StatelessWidget {
         const SizedBox(height: 6),
         TextField(
           controller: controller,
+          inputFormatters: [UpperCaseTextFormatter()],
+          textCapitalization: TextCapitalization.characters,
           style: const TextStyle(fontSize: 13),
           decoration: const InputDecoration(
             fillColor: Colors.white,

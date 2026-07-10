@@ -257,14 +257,14 @@ class SettingController extends GetxController {
   String? selectedTable;
   String? selectedColumn;
   final Map<String, List<String>> tableColumnsMap = {
-    "BOOKING": ["reference_number"],
-    "COMPLAINT": ["reference_number"],
-    "ACCOUNT INVOICE": ["invoice_number"],
-    "ACCOUNT PRE INVOICE": ["invoice_number"],
-    "CUSTOMER INVOICE": ["invoice_number"],
-    "CUSTOMER PRE INVOICE": ["invoice_number"],
-    "DRIVER COMMISSION": ["transaction_number"],
-    "LOST PROPERTY": ["lost_number"],
+    "booking": ["reference_number"],
+    "complaint": ["reference_number"],
+    "account_invoice": ["invoice_number"],
+    "account_pre_invoice": ["invoice_number"],
+    "customer_invoice": ["invoice_number"],
+    "customer_pre_invoice": ["invoice_number"],
+    "driver_commission": ["transaction_number"],
+    "lost_property": ["lost_number"],
   };
 
   void onTableChanged(String? table) {
@@ -276,8 +276,8 @@ class SettingController extends GetxController {
     }
     update();
   }
-  String? selectedSubsidiary;
 
+  String? selectedSubsidiary;
 
   void changeCounterValue(TextEditingController textController, bool isIncrement) {
     int val = int.tryParse(textController.text) ?? 0;
@@ -332,7 +332,7 @@ class SettingController extends GetxController {
 
     var formData = {
       "subsidiary_id": int.tryParse(selectedSubsidiaryId!) ?? 0,
-      "document_table": selectedTable.toString().toLowerCase().replaceAll(" ", "_"),
+      "document_table": selectedTable.toString(),
       "document_column": selectedColumn.toString().trim(),
       "prefix": prefixController.text,
       "start_number": int.tryParse(startNumberController.text) ?? 1,
@@ -343,14 +343,20 @@ class SettingController extends GetxController {
     try {
       var response = await Api().post(
           formData,
-          "document/document_numbers/add"
+          updateDocumentNumber.value == false
+          ? "document/document_numbers/add"
+              : "document/document_numbers/update/${documentUpdateId.value}"
       );
 
       print("🔴 SERVER RESPONSE: ${response.statusCode} -> ${response.data}");
 
       if (response.statusCode == 200) {
-        BotToast.showText(text: "Document Number Added Successfully!");
+        BotToast.showText(text: updateDocumentNumber.value == true
+        ? "DOCUMENT NUMBER UPDATED SUCCESSFULLY!"
+        : "DOCUMENT NUMBER ADDED SUCCESSFULLY!"
+        );
         print("API Response: ${response.data}");
+        clearFields();
         getDocumentNumber();
         Get.back();
       } else {
@@ -366,15 +372,41 @@ class SettingController extends GetxController {
   }
 
   /// Edit
+  RxBool updateDocumentNumber = false.obs;
+  RxInt documentUpdateId = 0.obs;
   bindDocumentNumber(DocumentNumber document) {
-    selectedTable = document.documentTable.toString() ?? "";
-    selectedColumn = document.documentColumn.toString() ?? "";
-    selectedSubsidiaryId = document.subsidiary.toString() ?? "";
+    selectedTable = document.documentTable.toString().toLowerCase();
+    selectedColumn = document.documentColumn.toString().toLowerCase();
+    selectedSubsidiaryId = document.subsidiaryId.toString() ?? "";
     prefixController.text = document.prefix ?? "";
-    startNumberController.text = document.startNumber.toString() ?? "";
-    incrementController.text = document.incrementValue.toString() ?? "";
+    startNumberController.text = document.startNumber.toString();
+    incrementController.text = document.incrementValue.toString();
+
+    updateDocumentNumber(true);
+    documentUpdateId(document.id);
   }
 
+  void clearFields() {
+    selectedTable = null;
+    selectedColumn = null;
+    selectedSubsidiaryId = null;
+    prefixController.clear();
+    startNumberController.text = "0";
+    incrementController.text = "0";
+    updateDocumentNumber(false);
+    documentUpdateId(0);
+    update();
+  }
+
+  /// delete APi
+
+  documentNumberDelete(int? id) async {
+    var response = await Api().delete("document/document_numbers/delete/$id");
+    if (response.statusCode == 200) {
+      BotToast.showText(text:"DOCUMENT NUMBER DELETED SUCCESSFULLY!");
+      getDocumentNumber();
+    }
+  }
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo document number functionality
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Company Information
