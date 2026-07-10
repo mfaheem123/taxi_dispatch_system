@@ -208,38 +208,38 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                         Text(
-                          "MANAGE EXTENSIONS",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        CustomButton(
-                          height: 35,
-                          width: 50,
-                          verticalPadding: 0.0,
-                          borderRadius: 4,
-                          widget: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(Icons.add, size: 16, color: Colors.white),
-                                SizedBox(width: 5),
-                              ],
-                            ),
-                          ),
-                          onTap: () {
-                            // Add new row
-                            setState(() {
-                              newExtensions
-                                  .add({"employee": null, "extension": ""});
-                            });
-                          },
-                        ),
-                      ],
+                  children: [
+                    Text(
+                      "MANAGE EXTENSIONS",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
+                    CustomButton(
+                      height: 35,
+                      width: 50,
+                      verticalPadding: 0.0,
+                      borderRadius: 4,
+                      widget: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.add, size: 16, color: Colors.white),
+                            SizedBox(width: 5),
+                          ],
+                        ),
+                      ),
+                      onTap: () {
+                        // Add new row
+                        setState(() {
+                          newExtensions
+                              .add({"employee": null, "extension": ""});
+                        });
+                      },
+                    ),
+                  ],
                 ),
+              ),
 
               const SizedBox(height: 10),
 
@@ -268,14 +268,16 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                           DataCell(
                             Container(
                               alignment: Alignment.center,
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
                               child: Text(ext.employee!.username ?? "-"),
                             ),
                           ),
                           DataCell(
                             Container(
                               alignment: Alignment.center,
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
                               child: Text(ext.extensionNumber ?? "-"),
                             ),
                           ),
@@ -289,13 +291,16 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                                     onPressed: () {
                                       print("Edit clicked");
                                     },
-                                    icon: Icon(Icons.edit, color: DynamicColors.primaryClr, size: 20),
+                                    icon: Icon(Icons.edit,
+                                        color: DynamicColors.primaryClr,
+                                        size: 20),
                                   ),
                                   IconButton(
                                     onPressed: () {
                                       print("Delete clicked");
                                     },
-                                    icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.red, size: 20),
                                   ),
                                 ],
                               ),
@@ -311,65 +316,81 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                         cells: [
                           // Employee dropdown
                           DataCell(
-                            DropdownButton<String>(
-                              value: row["employee"],
-                              hint: const Text("Select Employee"),
-                              items: employeeList
-                                  .map((e) => DropdownMenuItem(
-                                      value: e, child: Text(e)))
-                                  .toList(),
-                              onChanged: (val) {
-                                setState(() {
-                                  newExtensions[index]["employee"] = val;
-                                });
-                              },
+                            Container(
+                              alignment: Alignment.center,
+                              child: DropdownButton<String>(
+                                value: row["employee"],
+                                hint: const Text("Select Employee"),
+                                alignment: Alignment.center,
+                                items: employeeList
+                                    .map((e) => DropdownMenuItem(
+                                        value: e, child: Text(e)))
+                                    .toList(),
+                                onChanged: (val) {
+                                  setState(() {
+                                    newExtensions[index]["employee"] = val;
+                                  });
+                                },
+                              ),
                             ),
                           ),
                           // Extension TextField
-                          DataCell(TextField(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: "Enter Extension",
-                            ),
+                          DataCell(Container(
+                            alignment: Alignment.center,
+                            child: SizedBox(
+                                width: 150,
+                                height: 38,
+                                child: TextField(
+                                  textAlign: TextAlign.center,
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    hintText: "Enter Extension",
+                                  ),
 
-                            keyboardType:
-                                TextInputType.number, // Numeric keyboard
+                                  keyboardType:
+                                      TextInputType.number, // Numeric keyboard
 
-                            inputFormatters: [
-                              FilteringTextInputFormatter
-                                  .digitsOnly, // Sirf numbers allow
-                            ],
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter
+                                        .digitsOnly, // Sirf numbers allow
+                                  ],
 
-                            onChanged: (val) {
-                              newExtensions[index]["extension"] = val;
-                            },
+                                  onChanged: (val) {
+                                    newExtensions[index]["extension"] = val;
+                                  },
+                                )),
                           )),
                           // Actions: Save / Cancel
                           DataCell(
-                            Row(
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    print(
-                                        "Save new extension: ${row["employee"]} - ${row["extension"]}");
-                                    // Yahan controller ke addExtension method call kar sakte ho
-                                    setState(() {
-                                      newExtensions.removeAt(index);
-                                    });
-                                  },
-                                  icon: const Icon(Icons.check,
-                                      color: Colors.green),
-                                ),
-                                IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      newExtensions.removeAt(index);
-                                    });
-                                  },
-                                  icon: const Icon(Icons.close,
-                                      color: Colors.red),
-                                ),
-                              ],
+                            Container(
+                              alignment: Alignment.center,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      print(
+                                          "Save new extension: ${row["employee"]} - ${row["extension"]}");
+                                      // Yahan controller ke addExtension method call kar sakte ho
+                                      setState(() {
+                                        newExtensions.removeAt(index);
+                                      });
+                                    },
+                                    icon: const Icon(Icons.check,
+                                        color: Colors.green),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        newExtensions.removeAt(index);
+                                      });
+                                    },
+                                    icon: const Icon(Icons.close,
+                                        color: Colors.red),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
