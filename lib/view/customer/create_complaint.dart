@@ -1,10 +1,15 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:dashboard_new1/alert/back_slash_alert.dart';
+import 'package:dashboard_new1/alert/f4_get_booking.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../Model/driver_models/driver_model.dart' as hide;
 import 'package:dashboard_new1/view/customer/controller/get_driver_dropdown.dart';
 import '../../alert/customer_complaint_alert.dart';
+import '../../alert/f3.alert.dart';
+import '../../alert/f4_alert.dart' show showDriverEarningsAlert;
+import '../../alert/back_slash_alert.dart';
 import '../../component/color.dart';
 import '../../component/customButton.dart';
 import '../../component/datatable_widget.dart';
@@ -733,15 +738,15 @@ class _CreateComplaintState extends State<CreateComplaint> {
                   onTap: () {
                     controller.postComplaint();
 
-                    // Map<String, dynamic> data =
-                    //     controller.collectComplaintData();
-                    // print(data);
-                    print("=           ===      ===");
                   },
                 ),
                 SizedBox(
                   height: 10,
                 ),
+                    ElevatedButton(onPressed: (){showDriverInfoAlert();}, child: Text("F3")),
+                ElevatedButton(onPressed: (){showDriverEarningsAlert();}, child: Text("F4")),
+                ElevatedButton(onPressed: (){DriverBookingsAlert.show();}, child: Text("F4 get")),
+                ElevatedButton(onPressed: (){showSystemShortcutsAlert();}, child: Text("back_slash_alert  ")),
               ],
             ),
           ),
