@@ -65,7 +65,7 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                   width: w * 0.7,
                   // padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
+                    border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Column(

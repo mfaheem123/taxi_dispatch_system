@@ -32,14 +32,12 @@ class _PaymentTypeColorAlertState extends State<PaymentTypeColorAlert> {
     "CREDIT CARD PAID"
   ];
 
-  // Colors state maintain karne ke liye variables
   final Map<int, Color> bgColors = {};
   final Map<int, Color> fgColors = {};
 
   @override
   void initState() {
     super.initState();
-    // Sab rows ke liye default colors initial state me set kiye hain
     for (int i = 0; i < paymentTypes.length; i++) {
       bgColors[i] = Colors.white;
       fgColors[i] = Colors.black;
@@ -49,7 +47,7 @@ class _PaymentTypeColorAlertState extends State<PaymentTypeColorAlert> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 550, // 🔥 Chota aur compact size bilkul phle alert jaisa
+      width: 550,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(6),
@@ -57,7 +55,7 @@ class _PaymentTypeColorAlertState extends State<PaymentTypeColorAlert> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 1. HEADER (HEADING)
+
           Container(
             width: double.infinity,
             alignment: Alignment.center,
@@ -78,13 +76,12 @@ class _PaymentTypeColorAlertState extends State<PaymentTypeColorAlert> {
             ),
           ),
 
-          // 2. CONTENT AREA
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // SAVE BUTTON (Right Aligned)
+
                 Align(
                   alignment: Alignment.centerRight,
                   child: CustomButton(
@@ -110,7 +107,6 @@ class _PaymentTypeColorAlertState extends State<PaymentTypeColorAlert> {
 
                 const SizedBox(height: 10),
 
-                // ---------- TABLE STRUCTURE ----------
                 Container(
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey.shade300),
@@ -118,7 +114,7 @@ class _PaymentTypeColorAlertState extends State<PaymentTypeColorAlert> {
                   ),
                   child: Column(
                     children: [
-                      // Table Headers
+
                       Container(
                         color: Colors.grey.shade100,
                         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -156,7 +152,6 @@ class _PaymentTypeColorAlertState extends State<PaymentTypeColorAlert> {
                       ),
                       const Divider(height: 1, color: Colors.grey),
 
-                      // StatefuleBuilder lagaya hai taake color selection real-time refresh ho 🔴
                       StatefulBuilder(
                           builder: (context, dialogState) {
                             return ListView.separated(
@@ -170,7 +165,6 @@ class _PaymentTypeColorAlertState extends State<PaymentTypeColorAlert> {
                                   child: Row(
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
-                                      // Column 1: Payment Type Text
                                       Expanded(
                                         flex: 3,
                                         child: Center(
@@ -181,7 +175,6 @@ class _PaymentTypeColorAlertState extends State<PaymentTypeColorAlert> {
                                         ),
                                       ),
 
-                                      // Column 2: Background Color Picker Widget
                                       Expanded(
                                         flex: 4,
                                         child: Center(
@@ -203,7 +196,6 @@ class _PaymentTypeColorAlertState extends State<PaymentTypeColorAlert> {
                                         ),
                                       ),
 
-                                      // Column 3: Foreground Color Picker Widget
                                       Expanded(
                                         flex: 4,
                                         child: Center(
