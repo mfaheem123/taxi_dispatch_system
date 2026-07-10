@@ -71,7 +71,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
 
 
     return
-      RawKeyboardListener(
+       RawKeyboardListener(
       autofocus: true,
       focusNode: FocusNode(),
       onKey: _handleKey,
@@ -79,9 +79,12 @@ class _LocationListScreenState extends State<LocationListScreen> {
           initState: (v) {
         controller.getLocationList();
       }, builder: (controller) {
-        return controller.getLocationLoader.value == true
-            ? CircularProgressIndicator()
-            : SingleChildScrollView(
+        return
+
+          controller.getLocationLoader.value
+              ? CircularProgressIndicator()
+              :
+          SingleChildScrollView(
                 padding: const EdgeInsets.all(12),
                 child: Column(
                   children: [
@@ -94,10 +97,11 @@ class _LocationListScreenState extends State<LocationListScreen> {
                         ),
                         Checkbox(
                             value: controller.blackList.value,
-                            onChanged: (v) {
-                              controller.blackList.value = v!;
-                              controller.update();
-                            }),
+                          onChanged: (v) {
+                            controller.blackList.value = v ?? false;
+                            controller.locationCurrentPage.value = 1;
+                            controller.getLocationList();
+                          },),
                         Text(
                           AppText.blackList,
                           style: mozillaTextRegularText(
@@ -237,17 +241,9 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                             side: BorderSide(color: Colors.transparent),
                                           ),
                                           onPressed: () {
-                                            showDialog(
+                                            controller.deleteLocation(
+                                                item.id!);
 
-                                              context: context,
-
-                                              builder: (_) =>
-                                                  DeletePermissionAlert(
-                                                deleteFunctionName: () =>
-                                                    controller.deleteLocation(
-                                                        item.id!),
-                                              ),
-                                            );
                                           },
                                           child: Icon(Icons.delete_forever,
                                               size: 28),

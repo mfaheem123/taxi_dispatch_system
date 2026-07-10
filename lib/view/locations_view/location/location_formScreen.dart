@@ -21,7 +21,12 @@ class LocationForm extends StatelessWidget {
       builder: (context, constraints) {
         bool isMobile = constraints.maxWidth < 600;
         return GetBuilder<LocationController>(
-            initState: (v) {
+            initState: (v) async{
+              permissions = Api().sp.read('all_permissions') ?? [];
+
+              if (_controller.locationtypezoneModel == null) {
+                await _controller.getLocationTypeZone();
+              }
                   permissions = Api().sp.read('all_permissions') ?? [];
               if (_controller.updateLocationValue.value == false && _controller.locationtypezoneModel == null) {
                 _controller.getLocationTypeZone();
@@ -111,8 +116,6 @@ class LocationForm extends StatelessWidget {
                                   inputType: "both")),
 
                           const SizedBox(width: 10),
-
-
                             CustomDropdownField<ZoneObject>(
                               text: "SELECT ZONE",
                               label: "SELECT ZONE",
@@ -120,9 +123,11 @@ class LocationForm extends StatelessWidget {
                               height: 38,
                               items: controller.locationtypezoneModel!
                                   .zonesList!,
+
                               value: controller.zoneValue,
                               itemLabel: (templateList) =>
                               templateList.name!.toUpperCase(),
+
                               onChanged: (val) {
                                 controller.zoneValue = val;
                                 controller.update();

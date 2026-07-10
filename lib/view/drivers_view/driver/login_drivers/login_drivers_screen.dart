@@ -86,7 +86,10 @@ class _LoginDriversScreenState extends State<LoginDriversScreen> {
               controller.getDriverLoginLogout();
             },
               builder: (controller) {
-                return SingleChildScrollView(
+                return
+
+                  controller.driverLoginLogoutModel == null? CircularProgressIndicator():
+                  SingleChildScrollView(
                   padding: const EdgeInsets.all(12),
                   child: Column(
                     children: [

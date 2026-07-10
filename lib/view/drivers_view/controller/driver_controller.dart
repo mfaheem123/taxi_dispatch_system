@@ -943,7 +943,6 @@ class DriverController extends GetxController {
       BotToast.showText(text: 'DRIVER FEATURES UPDATED SUCCESSFULLY');
       print("Features Updated Successfully");
       saveFeaturesLoad(false);
-      print("Error Updating Features");
       print(response);
       update();
     }

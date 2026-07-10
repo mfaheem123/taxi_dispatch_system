@@ -183,14 +183,14 @@ class AppVersionWidget extends StatelessWidget {
                             },
                             label: AppText.disablePanicButton.toString().toUpperCase(),
                           ),
-                          KeyboardCheckbox(
-                            value: controller.showCompleteJobValue.value,
-                            onChanged: (v) {
-                              controller.showCompleteJobValue.value = v;
-                              controller.update();
-                            },
-                            label: AppText.disablePanicButton.toString().toUpperCase(),
-                          ),
+                          // KeyboardCheckbox(
+                          //   value: controller.showCompleteJobValue.value,
+                          //   onChanged: (v) {
+                          //     controller.showCompleteJobValue.value = v;
+                          //     controller.update();
+                          //   },
+                          //   label: AppText.showCompleteJob.toString().toUpperCase(),
+                          // ),
                           KeyboardCheckbox(
                             value: controller.showNavigationValue.value,
                             onChanged: (v) {
