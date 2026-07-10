@@ -1372,8 +1372,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   child: CustomTextField(
                                                                     width: fieldWidthh / 15.0,
                                                                     // Hardcoded width hata di taake notes field sahi se responsive ho
-                                                                    controller: controller.pickUpNoteController,
-                                                                    hintText: "PICKUP NOTES",
+                                                                    controller: controller.returnPickUpNoteController,
+                                                                    inputFormatters: [
+                                                                      UpperCaseTextFormatter(),
+                                                                    ],
+                                                                    hintText: "RETURN PICKUP NOTES".toUpperCase(),
                                                                     borderRadius: 6,
                                                                     onTap: () {
                                                                       controller.dropDownShow.value = false;
@@ -1560,8 +1563,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   child: CustomTextField(
                                                                     width: fieldWidthh / 15,
                                                                     // Hardcoded width hata di taake layout block na ho
-                                                                    controller: controller.dropUpNoteController,
-                                                                    hintText: "DROP NOTES",
+                                                                    controller: controller.returnDropUpNoteController,
+                                                                    inputFormatters: [
+                                                                      UpperCaseTextFormatter(),
+                                                                    ],
+                                                                    hintText: "RETURN DROP NOTES",
                                                                     borderRadius: 6,
                                                                     onTap: () {
                                                                       controller.dropDownShow.value = false;
@@ -1828,6 +1834,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 context: context,
                                                                 isMobile: isMobile,
                                                                 label: "R/${AppText.drv} ",
+
                                                                 width: fieldWidthh / 10.4,
                                                                 heights: 32,
                                                                 child: Container(
@@ -1837,6 +1844,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                                                                   ),
                                                                   child: DropdownButtonFormField<DashboardDriverObject>(
+                                                                    hint: Text("Select Driver".toUpperCase()),
+                                                                    style: mozillaTextSemiBoldText(
+                                                                      context: context,
+                                                                      fontSize: 10,
+                                                                      fontWeight: FontWeight.w800,
+                                                                    ),
                                                                     focusNode: controller.driverDropdownFocusNode,
                                                                     isExpanded: true,
                                                                     // Use true here so text reaches the icon and then clips

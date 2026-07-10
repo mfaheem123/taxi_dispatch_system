@@ -10,10 +10,13 @@ import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
 import '../../component/text_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
-import '../dashboard_view/models/dashboard_model.dart';
 import '../dashboard_view/widgets/time_picker_widget.dart';
 import '../dashboard_view/widgets/user_info_widget.dart';
 import 'controller/controller.dart';
+
+import 'package:dashboard_new1/view/vehicles_view/model/vehicle_type_model.dart';
+
+
 
 class CreateCompanyVehicle extends StatefulWidget {
   const CreateCompanyVehicle({super.key});
@@ -46,7 +49,7 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
 
     return GetBuilder<VehicleController>(
         initState: (v){
-          // _controller.getAllVehicleType();
+          _controller.getVehicleTypes();
         },
         builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
@@ -62,10 +65,10 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
             : maxWidth / 4;
 
             return
-              /*controller.getAllVehicleTypeLoader.value == true ? Center(
-              child: CircularProgressIndicator(),
+              // controller.vehicleTypeModel!.vehicleTypes == null ? Center(
+              // child: CircularProgressIndicator(),
 
-            ):*/
+            // ):
               Column(
               children: [
                 SizedBox(
@@ -105,54 +108,49 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(AppText.vehicleType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-
-                Container(
-                  height: 35,
-                  width: fieldWidth,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
-                  ),
-                  child: DropdownButtonFormField<DashboardVehicleTypeObject>(
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      isDense: true,
+                Obx(() {
+                  return Container(
+                    height: 35,
+                    width: fieldWidth,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                     ),
-                    value: controller.selectVehicleValue,
-                    items: (controllerdesh.dashboardAllData?.vehicleTypes ?? [])
-                        .map((vehicle) => DropdownMenuItem<DashboardVehicleTypeObject>(
-                      value: vehicle,
-                          child: Text((vehicle.name ?? "").toUpperCase(),
-                            style: mozillaTextRegularText(
-                              fontSize: 12,
-                              color: DynamicColors.textClr,
-                            ),
+                    child: DropdownButtonFormField<VehicleType>(
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      ),
+                      // YAHAN BADLAO KIYA HAI: Direct reference check karne ki jagah ID se match karwaya hai
+                      value: controller.selectVehicleValue != null
+                          ? controller.allVehicleTypes.firstWhereOrNull(
+                              (element) => element.id == controller.selectVehicleValue!.id)
+                          : null,
+                      hint: Text(
+                        "Select Vehicle Type",
+                        style: mozillaTextRegularText(fontSize: 12, color: DynamicColors.textClr.withOpacity(0.6)),
+                      ),
+                      items: controller.allVehicleTypes
+                          .map((vehicle) => DropdownMenuItem<VehicleType>(
+                        value: vehicle,
+                        child: Text(
+                          (vehicle.name ?? "").toUpperCase(),
+                          style: mozillaTextRegularText(
+                            fontSize: 12,
+                            color: DynamicColors.textClr,
                           ),
-                        ))
-                        .toList(),
-                    onChanged: (v) {
-                      controller.selectVehicleValue = v;
-                      controller.update();
-                    },
-                  ),
-                ),
+                        ),
+                      ))
+                          .toList(),
+                      onChanged: (VehicleType? v) {
+                        controller.selectVehicleValue = v;
+                        controller.update();
+                      },
+                    ),
+                  );
+                }),
 
-
-                // RestrictedDrivers(
-                //   width: fieldWidth/1.5,
-                //   // height: 35,
-                //   padding: 0.0,
-                //   border: Border.all(
-                //     color: DynamicColors.gryClr,
-                //   ),
-                //   titleText: "ESTAT",
-                //   driversList: [
-                //     "25 GEORGE HAMPTON",
-                //     "26 PAUL DOUBLEDAY",
-                //     "27 RICHARD HARDWICK",
-                //     "28 LANRE OKERJO",
-                //   ],
-                // ), 
               ]
             ),
             CustomTextField(

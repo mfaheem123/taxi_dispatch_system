@@ -34,7 +34,7 @@ class Api {
   Api._internal();
 
 // Company ID
-  final String globalCompanyId = "1";
+  final String globalCompanyId = "3";
 
   var sp = GetStorage();
   Future<dynamic> interceptorGet(String url,
@@ -76,7 +76,6 @@ class Api {
   }
 
 
-  // ✅ Step 1: Common function بنا لیں
   dynamic injectCompanyId(data) {
     if (data == null) {
       return {'company_id': globalCompanyId};

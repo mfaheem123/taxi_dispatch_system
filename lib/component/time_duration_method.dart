@@ -190,7 +190,11 @@ Future<String> getFares({
   print("returnMiles-- ${returnMiles}");
 
   try {
+<<<<<<< HEAD
     var response = await Api().post(formData, "fares/calculate-fare", );
+=======
+    var response = await Api().post(formData, "fares/calculate-fare",sendCompanyId: true);
+>>>>>>> 59adf6c809cf40e59abf9cb9a3da31c8b90178fa
 
     if (response != null && response.statusCode == 200) {
       // Check if data and total_fare exist to avoid null errors

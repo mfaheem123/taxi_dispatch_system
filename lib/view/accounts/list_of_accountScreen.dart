@@ -112,6 +112,7 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
                         value: controller.activeDrivers.value,
                         onChanged: (v) {
                           controller.activeDrivers.value = v!;
+                          controller.listOFAccount();
                           controller.update();
                         }),
                     Text(

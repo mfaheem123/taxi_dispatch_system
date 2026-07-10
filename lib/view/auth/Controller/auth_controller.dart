@@ -83,7 +83,7 @@ class AuthController extends GetxController {
       "web_device_id": fcmToken ?? "",
     };
 
-    var response = await Api().post(formData, 'employees/login', auth: false);
+    var response = await Api().post(formData, 'employees/login',sendCompanyId: true, auth: false);
 
     if (response.statusCode == 200) {
       var employeeData = response.data['employee'];

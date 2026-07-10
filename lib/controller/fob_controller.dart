@@ -37,7 +37,7 @@ class FobController extends GetxController {
         "driver_id": driverId,
       };
       var response =
-          await Api().post(formData, "bookings/fob-driver", auth: true);
+          await Api().post(formData, "bookings/fob-driver", auth: true, sendCompanyId: true,);
       if (response.statusCode == 200) {
         BotToast.showText(text: 'Driver Assigned Successfully');
         Get.back();
