@@ -76,6 +76,10 @@ dependencies:
   firebase_messaging: ^16.2.0
   flutter_local_notifications: ^20.0.0
   fl_chart: ^1.2.0
+  timepickerfield:
+    git:
+      url: https://github.com/hubaib33/timerpicker.git
+      ref: main
 
 
 dev_dependencies:
