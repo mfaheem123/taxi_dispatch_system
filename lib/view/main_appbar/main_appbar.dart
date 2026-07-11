@@ -1850,6 +1850,7 @@ import '../reports/income_report_view/income_screen.dart';
 import '../reports/pco_view/pco_screen.dart';
 import '../setting/company_configuration_view/company_configuration_view.dart';
 import '../setting/location_type_shortcuts.dart';
+import '../setting/payment_types_color.dart';
 import '../setting/template_settings.dart';
 import '../vehicles_view/create_company_vehicle.dart';
 import '../vehicles_view/list_vehicle_type.dart';
@@ -3305,6 +3306,22 @@ class _MyHomePageState extends State<MyHomePage> {
                     pageName: CompanyConfigurationView());
               }
             });
+          },
+        ),
+        NestedMenuItem(
+          title: "PAYMENT TYPES COLOR CODE",
+          onTap: () {
+            controller.menuBarRefresh(
+              title: "PAYMENT TYPES COLOR CODE",
+              pageName: controller.currentPage.value,
+            );
+            showDialog(
+              context: context,
+              barrierDismissible: true,
+              builder: (BuildContext context) {
+                return const PaymentTypeDialog();
+              },
+            );
           },
         ),
         // DocumentNumberScreen

@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/Model/image_model.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dashboard_new1/view/setting/payment_types_color.dart';
 import 'package:dashboard_new1/view/setting/shortcut_model.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -408,6 +409,41 @@ class SettingController extends GetxController {
     }
   }
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo document number functionality
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo payment type  functionality
+
+  List<PaymentTypeConfig> paymentTypesList = [];
+  RxBool isPaymentSaveLoading = false.obs;
+
+  void initPaymentTypes() {
+
+  if (paymentTypesList.isEmpty) {
+  paymentTypesList = [
+  PaymentTypeConfig(name: 'CASH', backgroundColor: Colors.green.shade100, foregroundColor: Colors.green.shade900),
+  PaymentTypeConfig(name: 'ACCOUNT', backgroundColor: Colors.blue.shade100, foregroundColor: Colors.blue.shade900),
+  PaymentTypeConfig(name: 'CREDIT CARD', backgroundColor: Colors.orange.shade100, foregroundColor: Colors.orange.shade900),
+  PaymentTypeConfig(name: 'CREDIT CARD PAID', backgroundColor: Colors.purple.shade100, foregroundColor: Colors.purple.shade900),
+  ];
+  }
+  // update();
+  }
+
+  void updateBackgroundColor(int index, Color color) {
+  paymentTypesList[index].backgroundColor = color;
+  update();
+  }
+
+  void updateForegroundColor(int index, Color color) {
+  paymentTypesList[index].foregroundColor = color;
+  update();
+  }
+
+  void savePaymentTypesSettings() {
+  isPaymentSaveLoading.value = true;
+
+  isPaymentSaveLoading.value = false;
+  Get.back();
+  }
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo payment type  functionality
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Company Information
 
