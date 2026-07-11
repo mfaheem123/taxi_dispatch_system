@@ -3,7 +3,7 @@ import 'package:dashboard_new1/view/setting/model/getManageExtrntionModel.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 
-class SettingController extends GetxController {
+class ExtensionController extends GetxController {
 
 
 

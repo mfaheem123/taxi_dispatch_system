@@ -5,7 +5,7 @@ import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/services.dart';
 import 'package:dashboard_new1/view/dashboard_view/booking_table.dart';
-import 'package:dashboard_new1/view/setting/controller/setting_controller.dart';
+import 'package:dashboard_new1/view/setting/controller/extension_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -19,14 +19,14 @@ class VoipSettingsScreen extends StatefulWidget {
 class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
   // Temporary new rows for adding extension
   List<Map<String, dynamic>> newExtensions = [];
-  SettingController controller = Get.put(SettingController());
+  ExtensionController controller = Get.put(ExtensionController());
 
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
     final h = MediaQuery.of(context).size.height;
 
-    return GetBuilder<SettingController>(
+    return GetBuilder<ExtensionController>(
       initState: (v) {
         controller.getManageExtention();
       },
