@@ -1,7 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/text_field.dart';
-import 'package:dashboard_new1/view/setting/setting_controller.dart';
+import 'package:dashboard_new1/view/setting/controller/setting_controller.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

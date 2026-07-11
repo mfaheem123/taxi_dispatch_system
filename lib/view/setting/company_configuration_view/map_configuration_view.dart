@@ -13,7 +13,7 @@ import '../../../component/networks/api.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
-import '../setting_controller.dart';
+import '../controller/setting_controller.dart';
 
 class MapConfigurationView extends StatefulWidget {
   const MapConfigurationView({super.key});

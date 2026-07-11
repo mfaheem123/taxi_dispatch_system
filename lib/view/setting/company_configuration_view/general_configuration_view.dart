@@ -10,7 +10,7 @@ import '../../../component/networks/api.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
-import '../setting_controller.dart';
+import '../controller/setting_controller.dart';
 
 class GeneralConfigurationView extends StatefulWidget {
   const GeneralConfigurationView({super.key});

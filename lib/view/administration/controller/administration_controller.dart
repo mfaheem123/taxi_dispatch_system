@@ -10,7 +10,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import '../../setting/setting_controller.dart';
+import '../../setting/controller/setting_controller.dart';
 import '../User/create_subsiDiary.dart';
 import '../model/get_role.dart';
 

@@ -2,7 +2,7 @@ import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/component/keyboard_checkBox_widget.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
-import 'package:dashboard_new1/view/setting/setting_controller.dart';
+import 'package:dashboard_new1/view/setting/controller/setting_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

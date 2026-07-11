@@ -5,7 +5,7 @@ import '../../component/color_picker_widget.dart';
 import '../../component/customButton.dart';
 import '../../component/datatable_widget.dart';
 import '../../component/textStyle.dart';
-import '../../view/setting/setting_controller.dart';
+import 'controller/setting_controller.dart';
 import '../dashboard_view/booking_table.dart';
 
 class PaymentTypeDialog extends StatelessWidget {

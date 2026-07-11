@@ -7,7 +7,7 @@ import '../component/dropdown_button.dart';
 import '../component/text_widget.dart';
 import '../view/administration/model/list_subsDiary.dart';
 import '../view/reports/controller/report_controller.dart';
-import '../view/setting/setting_controller.dart';
+import '../view/setting/controller/setting_controller.dart';
 
 class AddDocumentDialog extends StatelessWidget {
   const AddDocumentDialog({super.key});

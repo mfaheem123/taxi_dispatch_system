@@ -11,11 +11,11 @@ import 'package:get_storage/get_storage.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:pdf/pdf.dart';
 
-import '../administration/model/list_subsDiary.dart';
-import 'model/get_document_number_model.dart';
-import 'model/select_templete_type.dart';
-import 'model/templete_HTML_model.dart' hide TemplateType;
-import 'model/templete_by_type_model.dart';
+import '../../administration/model/list_subsDiary.dart';
+import '../model/get_document_number_model.dart';
+import '../model/select_templete_type.dart';
+import '../model/templete_HTML_model.dart' hide TemplateType;
+import '../model/templete_by_type_model.dart';
 
 import 'dart:typed_data';
 import 'dart:html' as html;
