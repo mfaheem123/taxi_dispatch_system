@@ -1849,8 +1849,10 @@ import '../reports/income_report_view/creidit_card_payments.dart';
 import '../reports/income_report_view/income_screen.dart';
 import '../reports/pco_view/pco_screen.dart';
 import '../setting/company_configuration_view/company_configuration_view.dart';
+import '../setting/email_tracking.dart';
 import '../setting/location_type_shortcuts.dart';
 import '../setting/payment_types_color.dart';
+import '../setting/sms_tracking.dart';
 import '../setting/template_settings.dart';
 import '../vehicles_view/create_company_vehicle.dart';
 import '../vehicles_view/list_vehicle_type.dart';
@@ -3393,20 +3395,31 @@ class _MyHomePageState extends State<MyHomePage> {
             });
           },
         ),
-        NestedMenuItem(
-          title: "GENERAL SMS CONFIG",
-          onTap: () => message(context, "DevOps"),
-        ),
         // NestedMenuItem(
-        //   title: "SMS SETTINGS",
-        //   onTap: () {
-        //     setState(() {
-        //       controller.currentPage.value = TemplateSettings();
-        //       controller.menuBarRefresh(
-        //           title: "SMS SETTINGS", pageName: TemplateSettings());
-        //     });
-        //   },
+        //   title: "GENERAL SMS CONFIG",
+        //   onTap: () => message(context, "DevOps"),
         // ),
+        NestedMenuItem(
+          title: "SMS TRACKING",
+          onTap: () {
+            setState(() {
+              controller.currentPage.value = SmsSettingsScreen();
+              controller.menuBarRefresh(
+                  title: "SMS TRACKING", pageName: SmsSettingsScreen());
+            });
+          },
+        ),
+
+        NestedMenuItem(
+          title: "EMAIL TRACKING",
+          onTap: () {
+            setState(() {
+              controller.currentPage.value = EmailTrackingScreen();
+              controller.menuBarRefresh(
+                  title: "EMAIL TRACKING", pageName: EmailTrackingScreen());
+            });
+          },
+        ),
 
         NestedMenuItem(
           title: "CHAT WITH DRIVER AND PASSENGER",
