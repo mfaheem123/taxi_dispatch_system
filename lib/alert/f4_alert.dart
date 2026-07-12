@@ -295,11 +295,11 @@ class _DriverEarningsAlertState extends State<DriverEarningsAlert> {
                   SizedBox(height: 20),
 
                   // ─── Data Table ───
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
+                  SizedBox(
+                    width: double.infinity,
                     child: DataTable(
                       headingRowHeight: 45,
-                      columnSpacing: 40,
+                      columnSpacing: 20,
                       headingRowColor: WidgetStateProperty.all(
                           DynamicColors.gryClr.withOpacity(0.3)),
                       border: TableBorder.all(
