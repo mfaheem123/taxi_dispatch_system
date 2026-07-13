@@ -414,9 +414,13 @@ class _BookingTableState extends State<BookingTable> {
                                 /// TYPE ❌
                                 DataCell(
                                   Icon(
-                                    item.bookingSource == "dashboard"
-                                        ? Icons.laptop_chromebook_outlined
-                                        : Icons.mobile_screen_share,
+                                    switch (item.bookingSource) {
+                                      'web' => Icons.language,
+                                      'app' => Icons.phone_android,
+                                      'ivr' => Icons.phone_in_talk,
+                                      'dashboard' => Icons.laptop_chromebook,
+                                      _ => Icons.help_outline,
+                                    },
                                     color: Colors.blue,
                                   ),
                                 ),

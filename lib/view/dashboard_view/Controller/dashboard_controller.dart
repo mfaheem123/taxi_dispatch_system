@@ -88,6 +88,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
 
   // We pass the context here so we can show the Dialog
+  // We pass the context here so we can show the Dialog
   void connectToDriverLogin() {
     final url = Uri.parse("$socketUrl/driver-login");
     try {
@@ -99,23 +100,40 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
           print(data['event']);
           if (data['event'] == "DRIVER_LOGIN") {
-
             final driver = DashboardDriverObject.fromJson(
               Map<String, dynamic>.from(data['data']),
             );
             dashboardAllData!.drivers!.add(driver);
             onlineDriversList.add(driver);
             update();
-          }else if (data['event'] != "DRIVER_LIST"){
+          }else if (data['event'] == "DRIVER_BREAK_STATUS_UPDATE") {
+
+            final driverData = data['data'];
 
             int index = onlineDriversList.indexWhere(
-                  (test) => test.id.toString() == data['data']['driverId'].toString(),
+                  (e) => e.id.toString() == driverData['id'].toString(),
+            );
+
+            if (index != -1) {
+              onlineDriversList[index].driverStatus =
+              driverData['driver_status'];
+
+              onlineDriversList[index].bookingStatus =
+              driverData['booking_status'];
+
+              update();
+            }
+          }  else if (data['event'] != "DRIVER_LIST") {
+            int index = onlineDriversList.indexWhere(
+                  (test) =>
+              test.id.toString() == data['data']['driverId'].toString(),
             );
 
             print(dashboardAllData!.drivers!);
 
-             int idd = dashboardAllData!.drivers!.indexWhere(
-                  (test) => test.id.toString() == data['data']['driverId'].toString(),
+            int idd = dashboardAllData!.drivers!.indexWhere(
+                  (test) =>
+              test.id.toString() == data['data']['driverId'].toString(),
             );
 
             print(dashboardAllData!.drivers!);
@@ -146,55 +164,143 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
 
   // We pass the context here so we can show the Dialog
+  // We pass the context here so we can show the Dialog
   void connectToBusyDriver() {
     final url = Uri.parse("$socketUrl/driver-busy");
     try {
       _channel = WebSocketChannel.connect(url);
 
+      // _channel!.stream.listen(
+      //   (message) {
+      //     final data = jsonDecode(message);
+      //
+      //     print(data['event']);
+      //     if (data['event'] == "BUSY_DRIVER_UPDATE") {
+      //       if (onlineDriversList
+      //           .any((e) => e.id.toString() == data['data']['id'].toString())) {
+      //         onlineDriversList.removeWhere(
+      //           (e) => e.id.toString() == data['data']['id'].toString(),
+      //         );
+      //       }
+      //
+      //       print(dashboardAllData!.drivers);
+      //       print(selectDriverValue);
+      //
+      //       if (dashboardAllData!.drivers!
+      //           .any((e) => e.id.toString() == data['data']['id'].toString())) {
+      //         dashboardAllData!.drivers!.removeWhere(
+      //           (e) => e.id.toString() == data['data']['id'].toString(),
+      //         );
+      //         selectDriverValue = null;
+      //       }
+      //
+      //       print(dashboardAllData!.drivers);
+      //
+      //       final driver = DashboardDriverObject.fromJson(
+      //         Map<String, dynamic>.from(data['data']),
+      //       );
+      //       busyDriversList.add(driver);
+      //       update();
+      //     } else {
+      //       busyDriversList.removeWhere(
+      //         (e) => e.id.toString() == data['data']['id'].toString(),
+      //       );
+      //       update();
+      //     }
+      //   },
+      //   onError: (error) => print("Connection Error: $error"),
+      //   onDone: () {
+      //     connectToBusyDriver();
+      //     print("🔌 Socket Disconnected");
+      //     print("Close Code: ${_channel?.closeCode}");
+      //     print("Close Reason: ${_channel?.closeReason}");
+      //   },
+      // );
       _channel!.stream.listen(
             (message) {
           final data = jsonDecode(message);
+          print("EVENT => ${data['event']}");
+          print("DATA => ${data['data']}");
+          print("EVENT => ${data['event']}");
 
-          print(data['event']);
-          if (data['event'] == "BUSY_DRIVER_UPDATE") {
+          // ==========================
+          // DRIVER STATUS UPDATE
+          // ==========================
+          if (data['event'] == "DRIVER_BOOKING_STATUS_WEB_UPDATE") {
 
-            if (onlineDriversList.any((e) => e.id.toString() == data['data']['id'].toString())) {
+            final driverId = data['data']['id'];
+
+            // Online Drivers
+            final onlineIndex = onlineDriversList.indexWhere(
+                  (e) => e.id == driverId,
+            );
+
+            if (onlineIndex != -1) {
+              onlineDriversList[onlineIndex].bookingStatus =
+              data['data']['booking_status'];
+
+              onlineDriversList[onlineIndex].driverStatus =
+              data['data']['driver_status'];
+            }
+
+            // Busy Drivers
+            final busyIndex = busyDriversList.indexWhere(
+                  (e) => e.id == driverId,
+            );
+
+            if (busyIndex != -1) {
+              busyDriversList[busyIndex].bookingStatus =
+              data['data']['booking_status'];
+
+              busyDriversList[busyIndex].driverStatus =
+              data['data']['driver_status'];
+            }
+
+            update();
+          }
+
+          // ==========================
+          // BUSY DRIVER UPDATE
+          // ==========================
+          else if (data['event'] == "BUSY_DRIVER_UPDATE") {
+
+            if (onlineDriversList.any(
+                  (e) => e.id.toString() == data['data']['id'].toString(),
+            )) {
               onlineDriversList.removeWhere(
                     (e) => e.id.toString() == data['data']['id'].toString(),
               );
             }
 
-            print(dashboardAllData!.drivers);
-            print(selectDriverValue);
-
-            if (dashboardAllData!.drivers!.any((e) => e.id.toString() == data['data']['id'].toString())) {
+            if (dashboardAllData!.drivers!.any(
+                  (e) => e.id.toString() == data['data']['id'].toString(),
+            )) {
               dashboardAllData!.drivers!.removeWhere(
                     (e) => e.id.toString() == data['data']['id'].toString(),
               );
+
               selectDriverValue = null;
             }
-
-            print(dashboardAllData!.drivers);
 
             final driver = DashboardDriverObject.fromJson(
               Map<String, dynamic>.from(data['data']),
             );
-            busyDriversList.add(driver);
-            update();
-          }else{
 
+            busyDriversList.add(driver);
+
+            update();
+          }
+
+          // ==========================
+          // REMOVE BUSY DRIVER
+          // ==========================
+          else {
             busyDriversList.removeWhere(
                   (e) => e.id.toString() == data['data']['id'].toString(),
             );
+
             update();
           }
-        },
-        onError: (error) => print("Connection Error: $error"),
-        onDone: () {
-          connectToBusyDriver();
-          print("🔌 Socket Disconnected");
-          print("Close Code: ${_channel?.closeCode}");
-          print("Close Reason: ${_channel?.closeReason}");
         },
       );
     } catch (e) {
@@ -207,47 +313,51 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   Timer? timer;
 
 
-  getAllOnlineDrivers() async{
-    var response = await Api().get("drivers/login-busy");
-    if(response.statusCode == 200){
+  getAllOnlineDrivers() async {
+    var response = await Api().get("drivers/login-busy",sendCompanyId: true,);
+    if (response.statusCode == 200) {
       print(response.data);
-      if(response.data['login_drivers'].isNotEmpty){
+      if (response.data['login_drivers'].isNotEmpty) {
         response.data['login_drivers'].forEach((element) {
-          onlineDriversList.insert(0, DashboardDriverObject(
-            id: element['id'],
-            name: element['name'],
-            username: element['username'],
-            vehicleType: element['vehicle_type'],
-            zone: element['zone'],
-            latitude: element['latitude'],
-            longitude: element['longitude'],
-            bookingStatus: element['booking_status'],
-            sessionStatus: element['session_status'],
-            driverStatus: element['driver_status'],
-            lastLoginAt: element['last_login_at'] != null
-                ? DateTime.parse(element['last_login_at']).toLocal()
-                : null,
-          ));
+          onlineDriversList.insert(
+              0,
+              DashboardDriverObject(
+                id: element['id'],
+                name: element['name'],
+                username: element['username'],
+                vehicleType: element['vehicle_type'],
+                zone: element['zone'],
+                latitude: element['latitude'],
+                longitude: element['longitude'],
+                bookingStatus: element['booking_status'],
+                sessionStatus: element['session_status'],
+                driverStatus: element['driver_status'],
+                lastLoginAt: element['last_login_at'] != null
+                    ? DateTime.parse(element['last_login_at']).toLocal()
+                    : null,
+              ));
         });
       }
 
-      if(response.data['busy_drivers'].isNotEmpty){
+      if (response.data['busy_drivers'].isNotEmpty) {
         response.data['busy_drivers'].forEach((element) {
-          busyDriversList.insert(0, DashboardDriverObject(
-            id: element['id'],
-            name: element['name'],
-            username: element['username'],
-            vehicleType: element['vehicle_type'],
-            zone: element['zone'],
-            latitude: element['latitude'],
-            longitude: element['longitude'],
-            bookingStatus: element['booking_status'],
-            sessionStatus: element['session_status'],
-            driverStatus: element['driver_status'],
-            lastLoginAt:  element['last_login_at'] != null
-                ? DateTime.parse(element['last_login_at']).toLocal()
-                : null,
-          ));
+          busyDriversList.insert(
+              0,
+              DashboardDriverObject(
+                id: element['id'],
+                name: element['name'],
+                username: element['username'],
+                vehicleType: element['vehicle_type'],
+                zone: element['zone'],
+                latitude: element['latitude'],
+                longitude: element['longitude'],
+                bookingStatus: element['booking_status'],
+                sessionStatus: element['session_status'],
+                driverStatus: element['driver_status'],
+                lastLoginAt: element['last_login_at'] != null
+                    ? DateTime.parse(element['last_login_at']).toLocal()
+                    : null,
+              ));
         });
       }
       timer = Timer.periodic(Duration(seconds: 5), (_) {
@@ -799,6 +909,48 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   String? viaMiles;
   String? returnMiles;
 
+  void clearViaIfNoPickupAndDrop() {
+
+    final bool hasPickup = pickupController.text.trim().isNotEmpty;
+    final bool hasDrop = dropOffController.text.trim().isNotEmpty;
+
+    // Dono empty hon tab hi Via remove hon
+    if (!hasPickup && !hasDrop) {
+
+      // Sirf One-Way Via remove hon
+      viaPoints.removeWhere((e) => e.withReturnWay == "via");
+
+      // Unke controllers bhi remove karo
+      for (int i = viaTextEditingController.length - 1; i >= 0; i--) {
+        if (i < viaPoints.length) continue;
+        viaTextEditingController.removeAt(i);
+      }
+
+      fetchRouteFromOSRM();
+      update();
+    }
+  }
+  void clearReturnViaIfNoPickupAndDrop() {
+
+    final bool hasReturnPickup =
+        pickupTwoWayController.text.trim().isNotEmpty;
+
+    final bool hasReturnDrop =
+        dropOffTwoWayController.text.trim().isNotEmpty;
+
+    // Dono empty hon tab hi Return Via remove hon
+    if (!hasReturnPickup && !hasReturnDrop) {
+
+      // Sirf Return Via remove hon
+      viaPoints.removeWhere((e) => e.withReturnWay != "via");
+
+      // Route dobara generate karo
+      fetchRouteFromOSRM();
+
+      update();
+    }
+  }
+
 // BUSINESS RULE IMPLEMENTATION: DETACHED OUTBOUND & RETURN SEGMENT ROUTES WITH SEQUENTIAL VIAS
    /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
    Future<void> fetchRouteFromOSRM() async {
@@ -1158,7 +1310,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
        pickupDate: "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
        pickupTime: pickUpTimeController.text,
        vehicleTypeId: selectVehicleValue!.id,
-       returnVehicleTypeId : selectVehicleValueReturn!.id,
+       returnVehicleTypeId : selectVehicleValueReturn == null?selectVehicleValue!.id:selectVehicleValueReturn!.id,
        withReturnPickUp: pickupTwoWayController.text.isEmpty ? null : pickupTwoWayController.text,
        withReturnDropOff: dropOffTwoWayController.text.isEmpty ? null : dropOffTwoWayController.text,
        returnMiles: dropOffTwoWayController.text.isNotEmpty || pickupTwoWayController.text.isNotEmpty ?tempStoreReturnMils: null,
@@ -2276,28 +2428,28 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     };
     print(markers);
     print(formData);
-    // var response = await Api().post(formData, id == null? "bookings/add" : "bookings/update/$id", sendCompanyId: true);
-    // if (response.statusCode == 200) {
-    //
-    //   if(id != null){
-    //     refreshPostAllFields();
-    //   }else{
-    //     if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" ==
-    //         "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
-    //         selectedTabId == 1) {
-    //       dashboardTableModelData!.data!.insert(
-    //           0, BookingObjectData.fromJson(response.data['bookings'][0]));
-    //     } else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" !=
-    //         "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
-    //         selectedTabId == 2) {
-    //       dashboardTableModelData!.data!.insert(
-    //           0, BookingObjectData.fromJson(response.data['bookings'][0]));
-    //     }
-    //
-    //     refreshPostAllFields();
-    //   }
-    //   print(response.data);
-    // }
+    var response = await Api().post(formData, id == null? "bookings/add" : "bookings/update/$id", sendCompanyId: true);
+    if (response.statusCode == 200) {
+
+      if(id != null){
+        refreshPostAllFields();
+      }else{
+        if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" ==
+            "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
+            selectedTabId == 1) {
+          dashboardTableModelData!.data!.insert(
+              0, BookingObjectData.fromJson(response.data['bookings'][0]));
+        } else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" !=
+            "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
+            selectedTabId == 2) {
+          dashboardTableModelData!.data!.insert(
+              0, BookingObjectData.fromJson(response.data['bookings'][0]));
+        }
+
+        refreshPostAllFields();
+      }
+      print(response.data);
+    }
   }
 
   restrictedDriversListConfig() async {

@@ -50,7 +50,7 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
       _channel = WebSocketChannel.connect(url);
 
       _channel!.stream.listen(
-        (message) {
+            (message) {
           final data = jsonDecode(message);
           if (data['event'] == 'DRIVER_LOCATION_UPDATE' ||
               data['event'] == "DRIVER_BOOKING_STATUS_UPDATE") {
@@ -70,7 +70,7 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
                 .indexWhere((test) => test.id == data['data']['id']);
 
             TrackingDriverObject objectData =
-                dashBoardCntrl.onlineBusyDriversList!.trackingDrivers![indexes];
+            dashBoardCntrl.onlineBusyDriversList!.trackingDrivers![indexes];
 
             objectData.latitude = lat.toString();
             objectData.longitude = lng.toString();
@@ -86,11 +86,13 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  Icon(
-                    Icons.directions_car,
-                    size: 70,
-                    color: _statusColor(objectData.bookingStatus),
+                  Image.asset(
+                    _statusImage(objectData.bookingStatus ?? ""),
+                    width: 70,
+                    height: 70,
+                    fit: BoxFit.contain,
                   ),
+
                   Container(
                     color: _statusColor(objectData.bookingStatus),
                     padding: const EdgeInsets.only(
@@ -122,7 +124,7 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
   Color _statusColor(String? status) {
     switch (status) {
       case "Accepted":
-        return Colors.orange;
+        return Colors.orange  ;
       case "Arrived":
         return Colors.yellow;
       case "On Route":
@@ -134,6 +136,36 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
     }
   }
 
+
+  String _statusImage(String status) {
+    switch (status) {
+      case "Accepted":
+        return "assets/c.png";   // Orange Car
+
+      case "Arrived":
+        return "assets/d.png";   // Yellow Car
+
+      case "On Route":
+        return "assets/tracking_car.png";    // Black Car
+
+      case "STC":
+        return "assets/a.png";        // Blue Car
+
+      default:
+        return "assets/green.jpeg";
+    }
+  }
+
+
+
+  void _updateZoom(bool zoomIn) {
+    double currentZoom = mapController.camera.zoom;
+    double newZoom = zoomIn ? currentZoom + 1 : currentZoom - 1;
+
+    if (newZoom >= 3.0 && newZoom <= 18.0) {
+      mapController.move(mapController.camera.center, newZoom);
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -156,13 +188,80 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
               children: [
                 TileLayer(
                   urlTemplate:
-                      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                   subdomains: const ['a', 'b', 'c'],
                 ),
 
                 /// Reactive markers
                 MarkerLayer(
                   markers: trackingMarkers,
+                ),
+              ],
+            ),
+          ),
+
+          /// MAP CONTROLS
+          Positioned(
+            right: 265, // Sidebar width (250) + margin
+            bottom: 20,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                /// Zoom In
+                SizedBox(
+                  height: 35,
+                  width: 35,
+                  child: FloatingActionButton.small(
+                    heroTag: "zoom_in_btn",
+                    backgroundColor: Colors.white,
+                    onPressed: () => _updateZoom(true),
+                    child: const Icon(
+                      Icons.add,
+                      color: Colors.black87,
+                      size: 20,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                /// Zoom Out
+                SizedBox(
+                  height: 35,
+                  width: 35,
+                  child: FloatingActionButton.small(
+                    heroTag: "zoom_out_btn",
+                    backgroundColor: Colors.white,
+                    onPressed: () => _updateZoom(false),
+                    child: const Icon(
+                      Icons.remove,
+                      color: Colors.black87,
+                      size: 20,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                /// Focus Selected Driver
+                SizedBox(
+                  height: 40,
+                  width: 40,
+                  child: FloatingActionButton.small(
+                    heroTag: "focus_driver_btn",
+                    backgroundColor: Colors.black26,
+                    onPressed: () {
+                      mapController.move(
+                        LatLng(50.5, 30.51),
+                        12,
+                      );
+                    },
+                    child: const Icon(
+                      Icons.center_focus_strong,
+                      color: Colors.black87,
+                      size: 22,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -207,7 +306,7 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
 
                         return ListView.builder(
                           itemCount: controller.onlineBusyDriversList
-                                  ?.trackingDrivers?.length ??
+                              ?.trackingDrivers?.length ??
                               0,
                           itemBuilder: (context, index) {
                             final driver = controller.onlineBusyDriversList!
@@ -221,7 +320,7 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
 
                                 /// Remove old marker for this driver
                                 trackingMarkers.removeWhere((marker) =>
-                                    marker.id.toString() ==
+                                marker.id.toString() ==
                                     controller.onlineBusyDriversList!
                                         .trackingDrivers![index].id
                                         .toString());
@@ -238,15 +337,21 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
                                     child: Stack(
                                       alignment: Alignment.center,
                                       children: [
-                                        Icon(
-                                          Icons.directions_car,
-                                          size: 70,
-                                          color: _statusColor(
-                                              driver.bookingStatus),
+                                        Image.asset(
+                                          _statusImage(driver.bookingStatus ?? ""),
+                                          width: 70,
+                                          height: 70,
+                                          fit: BoxFit.contain,
                                         ),
+                                        // Icon(
+                                        //   Icons.directions_car, ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                                        //   size: 70,
+                                        //    color: _statusColor(
+                                        //        driver.bookingStatus),
+                                        // ),
                                         Container(
-                                          color: _statusColor(
-                                              driver.bookingStatus),
+                                          // color: _statusColor(
+                                          //     driver.bookingStatus),
                                           padding: const EdgeInsets.only(
                                               bottom: 10.0,
                                               left: 4,
@@ -254,7 +359,7 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
                                           child: Text(
                                             driver.username ?? "",
                                             style: const TextStyle(
-                                                fontSize: 12,
+                                                fontSize: 9,
                                                 color: Colors.white),
                                           ),
                                         ),

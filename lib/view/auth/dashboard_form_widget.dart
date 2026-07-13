@@ -8,6 +8,7 @@ import '../../../alert/restrict_drivers_alert.dart';
 import '../../alert/child_seats_alert.dart';
 import '../../alert/extra_fares_alert.dart';
 import '../../alert/extra_info_alert.dart';
+import '../../component/marker_class.dart';
 import '../../component/text_field.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/dashboard/F8_widget_alert.dart';
@@ -260,25 +261,32 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.tapSelect(index);
                                   },
                                   onPressed: () {
-                                    DashboardController _controller =
-                                    Get.find();
-                                    int index = _controller.markers.indexWhere(
-                                            (test) => test.type == "pickup");
-                                    FocusScope.of(Get.context!).requestFocus(
-                                        _controller.pickupTextFieldFocusNode);
-                                    _controller.markers.clear();
-                                    _controller.dropDownShow.value = false;
-                                    _controller.polyLineMarkerInfo.clear();
-                                    _controller.pickupController.clear();
-                                    _controller.dropOffController.clear();
-                                    _controller.polylinePoints.clear();
-                                    _controller.fetchRouteFromOSRM();
-                                    _controller.fixedFare.value = "0";
-                                    _controller.totalDistance.value = "0";
-                                    _controller.totalTimeDuration.value = "0";
-                                    _controller.update();
-                                    // controller.clear();
-                                    // onChanged?.call('');
+                                    final pickupPolylineIndex = controller.polyLineMarkerInfo
+                                        .indexWhere((e) => e.markerType == "PICKUP LOCATION");
+                                    if (pickupPolylineIndex >= 0) {
+                                      controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
+                                    }
+                                    final pickupMarkerIndex =
+                                    controller.markers.indexWhere((e) => e.type == "pickup");
+                                    if (pickupMarkerIndex >= 0) {
+                                      controller.markers.removeAt(pickupMarkerIndex);
+                                    }
+                                    controller.pickupController.clear();
+                                    // controller.dropOffController.clear();
+                                    controller.dropDownShow.value = false;
+                                    controller.suggestions.clear();
+                                    controller.clearViaIfNoPickupAndDrop();
+                                    controller.totalDistance.value = "0.00";
+                                    controller.totalTimeDuration.value = "0 min";
+                                    controller.fixedFare.value = "0";
+                                    controller.returnFareValue = "0";
+                                    controller.tempStoreViaMils = "0";
+                                    controller.slugController.clear();
+                                    controller.slugControllerReturn.clear();
+                                    controller.tempStoreMils = null;
+                                    controller.fetchRouteFromOSRM();
+                                    FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
+                                    controller.update();
                                   },
                                   notesController: controller.pickUpNoteController,
                                   onCurrentLocation: () {
@@ -362,25 +370,37 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   onPickIndex: (index) =>
                                       controller.tapSelect(index),
                                           onPressed: () {
-                                    DashboardController _controller =
-                                    Get.find();
-                                    int index = _controller.markers.indexWhere(
-                                            (test) => test.type == "pickup");
-                                    FocusScope.of(Get.context!).requestFocus(
-                                        _controller.pickupTextFieldFocusNode);
-                                    _controller.markers.clear();
-                                    _controller.dropDownShow.value = false;
-                                    _controller.polyLineMarkerInfo.clear();
-                                    _controller.pickupController.clear();
-                                    _controller.dropOffController.clear();
-                                    _controller.polylinePoints.clear();
-                                    _controller.fetchRouteFromOSRM();
-                                    _controller.fixedFare.value = "0";
-                                    _controller.totalDistance.value = "0";
-                                    _controller.totalTimeDuration.value = "0";
-                                    _controller.update();
-                                    // controller.clear();
-                                    // onChanged?.call('');
+                                            final dropPolylineIndex = controller.polyLineMarkerInfo
+                                                .indexWhere((e) => e.markerType == "DROP LOCATION");
+
+                                            if (dropPolylineIndex >= 0) {
+                                              controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
+                                            }
+                                            final dropOffMarkerIndex =
+                                            controller.markers.indexWhere((e) => e.type == "dropOff");
+
+                                            if (dropOffMarkerIndex >= 0) {
+                                              controller.markers.removeAt(dropOffMarkerIndex);
+                                            }
+                                            // controller.viaPoints.clear();
+                                            // controller.viaTextEditingController.clear();
+                                            // controller.pickupController.clear();
+                                            controller.dropOffController.clear();
+                                            controller.clearViaIfNoPickupAndDrop();
+                                            controller.dropDownShow.value = false;
+                                            controller.suggestions.clear();
+                                            // controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "DROP LOCATION" || item.markerType == "Create Booking DROP LOCATION");
+                                            controller.totalDistance.value = "0.00";
+                                            controller.totalTimeDuration.value = "0 min";
+                                            controller.fixedFare.value = "0";
+                                            controller.returnFareValue = "0";
+                                            controller.tempStoreViaMils = "0";
+                                            controller.slugController.clear();
+                                            controller.slugControllerReturn.clear();
+                                            controller.tempStoreMils = null;
+                                            controller.fetchRouteFromOSRM();
+                                            FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
+                                            controller.update();
                                   },
                                   notesController: controller.dropUpNoteController,
                                   onCurrentLocation: () {
@@ -642,9 +662,38 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           zoneLabel: (z) => z.name!,
           onPickIndex: (index) => controller.tapSelect(index),
           onPressed: () {
-            FocusScope.of(Get.context!)
-                .requestFocus(controller.pickupTwoTextFieldFocusNode);
-            _clearTwoWayData(controller);
+            FocusScope.of(Get.context!).requestFocus(controller.pickupTwoTextFieldFocusNode);
+
+            final pickupPolylineIndex = controller.polyLineMarkerInfo
+                .indexWhere((e) => e.markerType == "PICKUP TWO WAY LOCATION");
+
+            if (pickupPolylineIndex >= 0) {
+              controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
+            }
+            final pickupMarkerIndex =
+            controller.markers.indexWhere((e) => e.type == "pickup two way");
+            if (pickupMarkerIndex >= 0) {
+              controller.markers.removeAt(pickupMarkerIndex);
+            }
+            controller.pickupTwoWayController.clear();
+            controller.clearReturnViaIfNoPickupAndDrop();
+            // controller.dropOffTwoWayController.clear();
+            controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "PICKUP TWO WAY LOCATION");
+            if (controller.markers is List<CustomMarker>) {
+              controller.markers.removeWhere((marker) => marker.type == "PICKUP TWO WAY LOCATION");
+            }
+            // controller.tempStoreReturnMils = null;
+            // controller.fixedFare.value = "0";
+            // controller.returnFareValue = "";
+            // controller.slugControllerReturn.clear();
+            // // controller.slugController.clear();
+            controller.dropDownShow.value = false;
+            // controller.tempStoreMils = null;
+            controller.fetchRouteFromOSRM();
+            controller.update();
+            // FocusScope.of(Get.context!)
+            //     .requestFocus(controller.pickupTwoTextFieldFocusNode);
+            // _clearTwoWayData(controller);
           },
           onCurrentLocation: () => debugPrint('Use current location → R/PICK'),
         ),
@@ -669,9 +718,40 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           zoneLabel: (z) => z.name!,
           onPickIndex: (index) => controller.tapSelect(index),
           onPressed: () {
-            FocusScope.of(Get.context!)
-                .requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
-            _clearTwoWayData(controller, recalcRoute: true);
+            FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
+
+            final dropPolylineIndex = controller.polyLineMarkerInfo
+                .indexWhere((e) => e.markerType == "DROP TWO WAY LOCATION");
+
+            if (dropPolylineIndex >= 0) {
+              controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
+            }
+            final dropOffMarkerIndex =
+            controller.markers.indexWhere((e) => e.type == "dropOff two way");
+
+            if (dropOffMarkerIndex >= 0) {
+              controller.markers.removeAt(dropOffMarkerIndex);
+            }
+            controller.markers.removeWhere((marker) => marker.type == "via with return");
+            // 1. Only Two-Way controllers clear karein
+            controller.dropOffTwoWayController.clear();
+            controller.clearReturnViaIfNoPickupAndDrop();
+            // 3. Fares aur temporaries reset
+            // controller.tempStoreMils = null;
+            // // controller.fixedFare.value = "0";
+            // controller.returnFareValue = "";
+            // controller.tempStoreReturnMils = null;
+            // controller.slugControllerReturn.clear();
+            // // controller.slugController.clear();
+            // // controller.totalDistance.value = "0";
+            // // controller.totalTimeDuration.value = "0";
+            controller.dropDownShow.value = false;
+            //  Route API
+            controller.fetchRouteFromOSRM();
+            controller.update();
+            // FocusScope.of(Get.context!)
+            //     .requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
+            // _clearTwoWayData(controller, recalcRoute: true);
           },
           onCurrentLocation: () => debugPrint('Use current location → R/DROP'),
         ),
