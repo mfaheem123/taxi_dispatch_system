@@ -294,7 +294,7 @@ class AppVersionWidget extends StatelessWidget {
 }
 
 
-class KeyboardCheckbox extends StatelessWidget {
+class KeyboardCheckbox extends StatefulWidget {
   final bool value;
   final ValueChanged<bool> onChanged;
   final String label;
@@ -307,8 +307,28 @@ class KeyboardCheckbox extends StatelessWidget {
   });
 
   @override
+  State<KeyboardCheckbox> createState() => _KeyboardCheckboxState();
+}
+
+class _KeyboardCheckboxState extends State<KeyboardCheckbox> {
+  late FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FocusableActionDetector(
+      focusNode: _focusNode,
       shortcuts: {
         LogicalKeySet(LogicalKeyboardKey.enter): const ActivateIntent(),
         LogicalKeySet(LogicalKeyboardKey.space): const ActivateIntent(),
@@ -316,27 +336,46 @@ class KeyboardCheckbox extends StatelessWidget {
       actions: {
         ActivateIntent: CallbackAction<ActivateIntent>(
           onInvoke: (intent) {
-            onChanged(!value);
+            widget.onChanged(!widget.value);
             return null;
           },
         ),
       },
       child: Padding(
-        padding: const EdgeInsets.only(right: 15, bottom: 8), // gap between items
+        padding: const EdgeInsets.only(right: 15, bottom: 8),
         child: Row(
-          mainAxisSize: MainAxisSize.min, // 👈 important
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Checkbox(
-              value: value,
-              onChanged: (v) => onChanged(v!),
+              focusNode: FocusNode(canRequestFocus: false, skipTraversal: true), // Prevent double tab
+              value: widget.value,
+              onChanged: (v) {
+                if (!_focusNode.hasFocus) {
+                  _focusNode.requestFocus();
+                }
+                widget.onChanged(v!);
+              },
+              // We simulate the focus visual state of the checkbox by checking if our wrapper has focus
+              fillColor: MaterialStateProperty.resolveWith<Color?>((states) {
+                if (widget.value) return Theme.of(context).primaryColor;
+                if (_focusNode.hasFocus) return Colors.grey.withOpacity(0.3); // focus highlight
+                return null;
+              }),
             ),
             Flexible(
-              child: Text(
-                label,
-                overflow: TextOverflow.ellipsis,
-                style: mozillaTextRegularText(
-                  fontSize: 12,
+              child: GestureDetector(
+                onTap: () {
+                  _focusNode.requestFocus();
+                  widget.onChanged(!widget.value);
+                },
+                child: Text(
+                  widget.label,
+                  overflow: TextOverflow.ellipsis,
+                  style: mozillaTextRegularText(
+                    fontSize: 12,
+                    color: _focusNode.hasFocus ? Colors.blue : Colors.black, // Show focus on text too
+                  ),
                 ),
               ),
             ),

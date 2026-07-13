@@ -188,7 +188,9 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<DriverController>(
+    return FocusTraversalGroup(
+      policy: OrderedTraversalPolicy(),
+      child: GetBuilder<DriverController>(
       initState: (state) {
         permissions = Api().sp.read('all_permissions') ?? [];
         controller.getAllDrivers();
@@ -300,6 +302,7 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
           },
         );
       },
+    ),
     );
   }
 }

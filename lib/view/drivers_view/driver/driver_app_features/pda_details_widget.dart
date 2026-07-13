@@ -151,7 +151,7 @@ class PdaDetailsWidget extends StatelessWidget {
                                 ),
                               ),
                               FocusTraversalOrder(
-                                order: const NumericFocusOrder(8),
+                                order: const NumericFocusOrder(9),
                                 child:
                                 textFieldsWidget(
                                   context,

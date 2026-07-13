@@ -352,12 +352,14 @@ class NoteAlert {
                           const SizedBox(height: 12),
 
                           Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Expanded(
                                   flex: 4, child: TextField(
                                 maxLines: 5,
                                 minLines: 5,
                                 controller: controller.notesCtrl,
+                                textAlignVertical: TextAlignVertical.top,
                                 textCapitalization: TextCapitalization.characters,
                                 onChanged: (value) {
                                   controller.notesCtrl.value = controller.notesCtrl.value.copyWith(
@@ -368,12 +370,13 @@ class NoteAlert {
                                 style: const TextStyle(fontSize: 12),
                                 decoration: InputDecoration(
                                   labelText: "NOTES",
+                                  alignLabelWithHint: true,
                                   labelStyle: const TextStyle(fontSize: 11),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                                  const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                                 ),
                               )),
                               const SizedBox(width: 8),

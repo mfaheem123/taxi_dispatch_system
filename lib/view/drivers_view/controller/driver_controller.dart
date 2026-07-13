@@ -995,10 +995,53 @@ class DriverController extends GetxController {
       BotToast.showText(text: 'DRIVER FEATURES UPDATED SUCCESSFULLY');
       print("Features Updated Successfully");
       saveFeaturesLoad(false);
+      selectDriverObject = null; // Reset dropdown to placeholder state
+      clearDriverFeaturesFields();
+      update();
+    } else {
       print("Error Updating Features");
       print(response);
+      saveFeaturesLoad(false);
       update();
     }
+  }
+
+  void clearDriverFeaturesFields() {
+    showCustomerValue.value = false;
+    enableCustomerValue.value = false;
+    enableFlagDownValue.value = false;
+    showAccountFareValue.value = false;
+    hideBreakValue.value = false;
+    hideDeclineValue.value = false;
+    hideRecoverValue.value = false;
+    hideNoPickUpValue.value = false;
+    hidePickUpValue.value = false;
+    hideDropOffValue.value = false;
+    fareMeterValue.value = false;
+    diableFareMeterValue.value = false;
+    fareMeterWaitingValue.value = false;
+    payByCardValue.value = false;
+    waitingAfterArrivalValue.value = false;
+    disablePanicButtonValue.value = false;
+    showCompleteJobValue.value = false;
+    showNavigationValue.value = false;
+    showSwipeArriveValue.value = false;
+    shawFareValue.value = false;
+    hasCompanyCarValue.value = false;
+    hidePaymentTypeValue.value = false;
+    enableTollChargesValue.value = false;
+
+    bookingTimerController.clear();
+    breakController.clear();
+    imeController.clear();
+    makeController.clear();
+    modelController.clear();
+    simNetworkController.clear();
+    simNumberController.clear();
+    networkProviderController.clear();
+    dataAllowanceController.clear();
+    pdaDepositController.clear();
+    commentsController.clear();
   }
 
 
