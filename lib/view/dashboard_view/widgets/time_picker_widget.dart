@@ -687,6 +687,19 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
   void _onRawKey(RawKeyEvent event) {
     if (event is! RawKeyDownEvent) return;
     final key = event.logicalKey;
+
+    /// Tab key handling - move focus to next/previous field in traversal order
+    if (key == LogicalKeyboardKey.tab) {
+      if (HardwareKeyboard.instance.isShiftPressed) {
+        /// Shift+Tab: move focus to previous field
+        FocusScope.of(context).previousFocus();
+      } else {
+        /// Tab: move focus to next field
+        FocusScope.of(context).nextFocus();
+      }
+      return;
+    }
+
     // arrows
     if (key == LogicalKeyboardKey.arrowUp) {
       _onIncrementActive(1);
@@ -756,7 +769,8 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
 
     return RawKeyboardListener(
       focusNode: _focusNode,
-      autofocus: true,
+      /// autofocus disabled to prevent multiple date pickers from stealing focus
+      autofocus: false,
       onKey: _onRawKey,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 8),

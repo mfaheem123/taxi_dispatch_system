@@ -195,11 +195,13 @@ class VehicleInformation extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
 
+                    /// Row: Vehicle Type dropdown + Owner field
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
+                        /// Tab order 26 - Vehicle Type dropdown (sequential after Color)
                         FocusTraversalOrder(
-                          order: const NumericFocusOrder(28),
+                          order: const NumericFocusOrder(26),
                           child: CustomDropdownField<SubsidiaryObject>(
                             label: "VEHICLE TYPE",
                             width: fieldWidth * 1.9,
@@ -218,8 +220,9 @@ class VehicleInformation extends StatelessWidget {
                           ),
                         ),
                         const Spacer(),
+                        /// Tab order 27 - Owner field (sequential after Vehicle Type)
                         FocusTraversalOrder(
-                          order: const NumericFocusOrder(26),
+                          order: const NumericFocusOrder(27),
                           child: labeledTextField(context, isMobile, AppText.owner, controller.vehicleOwnerController,
                               width: fieldWidth * 1.9,
                               textInputAction: TextInputAction.next,
@@ -235,8 +238,9 @@ class VehicleInformation extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
+                        /// Tab order 28 - Log Book field (sequential after Owner)
                         FocusTraversalOrder(
-                          order: const NumericFocusOrder(27),
+                          order: const NumericFocusOrder(28),
                           child: labeledTextField(context, isMobile, AppText.logBook, controller.vehicleLogBookController,
                               width: fieldWidth * 1.9,
                               textInputAction: TextInputAction.next,

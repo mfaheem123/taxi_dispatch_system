@@ -34,10 +34,38 @@ class _DriverFormState extends State<DriverForm> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "createDriver";
+
+    /// Listen for focus changes to auto-scroll the page to the focused widget
+    FocusManager.instance.addListener(_onFocusChange);
   }
+
+  @override
+  void dispose() {
+    /// Remove focus change listener to prevent memory leaks
+    FocusManager.instance.removeListener(_onFocusChange);
+    super.dispose();
+  }
+
+  /// Auto-scroll to the focused widget when focus changes (e.g. via Tab key)
+  /// Wrapped in try-catch to handle cases where focused widget is outside a Scrollable (e.g. dialogs, overlays)
+  void _onFocusChange() {
+    final focusNode = FocusManager.instance.primaryFocus;
+    if (focusNode != null && focusNode.context != null && mounted) {
+      try {
+        Scrollable.ensureVisible(
+          focusNode.context!,
+          alignment: 0.5,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      } catch (_) {
+        /// Ignore error if focused widget has no Scrollable ancestor
+      }
+    }
+  }
+
   List permissions = [];
 
   @override
@@ -255,16 +283,50 @@ class _DriverFormState extends State<DriverForm> {
                                   ),
                                 ),
                               ),
+                                  /// Document image preview with remove button
                                   Container(
                                     width: 60,
                                     height: 40,
                                     child: row.fileName == null
                                         ? SizedBox.shrink()
-                                        : row.fileName!.bytes.isNotEmpty
-                                        ? Image.memory(
-                                        row.fileName!.bytes, fit: BoxFit.fill)
-                                        : Image(image: NetworkImage(
-                                        row.fileName!.name)),
+                                        : Stack(
+                                            clipBehavior: Clip.none,
+                                            children: [
+                                              /// Show the selected document image
+                                              Positioned.fill(
+                                                child: row.fileName!.bytes.isNotEmpty
+                                                    ? Image.memory(
+                                                        row.fileName!.bytes, fit: BoxFit.fill)
+                                                    : Image(image: NetworkImage(
+                                                        row.fileName!.name)),
+                                              ),
+                                              /// Remove button (X icon) to clear the document image
+                                              Positioned(
+                                                top: -8,
+                                                right: -8,
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    /// Remove document image on tap
+                                                    controller.removeDocument(
+                                                        controller.rows.indexOf(row));
+                                                  },
+                                                  child: Container(
+                                                    width: 18,
+                                                    height: 18,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.red,
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                    child: Icon(
+                                                      Icons.close,
+                                                      size: 12,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                 ),
                               ];
                             }),
