@@ -15,6 +15,13 @@ import '../component/keyboard_dropdown_widget.dart';
 class RestrictDriversAlert extends StatefulWidget {
   RestrictDriversAlert({super.key});
 
+  static void show() {
+    Get.dialog(
+      RestrictDriversAlert(),
+      barrierDismissible: false,
+    );
+  }
+
   @override
   State<RestrictDriversAlert> createState() => _RestrictDriversAlertState();
 }
@@ -42,173 +49,173 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: GetBuilder<DashboardController>(
-        builder: (controller) {
-          return Container(
+          builder: (controller) {
+            return Container(
               height: 350,
               width: 450,
-            padding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
-            child: controller.allDriverData == null?SizedBox.shrink(): Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
+              padding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
+              child: controller.allDriverData == null?SizedBox.shrink(): Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(AppText.restrictDrivers,
-                    style: mozillaTextSemiBoldText(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13,
-                    ),
-                    ),
-                    GestureDetector(
-                      onTap: (){
-                         Get.back();
-                      },
-                      child: Icon(Icons.close,
-                      color: DynamicColors.textClr,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(AppText.restrictDrivers,
+                        style: mozillaTextSemiBoldText(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                        ),
                       ),
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 10),
-                    decoration: BoxDecoration(
-                      border: const Border(
-                        top: BorderSide(color: Colors.grey),
-                        left: BorderSide(color: Colors.grey),
-                        bottom: BorderSide(color: Colors.grey),
-                        // 👉 right side intentionally remove kiya (no border)
-                      ),
-                    ),
-                    child: Center(
-                      child: Text("#"),
-                    ),
+                      GestureDetector(
+                        onTap: (){
+                          Get.back();
+                        },
+                        child: Icon(Icons.close,
+                          color: DynamicColors.textClr,
+                        ),
+                      )
+                    ],
                   ),
-                    CustomDropdownField<DriverObject>(
-                      label: "SELECT DRIVERS",
-                      width: 320,
-                      height: 35,
-                      items: controller.allDriverData!.drivers!,
-                      value: controller.selectDriverObject,
-                      itemLabel: (driver) =>
-                      driver.name!,
-                      onChanged: (val) {
-                        controller.selectDriverObject = val;
-                        controller.update();
-                      },
-                    ),
-                    GestureDetector(
-                      onTap: (){
-                        if(controller.selectDriverObject != null){
-                        controller.driversList
-                            .add(controller.selectDriverObject!);
-                        controller.selectDriverObject = null;
-                        controller.update();
-                      }
-                    },
-                      child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 10),
-                          decoration: BoxDecoration(
-                            border: const Border(
-                              top: BorderSide(color: Colors.grey),
-                              right: BorderSide(color: Colors.grey),
-                              bottom: BorderSide(color: Colors.grey),
-                              // 👉 right side intentionally remove kiya (no border)
-                            ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 10),
+                        decoration: BoxDecoration(
+                          border: const Border(
+                            top: BorderSide(color: Colors.grey),
+                            left: BorderSide(color: Colors.grey),
+                            bottom: BorderSide(color: Colors.grey),
+                            // 👉 right side intentionally remove kiya (no border)
                           ),
-                          child: Center(child: Icon(Icons.remove_circle,
-                            color: DynamicColors.primaryClr,
-                          ))),
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: 220,
-                  child: ListView.builder(
-                      itemCount: controller.driversList.length,
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      physics: AlwaysScrollableScrollPhysics(),
-                      itemBuilder: (BuildContext context,index){
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 3.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(vertical: 7,horizontal: 10),
+                        ),
+                        child: Center(
+                          child: Text("#"),
+                        ),
+                      ),
+                      CustomDropdownField<DriverObject>(
+                        label: "SELECT DRIVERS",
+                        width: 320,
+                        height: 35,
+                        items: controller.allDriverData!.drivers!,
+                        value: controller.selectDriverObject,
+                        itemLabel: (driver) =>
+                        driver.name!,
+                        onChanged: (val) {
+                          controller.selectDriverObject = val;
+                          controller.update();
+                        },
+                      ),
+                      GestureDetector(
+                        onTap: (){
+                          if(controller.selectDriverObject != null){
+                            controller.driversList
+                                .add(controller.selectDriverObject!);
+                            controller.selectDriverObject = null;
+                            controller.update();
+                          }
+                        },
+                        child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 10),
                             decoration: BoxDecoration(
                               border: const Border(
                                 top: BorderSide(color: Colors.grey),
-                                left: BorderSide(color: Colors.grey),
+                                right: BorderSide(color: Colors.grey),
                                 bottom: BorderSide(color: Colors.grey),
                                 // 👉 right side intentionally remove kiya (no border)
                               ),
                             ),
-                            child: Center(
-                              child: Text("${index+1}"),
-                            ),
-                          ),
-                         Container(
-                           width: MediaQuery.of(context).size.width / 6,
-                           padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 4),
-                           decoration: BoxDecoration(
-                             border: Border.all(color: Colors.grey),
-                             // borderRadius: BorderRadius.circular(8),
-                           ),
-                           child: Row(
-                             children: [
+                            child: Center(child: Icon(Icons.add_circle,
+                              color: DynamicColors.primaryClr,
+                            ))),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 220,
+                    child: ListView.builder(
+                        itemCount: controller.driversList.length,
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        physics: AlwaysScrollableScrollPhysics(),
+                        itemBuilder: (BuildContext context,index){
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 3.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
                                 Container(
-                                  padding: EdgeInsets.symmetric(vertical: 5,horizontal: 6),
-                                  color: DynamicColors.primaryClr,
-                                  child: Center(
-                                    child: Text("$index",
-                                    style: mozillaTextSemiBoldText(
-                                      fontSize: 12,
-                                      color: DynamicColors.whiteClr
-                                    ),
+                                  padding: const EdgeInsets.symmetric(vertical: 7,horizontal: 10),
+                                  decoration: BoxDecoration(
+                                    border: const Border(
+                                      top: BorderSide(color: Colors.grey),
+                                      left: BorderSide(color: Colors.grey),
+                                      bottom: BorderSide(color: Colors.grey),
+                                      // 👉 right side intentionally remove kiya (no border)
                                     ),
                                   ),
+                                  child: Center(
+                                    child: Text("${index+1}"),
+                                  ),
                                 ),
-                               Padding(
-                                 padding: EdgeInsets.only(left: 8.0),
-                                 child: Text(controller.driversList[index].name!,
-                                   style: mozillaTextSemiBoldText(
-                                       fontSize: 12,
-                                   ),
-                                 ),
-                               )
-                             ],
-                           ),
-                         ),
-                          Container(
-                              padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 10),
-                              decoration: BoxDecoration(
-                                border: const Border(
-                                  top: BorderSide(color: Colors.grey),
-                                  right: BorderSide(color: Colors.grey),
-                                  bottom: BorderSide(color: Colors.grey),
-                                  // 👉 right side intentionally remove kiya (no border)
+                                Container(
+                                  width: MediaQuery.of(context).size.width / 6,
+                                  padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 4),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey),
+                                    // borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.symmetric(vertical: 5,horizontal: 6),
+                                        color: DynamicColors.primaryClr,
+                                        child: Center(
+                                          child: Text("$index",
+                                            style: mozillaTextSemiBoldText(
+                                                fontSize: 12,
+                                                color: DynamicColors.whiteClr
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 8.0),
+                                        child: Text(controller.driversList[index].name!,
+                                          style: mozillaTextSemiBoldText(
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              child: Center(child: Icon(Icons.delete_forever,
-                                color: DynamicColors.primaryClr,
-                              )))
-                        ],
-                      ),
-                    );
-                  }),
-                )
-              ],
-            ),
-          );
-        }
+                                Container(
+                                    padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 10),
+                                    decoration: BoxDecoration(
+                                      border: const Border(
+                                        top: BorderSide(color: Colors.grey),
+                                        right: BorderSide(color: Colors.grey),
+                                        bottom: BorderSide(color: Colors.grey),
+                                        // 👉 right side intentionally remove kiya (no border)
+                                      ),
+                                    ),
+                                    child: Center(child: Icon(Icons.delete_forever,
+                                      color: DynamicColors.redClr,
+                                    )))
+                              ],
+                            ),
+                          );
+                        }),
+                  )
+                ],
+              ),
+            );
+          }
       ),
     );
   }
