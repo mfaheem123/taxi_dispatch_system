@@ -5,9 +5,9 @@ import '../../component/color.dart';
 import '../../component/text_widget.dart';
 
 class AudioPlayerDialog extends StatefulWidget {
-  final String customerName;
 
-  const AudioPlayerDialog({super.key, required this.customerName});
+
+  const AudioPlayerDialog({super.key});
 
   @override
   State<AudioPlayerDialog> createState() => _AudioPlayerDialogState();
@@ -26,7 +26,7 @@ class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
       actionsPadding: const EdgeInsets.all(12),
       title: Text(
-        "RECORDING - ${widget.customerName}",
+        "RECORDING",
         style: mozillaTextSemiBoldText(fontWeight: FontWeight.w800, fontSize: 18),
       ),
       content: SizedBox(
