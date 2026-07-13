@@ -187,7 +187,6 @@ class _CallRecordingScreenState extends State<CallRecordingScreen> {
                                         context: context,
                                         builder: (context) =>
                                             const AudioPlayerDialog(
-                                          customerName: "John Doe",
                                         ),
                                       );
                                     },

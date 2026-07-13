@@ -1782,6 +1782,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../alert/back_slash_alert.dart';
 import '../../alert/cli_extention_alert.dart';
 import '../../component/color.dart';
 import '../../component/networks/api.dart';
@@ -1853,8 +1854,10 @@ import '../setting/company_configuration_view/company_configuration_view.dart';
 import '../setting/email_tracking.dart';
 import '../setting/location_type_shortcuts.dart';
 import '../setting/payment_types_color.dart';
+import '../setting/release_notes.dart';
 import '../setting/sms_tracking.dart';
 import '../setting/template_settings.dart';
+import '../setting/wallboard_screen.dart';
 import '../vehicles_view/create_company_vehicle.dart';
 import '../vehicles_view/list_vehicle_type.dart';
 import '../vehicles_view/company_vehiclesScreen.dart';
@@ -3432,15 +3435,48 @@ class _MyHomePageState extends State<MyHomePage> {
             });
           },
         ),
+        NestedMenuItem(
+          title: "RELEASE NOTES",
+          onTap: () {
+            controller.menuBarRefresh(
+              title: "RELEASE NOTES",
+              pageName: controller.currentPage.value,
+            );
+            showDialog(
+              context: context,
+              barrierDismissible: true,
+              builder: (BuildContext context) {
+                return const ReleaseNotesDialog();
+              },
+            );
+          },
+        ),
 
         NestedMenuItem(
-          title: "CHAT WITH DRIVER AND PASSENGER",
+          title: "HELP",
+          onTap: () {
+            controller.menuBarRefresh(
+              title: "HELP",
+              pageName: controller.currentPage.value,
+            );
+            showDialog(
+              context: context,
+              barrierDismissible: true,
+              builder: (BuildContext context) {
+                return const BackSlashAlert();
+              },
+            );
+          },
+        ),
+
+        NestedMenuItem(
+          title: "WALLBOARD",
           onTap: () {
             setState(() {
-              controller.currentPage.value = ChatWithDriverAndPassenger();
+              controller.currentPage.value = WallboardScreen();
               controller.menuBarRefresh(
-                  title: "CHAT WITH DRIVER AND PASSENGER",
-                  pageName: ChatWithDriverAndPassenger());
+                  title: "WALLBOARD",
+                  pageName: WallboardScreen());
             });
           },
         ),
