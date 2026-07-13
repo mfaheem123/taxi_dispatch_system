@@ -1,6 +1,7 @@
 
 
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/view/fare_view/model/plotVehicleModel.dart';
@@ -39,6 +40,8 @@ class _PlotFareState extends State<PlotFare> {
   void initState() {
     super.initState();
     shortCutKeyValue.value = "plotFare";
+    controller.getPlotVehicleType();
+    controller.getAllPlotFare();
   }
 
   @override
@@ -58,8 +61,7 @@ class _PlotFareState extends State<PlotFare> {
           return
 
 
-           controller.getPlotVehicleTypeLoader.value
-              ? Center(
+           controller.allPlotFareModel!.plotFares == null ? Center(
             child: CircularProgressIndicator(),
           )
               :
@@ -356,6 +358,8 @@ class _PlotFareState extends State<PlotFare> {
                           children: [
                             CustomButton(
                               onTap: (){
+                                controller.Zoneevalue== null ||controller.ploteFareDescription2ndController ==null  || controller.ploteFareDescriptionController == null ||controller.Zonee1value == null ||  controller.Zoneevalue == null ? BotToast.showText(text: "ADD PLOT"):
+
                                 controller.postPlotFare();
                               },
                               height: 35,

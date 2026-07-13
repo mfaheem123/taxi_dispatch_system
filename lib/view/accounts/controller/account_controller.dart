@@ -30,6 +30,7 @@ class AccountController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create account form functionality
   /// RxBool variable
   RxBool activeDrivers = false.obs;
+  RxBool postactiveDrivers = false.obs;
 
   final accountNameController = TextEditingController();
   final accountCodeController = TextEditingController();
@@ -187,7 +188,9 @@ class AccountController extends GetxController {
       if (contactsList.isNotEmpty) "contacts": contactsList,
       if (orderAccountList.isNotEmpty) "order_numbers": orderAccountList,
       if (companyAddressesList.isNotEmpty)
-        "company_addresses": companyAddressesList
+        "company_addresses": companyAddressesList,
+      "closed" : postactiveDrivers.value,
+
     };
 
     if (accountPasswordController.text.trim().isNotEmpty) {
