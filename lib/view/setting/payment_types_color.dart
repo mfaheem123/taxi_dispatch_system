@@ -22,7 +22,6 @@ class PaymentTypeDialog extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       titlePadding: EdgeInsets.zero,
-
       title: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
         color: DynamicColors.gryClr,
@@ -34,15 +33,26 @@ class PaymentTypeDialog extends StatelessWidget {
           ),
         ),
       ),
-
       content: GetBuilder<SettingController>(
         initState: (state) {
-          controller.initPaymentTypes();
+          controller.getSettingPaymentTypes();
         },
         builder: (logic) {
+          final list = logic.driverCommissionPaymentModel?.paymentTypes ?? [];
+
           return SizedBox(
             width: MediaQuery.of(context).size.width * 0.45,
-            child: SingleChildScrollView(
+            child: logic.isLoadingPaymentTypes
+                ? const SizedBox(
+              height: 200,
+              child: Center(child: CircularProgressIndicator()),
+            )
+                : list.isEmpty
+                ? const SizedBox(
+              height: 200,
+              child: Center(child: Text("No Payment Types Available")),
+            )
+                : SingleChildScrollView(
               child: LayoutBuilder(builder: (context, constraints) {
                 final double maxWidth = constraints.maxWidth;
                 final double fieldWidth = maxWidth / 3.5;
@@ -60,20 +70,18 @@ class PaymentTypeDialog extends StatelessWidget {
                           width: 100,
                           borderRadius: 4,
                           onTap: () {
-                            logic.savePaymentTypesSettings();
                           },
                         ),
                       ],
                     ),
                     const SizedBox(height: 15),
-
                     Scrollbar(
                       thickness: 8,
                       radius: const Radius.circular(10),
                       child: SizedBox(
                         width: maxWidth,
                         child: DatatableWidget(
-                          totalRow: logic.paymentTypesList.length,
+                          totalRow: list.length,
                           columns: [
                             buildHeaderWithSearch(
                               title: "PAYMENT TYPE",
@@ -88,20 +96,23 @@ class PaymentTypeDialog extends StatelessWidget {
                               removeSearching: true,
                             ),
                           ],
-                          rows: List.generate(logic.paymentTypesList.length, (index) {
-                            final item = logic.paymentTypesList[index];
+                          rows: List.generate(list.length, (index) {
+                            final item = list[index];
                             return DataRow(
                               cells: [
                                 DataCell(
                                   Text(
-                                    item.name,
-                                    style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+                                    (item.name ?? "").toUpperCase(),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 13,
+                                    ),
                                   ),
                                 ),
                                 DataCell(
                                   Center(
                                     child: ColorPickerWidget(
-                                      pickerColor: item.backgroundColor,
+                                      pickerColor: logic.parseColor(item.backgroundColor, Colors.white),
                                       onColorChanged: (color) {
                                         logic.updateBackgroundColor(index, color);
                                       },
@@ -117,7 +128,7 @@ class PaymentTypeDialog extends StatelessWidget {
                                 DataCell(
                                   Center(
                                     child: ColorPickerWidget(
-                                      pickerColor: item.foregroundColor,
+                                      pickerColor: logic.parseColor(item.foregroundColor, Colors.black),
                                       onColorChanged: (color) {
                                         logic.updateForegroundColor(index, color);
                                       },
@@ -145,16 +156,4 @@ class PaymentTypeDialog extends StatelessWidget {
       ),
     );
   }
-}
-
-class PaymentTypeConfig {
-  final String name;
-  Color backgroundColor;
-  Color foregroundColor;
-
-  PaymentTypeConfig({
-    required this.name,
-    required this.backgroundColor,
-    required this.foregroundColor,
-  });
 }

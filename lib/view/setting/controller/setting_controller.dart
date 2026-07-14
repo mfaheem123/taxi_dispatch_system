@@ -12,6 +12,7 @@ import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:pdf/pdf.dart';
 
 import '../../administration/model/list_subsDiary.dart';
+import '../../drivers_view/model/driver_commission_payment_model.dart';
 import '../model/get_document_number_model.dart';
 import '../model/select_templete_type.dart';
 import '../model/templete_HTML_model.dart' hide TemplateType;
@@ -411,38 +412,94 @@ class SettingController extends GetxController {
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo document number functionality
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo payment type  functionality
 
-  List<PaymentTypeConfig> paymentTypesList = [];
-  RxBool isPaymentSaveLoading = false.obs;
+  DriverCommissionPaymentModel? driverCommissionPaymentModel;
+  bool isLoadingPaymentTypes = false;
 
-  void initPaymentTypes() {
 
-  if (paymentTypesList.isEmpty) {
-  paymentTypesList = [
-  PaymentTypeConfig(name: 'CASH', backgroundColor: Colors.green.shade100, foregroundColor: Colors.green.shade900),
-  PaymentTypeConfig(name: 'ACCOUNT', backgroundColor: Colors.blue.shade100, foregroundColor: Colors.blue.shade900),
-  PaymentTypeConfig(name: 'CREDIT CARD', backgroundColor: Colors.orange.shade100, foregroundColor: Colors.orange.shade900),
-  PaymentTypeConfig(name: 'CREDIT CARD PAID', backgroundColor: Colors.purple.shade100, foregroundColor: Colors.purple.shade900),
-  ];
+  getSettingPaymentTypes() async {
+    isLoadingPaymentTypes = true;
+    update();
+
+    try {
+      var response = await Api().get("enumerations/payment-types");
+      if (response.statusCode == 200) {
+        driverCommissionPaymentModel = DriverCommissionPaymentModel.fromJson(response.data);
+      }
+    } catch (e) {
+      debugPrint("Error fetching payment types: $e");
+    } finally {
+      isLoadingPaymentTypes = false;
+      update();
+    }
   }
-  // update();
+
+  Color parseColor(String? hexString, Color defaultColor) {
+    if (hexString == null || hexString.isEmpty) return defaultColor;
+    try {
+      String hex = hexString.replaceAll('#', '');
+      if (hex.length == 6) {
+        return Color(int.parse("FF$hex", radix: 16));
+      } else if (hex.length == 8) {
+        return Color(int.parse(hex, radix: 16));
+      }
+    } catch (_) {}
+    return defaultColor;
+  }
+
+  String colorToHex(Color color) {
+    return '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
   }
 
   void updateBackgroundColor(int index, Color color) {
-  paymentTypesList[index].backgroundColor = color;
-  update();
+    if (driverCommissionPaymentModel?.paymentTypes != null) {
+      driverCommissionPaymentModel!.paymentTypes![index].backgroundColor = colorToHex(color);
+      update();
+    }
   }
 
   void updateForegroundColor(int index, Color color) {
-  paymentTypesList[index].foregroundColor = color;
-  update();
+    if (driverCommissionPaymentModel?.paymentTypes != null) {
+      driverCommissionPaymentModel!.paymentTypes![index].foregroundColor = colorToHex(color);
+      update();
+    }
   }
 
-  void savePaymentTypesSettings() {
-  isPaymentSaveLoading.value = true;
 
-  isPaymentSaveLoading.value = false;
-  Get.back();
-  }
+
+
+
+  // List<PaymentTypeConfig> paymentTypesList = [];
+  // RxBool isPaymentSaveLoading = false.obs;
+  //
+  // void initPaymentTypes() {
+  //
+  // if (paymentTypesList.isEmpty) {
+  // paymentTypesList = [
+  // PaymentTypeConfig(name: 'CASH', backgroundColor: Colors.green.shade100, foregroundColor: Colors.green.shade900),
+  // PaymentTypeConfig(name: 'ACCOUNT', backgroundColor: Colors.blue.shade100, foregroundColor: Colors.blue.shade900),
+  // PaymentTypeConfig(name: 'CREDIT CARD', backgroundColor: Colors.orange.shade100, foregroundColor: Colors.orange.shade900),
+  // PaymentTypeConfig(name: 'CREDIT CARD PAID', backgroundColor: Colors.purple.shade100, foregroundColor: Colors.purple.shade900),
+  // ];
+  // }
+  // // update();
+  // }
+  //
+  // void updateBackgroundColor(int index, Color color) {
+  // paymentTypesList[index].backgroundColor = color;
+  // update();
+  // }
+  //
+  // void updateForegroundColor(int index, Color color) {
+  // paymentTypesList[index].foregroundColor = color;
+  // update();
+  // }
+  //
+  // void savePaymentTypesSettings() {
+  // isPaymentSaveLoading.value = true;
+  //
+  // isPaymentSaveLoading.value = false;
+  // Get.back();
+  // }
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo payment type  functionality
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Company Information
