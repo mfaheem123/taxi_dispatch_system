@@ -295,7 +295,7 @@ class ShiftAlert {
 
 
 
-class NoteAlert {
+class   NoteAlert {
   static void show() {
     // final List<Map<String, String>> shifts = [];
     DriverController controller = Get.isRegistered<DriverController>()

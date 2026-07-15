@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../Model/image_model.dart';
 import '../../../../alert/shift_alert.dart';
+import '../../../../alert/update_driver_rent_email.dart';
+import '../../../../alert/vehicle_history_alert.dart';
+import '../../../../alert/attribute_alert.dart';
 import '../../../../component/color.dart';
 import '../../../../component/customButton.dart';
 import '../../../../component/datatable_widget.dart';
@@ -134,6 +137,32 @@ class _DriverFormState extends State<DriverForm> {
                           onTap: () {
                             ShiftAlert.show();
                           },
+                        ),
+                        const SizedBox(width: 8),
+                        CustomButton(
+                          width: 130,
+                          height: 35,
+                          verticalPadding: 0.0,
+                          btnText: "VEHICLE HISTORY",
+                          borderRadius: 4,
+                          onTap: (){
+                            VehicleHistoryAlert.show();
+                          },
+                          style: mozillaTextRegularText(
+                              fontSize: 12, color: DynamicColors.whiteClr),
+                        ),
+                        const SizedBox(width: 8),
+                        CustomButton(
+                          width: 100,
+                          height: 35,
+                          verticalPadding: 0.0,
+                          btnText: "ATTRIBUTES",
+                          borderRadius: 4,
+                          onTap: (){
+                            AttributeAlert.show();
+                          },
+                          style: mozillaTextRegularText(
+                              fontSize: 12, color: DynamicColors.whiteClr),
                         ),
                         const SizedBox(width: 8),
                         CustomButton(
