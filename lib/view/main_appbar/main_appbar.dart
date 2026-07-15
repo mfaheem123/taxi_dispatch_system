@@ -3362,12 +3362,12 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
         NestedMenuItem(
-          title: "BOOKING CLEARING UTILITY",
+          title: "CLEAR BOOKINGS",
           onTap: () {
             setState(() {
               controller.currentPage.value = BookingClearingUtilityScreen();
               controller.menuBarRefresh(
-                  title: "BOOKING CLEARING UTILITY",
+                  title: "CLEAR BOOKINGS",
                   pageName: BookingClearingUtilityScreen());
             });
           },

@@ -13,6 +13,7 @@ import 'package:pdf/pdf.dart';
 
 import '../../administration/model/list_subsDiary.dart';
 import '../../drivers_view/model/driver_commission_payment_model.dart';
+import '../model/get_clear_booking_model.dart';
 import '../model/get_document_number_model.dart';
 import '../model/select_templete_type.dart';
 import '../model/templete_HTML_model.dart' hide TemplateType;
@@ -484,6 +485,81 @@ class SettingController extends GetxController {
     }
   }
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo payment type  functionality
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo clear booking  functionality
+
+  ClearBookingModel? clearBookingModel;
+  List<String> selectedBookingIds = [];
+  bool isClearingSelected = false;
+  bool isLoadingBooking = false;
+
+  void toggleSelection(String id) {
+    if (selectedBookingIds.contains(id)) {
+      selectedBookingIds.remove(id);
+    } else {
+      selectedBookingIds.add(id);
+    }
+    update();
+  }
+
+  getBookingsToClear() async {
+    isLoadingBooking = true;
+    update();
+    
+    var response = await Api().get("bookings/clear");
+    if (response.statusCode == 200) {
+      clearBookingModel = ClearBookingModel.fromJson(response.data);
+    }
+    isLoadingBooking = false;
+    update();
+  }
+
+  // Post Clear Selected Api
+  clearSelectedBookings() async {
+    if (selectedBookingIds.isEmpty) return;
+
+    isClearingSelected = true;
+    update();
+
+    int? driverId;
+    if (clearBookingModel?.bookings != null) {
+      final selectedBooking = clearBookingModel!.bookings!.firstWhereOrNull(
+            (b) => b.id == selectedBookingIds.first,
+      );
+      driverId = selectedBooking?.driverId;
+    }
+
+    var formData = {
+      "driver_id": driverId ?? 0,
+      "ids": selectedBookingIds.map((id) => int.tryParse(id) ?? id).toList(),
+    };
+
+    try {
+      var response = await Api().post(
+        formData,
+        "bookings/clear-selected",
+      );
+      print("SERVER RESPONSE STATUS CODE: ${response.statusCode}");
+      print("SERVER RESPONSE DATA: ${response.data}");
+
+      if (response.statusCode == 200) {
+        print("SERVER RESPONSE STATUS CODE: ${response.statusCode}");
+        print("SERVER RESPONSE DATA: ${response.data}");
+        BotToast.showText(text: "BOOKINGS CLEARED SUCCESSFULLY!");
+        selectedBookingIds.clear();
+        await getBookingsToClear();
+      } else {
+        BotToast.showText(text: "FAILED TO CLEAR BOOKINGS!");
+      }
+    } catch (e) {
+      print("Error: $e");
+      BotToast.showText(text: "SOMETHING WENT WRONG!");
+    } finally {
+      isClearingSelected = false;
+      update();
+    }
+  }
+
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo clear booking  functionality
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Company Information
 
