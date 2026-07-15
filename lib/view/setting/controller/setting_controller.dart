@@ -446,60 +446,43 @@ class SettingController extends GetxController {
     return defaultColor;
   }
 
-  String colorToHex(Color color) {
-    return '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
-  }
 
-  void updateBackgroundColor(int index, Color color) {
-    if (driverCommissionPaymentModel?.paymentTypes != null) {
-      driverCommissionPaymentModel!.paymentTypes![index].backgroundColor = colorToHex(color);
+  var isUpdatingPayment = false.obs;
+  var paymentBackgroundHex = "".obs;
+  var paymentForegroundHex = "".obs;
+
+// Update API function
+  updatePaymentTypeColor(int paymentId) async {
+    isUpdatingPayment.value = true;
+    update();
+
+    var formData = {
+      "background_color": paymentBackgroundHex.value,
+      "foreground_color": paymentForegroundHex.value,
+    };
+
+    try {
+      var response = await Api().post(
+        formData,
+        "enumerations/payment-types/update/$paymentId",
+      );
+
+      print("SERVER RESPONSE: ${response.statusCode} -> ${response.data}");
+
+      if (response.statusCode == 200) {
+        BotToast.showText(text: "PAYMENT COLOR UPDATED SUCCESSFULLY!");
+        getSettingPaymentTypes();
+      } else {
+        BotToast.showText(text: "FAILED TO UPDATE COLOR!");
+      }
+    } catch (e) {
+      print("Error: $e");
+      BotToast.showText(text: "SOMETHING WENT WRONG!");
+    } finally {
+      isUpdatingPayment.value = false;
       update();
     }
   }
-
-  void updateForegroundColor(int index, Color color) {
-    if (driverCommissionPaymentModel?.paymentTypes != null) {
-      driverCommissionPaymentModel!.paymentTypes![index].foregroundColor = colorToHex(color);
-      update();
-    }
-  }
-
-
-
-
-
-  // List<PaymentTypeConfig> paymentTypesList = [];
-  // RxBool isPaymentSaveLoading = false.obs;
-  //
-  // void initPaymentTypes() {
-  //
-  // if (paymentTypesList.isEmpty) {
-  // paymentTypesList = [
-  // PaymentTypeConfig(name: 'CASH', backgroundColor: Colors.green.shade100, foregroundColor: Colors.green.shade900),
-  // PaymentTypeConfig(name: 'ACCOUNT', backgroundColor: Colors.blue.shade100, foregroundColor: Colors.blue.shade900),
-  // PaymentTypeConfig(name: 'CREDIT CARD', backgroundColor: Colors.orange.shade100, foregroundColor: Colors.orange.shade900),
-  // PaymentTypeConfig(name: 'CREDIT CARD PAID', backgroundColor: Colors.purple.shade100, foregroundColor: Colors.purple.shade900),
-  // ];
-  // }
-  // // update();
-  // }
-  //
-  // void updateBackgroundColor(int index, Color color) {
-  // paymentTypesList[index].backgroundColor = color;
-  // update();
-  // }
-  //
-  // void updateForegroundColor(int index, Color color) {
-  // paymentTypesList[index].foregroundColor = color;
-  // update();
-  // }
-  //
-  // void savePaymentTypesSettings() {
-  // isPaymentSaveLoading.value = true;
-  //
-  // isPaymentSaveLoading.value = false;
-  // Get.back();
-  // }
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo payment type  functionality
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Company Information
