@@ -67,6 +67,7 @@ class CustomerController extends GetxController {
       "address1": address1Controller.text,
       "address2": address2Controller.text,
       "restricted_drivers": apiDriversList,
+      "sms_flag" : enableSms.value,
     };
     print(formData);
     var response = await Api().post(
@@ -165,6 +166,7 @@ sendCompanyId: true,
   RxInt customerUpdateId = 0.obs;
   customerUpdate({Customer? customerUpdate}) async {
     customerUpdateId.value = customerUpdate!.id!;
+    enableSms.value= customerUpdate.smsFlag!;
     nameController.text = customerUpdate.name!;
     emailController.text = customerUpdate.email!;
     mobileController.text = customerUpdate.mobile!;
@@ -269,7 +271,7 @@ sendCompanyId: true,
 
     try {
       String param = int.tryParse(query) != null ? "mobile" : "name";
-      var response = await Api().get("bookings/customer-jobs?$param=$query");
+      var response = await Api().get("bookings/customer-jobs?$param=$query", sendCompanyId: true);
       if (response.statusCode == 200) {
         getCustomerBookingModel =
             GetCustomerBookingModel.fromJson(response.data);

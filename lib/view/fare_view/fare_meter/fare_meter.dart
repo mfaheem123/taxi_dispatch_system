@@ -139,22 +139,25 @@ class _FareMeterState extends State<FareMeter> {
                       cells: [
                         DataCell(Center(child: Text(controller.getAllFareMeterRateModel!.fareMeters![index].vehicleType!.name!))),
                         DataCell(Center(
-                          child: DynamicSwitch(
-                            controller: ValueNotifier(controller.getAllFareMeterRateModel!.fareMeters![index].hasMeter),
-                            activeColor: DynamicColors.primaryClr,
-                            inactiveColor: DynamicColors.gryClr,
-                            focusScale: 1.5,
-                            onChanged: (v){
-                              controller.getAllFareMeterRateModel!.fareMeters![index].autostartWait =
-                              !controller.getAllFareMeterRateModel!.fareMeters![index].autostartWait;
-                              controller.update();
-                            },
-                            onToggle: () {
-                              controller.getAllFareMeterRateModel!.fareMeters![index].hasMeter =
-                              !controller.getAllFareMeterRateModel!.fareMeters![index].hasMeter;
-                              controller.update();
-                              print(
-                                  "Switch toggled: ${controller.getAllFareMeterRateModel!.fareMeters![index].hasMeter}");
+                          child: GetBuilder<FareController>( // Ensure correct controller scope
+                            builder: (controller) {
+                              final currentFareMeter = controller.getAllFareMeterRateModel!.fareMeters![index];
+                              return DynamicSwitch(
+                                controller: ValueNotifier(currentFareMeter.hasMeter),
+                                activeColor: DynamicColors.primaryClr,
+                                inactiveColor: DynamicColors.gryClr,
+                                focusScale: 1.5,
+                                onChanged: (v) {
+                                  currentFareMeter.hasMeter = v;
+                                  controller.update();
+                                },
+                                onToggle: () async {
+                                  currentFareMeter.hasMeter = !currentFareMeter.hasMeter;
+                                  controller.update();
+                                  print("Switch toggled locally: ${currentFareMeter.hasMeter}");
+                                  await controller.editFareMeterRate(fareMeterObj: currentFareMeter);
+                                },
+                              );
                             },
                           ),
                         )),

@@ -221,6 +221,8 @@ class _PlotFareState extends State<PlotFare> {
                                         side: BorderSide(color: DynamicColors.gryClr), // optional border color
                                       ),
                                       onPressed: (){
+                                        controller.ploteFareDescriptionController.clear();
+                                        controller.selectedPickupIds.clear();
                                         controller.Zoneevalue = null;
                                         controller.update();
                                       }, child: Icon(Icons.delete_forever,
@@ -291,7 +293,7 @@ class _PlotFareState extends State<PlotFare> {
                                         }
                                       }, child: Icon(Icons.add)
                                   ),
-
+                                  // Delete To Plot
                                   OutlinedButton(
                                       style: OutlinedButton.styleFrom(
                                         minimumSize: const Size(43, 42), // width & height
@@ -302,6 +304,8 @@ class _PlotFareState extends State<PlotFare> {
                                         side: BorderSide(color: DynamicColors.gryClr), // optional border color
                                       ),
                                       onPressed: (){
+                                        controller.ploteFareDescription2ndController.clear();
+                                        controller.selectedDropoffIds .clear();
                                         controller.Zonee1value = null;
                                         controller.update();
                                       }, child: Icon(Icons.delete_forever,
@@ -358,7 +362,7 @@ class _PlotFareState extends State<PlotFare> {
                           children: [
                             CustomButton(
                               onTap: (){
-                                controller.Zoneevalue== null ||controller.ploteFareDescription2ndController ==null  || controller.ploteFareDescriptionController == null ||controller.Zonee1value == null ||  controller.Zoneevalue == null ? BotToast.showText(text: "ADD PLOT"):
+                                controller.ploteFareDescription2ndController == null  || controller.ploteFareDescriptionController == null  ? BotToast.showText(text: "ADD PLOT"):
 
                                 controller.postPlotFare();
                               },
