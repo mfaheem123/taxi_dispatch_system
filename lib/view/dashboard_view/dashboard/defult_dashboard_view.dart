@@ -446,6 +446,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.dropDownShow.value = false;
                                                                       _controller.zoneValue = val;
                                                                       controller.dashboardZoneValue = val;
+                                                                      controller.getFaresCalculation();
                                                                       controller.update();
                                                                     },
                                                                   ),
@@ -728,6 +729,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.dropDownShow.value = false;
                                                                       _controller.zoneDValue = val;
                                                                       controller.dashboardDZoneValue = val;
+                                                                      controller.getFaresCalculation();
                                                                       controller.update();
                                                                     },
                                                                   ),
@@ -1352,6 +1354,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             controller.dropDownShow.value = false;
                                                                             _controller.RNzoneValue = val;
                                                                             controller.dashboardRNZoneValue = val;
+                                                                            controller.getFaresCalculation();
                                                                             controller.update();
                                                                           },
                                                                         ),
@@ -1543,6 +1546,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             controller.dropDownShow.value = false;
                                                                             _controller.RN1zoneValue = val;
                                                                             controller.dashboardRN1ZoneValue = val;
+                                                                            controller.getFaresCalculation();
                                                                             controller.update();
                                                                           },
                                                                         ),

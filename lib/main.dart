@@ -379,12 +379,18 @@ void main() async {
   try {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
-        apiKey: "AIzaSyDDxZ8lPfTJ1XcUn_7HpyvExygoWxgQR-A",
-        authDomain: "texidispetchsystem.firebaseapp.com",
-        projectId: "texidispetchsystem",
-        storageBucket: "texidispetchsystem.firebasestorage.app",
-        messagingSenderId: "81697669010",
-        appId: "1:81697669010:web:388758b1deabeb4af60b4b",
+        // apiKey: "AIzaSyDDxZ8lPfTJ1XcUn_7HpyvExygoWxgQR-A",
+        // authDomain: "texidispetchsystem.firebaseapp.com",
+        // projectId: "texidispetchsystem",
+        // storageBucket: "texidispetchsystem.firebasestorage.app",
+        // messagingSenderId: "81697669010",
+        // appId: "1:81697669010:web:388758b1deabeb4af60b4b",
+        apiKey: "AIzaSyBcPkD24z5Pd1hA3idX4ZnOw2zE4mcxrP4",
+        authDomain: "nexus-texh-group-ltd.firebaseapp.com",
+        projectId: "nexus-texh-group-ltd",
+        storageBucket: "nexus-texh-group-ltd.firebasestorage.app",
+        messagingSenderId: "532500206034",
+        appId:"1:532500206034:web:0c31feb5dbab22da97f80b",
       ),
     );
 

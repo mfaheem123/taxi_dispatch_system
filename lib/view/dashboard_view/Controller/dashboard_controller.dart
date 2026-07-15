@@ -2000,8 +2000,8 @@ class DashboardController extends GetxController {
       journeyTypeId: selectJourneyTypeValue!.id,
       multiReservationList:
           multiReservationList.isEmpty ? null : multiReservationList,
-      dropOff: pickupController.text,
-      pickup: dropOffController.text,
+      dropOff: dropOffController.text,
+      pickup: pickupController.text,
       miles: tempStoreMils,
       dropoffPlotId:
           dashboardDZoneValue != null ? dashboardDZoneValue!.id : null,
