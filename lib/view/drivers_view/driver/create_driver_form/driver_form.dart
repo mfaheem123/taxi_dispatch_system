@@ -133,7 +133,6 @@ class _DriverFormState extends State<DriverForm> {
                             btnText: "DOWNLOAD PDF",
                             borderRadius: 4,
                             onTap: (){
-                              VehicleHistoryAlert.show();
                             },
                             style: mozillaTextRegularText(
                                 fontSize: 12, color: DynamicColors.whiteClr),
@@ -161,7 +160,6 @@ class _DriverFormState extends State<DriverForm> {
                             btnText: "AUDIT REPORT",
                             borderRadius: 4,
                             onTap: (){
-                              VehicleHistoryAlert.show();
                             },
                             style: mozillaTextRegularText(
                                 fontSize: 12, color: DynamicColors.whiteClr),
@@ -219,7 +217,6 @@ class _DriverFormState extends State<DriverForm> {
                             btnText: "COMPLAINTS",
                             borderRadius: 4,
                             onTap: (){
-                              VehicleHistoryAlert.show();
                             },
                             style: mozillaTextRegularText(
                                 fontSize: 12, color: DynamicColors.whiteClr),
