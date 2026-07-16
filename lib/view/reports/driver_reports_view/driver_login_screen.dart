@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ import '../../dashboard_view/booking_table.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../dashboard_view/widgets/user_info_widget.dart';
 import '../controller/report_controller.dart';
+import 'driver_login_view_screen.dart';
 
 class DriverLoginScreen extends StatefulWidget {
   const DriverLoginScreen({super.key});
@@ -30,14 +32,6 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
   ReportController controller = Get.isRegistered<ReportController>()
       ? Get.find<ReportController>()
       : Get.put(ReportController());
-
-  // Date controllers
-  // DateTime? fromDate;
-  // DateTime? toDate;
-  DateTime fromDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
-  DateTime toDate = DateTime.now();
-  TimeOfDay? fromTime;
-  TimeOfDay? toTime;
 
   @override
   void initState() {
@@ -61,40 +55,6 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
     }
   }
 
-  Future<void> _pickDate(BuildContext context, bool isFrom) async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isFrom) {
-          fromDate = picked;
-        } else {
-          toDate = picked;
-        }
-      });
-    }
-  }
-
-  Future<void> _pickTime(BuildContext context, bool isFrom) async {
-    TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isFrom) {
-          fromTime = picked;
-        } else {
-          toTime = picked;
-        }
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return RawKeyboardListener(
@@ -103,6 +63,7 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
         onKey: _handleKey,
         child: GetBuilder<ReportController>(
           initState: (state) {
+            controller.selectDriverObject = null;
             controller.getAllDrivers();
             controller.loginStartTimeController.text = "12:00";
             controller.loginEndTimeController.text =
@@ -117,8 +78,8 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
               final double fieldWidth = isMobile
                   ? maxWidth // full width
                   : isTablet
-                      ? maxWidth / 2
-                      : maxWidth / 4;
+                  ? maxWidth / 2
+                  : maxWidth / 4;
 
               return SingleChildScrollView(
                 padding: const EdgeInsets.all(12),
@@ -145,13 +106,13 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                           isMobile: isMobile,
                           label: "FROM:",
                           column: false,
-                          width: 160,
+                          width: maxWidth < 1366 ? 120 : 160,
                           child: SizedBox(
                             height: 30,
                             child: KeyboardDatePicker(
-                              initialDate: fromDate,
+                              initialDate: controller.loginFromDate.value,
                               onChanged: (date) =>
-                                  setState(() => fromDate = date),
+                                  setState(() => controller.loginFromDate.value = date),
                             ),
                           ),
                         ),
@@ -174,13 +135,13 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                           isMobile: isMobile,
                           label: "TO:",
                           column: false,
-                          width: 160,
+                          width: maxWidth < 1366 ? 120 : 160,
                           child: SizedBox(
                             height: 30,
                             child: KeyboardDatePicker(
-                              initialDate: toDate,
+                              initialDate: controller.loginToDate.value,
                               onChanged: (date) =>
-                                  setState(() => toDate = date),
+                                  setState(() => controller.loginToDate.value = date),
                             ),
                           ),
                         ),
@@ -201,18 +162,44 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                         // Driver Dropdown
                         CustomDropdownField<DriverObject>(
                           label: "SELECT DRIVERS",
-                          width: 320,
+                          width: maxWidth < 1366 ? 220 : 320,
                           height: 35,
                           items: controller.allDriverData?.drivers ?? [],
-                          value: controller.selectDriverObject,
+                          value: controller.allDriverData?.drivers?.any((d) => d.id == controller.selectDriverObject?.id) ?? false
+                              ? controller.allDriverData!.drivers!.firstWhere((d) => d.id == controller.selectDriverObject?.id)
+                              : null,
                           itemLabel: (driver) =>
-                              driver.name ?? "".toUpperCase(),
+                              (driver.name ?? "").toUpperCase(),
                           onChanged: (val) {
                             controller.selectDriverObject = val;
                             controller.update();
                           },
                         ),
-
+                        SizedBox(width: maxWidth < 1366 ? 10 : 80),
+                        CustomButton(
+                          height: 30,
+                          width: 60,
+                          verticalPadding: 0.0,
+                          borderRadius: 4,
+                          onTap: () {
+                            setState(() {
+                              controller.loginFromDate.value = DateTime(DateTime.now().year, DateTime.now().month, 1);
+                              controller.loginToDate.value = DateTime.now();
+                              controller.selectDriverObject = null;
+                              controller.driverLoginReportListModel = null;
+                            });
+                            controller.update();
+                          },
+                          widget: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 0.0),
+                            child: Icon(
+                              Icons.refresh,
+                              color: DynamicColors.whiteClr,
+                              size: 25,
+                            ),
+                          ),
+                        ),
                         CustomButton(
                           verticalPadding: 0.0,
                           width: 60,
@@ -221,20 +208,28 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                           btnText: AppText.filter,
                           style: mozillaTextRegularText(
                               fontSize: 10, color: DynamicColors.whiteClr),
-                          onTap: () {},
+                          onTap: () {
+                            controller.getDriverShiftHistory();
+                          },
                         ),
                         SizedBox(
-                          width: 7,
+                          width: maxWidth < 1366 ? 0 : 7,
                         ),
                         CustomButton(
-                          verticalPadding: 0.0,
-                          width: 60,
-                          height: 30,
-                          borderRadius: 4,
-                          btnText: AppText.view,
-                          style: mozillaTextRegularText(
-                              fontSize: 10, color: DynamicColors.whiteClr),
-                          onTap: () {},
+                            verticalPadding: 0.0,
+                            width: 60,
+                            height: 30,
+                            borderRadius: 4,
+                            btnText: AppText.view,
+                            style: mozillaTextRegularText(
+                                fontSize: 10, color: DynamicColors.whiteClr),
+                            onTap: () {
+                              if (controller.driverLoginReportListModel != null &&
+                                  controller.driverLoginReportListModel!
+                                      .driverShiftHistories != null) {
+                                Get.dialog(DriverLoginViewWindow());
+                              }
+                            }
                         ),
                       ],
                     ),
@@ -244,24 +239,42 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                     // Table Section
                     SizedBox(
                       width: MediaQuery.of(context).size.width,
-                      child: DatatableWidget(
-                        columns: [
-                          buildHeaderWithSearch(title: "DRIVER"),
-                          buildHeaderWithSearch(title: "BOOKINGS"),
-                          buildHeaderWithSearch(title: "LOGIN DATE"),
-                          buildHeaderWithSearch(title: "LOGIN TIME"),
-                          buildHeaderWithSearch(title: "LOGOUT DATE"),
-                          buildHeaderWithSearch(title: "LOGOUT TIME"),
-                        ],
-                        totalRow: 15,
-                        cells: const [
-                          DataCell(Center(child: Text("driver"))),
-                          DataCell(Center(child: Text("bookings"))),
-                          DataCell(Center(child: Text("loginDate"))),
-                          DataCell(Center(child: Text("loginTime"))),
-                          DataCell(Center(child: Text("logoutDate"))),
-                          DataCell(Center(child: Text("logoutTime"))),
-                        ],
+                      child: SingleChildScrollView(
+                        child: DatatableWidget(
+                          columns: [
+                            buildHeaderWithSearch(title: "DRIVER"),
+                            buildHeaderWithSearch(title: "BOOKINGS"),
+                            buildHeaderWithSearch(title: "LOGIN DATE"),
+                            buildHeaderWithSearch(title: "LOGIN TIME"),
+                            buildHeaderWithSearch(title: "LOGOUT DATE"),
+                            buildHeaderWithSearch(title: "LOGOUT TIME"),
+                          ],
+                          totalRow: controller.driverLoginReportListModel?.driverShiftHistories?.length ?? 0,
+                          rows: (controller.driverLoginReportListModel?.driverShiftHistories ?? []).map((item) {
+                            return DataRow(
+                              cells: [
+                                DataCell(Center(
+                                    child: Text((item.driver?.username ?? "").toUpperCase()))),
+                                DataCell(Center(
+                                    child: Text(item.booking == null || item.booking!.isEmpty
+                                        ? "0"
+                                        : item.booking!.length.toString()))),
+                                DataCell(Center(
+                                    child: Text(item.loginDate != null
+                                        ? DateFormat('dd-MM-yyyy').format(item.loginDate!)
+                                        : "-"))),
+                                DataCell(Center(
+                                    child: Text(item.loginTime ?? "-"))),
+                                DataCell(Center(
+                                    child: Text(item.logoutDate != null
+                                        ? DateFormat('dd-MM-yyyy').format(item.logoutDate!)
+                                        : "-"))),
+                                DataCell(Center(
+                                    child: Text(item.logoutTime ?? "-"))),
+                              ],
+                            );
+                          }).toList(),
+                        ),
                       ),
                     ),
                   ],

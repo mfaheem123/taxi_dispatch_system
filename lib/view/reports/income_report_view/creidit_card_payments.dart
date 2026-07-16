@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../component/customButton.dart';
@@ -45,29 +43,21 @@ class _CreiditCardPaymentsState extends State<CreiditCardPayments> {
             ? maxWidth / 2
             : maxWidth / 4;
 
-            return Column(
+        return SingleChildScrollView(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 SizedBox(
                   height: 10,
                 ),
-                Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.end,
-                  runAlignment: WrapAlignment.start,
-                  spacing: 10,
-                  runSpacing: 16,
+                Row(
                   children: [
-                    Text(AppText.creditCardPayment,
-                      style: mozillaTextSemiBoldText(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 17,
-                      ),
-                    ),
                     labeledField(
                       context: context,
                       isMobile: isMobile,
                       label: AppText.from,
-                      width: fieldWidth/1.5,
+                      width: fieldWidth/1.9,
                       column: true,
                       child: SizedBox(height: 30, child: KeyboardDatePicker()),
                     ),
@@ -79,12 +69,11 @@ class _CreiditCardPaymentsState extends State<CreiditCardPayments> {
                       isMobile: isMobile,
                       column: true,
                       label: AppText.to,
-                      width: fieldWidth/1.5,
+                      width: fieldWidth/1.9,
                       child: SizedBox(height: 30, child: KeyboardDatePicker()),
                     ),
+                    const Spacer(),
 
-
-                    SizedBox(width: 20,),
                     KeyboardCheckbox(
                       focusNode: controller.creditCardPaidNode,
                       value: controller.creditCardPaidValue.value,
@@ -95,7 +84,7 @@ class _CreiditCardPaymentsState extends State<CreiditCardPayments> {
                         controller.update();
                       },
                     ),
-                    SizedBox(width: 20,),
+                    const Spacer(),
                     CustomButton(
                       width: 120,
                       height: 30,
@@ -104,6 +93,7 @@ class _CreiditCardPaymentsState extends State<CreiditCardPayments> {
                       btnText: AppText.filter,
                       fontSize: 12,
                     ),
+                    SizedBox(width: 10),
                     CustomButton(
                       width: 120,
                       height: 30,
@@ -126,11 +116,9 @@ class _CreiditCardPaymentsState extends State<CreiditCardPayments> {
                           buildHeaderWithSearch(title: "REF #"),
                           buildHeaderWithSearch(title: "STRIPE PAYMENT ID"),
                           buildHeaderWithSearch(title: "DATETIME"),
-
                           buildHeaderWithSearch(title: "PICKUP"),
                           buildHeaderWithSearch(title: "DROPOFF"),
                           buildHeaderWithSearch(title: "FARE"),
-
                           buildHeaderWithSearch(title: "J/T"),
                           buildHeaderWithSearch(title: "STATUS"),
                           buildHeaderWithSearch(title: "PAYMENT TYPE"),
@@ -140,11 +128,9 @@ class _CreiditCardPaymentsState extends State<CreiditCardPayments> {
                           const DataCell(Center(child: Text("#PHC VEHICLE"))),
                           const DataCell(Center(child: Text("20/10/2025"))),
                           const DataCell(Center(child: Text("#PHC VEHICLE"))),
-
                           const DataCell(Center(child: Text("#PHC VEHICLE"))),
                           const DataCell(Center(child: Text("20/10/2025"))),
                           const DataCell(Center(child: Text("#PHC VEHICLE"))),
-
                           const DataCell(Center(child: Text("#PHC VEHICLE"))),
                           const DataCell(Center(child: Text("20/10/2025"))),
                           const DataCell(Center(child: Text("#PHC VEHICLE"))),
@@ -153,10 +139,11 @@ class _CreiditCardPaymentsState extends State<CreiditCardPayments> {
                   ),
                 ),
               ],
-            );
-          }
+            )
         );
       }
+      );
+    }
     );
   }
 }
