@@ -37,6 +37,7 @@ class _AuditReportScreenState extends State<AuditReportScreen> {
         return _buildBody();
       }),
     );
+
   }
 
   Widget _buildBody() {
