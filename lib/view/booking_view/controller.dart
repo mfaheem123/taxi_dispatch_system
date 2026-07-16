@@ -215,7 +215,7 @@ class BookingController extends GetxController{
 
   final int completedBookId = 4;
   getcompletedBookingData() async {
-    webBookingLoad(true);
+    completedBookingLoad(true);
     var response = await Api().get("bookings/getbytabs/${completedBookId}", sendCompanyId: true,
         queryParameters: {
           "page": completedBookingCurrentPage.value,
@@ -240,8 +240,8 @@ class BookingController extends GetxController{
     );
     if(response.statusCode == 200){
       completedBookingModelData = DashboardTableModel.fromJson(response.data);
-      completedBookingTotalPages.value = completedBookingModelData?.totalPages ?? 1;
       completedBookingAll.value = completedBookingModelData?.data ?? [];
+      completedBookingTotalPages.value = completedBookingModelData?.totalPages ?? 1;
       completedBookingFiltered.value = completedBookingAll;
       completedBookingLoad(false);
       update();

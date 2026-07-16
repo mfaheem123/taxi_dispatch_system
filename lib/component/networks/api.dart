@@ -142,54 +142,6 @@ class Api {
     // }
   }
 
-  // Future<dynamic> delete( String url, {isProgressShow = false}) async {
-  //   if (isProgressShow == false) {
-  //     BotToast.showLoading();
-  //   }
-  //   Dio dio = Dio(BaseOptions(
-  //     connectTimeout: Duration(seconds: 50),
-  //     receiveTimeout: Duration(seconds: 50),
-  //   ));
-  //   dio.options.headers['Authorization'] = "Bearer ${sp.read('token')}";
-  //   dio.options.headers['Connection'] = "keep-alive";
-
-  //   try {
-  //     final response = await dio.post(
-  //       apiUrl + url,
-  //       // data: formData,
-  //       options: Options(
-  //         headers: {
-  //           Headers.acceptHeader: "application/json",
-  //         },
-  //       ),
-  //     );
-  //     Future.delayed(Duration(seconds: 1), () {
-  //       if (isProgressShow == false) {
-  //         BotToast.closeAllLoading();
-  //       }
-  //     });
-  //     return response;
-  //   } on SocketException {
-  //     Future.delayed(Duration(seconds: 1), () {
-  //       if (isProgressShow == false) {
-  //         BotToast.closeAllLoading();
-  //       }
-  //     });
-  //     BotToast.showText(text: 'No Internet connection');
-  //   } on DioException catch (e) {
-  //     if (e.type == DioExceptionType.connectionTimeout) {
-  //       BotToast.closeAllLoading();
-  //       BotToast.showText(text: "Connection Timeout Exception");
-  //       throw Exception("Connection Timeout Exception");
-  //     }
-  //     Future.delayed(Duration(seconds: 1), () {
-  //       if (isProgressShow == false) {
-  //         BotToast.closeAllLoading();
-  //       }
-  //     });
-  //     return returnResponse(e.response!);
-  //   }
-  // }
 
 Future<dynamic> delete(String url, {isProgressShow = false, formData}) async {
      if (isProgressShow == false) {

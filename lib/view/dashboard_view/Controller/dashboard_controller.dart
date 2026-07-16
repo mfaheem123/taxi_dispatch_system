@@ -45,33 +45,39 @@ class DashboardController extends GetxController {
   WebSocketChannel? _channel;
   bool isConnected = false;
 
-  // We pass the context here so we can show the Dialog
-  void connectToCli(String extension) {
-    final url = Uri.parse("$socketUrl/cli?extension=$extension");
+// Global company ID access karne ke liye Api singleton ka use karenge
+  final String _companyId = Api.singleton.globalCompanyId;
+
+  // Helper method jo URL me company_id attach karega agar sendCompanyId true ho
+  String _buildSocketUrl(String endpoint, {bool sendCompanyId = false}) {
+    String finalUrl = "$socketUrl$endpoint";
+    if (sendCompanyId) {
+      // Agar pehle se URL me "?" hai to "&" lagayenge, warna "?" lagayenge
+      finalUrl += finalUrl.contains('?') ? "&" : "?";
+      finalUrl += "company_id=$_companyId";
+    }
+    return finalUrl;
+  }
+  // 1. Connect To CLI
+  void connectToCli(String extension, {bool sendCompanyId = false}) {
+    final String path = "/cli?extension=$extension";
+    final url = Uri.parse(_buildSocketUrl(path, sendCompanyId: sendCompanyId));
 
     try {
       _channel = WebSocketChannel.connect(url);
 
       _channel!.stream.listen(
-        (message) {
+            (message) {
           final data = jsonDecode(message);
 
           if (data['event'] == "CLI_OPEN") {
             print(data['data']);
             print(data['data']['callerId']);
             Get.to(() => ResponsivePassengerScreen(
-                  extensionNumber: data['data']['callerId'],
-                ))?.then((value) {
-              connectToCli("200");
+              extensionNumber: data['data']['callerId'],
+            ))?.then((value) {
+              connectToCli("200", sendCompanyId: sendCompanyId);
             });
-
-            // Get.to(ResponsivePassengerScreen(extensionNumber: data['data']['callerId'],));
-            // _showIncomingCallDialog(
-            //   context,
-            //   data['data']['callId'].toString(),
-            //   data['data']['callerId'].toString(),
-            //   data['data']['extension'].toString(),
-            // );
           }
         },
         onError: (error) => print("Connection Error: $error"),
@@ -84,14 +90,14 @@ class DashboardController extends GetxController {
 
   List<DashboardDriverObject> onlineDriversList = [];
 
-  // We pass the context here so we can show the Dialog
-  void connectToDriverLogin() {
-    final url = Uri.parse("$socketUrl/driver-login");
+  // 2. Connect To Driver Login
+  void connectToDriverLogin({bool sendCompanyId = false}) {
+    final url = Uri.parse(_buildSocketUrl("/driver-login", sendCompanyId: sendCompanyId));
     try {
       _channel = WebSocketChannel.connect(url);
 
       _channel!.stream.listen(
-        (message) {
+            (message) {
           final data = jsonDecode(message);
 
           print(data['event']);
@@ -102,8 +108,7 @@ class DashboardController extends GetxController {
             dashboardAllData!.drivers!.add(driver);
             onlineDriversList.add(driver);
             update();
-          }else if (data['event'] == "DRIVER_BREAK_STATUS_UPDATE") {
-
+          } else if (data['event'] == "DRIVER_BREAK_STATUS_UPDATE") {
             final driverData = data['data'];
 
             int index = onlineDriversList.indexWhere(
@@ -119,17 +124,17 @@ class DashboardController extends GetxController {
 
               update();
             }
-          }  else if (data['event'] != "DRIVER_LIST") {
+          } else if (data['event'] != "DRIVER_LIST") {
             int index = onlineDriversList.indexWhere(
-              (test) =>
-                  test.id.toString() == data['data']['driverId'].toString(),
+                  (test) =>
+              test.id.toString() == data['data']['driverId'].toString(),
             );
 
             print(dashboardAllData!.drivers!);
 
             int idd = dashboardAllData!.drivers!.indexWhere(
-              (test) =>
-                  test.id.toString() == data['data']['driverId'].toString(),
+                  (test) =>
+              test.id.toString() == data['data']['driverId'].toString(),
             );
 
             print(dashboardAllData!.drivers!);
@@ -144,7 +149,7 @@ class DashboardController extends GetxController {
         },
         onError: (error) => print("Connection Error: $error"),
         onDone: () {
-          connectToDriverLogin();
+          connectToDriverLogin(sendCompanyId: sendCompanyId);
           print("🔌 Socket Disconnected");
           print("Close Code: ${_channel?.closeCode}");
           print("Close Reason: ${_channel?.closeReason}");
@@ -157,73 +162,21 @@ class DashboardController extends GetxController {
 
   List<DashboardDriverObject> busyDriversList = [];
 
-  // We pass the context here so we can show the Dialog
-  void connectToBusyDriver() {
-    final url = Uri.parse("$socketUrl/driver-busy");
+  // 3. Connect To Busy Driver
+  void connectToBusyDriver({bool sendCompanyId = false}) {
+    final url = Uri.parse(_buildSocketUrl("/driver-busy", sendCompanyId: sendCompanyId));
     try {
       _channel = WebSocketChannel.connect(url);
 
-      // _channel!.stream.listen(
-      //   (message) {
-      //     final data = jsonDecode(message);
-      //
-      //     print(data['event']);
-      //     if (data['event'] == "BUSY_DRIVER_UPDATE") {
-      //       if (onlineDriversList
-      //           .any((e) => e.id.toString() == data['data']['id'].toString())) {
-      //         onlineDriversList.removeWhere(
-      //           (e) => e.id.toString() == data['data']['id'].toString(),
-      //         );
-      //       }
-      //
-      //       print(dashboardAllData!.drivers);
-      //       print(selectDriverValue);
-      //
-      //       if (dashboardAllData!.drivers!
-      //           .any((e) => e.id.toString() == data['data']['id'].toString())) {
-      //         dashboardAllData!.drivers!.removeWhere(
-      //           (e) => e.id.toString() == data['data']['id'].toString(),
-      //         );
-      //         selectDriverValue = null;
-      //       }
-      //
-      //       print(dashboardAllData!.drivers);
-      //
-      //       final driver = DashboardDriverObject.fromJson(
-      //         Map<String, dynamic>.from(data['data']),
-      //       );
-      //       busyDriversList.add(driver);
-      //       update();
-      //     } else {
-      //       busyDriversList.removeWhere(
-      //         (e) => e.id.toString() == data['data']['id'].toString(),
-      //       );
-      //       update();
-      //     }
-      //   },
-      //   onError: (error) => print("Connection Error: $error"),
-      //   onDone: () {
-      //     connectToBusyDriver();
-      //     print("🔌 Socket Disconnected");
-      //     print("Close Code: ${_channel?.closeCode}");
-      //     print("Close Reason: ${_channel?.closeReason}");
-      //   },
-      // );
       _channel!.stream.listen(
             (message) {
           final data = jsonDecode(message);
           print("EVENT => ${data['event']}");
           print("DATA => ${data['data']}");
-          print("EVENT => ${data['event']}");
 
-          // ==========================
-          // DRIVER STATUS UPDATE
-          // ==========================
           if (data['event'] == "DRIVER_BOOKING_STATUS_WEB_UPDATE") {
-
             final driverId = data['data']['id'];
 
-            // Online Drivers
             final onlineIndex = onlineDriversList.indexWhere(
                   (e) => e.id == driverId,
             );
@@ -236,7 +189,6 @@ class DashboardController extends GetxController {
               data['data']['driver_status'];
             }
 
-            // Busy Drivers
             final busyIndex = busyDriversList.indexWhere(
                   (e) => e.id == driverId,
             );
@@ -250,13 +202,7 @@ class DashboardController extends GetxController {
             }
 
             update();
-          }
-
-          // ==========================
-          // BUSY DRIVER UPDATE
-          // ==========================
-          else if (data['event'] == "BUSY_DRIVER_UPDATE") {
-
+          } else if (data['event'] == "BUSY_DRIVER_UPDATE") {
             if (onlineDriversList.any(
                   (e) => e.id.toString() == data['data']['id'].toString(),
             )) {
@@ -280,20 +226,19 @@ class DashboardController extends GetxController {
             );
 
             busyDriversList.add(driver);
-
             update();
-          }
-
-          // ==========================
-          // REMOVE BUSY DRIVER
-          // ==========================
-          else {
+          } else {
             busyDriversList.removeWhere(
                   (e) => e.id.toString() == data['data']['id'].toString(),
             );
 
             update();
           }
+        },
+        onError: (error) => print("Connection Error: $error"),
+        onDone: () {
+          connectToBusyDriver(sendCompanyId: sendCompanyId);
+          print("🔌 Socket Disconnected");
         },
       );
     } catch (e) {
@@ -584,10 +529,10 @@ class DashboardController extends GetxController {
     Future.delayed(Duration(seconds: 1), () {
       String myExtension = Employee.selectedEmployee?.extensionNumber ?? "200";
       print("Connecting to CLI with Extension: $myExtension");
-      connectToCli(myExtension);
+      connectToCli(myExtension, sendCompanyId: true);
     });
-    connectToDriverLogin();
-    connectToBusyDriver();
+    connectToDriverLogin(sendCompanyId: true);
+    connectToBusyDriver(sendCompanyId: true);
     getAllDrivers();
     getAllOnlineDrivers();
     // startAutoRefresh(selectedTabId);
