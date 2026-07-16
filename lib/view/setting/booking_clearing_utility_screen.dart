@@ -100,6 +100,9 @@ class _BookingClearingUtilityScreenState
                     btnText: AppText.clearAll,
                     style: mozillaTextRegularText(
                         fontSize: 10, color: DynamicColors.whiteClr),
+                    onTap: () {
+                      controller.clearAllBookings();
+                    },
                   ),
                 ],
               ),

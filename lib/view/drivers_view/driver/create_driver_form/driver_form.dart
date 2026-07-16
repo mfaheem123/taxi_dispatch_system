@@ -125,32 +125,20 @@ class _DriverFormState extends State<DriverForm> {
                     ),
                     Row(
                       children: [
-                        if(permissions.contains('read_driver_shift'))
+                        if (controller.singleDriverData != null) ...[
                           CustomButton(
-                          width: 80,
-                          height: 35,
-                          verticalPadding: 0.0,
-                          btnText: "SHIFTS",
-                          borderRadius: 4,
-                          style: mozillaTextRegularText(
-                              fontSize: 14, color: DynamicColors.whiteClr),
-                          onTap: () {
-                            ShiftAlert.show();
-                          },
-                        ),
-                        const SizedBox(width: 8),
-                        CustomButton(
-                          width: 130,
-                          height: 35,
-                          verticalPadding: 0.0,
-                          btnText: "VEHICLE HISTORY",
-                          borderRadius: 4,
-                          onTap: (){
-                            VehicleHistoryAlert.show();
-                          },
-                          style: mozillaTextRegularText(
-                              fontSize: 12, color: DynamicColors.whiteClr),
-                        ),
+                            width: 130,
+                            height: 35,
+                            verticalPadding: 0.0,
+                            btnText: "DOWNLOAD PDF",
+                            borderRadius: 4,
+                            onTap: (){
+                              VehicleHistoryAlert.show();
+                            },
+                            style: mozillaTextRegularText(
+                                fontSize: 12, color: DynamicColors.whiteClr),
+                          ),
+                        ],
                         const SizedBox(width: 8),
                         CustomButton(
                           width: 100,
@@ -165,11 +153,56 @@ class _DriverFormState extends State<DriverForm> {
                               fontSize: 12, color: DynamicColors.whiteClr),
                         ),
                         const SizedBox(width: 8),
+                        if (controller.singleDriverData != null) ...[
+                          CustomButton(
+                            width: 130,
+                            height: 35,
+                            verticalPadding: 0.0,
+                            btnText: "AUDIT REPORT",
+                            borderRadius: 4,
+                            onTap: (){
+                              VehicleHistoryAlert.show();
+                            },
+                            style: mozillaTextRegularText(
+                                fontSize: 12, color: DynamicColors.whiteClr),
+                          ),
+                        ],
+                        const SizedBox(width: 8),
+
+                        if(permissions.contains('read_driver_shift'))
+                          CustomButton(
+                          width: 80,
+                          height: 35,
+                          verticalPadding: 0.0,
+                          btnText: "SHIFTS",
+                          borderRadius: 4,
+                          style: mozillaTextRegularText(
+                              fontSize: 14, color: DynamicColors.whiteClr),
+                          onTap: () {
+                            ShiftAlert.show();
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        if (controller.singleDriverData != null) ...[
+                        CustomButton(
+                          width: 130,
+                          height: 35,
+                          verticalPadding: 0.0,
+                          btnText: "VEHICLE HISTORY",
+                          borderRadius: 4,
+                          onTap: (){
+                            VehicleHistoryAlert.show();
+                          },
+                          style: mozillaTextRegularText(
+                              fontSize: 12, color: DynamicColors.whiteClr),
+                        ),
+                        ],
+                        const SizedBox(width: 8),
                         CustomButton(
                           width: 80,
                           height: 35,
                           verticalPadding: 0.0,
-                          btnText: AppText.note,
+                          btnText: "NOTES",
                           borderRadius: 4,
                           onTap: (){
                             NoteAlert.show();
@@ -177,6 +210,21 @@ class _DriverFormState extends State<DriverForm> {
                           style: mozillaTextRegularText(
                               fontSize: 14, color: DynamicColors.whiteClr),
                         ),
+                        const SizedBox(width: 8),
+                        if (controller.singleDriverData != null) ...[
+                          CustomButton(
+                            width: 130,
+                            height: 35,
+                            verticalPadding: 0.0,
+                            btnText: "COMPLAINTS",
+                            borderRadius: 4,
+                            onTap: (){
+                              VehicleHistoryAlert.show();
+                            },
+                            style: mozillaTextRegularText(
+                                fontSize: 12, color: DynamicColors.whiteClr),
+                          ),
+                        ],
                       ],
                     ),
                   ],
