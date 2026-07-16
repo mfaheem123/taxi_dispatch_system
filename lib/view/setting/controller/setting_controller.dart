@@ -10,7 +10,8 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:pdf/pdf.dart';
-
+import 'dart:convert';
+import 'package:dio/dio.dart' as dio;
 import '../../administration/model/list_subsDiary.dart';
 import '../../drivers_view/model/driver_commission_payment_model.dart';
 import '../model/get_clear_booking_model.dart';
@@ -513,7 +514,6 @@ class SettingController extends GetxController {
     update();
   }
 
-  // Post Clear Selected Api
   clearSelectedBookings() async {
     if (selectedBookingIds.isEmpty) return;
 
@@ -523,27 +523,31 @@ class SettingController extends GetxController {
     int? driverId;
     if (clearBookingModel?.bookings != null) {
       final selectedBooking = clearBookingModel!.bookings!.firstWhereOrNull(
-            (b) => b.id == selectedBookingIds.first,
+            (b) => b.id.toString() == selectedBookingIds.first,
       );
       driverId = selectedBooking?.driverId;
     }
 
-    var formData = {
+    List<int> parsedIds = selectedBookingIds
+        .map((id) => int.tryParse(id))
+        .whereType<int>()
+        .toList();
+
+    var formData = dio.FormData.fromMap({
       "driver_id": driverId ?? 0,
-      "ids": selectedBookingIds.map((id) => int.tryParse(id) ?? id).toList(),
-    };
+      "ids[]": parsedIds
+    });
 
     try {
       var response = await Api().post(
         formData,
-        "bookings/clear-selected",
+        "bookings/clear-selected", auth: true,
       );
+
       print("SERVER RESPONSE STATUS CODE: ${response.statusCode}");
       print("SERVER RESPONSE DATA: ${response.data}");
 
       if (response.statusCode == 200) {
-        print("SERVER RESPONSE STATUS CODE: ${response.statusCode}");
-        print("SERVER RESPONSE DATA: ${response.data}");
         BotToast.showText(text: "BOOKINGS CLEARED SUCCESSFULLY!");
         selectedBookingIds.clear();
         await getBookingsToClear();
@@ -555,6 +559,37 @@ class SettingController extends GetxController {
       BotToast.showText(text: "SOMETHING WENT WRONG!");
     } finally {
       isClearingSelected = false;
+      update();
+    }
+  }
+
+  bool isClearingAll = false;
+
+  clearAllBookings() async {
+    isClearingAll = true;
+    update();
+
+    try {
+
+      var response = await Api().post(
+        {},
+        "bookings/clear-all", auth: true,
+      );
+
+      print("CLEAR ALL STATUS: ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        BotToast.showText(text: "ALL BOOKINGS CLEARED SUCCESSFULLY!");
+        selectedBookingIds.clear();
+        await getBookingsToClear();
+      } else {
+        BotToast.showText(text: "FAILED TO CLEAR ALL BOOKINGS!");
+      }
+    } catch (e) {
+      print("Error in clear-all: $e");
+      BotToast.showText(text: "SOMETHING WENT WRONG!");
+    } finally {
+      isClearingAll = false;
       update();
     }
   }
