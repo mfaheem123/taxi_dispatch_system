@@ -2572,6 +2572,8 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     telController.clear();
     // pickUpTimeController.clear();
     minController.clear();
+    minControllerReturn.clear();
+    slugControllerReturn.clear();
     passController.clear();
     luggController.clear();
     sluggController.clear();
@@ -2819,7 +2821,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       final zones = _controller.locationtypezoneModel?.zonesList;
 
       if (zones != null) {
-        _controller.updateLocationValue.value == true;
+        _controller.updateLocationValue.value = true;
         // Find pickup zone
         if (jobData.pickupPlot != null) {
           dashboardZoneValue = zones.firstWhereOrNull((z) => z.id == jobData.pickupPlot);
@@ -2832,7 +2834,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           _controller.zoneDValue = zones.firstWhereOrNull((z) => z.id == jobData.dropoffPlot);
         }
 
-        _controller.updateLocationValue.value == false;
+        _controller.updateLocationValue.value = false;
       }
       if(hitAddBooking == true){
         dashBoardApiValidation();

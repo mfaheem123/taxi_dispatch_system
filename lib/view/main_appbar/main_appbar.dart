@@ -1823,6 +1823,7 @@ import '../drivers_view/driver/driver_rent_pay/driver_rent_pay.dart';
 import '../drivers_view/driver/driver_sin_bin_setting/driver_sin_bin_setting.dart';
 import '../drivers_view/driver/drivers_list/driver_list_screen.dart';
 import '../drivers_view/driver/login_drivers/login_drivers_screen.dart';
+import '../drivers_view/driver/driver_attributes/driver_attributes_screen.dart';
 import '../fare_view/airport_charges/airport_charges.dart';
 import '../fare_view/fare_by_vehicle/fare_by_vehicle.dart';
 import '../fare_view/fare_charges/fare_charges.dart';
@@ -2743,6 +2744,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 });
               },
             ),
+            NestedMenuItem(
+              title: "DRIVER ATTRIBUTES",
+              onTap: () {
+                setState(() {
+                  controller.currentPage.value = const DriverAttributesScreen();
+                  controller.menuBarRefresh(
+                      title: "DRIVER ATTRIBUTES",
+                      pageName: const DriverAttributesScreen());
+                });
+              },
+            ),
           ],
         ),
         NestedMenuItem(
@@ -3362,12 +3374,12 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
         NestedMenuItem(
-          title: "BOOKING CLEARING UTILITY",
+          title: "CLEAR BOOKINGS",
           onTap: () {
             setState(() {
               controller.currentPage.value = BookingClearingUtilityScreen();
               controller.menuBarRefresh(
-                  title: "BOOKING CLEARING UTILITY",
+                  title: "CLEAR BOOKINGS",
                   pageName: BookingClearingUtilityScreen());
             });
           },

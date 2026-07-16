@@ -89,7 +89,7 @@ class _AccountViewState extends State<AccountView> {
                           ),
                           child: Column(
                             children: [
-                              //_headerBtn(AppText.restrictDrivers , () => RestrictDriversAlert.show(), width: 150),
+
                               // Header Row
                               Container(
                                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
@@ -103,7 +103,7 @@ class _AccountViewState extends State<AccountView> {
                                     if (permissions.contains('read_account_contact')) _headerBtn(AppText.contact, () => ContactAlert.show()),
                                     if (permissions.contains('read_account_order_number')) _headerBtn(AppText.order, () => OrderAlert.show()),
                                     if (permissions.contains('read_account_company_address')) _headerBtn(AppText.companyAddress, () => CompanyAddressAlert.show(), width: 150),
-                                    _headerBtn(AppText.restrictDrivers , () => RestrictDriversAlert, width: 150),
+                                    _headerBtn(AppText.restrictDrivers , () => RestrictDriversAlert.show(), width: 150),
                                   ],
                                 ),
                               ),

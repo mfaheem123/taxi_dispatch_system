@@ -56,8 +56,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   final FocusNode _shortcutFocusNode = FocusNode();
   // ────────── return-journey state
   ZoneObject? returnDropZone;
-  DashboardVehicleTypeObject? returnVehicleValue;
-  DashboardDriverObject? returnDriverValue;
+  // DashboardVehicleTypeObject? returnVehicleValue;
+  // DashboardDriverObject? returnDriverValue;
   // late final _rDropoff = TextEditingController();
   // DateTime? returnDate = DateTime.now();
   // late final _rTime = TextEditingController(text: '15:03');
@@ -75,7 +75,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   void _onMultiReservation() => debugPrint('F8 / Multi Reservation tapped');
   void _onAddVehicles() => debugPrint('F9 / Vehicles tapped');
   void _onVia() => debugPrint('Via tapped');
-  void _onSub() => debugPrint('Sub tapped');
   void _onClear() => debugPrint('F7 / Clear tapped');
   void _showPickBookingAlert() {
     showDialog(
@@ -776,19 +775,19 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 _addReturnFareCheckbox(),
                 const SizedBox(height: 8),
                 _dropdown<DashboardVehicleTypeObject>(
-                  'Return/VEH',
-                  returnVehicleValue,
+                  'Select R/VEH',
+                   controller.selectVehicleValueReturn,
                   controller.dashboardAllData!.vehicleTypes!,
-                  (v) => setState(() => returnVehicleValue = v),
+                  (v) => setState(() =>  controller.selectVehicleValueReturn = v),
                   32,
                   itemLabel: (p) => p.name!,
                 ),
                 const SizedBox(height: 8),
                 _dropdown<DashboardDriverObject>(
-                  'Return/DRV',
-                  returnDriverValue,
+                  'Select R/DRV',
+                  controller.selectDriverValueReturn,
                   controller.dashboardAllData!.drivers ?? const [],
-                  (v) => setState(() => returnDriverValue = v),
+                  (v) => setState(() => controller.selectDriverValueReturn = v),
                   33,
                   itemLabel: (p) => p.name ?? '',
                 ),
@@ -798,10 +797,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: _dropdown<DashboardVehicleTypeObject>(
-                    'Return/VEH',
-                    returnVehicleValue,
+                    'Select R/VEH',
+                    controller.selectVehicleValueReturn,
                     controller.dashboardAllData!.vehicleTypes!,
-                    (v) => setState(() => returnVehicleValue = v),
+                    (v) => setState(() => controller.selectVehicleValueReturn = v),
                     32,
                     itemLabel: (p) => p.name!,
                   ),
@@ -809,10 +808,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _dropdown<DashboardDriverObject>(
-                    'Return/DRV',
-                    returnDriverValue,
+                    'Select R/DRV',
+                    controller.selectDriverValueReturn,
                     controller.dashboardAllData!.drivers ?? const [],
-                    (v) => setState(() => returnDriverValue = v),
+                    (v) => setState(() => controller.selectDriverValueReturn = v),
                     33,
                     itemLabel: (p) => p.name ?? '',
                   ),
@@ -899,7 +898,17 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               tab('Via (${controller.viaPoints.length})', onTap: () {
                 showDialog(context: context, builder: (_) => ViaLocation());
               }),
-              tab('Sub', onTap: _onSub),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                child: Text(
+                  'Sub',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w600,
+                    fontSize: _fsTab,
+                  ),
+                ),
+              ),
               const SizedBox(width: 6),
               SizedBox(
                 width: 220,

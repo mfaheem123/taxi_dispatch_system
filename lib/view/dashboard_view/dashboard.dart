@@ -31,6 +31,7 @@ import '../drivers_view/driver/driver_rent_pay/driver_rent_pay.dart';
 import '../drivers_view/driver/driver_sin_bin_setting/driver_sin_bin_setting.dart';
 import '../drivers_view/driver/drivers_list/driver_list_screen.dart';
 import '../drivers_view/driver/login_drivers/login_drivers_screen.dart';
+import '../drivers_view/driver/driver_attributes/driver_attributes_screen.dart';
 import '../fare_view/airport_charges/airport_charges.dart';
 import '../fare_view/fare_by_vehicle/fare_by_vehicle.dart';
 import '../fare_view/fare_charges/fare_charges.dart';
@@ -552,6 +553,9 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
       case 'LIST OF LOGGED IN/OUT DRIVERS':
         child = LoginDriversScreen();
         break;
+      case 'DRIVER ATTRIBUTES':
+        child = const DriverAttributesScreen();
+        break;
       case 'DRIVER APP FEATURES':
         return DriverAppFeatureScreen();
       case 'CREATE VEHICLE TYPE':
@@ -644,7 +648,7 @@ final List<MenuItemData> menus = [
   MenuItemData("CUSTOMERS", Icons.headset_mic, ["CREATE BOOKINGS", "LIST OF BOOKINGS", "LIST OF WEB BOOKINGS", "LIST OF APP BOOKINGS", "LIST OF MULTI BOOKINGS", "LIST OF TRASH BOOKINGS"]),
   MenuItemData("FARES", Icons.wallet_outlined, ["CREATE FARE SETTINGS", "CREATE FIXED FARE SETTINGS", "CREATE PLOT FARE", "CREATE FARE BY VEHICLE SETTINGS", "AIRPORT CHARGES", "FARE INCREMENT", "SUR CHARGES", "FARE METER"]),
   MenuItemData("LOCATIONS", Icons.location_pin, ["CREATE LOCATIONS", "LIST OF LOCATIONS", "CREATE ZONE", "LIST OF ZONES", "LOCALIZATION", "PLOTTING"]),
-  MenuItemData("DRIVERS", Icons.person, ["CREATE DRIVER", "LIST OF DRIVERS", "DRIVER APP FEATURES", "LIST OF LOGGED IN/OUT DRIVERS", "CREATE DRIVER COMMISSION", "CREATE DRIVER RENT", "DRIVER COMMISSIONS", "BULK DRIVER COMMISSION","DRIVER COMMISSION PAY","DRIVER RENT", "BULK DRIVER RENT","DRIVER RENT PAY", "DRIVER SIN BIN SETTINGS"]),
+  MenuItemData("DRIVERS", Icons.person, ["CREATE DRIVER", "LIST OF DRIVERS", "DRIVER APP FEATURES", "2LIST OF LOGGED IN/OUT DRIVERS", "DRIVER ATTRIBUTES", "CREATE DRIVER COMMISSION", "CREATE DRIVER RENT", "DRIVER COMMISSIONS", "BULK DRIVER COMMISSION","DRIVER COMMISSION PAY","DRIVER RENT", "BULK DRIVER RENT","DRIVER RENT PAY", "DRIVER SIN BIN SETTINGS"]),
   MenuItemData("ACCOUNTS", Icons.account_circle, ["CREATE ACCOUNT", "LIST OF ACCOUNTS", "CREATE CUSTOMER INVOICE", "LIST OF CUSTOMER INVOICES", "CREATE ACCOUNT INVOICE", "LIST OF ACCOUNT INVOICES"]),
   MenuItemData("VEHICLES", Icons.directions_car, ["CREATE VEHICLE TYPE", "LIST OF VEHICLE TYPES", "CREATE COMPANY VEHICLE", "LIST OF COMPANY VEHICLE"]),
   MenuItemData("INVOICE", Icons.supervised_user_circle, ["CREATE USER", "LIST OF USER", "AUTHORIZATION"]),

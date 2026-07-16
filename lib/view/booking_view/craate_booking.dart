@@ -95,7 +95,9 @@ class _CreateBookingState extends State<CreateBooking> {
     dropdownFocusNode.dispose();
   }
 
-  DashboardController controller = Get.put(DashboardController());
+  DashboardController controller = Get.isRegistered<DashboardController>()
+      ? Get.find<DashboardController>()
+      : Get.put(DashboardController());
 
   SuggestionController suggestion_controller =
       Get.isRegistered<SuggestionController>()
