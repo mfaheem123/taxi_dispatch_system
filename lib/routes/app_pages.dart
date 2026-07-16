@@ -12,6 +12,7 @@ import '../view/dashboard_view/Controller/dashboard_controller.dart';
 import '../view/booking_view/craate_booking.dart';
 import '../view/dashboard_view/dashboard.dart';
 import '../view/dashboard_view/widgets/view_drivers_map.dart';
+import '../view/drivers_view/driver/create_driver_form/Aduit_report_screen.dart';
 import '../view/main_appbar/main_appbar.dart';
 part 'app_routes.dart';
 
@@ -71,6 +72,10 @@ class AppPages {
     GetPage(
       name: _Paths.createVehicle,
       page: () => CreateVehicleTypes(),
+    ),
+    GetPage(
+      name: _Paths.driverAuditReport,
+      page: () => AuditReportScreen(),
     ),
   ];
 }

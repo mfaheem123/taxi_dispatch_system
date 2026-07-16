@@ -442,6 +442,23 @@ class DriverController extends GetxController {
   singleDriver.SingleDriverModel? singleDriverData;
   RxBool driverDataBindingLoading = false.obs;
 
+  RxBool isAuditDriverLoading = false.obs;
+  Map<String, dynamic>? auditDriverData;
+
+  Future<void> fetchAuditDriverData(String driverId) async {
+    isAuditDriverLoading.value = true;
+    try {
+      var response = await Api().get("drivers/getbyid/$driverId");
+      if (response.statusCode == 200) {
+        auditDriverData = response.data['driver'];
+      }
+    } catch (e) {
+      print("Error fetching driver data: $e");
+    } finally {
+      isAuditDriverLoading.value = false;
+    }
+  }
+
   driverDataBinding(id) async {
     driverDataBindingLoading(true);
     var response = await Api().get("drivers/getbyid/$id");

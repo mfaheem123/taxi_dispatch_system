@@ -5,6 +5,7 @@ import 'package:dashboard_new1/view/drivers_view/driver/create_driver_form/vehic
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../Model/image_model.dart';
+import '../../../../alert/complaint_alert.dart';
 import '../../../../alert/shift_alert.dart';
 import '../../../../alert/update_driver_rent_email.dart';
 import '../../../../alert/vehicle_history_alert.dart';
@@ -19,6 +20,7 @@ import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../../dashboard_view/booking_table.dart';
 import '../../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../controller/driver_controller.dart';
+import '../../../../utils/open_new_tab_web.dart';
 
 class DriverForm extends StatefulWidget {
   DriverForm({Key? key, this.driverUpdateFlow = false}) : super(key: key);
@@ -160,6 +162,10 @@ class _DriverFormState extends State<DriverForm> {
                             btnText: "AUDIT REPORT",
                             borderRadius: 4,
                             onTap: (){
+                              String driverId = controller.singleDriverData?.driver?.id?.toString() ?? '';
+                              if (driverId.isNotEmpty) {
+                                openInNewTab('#/view/driver_audit_report?id=$driverId');
+                              }
                             },
                             style: mozillaTextRegularText(
                                 fontSize: 12, color: DynamicColors.whiteClr),
@@ -217,6 +223,7 @@ class _DriverFormState extends State<DriverForm> {
                             btnText: "COMPLAINTS",
                             borderRadius: 4,
                             onTap: (){
+                              ComplaintAlert.show();
                             },
                             style: mozillaTextRegularText(
                                 fontSize: 12, color: DynamicColors.whiteClr),

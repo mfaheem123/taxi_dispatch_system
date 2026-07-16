@@ -12,6 +12,7 @@ abstract class Routes {
   static const completeBookingsScreen = _Paths.completeBookingsScreen;
   static const CustomerFormScreen = _Paths.CustomerFormScreen;
   static const updateBooking = _Paths.updateBooking;
+  static const driverAuditReport = _Paths.driverAuditReport;
 }
 
 abstract class _Paths {
@@ -25,4 +26,5 @@ abstract class _Paths {
   static const ResponsivePassengerScreen = '/ResponsivePassengerScreen';
   static const completeBookingsScreen = '/CompleteBookingsScreen';
   static const CustomerFormScreen = '/CustomerFormScreen';
+  static const driverAuditReport = '/view/driver_audit_report';
 }
