@@ -34,7 +34,7 @@ class ReportController extends GetxController {
     isLoadingDriver = true;
     update();
     try {
-      var response = await Api().get("drivers/get");
+      var response = await Api().get("drivers/get", sendCompanyId: true);
       if (response.statusCode == 200) {
         allDriverData = RestricDriverModel.fromJson(response.data);
       }

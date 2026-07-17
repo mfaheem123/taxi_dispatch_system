@@ -1072,7 +1072,7 @@ class DriverController extends GetxController {
     isCreateDriverCommission = true;
     update();
     var response = await Api()
-        .get("drivers/commission?active=true&driver_type=Commission", sendCompanyId: true);
+        .get("drivers/commission?active=true&driver_type=COMMISSION", sendCompanyId: true);
     if (response.statusCode == 200) {
       // print("API Response: ${response.data}");
       listDriverCommission = ListDriverCommissionModel.fromJson(response.data);
@@ -2057,7 +2057,7 @@ class DriverController extends GetxController {
     isCreateDriverRent = true;
     update();
     var response =
-    await Api().get("drivers/commission?active=true&driver_type=Rent/Week", sendCompanyId: true,);
+    await Api().get("drivers/commission?active=true&driver_type=RENT/WEEK", sendCompanyId: true,);
     if (response.statusCode == 200) {
       print("API Response: ${response.data}");
       driverRentModel = DriverRentModel.fromJson(response.data);

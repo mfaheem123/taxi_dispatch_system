@@ -1261,10 +1261,10 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('read_customer_invoice')){
-                controller.currentPage.value = CreateCustomerinvoice();
+                controller.currentPage.value = CreateCustomerInvoice();
                 controller.menuBarRefresh(
                     title: "CREATE CUSTOMER INVOICE",
-                    pageName: CreateCustomerinvoice());
+                    pageName: CreateCustomerInvoice());
               }
             });
           },
