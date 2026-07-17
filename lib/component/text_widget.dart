@@ -418,7 +418,7 @@ class AppText {
   static get createreservation => "CRATE RESEVERVATION";
   static get saveAndClose => "SAVE & CLOSE";
   static get departmentType => "DEPARTMENT TYPE";
-  static get customerInvoices => "CUSTOMER INVOICES (0)";
+  static get customerInvoices => "CUSTOMER INVOICES";
   static get paid => "PAID";
   static get accountInvoice => "ACCOUNT INVOICE";
   static get create => "CREATE";

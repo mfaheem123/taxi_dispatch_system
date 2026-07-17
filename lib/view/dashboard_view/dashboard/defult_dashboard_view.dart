@@ -9,6 +9,8 @@ import 'package:get/get.dart';
 import '../../../alert/child_seats_alert.dart';
 import '../../../alert/extra_fares_alert.dart';
 import '../../../alert/extra_info_alert.dart';
+import '../../../alert/f3_alert.dart';
+import '../../../alert/f4_alert.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
 import '../../../component/dropdown_button.dart' show CustomDropdownField;
@@ -153,7 +155,14 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                   DashboardF8Alert.show();
                 }
                 return;
-              } else if (event.logicalKey.keyLabel == "F9") {
+              } else if (event.logicalKey.keyLabel == "F3") {
+                showDriverInfoAlert();
+                return;
+              } else if (event.logicalKey.keyLabel == "F4") {
+                showDriverEarningsAlert();
+                return;
+              }
+              else if (event.logicalKey.keyLabel == "F9") {
                 if (controller.pickupController.text.isNotEmpty &&
                     controller.dropOffController.text.isNotEmpty) {
                   DashboardF9Alert.show();
@@ -192,12 +201,23 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                 ShortcutKeyWidget(
                                     keyss: "F2",
                                     valuess: "BOOKING FORM"),
-                                ShortcutKeyWidget(
+                                InkWell(
+                                  onTap: () {
+                                    showDriverInfoAlert();
+                                  },
+                                  child: ShortcutKeyWidget(
                                     keyss: "F3",
-                                    valuess: "DRIVER VEHICLE"),
-                                ShortcutKeyWidget(
-                                    keyss: "F4",
-                                    valuess: "DRIVER EARNING"),
+                                    valuess: "DRIVER VEHICLE",
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    showDriverEarningsAlert();
+                                  },
+                                  child:  ShortcutKeyWidget(
+                                      keyss: "F4",
+                                      valuess: "DRIVER EARNING"),
+                                ),
                                 ShortcutKeyWidget(
                                     keyss: "F6",
                                     valuess: "QUOTATION"),
