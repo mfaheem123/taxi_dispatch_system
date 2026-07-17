@@ -75,6 +75,7 @@ class _DriversViewState extends State<DriversView> {
         return "assets/green.jpeg";
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -575,6 +576,8 @@ class _DriversViewState extends State<DriversView> {
         DashboardController _controller = Get.find();
 
         print(index);
+        // Remove the previous driver tracking marker before assigning a new one
+        _controller.markers.removeWhere((m) => m.type == "driverMarker");
         _controller.markers.add(
           CustomMarker(
             withReturnType: "driverMarker",

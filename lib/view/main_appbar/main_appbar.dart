@@ -1972,44 +1972,90 @@ class _MyHomePageState extends State<MyHomePage> {
                 popUpMenuItemHoverBackgroundColor: Colors.black,
               ),
               // Spacer(),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  GestureDetector(
+              Container(
+                padding: EdgeInsetsGeometry.symmetric(vertical: 4,horizontal: 4),
+                decoration: BoxDecoration(
+                  border: Border.all(color: DynamicColors.secondaryClr),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+
+                    GestureDetector(
+                      onTap: () {
+                        // ExtensionAlert.show();
+                      },
+                      child: Icon(
+                        Icons.dark_mode_outlined,
+                        size: 24,
+                        color: DynamicColors.whiteClr,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 9,
+                    ),      GestureDetector(
+                      onTap: () {
+                        // ExtensionAlert.show();
+                      },
+                      child: Icon(
+                        Icons.phone,
+                        size: 24,
+                        color: DynamicColors.whiteClr,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 9,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        // ExtensionAlert.show();
+                      },
+                      child: Icon(
+                        Icons.settings,
+                        size: 24,
+                        color: DynamicColors.whiteClr,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 9,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        ExtensionAlert.show();
+                      },
+                      child: Icon(
+                        Icons.headset_mic_outlined,
+                        size: 24,
+                        color: DynamicColors.whiteClr,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 9,
+                    ),
+                    Icon(
+                      Icons.notifications,
+                      size: 24,
+                      color: DynamicColors.whiteClr,
+                    ),
+                    SizedBox(
+                      width: 9,
+                    ),
+                    GestureDetector(
                     onTap: () {
-                      ExtensionAlert.show();
+                      authController.logout();
                     },
-                    child: Icon(
-                      Icons.headset_mic_outlined,
-                      size: 24,
-                      color: DynamicColors.whiteClr,
+                      child: Icon(
+                        Icons.power_settings_new,
+                        size: 24,
+                        color: DynamicColors.whiteClr,
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 9,
-                  ),
-                  Icon(
-                    Icons.notifications,
-                    size: 24,
-                    color: DynamicColors.whiteClr,
-                  ),
-                  SizedBox(
-                    width: 9,
-                  ),
-                  GestureDetector(
-                  onTap: () {
-                    authController.logout();
-                  },
-                    child: Icon(
-                      Icons.power_settings_new,
-                      size: 24,
-                      color: DynamicColors.whiteClr,
+                    SizedBox(
+                      width: 9,
                     ),
-                  ),
-                  SizedBox(
-                    width: 9,
-                  ),
-                ],
+                  ],
+                ),
               )
             ],
           ),

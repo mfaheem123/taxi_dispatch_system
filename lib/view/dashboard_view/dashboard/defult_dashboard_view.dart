@@ -233,6 +233,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                     valuess: "DRIVER EARNING"),
                 ShortcutKeyWidget(
                     keyss: "F6", valuess: "QUOTATION"),
+                ShortcutKeyWidget(
+                    keyss: "/", valuess: "SHORTCUTS"),
                 // width >= 1900
                 //     ? Spacer()
                 //     : SizedBox.shrink(),

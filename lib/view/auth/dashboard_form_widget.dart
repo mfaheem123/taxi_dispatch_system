@@ -56,8 +56,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   final FocusNode _shortcutFocusNode = FocusNode();
   // ────────── return-journey state
   ZoneObject? returnDropZone;
-  DashboardVehicleTypeObject? returnVehicleValue;
-  DashboardDriverObject? returnDriverValue;
+  // DashboardVehicleTypeObject? returnVehicleValue;
+  // DashboardDriverObject? returnDriverValue;
   // late final _rDropoff = TextEditingController();
   // DateTime? returnDate = DateTime.now();
   // late final _rTime = TextEditingController(text: '15:03');
@@ -75,7 +75,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   void _onMultiReservation() => debugPrint('F8 / Multi Reservation tapped');
   void _onAddVehicles() => debugPrint('F9 / Vehicles tapped');
   void _onVia() => debugPrint('Via tapped');
-  void _onSub() => debugPrint('Sub tapped');
   void _onClear() => debugPrint('F7 / Clear tapped');
   void _showPickBookingAlert() {
     showDialog(
@@ -313,27 +312,35 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                                       .arrivalTimeController),
                                             ],
                                           )
-                                        : Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Expanded(
-                                                flex: 3,
-                                                child: _field('FL',
-                                                    tab: 4.3,
-                                                    controller: controller
-                                                        .selectAirportController),
-                                              ),
-                                              const SizedBox(width: 12),
-                                              Expanded(
-                                                flex: 1,
-                                                child: _timeField('ARP',
-                                                    tab: 4.6,
-                                                    controller: controller
-                                                        .arrivalTimeController),
-                                              ),
-                                            ],
-                                          ),
+                                        :
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        SizedBox(width: 80, child:  Row(mainAxisSize: MainAxisSize.min, children: [
+                                          Icon(Icons.circle, size: 9, color: Colors.green),
+                                          const SizedBox(width: 6),
+                                          Text("FL",
+                                              style:
+                                              const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsLabel)),
+                                        ])),
+                                        const SizedBox(width: 2),
+                                        Expanded(
+                                          flex: 3,
+                                          child: _field('FL',
+                                              tab: 4.3,
+                                              controller: controller
+                                                  .selectAirportController),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          flex: 1,
+                                          child: _timeField('ARP',
+                                              tab: 4.6,
+                                              controller: controller
+                                                  .arrivalTimeController),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 4),
@@ -654,10 +661,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           (value) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               controller.onChangeHandler(
-                  fieldName: "PICKUP LOCATION", searchingText: value);
+                  fieldName: "PICKUP TWO WAY LOCATION", searchingText: value);
             });
           },
-          (addr) {},
+          (addr) {
+            setState(() => _selectedDrop = addr);
+          },
           19,
           zoneLabel: (z) => z.name!,
           onPickIndex: (index) => controller.tapSelect(index),
@@ -711,9 +720,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           isMobile,
           (value) {
             controller.onChangeHandler(
-                fieldName: "DROP LOCATION", searchingText: value);
+                fieldName: "DROP TWO WAY LOCATION", searchingText: value);
           },
-          (addr) {},
+          (addr) {
+            setState(() => _selectedDrop = addr);
+          },
           23,
           zoneLabel: (z) => z.name!,
           onPickIndex: (index) => controller.tapSelect(index),
@@ -776,19 +787,19 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 _addReturnFareCheckbox(),
                 const SizedBox(height: 8),
                 _dropdown<DashboardVehicleTypeObject>(
-                  'Return/VEH',
-                  returnVehicleValue,
+                  'Select R/VEH',
+                   controller.selectVehicleValueReturn,
                   controller.dashboardAllData!.vehicleTypes!,
-                  (v) => setState(() => returnVehicleValue = v),
+                  (v) => setState(() =>  controller.selectVehicleValueReturn = v),
                   32,
                   itemLabel: (p) => p.name!,
                 ),
                 const SizedBox(height: 8),
                 _dropdown<DashboardDriverObject>(
-                  'Return/DRV',
-                  returnDriverValue,
+                  'Select R/DRV',
+                  controller.selectDriverValueReturn,
                   controller.dashboardAllData!.drivers ?? const [],
-                  (v) => setState(() => returnDriverValue = v),
+                  (v) => setState(() => controller.selectDriverValueReturn = v),
                   33,
                   itemLabel: (p) => p.name ?? '',
                 ),
@@ -798,10 +809,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: _dropdown<DashboardVehicleTypeObject>(
-                    'Return/VEH',
-                    returnVehicleValue,
+                    'Select R/VEH',
+                    controller.selectVehicleValueReturn,
                     controller.dashboardAllData!.vehicleTypes!,
-                    (v) => setState(() => returnVehicleValue = v),
+                    (v) => setState(() => controller.selectVehicleValueReturn = v),
                     32,
                     itemLabel: (p) => p.name!,
                   ),
@@ -809,10 +820,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _dropdown<DashboardDriverObject>(
-                    'Return/DRV',
-                    returnDriverValue,
+                    'Select R/DRV',
+                    controller.selectDriverValueReturn,
                     controller.dashboardAllData!.drivers ?? const [],
-                    (v) => setState(() => returnDriverValue = v),
+                    (v) => setState(() => controller.selectDriverValueReturn = v),
                     33,
                     itemLabel: (p) => p.name ?? '',
                   ),
@@ -899,7 +910,17 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               tab('Via (${controller.viaPoints.length})', onTap: () {
                 showDialog(context: context, builder: (_) => ViaLocation());
               }),
-              tab('Sub', onTap: _onSub),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                child: Text(
+                  'Sub',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w600,
+                    fontSize: _fsTab,
+                  ),
+                ),
+              ),
               const SizedBox(width: 6),
               SizedBox(
                 width: 220,
@@ -1659,6 +1680,7 @@ class _AddressModelAutocomplete extends StatefulWidget {
   // Focus is redirected here instead of being dropped, so the CallbackShortcuts
   // (F7/F8/F9) ancestor stays in the focused chain after a pick / tap-outside.
   final FocusNode? fallbackFocusNode;
+
   @override
   State<_AddressModelAutocomplete> createState() =>
       _AddressModelAutocompleteState();

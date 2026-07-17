@@ -11,8 +11,8 @@ abstract class BaseConfig {
 class DevConfig implements BaseConfig {
   @override
   // String get baseUrl => "http://192.168.110.5:5000/api/";
-  // String get baseUrl => "https://www.nexustechnologys.com/api/";
-  String get baseUrl => "http://158.220.92.206:5000/api/";
+  String get baseUrl => "https://www.nexustechnologys.com/api/";
+  // String get baseUrl => "http://158.220.92.206:5000/api/";
   // String get baseUrl => "https://demo.nexustechnologys.com/api/";
 
 
@@ -24,8 +24,8 @@ class DevConfig implements BaseConfig {
 
   @override
   // String get apiUrl => "http://192.168.110.5:5000/api/";
-  // String get apiUrl => "https://www.nexustechnologys.com/api/";
-  String get apiUrl => "http://158.220.92.206:5000/api/";
+  String get apiUrl => "https://www.nexustechnologys.com/api/";
+  // String get apiUrl => "http://158.220.92.206:5000/api/";
   // String get apiUrl => "https://demo.nexustechnologys.com/api/";
 
   @override
@@ -36,8 +36,8 @@ class DevConfig implements BaseConfig {
 class ProductionConfig implements BaseConfig {
   @override
   // String get baseUrl => "http://192.168.110.5:5000/api/";
-  // String get baseUrl => "https://www.nexustechnologys.com/api/";
-  String get baseUrl => "http://158.220.92.206:5000/api/";
+  String get baseUrl => "https://www.nexustechnologys.com/api/";
+  // String get baseUrl => "http://158.220.92.206:5000/api/";
   // String get baseUrl => "https://demo.nexustechnologys.com/api/";
 
   @override
@@ -48,14 +48,14 @@ class ProductionConfig implements BaseConfig {
 
   @override
   // String get apiUrl => "http://192.168.110.5:5000/api/";
-  // String get apiUrl => "https://www.nexustechnologys.com/api/";
-  String get apiUrl => "http://158.220.92.206:5000/api/";
+  String get apiUrl => "https://www.nexustechnologys.com/api/";
+  // String get apiUrl => "http://158.220.92.206:5000/api/";
   // String get apiUrl => "https://demo.nexustechnologys.com/api/";
 
   @override
   // String get socketUrl => "ws://192.168.110.5:5000/websocket";
-  // String get socketUrl => "wss://www.nexustechnologys.com/websocket";
-  String get socketUrl => "ws://158.220.92.206:5000/websocket";
+  String get socketUrl => "wss://www.nexustechnologys.com/websocket";
+  // String get socketUrl => "ws://158.220.92.206:5000/websocket";
   // String get socketUrl => "wss://demo.nexustechnologys.com/websocket";
 
 

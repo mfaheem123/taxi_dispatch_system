@@ -5,6 +5,7 @@ import 'package:dashboard_new1/view/drivers_view/driver/create_driver_form/vehic
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../Model/image_model.dart';
+import '../../../../alert/complaint_alert.dart';
 import '../../../../alert/shift_alert.dart';
 import '../../../../alert/update_driver_rent_email.dart';
 import '../../../../alert/vehicle_history_alert.dart';
@@ -19,6 +20,7 @@ import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../../dashboard_view/booking_table.dart';
 import '../../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../controller/driver_controller.dart';
+import '../../../../utils/open_new_tab_web.dart';
 
 class DriverForm extends StatefulWidget {
   DriverForm({Key? key, this.driverUpdateFlow = false}) : super(key: key);
@@ -126,16 +128,57 @@ class _DriverFormState extends State<DriverForm> {
                     Row(
                       children: [
                         if (controller.singleDriverData != null) ...[
-                          CustomButton(
-                            width: 130,
+                          Container(
                             height: 35,
-                            verticalPadding: 0.0,
-                            btnText: "DOWNLOAD PDF",
-                            borderRadius: 4,
-                            onTap: (){
-                            },
-                            style: mozillaTextRegularText(
-                                fontSize: 12, color: DynamicColors.whiteClr),
+                            width: 145,
+                            padding: const EdgeInsets.only(left: 8),
+                            decoration: BoxDecoration(
+                              color: DynamicColors.primaryClr,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                isExpanded: true,
+                                icon: Icon(Icons.arrow_drop_down, color: DynamicColors.whiteClr, size: 20),
+                                dropdownColor: Colors.white,
+                                focusColor: Colors.transparent,
+                                hint: Center(
+                                  child: Text("DOWNLOAD PDF",
+                                      style: mozillaTextRegularText(fontSize: 12, color: DynamicColors.whiteClr)),
+                                ),
+                                items: [
+                                  DropdownMenuItem<String>(
+                                    value: 'driver',
+                                    child: Text('DRIVER INFORMATION',
+                                        style: mozillaTextRegularText(fontSize: 12, color: Colors.black)),
+                                  ),
+                                  DropdownMenuItem<String>(
+                                    value: 'vehicle',
+                                    child: Text('VEHICLE INFORMATION',
+                                        style: mozillaTextRegularText(fontSize: 12, color: Colors.black)),
+                                  ),
+                                ],
+                                onChanged: (String? value) {
+                                  if (value == 'driver') {
+                                    controller.downloadDriverInfoPdf();
+                                  } else if (value == 'vehicle') {
+                                    controller.downloadVehicleInfoPdf();
+                                  }
+                                },
+                                selectedItemBuilder: (BuildContext context) {
+                                  return [
+                                    Center(
+                                      child: Text("DOWNLOAD PDF",
+                                          style: mozillaTextRegularText(fontSize: 12, color: DynamicColors.whiteClr)),
+                                    ),
+                                    Center(
+                                      child: Text("DOWNLOAD PDF",
+                                          style: mozillaTextRegularText(fontSize: 12, color: DynamicColors.whiteClr)),
+                                    ),
+                                  ];
+                                },
+                              ),
+                            ),
                           ),
                         ],
                         const SizedBox(width: 8),
@@ -160,6 +203,10 @@ class _DriverFormState extends State<DriverForm> {
                             btnText: "AUDIT REPORT",
                             borderRadius: 4,
                             onTap: (){
+                              String driverId = controller.singleDriverData?.driver?.id?.toString() ?? '';
+                              if (driverId.isNotEmpty) {
+                                openInNewTab('#/view/driver_audit_report?id=$driverId');
+                              }
                             },
                             style: mozillaTextRegularText(
                                 fontSize: 12, color: DynamicColors.whiteClr),
@@ -217,6 +264,7 @@ class _DriverFormState extends State<DriverForm> {
                             btnText: "COMPLAINTS",
                             borderRadius: 4,
                             onTap: (){
+                              ComplaintAlert.show();
                             },
                             style: mozillaTextRegularText(
                                 fontSize: 12, color: DynamicColors.whiteClr),

@@ -439,8 +439,445 @@ class DriverController extends GetxController {
     update();
   }
 
+  /// Download Driver Information PDF
+  Future<void> downloadDriverInfoPdf() async {
+    if (singleDriverData == null) return;
+
+    final driver = singleDriverData!.driver!;
+    final pdf = pw.Document();
+
+    /// Get company name from subsidiary
+    String companyName = driver.subsidiaryName?.toUpperCase() ?? 'DEMO COMPANY';
+
+    /// Format license expiry with time
+    String licenceExpiryFormatted = '-';
+    if (driver.licenceExpiry != null) {
+      licenceExpiryFormatted = driver.licenceExpiry!;
+      if (driver.licenceExpiryTime != null && driver.licenceExpiryTime!.isNotEmpty) {
+        licenceExpiryFormatted += ' ${driver.licenceExpiryTime}';
+      }
+    }
+
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(40),
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              /// Company Name & Title
+              pw.Center(
+                child: pw.Column(
+                  children: [
+                    pw.SizedBox(height: 20),
+                    pw.Text(companyName,
+                        style: pw.TextStyle(
+                            fontSize: 24, fontWeight: pw.FontWeight.bold)),
+                    pw.SizedBox(height: 4),
+                    pw.Text('DRIVER INFORMATION',
+                        style: pw.TextStyle(
+                            fontSize: 14, fontWeight: pw.FontWeight.bold)),
+                    pw.SizedBox(height: 20),
+                  ],
+                ),
+              ),
+
+
+
+              /// Main table with driver info
+              pw.Table(
+                border: pw.TableBorder(
+                  top: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                  bottom: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                  left: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                  right: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                ),
+                columnWidths: {
+                  0: const pw.FlexColumnWidth(2),
+                  1: const pw.FlexColumnWidth(3),
+                  2: const pw.FlexColumnWidth(2.5),
+                  3: const pw.FlexColumnWidth(2.5),
+                },
+                children: [
+                  /// Driver ID row
+                  // pw.TableRow(
+                  //   children: [
+                  //     _buildPdfCell('ID', bold: true),
+                  //     _buildPdfCell('${driver.id ?? '-'}', bold: true),
+                  //     _buildPdfCell(''),
+                  //     _buildPdfCell(''),
+                  //   ],                  ),
+
+
+
+                  /// Name + NI row
+                  pw.TableRow(
+                    children: [
+                      _buildPdfLabelCell('NAME'),
+                      _buildPdfValueCell(driver.name?.toUpperCase() ?? '-'),
+                      _buildPdfLabelCell('NI'),
+                      _buildPdfValueCell(driver.ni ?? '-'),
+                    ],
+                  ),
+                  /// Address row
+                  pw.TableRow(
+                    children: [
+                      _buildPdfLabelCell('ADDRESS'),
+                      _buildPdfValueCell(driver.address?.toUpperCase() ?? '-'),
+                      _buildPdfLabelCell(''),
+                      _buildPdfValueCell(''),
+                    ],
+                  ),
+                  /// DOB + PHC License row
+                  pw.TableRow(
+                    children: [
+                      _buildPdfLabelCell('DATE OF BIRTH'),
+                      _buildPdfValueCell(driver.dob ?? '-'),
+                      _buildPdfLabelCell('PRIVATE HIRE LICENSE #'),
+                      _buildPdfValueCell(driver.phcDriverNumber ?? '-'),
+                    ],
+                  ),
+                  /// License # + License Expiry row
+                  pw.TableRow(
+                    children: [
+                      _buildPdfLabelCell('LICENSE #'),
+                      _buildPdfValueCell(driver.licenceNumber ?? '-'),
+                      _buildPdfLabelCell('LICENSE EXPIRY'),
+                      _buildPdfValueCell(licenceExpiryFormatted),
+                    ],
+                  ),
+                  /// Start Date + End Date row
+                  pw.TableRow(
+                    children: [
+                      _buildPdfLabelCell('START DATE'),
+                      _buildPdfValueCell(driver.startDate ?? '-'),
+                      _buildPdfLabelCell('END DATE'),
+                      _buildPdfValueCell(driver.endDate ?? '-'),
+                    ],
+                  ),
+                ],
+              ),
+
+              pw.SizedBox(height: 20),
+
+              /// Reminder text
+              pw.Center(
+                child: pw.Text(
+                  'REMEMBER TO CHECK DRIVER LICENCE DETAILS AT REGULAR INTERVALS USING DVSA AND TFL DATABASE',
+                  style: pw.TextStyle(
+                    fontSize: 10,
+                    fontWeight: pw.FontWeight.bold,
+                    color: PdfColor.fromHex('#FF0000'),
+                  ),
+                  textAlign: pw.TextAlign.center,
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    final bytes = await pdf.save();
+
+    /// Download PDF in browser
+    final blob = html.Blob([bytes], 'application/pdf');
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    html.AnchorElement(href: url)
+      ..setAttribute('download', 'driver_${driver.id}.pdf')
+      ..click();
+    html.Url.revokeObjectUrl(url);
+  }
+
+  /// PDF helper: label cell (bold)
+  pw.Widget _buildPdfLabelCell(String text) {
+    return pw.Container(
+      padding: const pw.EdgeInsets.all(8),
+      child: pw.Text(text,
+          style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
+    );
+  }
+
+  /// PDF helper: value cell
+  pw.Widget _buildPdfValueCell(String text) {
+    return pw.Container(
+      padding: const pw.EdgeInsets.all(8),
+      child: pw.Text(text, style: const pw.TextStyle(fontSize: 10)),
+    );
+  }
+
+  /// PDF helper: full-width cell
+  pw.Widget _buildPdfCell(String text, {bool bold = false, bool colSpan = false}) {
+    return pw.Container(
+      padding: const pw.EdgeInsets.all(8),
+      child: pw.Text(text,
+          style: pw.TextStyle(
+              fontSize: bold ? 12 : 10,
+              fontWeight: bold ? pw.FontWeight.bold : null)),
+    );
+  }
+
+  /// Download Vehicle Information PDF
+  Future<void> downloadVehicleInfoPdf() async {
+    if (singleDriverData == null) return;
+
+    final driver = singleDriverData!.driver!;
+    final vehicle = driver.vehicle;
+    final pdf = pw.Document();
+
+    /// Get company name from subsidiary
+    String companyName = driver.subsidiaryName?.toUpperCase() ?? 'DEMO COMPANY';
+
+    /// Helper to format expiry with time
+    String formatExpiry(String? expiry, String? expiryTime) {
+      if (expiry == null) return '-';
+      String result = expiry;
+      if (expiryTime != null && expiryTime.isNotEmpty) {
+        result += ' $expiryTime';
+      }
+      return result;
+    }
+
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(40),
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              /// Company Name & Title
+              pw.Center(
+                child: pw.Column(
+                  children: [
+                    pw.SizedBox(height: 20),
+                    pw.Text(companyName,
+                        style: pw.TextStyle(
+                            fontSize: 24, fontWeight: pw.FontWeight.bold)),
+                    pw.SizedBox(height: 4),
+                    pw.Text('VEHICLE INFORMATION',
+                        style: pw.TextStyle(
+                            fontSize: 14, fontWeight: pw.FontWeight.bold)),
+                    pw.SizedBox(height: 20),
+                  ],
+                ),
+              ),
+
+              /// Main table with vehicle info
+              pw.Table(
+                border: pw.TableBorder(
+                  top: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                  bottom: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                  left: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                  right: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                ),
+                columnWidths: {
+                  0: const pw.FlexColumnWidth(2.5),
+                  1: const pw.FlexColumnWidth(3),
+                  2: const pw.FlexColumnWidth(2.5),
+                  3: const pw.FlexColumnWidth(3),
+                },
+                children: [
+                  /// Driver ID row
+                  // pw.TableRow(
+                  //   children: [
+                  //     _buildPdfCell('ID', bold: true),
+                  //     _buildPdfCell('${driver.id ?? '-'}', bold: true),
+                  //     _buildPdfCell(''),
+                  //     _buildPdfCell(''),
+                  //   ],
+                  // ),
+
+                  /// Vehicle Number + Vehicle Type
+                  pw.TableRow(
+                    children: [
+                      _buildPdfLabelCell('VEHICLE NUMBER'),
+                      _buildPdfValueCell(vehicle?.vehicleNumber?.toUpperCase() ?? '-'),
+                      _buildPdfLabelCell('VEHICLE TYPE'),
+                      _buildPdfValueCell(vehicle?.vehicleType?.name?.toUpperCase() ?? '-'),
+                    ],
+                  ),
+                  /// Make + Model
+                  pw.TableRow(
+                    children: [
+                      _buildPdfLabelCell('MAKE'),
+                      _buildPdfValueCell(vehicle?.make?.toUpperCase() ?? '-'),
+                      _buildPdfLabelCell('MODEL'),
+                      _buildPdfValueCell(vehicle?.model?.toUpperCase() ?? '-'),
+                    ],
+                  ),
+                  /// Color + Owner
+                  pw.TableRow(
+                    children: [
+                      _buildPdfLabelCell('COLOR'),
+                      _buildPdfValueCell(vehicle?.color?.toUpperCase() ?? '-'),
+                      _buildPdfLabelCell('OWNER'),
+                      _buildPdfValueCell(vehicle?.owner?.toUpperCase() ?? '-'),
+                    ],
+                  ),
+
+                  /// PHC Vehicle
+                  pw.TableRow(
+                    children: [
+                      _buildPdfLabelCell('PHC VEHICLE #'),
+                      _buildPdfValueCell(vehicle?.phcVehicle?.phcVehicleNumber ?? '-'),
+                      _buildPdfLabelCell('PHC VEHICLE EXPIRY'),
+                      _buildPdfValueCell(formatExpiry(
+                          vehicle?.phcVehicle?.phcVehicleExpiry,
+                          vehicle?.phcVehicle?.phcVehicleExpiryTime)),
+                    ],
+                  ),
+                  /// PHC Driver
+                  pw.TableRow(
+                    children: [
+                      _buildPdfLabelCell('PHC DRIVER #'),
+                      _buildPdfValueCell(vehicle?.phcDriver?.phcDriverNumber ?? '-'),
+                      _buildPdfLabelCell('PHC DRIVER EXPIRY'),
+                      _buildPdfValueCell(formatExpiry(
+                          vehicle?.phcDriver?.phcDriverExpiry,
+                          vehicle?.phcDriver?.phcDriverExpiryTime)),
+                    ],
+                  ),
+                  /// MOT
+                  pw.TableRow(
+                    children: [
+                      _buildPdfLabelCell('MOT #'),
+                      _buildPdfValueCell(vehicle?.mot?.motNumber ?? '-'),
+                      _buildPdfLabelCell('MOT EXPIRY'),
+                      _buildPdfValueCell(formatExpiry(
+                          vehicle?.mot?.motExpiry,
+                          vehicle?.mot?.motExpiryTime)),
+                    ],
+                  ),
+                  /// MOT 2
+                  pw.TableRow(
+                    children: [
+                      _buildPdfLabelCell('MOT 2 #'),
+                      _buildPdfValueCell(vehicle?.mot2?.mot2Number ?? '-'),
+                      _buildPdfLabelCell('MOT 2 EXPIRY'),
+                      _buildPdfValueCell(formatExpiry(
+                          vehicle?.mot2?.mot2Expiry,
+                          vehicle?.mot2?.mot2ExpiryTime)),
+                    ],
+                  ),
+                  /// Insurance
+                  pw.TableRow(
+                    children: [
+                      _buildPdfLabelCell('INSURANCE #'),
+                      _buildPdfValueCell(vehicle?.insurance?.insuranceNumber ?? '-'),
+                      _buildPdfLabelCell('INSURANCE EXPIRY'),
+                      _buildPdfValueCell(formatExpiry(
+                          vehicle?.insurance?.insuranceExpiry,
+                          vehicle?.insurance?.insuranceExpiryTime)),
+                    ],
+                  ),
+                  /// License
+                  pw.TableRow(
+                    children: [
+                      _buildPdfLabelCell('LICENSE #'),
+                      _buildPdfValueCell(vehicle?.licence?.licenceNumber ?? '-'),
+                      _buildPdfLabelCell('LICENSE EXPIRY'),
+                      _buildPdfValueCell(formatExpiry(
+                          vehicle?.licence?.licenceExpiry,
+                          vehicle?.licence?.licenceExpiryTime)),
+                    ],
+                  ),
+                  /// Road Tax
+                  pw.TableRow(
+                    children: [
+                      _buildPdfLabelCell('ROAD TAX #'),
+                      _buildPdfValueCell(vehicle?.roadTax?.roadTaxNumber ?? '-'),
+                      _buildPdfLabelCell('ROAD TAX EXPIRY'),
+                      _buildPdfValueCell(formatExpiry(
+                          vehicle?.roadTax?.roadTaxExpiry,
+                          vehicle?.roadTax?.roadTaxExpiryTime)),
+                    ],
+                  ),
+                  /// V5 Registration
+                  pw.TableRow(
+                    children: [
+                      _buildPdfLabelCell('V5 REGISTRATION #'),
+                      _buildPdfValueCell(vehicle?.v5Registration?.v5RegistrationNumber ?? '-'),
+                      _buildPdfLabelCell('V5 REGISTRATION EXPIRY'),
+                      _buildPdfValueCell(formatExpiry(
+                          vehicle?.v5Registration?.v5RegistrationExpiry,
+                          vehicle?.v5Registration?.v5RegistrationExpiryTime)),
+                    ],
+                  ),
+                  /// Rental Agreement
+                  pw.TableRow(
+                    children: [
+                      _buildPdfLabelCell('RENTAL AGREEMENT #'),
+                      _buildPdfValueCell(vehicle?.rentalAgreement?.rentalAgreementNumber ?? '-'),
+                      _buildPdfLabelCell('RENTAL AGREEMENT EXPIRY'),
+                      _buildPdfValueCell(formatExpiry(
+                          vehicle?.rentalAgreement?.rentalAgreementExpiry,
+                          vehicle?.rentalAgreement?.rentalAgreementExpiryTime)),
+                    ],
+                  ),
+                  /// Log Book
+                  pw.TableRow(
+                    children: [
+                      _buildPdfLabelCell('LOG BOOK #'),
+                      _buildPdfValueCell(vehicle?.logBook?.logBookNumber ?? '-'),
+                      _buildPdfLabelCell(''),
+                      _buildPdfValueCell(''),
+                    ],
+                  ),
+                ],
+              ),
+
+              pw.SizedBox(height: 20),
+
+              /// Reminder text
+              pw.Center(
+                child: pw.Text(
+                  'REMEMBER TO CHECK VEHICLE DETAILS AT REGULAR INTERVALS USING DVSA AND TFL DATABASE',
+                  style: pw.TextStyle(
+                    fontSize: 10,
+                    fontWeight: pw.FontWeight.bold,
+                    color: PdfColor.fromHex('#FF0000'),
+                  ),
+                  textAlign: pw.TextAlign.center,
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    final bytes = await pdf.save();
+
+    /// Download PDF in browser
+    final blob = html.Blob([bytes], 'application/pdf');
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    html.AnchorElement(href: url)
+      ..setAttribute('download', 'vehicle_${driver.id}.pdf')
+      ..click();
+    html.Url.revokeObjectUrl(url);
+  }
+
   singleDriver.SingleDriverModel? singleDriverData;
   RxBool driverDataBindingLoading = false.obs;
+
+  RxBool isAuditDriverLoading = false.obs;
+  Map<String, dynamic>? auditDriverData;
+
+  Future<void> fetchAuditDriverData(String driverId) async {
+    isAuditDriverLoading.value = true;
+    try {
+      var response = await Api().get("drivers/getbyid/$driverId");
+      if (response.statusCode == 200) {
+        auditDriverData = response.data['driver'];
+      }
+    } catch (e) {
+      print("Error fetching driver data: $e");
+    } finally {
+      isAuditDriverLoading.value = false;
+    }
+  }
 
   driverDataBinding(id) async {
     driverDataBindingLoading(true);
