@@ -483,6 +483,8 @@ class DriverController extends GetxController {
                 ),
               ),
 
+
+
               /// Main table with driver info
               pw.Table(
                 border: pw.TableBorder(
