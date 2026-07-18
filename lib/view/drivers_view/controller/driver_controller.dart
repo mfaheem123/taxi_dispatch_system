@@ -1525,6 +1525,7 @@ class DriverController extends GetxController {
   driverCommissionDelete(int? id) async {
     var response = await Api().delete("driver_commission/delete/$id");
     if (response.statusCode == 200) {
+      getDriverCommission();
       BotToast.showText(text:"DRIVER COMMISSION DELETED SUCCESSFULLY!");
       print("DriverCommission deleted successfully!");
     }

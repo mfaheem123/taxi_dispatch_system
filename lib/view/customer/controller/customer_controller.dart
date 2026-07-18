@@ -289,67 +289,7 @@ sendCompanyId: true,
     }
   }
 
-  // Save Api
-  bool saveLostPropertyLoad = false;
 
-  saveLostProperty() async {
-    if (selectedBookingForLostProperty == null) {
-      BotToast.showText(text: "PLEASE SELECT A BOOKING FIRST!");
-      return;
-    }
-    try {
-      saveLostPropertyLoad = true;
-      update();
-
-      var formData = {
-        // "booking_id": selectedBookingForLostProperty?.id.toString(),
-        // "customer_id": selectedBookingForLostProperty?.customerId.toString(),
-        "booking_id":
-            (updateBookingId ?? selectedBookingForLostProperty?.id).toString(),
-        "customer_id":
-            (updateCustomerId ?? selectedBookingForLostProperty?.customerId)
-                .toString(),
-        "item_description": detailOfPropertyController.text,
-        "inquiry": enquiryController.text,
-        "checked_by": checkedByController.text,
-        "method_desposition": methodOfDespositionController.text,
-        "result": resultController.text,
-        "lost_date": lostDateController,
-        "report_date": reportDateController,
-      };
-      print("Sending Data: $formData");
-
-      var response = await Api().post(
-          formData,
-          lostPropertyValue.value == false
-              ? "lost-property/add"
-              : "lost-property/update/${lostPropertyUpdateId.value}",
-        sendCompanyId: true,  auth: true);
-      if (response.statusCode == 200) {
-        BotToast.showText(
-            text: lostPropertyValue.value
-                ? "LOST PROPERTY UPDATED SUCCESSFULLY"
-                : 'LOST PROPERTY ADDED SUCCESSFULLY');
-        refreshFields();
-      }
-    } catch (err) {
-      print("Error: $err");
-    }
-    saveLostPropertyLoad = false;
-    update();
-  }
-
-  refreshFields() {
-    selectedBookingForLostProperty = null;
-    detailOfPropertyController.clear();
-    methodOfDespositionController.clear();
-    nameController.clear();
-    mobileController.clear();
-    address1Controller.clear();
-    enquiryController.clear();
-    checkedByController.clear();
-    resultController.clear();
-  }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create lost property functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo list of lost property functionality
@@ -404,32 +344,163 @@ sendCompanyId: true,
     currentPageLostProperty.value = page;
     getAllLostProperty();
   }
+  // Save Api
+  bool saveLostPropertyLoad = false;
 
+  saveLostProperty() async {
+    if (selectedBookingForLostProperty == null) {
+      BotToast.showText(text: "PLEASE SELECT A BOOKING FIRST!");
+      return;
+    }
+
+      saveLostPropertyLoad = true;
+      update();
+
+      var formData = {
+        // "booking_id": selectedBookingForLostProperty?.id.toString(),
+        // "customer_id": selectedBookingForLostProperty?.customerId.toString(),
+        "booking_id":
+        (updateBookingId ?? selectedBookingForLostProperty?.id).toString(),
+        "customer_id":
+        (updateCustomerId ?? selectedBookingForLostProperty?.customerId)
+            .toString(),
+        "item_description": detailOfPropertyController.text,
+        "inquiry": enquiryController.text,
+        "checked_by": checkedByController.text,
+        "method_desposition": methodOfDespositionController.text,
+        "result": resultController.text,
+        "lost_date": lostDateController,
+        "report_date": reportDateController,
+      };
+      print("Sending Data: $formData");
+
+      var response = await Api().post(
+          formData,
+          lostPropertyModel != null
+              ? "lost-property/update/${lostPropertyUpdateId.value}"
+              : "lost-property/add",
+          sendCompanyId: true,  auth: true);
+      if (response.statusCode == 200) {
+        BotToast.showText(
+            text: lostPropertyValue.value
+                ? "LOST PROPERTY UPDATED SUCCESSFULLY"
+                : 'LOST PROPERTY ADDED SUCCESSFULLY');
+        refreshFields();
+      }
+
+    saveLostPropertyLoad = false;
+    update();
+  }
+
+  refreshFields() {
+    lostPropertyModel == null;
+    selectedBookingForLostProperty = null;
+    detailOfPropertyController.clear();
+    methodOfDespositionController.clear();
+    nameController.clear();
+    mobileController.clear();
+    address1Controller.clear();
+    enquiryController.clear();
+    checkedByController.clear();
+    resultController.clear();
+    lostPropertyValue(false);
+  }
   RxBool lostPropertyValue = false.obs;
   RxInt lostPropertyUpdateId = 0.obs;
 
+  // lostPropertyUpdate({dynamic lostPropertyUpdate}) async {
+  //   print("--- BINDING START ---");
+  //
+  //   lostPropertyUpdateId.value = lostPropertyUpdate?.id;
+  //   nameController.text = lostPropertyUpdate?.customer?.name ?? "";
+  //   detailOfPropertyController.text = lostPropertyUpdate?.itemDescription ?? "";
+  //   lostDateController = lostPropertyUpdate?.lostDate != null
+  //       ? lostPropertyUpdate.lostDate.toString().split(' ')[0]
+  //       : "";
+  //   reportDateController = lostPropertyUpdate?.reportDate != null
+  //       ? lostPropertyUpdate.reportDate.toString().split(' ')[0]
+  //       : "";
+  //
+  //   lostPropertyValue(true);
+  //   update();
+  //
+  //   try {
+  //     print("Calling API for ID: ${lostPropertyUpdate.id}");
+  //
+  //     final response =
+  //         await Api().get("lost-property/getbyid/${lostPropertyUpdate.id}",sendCompanyId: true);
+  //     print("API Raw Data: ${response.data}");
+  //
+  //     if (response != null && response.data != null) {
+  //       var apiModel = LostPropertyGetByIdModel.fromJson(response.data);
+  //       var detail = apiModel.lostProperty;
+  //
+  //       if (detail != null) {
+  //         updateBookingId = detail.bookingId;
+  //         updateCustomerId = detail.customerId;
+  //         mobileController.text = detail.mobile ?? "";
+  //         address1Controller.text = detail.address1?.toString() ??
+  //             detail.customer?.address1?.toString() ??
+  //             "";
+  //         // address1Controller.text = detail.address1 ?? "";
+  //         checkedByController.text = detail.checkedBy ?? "";
+  //         enquiryController.text = detail.inquiry ?? "";
+  //         resultController.text = detail.result ?? "";
+  //         methodOfDespositionController.text = detail.methodDesposition ?? "";
+  //
+  //         if (detail.booking != null) {
+  //           selectedBookingForLostProperty = detail.booking;
+  //         } else {
+  //           selectedBookingForLostProperty = BookingGetById(
+  //             referenceNumber: detail.referenceNumber,
+  //             pickupDate: detail.pickupDate,
+  //             pickupTime: detail.pickupTime,
+  //             pickup: detail.pickup,
+  //             dropoff: detail.dropoff,
+  //             vehicleType: VehicleTypeGetById(name: detail.vehicleTypeName),
+  //           );
+  //         }
+  //
+  //         print(
+  //             "Table Data Bound: ${selectedBookingForLostProperty?.referenceNumber}");
+  //       }
+  //     }
+  //   } catch (e) {
+  //     print("Caught Error in Controller: $e");
+  //   }
+  //
+  //   update();
+  //   print("--- BINDING END ---");
+  // }
   lostPropertyUpdate({dynamic lostPropertyUpdate}) async {
     print("--- BINDING START ---");
 
-    lostPropertyUpdateId.value = lostPropertyUpdate?.id;
-    nameController.text = lostPropertyUpdate?.customer?.name ?? "";
-    detailOfPropertyController.text = lostPropertyUpdate?.itemDescription ?? "";
-    lostDateController = lostPropertyUpdate?.lostDate != null
+    if (lostPropertyUpdate == null) {
+      print("Error: lostPropertyUpdate object is null");
+      return;
+    }
+
+    // 1. Sabse pehle state ko TRUE karein aur UI ko update karein taake button UPDATE ho jaye
+    lostPropertyUpdateId.value = lostPropertyUpdate.id ?? 0;
+    lostPropertyValue(true);
+    update(); // Yeh call button ka text badal degi instantly
+
+    // 2. Form fields ki basic binding
+    nameController.text = lostPropertyUpdate.customer?.name ?? "";
+    detailOfPropertyController.text = lostPropertyUpdate.itemDescription ?? "";
+
+    lostDateController = lostPropertyUpdate.lostDate != null
         ? lostPropertyUpdate.lostDate.toString().split(' ')[0]
         : "";
-    reportDateController = lostPropertyUpdate?.reportDate != null
+    reportDateController = lostPropertyUpdate.reportDate != null
         ? lostPropertyUpdate.reportDate.toString().split(' ')[0]
         : "";
-
-    lostPropertyValue(true);
-    update();
 
     try {
       print("Calling API for ID: ${lostPropertyUpdate.id}");
 
-      final response =
-          await Api().get("lost-property/getbyid/${lostPropertyUpdate.id}",sendCompanyId: true);
-      print("API Raw Data: ${response.data}");
+      final response = await Api().get("lost-property/getbyid/${lostPropertyUpdate.id}", sendCompanyId: true);
+      print("API Raw Data: ${response?.data}");
 
       if (response != null && response.data != null) {
         var apiModel = LostPropertyGetByIdModel.fromJson(response.data);
@@ -439,10 +510,11 @@ sendCompanyId: true,
           updateBookingId = detail.bookingId;
           updateCustomerId = detail.customerId;
           mobileController.text = detail.mobile ?? "";
+
           address1Controller.text = detail.address1?.toString() ??
               detail.customer?.address1?.toString() ??
               "";
-          // address1Controller.text = detail.address1 ?? "";
+
           checkedByController.text = detail.checkedBy ?? "";
           enquiryController.text = detail.inquiry ?? "";
           resultController.text = detail.result ?? "";
@@ -460,19 +532,18 @@ sendCompanyId: true,
               vehicleType: VehicleTypeGetById(name: detail.vehicleTypeName),
             );
           }
-
-          print(
-              "Table Data Bound: ${selectedBookingForLostProperty?.referenceNumber}");
+          print("Table Data Bound: ${selectedBookingForLostProperty?.referenceNumber}");
         }
       }
     } catch (e) {
-      print("Caught Error in Controller: $e");
+      print("Caught Error in Controller API Call: $e");
+      // Agar API fail bhi ho jaye, tab bhi update mode true hi rehna chahiye
     }
 
+    // Final UI sync
     update();
     print("--- BINDING END ---");
   }
-
   deleteLostProperty(int? id) async {
     var response = await Api().delete("lost-property/delete/$id");
     if (response.statusCode == 200) {

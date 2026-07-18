@@ -32,6 +32,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "lostPropertyScreen";
+    controller.lostPropertyValue(false);
   }
 
   int selectedRowIndex = 0;
@@ -99,8 +100,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                     height: 32,
                                     child: KeyboardDatePicker(
                                       initialDate: controller
-                                                  .reportDateController !=
-                                              ""
+                                                  .reportDateController !=""
                                           ? DateTime.parse(
                                               controller.reportDateController)
                                           : DateTime.now(),
@@ -527,7 +527,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                 SizedBox(
                   height: 10,
                 ),
-                CustomButton(
+              CustomButton(
                   onTap: () {
                     controller.saveLostProperty();
                   },
@@ -536,9 +536,10 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                   fontSize: 17,
                   height: 30,
                   width: fieldWidth * 0.9,
-                  btnText: controller.lostPropertyValue.value == false
-                      ? AppText.save
-                      : "UPDATE",
+                  // lostPropertyValue jab true hoga to UPDATE dikhega, warna SAVE
+                  btnText: controller.
+                  lostPropertyModel != null
+                      ? "UPDATE" : AppText.save,
                 ),
                 SizedBox(
                   height: 10,

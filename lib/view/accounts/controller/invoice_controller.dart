@@ -233,6 +233,7 @@ class InvoiceController extends GetxController {
 
   listAccountInvoice({bool isFirstTime = false, String? activeFilter}) async {
     isLoadingListOfAccountInvoice.value = true;
+
     String? fromDateStr = isFirstTime
         ? null
         : invoiceListFromDate?.toIso8601String().split('T').first;
@@ -240,33 +241,29 @@ class InvoiceController extends GetxController {
         ? null
         : invoiceListToDate?.toIso8601String().split('T').first;
 
+    // Status payload value process logic
+    String? statusParam;
+    if (status != null && status != "all" && status!.isNotEmpty) {
+      statusParam = status!.toLowerCase();
+    }
+
     var response = await Api().get("account_invoice/get", queryParameters: {
       "limit": limit,
-      "invoice_number":
-          activeFilter == "invoice" ? invoiceNumber.value.toLowerCase() : null,
-      "account_name":
-          activeFilter == "account" ? searchAccount.value.toLowerCase() : null,
-      "department_name": activeFilter == "department"
-          ? searchDepartment.value.toLowerCase()
-          : null,
-      "order_number":
-          activeFilter == "order" ? searchOrder.value.toLowerCase() : null,
-      "amount":
-          activeFilter == "amount" ? searchAmount.value.toLowerCase() : null,
-      "subsidiary_name": activeFilter == "subsidiary"
-          ? searchSubsidiary.value.toLowerCase()
-          : null,
+      "invoice_number": activeFilter == "invoice" ? invoiceNumber.value.toLowerCase() : null,
+      "account_name": activeFilter == "account" ? searchAccount.value.toLowerCase() : null,
+      "department_name": activeFilter == "department" ? searchDepartment.value.toLowerCase() : null,
+      "order_number": activeFilter == "order" ? searchOrder.value.toLowerCase() : null,
+      "amount": activeFilter == "amount" ? searchAmount.value.toLowerCase() : null,
+      "subsidiary_name": activeFilter == "subsidiary" ? searchSubsidiary.value.toLowerCase() : null,
       "invoice_date": activeFilter == "invoicedate" ? searchDate.value : null,
-      "invoice_due_date":
-          activeFilter == "duedate" ? searchDueDate.value : null,
-      "status": activeFilter == "status"
-          ? (status == null || status == "all")
-              ? null
-              : status
-          : null,
+      "invoice_due_date": activeFilter == "duedate" ? searchDueDate.value : null,
+
+      // Status direct send hoga jab query match karegi bina string validation check failure ke
+      "status": activeFilter == "status" ? statusParam : statusParam,
       "from_date": fromDateStr,
       "to_date": toDateStr,
     }, sendCompanyId: true);
+
     if (response.statusCode == 200) {
       listOfAccountInvoice = ListOfAccountInvoiceModel.fromJson(response.data);
       totalPages.value = listOfAccountInvoice?.totalPages ?? 1;
