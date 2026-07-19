@@ -1850,6 +1850,7 @@ import '../reports/income_report_view/company_income_screen.dart';
 import '../reports/income_report_view/creidit_card_payments.dart';
 import '../reports/income_report_view/income_screen.dart';
 import '../reports/pco_view/pco_screen.dart';
+import '../reports/report_call_history_alert/report_history_alert.dart';
 import '../setting/call_recordings.dart';
 import '../setting/company_configuration_view/company_configuration_view.dart';
 import '../setting/email_tracking.dart';
@@ -1862,6 +1863,7 @@ import '../setting/wallboard_screen.dart';
 import '../vehicles_view/create_company_vehicle.dart';
 import '../vehicles_view/list_vehicle_type.dart';
 import '../vehicles_view/company_vehiclesScreen.dart';
+import '../../alert/bell_icon_alert.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -1994,9 +1996,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     SizedBox(
                       width: 9,
-                    ),      GestureDetector(
+                    ),
+                    GestureDetector(
                       onTap: () {
-                        // ExtensionAlert.show();
+                        controller.currentPage.value = const ReportHistoryAlert();
+                        controller.menuBarRefresh(
+                            title: "REPORTS|HISTORY",
+                            pageName: const ReportHistoryAlert());
                       },
                       child: Icon(
                         Icons.phone,
@@ -2033,10 +2039,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     SizedBox(
                       width: 9,
                     ),
-                    Icon(
-                      Icons.notifications,
-                      size: 24,
-                      color: DynamicColors.whiteClr,
+                    GestureDetector(
+                      onTap: () {
+                        BellIconAlert.show(context);
+                      },
+                      child: Icon(
+                        Icons.notifications,
+                        size: 24,
+                        color: DynamicColors.whiteClr,
+                      ),
                     ),
                     SizedBox(
                       width: 9,
