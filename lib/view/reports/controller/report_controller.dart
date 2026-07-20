@@ -66,10 +66,14 @@ class ReportController extends GetxController {
       String formattedFromDate = loginFromDate.value != null
           ? DateFormat('yyyy-MM-dd').format(loginFromDate.value!)
           : "";
+      String toDateFormate = loginToDate.value != null
+          ? DateFormat('yyyy-MM-dd').format(loginToDate.value!)
+          : "";
       var response = await Api().get("driver_shift_history/login",
           queryParameters: {
             "driver_id": selectDriverObject?.id.toString(),
             "from_date": formattedFromDate,
+            "to_date" : toDateFormate,
           }
       );
       if (response.statusCode == 200) {
@@ -88,8 +92,9 @@ class ReportController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver logs functionality
   var fromDate = Rxn<DateTime>(DateTime(DateTime.now().year, DateTime.now().month, 1));
   var toDate = Rxn<DateTime>(DateTime.now());
-  final logStartTimeController = TextEditingController();
-  final logEndTimeController = TextEditingController();
+// Purane controllers ki jagah ye likhein:
+  final logStartTimeController = TextEditingController(text: "00:00");
+  final logEndTimeController = TextEditingController(text: "23:59");
 
   DriverLogsReportListModel? driverLogsData;
   bool isLoadingLogs = false;

@@ -302,8 +302,11 @@ class InvoiceController extends GetxController {
 
   var isPaid = false.obs;
 
-  void togglePaidStatus() {
+// 1. togglePaidStatus ko update karein taaki ye Invoice aur naya status accept kare
+  void togglePaidStatus(AccountInvoiceAccountInvoice invoice) {
     isPaid.value = !isPaid.value;
+    invoice.status = isPaid.value ? "PAID" : "UNPAID";
+    updateBookingAmount(invoice);
   }
 
   bool isFilterUpdateApplied = false;
@@ -736,6 +739,7 @@ CC: CONGESTION CHARGES
     }
   }
 
+// 2. API Function (Jo aapka already likha hua hai)
   updateBookingAmount(AccountInvoiceAccountInvoice invoice) async {
     var formData = {
       if (invoice.amount != null) "amount": invoice.amount,
@@ -743,17 +747,17 @@ CC: CONGESTION CHARGES
       if (invoice.subsidiaryId != null) "subsidiary_id": invoice.subsidiaryId,
       if (invoice.departmentId != null) "department_id": invoice.departmentId,
       if (invoice.fromDate != null)
-        "from_date":
-            "${invoice.fromDate!.year}-${invoice.fromDate!.month}-${invoice.fromDate!.day}",
+        "from_date": "${invoice.fromDate!.year}-${invoice.fromDate!.month}-${invoice.fromDate!.day}",
       if (invoice.toDate != null)
-        "to_date":
-            "${invoice.toDate!.year}-${invoice.toDate!.month}-${invoice.toDate!.day}",
+        "to_date": "${invoice.toDate!.year}-${invoice.toDate!.month}-${invoice.toDate!.day}",
+      // Note: Agar ye controllers text fields hain, toh yahan .text lagana mat bhooliyega (e.g., invoiceDateController.text)
       if (invoiceDateController != null) "invoice_date": invoiceDateController,
-      if (invoiceDueDateController != null)
-        "invoice_due_date": invoiceDueDateController,
+      if (invoiceDueDateController != null) "invoice_due_date": invoiceDueDateController,
       if (invoice.invoiceType != null) "invoice_type": invoice.invoiceType,
+      // Yahan aapka status "PAID" ya "UNPAID" chala jayega form data me
       if (invoice.status != null) "status": invoice.status,
     };
+
     var response = await Api()
         .post(formData, "account_invoice/update/${invoice.id}", auth: true);
 

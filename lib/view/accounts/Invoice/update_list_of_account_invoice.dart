@@ -91,19 +91,25 @@ class _UpdateAccountInvoiceScreenState
                     },
                   ),
                   SizedBox(width: 5),
-                  Obx(() => CustomButton(
-                    verticalPadding: 0.0,
-                    width: 100,
-                    height: 30,
-                    borderRadius: 4,
-                    btnText: controller.isPaid.value ? "MARK AS  PAID" : "MARK AS UNPAID",
-                    btnColor: controller.isPaid.value ? Colors.green : DynamicColors.primaryClr,
-                    style: mozillaTextRegularText(
-                        fontSize: 10, color: DynamicColors.whiteClr),
-                    onTap: () {
-                      controller.togglePaidStatus();
-                    },
-                  )),
+                  Obx(() {
+                    final invoice = controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice;
+                    return CustomButton(
+                      verticalPadding: 0.0,
+                      width: 100,
+                      height: 30,
+                      borderRadius: 4,
+                      btnText: controller.isPaid.value ? "MARK AS PAID" : "MARK AS UNPAID",
+                      btnColor: controller.isPaid.value ? Colors.green : DynamicColors.primaryClr,
+                      style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
+                      onTap: () {
+                        if (invoice != null) {
+                          controller.togglePaidStatus(invoice);
+                        } else {
+                          BotToast.showText(text: "Invoice data not loaded yet");
+                        }
+                      },
+                    );
+                  }),
                   SizedBox(width: 5),
                   CustomButton(
                     verticalPadding: 0.0,
