@@ -71,54 +71,60 @@ class AuthController extends GetxController {
   // }
   postLoginDetails() async {
     PostAuthLoader(true);
+    try {
+      // 1. FCM Token fetch karein
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
+      print("FCM Token: $fcmToken");
 
-    // 1. FCM Token fetch karein
-    String? fcmToken = await FirebaseMessaging.instance.getToken();
-    print("FCM Token: $fcmToken");
+      var formData = {
+        "username": usernameController.text,
+        "password": passwordController.text,
+        // 2. web_device_id mein fcmToken pass karein
+        "web_device_id": fcmToken ?? "",
+      };
 
-    var formData = {
-      "username": usernameController.text,
-      "password": passwordController.text,
-      // 2. web_device_id mein fcmToken pass karein
-      "web_device_id": fcmToken ?? "",
-    };
+      var response = await Api()
+          .post(formData, 'employees/login', sendCompanyId: true, auth: false, isProgressShow: true);
 
-    var response = await Api().post(formData, 'employees/login',sendCompanyId: true, auth: false);
+      if (response.statusCode == 200) {
+        var employeeData = response.data['employee'];
+        var token = response.data['token'];
+        usernameController.clear();
+        passwordController.clear();
+        sp.write('userRole', employeeData['role']['name']);
+        sp.write('token', token);
+        sp.write('userData', employeeData);
 
-    if (response.statusCode == 200) {
-      var employeeData = response.data['employee'];
-      var token = response.data['token'];
-      usernameController.clear();
-      passwordController.clear();
-      sp.write('userRole', employeeData['role']['name']);
-      sp.write('token', token);
-      sp.write('userData', employeeData);
+        await getRole(id: employeeData['role_id']);
+        Employee.selectedEmployee = Employee.fromJson(employeeData);
 
-      await getRole(id: employeeData['role_id']);
-      Employee.selectedEmployee = Employee.fromJson(employeeData);
+        List extensions = employeeData['employee_extensions'] ?? [];
 
-      List extensions = employeeData['employee_extensions'] ?? [];
-
-      if (extensions.isEmpty) {
-        Get.offAllNamed(Routes.myHomePage);
-        PostAuthLoader(false);
-        Future.delayed(const Duration(milliseconds: 800), () {
-          ExtensionAlert.show();
-        });
+        if (extensions.isEmpty) {
+          Get.offAllNamed(Routes.myHomePage);
+          PostAuthLoader(false);
+          Future.delayed(const Duration(milliseconds: 800), () {
+            ExtensionAlert.show();
+          });
+        } else {
+          String latestExtension =
+              extensions.last['extension_number'].toString();
+          Employee.selectedEmployee!.extensionNumber = latestExtension;
+          print("Extension Found: $latestExtension");
+          Get.offAllNamed(Routes.myHomePage);
+          PostAuthLoader(false);
+          update();
+        }
       } else {
-        String latestExtension = extensions.last['extension_number'].toString();
-        Employee.selectedEmployee!.extensionNumber = latestExtension;
-        print("Extension Found: $latestExtension");
-        Get.offAllNamed(Routes.myHomePage);
         PostAuthLoader(false);
-        update();
+        // Error handling behtar karne ke liye response message bhi dikha sakte hain
+        BotToast.showText(text: response.data['message'] ?? "Login failed!");
       }
-    } else {
+    } catch (e) {
       PostAuthLoader(false);
-      // Error handling behtar karne ke liye response message bhi dikha sakte hain
-      BotToast.showText(text: response.data['message'] ?? "Login failed!");
+      debugPrint("Unknown error: $e");
     }
-    PostAuthLoader(false);
+
   }
   /// get role
   getRole({id}) async{

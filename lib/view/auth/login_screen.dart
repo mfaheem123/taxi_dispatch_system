@@ -63,9 +63,18 @@ import '../../component/text_field.dart';
 import '../../component/text_widget.dart';
 import '../../routes/app_pages.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
 AuthController controller = Get.put(AuthController());
+
+  RxBool loader = false.obs;
+
   @override
   Widget build(BuildContext context) {
     double width = Get.width;
@@ -153,25 +162,32 @@ AuthController controller = Get.put(AuthController());
                       const SizedBox(height: 25),
 
                       // Login Button
-                      CustomButton(
-                        height: 55,
-                        // text: "Login",
-                        onTap: () {
-                          // GetStorage().write(
-                          //   'token',
-                          //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJuZXh1cyIsInJvbGVfaWQiOi0xLCJpYXQiOjE3Njc3MTkxMTEsImV4cCI6MTc2ODMyMzkxMX0.FLkrfOerQInZVtWeeQZ_jsiMZY3zIG3vjDUyufaDN1Q',
-                          // );
+                      Obx(()=> CustomButton(
+                          height: 55,
+                          widget: loader.value == true? Center(
+                            child: CircularProgressIndicator(),
+                          ):null,
+                          // text: "Login",
+                          onTap: () async{
+                            loader(true);
+                            // GetStorage().write(
+                            //   'token',
+                            //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJuZXh1cyIsInJvbGVfaWQiOi0xLCJpYXQiOjE3Njc3MTkxMTEsImV4cCI6MTc2ODMyMzkxMX0.FLkrfOerQInZVtWeeQZ_jsiMZY3zIG3vjDUyufaDN1Q',
+                            // );
 
-                          if(controller.usernameController.text.isEmpty || controller.passwordController.text.isEmpty){
-                            BotToast.showText(text: "Please enter user name or password");
-                            return;
-                          }
-                          if(controller.PostAuthLoader.value == false){
-                            controller.postLoginDetails();
-                          }
-                          // Get.offAllNamed(Routes.myHomePage);
-                          // Get.offAllNamed(Routes.createBooking);
-                        },
+                            if(controller.usernameController.text.isEmpty || controller.passwordController.text.isEmpty){
+                              BotToast.showText(text: "Please enter user name or password");
+                              loader(false);
+                              return;
+                            }
+                            if(controller.PostAuthLoader.value == false){
+                             await controller.postLoginDetails();
+                             loader(false);
+                            }
+                            // Get.offAllNamed(Routes.myHomePage);
+                            // Get.offAllNamed(Routes.createBooking);
+                          },
+                        ),
                       ),
 
                       const SizedBox(height: 20),
