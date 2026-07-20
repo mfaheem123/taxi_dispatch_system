@@ -198,6 +198,7 @@ class DriverCommissionAlt {
                                                   controller
                                                       .driverCommissionDelete(
                                                       item.id);
+                                                  controller.getDriverCommission();
                                                 }),
                                             Text("|"),
                                             IconButton(

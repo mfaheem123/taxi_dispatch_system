@@ -183,14 +183,14 @@ class AppVersionWidget extends StatelessWidget {
                             },
                             label: AppText.disablePanicButton.toString().toUpperCase(),
                           ),
-                          KeyboardCheckbox(
-                            value: controller.showCompleteJobValue.value,
-                            onChanged: (v) {
-                              controller.showCompleteJobValue.value = v;
-                              controller.update();
-                            },
-                            label: AppText.disablePanicButton.toString().toUpperCase(),
-                          ),
+                          // KeyboardCheckbox(
+                          //   value: controller.showCompleteJobValue.value,
+                          //   onChanged: (v) {
+                          //     controller.showCompleteJobValue.value = v;
+                          //     controller.update();
+                          //   },
+                          //   label: AppText.showCompleteJob.toString().toUpperCase(),
+                          // ),
                           KeyboardCheckbox(
                             value: controller.showNavigationValue.value,
                             onChanged: (v) {
@@ -541,7 +541,7 @@ class AppVersionWidget extends StatelessWidget {
   }
 }
 
-class KeyboardCheckbox extends StatelessWidget {
+class KeyboardCheckbox extends StatefulWidget {
   final bool value;
   final ValueChanged<bool> onChanged;
   final String label;
@@ -554,8 +554,32 @@ class KeyboardCheckbox extends StatelessWidget {
   });
 
   @override
+  State<KeyboardCheckbox> createState() => _KeyboardCheckboxState();
+}
+
+class _KeyboardCheckboxState extends State<KeyboardCheckbox> {
+  late FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+    // Focus change listener lagaya taake Tab key dabane par widget rebuild ho aur highlight nazar aaye
+    _focusNode.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FocusableActionDetector(
+      focusNode: _focusNode,
       shortcuts: {
         LogicalKeySet(LogicalKeyboardKey.enter): const ActivateIntent(),
         LogicalKeySet(LogicalKeyboardKey.space): const ActivateIntent(),
@@ -563,30 +587,65 @@ class KeyboardCheckbox extends StatelessWidget {
       actions: {
         ActivateIntent: CallbackAction<ActivateIntent>(
           onInvoke: (intent) {
-            onChanged(!value);
+            widget.onChanged(!widget.value);
             return null;
           },
         ),
       },
-      child: Padding(
-        padding: const EdgeInsets.only(right: 15, bottom: 8), // gap between items
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        margin: const EdgeInsets.only(right: 15, bottom: 8),
+        decoration: BoxDecoration(
+          // Jab keyboard se focus aayega to halka sa background color aur border dikhega
+          color: _focusNode.hasFocus ? Colors.blue.withOpacity(0.05) : Colors.transparent,
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(
+            color: _focusNode.hasFocus ? Colors.blue.withOpacity(0.5) : Colors.transparent,
+            width: 1,
+          ),
+        ),
         child: Row(
-          mainAxisSize: MainAxisSize.min, // 👈 important
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Checkbox(
-              value: value,
-              onChanged: (v) => onChanged(v!),
+              focusNode: FocusNode(canRequestFocus: false, skipTraversal: true), // Prevent double tab
+              value: widget.value,
+              onChanged: (v) {
+                if (!_focusNode.hasFocus) {
+                  _focusNode.requestFocus();
+                }
+                widget.onChanged(v!);
+              },
+              // Focus state check karne ke liye controller state directly use ki hai
+              side: BorderSide(
+                color: _focusNode.hasFocus ? Colors.blue : Colors.grey.shade600,
+                width: _focusNode.hasFocus ? 2 : 1,
+              ),
+              fillColor: MaterialStateProperty.resolveWith<Color?>((states) {
+                if (widget.value) {
+                  return _focusNode.hasFocus ? Colors.blue.shade700 : Theme.of(context).primaryColor;
+                }
+                return null;
+              }),
             ),
             Flexible(
-              child: Text(
-                label,
-                overflow: TextOverflow.ellipsis,
-                style: mozillaTextRegularText(
-                  fontSize: 12,
+              child: GestureDetector(
+                onTap: () {
+                  _focusNode.requestFocus();
+                  widget.onChanged(!widget.value);
+                },
+                child: Text(
+                  widget.label,
+                  overflow: TextOverflow.ellipsis,
+                  style: mozillaTextRegularText(
+                    fontSize: 12,
+                    color: _focusNode.hasFocus ? Colors.blue.shade700 : Colors.black,
+                  ),
                 ),
               ),
-            ),
+            )
           ],
         ),
       ),

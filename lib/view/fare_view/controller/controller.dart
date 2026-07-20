@@ -1234,6 +1234,7 @@ class FareController extends GetxController {
     };
     formData["waiting_charges"] =
         fareMeterObj.waitingCharges!.map((e) => e.toJson()).toList();
+    print(formData);
     var response =
         await Api().post(formData, "faremeter/edit/${fareMeterObj.id}");
     if (response.statusCode == 200) {

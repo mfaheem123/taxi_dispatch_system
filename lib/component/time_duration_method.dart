@@ -153,7 +153,7 @@ Future<String> getFares({
       "return_pickup_time": returnPickupTime,
     if (withReturnPickUp != null && withReturnDropOff != null)
       "return_pickup_time": returnPickupTime,
-    if (withReturnPickUp != null && withReturnDropOff != null)
+    // if (withReturnPickUp != null && withReturnDropOff != null)
       "return_miles": returnMiles,
     if (withReturnPickUp != null &&
         withReturnDropOff != null &&
@@ -185,15 +185,19 @@ Future<String> getFares({
       "return_company_price": returnCompanyPrice,
   };
   print(pickUpPlotId);
-  print(formData);
+  print(" form data ------${formData}");
   print("tempMiles-- ${tempMiles}");
+  print("returnMiles-- ${returnMiles}");
 
   try {
-    var response = await Api().post(formData, "fares/calculate-fare");
+
+    var response = await Api().post(formData, "fares/calculate-fare",sendCompanyId: true);
+
 
     if (response != null && response.statusCode == 200) {
       // Check if data and total_fare exist to avoid null errors
       return jsonEncode(response.data['data']);
+
       // return fare?.toString() ?? "0";
     } else {
       print("API Error: ${response?.statusCode}");

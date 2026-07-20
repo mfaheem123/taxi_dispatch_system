@@ -2,6 +2,8 @@ import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'color.dart';
+
 class CustomDropdownField<T> extends StatelessWidget {
   final String? label;
   final List<T> items;
@@ -40,9 +42,16 @@ class CustomDropdownField<T> extends StatelessWidget {
               hintStyle: mozillaTextRegularText(fontSize: 10),
               border: const OutlineInputBorder(),
               contentPadding: const EdgeInsets.all(12),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color:  DynamicColors.primaryClr),
+              ),
+
+
             ),
             child: DropdownButtonHideUnderline(
+
               child: DropdownButton<T>(
+
                 value: value,
                 isDense: true,
                 hint: Text(label ?? "",

@@ -9,6 +9,8 @@ import 'package:get/get.dart';
 import '../../../alert/child_seats_alert.dart';
 import '../../../alert/extra_fares_alert.dart';
 import '../../../alert/extra_info_alert.dart';
+import '../../../alert/f3_alert.dart';
+import '../../../alert/f4_alert.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
 import '../../../component/dropdown_button.dart' show CustomDropdownField;
@@ -153,7 +155,14 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                   DashboardF8Alert.show();
                 }
                 return;
-              } else if (event.logicalKey.keyLabel == "F9") {
+              } else if (event.logicalKey.keyLabel == "F3") {
+                showDriverInfoAlert();
+                return;
+              } else if (event.logicalKey.keyLabel == "F4") {
+                showDriverEarningsAlert();
+                return;
+              }
+              else if (event.logicalKey.keyLabel == "F9") {
                 if (controller.pickupController.text.isNotEmpty &&
                     controller.dropOffController.text.isNotEmpty) {
                   DashboardF9Alert.show();
@@ -192,12 +201,23 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                 ShortcutKeyWidget(
                                     keyss: "F2",
                                     valuess: "BOOKING FORM"),
-                                ShortcutKeyWidget(
+                                InkWell(
+                                  onTap: () {
+                                    showDriverInfoAlert();
+                                  },
+                                  child: ShortcutKeyWidget(
                                     keyss: "F3",
-                                    valuess: "DRIVER VEHICLE"),
-                                ShortcutKeyWidget(
-                                    keyss: "F4",
-                                    valuess: "DRIVER EARNING"),
+                                    valuess: "DRIVER VEHICLE",
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    showDriverEarningsAlert();
+                                  },
+                                  child:  ShortcutKeyWidget(
+                                      keyss: "F4",
+                                      valuess: "DRIVER EARNING"),
+                                ),
                                 ShortcutKeyWidget(
                                     keyss: "F6",
                                     valuess: "QUOTATION"),
@@ -298,148 +318,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           ),
                                                         ),
                                                       ),
-
-                                                      // (1) Pickup textfield
-//                                                       FocusTraversalOrder(
-//                                                         order: const NumericFocusOrder(1),
-//                                                         child: SizedBox(
-//                                                           width: fieldWidth / 1.2,
-//                                                           height: 30,
-//                                                           child: RawKeyboardListener(
-//                                                             focusNode: controller.pickupKeyboardFocusNode,
-//                                                             onKey: (event) {
-//                                                               if (event is RawKeyDownEvent) {
-//                                                                 if (event.logicalKey == LogicalKeyboardKey.arrowDown && controller.highlightedIndex.value < controller.suggestions.length - 1) {
-//                                                                   controller.highlightedIndex.value++;
-//                                                                 } else if (event.logicalKey == LogicalKeyboardKey.arrowUp && controller.highlightedIndex.value > 0) {
-//                                                                   controller.highlightedIndex.value--;
-//                                                                 } else if (event.logicalKey == LogicalKeyboardKey.enter) {
-//                                                                   final selected = controller.suggestions[controller.highlightedIndex.value].name;
-//                                                                   controller.selectSuggestion(selected);
-//                                                                 } else if (event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.arrowUp
-//                                                                     || event.logicalKey == LogicalKeyboardKey.tab
-//                                                                 ) {
-//                                                                   FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
-//                                                                 }
-//                                                                 // }else if(event.logicalKey == LogicalKeyboardKey.tab){
-//                                                                 //   FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
-//                                                                 // }
-//                                                               }
-//                                                             },
-//                                                             child: CustomTextField(
-//                                                               key: controller.pickupFieldKey,
-//                                                               controller: controller.pickupController,
-//                                                               focusNode: controller.pickupTextFieldFocusNode,
-//                                                               inputFormatters: [
-//                                                                 UpperCaseTextFormatter(),
-//                                                               ],
-//                                                               hintText: 'PICKUP LOCATION',
-//                                                               borderRadius: 4,
-//                                                               prefixIcon: const Icon(
-//                                                                 Icons.location_pin,
-//                                                                 color: Colors.red,
-//                                                                 size: 20,
-//                                                               ),
-//                                                               textInputAction: TextInputAction.next,
-//                                                               onTap: () {
-//                                                                 shortCutKeyValue.value = "PICKUP LOCATION";
-//                                                                 controller.dropDownShow.value = true;
-//                                                               },
-//                                                               onChanged: (v) {
-//                                                                 if(v.isEmpty) {
-//                                                                   controller
-//                                                                       .dropDownShow
-//                                                                       .value =
-//                                                                   false;
-//                                                                 }else{
-//                                                                   controller.dropDownShow.value = true;
-//                                                                 }
-//                                                                 controller.onChangeHandler(fieldName: "PICKUP LOCATION", searchingText: v);
-//                                                               },
-//                                                               onSubmitted: (_) => FocusScope.of(context).nextFocus(),
-//                                                               suffixIcon: Row(
-//                                                                 mainAxisAlignment: MainAxisAlignment.end,
-//                                                                 mainAxisSize: MainAxisSize.min,
-//                                                                 children: [
-//                                                                   controller.pickupController.text.isEmpty
-//                                                                       ? SizedBox.shrink()
-//                                                                       : KbdActivatable(
-//                                                                     focusNode: clearPic,
-//                                                                     onActivate: () {
-//   // 1. Text Controller aur Dropdown clear karein
-//   controller.pickupController.clear();
-//   controller.dropDownShow.value = false;
-//   controller.suggestions.clear();
-
-//   // 2. Sirf PICKUP ya Create Booking PICKUP waale data ko list se remove karein
-//   controller.polyLineMarkerInfo.removeWhere((item) =>
-//     item.markerType == "PICKUP LOCATION" || item.markerType == "Create Booking PICKUP"
-//   );
-
-//   // 3. Fares aur distance ko reset karein
-//   controller.totalDistance.value = "0.00";
-//   controller.totalTimeDuration.value = "0 min";
-//   controller.fixedFare.value = "0";
-//   controller.returnFareValue = "0";
-//   controller.slugController.clear();
-//   controller.slugControllerReturn.clear();
-//   controller.tempStoreMils = null;
-
-//   // 4. Map aur Markers ko update karein
-//   controller.fetchRouteFromOSRM();
-
-//   // 5. Focus wapas textfield par le aayein
-//   FocusScope.of(Get.context!).requestFocus(controller.pickupTextFieldFocusNode);
-//   controller.update();
-// },
-//                                                                     // onActivate: () {
-//                                                                       int index = controller.markers.indexWhere((test) => test.type == "pickup");
-//                                                                       int indexx = controller.polyLineMarkerInfo.indexWhere(((element) => element.markerType == "PICKUP LOCATION"));
-//                                                                       controller.polyLineMarkerInfo.remove(controller.polyLineMarkerInfo[indexx]);
-//                                                                       controller.markers.remove(controller.markers[index]);
-                                                      //   FocusScope.of(Get.context!).requestFocus(controller.pickupTextFieldFocusNode);
-//                                                                     //   controller.markers.clear();
-//                                                                     //   controller.fixedFare.value = "0";
-//                                                                     //   controller.returnFareValue = "";
-//                                                                     //   controller.slugControllerReturn.clear();
-//                                                                     //   controller.slugController.clear();
-//                                                                     //   controller.dropDownShow.value = false;
-//                                                                     //   // controller.polyLineMarkerInfo.clear();
-//                                                                     //   controller.pickupController.clear();
-//                                                                     //   controller.dropOffController.clear();
-//                                                                     //   controller.polylinePoints.clear();
-//                                                                     //   controller.tempStoreMils = null;
-//                                                                     //   controller.fetchRouteFromOSRM();
-//                                                                     //   controller.fixedFare.value = "0";
-//                                                                     //   controller.totalDistance.value = "0";
-//                                                                     //   controller.totalTimeDuration.value = "0";
-//                                                                     //   controller.update();
-//                                                                     //   // controller.fetchRouteFromOSRM();
-//                                                                     // },
-//                                                                     child: Icon(
-//                                                                       Icons.close,
-//                                                                       color: DynamicColors.redClr,
-//                                                                       size: 15,
-//                                                                     ),
-//                                                                   ),
-//                                                                   KbdActivatable(
-//                                                                     focusNode: swap1FN,
-//                                                                     onActivate: () {
-//                                                                       String tempPic = controller.pickupController.text;
-//                                                                       String tempDrop = controller.dropOffController.text;
-//                                                                       controller.pickupController.text = tempDrop;
-//                                                                       controller.dropOffController.text = tempPic;
-//                                                                       controller.update();
-//                                                                     },
-//                                                                     child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
-//                                                                   ),
-//                                                                 ],
-//                                                               ),
-//                                                             ),
-//                                                           ),
-//                                                         ),
-//                                                       ),
-// (1) Pickup textfield
                                                       FocusTraversalOrder(
                                                         order: const NumericFocusOrder(1),
                                                         child: SizedBox(
@@ -499,43 +377,16 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       if (pickupPolylineIndex >= 0) {
                                                                         controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
                                                                       }
-
-                                                                      final dropPolylineIndex = controller.polyLineMarkerInfo
-                                                                          .indexWhere((e) => e.markerType == "DROP LOCATION");
-                                                                      if (dropPolylineIndex >= 0) {
-                                                                        controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
-                                                                      }
-
                                                                       final pickupMarkerIndex =
                                                                       controller.markers.indexWhere((e) => e.type == "pickup");
                                                                       if (pickupMarkerIndex >= 0) {
                                                                         controller.markers.removeAt(pickupMarkerIndex);
                                                                       }
-
-                                                                      final dropOffMarkerIndex =
-                                                                      controller.markers.indexWhere((e) => e.type == "dropOff");
-                                                                      if (dropOffMarkerIndex >= 0) {
-                                                                        controller.markers.removeAt(dropOffMarkerIndex);
-                                                                      }
-
-                                                                      // ✅ FIX: Sirf One-Way (via) wale markers list se remove honge
-                                                                      controller.markers.removeWhere((marker) => marker.type == "via");
-
-                                                                      // ✅ FIX: Sirf One-Way wale via points aur text fields remove honge (withReturnWay == "via")
-                                                                      for (int i = controller.viaPoints.length - 1; i >= 0; i--) {
-                                                                        if (controller.viaPoints[i].withReturnWay == "via") {
-                                                                          controller.viaPoints.removeAt(i);
-                                                                          if (i < controller.viaTextEditingController.length) {
-                                                                            controller.viaTextEditingController.removeAt(i);
-                                                                          }
-                                                                        }
-                                                                      }
-
                                                                       controller.pickupController.clear();
-                                                                      controller.dropOffController.clear();
+                                                                      // controller.dropOffController.clear();
                                                                       controller.dropDownShow.value = false;
                                                                       controller.suggestions.clear();
-
+                                                                      controller.clearViaIfNoPickupAndDrop();
                                                                       controller.totalDistance.value = "0.00";
                                                                       controller.totalTimeDuration.value = "0 min";
                                                                       controller.fixedFare.value = "0";
@@ -544,7 +395,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.slugController.clear();
                                                                       controller.slugControllerReturn.clear();
                                                                       controller.tempStoreMils = null;
-
                                                                       controller.fetchRouteFromOSRM();
                                                                       FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
                                                                       controller.update();
@@ -553,23 +403,38 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   ),
                                                                   KbdActivatable(
                                                                     focusNode: swap1FN,
-                                                                    onActivate: () {
+                                                                    onActivate: () async {
                                                                       String tempPic = controller.pickupController.text;
                                                                       String tempDrop = controller.dropOffController.text;
                                                                       controller.pickupController.text = tempDrop;
                                                                       controller.dropOffController.text = tempPic;
+                                                                      controller.dropDownShow.value = false;
+                                                                      controller.swapPickupDropMarkers();
+                                                                      await controller.fetchRouteFromOSRM();
                                                                       controller.update();
                                                                     },
                                                                     child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
                                                                   ),
+                                                                  // KbdActivatable(
+                                                                  //   focusNode: swap1FN,
+                                                                  //   onActivate: () async {
+                                                                  //     String tempPic = controller.pickupController.text;
+                                                                  //     String tempDrop = controller.dropOffController.text;
+                                                                  //     controller.pickupController.text = tempDrop;
+                                                                  //     controller.dropOffController.text = tempPic;
+                                                                  //     controller.swapPickupDropMarkers();
+                                                                  //     await controller.fetchRouteFromOSRM();
+                                                                  //     controller.update();
+                                                                  //   },
+                                                                  //   child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
+                                                                  // ),
                                                                 ],
                                                               ),
                                                             ),
                                                           ),
                                                         ),
                                                       ),
-                                                      // Select Zone on pick Up location line
-                                                      // (2) Pickup Zone Dropdown - (Flex: 5 aur width null ke sath)
+                                                      // (2) Pickup Zone Dropdown
                                                       Expanded(
                                                         flex: 5,
                                                         child: Obx(
@@ -578,7 +443,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               Padding(
                                                                 padding: const EdgeInsets.only(right: 6.0, left: 15.0),
                                                                 child: SizedBox(
-                                                                  width: 40,
+                                                                  width: 41,
                                                                   // Perfect alignment ke liye bilkul baqi rows jitna size
                                                                   child: Text(
                                                                     "ZONE",
@@ -591,7 +456,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   order: const NumericFocusOrder(2),
                                                                   child: CustomDropdownField<ZoneObject>(
                                                                     label: "SELECT ZONE",
-                                                                    width: fieldWidthh / 10.5,
+                                                                    width: fieldWidthh / 9,
                                                                     // Hardcoded width hata di taake flex perfect chale
                                                                     height: 30,
                                                                     items: _controller.updateLocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
@@ -601,6 +466,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.dropDownShow.value = false;
                                                                       _controller.zoneValue = val;
                                                                       controller.dashboardZoneValue = val;
+                                                                      controller.getFaresCalculation();
                                                                       controller.update();
                                                                     },
                                                                   ),
@@ -610,13 +476,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           ),
                                                         ),
                                                       ),
-
-// Dono fields ke darmiyan ka fasla (Aapka original 13.0 spacing)
-                                                      const SizedBox(
-                                                        width: 55.0,
-                                                      ),
-
-// (3) Pickup notes - (Flex: 3 aur bina label ke)
+                                                      const SizedBox(width: 55.0),
+                                                      // (3) Pickup notes
                                                       Expanded(
                                                         flex: 3,
                                                         child: FocusTraversalOrder(
@@ -653,7 +514,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                   child:
                                                   Padding(
                                                     padding:
-                                                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                                    const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                                                     child:
                                                     Row(
                                                       children: [
@@ -672,7 +533,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           child: FocusTraversalOrder(
                                                             order: const NumericFocusOrder(4),
                                                             child: SizedBox(
-                                                              width: fieldWidth / 0.70,
+                                                              width: fieldWidth / 0.73,
                                                               height: 30,
                                                               child: CustomTextField(
                                                                 controller: controller.selectAirportController,
@@ -690,6 +551,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             ),
                                                           ),
                                                         ),
+                                                        SizedBox(width: 14),
                                                         Padding(
                                                           padding: const EdgeInsets.only(right: 10, left: 5),
                                                           child: Text(
@@ -700,12 +562,13 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             ),
                                                           ),
                                                         ),
+
                                                         Padding(
                                                           padding: EdgeInsets.only(left: 0),
                                                           child: FocusTraversalOrder(
                                                             order: const NumericFocusOrder(5),
                                                             child: SizedBox(
-                                                              width: fieldWidth / 3.1,
+                                                              width: fieldWidth / 3.7,
                                                               height: 30,
                                                               child: CustomTextField(
                                                                 controller: controller.arrivalTimeController,
@@ -731,9 +594,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                 // ================= DROPOFF ROW =================
                                                 Padding(
                                                   padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 10.0,
-                                                      vertical: 12.0),
+                                                      .only(left: 10.0, right: 10.0, top: 0, bottom: 5.0),
                                                   child:
                                                   Row(
                                                     children: [
@@ -748,136 +609,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ),
                                                       ),
 
-                                                      // (2) Dropoff textfield
-//                                                       FocusTraversalOrder(
-//                                                         order: const NumericFocusOrder(6),
-//                                                         child: SizedBox(
-//                                                           width: fieldWidth / 1.2,
-//                                                           height: 30,
-//                                                           child: RawKeyboardListener(
-//                                                             focusNode: controller.dropOffKeyboardFocusNode,
-//                                                             onKey: (event) {
-//                                                               if (event is RawKeyDownEvent) {
-//                                                                 if (event.logicalKey == LogicalKeyboardKey.arrowDown && controller.highlightedIndex.value < controller.suggestions.length - 1) {
-//                                                                   controller.highlightedIndex.value++;
-//                                                                 } else if (event.logicalKey == LogicalKeyboardKey.arrowUp && controller.highlightedIndex.value > 0) {
-//                                                                   controller.highlightedIndex.value--;
-//                                                                 } else if (event.logicalKey == LogicalKeyboardKey.enter) {
-//                                                                   final selected = controller.suggestions[controller.highlightedIndex.value].name;
-//                                                                   controller.selectSuggestion(selected);
-//                                                                 } else if (event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.tab) {
-//                                                                   FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
-//                                                                 }
-//                                                               }
-//                                                             },
-//                                                             child: CustomTextField(
-//                                                               key: controller.dropOffFieldKey,
-//                                                               controller: controller.dropOffController,
-//                                                               focusNode: controller.dropOffTextFieldFocusNode,
-//                                                               hintText: 'DROP LOCATION',
-//                                                               inputFormatters: [
-//                                                                 UpperCaseTextFormatter(),
-//                                                               ],
-//                                                               onTap: () {
-//                                                                 shortCutKeyValue.value = "DROP LOCATION";
-//                                                                 controller.dropDownShow.value = true;
-//                                                               },
-//                                                               borderRadius: 4,
-//                                                               onChanged: (v) {
-//                                                                 if(v.isEmpty){
-//                                                                   controller.dropDownShow.value = false;
-//                                                                 }else{
-//                                                                   controller.dropDownShow.value = true;
-//                                                                 }
-//                                                                 controller.onChangeHandler(fieldName: "DROP LOCATION", searchingText: v);
-//                                                               },
-//                                                               prefixIcon: const Icon(
-//                                                                 Icons.location_pin,
-//                                                                 color: Colors.red,
-//                                                                 size: 20,
-//                                                               ),
-//                                                               textInputAction: TextInputAction.next,
-//                                                               onSubmitted: (_) => FocusScope.of(context).nextFocus(),
-//                                                               suffixIcon: Row(
-//                                                                 mainAxisSize: MainAxisSize.min,
-//                                                                 mainAxisAlignment: MainAxisAlignment.end,
-//                                                                 children: [
-//                                                                   controller.dropOffController.text.isEmpty
-//                                                                       ? SizedBox.shrink()
-//                                                                       : KbdActivatable(
-//                                                                     focusNode: clearDrop,
-//                                                                     onActivate: () {
-//   controller.dropOffController.clear();
-//   controller.dropDownShow.value = false;
-//   controller.suggestions.clear();
-
-//   // Sirf DROP waale markers remove karein
-//   controller.polyLineMarkerInfo.removeWhere((item) =>
-//     item.markerType == "DROP LOCATION" || item.markerType == "Create Booking DROP LOCATION"
-//   );
-
-//   controller.totalDistance.value = "0.00";
-//   controller.totalTimeDuration.value = "0 min";
-//   controller.fixedFare.value = "0";
-//   controller.returnFareValue = "0";
-//   controller.slugController.clear();
-//   controller.slugControllerReturn.clear();
-//   controller.tempStoreMils = null;
-
-//   controller.fetchRouteFromOSRM(); // Route aur markers update karega
-
-//   FocusScope.of(Get.context!).requestFocus(controller.dropoffFocusNode); // Dropoff focus node
-//   controller.update();
-// },
-//                                                                     // onActivate: () {
-//                                                                     //   // int index = controller.markers.indexWhere((test) => test.type == "dropOff");
-//                                                                     //   // int indexx = controller.polyLineMarkerInfo.indexWhere(((element) => element.markerType == "DROP LOCATION"));
-//                                                                     //   // controller.polyLineMarkerInfo.remove(controller.polyLineMarkerInfo[indexx]);
-//                                                                     //   // controller.markers.remove(controller.markers[index]);
-//                                                                     //   FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
-//                                                                     //   controller.dropOffController.clear();
-//                                                                     //   controller.fixedFare.value = "0";
-//                                                                     //   controller.returnFareValue = "";
-//                                                                     //   controller.slugControllerReturn.clear();
-//                                                                     //   controller.slugController.clear();
-//                                                                     //   controller.markers.clear();
-//                                                                     //   controller.polyLineMarkerInfo.clear();
-//                                                                     //   controller.pickupController.clear();
-//                                                                     //   controller.polylinePoints.clear();
-//                                                                     //   controller.tempStoreMils = null;
-//                                                                     //   controller.dropDownShow.value = false;
-//                                                                     //   controller.fetchRouteFromOSRM();
-//                                                                     //   controller.fixedFare.value = "0";
-//                                                                     //   controller.totalDistance.value = "0";
-//                                                                     //   controller.totalTimeDuration.value = "0";
-//                                                                     //   controller.update();
-//                                                                     // },
-//                                                                     child: Icon(
-//                                                                       Icons.close,
-//                                                                       color: DynamicColors.redClr,
-//                                                                       size: 15,
-//                                                                     ),
-//                                                                   ),
-//                                                                   KbdActivatable(
-//                                                                     focusNode: swap2FN,
-//                                                                     onActivate: () {
-//                                                                       String tempPic = controller.pickupController.text;
-//                                                                       String tempDrop = controller.dropOffController.text;
-//                                                                       controller.pickupController.text = tempDrop;
-//                                                                       controller.dropOffController.text = tempPic;
-//                                                                       controller.dropDownShow.value = false;
-//                                                                       controller.update();
-//                                                                     },
-//                                                                     child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
-//                                                                   ),
-//                                                                 ],
-//                                                               ),
-//                                                             ),
-//                                                           ),
-//                                                         ),
-//                                                       ),
-
-                                                      // (2) Dropoff textfield
                                                       FocusTraversalOrder(
                                                         order: const NumericFocusOrder(6),
                                                         child: SizedBox(
@@ -932,55 +663,26 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       : KbdActivatable(
                                                                     focusNode: clearDrop,
                                                                     onActivate: () {
-
-                                                                      final pickupPolylineIndex = controller.polyLineMarkerInfo
-                                                                          .indexWhere((e) => e.markerType == "PICKUP LOCATION");
-
-                                                                      if (pickupPolylineIndex >= 0) {
-                                                                        controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
-                                                                      }
-
                                                                       final dropPolylineIndex = controller.polyLineMarkerInfo
                                                                           .indexWhere((e) => e.markerType == "DROP LOCATION");
 
                                                                       if (dropPolylineIndex >= 0) {
                                                                         controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
                                                                       }
-
-                                                                      final pickupMarkerIndex =
-                                                                      controller.markers.indexWhere((e) => e.type == "pickup");
-
-                                                                      if (pickupMarkerIndex >= 0) {
-                                                                        controller.markers.removeAt(pickupMarkerIndex);
-                                                                      }
-
                                                                       final dropOffMarkerIndex =
                                                                       controller.markers.indexWhere((e) => e.type == "dropOff");
 
                                                                       if (dropOffMarkerIndex >= 0) {
                                                                         controller.markers.removeAt(dropOffMarkerIndex);
                                                                       }
-                                                                      // ✅ FIX: Sirf One-Way (via) wale markers list se remove honge
-                                                                      controller.markers.removeWhere((marker) => marker.type == "via");
-
-                                                                      // ✅ FIX: Sirf One-Way wale via points aur text fields remove honge (withReturnWay == "via")
-                                                                      for (int i = controller.viaPoints.length - 1; i >= 0; i--) {
-                                                                        if (controller.viaPoints[i].withReturnWay == "via") {
-                                                                          controller.viaPoints.removeAt(i);
-                                                                          if (i < controller.viaTextEditingController.length) {
-                                                                            controller.viaTextEditingController.removeAt(i);
-                                                                          }
-                                                                        }
-                                                                      }
-                                                                      controller.viaPoints.clear();
-                                                                      controller.viaTextEditingController.clear();
-                                                                      controller.pickupController.clear();
+                                                                      // controller.viaPoints.clear();
+                                                                      // controller.viaTextEditingController.clear();
+                                                                      // controller.pickupController.clear();
                                                                       controller.dropOffController.clear();
+                                                                      controller.clearViaIfNoPickupAndDrop();
                                                                       controller.dropDownShow.value = false;
                                                                       controller.suggestions.clear();
-                                                                      // Sirf 1st Dropoff wale markers remove honge
                                                                       // controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "DROP LOCATION" || item.markerType == "Create Booking DROP LOCATION");
-                                                                      controller.viaPoints.clear();
                                                                       controller.totalDistance.value = "0.00";
                                                                       controller.totalTimeDuration.value = "0 min";
                                                                       controller.fixedFare.value = "0";
@@ -997,14 +699,16 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   ),
                                                                   KbdActivatable(
                                                                     focusNode: swap2FN,
-                                                                    onActivate: () {
+                                                                    onActivate: () async {
                                                                       String tempPic = controller.pickupController.text;
                                                                       String tempDrop = controller.dropOffController.text;
                                                                       controller.pickupController.text = tempDrop;
                                                                       controller.dropOffController.text = tempPic;
                                                                       controller.dropDownShow.value = false;
+                                                                      controller.swapPickupDropMarkers();
+                                                                      await controller.fetchRouteFromOSRM();
                                                                       controller.update();
-                                                                    },
+                                                                   },
                                                                     child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
                                                                   ),
                                                                 ],
@@ -1045,6 +749,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.dropDownShow.value = false;
                                                                       _controller.zoneDValue = val;
                                                                       controller.dashboardDZoneValue = val;
+                                                                      controller.getFaresCalculation();
                                                                       controller.update();
                                                                     },
                                                                   ),
@@ -1216,7 +921,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         //     ],
                                                         //   ),
                                                         // ),
-                                                        // (8) Mobile Field - (Aapka original code baseline alignment ke sath)
+                                                        /// (8) Mobile Field
                                                         Expanded(
                                                           child: Row(
                                                             children: [
@@ -1536,142 +1241,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 ),
                                                               ),
                                                             ),
-                                                            // (3) Pickup textfield ------------------------------------------------------
-//                                                             FocusTraversalOrder(
-//                                                               order: const NumericFocusOrder(17),
-//                                                               child: SizedBox(
-//                                                                 width: fieldWidth / 1.2,
-//                                                                 height: 30,
-//                                                                 child: RawKeyboardListener(
-//                                                                   focusNode: controller.pickupTwoWayKeyboardFocusNode,
-//                                                                   onKey: (event) {
-//                                                                     if (event is RawKeyDownEvent) {
-//                                                                       if (event.logicalKey == LogicalKeyboardKey.arrowDown && controller.highlightedIndex.value < controller.suggestions.length - 1) {
-//                                                                         controller.highlightedIndex.value++;
-//                                                                       } else if (event.logicalKey == LogicalKeyboardKey.arrowUp && controller.highlightedIndex.value > 0) {
-//                                                                         controller.highlightedIndex.value--;
-//                                                                       } else if (event.logicalKey == LogicalKeyboardKey.enter) {
-//                                                                         final selected = controller.suggestions[controller.highlightedIndex.value].name;
-//                                                                         controller.selectSuggestion(selected);
-//                                                                       } else if (event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.tab) {
-//                                                                         FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
-//                                                                       }
-//                                                                     }
-//                                                                   },
-//                                                                   child: CustomTextField(
-//                                                                     key: controller.pickupTwoWayFieldKey,
-//                                                                     controller: controller.pickupTwoWayController,
-//                                                                     focusNode: controller.pickupTwoTextFieldFocusNode,
-//                                                                     hintText: 'PICKUP LOCATION',
-//                                                                     inputFormatters: [
-//                                                                       UpperCaseTextFormatter(),
-//                                                                     ],
-//                                                                     borderRadius: 4,
-//                                                                     prefixIcon: const Icon(
-//                                                                       Icons.location_pin,
-//                                                                       color: Colors.red,
-//                                                                       size: 20,
-//                                                                     ),
-//                                                                     textInputAction: TextInputAction.next,
-//                                                                     onTap: () {
-//                                                                       shortCutKeyValue.value = "PICKUP Two Way LOCATION";
-//                                                                       controller.dropDownShow.value = true;
-//                                                                     },
-//                                                                     onChanged: (v) {
-//                                                                       controller.onChangeHandler(fieldName: "PICKUP TWO WAY LOCATION", searchingText: v);
-//                                                                     },
-//                                                                     onSubmitted: (_) => FocusScope.of(context).nextFocus(),
-//                                                                     suffixIcon: Row(
-//                                                                       mainAxisAlignment: MainAxisAlignment.end,
-//                                                                       mainAxisSize: MainAxisSize.min,
-//                                                                       children: [
-//                                                                         controller.pickupTwoWayController.text.isEmpty
-//                                                                             ? SizedBox.shrink()
-//                                                                             :
-//                                                                         //      KbdActivatable(
-//                                                                         //   focusNode: clearPicTwo,
-//                                                                         //   onActivate: () {
-//                                                                         //     FocusScope.of(Get.context!).requestFocus(controller.pickupTwoTextFieldFocusNode);
-//                                                                         //     controller.markers.clear();
-//                                                                         //     controller.fixedFare.value = "0";
-//                                                                         //     controller.returnFareValue = "";
-//                                                                         //     controller.slugControllerReturn.clear();
-//                                                                         //     controller.slugController.clear();
-//                                                                         //     controller.polyLineMarkerInfo.clear();
-//                                                                         //     controller.pickupTwoWayController.clear();
-//                                                                         //     controller.dropOffTwoWayController.clear();
-//                                                                         //     controller.pickupController.clear();
-//                                                                         //     controller.dropOffController.clear();
-//                                                                         //     controller.polylinePoints.clear();
-//                                                                         //     controller.fetchRouteFromOSRM();
-//                                                                         //     controller.fixedFare.value = "0";
-//                                                                         //     controller.totalDistance.value = "0";
-//                                                                         //     controller.totalTimeDuration.value = "0";
-//                                                                         //     controller.dropDownShow.value = false;
-//                                                                         //     controller.update();
-
-//                                                                         //     // controller.fetchRouteFromOSRM();
-//                                                                         //   },
-//                                                                         //   child: Icon(
-//                                                                         //     Icons.close,
-//                                                                         //     color: DynamicColors.redClr,
-//                                                                         //     size: 15,
-//                                                                         //   ),
-//                                                                         // ),
-
-//                                                                        // (3) Pickup textfield - Clear button logic section
-// KbdActivatable(
-//   focusNode: clearPicTwo,
-//   onActivate: () {
-//     FocusScope.of(Get.context!).requestFocus(controller.pickupTwoTextFieldFocusNode);
-//     controller.markers.clear();
-//     controller.fixedFare.value = "0";
-//     controller.returnFareValue = "";
-//     controller.slugControllerReturn.clear();
-//     controller.slugController.clear();
-//     controller.polyLineMarkerInfo.clear();
-
-//     // ONLY CLEARING TWO-WAY FIELDS NOW
-//     controller.pickupTwoWayController.clear();
-//     controller.dropOffTwoWayController.clear();
-
-//     // REMOVED: controller.pickupController.clear();
-//     // REMOVED: controller.dropOffController.clear();
-
-//     controller.polylinePoints.clear();
-//     controller.fetchRouteFromOSRM();
-//     controller.fixedFare.value = "0";
-//     controller.totalDistance.value = "0";
-//     controller.totalTimeDuration.value = "0";
-//     controller.dropDownShow.value = false;
-//     controller.update();
-//   },
-//   child: Icon(
-//     Icons.close,
-//     color: DynamicColors.redClr,
-//     size: 15,
-//   ),
-// ),
-//                                                                         KbdActivatable(
-//                                                                           focusNode: swap1FNTwoWay,
-//                                                                           onActivate: () {
-//                                                                             String tempPic = controller.pickupTwoWayController.text;
-//                                                                             String tempDrop = controller.dropOffTwoWayController.text;
-//                                                                             controller.pickupTwoWayController.text = tempDrop;
-//                                                                             controller.dropOffTwoWayController.text = tempPic;
-//                                                                             controller.dropDownShow.value = false;
-//                                                                             controller.update();
-//                                                                           },
-//                                                                           child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
-//                                                                         ),
-//                                                                       ],
-//                                                                     ),
-//                                                                   ),
-//                                                                 ),
-//                                                               ),
-//                                                             ),
-
-                                                            // (3) Pickup textfield TWO WAY ------------------------------------------------------
                                                             FocusTraversalOrder(
                                                               order: const NumericFocusOrder(17),
                                                               child: SizedBox(
@@ -1729,71 +1298,40 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             if (pickupPolylineIndex >= 0) {
                                                                               controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
                                                                             }
-
-                                                                            final dropPolylineIndex = controller.polyLineMarkerInfo
-                                                                                .indexWhere((e) => e.markerType == "DROP TWO WAY LOCATION");
-
-                                                                            if (dropPolylineIndex >= 0) {
-                                                                              controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
-                                                                            }
-
                                                                             final pickupMarkerIndex =
                                                                             controller.markers.indexWhere((e) => e.type == "pickup two way");
-
                                                                             if (pickupMarkerIndex >= 0) {
                                                                               controller.markers.removeAt(pickupMarkerIndex);
                                                                             }
-
-                                                                            final dropOffMarkerIndex =
-                                                                            controller.markers.indexWhere((e) => e.type == "dropOff two way");
-
-                                                                            if (dropOffMarkerIndex >= 0) {
-                                                                              controller.markers.removeAt(dropOffMarkerIndex);
-                                                                            }
-
-                                                                            // 1. Sirf Two-Way waale controllers ko clear karein
                                                                             controller.pickupTwoWayController.clear();
-                                                                            controller.dropOffTwoWayController.clear();
-
-                                                                            // 2. POORI list clear karne ke bajaye, sirf TWO WAY waale markers remove karein
+                                                                            controller.clearReturnViaIfNoPickupAndDrop();
+                                                                            // controller.dropOffTwoWayController.clear();
                                                                             controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "PICKUP TWO WAY LOCATION");
                                                                             if (controller.markers is List<CustomMarker>) {
                                                                               controller.markers.removeWhere((marker) => marker.type == "PICKUP TWO WAY LOCATION");
                                                                             }
-                                                                            controller.markers.removeWhere((marker) => marker.type == "via with return");
-
-                                                                             for (int i = controller.viaPoints.length - 1; i >= 0; i--) {
-                                                                              if (controller.viaPoints[i].withReturnWay == "via with return") {
-                                                                                controller.viaPoints.removeAt(i);
-                                                                                if (i < controller.viaTextEditingController.length) {
-                                                                                  controller.viaTextEditingController.removeAt(i);
-                                                                                }
-                                                                              }
-                                                                            }
-                                                                            controller.tempStoreReturnMils = null;
-                                                                            // 3. Baki states ko reset karein
+                                                                            // controller.tempStoreReturnMils = null;
                                                                             // controller.fixedFare.value = "0";
-                                                                            controller.returnFareValue = "";
+                                                                            // controller.returnFareValue = "";
                                                                             // controller.slugControllerReturn.clear();
                                                                             // // controller.slugController.clear();
-                                                                            // controller.dropDownShow.value = false;
+                                                                            controller.dropDownShow.value = false;
                                                                             // controller.tempStoreMils = null;
-
-                                                                            // 4. Route ko recalculate karein (Yeh ab bache hue 1st pickup/dropoff ka route banayega)
-                                                                            // controller.fetchRouteFromOSRM();
-
+                                                                             controller.fetchRouteFromOSRM();
                                                                             controller.update();
                                                                           },
                                                                           child: Icon(Icons.close, color: DynamicColors.redClr, size: 15),
                                                                         ),
                                                                         KbdActivatable(
                                                                           focusNode: swap1FNTwoWay,
-                                                                          onActivate: () {
+                                                                          onActivate: () async {
                                                                             String tempPic = controller.pickupTwoWayController.text;
                                                                             String tempDrop = controller.dropOffTwoWayController.text;
                                                                             controller.pickupTwoWayController.text = tempDrop;
                                                                             controller.dropOffTwoWayController.text = tempPic;
                                                                             controller.dropDownShow.value = false;
+                                                                            controller.swapReturnPickupDropMarkers();
+                                                                            await controller.fetchRouteFromOSRM();
                                                                             controller.update();
                                                                           },
                                                                           child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
@@ -1804,8 +1342,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 ),
                                                               ),
                                                             ),
-                                                            // Select Zone
-
+                                                            /// Select Zone
                                                             Expanded(
                                                               flex: 5,
                                                               child: Obx(
@@ -1837,6 +1374,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             controller.dropDownShow.value = false;
                                                                             _controller.RNzoneValue = val;
                                                                             controller.dashboardRNZoneValue = val;
+                                                                            controller.getFaresCalculation();
                                                                             controller.update();
                                                                           },
                                                                         ),
@@ -1846,11 +1384,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 ),
                                                               ),
                                                             ),
-
-                                                            // Dono fields ke darmiyan ka fasla (Aapki original 10.0 spacing)
                                                             const SizedBox(width: 55.0),
-
-                                                            // (3) Pickup notes - (Flex: 3 aur bina label ke)
+                                                            /// (3) Pickup notes - (Flex: 3 aur bina label ke)
                                                             Expanded(
                                                               flex: 3,
                                                               child: FocusTraversalOrder(
@@ -1860,8 +1395,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   child: CustomTextField(
                                                                     width: fieldWidthh / 15.0,
                                                                     // Hardcoded width hata di taake notes field sahi se responsive ho
-                                                                    controller: controller.pickUpNoteController,
-                                                                    hintText: "PICKUP NOTES",
+                                                                    controller: controller.returnPickUpNoteController,
+                                                                    inputFormatters: [
+                                                                      UpperCaseTextFormatter(),
+                                                                    ],
+                                                                    hintText: "RETURN PICKUP NOTES".toUpperCase(),
                                                                     borderRadius: 6,
                                                                     onTap: () {
                                                                       controller.dropDownShow.value = false;
@@ -1892,142 +1430,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 ),
                                                               ),
                                                             ),
-                                                            // (1) Pickup textfield
-                                                            // (4) Dropoff textfield --------------------------------------------------------
-                                                            //                                                             FocusTraversalOrder(
-                                                            //                                                               order: const NumericFocusOrder(20),
-                                                            //                                                               child: SizedBox(
-                                                            //                                                                 width: fieldWidth / 1.2,
-                                                            //                                                                 height: 30,
-                                                            //                                                                 child: RawKeyboardListener(
-                                                            //                                                                   focusNode: controller.dropOffTwoDayKeyboardFocusNode,
-                                                            //                                                                   onKey: (event) {
-                                                            //                                                                     if (event is RawKeyDownEvent) {
-                                                            //                                                                       if (event.logicalKey == LogicalKeyboardKey.arrowDown && controller.highlightedIndex.value < controller.suggestions.length - 1) {
-                                                            //                                                                         controller.highlightedIndex.value++;
-                                                            //                                                                       } else if (event.logicalKey == LogicalKeyboardKey.arrowUp && controller.highlightedIndex.value > 0) {
-                                                            //                                                                         controller.highlightedIndex.value--;
-                                                            //                                                                       } else if (event.logicalKey == LogicalKeyboardKey.enter) {
-                                                            //                                                                         final selected = controller.suggestions[controller.highlightedIndex.value].name;
-                                                            //                                                                         controller.selectSuggestion(selected);
-                                                            //                                                                       } else if (event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.tab) {
-                                                            //                                                                         FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
-                                                            //                                                                       }
-                                                            //                                                                     }
-                                                            //                                                                   },
-                                                            //                                                                   child: CustomTextField(
-                                                            //                                                                     key: controller.dropOffTwoFieldKey,
-                                                            //                                                                     controller: controller.dropOffTwoWayController,
-                                                            //                                                                     focusNode: controller.dropOffTwoWayTextFieldFocusNode,
-                                                            //                                                                     hintText: 'DROP LOCATION',
-                                                            //                                                                     inputFormatters: [
-                                                            //                                                                       UpperCaseTextFormatter(),
-                                                            //                                                                     ],
-                                                            //                                                                     onTap: () {
-                                                            //                                                                       shortCutKeyValue.value = "DROP TWO WAY LOCATION";
-                                                            //                                                                       controller.dropDownShow.value = true;
-                                                            //                                                                     },
-                                                            //                                                                     borderRadius: 4,
-                                                            //                                                                     onChanged: (v) {
-                                                            //                                                                       controller.onChangeHandler(fieldName: "DROP TWO WAY LOCATION", searchingText: v);
-                                                            //                                                                     },
-                                                            //                                                                     prefixIcon: const Icon(
-                                                            //                                                                       Icons.location_pin,
-                                                            //                                                                       color: Colors.red,
-                                                            //                                                                       size: 20,
-                                                            //                                                                     ),
-                                                            //                                                                     textInputAction: TextInputAction.next,
-                                                            //                                                                     onSubmitted: (_) => FocusScope.of(context).nextFocus(),
-                                                            //                                                                     suffixIcon: Row(
-                                                            //                                                                       mainAxisSize: MainAxisSize.min,
-                                                            //                                                                       mainAxisAlignment: MainAxisAlignment.end,
-                                                            //                                                                       children: [
-                                                            //                                                                         controller.dropOffTwoWayController.text.isEmpty
-                                                            //                                                                             ? SizedBox.shrink()
-                                                            //                                                                             :
-                                                            //                                                                         //      KbdActivatable(
-                                                            //                                                                         //   focusNode: clearDrop,
-                                                            //                                                                         //   onActivate: () {
-                                                            //                                                                         //     controller.tempStoreMils = null;
-                                                            //                                                                         //     controller.fixedFare.value = "0";
-                                                            //                                                                         //     controller.returnFareValue = "";
-                                                            //                                                                         //     controller.slugControllerReturn.clear();
-                                                            //                                                                         //     controller.slugController.clear();
-                                                            //                                                                         //     FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
-                                                            //                                                                         //     controller.pickupController.clear();
-                                                            //                                                                         //     controller.dropOffController.clear();
-                                                            //                                                                         //     controller.dropOffTwoWayController.clear();
-                                                            //                                                                         //     controller.markers.clear();
-                                                            //                                                                         //     controller.polyLineMarkerInfo.clear();
-                                                            //                                                                         //     controller.pickupController.clear();
-                                                            //                                                                         //     controller.polylinePoints.clear();
-                                                            //                                                                         //     controller.pickupTwoWayController.clear();
-                                                            //                                                                         //     controller.fetchRouteFromOSRM();
-                                                            //                                                                         //     controller.fixedFare.value = "0";
-                                                            //                                                                         //     controller.totalDistance.value = "0";
-                                                            //                                                                         //     controller.totalTimeDuration.value = "0";
-                                                            //                                                                         //     controller.dropDownShow.value = false;
-                                                            //                                                                         //     controller.update();
-                                                            //                                                                         //   },
-                                                            //                                                                         //   child: Icon(
-                                                            //                                                                         //     Icons.close,
-                                                            //                                                                         //     color: DynamicColors.redClr,
-                                                            //                                                                         //     size: 15,
-                                                            //                                                                         //   ),
-                                                            //                                                                         // ),
-                                                            //                                                                         // (4) Dropoff textfield - Clear button logic section
-                                                            // KbdActivatable(
-                                                            //   focusNode: clearDrop,
-                                                            //   onActivate: () {
-                                                            //     controller.tempStoreMils = null;
-                                                            //     controller.fixedFare.value = "0";
-                                                            //     controller.returnFareValue = "";
-                                                            //     controller.slugControllerReturn.clear();
-                                                            //     controller.slugController.clear();
-                                                            //     FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
-
-                                                            //     // ONLY CLEARING TWO-WAY FIELDS NOW
-                                                            //     controller.pickupTwoWayController.clear();
-                                                            //     controller.dropOffTwoWayController.clear();
-
-                                                            //     // REMOVED: controller.pickupController.clear();
-                                                            //     // REMOVED: controller.dropOffController.clear();
-
-                                                            //     controller.markers.clear();
-                                                            //     controller.polyLineMarkerInfo.clear();
-                                                            //     controller.polylinePoints.clear();
-                                                            //     controller.fetchRouteFromOSRM();
-                                                            //     controller.fixedFare.value = "0";
-                                                            //     controller.totalDistance.value = "0";
-                                                            //     controller.totalTimeDuration.value = "0";
-                                                            //     controller.dropDownShow.value = false;
-                                                            //     controller.update();
-                                                            //   },
-                                                            //   child: Icon(
-                                                            //     Icons.close,
-                                                            //     color: DynamicColors.redClr,
-                                                            //     size: 15,
-                                                            //   ),
-                                                            // ),
-                                                            //                                                                         KbdActivatable(
-                                                            //                                                                           focusNode: swap2FNTwoWay,
-                                                            //                                                                           onActivate: () {
-                                                            //                                                                             String tempPic = controller.pickupTwoWayController.text;
-                                                            //                                                                             String tempDrop = controller.dropOffTwoWayController.text;
-                                                            //                                                                             controller.pickupTwoWayController.text = tempDrop;
-                                                            //                                                                             controller.dropOffTwoWayController.text = tempPic;
-                                                            //                                                                             controller.dropDownShow.value = false;
-                                                            //                                                                             controller.update();
-                                                            //                                                                           },
-                                                            //                                                                           child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
-                                                            //                                                                         ),
-                                                            //                                                                       ],
-                                                            //                                                                     ),
-                                                            //                                                                   ),
-                                                            //                                                                 ),
-                                                            //                                                               ),
-                                                            //                                                             ),
-                                                            // (4) Dropoff textfield TWO WAY --------------------------------------------------------
+                                                            /// Drop Return textfield
                                                             FocusTraversalOrder(
                                                               order: const NumericFocusOrder(20),
                                                               child: SizedBox(
@@ -2079,27 +1482,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           onActivate: () {
                                                                             FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
 
-                                                                            final pickupPolylineIndex = controller.polyLineMarkerInfo
-                                                                                .indexWhere((e) => e.markerType == "PICKUP TWO WAY LOCATION");
-
-                                                                            if (pickupPolylineIndex >= 0) {
-                                                                              controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
-                                                                            }
-
                                                                             final dropPolylineIndex = controller.polyLineMarkerInfo
                                                                                 .indexWhere((e) => e.markerType == "DROP TWO WAY LOCATION");
 
                                                                             if (dropPolylineIndex >= 0) {
                                                                               controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
                                                                             }
-
-                                                                            final pickupMarkerIndex =
-                                                                            controller.markers.indexWhere((e) => e.type == "pickup two way");
-
-                                                                            if (pickupMarkerIndex >= 0) {
-                                                                              controller.markers.removeAt(pickupMarkerIndex);
-                                                                            }
-
                                                                             final dropOffMarkerIndex =
                                                                             controller.markers.indexWhere((e) => e.type == "dropOff two way");
 
@@ -2107,52 +1495,35 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                               controller.markers.removeAt(dropOffMarkerIndex);
                                                                             }
                                                                             controller.markers.removeWhere((marker) => marker.type == "via with return");
-
-                                                                            for (int i = controller.viaPoints.length - 1; i >= 0; i--) {
-                                                                              if (controller.viaPoints[i].withReturnWay == "via with return") {
-                                                                                controller.viaPoints.removeAt(i);
-                                                                                if (i < controller.viaTextEditingController.length) {
-                                                                                  controller.viaTextEditingController.removeAt(i);
-                                                                                }
-                                                                              }
-                                                                            }
                                                                             // 1. Only Two-Way controllers clear karein
-                                                                            controller.pickupTwoWayController.clear();
                                                                             controller.dropOffTwoWayController.clear();
-
-                                                                            // 2. Specific filtering lagayein pure clear ke bajaye
-                                                                            // controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "DROP TWO WAY LOCATION");
-                                                                            //
-                                                                            // if (controller.markers is List<CustomMarker>) {
-                                                                            //   controller.markers.removeWhere((marker) => marker.type == "DROP TWO WAY LOCATION");
-                                                                            // }
-
+                                                                            controller.clearReturnViaIfNoPickupAndDrop();
                                                                             // 3. Fares aur temporaries reset
-                                                                            controller.tempStoreMils = null;
+                                                                            // controller.tempStoreMils = null;
                                                                             // // controller.fixedFare.value = "0";
-                                                                            controller.returnFareValue = "";
-                                                                            controller.tempStoreReturnMils = null;
+                                                                            // controller.returnFareValue = "";
+                                                                            // controller.tempStoreReturnMils = null;
                                                                             // controller.slugControllerReturn.clear();
                                                                             // // controller.slugController.clear();
                                                                             // // controller.totalDistance.value = "0";
                                                                             // // controller.totalTimeDuration.value = "0";
-                                                                            // controller.dropDownShow.value = false;
-
-                                                                            // 4. Update Route
+                                                                            controller.dropDownShow.value = false;
+                                                                            //  Route API
                                                                             controller.fetchRouteFromOSRM();
-
                                                                             controller.update();
                                                                           },
                                                                           child: Icon(Icons.close, color: DynamicColors.redClr, size: 15),
                                                                         ),
                                                                         KbdActivatable(
                                                                           focusNode: swap2FNTwoWay,
-                                                                          onActivate: () {
+                                                                          onActivate: () async {
                                                                             String tempPic = controller.pickupTwoWayController.text;
                                                                             String tempDrop = controller.dropOffTwoWayController.text;
                                                                             controller.pickupTwoWayController.text = tempDrop;
                                                                             controller.dropOffTwoWayController.text = tempPic;
                                                                             controller.dropDownShow.value = false;
+                                                                            controller.swapReturnPickupDropMarkers();
+                                                                            await controller.fetchRouteFromOSRM();
                                                                             controller.update();
                                                                           },
                                                                           child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
@@ -2163,7 +1534,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 ),
                                                               ),
                                                             ),
-                                                            // Select Zone Dropdown - (Flex: 5, width: null, label: "ZONE")
+                                                            /// Select Zone Dropdown
                                                             Expanded(
                                                               flex: 5,
                                                               child: Obx(
@@ -2195,6 +1566,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             controller.dropDownShow.value = false;
                                                                             _controller.RN1zoneValue = val;
                                                                             controller.dashboardRN1ZoneValue = val;
+                                                                            controller.getFaresCalculation();
                                                                             controller.update();
                                                                           },
                                                                         ),
@@ -2204,11 +1576,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 ),
                                                               ),
                                                             ),
-
-// Dono fields ke darmiyan ka fasla
                                                             const SizedBox(width: 55.0),
-
-// (3) Drop Notes - (Flex: 3 aur bina label ke)
+                                                            /// (3) Drop Notes
                                                             Expanded(
                                                               flex: 3,
                                                               child: FocusTraversalOrder(
@@ -2218,8 +1587,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   child: CustomTextField(
                                                                     width: fieldWidthh / 15,
                                                                     // Hardcoded width hata di taake layout block na ho
-                                                                    controller: controller.dropUpNoteController,
-                                                                    hintText: "DROP NOTES",
+                                                                    controller: controller.returnDropUpNoteController,
+                                                                    inputFormatters: [
+                                                                      UpperCaseTextFormatter(),
+                                                                    ],
+                                                                    hintText: "RETURN DROP NOTES",
                                                                     borderRadius: 6,
                                                                     onTap: () {
                                                                       controller.dropDownShow.value = false;
@@ -2236,6 +1608,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                       Row(
                                                         children: [
+                                                          /// R-Date
                                                           SizedBox(
                                                             child: FocusTraversalOrder(
                                                               order: const NumericFocusOrder(23),
@@ -2264,11 +1637,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               ),
                                                             ),
                                                           ),
-                                                          SizedBox(
-                                                            width: fieldWidthh / 150,
-                                                          ),
-
-                                                          // (6) Time
+                                                          SizedBox(width: fieldWidthh / 150),
+                                                          /// (6) Time
                                                           SizedBox(
                                                             child: FocusTraversalOrder(
                                                               order: const NumericFocusOrder(24),
@@ -2282,10 +1652,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     child: CustomTimePicker(
                                                                       controller: controller.pickUpTimeControllerReturn,
                                                                       // optional
-                                                                      onTimeSelected: (time) {
-                                                                        controller.dropDownShow.value = false;
+                                                                      onTimeSelected: (time) async {
                                                                         controller.pickUpTimeControllerReturn.text = time;
                                                                         controller.getFaresCalculation();
+                                                                        controller.dropDownShow.value = false;
                                                                         setState(() {});
                                                                       },
                                                                     )),
@@ -2293,10 +1663,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             ),
                                                           ),
 
-                                                          SizedBox(
-                                                            width: 10,
-                                                          ),
-                                                          // (7) Lead (mins)
+                                                          SizedBox(width: 10),
+                                                          /// (7) Lead (mins)
                                                           SizedBox(
                                                             child: FocusTraversalOrder(
                                                               order: const NumericFocusOrder(25),
@@ -2327,8 +1695,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           ),
 
                                                           SizedBox(
-                                                            width: 5,
+                                                            width: 5
                                                           ),
+                                                          /// R-Fare
                                                           SizedBox(
                                                             child: FocusTraversalOrder(
                                                               order: const NumericFocusOrder(26),
@@ -2362,244 +1731,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           ),
                                                         ],
                                                       ),
-                                                      // ---------------------------------------------------- checkBox
-                                                      // Row(
-                                                      //
-                                                      //   children: [
-                                                      //     Expanded(
-                                                      //       child: FocusTraversalOrder(
-                                                      //         order: const NumericFocusOrder(27),
-                                                      //         child: SizedBox(
-                                                      //           width: fieldWidth / 2,
-                                                      //           // height: 50 ,
-                                                      //           // width: fieldWidth/6,
-                                                      //           child: Row(
-                                                      //             mainAxisSize: MainAxisSize.min,
-                                                      //             children: [
-                                                      //               RawKeyboardListener(
-                                                      //                 focusNode: checkboxFocusReturn,
-                                                      //                 onKey: (event) {
-                                                      //                   if (event is RawKeyDownEvent && (event.logicalKey == LogicalKeyboardKey.enter || event.logicalKey == LogicalKeyboardKey.space)) {
-                                                      //                     setState(() {
-                                                      //                       // controller.smsCheckbox.value = !controller.smsCheckbox.value; // ✅ toggle
-                                                      //                     });
-                                                      //                   }
-                                                      //                 },
-                                                      //                 child: Padding(
-                                                      //                   padding: const EdgeInsets.only(left: 20),
-                                                      //                   child: Checkbox(
-                                                      //                     activeColor: DynamicColors.primaryClr,
-                                                      //                     value: controller.addReturnFare.value,
-                                                      //                     onChanged: (v) {
-                                                      //                       // controller.smsCheckbox.value = v!;
-                                                      //                       // controller.update();
-                                                      //                     },
-                                                      //                   ),
-                                                      //                 ),
-                                                      //               ),
-                                                      //               Text(
-                                                      //                 "ADD RETURN FARE",
-                                                      //                 style: mozillaTextSemiBoldText(context: context, fontSize: 13),
-                                                      //               ),
-                                                      //             ],
-                                                      //           ),
-                                                      //         ),
-                                                      //       ),
-                                                      //     ),
-                                                      //
-                                                      //     // Expanded(
-                                                      //     //   child: FocusTraversalOrder(
-                                                      //     //     order: const NumericFocusOrder(28),
-                                                      //     //     child: labeledField(
-                                                      //     //       context: context,
-                                                      //     //       isMobile: isMobile,
-                                                      //     //       label: "Return/${AppText.veh} ",
-                                                      //     //       width: fieldWidth / 3,
-                                                      //     //       heights: 32,
-                                                      //     //       child: Container(
-                                                      //     //         // height: 35,
-                                                      //     //         decoration: BoxDecoration(
-                                                      //     //           borderRadius: BorderRadius.circular(6),
-                                                      //     //           border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
-                                                      //     //         ),
-                                                      //     //         child: DropdownButtonFormField<DashboardVehicleTypeObject>(
-                                                      //     //           decoration: const InputDecoration(
-                                                      //     //             border: OutlineInputBorder(),
-                                                      //     //             isDense: true,
-                                                      //     //           ),
-                                                      //     //           value: controller.selectVehicleValueReturn,
-                                                      //     //           items: controller.dashboardAllData!.vehicleTypes!
-                                                      //     //               .map((vehicle) => DropdownMenuItem<DashboardVehicleTypeObject>(
-                                                      //     //             value: vehicle,
-                                                      //     //             child: Text(
-                                                      //     //               vehicle.name ?? "",
-                                                      //     //               style: mozillaTextRegularText(
-                                                      //     //                 fontSize: 10,
-                                                      //     //                 color: DynamicColors.textClr,
-                                                      //     //               ),
-                                                      //     //             ),
-                                                      //     //           ))
-                                                      //     //               .toList(),
-                                                      //     //           onChanged: (v) async {
-                                                      //     //             controller.selectVehicleValueReturn = v;
-                                                      //     //             controller.dropDownShow.value = false;
-                                                      //     //             final fare = await getActiveFareForVehicle(
-                                                      //     //               controller.dashboardAllData!.fareConfigurations!,
-                                                      //     //               controller.selectVehicleValue!.id!,
-                                                      //     //             );
-                                                      //     //             if (fare != null) {
-                                                      //     //               print(
-                                                      //     //                 'Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}',
-                                                      //     //               );
-                                                      //     //
-                                                      //     //               double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
-                                                      //     //
-                                                      //     //               controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
-                                                      //     //             } else {
-                                                      //     //               print('No active fare found for this vehicle');
-                                                      //     //             }
-                                                      //     //             controller.update();
-                                                      //     //           },
-                                                      //     //         ),
-                                                      //     //       ),
-                                                      //     //     ),
-                                                      //     //   ),
-                                                      //     // ),
-                                                      //     Expanded(
-                                                      //       child: FocusTraversalOrder(
-                                                      //         order: const NumericFocusOrder(28),
-                                                      //         child: labeledField(
-                                                      //           context: context,
-                                                      //           isMobile: isMobile,
-                                                      //           label: "Return/${AppText.veh} ",
-                                                      //           width: fieldWidth / 3,
-                                                      //           heights: 32,
-                                                      //           child: Container(
-                                                      //             decoration: BoxDecoration(
-                                                      //               borderRadius: BorderRadius.circular(6),
-                                                      //               border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
-                                                      //             ),
-                                                      //             child: DropdownButtonFormField<DashboardVehicleTypeObject>(
-                                                      //               // 1. isExpanded true karne se text katega nahi aur icon aakhir me chala jayega
-                                                      //               isExpanded: true,
-                                                      //               decoration: const InputDecoration(
-                                                      //                 // 2. Internal border ko none kiya taake double border issue na ho aur text ko jagah mile
-                                                      //                 border: InputBorder.none,
-                                                      //                 isDense: true,
-                                                      //                 // 3. Padding thodi kam ki taake text vertical ya horizontal kooch na kate
-                                                      //                 contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-                                                      //               ),
-                                                      //               // 4. Dropdown icon ki padding aur size adjust ki
-                                                      //               icon: const Icon(Icons.arrow_drop_down, size: 20),
-                                                      //               value: controller.selectVehicleValueReturn,
-                                                      //               items: controller.dashboardAllData!.vehicleTypes!
-                                                      //                   .map((vehicle) => DropdownMenuItem<DashboardVehicleTypeObject>(
-                                                      //                         value: vehicle,
-                                                      //                         child: Text(
-                                                      //                           vehicle.name ?? "",
-                                                      //                           // Agar ab bhi text bada ho, to maxLines aur overflow handle karein
-                                                      //                           maxLines: 1,
-                                                      //                           overflow: TextOverflow.ellipsis,
-                                                      //                           style: mozillaTextRegularText(
-                                                      //                             fontSize: 12,
-                                                      //                             // Font size 12 standard hai, aap 10 bhi rakh sakte hain
-                                                      //                             color: DynamicColors.textClr,
-                                                      //                           ),
-                                                      //                         ),
-                                                      //                       ))
-                                                      //                   .toList(),
-                                                      //               onChanged: (v) async {
-                                                      //                 controller.selectVehicleValueReturn = v;
-                                                      //                 controller.dropDownShow.value = false;
-                                                      //
-                                                      //                 // Note: Yahan aapne 'controller.selectVehicleValue!.id!' likha tha,
-                                                      //                 // agar ye Return vehicle ke liye hai to shayad yahan 'v!.id!' ya 'controller.selectVehicleValueReturn!.id!' hona chahiye.
-                                                      //                 final fare = await getActiveFareForVehicle(
-                                                      //                   controller.dashboardAllData!.fareConfigurations!,
-                                                      //                   v?.id ?? controller.selectVehicleValue!.id!,
-                                                      //                 );
-                                                      //
-                                                      //                 if (fare != null) {
-                                                      //                   print(
-                                                      //                     'Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}',
-                                                      //                   );
-                                                      //
-                                                      //                   double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
-                                                      //
-                                                      //                   controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
-                                                      //                 } else {
-                                                      //                   print('No active fare found for this vehicle');
-                                                      //                 }
-                                                      //                 controller.update();
-                                                      //               },
-                                                      //             ),
-                                                      //           ),
-                                                      //         ),
-                                                      //       ),
-                                                      //     ),
-                                                      //     Expanded(
-                                                      //       child: FocusTraversalOrder(
-                                                      //         order: const NumericFocusOrder(29),
-                                                      //         child: labeledField(
-                                                      //           context: context,
-                                                      //           isMobile: isMobile,
-                                                      //           label: "Return/${AppText.drv} ",
-                                                      //           width: fieldWidthh / 13,
-                                                      //           heights: 32,
-                                                      //           child: Container(
-                                                      //             // height: 35,
-                                                      //             decoration: BoxDecoration(
-                                                      //               borderRadius: BorderRadius.circular(6),
-                                                      //               border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
-                                                      //             ),
-                                                      //             child: DropdownButtonFormField<DashboardDriverObject>(
-                                                      //               focusNode: controller.driverDropdownFocusNode,
-                                                      //               isExpanded: true,
-                                                      //               // Use true here so text reaches the icon and then clips
-                                                      //               decoration: const InputDecoration(
-                                                      //                 /*border: OutlineInputBorder(),
-                                                      //               isDense: true,
-                                                      //               contentPadding: EdgeInsets.symmetric(horizontal: 2),
-                                                      //               */
-                                                      //                 // Remove the internal border since you have a Container border
-                                                      //                 border: InputBorder.none,
-                                                      //                 isDense: true,
-                                                      //                 contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                                                      //               ),
-                                                      //               // 3. You can also customize the icon to remove its default side padding
-                                                      //               icon: const Icon(Icons.arrow_drop_down, size: 20),
-                                                      //
-                                                      //               padding: EdgeInsets.zero,
-                                                      //               value: controller.selectDriverValueReturn,
-                                                      //               items: controller.dashboardAllData!.drivers!
-                                                      //                   .map((driver) => DropdownMenuItem<DashboardDriverObject>(
-                                                      //                         value: driver,
-                                                      //                         child: Text(
-                                                      //                           driver.name ?? "",
-                                                      //                           style: mozillaTextRegularText(
-                                                      //                             fontSize: 12,
-                                                      //                             color: DynamicColors.textClr,
-                                                      //                           ),
-                                                      //                         ),
-                                                      //                       ))
-                                                      //                   .toList(),
-                                                      //
-                                                      //               onTap: () {
-                                                      //                 controller.dropDownShow.value = false;
-                                                      //               },
-                                                      //               onChanged: (v) {
-                                                      //                 controller.selectDriverValueReturn = v;
-                                                      //                 controller.update();
-                                                      //               },
-                                                      //             ),
-                                                      //           ),
-                                                      //         ),
-                                                      //       ),
-                                                      //     ),
-                                                      //   ],
-                                                      // )
-// ---------------------------------------------------- checkBox
-                                                      // ---------------------------------------------------- checkBox
+                                                      /// ---------------------------------------------------- checkBox
                                                       Row(
                                                         mainAxisAlignment: MainAxisAlignment.start,
                                                         children: [
@@ -2643,26 +1775,17 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               ),
                                                             ),
                                                           ),
+                                                          /// R-Vehicle
                                                           SizedBox(
                                                             child: FocusTraversalOrder(
                                                               order: const NumericFocusOrder(28),
                                                               child: Builder(
-                                                                // Builder lagaya taake context safe rahe
                                                                 builder: (context) {
-                                                                  // --- JUGAD / DEFAULT ID LOGIC ---
-                                                                  // Agar page load hote hi selectVehicleValueReturn null hai, lekin list me data hai
                                                                   if (controller.selectVehicleValueReturn == null && (controller.dashboardAllData?.vehicleTypes?.isNotEmpty ?? false)) {
-                                                                    // Hum background me chupke se pehli gari (Saloon) assign kar dete hain
                                                                     controller.selectVehicleValueReturn = controller.dashboardAllData!.vehicleTypes!.first;
-
-                                                                    // Aur bina tap kiye hi fare calculation ka function fire kar dete hain taake ID chali jaye
                                                                     WidgetsBinding.instance.addPostFrameCallback((_) {
                                                                       controller.getFaresCalculation();
-                                                                    });
-                                                                  }
-
-                                                                  // ---------------------------------
-
+                                                                    });}
                                                                   return labeledField(
                                                                     context: context,
                                                                     isMobile: isMobile,
@@ -2726,9 +1849,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               ),
                                                             ),
                                                           ),
-                                                          SizedBox(
-                                                            width: fieldWidthh / 150,
-                                                          ),
+                                                          SizedBox( width: fieldWidthh / 150),
+                                                          /// R-Driver
                                                           SizedBox(
                                                             child: FocusTraversalOrder(
                                                               order: const NumericFocusOrder(29),
@@ -2736,6 +1858,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 context: context,
                                                                 isMobile: isMobile,
                                                                 label: "R/${AppText.drv} ",
+
                                                                 width: fieldWidthh / 10.4,
                                                                 heights: 32,
                                                                 child: Container(
@@ -2745,6 +1868,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                                                                   ),
                                                                   child: DropdownButtonFormField<DashboardDriverObject>(
+                                                                    hint: Text("Select Driver".toUpperCase()),
+                                                                    style: mozillaTextSemiBoldText(
+                                                                      context: context,
+                                                                      fontSize: 10,
+                                                                      fontWeight: FontWeight.w800,
+                                                                    ),
                                                                     focusNode: controller.driverDropdownFocusNode,
                                                                     isExpanded: true,
                                                                     // Use true here so text reaches the icon and then clips
@@ -2791,12 +1920,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ],
                                                       )
                                                     ],
-                                                    // (10) Fare (Slugg)
-
+                                                    /// (10) Fare (Slugg)
                                                     Row(
                                                       crossAxisAlignment: CrossAxisAlignment.start,
                                                       children: [
-                                                        // (10) Fare Field
+                                                        /// (10) Fare Field
                                                         SizedBox(
                                                           child: Padding(
                                                             padding: const EdgeInsets.only(left: 5.0),
@@ -2830,7 +1958,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ),
 
                                                         SizedBox(width: fieldWidthh / 60),
-                                                        // (11) Account Dropdown
+                                                        /// (11) Account Dropdown
                                                         SizedBox(
                                                           child: FocusTraversalOrder(
                                                             order: NumericFocusOrder(controller.jourValue == 'W/R' ? 35 : 31),
@@ -2887,7 +2015,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           ),
                                                         ),
                                                         SizedBox(width: fieldWidthh / 47),
-                                                        // (12) Pay Dropdown
+                                                        /// (12) Pay Dropdown
                                                         SizedBox(
                                                           child: FocusTraversalOrder(
                                                             order: NumericFocusOrder(controller.jourValue == 'W/R' ? 36 : 32),
@@ -2947,8 +2075,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           ),
                                                         ),
                                                         SizedBox(width: fieldWidthh / 55),
-                                                        // Consistent spacing
-                                                        // (13) Vehicle Dropdown
+
+                                                        /// (13) Vehicle Dropdown
                                                         SizedBox(
                                                           child: FocusTraversalOrder(
                                                             order: NumericFocusOrder(controller.jourValue == 'W/R' ? 38 : 33),
@@ -3058,7 +2186,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ),
                                                       ),
                                                     ),
-                                                    // Switch + Quotation
+                                                    /// Switch + Quotation
                                                     FocusTraversalOrder(
                                                       order: NumericFocusOrder(controller.jourValue == 'W/R' ? 40 : 35),
                                                       child: DynamicSwitch(
@@ -3072,11 +2200,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         },
                                                       ),
                                                     ),
+                                                    /// Quotation
                                                     Text(
                                                       AppText.quotation,
                                                       style: mozillaTextSemiBoldText(context: context, fontSize: 13),
                                                     ),
-                                                    // SMS Checkbox
+                                                    /// SMS Checkbox
                                                     FocusTraversalOrder(
                                                       order: NumericFocusOrder(controller.jourValue == 'W/R' ? 41 : 36),
                                                       child: SizedBox(
@@ -3111,7 +2240,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ),
                                                       ),
                                                     ),
-                                                    // Email Checkbox
+                                                    /// Email Checkbox
                                                     FocusTraversalOrder(
                                                       order: NumericFocusOrder(controller.jourValue == 'W/R' ? 42 : 37),
                                                       child: SizedBox(
@@ -3146,10 +2275,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ),
                                                       ),
                                                     ),
-                                                    // Pass, Lugg, Slugg fields
-
+                                                    /// Pass, Lugg, Slugg fields
                                                     SizedBox(
-                                                      // width: fieldWidth/2.0,
                                                       child: Row(
                                                         mainAxisSize: MainAxisSize.min,
                                                         children: [

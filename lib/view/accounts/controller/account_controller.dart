@@ -30,6 +30,7 @@ class AccountController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create account form functionality
   /// RxBool variable
   RxBool activeDrivers = false.obs;
+  RxBool postactiveDrivers = false.obs;
 
   final accountNameController = TextEditingController();
   final accountCodeController = TextEditingController();
@@ -187,7 +188,9 @@ class AccountController extends GetxController {
       if (contactsList.isNotEmpty) "contacts": contactsList,
       if (orderAccountList.isNotEmpty) "order_numbers": orderAccountList,
       if (companyAddressesList.isNotEmpty)
-        "company_addresses": companyAddressesList
+        "company_addresses": companyAddressesList,
+      "closed" : postactiveDrivers.value,
+
     };
 
     if (accountPasswordController.text.trim().isNotEmpty) {
@@ -273,7 +276,7 @@ class AccountController extends GetxController {
   RxBool SubsdairyBankLoader = false.obs;
   getSubsdairyBank() async {
     SubsdairyBankLoader(true);
-    var response = await Api().get("subsidiaries/with-bank-details");
+    var response = await Api().get("subsidiaries/with-bank-details", sendCompanyId: true,);
     if (response.statusCode == 200) {
       subsidairyBankModel = SubsidairyBankModel.fromJson(response.data);
       if (accountObjectData != null) {
@@ -393,24 +396,25 @@ class AccountController extends GetxController {
   RxBool creditCardPaid_Value = false.obs;
   RxBool showDownloadButtons = false.obs;
 
-  List<InvoiceRow> invoiceList = [
-    InvoiceRow(
-      ref: "REF001",
-      datetime: "12-09-2025",
-      pickup: "Heathrow",
-      dropoff: "NW7",
-      fare: "£55.00",
-      pickup1: "Heathrow",
-      dropoff2: "NW7",
-      fare3: "£55.00",
-    ),
-  ];
+  // List<InvoiceRow> invoiceList = [
+  //   InvoiceRow(
+  //     ref: "REF001",
+  //     datetime: "12-09-2025",
+  //     pickup: "Heathrow",
+  //     dropoff: "NW7",
+  //     fare: "£55.00",
+  //     pickup1: "Heathrow",
+  //     dropoff2: "NW7",
+  //     fare3: "£55.00",
+  //   ),
+  // ];
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List OF Account Api controller
 
   ListOfAccountModel? listofAccount;
 
   ///--------------------- Pagination
+  ///
   var currentPage = 1.obs;
   var totalPages = 1.obs;
   final int limit = 5;
@@ -447,6 +451,7 @@ class AccountController extends GetxController {
           "telephone": searchTelephone.value,
           "contact_name": searchcontactName.value,
           "subsidiary": searchSubsiDiary.value,
+         "closed" : activeDrivers.value,
         },
       );
       if (response.statusCode == 200) {
@@ -710,7 +715,7 @@ class AccountController extends GetxController {
   listEscort() async {
     try {
       listEscortLoding.value = true;
-      final response = await Api().get('escorts/get?',queryParameters: {
+      final response = await Api().get('escorts/get?' ,queryParameters: {
       "page": escortCurrentPage.value,
       "limit": escortLimit,
       "name": searchEscortName.value,

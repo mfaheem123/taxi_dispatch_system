@@ -91,19 +91,25 @@ class _UpdateAccountInvoiceScreenState
                     },
                   ),
                   SizedBox(width: 5),
-                  Obx(() => CustomButton(
-                    verticalPadding: 0.0,
-                    width: 100,
-                    height: 30,
-                    borderRadius: 4,
-                    btnText: controller.isPaid.value ? "MARK AS  PAID" : "MARK AS UNPAID",
-                    btnColor: controller.isPaid.value ? Colors.green : DynamicColors.primaryClr,
-                    style: mozillaTextRegularText(
-                        fontSize: 10, color: DynamicColors.whiteClr),
-                    onTap: () {
-                      controller.togglePaidStatus();
-                    },
-                  )),
+                  Obx(() {
+                    final invoice = controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice;
+                    return CustomButton(
+                      verticalPadding: 0.0,
+                      width: 100,
+                      height: 30,
+                      borderRadius: 4,
+                      btnText: controller.isPaid.value ? "MARK AS PAID" : "MARK AS UNPAID",
+                      btnColor: controller.isPaid.value ? Colors.green : DynamicColors.primaryClr,
+                      style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
+                      onTap: () {
+                        if (invoice != null) {
+                          controller.togglePaidStatus(invoice);
+                        } else {
+                          BotToast.showText(text: "Invoice data not loaded yet");
+                        }
+                      },
+                    );
+                  }),
                   SizedBox(width: 5),
                   CustomButton(
                     verticalPadding: 0.0,
@@ -571,7 +577,7 @@ class _UpdateAccountInvoiceScreenState
                         for (var i = 0; i < 6; i++) DataCell.empty,
                         DataCell(Center(
                           child: Text(
-                              "£${controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.account?.adminFees ?? "0"}",
+                              "£${controller.adminFees.toStringAsFixed(2)}",
                               style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900)),
                         )),
                         DataCell.empty,

@@ -85,20 +85,26 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    Icon(Icons.directions_car,
-                        // size: 40,
-                      color: objectData.bookingStatus == "Accepted"?Colors.orange:
-                      objectData.bookingStatus == "Arrived"?Colors.yellow:
-                      objectData.bookingStatus == "On Route"?Colors.red:
-                      objectData.bookingStatus == "STC"?Colors.blue:
-                      Colors.green,
+                    Image.asset(
+                      statusCarImage(objectData.bookingStatus ?? ""),
+                      width: 70,
+                      height: 70,
+                      fit: BoxFit.contain,
                     ),
+                    // Icon(Icons.directions_car,
+                    //     // size: 40,
+                    //   color: objectData.bookingStatus == "Accepted"?Colors.orange:
+                    //   objectData.bookingStatus == "Arrived"?Colors.yellow:
+                    //   objectData.bookingStatus == "On Route"?Colors.red:
+                    //   objectData.bookingStatus == "STC"?Colors.blue:
+                    //   Colors.green,
+                    // ),
                     Container(
-                      color: objectData.bookingStatus == "Accepted"?Colors.orange:
-                      objectData.bookingStatus == "Arrived"?Colors.yellow:
-                      objectData.bookingStatus == "On Route"?Colors.red:
-                      objectData.bookingStatus == "STC"?Colors.blue:
-                      Colors.green,
+                      // color: objectData.bookingStatus == "Accepted"?Colors.orange:
+                      // objectData.bookingStatus == "Arrived"?Colors.yellow:
+                      // objectData.bookingStatus == "On Route"?Colors.red:
+                      // objectData.bookingStatus == "STC"?Colors.blue:
+                      // Colors.green,
                       padding: const EdgeInsets.only(bottom: 10.0,left: 4,right: 4),
                       child: Text(
                         objectData.username ?? "",
@@ -123,20 +129,26 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    Icon(Icons.directions_car,
-                      size: 10,
-                      color: objectData.bookingStatus == "Accepted"?Colors.orange:
-                      objectData.bookingStatus == "Arrived"?Colors.yellow:
-                      objectData.bookingStatus == "On Route"?Colors.red:
-                      objectData.bookingStatus == "STC"?Colors.blue:
-                      Colors.green,
+                    Image.asset(
+                      statusCarImage(objectData.bookingStatus ?? ""),
+                      width: 70,
+                      height: 70,
+                      fit: BoxFit.contain,
                     ),
+                    // Icon(Icons.directions_car,
+                    //   size: 10,
+                    //   color: objectData.bookingStatus == "Accepted"?Colors.orange:
+                    //   objectData.bookingStatus == "Arrived"?Colors.yellow:
+                    //   objectData.bookingStatus == "On Route"?Colors.red:
+                    //   objectData.bookingStatus == "STC"?Colors.blue:
+                    //   Colors.green,
+                    // ),
                     Container(
-                      color: objectData.bookingStatus == "Accepted"?Colors.orange:
-                      objectData.bookingStatus == "Arrived"?Colors.yellow:
-                      objectData.bookingStatus == "On Route"?Colors.red:
-                      objectData.bookingStatus == "STC"?Colors.blue:
-                      Colors.green,
+                      // color: objectData.bookingStatus == "Accepted"?Colors.orange:
+                      // objectData.bookingStatus == "Arrived"?Colors.yellow:
+                      // objectData.bookingStatus == "On Route"?Colors.red:
+                      // objectData.bookingStatus == "STC"?Colors.blue:
+                      // Colors.green,
                       padding: const EdgeInsets.only(bottom: 10.0,left: 4,right: 4),
                       child: Text(
                         objectData.username ?? "",
@@ -184,6 +196,27 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
       mapController.move(mapController.camera.center, newZoom);
     }
   }
+
+  String statusCarImage(String status) {
+    switch (status) {
+      case "Accepted":
+        return "assets/c.png";   // Orange Car
+
+      case "Arrived":
+        return "assets/d.png";   // Yellow Car
+
+      case "On Route":
+        return "assets/tracking_car.png";    // Black Car
+
+      case "STC":
+        return "assets/a.png";        // Blue Car
+
+      default:
+        return "assets/green.jpeg";
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -303,9 +336,25 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                             child: const Icon(Icons.remove, color: Colors.black87, size: 20,),
                           ),
                         ),
+                        // Camera fouces
+                        SizedBox(
+                          height: 30,
+                          width: 30,
+                          child: FloatingActionButton.small(
+                            backgroundColor: Colors.black26,
+                            onPressed: () {
+                              mapController.move(
+                                LatLng(50.5, 30.51),
+                                12,
+                              );
+                            },
+                            child: const Icon(Icons.center_focus_strong, color: Colors.black87, size: 20,),
+                          ),
+                        ),
                       ],
                     ),
                   ),
+
                   ///  DRIVER LIST (ONLY THIS uses GetBuilder)
                   Container(
                     height: Get.height,
@@ -348,20 +397,27 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                                     child: Stack(
                                       alignment: Alignment.center,
                                       children: [
-                                        Icon(Icons.directions_car,
-                                          size: 70,
-                                          color: driver.bookingStatus == "Accepted"?Colors.orange:
-                                          driver.bookingStatus == "Arrived"?Colors.yellow:
-                                          driver.bookingStatus == "On Route"?Colors.red:
-                                          driver.bookingStatus == "STC"?Colors.blue:
-                                          Colors.green,
+                                        Image.asset(
+                                          statusCarImage(driver.bookingStatus ?? ""),
+                                          width: 70,
+                                          height: 70,
+                                          fit: BoxFit.contain,
                                         ),
+                                       //  ImageIcon(
+                                       //  AssetImage("assets/tracking_car.png"),
+                                       // size: 120,
+                                       //    color: driver.bookingStatus == "Accepted"?Colors.orange:
+                                       //    driver.bookingStatus == "Arrived"?Colors.yellow:
+                                       //    driver.bookingStatus == "On Route"?Colors.red:
+                                       //    driver.bookingStatus == "STC"?Colors.blue:
+                                       //    Colors.green,
+                                       //  ),
                                         Container(
-                                          color: driver.bookingStatus == "Accepted"?Colors.orange:
-                                          driver.bookingStatus == "Arrived"?Colors.yellow:
-                                          driver.bookingStatus == "On Route"?Colors.red:
-                                          driver.bookingStatus == "STC"?Colors.blue:
-                                          Colors.green,
+                                          // color: driver.bookingStatus == "Accepted"?Colors.orange:
+                                          // driver.bookingStatus == "Arrived"?Colors.yellow:
+                                          // driver.bookingStatus == "On Route"?Colors.red:
+                                          // driver.bookingStatus == "STC"?Colors.blue:
+                                          // Colors.green,
                                           padding: const EdgeInsets.only(bottom: 10.0,left: 4,right: 4),
                                           child: Text(
                                             driver.username ?? "",

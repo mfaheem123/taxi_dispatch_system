@@ -166,7 +166,9 @@ AuthController controller = Get.put(AuthController());
                             BotToast.showText(text: "Please enter user name or password");
                             return;
                           }
-                          controller.postLoginDetails();
+                          if(controller.PostAuthLoader.value == false){
+                            controller.postLoginDetails();
+                          }
                           // Get.offAllNamed(Routes.myHomePage);
                           // Get.offAllNamed(Routes.createBooking);
                         },

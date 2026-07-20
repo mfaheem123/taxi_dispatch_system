@@ -97,6 +97,29 @@ class _AccountViewState extends State<AccountView> {
                                         children: [
                                           Text(AppText.account,
                                               style: titleDesign()),
+                                          SizedBox(
+                                            width: 20,
+                                          ),
+                                          controller.accountObjectData != null ?
+                                          Row(
+                                            children: [
+                                              Checkbox(
+                                                  value: controller.postactiveDrivers.value,
+                                                  onChanged: (v) {
+                                                    controller.postactiveDrivers.value = v!;
+                                                    controller.update();
+                                                  }),
+                                              Text(
+                                                "CLOSED",
+                                                style: mozillaTextSemiBoldText(
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 14,
+                                                    color: DynamicColors.redClr),
+                                              )
+                                            ],
+                                          ): SizedBox.shrink(),
+
+
                                           Spacer(),
                                           if(permissions.contains('read_account_web_login')) CustomButton(
                                               verticalPadding: 0.0,

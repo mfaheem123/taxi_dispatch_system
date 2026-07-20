@@ -8,7 +8,9 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../../dashboard_view/models/users_phone_numbers_model.dart';
-import '../model/get_customer_booking_model.dart';
+import '../model/get_complaint_model.dart' hide Booking, Customer;
+import '../model/get_customer_booking_model.dart' hide Driver;
+import '../model/get_driver_dropdown.dart';
 import '../model/get_lost_property_model.dart';
 import '../model/lost_property_getById__model.dart';
 import '../model/search_customer_by_mobile.dart';
@@ -45,7 +47,7 @@ class CustomerController extends GetxController {
 
   getRestricDriver() async {
     restricDriverLoader(true);
-    var response = await Api().get("drivers/get");
+    var response = await Api().get("drivers/get", sendCompanyId: true,);
     if (response.statusCode == 200) {
       restricDriverModel = RestricDriverModel.fromJson(response.data);
       restricDriverLoader(false);
@@ -67,6 +69,7 @@ class CustomerController extends GetxController {
       "address1": address1Controller.text,
       "address2": address2Controller.text,
       "restricted_drivers": apiDriversList,
+      "sms_flag" : enableSms.value,
     };
     print(formData);
     var response = await Api().post(
@@ -165,6 +168,7 @@ sendCompanyId: true,
   RxInt customerUpdateId = 0.obs;
   customerUpdate({Customer? customerUpdate}) async {
     customerUpdateId.value = customerUpdate!.id!;
+    enableSms.value= customerUpdate.smsFlag!;
     nameController.text = customerUpdate.name!;
     emailController.text = customerUpdate.email!;
     mobileController.text = customerUpdate.mobile!;
@@ -269,7 +273,7 @@ sendCompanyId: true,
 
     try {
       String param = int.tryParse(query) != null ? "mobile" : "name";
-      var response = await Api().get("bookings/customer-jobs?$param=$query");
+      var response = await Api().get("bookings/customer-jobs?$param=$query", sendCompanyId: true);
       if (response.statusCode == 200) {
         getCustomerBookingModel =
             GetCustomerBookingModel.fromJson(response.data);
@@ -285,67 +289,7 @@ sendCompanyId: true,
     }
   }
 
-  // Save Api
-  bool saveLostPropertyLoad = false;
 
-  saveLostProperty() async {
-    if (selectedBookingForLostProperty == null) {
-      BotToast.showText(text: "PLEASE SELECT A BOOKING FIRST!");
-      return;
-    }
-    try {
-      saveLostPropertyLoad = true;
-      update();
-
-      var formData = {
-        // "booking_id": selectedBookingForLostProperty?.id.toString(),
-        // "customer_id": selectedBookingForLostProperty?.customerId.toString(),
-        "booking_id":
-            (updateBookingId ?? selectedBookingForLostProperty?.id).toString(),
-        "customer_id":
-            (updateCustomerId ?? selectedBookingForLostProperty?.customerId)
-                .toString(),
-        "item_description": detailOfPropertyController.text,
-        "inquiry": enquiryController.text,
-        "checked_by": checkedByController.text,
-        "method_desposition": methodOfDespositionController.text,
-        "result": resultController.text,
-        "lost_date": lostDateController,
-        "report_date": reportDateController,
-      };
-      print("Sending Data: $formData");
-
-      var response = await Api().post(
-          formData,
-          lostPropertyValue.value == false
-              ? "lost-property/add"
-              : "lost-property/update/${lostPropertyUpdateId.value}",
-        sendCompanyId: true,  auth: true);
-      if (response.statusCode == 200) {
-        BotToast.showText(
-            text: lostPropertyValue.value
-                ? "LOST PROPERTY UPDATED SUCCESSFULLY"
-                : 'LOST PROPERTY ADDED SUCCESSFULLY');
-        refreshFields();
-      }
-    } catch (err) {
-      print("Error: $err");
-    }
-    saveLostPropertyLoad = false;
-    update();
-  }
-
-  refreshFields() {
-    selectedBookingForLostProperty = null;
-    detailOfPropertyController.clear();
-    methodOfDespositionController.clear();
-    nameController.clear();
-    mobileController.clear();
-    address1Controller.clear();
-    enquiryController.clear();
-    checkedByController.clear();
-    resultController.clear();
-  }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create lost property functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo list of lost property functionality
@@ -400,32 +344,163 @@ sendCompanyId: true,
     currentPageLostProperty.value = page;
     getAllLostProperty();
   }
+  // Save Api
+  bool saveLostPropertyLoad = false;
 
+  saveLostProperty() async {
+    if (selectedBookingForLostProperty == null) {
+      BotToast.showText(text: "PLEASE SELECT A BOOKING FIRST!");
+      return;
+    }
+
+      saveLostPropertyLoad = true;
+      update();
+
+      var formData = {
+        // "booking_id": selectedBookingForLostProperty?.id.toString(),
+        // "customer_id": selectedBookingForLostProperty?.customerId.toString(),
+        "booking_id":
+        (updateBookingId ?? selectedBookingForLostProperty?.id).toString(),
+        "customer_id":
+        (updateCustomerId ?? selectedBookingForLostProperty?.customerId)
+            .toString(),
+        "item_description": detailOfPropertyController.text,
+        "inquiry": enquiryController.text,
+        "checked_by": checkedByController.text,
+        "method_desposition": methodOfDespositionController.text,
+        "result": resultController.text,
+        "lost_date": lostDateController,
+        "report_date": reportDateController,
+      };
+      print("Sending Data: $formData");
+
+      var response = await Api().post(
+          formData,
+          lostPropertyModel != null
+              ? "lost-property/update/${lostPropertyUpdateId.value}"
+              : "lost-property/add",
+          sendCompanyId: true,  auth: true);
+      if (response.statusCode == 200) {
+        BotToast.showText(
+            text: lostPropertyValue.value
+                ? "LOST PROPERTY UPDATED SUCCESSFULLY"
+                : 'LOST PROPERTY ADDED SUCCESSFULLY');
+        refreshFields();
+      }
+
+    saveLostPropertyLoad = false;
+    update();
+  }
+
+  refreshFields() {
+    lostPropertyModel == null;
+    selectedBookingForLostProperty = null;
+    detailOfPropertyController.clear();
+    methodOfDespositionController.clear();
+    nameController.clear();
+    mobileController.clear();
+    address1Controller.clear();
+    enquiryController.clear();
+    checkedByController.clear();
+    resultController.clear();
+    lostPropertyValue(false);
+  }
   RxBool lostPropertyValue = false.obs;
   RxInt lostPropertyUpdateId = 0.obs;
 
+  // lostPropertyUpdate({dynamic lostPropertyUpdate}) async {
+  //   print("--- BINDING START ---");
+  //
+  //   lostPropertyUpdateId.value = lostPropertyUpdate?.id;
+  //   nameController.text = lostPropertyUpdate?.customer?.name ?? "";
+  //   detailOfPropertyController.text = lostPropertyUpdate?.itemDescription ?? "";
+  //   lostDateController = lostPropertyUpdate?.lostDate != null
+  //       ? lostPropertyUpdate.lostDate.toString().split(' ')[0]
+  //       : "";
+  //   reportDateController = lostPropertyUpdate?.reportDate != null
+  //       ? lostPropertyUpdate.reportDate.toString().split(' ')[0]
+  //       : "";
+  //
+  //   lostPropertyValue(true);
+  //   update();
+  //
+  //   try {
+  //     print("Calling API for ID: ${lostPropertyUpdate.id}");
+  //
+  //     final response =
+  //         await Api().get("lost-property/getbyid/${lostPropertyUpdate.id}",sendCompanyId: true);
+  //     print("API Raw Data: ${response.data}");
+  //
+  //     if (response != null && response.data != null) {
+  //       var apiModel = LostPropertyGetByIdModel.fromJson(response.data);
+  //       var detail = apiModel.lostProperty;
+  //
+  //       if (detail != null) {
+  //         updateBookingId = detail.bookingId;
+  //         updateCustomerId = detail.customerId;
+  //         mobileController.text = detail.mobile ?? "";
+  //         address1Controller.text = detail.address1?.toString() ??
+  //             detail.customer?.address1?.toString() ??
+  //             "";
+  //         // address1Controller.text = detail.address1 ?? "";
+  //         checkedByController.text = detail.checkedBy ?? "";
+  //         enquiryController.text = detail.inquiry ?? "";
+  //         resultController.text = detail.result ?? "";
+  //         methodOfDespositionController.text = detail.methodDesposition ?? "";
+  //
+  //         if (detail.booking != null) {
+  //           selectedBookingForLostProperty = detail.booking;
+  //         } else {
+  //           selectedBookingForLostProperty = BookingGetById(
+  //             referenceNumber: detail.referenceNumber,
+  //             pickupDate: detail.pickupDate,
+  //             pickupTime: detail.pickupTime,
+  //             pickup: detail.pickup,
+  //             dropoff: detail.dropoff,
+  //             vehicleType: VehicleTypeGetById(name: detail.vehicleTypeName),
+  //           );
+  //         }
+  //
+  //         print(
+  //             "Table Data Bound: ${selectedBookingForLostProperty?.referenceNumber}");
+  //       }
+  //     }
+  //   } catch (e) {
+  //     print("Caught Error in Controller: $e");
+  //   }
+  //
+  //   update();
+  //   print("--- BINDING END ---");
+  // }
   lostPropertyUpdate({dynamic lostPropertyUpdate}) async {
     print("--- BINDING START ---");
 
-    lostPropertyUpdateId.value = lostPropertyUpdate?.id;
-    nameController.text = lostPropertyUpdate?.customer?.name ?? "";
-    detailOfPropertyController.text = lostPropertyUpdate?.itemDescription ?? "";
-    lostDateController = lostPropertyUpdate?.lostDate != null
+    if (lostPropertyUpdate == null) {
+      print("Error: lostPropertyUpdate object is null");
+      return;
+    }
+
+    // 1. Sabse pehle state ko TRUE karein aur UI ko update karein taake button UPDATE ho jaye
+    lostPropertyUpdateId.value = lostPropertyUpdate.id ?? 0;
+    lostPropertyValue(true);
+    update(); // Yeh call button ka text badal degi instantly
+
+    // 2. Form fields ki basic binding
+    nameController.text = lostPropertyUpdate.customer?.name ?? "";
+    detailOfPropertyController.text = lostPropertyUpdate.itemDescription ?? "";
+
+    lostDateController = lostPropertyUpdate.lostDate != null
         ? lostPropertyUpdate.lostDate.toString().split(' ')[0]
         : "";
-    reportDateController = lostPropertyUpdate?.reportDate != null
+    reportDateController = lostPropertyUpdate.reportDate != null
         ? lostPropertyUpdate.reportDate.toString().split(' ')[0]
         : "";
-
-    lostPropertyValue(true);
-    update();
 
     try {
       print("Calling API for ID: ${lostPropertyUpdate.id}");
 
-      final response =
-          await Api().get("lost-property/getbyid/${lostPropertyUpdate.id}",sendCompanyId: true);
-      print("API Raw Data: ${response.data}");
+      final response = await Api().get("lost-property/getbyid/${lostPropertyUpdate.id}", sendCompanyId: true);
+      print("API Raw Data: ${response?.data}");
 
       if (response != null && response.data != null) {
         var apiModel = LostPropertyGetByIdModel.fromJson(response.data);
@@ -435,10 +510,11 @@ sendCompanyId: true,
           updateBookingId = detail.bookingId;
           updateCustomerId = detail.customerId;
           mobileController.text = detail.mobile ?? "";
+
           address1Controller.text = detail.address1?.toString() ??
               detail.customer?.address1?.toString() ??
               "";
-          // address1Controller.text = detail.address1 ?? "";
+
           checkedByController.text = detail.checkedBy ?? "";
           enquiryController.text = detail.inquiry ?? "";
           resultController.text = detail.result ?? "";
@@ -456,19 +532,18 @@ sendCompanyId: true,
               vehicleType: VehicleTypeGetById(name: detail.vehicleTypeName),
             );
           }
-
-          print(
-              "Table Data Bound: ${selectedBookingForLostProperty?.referenceNumber}");
+          print("Table Data Bound: ${selectedBookingForLostProperty?.referenceNumber}");
         }
       }
     } catch (e) {
-      print("Caught Error in Controller: $e");
+      print("Caught Error in Controller API Call: $e");
+      // Agar API fail bhi ho jaye, tab bhi update mode true hi rehna chahiye
     }
 
+    // Final UI sync
     update();
     print("--- BINDING END ---");
   }
-
   deleteLostProperty(int? id) async {
     var response = await Api().delete("lost-property/delete/$id");
     if (response.statusCode == 200) {
@@ -479,4 +554,397 @@ sendCompanyId: true,
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo list of lost property functionality
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>   Working on create complain
+
+
+  final customerMobileController = TextEditingController();
+  final customerNameController = TextEditingController();
+  final incidentedController = TextEditingController();
+  final customerNoteController = TextEditingController();
+  final customerRefNoController = TextEditingController();
+  final complainDateController = TextEditingController(  text: DateTime.now().toIso8601String().split("T").first,);
+  String pickupAddress = "";
+  String dropoffAddress = "";
+
+
+  final FocusNode complaintFocusNode = FocusNode();
+  SearchCustomerByMobileModel? complaintPhoneNumbersModel;
+  int complaintSelectedIndex = -1;
+
+  var selectedBookingForComplaint;
+
+  getComplaintCustomerNumbers(String mobile) async {
+    var response = await Api().get(
+      "customers/search-data?mobile=$mobile",
+      sendCompanyId: true,
+    );
+
+    if (response.statusCode == 200) {
+      complaintPhoneNumbersModel =
+          SearchCustomerByMobileModel.fromJson(response.data);
+
+      update();
+    }
+  }
+  void fillComplaintFromBooking(dynamic booking) {
+    if (booking == null) return;
+
+    final Booking b = booking as Booking;
+
+    customerNameController.text = (b.name ?? "").toUpperCase();
+    customerMobileController.text = (b.mobile ?? "").toUpperCase();
+    customerRefNoController.text = (b.referenceNumber ?? "").toUpperCase();
+
+    // ✅ FIXED VEHICLE PATH
+    regController.text = (b.driver?.vehicle?.vehicleNumber ?? "").toUpperCase();
+
+    final notes = jsonDecode(b.notes.toString());
+
+    customerNoteController.text =
+    notes.isNotEmpty ? notes.first["note"] ?? "" : "";
+
+    // if (b.notes != null && b.notes is List) {
+    //   customerNoteController.text =
+    //       (b.notes as List).map((e) => e.toString()).join(", ");
+    // } else {
+    //   customerNoteController.text = "";
+    // }
+
+    incidentedController.text = b.pickupDate ?? "";
+
+    pickupAddress =( b.pickup)?.toUpperCase() ?? "";
+    dropoffAddress = (b.dropoff)?.toUpperCase() ?? "";
+
+    selectedBookingForComplaint = b;
+
+    update();
+  }
+  GetDriverDropdown? getDriverDropdownModel;
+  List<Driver> driverList = [];
+
+  Driver? selectedDriver;
+
+  bool driverLoader = false;
+//driver dropdown api
+  getDriversDropdown() async {
+    driverLoader = true;
+    update();
+
+    try {
+      var response = await Api().get(
+        "drivers/get",
+        sendCompanyId: true,
+      );
+
+      if (response.statusCode == 200) {
+        getDriverDropdownModel =
+            GetDriverDropdown.fromJson(response.data);
+
+        driverList = getDriverDropdownModel?.drivers ?? [];
+
+        // 👇 IMPORTANT
+        if (selectedDriver != null) {
+          selectedDriver = driverList.firstWhereOrNull(
+                (e) => e.id.toString() == selectedDriver!.id.toString(),
+          );
+        }
+
+        print("Drivers loaded: ${driverList.length}");
+      }
+    } catch (e) {
+      print(e);
+    }
+
+    driverLoader = false;
+    update();
+  }
+
+ String capitalizeWords(String text) {
+    return text
+        .split(' ')
+        .map((word) => word.isNotEmpty
+        ? '${word[0].toUpperCase()}${word.substring(1).toUpperCase()}'
+        : '')
+        .join(' ');
+  }
+  bool complaintLoader = false;
+
+  postComplaintLoad(bool value) {
+    complaintLoader = value;
+    update();
+  }
+
+  postComplaint() async {
+    postComplaintLoad(true);
+
+    var formData = {
+      "complain_date": complainDateController.text,
+      "incident_date": incidentedController.text,
+
+      "customer_id": complaintValue.value
+          ? updateComplainCustomerId
+          : selectedBookingForComplaint?.customerId,
+
+      "booking_id": complaintValue.value
+          ? updateComplainBookingId
+          : selectedBookingForComplaint?.id,
+
+      "complaint": complaintController.text,
+      "dealt_with": howDealWithController.text,
+      "result": resultController.text,
+
+      "driver_id": selectedDriver?.id,
+    };
+
+    print(formData);
+
+    var response = await Api().post(
+      formData,
+      complaintValue.value
+          ? "complaint/update/${complaintUpdateId.value}"
+          : "complaint/add",
+      auth: true,
+      sendCompanyId: true,
+    );
+
+    if (response != null &&
+        (response.statusCode == 200 ||
+            response.statusCode == 201)) {
+      BotToast.showText(
+        text: complaintValue.value
+            ? "COMPLAINT UPDATED SUCCESSFULLY"
+            : "COMPLAINT ADDED SUCCESSFULLY",
+      );
+
+      // Reset edit mode
+      complaintValue.value = false;
+      complaintUpdateId.value = 0;
+      updateCustomerId = null;
+      updateBookingId = null;
+
+      // Clear Controllers
+      complainDateController.text =
+          DateTime.now().toIso8601String().split("T").first;
+
+      incidentedController.clear();
+      customerNameController.clear();
+      customerMobileController.clear();
+      customerRefNoController.clear();
+      customerNoteController.clear();
+      regController.clear();
+
+
+      complaintController.clear();
+      howDealWithController.clear();
+      resultController.clear();
+
+      pickupAddress = "";
+      dropoffAddress = "";
+
+      selectedBookingForComplaint = null;
+      selectedDriver = null;
+
+      await getCustomerComplaints();
+
+      update();
+    } else {
+      BotToast.showText(
+        text: complaintValue.value
+            ? "FAILED TO UPDATE COMPLAINT"
+            : "FAILED TO ADD COMPLAINT",
+      );
+
+      print(response?.data);
+    }
+
+    postComplaintLoad(false);
+  }
+
+  GetCustomerComplainsModel? getCustomerComplainsModel;
+  RxBool complaintsLoader = false.obs;
+
+  /// Search Work
+  RxList<Complaint> complaintsAll = <Complaint>[].obs;
+  RxList<Complaint> filteredComplaints = <Complaint>[].obs;
+
+  RxString searchReferenceNumber = ''.obs;
+  RxString searchComplainDate = ''.obs;
+  RxString searchCustomerName = ''.obs;
+  RxString searchComplaint = ''.obs;
+
+  /// Pagination
+  var currentPageComplaints = 1.obs;
+  var totalPagesComplaints = 1.obs;
+  final int limitComplaints = 10;
+
+  Future<void> getCustomerComplaints() async {
+    complaintsLoader(true);
+
+    try {
+      var response = await Api().get(
+        "complaint/get",
+      );
+
+      print("Status Code => ${response.statusCode}");
+      print("Response => ${response.data}");
+
+      if (response.statusCode == 200) {
+        getCustomerComplainsModel = GetCustomerComplainsModel.fromJson(response.data);
+
+        complaintsAll.value = getCustomerComplainsModel?.complaints ?? [];
+
+        filteredComplaints.value = List<Complaint>.from(complaintsAll);
+
+        print("Total Complaints => ${filteredComplaints.length}");
+
+        update();
+      }
+    } catch (e, s) {
+      print("Get Complaints Error => $e");
+      print(s);
+    } finally {
+      complaintsLoader(false);
+      update();
+    }
+  }
+
+
+
+  void searchComplaints() {
+    filteredComplaints.value = complaintsAll.where((item) {
+      final ref = (item.referenceNumber ?? "").toLowerCase();
+
+      final date = item.complainDate == null
+          ? ""
+          : "${item.complainDate!.day}/${item.complainDate!.month}/${item.complainDate!.year}"
+          .toLowerCase();
+
+      final customer = (item.customer?.name ?? "").toLowerCase();
+
+      return ref.contains(searchReferenceNumber.value.toLowerCase()) &&
+          date.contains(searchComplainDate.value.toLowerCase()) &&
+          customer.contains(searchCustomerName.value.toLowerCase());
+    }).toList();
+
+    update();
+  }
+
+
+
+
+
+  void clearComplaintsSearch() {
+    searchReferenceNumber.value = "";
+    searchComplainDate.value = "";
+    searchCustomerName.value = "";
+
+    filteredComplaints.value = List<Complaint>.from(complaintsAll);
+
+    update();
+  }
+
+// complaint edit
+  RxBool complaintValue = false.obs;
+  RxInt complaintUpdateId = 0.obs;
+  int? updateComplainCustomerId;
+  int? updateComplainBookingId;
+
+  Future<void> complaintUpdate({required int complaintId}) async {
+    complaintValue.value = true;
+    complaintUpdateId.value = complaintId;
+
+    try {
+      // Load drivers first
+      if (driverList.isEmpty) {
+        await getDriversDropdown();
+      }
+
+      var response = await Api().get(
+        "complaint/getbyid/?id=$complaintId",
+        sendCompanyId: true,
+      );
+
+      if (response.statusCode == 200 && response.data["status"] == true) {
+        final detail = response.data["complaint"];
+
+        updateComplainCustomerId = detail["customer_id"];
+        updateComplainBookingId = detail["booking_id"];
+
+        customerNameController.text =
+            (detail["customer"]?["name"] ?? "").toString().toUpperCase();
+
+        customerMobileController.text =
+            (detail["customer"]?["mobile"] ?? "").toString().toUpperCase();
+
+        customerRefNoController.text =
+            (detail["booking"]?["reference_number"] ?? "")
+                .toString()
+                .toUpperCase();
+
+        complainDateController.text =
+            (detail["complain_date"] ?? "").toString().toUpperCase();
+
+        incidentedController.text =
+            (detail["incident_date"] ?? "").toString().toUpperCase();
+
+        complaintController.text =
+            (detail["complaint"] ?? "").toString().toUpperCase();
+
+        howDealWithController.text =
+            (detail["dealt_with"] ?? "").toString().toUpperCase();
+
+        resultController.text =
+            (detail["result"] ?? "").toString().toUpperCase();
+
+        final notes = jsonDecode(detail["booking"]["notes"] ?? "[]");
+
+        customerNoteController.text = notes.isNotEmpty
+            ? (notes.first["note"] ?? "").toString().toUpperCase()
+            : "";
+
+        pickupAddress =
+            (detail["booking"]?["pickup"] ?? "").toString().toUpperCase();
+
+        dropoffAddress =
+            (detail["booking"]?["dropoff"] ?? "").toString().toUpperCase();
+
+        // Driver Select
+        final driverId = detail["driver_id"];
+
+        print("Complaint Driver ID => $driverId");
+        print(
+          "Driver List => ${driverList.map((e) => "${e.id}-${e.name}").toList()}",
+        );
+
+        if (driverId != null && driverId.toString().isNotEmpty && driverId.toString() != "null") {
+          selectedDriver = driverList.firstWhereOrNull(
+                (e) => e.id.toString().trim() == driverId.toString().trim(),
+          );
+        } else {
+          selectedDriver = null;
+        }
+
+        print("Selected Driver => ${selectedDriver?.name}");
+
+        update();
+      }
+    } catch (e) {
+      print("Complaint Update Error: $e");
+    }
+  }
+
+ deleteComplaint(int? id) async {
+    var response = await Api().delete(
+      "complaint/delete/$id",
+    );
+
+    if (response.statusCode == 200) {
+      getCustomerComplaints();
+      BotToast.showText(
+        text: "COMPLAINT DELETED SUCCESSFULLY",
+      );
+      print("Complaint Deleted Successfully!");
+    }
+  }
 }

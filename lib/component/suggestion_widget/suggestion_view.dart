@@ -38,6 +38,10 @@ class _SuggestionViewState extends State<SuggestionView> {
     super.initState();
     controller.allListData = widget.allListData;
     // FocusScope.of(Get.context!).requestFocus(dashboardController.phoneNumberFieldKey);
+    // 🔥 ZAROORI FIX: Jaise hi dropdown khule, RawKeyboardListener ko focus do
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      dashboardController.suggestionPhoneFocusNode.value.requestFocus();
+    });
     controller.updateKeys();
   }
 
@@ -74,28 +78,50 @@ class _SuggestionViewState extends State<SuggestionView> {
         width: width/8,
         child: RawKeyboardListener(
           focusNode: dashboardController.suggestionPhoneFocusNode.value,
-          // autofocus: true,
+          autofocus: true,
           onKey: (RawKeyEvent event) async {
             if (event is RawKeyDownEvent) {
               if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
                 controller.moveHighlightDown();
               } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                 controller.moveHighlightUp();
-              } else if (event.logicalKey == LogicalKeyboardKey.enter) {
-                print("controller.highlightedIndex.value");
-                print(controller.highlightedIndex.value);
-                print(controller.highlightedIndex.value);
-                print(controller.highlightedIndex.value);
-                print(controller.highlightedIndex.value);
-                print(controller.highlightedIndex.value);
-                print(controller.highlightedIndex.value);
-                print(controller.highlightedIndex.value);
-                print(controller.highlightedIndex.value);
-                final data = await controller.tapSelect(controller.highlightedIndex.value);
-                widget.onSelect(data);
+              }
+              // 🔥 FIX: Enter ya Space press hone par select karein
+              else if (event.logicalKey == LogicalKeyboardKey.enter ||
+                  event.logicalKey == LogicalKeyboardKey.space) {
+
+                // Safe check taake index out of range ka error na aaye
+                if (controller.highlightedIndex.value >= 0 &&
+                    controller.highlightedIndex.value < controller.allListData.length) {
+
+                  final data = await controller.tapSelect(controller.highlightedIndex.value);
+                  widget.onSelect(data);
+                }
               }
             }
           },
+          // onKey: (RawKeyEvent event) async {
+          //   if (event is RawKeyDownEvent) {
+          //     if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+          //       controller.moveHighlightDown();
+          //     } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+          //       controller.moveHighlightUp();
+          //     } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+          //       print("controller.highlightedIndex.value");
+          //       print(controller.highlightedIndex.value);
+          //       print(controller.highlightedIndex.value);
+          //       print(controller.highlightedIndex.value);
+          //       print(controller.highlightedIndex.value);
+          //       print(controller.highlightedIndex.value);
+          //       print(controller.highlightedIndex.value);
+          //       print(controller.highlightedIndex.value);
+          //       print(controller.highlightedIndex.value);
+          //       final data = await controller.tapSelect(controller.highlightedIndex.value);
+          //       widget.onSelect(data);
+          //     }
+          //   }
+          //
+          // },
           child: Container(
             height: screenHeight * 0.3,
             width: screenWidth * 0.3,
@@ -118,7 +144,11 @@ class _SuggestionViewState extends State<SuggestionView> {
                 return Obx(() {
                   final isHighlighted = controller.highlightedIndex.value == index;
                   return Container(
-                    key: controller.suggestionItemKeys[index],
+                    // Donon Suggestion views ke andar Container ki key ko is tarah safe karein:
+                    key: (controller.suggestionItemKeys.length > index)
+                        ? controller.suggestionItemKeys[index]
+                        : UniqueKey(), // Agar index out of range ho toh crash na ho
+                    // key: controller.suggestionItemKeys[index],
                     color: isHighlighted ? const Color(0xffA0DCFF) : Colors.transparent,
                     width: screenWidth * 0.3,
                     child: ListTile(

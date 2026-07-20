@@ -412,6 +412,9 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                     ? true
                                     : false,
                                 child: CustomTextField(
+                                  inputFormatters: [
+                                    UpperCaseTextFormatter(),
+                                  ],
                                   borderRadius: 4,
                                   controller: controller.titleController,
                                   width: fieldWidth,

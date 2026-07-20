@@ -154,11 +154,12 @@ class _CreateAccountInvoiceScreenState
                             TextSpan(
                                 text:
                                     " ${controller.invoiceNumberModel!.documentNumber!.prefix}"
-                                    "${controller.invoiceNumberModel!.documentNumber!.endNumber}",
+                                    "${controller.invoiceNumberModel!.documentNumber!.endNumber}".toUpperCase(),
                                 style: mozillaTextRegularText(
                                     color: DynamicColors.redClr))
                           ]))),
                   CustomDropdownField<Subsidiaries>(
+                    height: 35,
                     text: AppText.subsidiary,
                     width: fieldWidth / 1.5,
                     label: AppText.subsidiary,
@@ -179,7 +180,7 @@ class _CreateAccountInvoiceScreenState
                             fontSize: 13,
                           )),
                       SizedBox(
-                        height: 30,
+                        height: 35,
                         width: fieldWidth / 1.5,
                         child: DropdownButtonFormField<DashboardAccountObject>(
                           decoration: const InputDecoration(
@@ -219,14 +220,9 @@ class _CreateAccountInvoiceScreenState
                             context: context,
                             fontSize: 13,
                           )),
-                      Container(
-                        height: 30,
+                      SizedBox(
+                        height: 35,
                         width: fieldWidth / 1.5,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                              color: DynamicColors.primaryClr, width: 1.2),
-                        ),
                         child: DropdownButtonFormField<DepartmentObject>(
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),

@@ -2,19 +2,14 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
-import 'package:dashboard_new1/view/vehicles_view/model/comapny_vehicle_model.dart'
-    hide VehicleType;
-import 'package:dashboard_new1/view/vehicles_view/model/vehicle_type_model.dart';
-import 'package:dashboard_new1/view/vehicles_view/model/vehicle_type_model.dart'
-    as type;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../Model/image_model.dart';
 import 'package:dio/dio.dart' as dio;
-
-import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/models/dashboard_model.dart';
+import '../model/comapny_vehicle_model.dart' hide VehicleType;
+import '../model/vehicle_type_model.dart';
 
 class VehicleController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo functionality vehicle type
@@ -39,18 +34,7 @@ class VehicleController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo company vehicle
 
-  VehicleType? allVehicleTypeData;
-  RxBool getAllVehicleTypeLoader = false.obs;
-  getAllVehicleType() async {
-    getAllVehicleTypeLoader(true);
-    var response = await Api().get("vehicle-type");
-    if (response.statusCode == 200) {
-      allVehicleTypeData =
-          VehicleType.fromJson(response.data['vehicle_types']);
-      getAllVehicleTypeLoader(false);
-      update();
-    }
-  }
+
 
   /// text fields editing
   final colorController = TextEditingController();
@@ -78,14 +62,29 @@ class VehicleController extends GetxController {
   final mot2ExpiryExpireTimeController = TextEditingController();
   final insuranceExpiryTimeController = TextEditingController();
   DashboardDataModel? dashboardAllData;
-  DashboardVehicleTypeObject? selectVehicleValue;
+
+  VehicleType? selectVehicleValue;
+
   postCompanyVehicle() async {
+    // Dropdown validation check
+    if (selectVehicleValue == null) {
+      BotToast.showText(text: "Please Select Vehicle Type");
+      return;
+    }
+
+    if (vehicleNumberController.text.isEmpty) {
+      BotToast.showText(text: "Please Fill Vehicle Number");
+      return;
+    }
+
     companyVehicleLoader(true);
     update();
+
     dio.MultipartFile? phcFile;
     dio.MultipartFile? motFile;
     dio.MultipartFile? mot2File;
     dio.MultipartFile? insuranceFile;
+
     if (phcVehicleDocPic != null) {
       phcFile = dio.MultipartFile.fromBytes(phcVehicleDocPic!, filename: "phc.png");
     }
@@ -99,15 +98,8 @@ class VehicleController extends GetxController {
       insuranceFile = dio.MultipartFile.fromBytes(insuranceDocPic!, filename: "insurance.png");
     }
 
-    if (vehicleNumberController.text.isEmpty  ) {
-      BotToast.showText(text: "Please Fill Vehicle Number");
-      companyVehicleLoader(false);
-      update();
-      return;
-    }
-
     var formData = dio.FormData.fromMap({
-      "vehicle_type_id": selectVehicleValue!.id,
+      "vehicle_type_id": selectVehicleValue!.id, // Yahan ID sahi se chali jayegi
       'vehicle_number': vehicleNumberController.text,
       'make': vehicleMakeController.text,
       'model': vehicleModelController.text,
@@ -129,14 +121,17 @@ class VehicleController extends GetxController {
       "mot_expiry_time": motExpiryExpireTimeController.text,
       "mot2_expiry_time": mot2ExpiryExpireTimeController.text,
       "insurance_expiry_time": insuranceExpiryTimeController.text,
+      "owner":"company"
     });
+
+    try {
       var response = await Api().post(
-          formData,
-          singleVehicleData !=null?
-           "company-vehicles/update/${singleVehicleData!.id}" :
-          'company-vehicles/add',
-          auth: true,
-          multiPart: true,
+        formData,
+        singleVehicleData != null
+            ? "company-vehicles/update/${singleVehicleData!.id}"
+            : 'company-vehicles/add',
+        auth: true,
+        multiPart: true,
         sendCompanyId: true,
       );
       if (response.statusCode == 200) {
@@ -147,8 +142,12 @@ class VehicleController extends GetxController {
         singleVehicleData = null;
         BotToast.showText(text: message);
       }
+    } catch (e) {
+      print("Error: $e");
+    } finally {
       companyVehicleLoader(false);
       update();
+    }
   }
 
   _clearAllFields() {
@@ -165,17 +164,21 @@ class VehicleController extends GetxController {
     motDocPic = null;
     mot2DocPic = null;
     insuranceDocPic = null;
+    selectVehicleValue = null; // Clear drop down selection too
   }
-  List<VehicleType> vehicleTypeList = [];
-  VehicleType? selectVehicleValue1;
+
   Vehicles? singleVehicleData;
+
   companyDataBinding({Vehicles? data}) async {
     if (data == null) return;
+
+    // filteredVehicleTypes me se id match karwa kar selectVehicleValue set karenge
     if (data.vehicleTypeId != null) {
-      selectVehicleValue1 = vehicleTypeList.firstWhereOrNull(
+      selectVehicleValue = allVehicleTypes.firstWhereOrNull(
               (element) => element.id == data.vehicleTypeId
       );
     }
+
     vehicleMakeController.text = (data.make?.toString() ?? '').toUpperCase();
     vehicleModelController.text = (data.model?.toString() ?? '').toUpperCase();
     colorController.text = (data.color?.toString() ?? '').toUpperCase();
@@ -201,16 +204,12 @@ class VehicleController extends GetxController {
     update();
   }
 
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo company vehicle
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>VEHICLE TYPES Model
-
   VehicleTypeModel? vehicleTypeModel;
   RxBool isLoading = false.obs;
   RxList<VehicleType> allVehicleTypes = <VehicleType>[].obs;
   RxList<VehicleType> filteredVehicleTypes = <VehicleType>[].obs;
 
-//  ye search fields hain
   RxString searchName = ''.obs;
   RxString searchPassengers = ''.obs;
   RxString searchLuggages = ''.obs;
@@ -218,22 +217,23 @@ class VehicleController extends GetxController {
   RxString searchMinFare = ''.obs;
   RxString searchMinMiles = ''.obs;
 
-  // Pagination
   var currentPage = 1.obs;
   var totalPages = 1.obs;
   final int limit = 20;
+
   getVehicleTypes() async {
+    try {
       isLoading.value = true;
-      final response = await Api().get('vehicle-type/get' , sendCompanyId: true,
+      final response = await Api().get('vehicle-type/get', sendCompanyId: true,
         queryParameters: {
-        "page": currentPage.value,
-        "limit": limit,
-        "name": searchName.value,
-        "passengers": searchPassengers.value,
-        "luggages": searchLuggages.value,
-        "hand_luggages": searchHandLuggages.value,
-        "minimum_fares": searchMinFare.value,
-        "minimum_miles": searchMinMiles.value,
+          "page": currentPage.value,
+          "limit": limit,
+          "name": searchName.value,
+          "passengers": searchPassengers.value,
+          "luggages": searchLuggages.value,
+          "hand_luggages": searchHandLuggages.value,
+          "minimum_fares": searchMinFare.value,
+          "minimum_miles": searchMinMiles.value,
         },
       );
       if (response.statusCode == 200) {
@@ -241,17 +241,20 @@ class VehicleController extends GetxController {
         totalPages.value = vehicleTypeModel?.totalPages ?? 1;
         allVehicleTypes.value = vehicleTypeModel?.vehicleTypes ?? [];
         filteredVehicleTypes.value = allVehicleTypes;
-      isLoading.value = false;
-      print(response);
-      update();
       }
+    } catch(e) {
+      print(e);
+    } finally {
+      isLoading.value = false;
+      update(); // UI ko refresh karne ke liye
+    }
   }
-// Search changes function
+
   void onSearchChanged() {
     currentPage.value = 1;
     getVehicleTypes();
   }
-  //  pagination function
+
   void onPageChange(int page) {
     currentPage.value = page;
     getVehicleTypes();

@@ -34,7 +34,6 @@ class BookingTable extends StatefulWidget {
   @override
   State<BookingTable> createState() => _BookingTableState();
 }
-
 class _BookingTableState extends State<BookingTable> {
 
   late final DashboardController controller;
@@ -44,35 +43,56 @@ class _BookingTableState extends State<BookingTable> {
 
   List permissions = [];
 
+  // Keyboard focus ke liye node
+  final FocusNode _tableFocusNode = FocusNode();
+
   @override
   void initState() {
-    // Ensure controller is available even if widget is built before route bindings complete.
     controller = Get.isRegistered<DashboardController>()
         ? Get.find<DashboardController>()
         : Get.put(DashboardController());
     permissions = Api().sp.read('all_permissions') ?? [];
-    setState(() {
-
-    });
     super.initState();
   }
 
   @override
+  void dispose() {
+    _tableFocusNode.dispose(); // Focus node dispose zaroor karein
+    super.dispose();
+  }
+
+  // Keyboard navigation handle karne ka function
+  void _handleKeyEvent(RawKeyEvent event) {
+    if (event is RawKeyDownEvent) {
+      final int maxIndex = (controller.dashboardTableModelData?.data?.length ?? 1) - 1;
+
+      if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+        setState(() {
+          if (selectedRowIndex < maxIndex) {
+            selectedRowIndex++;
+          }
+        });
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+        setState(() {
+          if (selectedRowIndex > 0) {
+            selectedRowIndex--;
+          }
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-double widthss = MediaQuery.of(context).size.width;
-    // if(controller.allAddressesData.isNotEmpty){
-    //   totalRows = 4;
-    // }else{
-    //   totalRows = 10;
-    // }
+    double widthss = MediaQuery.of(context).size.width;
 
     return GetBuilder<DashboardController>(
-
         builder: (controller) {
           return SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // --- Booking Tabs Section ---
                 SizedBox(
                   width: Get.width,
                   child: SizedBox(
@@ -80,8 +100,8 @@ double widthss = MediaQuery.of(context).size.width;
                     child: ListView.builder(
                       itemCount: controller.bookingTabsList!.length,
                       shrinkWrap: true,
-                      scrollDirection: Axis.horizontal, // <-- enable horizontal
-                      physics: const BouncingScrollPhysics(), // smooth scrolling
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
                       itemBuilder: (BuildContext context, index) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -108,7 +128,6 @@ double widthss = MediaQuery.of(context).size.width;
                               }
                             },
                           ):
-
                           SizedBox(
                             width: widthss/11.5,
                             child: Container(color: DynamicColors.secondaryClr,
@@ -136,11 +155,8 @@ double widthss = MediaQuery.of(context).size.width;
                                 }).toList(),
                                 onChanged: (value) {
                                   controller.dropDownShow.value = false;
-                                  print(controller.bookingTabsList![index].id);
-                                  print(index);
                                   controller.selectionIndex = index;
                                   controller.getTableDataStatus(index: index, value: value);
-                                  // });
                                 },
                               ),
                             ),
@@ -150,582 +166,395 @@ double widthss = MediaQuery.of(context).size.width;
                     ),
                   ),
                 ),
-                // _buildTabs(),
-
 
                 const SizedBox(height: 10),
 
-
+                // --- DataTable Focus & Navigation Section ---
                 if(permissions.contains('read_booking'))
-                  controller.dashboardTableModelData == null?SizedBox():
-                  SizedBox(
-                  width: Get.width,
-                  child: DataTable(
-                    headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                    columnSpacing: widthss/80,
-                    dataRowMinHeight: 40,
-                    dataRowMaxHeight: 48,
+                  controller.dashboardTableModelData == null ? SizedBox() :
+                  Focus(
+                    focusNode: _tableFocusNode,
+                    autofocus: true, // Screen load hote hi table focus accept karega
+                    onKey: (node, event) {
+                      _handleKeyEvent(event);
+                      // Agar keys arrow up/down hain to mazeed scroll navigation ko block karein taake table hi move ho
+                      if (event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                        return KeyEventResult.handled;
+                      }
+                      return KeyEventResult.ignored;
+                    },
+                    child: SizedBox(
+                      width: Get.width,
+                      child: DataTable(
+                        headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+                        columnSpacing: widthss/80,
+                        dataRowMinHeight: 40,
+                        dataRowMaxHeight: 48,
+                        headingTextStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
+                        dataTextStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
+                        border: TableBorder(
+                          horizontalInside: BorderSide(width: 0.5, color: Colors.grey.shade400),
+                          verticalInside: BorderSide(width: 0.5, color: Colors.grey.shade400),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        columns: [
+                          buildHeaderWithSearch(widget: SizedBox(width: 20, child: Checkbox(value: false, onChanged: (v){}))),
+                          buildHeaderWithSearch(title: "TYPE"),
+                          buildHeaderWithSearch(widhtss: widthss/20.5, title: "REF #", onChanged: (v){
+                            controller.referenceNumber.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString());
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5, title: "DATETIME", onChanged: (v){
+                            controller.pickupDate.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString());
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5, title: "CUS", onChanged: (v){
+                            controller.name.text = v;
+                            controller.getDashboardTableData(tableId: controller.selectedTabId);
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5, title: "PICKUP", onChanged: (v){
+                            controller.pickup.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString());
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5, title: "DROPOFF", onChanged: (v){
+                            controller.dropOff.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString());
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5, title: "ACC", onChanged: (v){
+                            controller.accountName.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString());
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5, title: "DRV", onChanged: (v){
+                            controller.driverName.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString());
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5, title: "VEH", onChanged: (v){
+                            controller.vehicleTypeName.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString());
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5, title: "NOTE", onChanged: (v){
+                            controller.notes.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString());
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5, title: "FARE", onChanged: (v){
+                            controller.fares.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString());
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5, title: "STATUS", onChanged: (v){
+                            controller.bookingStatus.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString());
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5, title: "J/T", onChanged: (v){
+                            controller.journeyType.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString());
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5, title: "P/T", onChanged: (v){
+                            controller.paymentType.text = v;
+                            controller.onTableChangeHandler(tableId: controller.selectedTabId.toString());
+                          }),
+                          buildHeaderWithSearch(widhtss: widthss/20.5, title: "Action"),
+                        ],
+                        rows: List.generate(
+                          controller.dashboardTableModelData!.data!.length,
+                              (index) {
+                            final item = controller.dashboardTableModelData!.data![index];
+                            bool isSelected = index == selectedRowIndex;
 
-                    headingTextStyle: const TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 13,
-                    ),
-                    dataTextStyle: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                    ),
-                    border: TableBorder(
-                      horizontalInside: BorderSide(
-                        width: 0.5,
-                        color: Colors.grey.shade400,
-                      ),
-                      verticalInside: BorderSide(
-                        width: 0.5,
-                        color: Colors.grey.shade400, // 👈 vertical lines added
-                      ),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    columns: [
-                      buildHeaderWithSearch(widget: SizedBox(
-                        width: 20,
-                        child: Checkbox(value: false, onChanged: (v){
-                        }),
-                      )),
-                      buildHeaderWithSearch(title: "TYPE"),
-                      buildHeaderWithSearch(
-                          widhtss: widthss/20.5,
-                          title: "REF #", onChanged: (v){
-                        controller.referenceNumber.text = v;
-                        controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                      }),
-                      buildHeaderWithSearch(
-                          widhtss: widthss/20.5,
-                          title: "DATETIME", onChanged: (v){
-                        controller.pickupDate.text = v;
-                        controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                      }),
-                      buildHeaderWithSearch(
-                          widhtss: widthss/20.5,
-                          title: "CUS", onChanged: (v){
-                        controller.name.text = v;
-                        controller.getDashboardTableData(tableId: controller.selectedTabId);
-                      }),
-                      buildHeaderWithSearch(
-                          widhtss: widthss/20.5,
-                          title: "PICKUP", onChanged: (v){
-                        controller.pickup.text = v;
-                        controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                      }),
-                      buildHeaderWithSearch(
-                          widhtss: widthss/20.5,
-                          title: "DROPOFF", onChanged: (v){
-                        controller.dropOff.text = v;
-                        controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                      }),
-                      buildHeaderWithSearch(widhtss: widthss/20.5,title: "ACC", onChanged: (v){
-                        controller.accountName.text = v;
-                        controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                      }),
-                      buildHeaderWithSearch(widhtss: widthss/20.5,title: "DRV", onChanged: (v){
-                        controller.driverName.text = v;
-                        controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                      }),
-                      buildHeaderWithSearch(widhtss: widthss/20.5,title: "VEH", onChanged: (v){
-                        controller.vehicleTypeName.text = v;
-                        controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                      }),
-                      buildHeaderWithSearch(widhtss: widthss/20.5,title: "NOTE", onChanged: (v){
-                        controller.notes.text = v;
-                        controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                      }),
-                      buildHeaderWithSearch(widhtss: widthss/20.5,title: "FARE", onChanged: (v){
-                        controller.fares.text = v;
-                        controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                      }),
-                      buildHeaderWithSearch(widhtss: widthss/20.5,title: "STATUS", onChanged: (v){
-                        controller.bookingStatus.text = v;
-                        controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                      }),
-                      buildHeaderWithSearch(widhtss: widthss/20.5,title: "J/T", onChanged: (v){
-                        controller.journeyType.text = v;
-                        controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                      }),
-                      buildHeaderWithSearch(widhtss: widthss/20.5,title: "P/T", onChanged: (v){
-                        controller.paymentType.text = v;
-                        controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
-                      }),
-                      buildHeaderWithSearch(widhtss: widthss/20.5,title: "Action"),
-                    ],
-                    rows: List.generate(
-                      controller.dashboardTableModelData!.data!.length,
-                          (index) {
-                        final item = controller.dashboardTableModelData!.data![index];
-                        bool isSelected = index == selectedRowIndex;
-                        return DataRow(
-                          key: ValueKey(item.id),
-                          // index: index,
-                          selected: isSelected,
-                          color: MaterialStateProperty.resolveWith<Color?>(
-                                (states) {
-                              if (isSelected) {
-                                return Colors.blue.withOpacity(0.2);
-                              }
-                              return null;
-                            },
-                          ),
-
-                          cells: [
-
-                            /// Checkbox ❌ (NO right click)
-                            DataCell(
-                              permissions.contains('create_trash_booking')?SizedBox.shrink(): Checkbox(
-                                value: controller.selectedDeletesItems?.contains(item) ?? false,
-                                onChanged: (bool? value) { // Checkbox value is nullable bool
-                                  if (value == null) return;
-
-                                  setState(() {
-                                    // 2. Ensure the list exists before using it
-                                    controller.selectedDeletesItems ??= [];
-
-                                    if (value) {
-                                      // If checked, add to list
-                                      controller.selectedDeletesItems!.add(item);
-                                      selectedRowIndex = index;
-                                    } else {
-                                      // If unchecked, remove from list
-                                      controller.selectedDeletesItems!.remove(item);
-                                      selectedRowIndex = -1;
-                                    }
-                                  });
+                            return DataRow(
+                              key: ValueKey(item.id),
+                              selected: isSelected,
+                              // Mukammal row highlight karne ke liye color configuration
+                              color: MaterialStateProperty.resolveWith<Color?>(
+                                    (states) {
+                                  if (isSelected) {
+                                    return Colors.blue.withOpacity(0.25); // Complete row selection color
+                                  }
+                                  return null;
                                 },
-                                // onChanged: (value) {
-                                //   setState(() {
-                                //     print(item);
-                                //     if(controller.selectedDeletesItems!.contains(item)){
-                                //       controller.selectedDeletesItems!.remove(item);
-                                //     }else{
-                                //       controller.selectedDeletesItems!.add(item);
-                                //     }
-                                //     selectedRowIndex = value! ? index : -1;
-                                //   });
-                                // },
                               ),
-                            ),
-
-                            /// TYPE ❌
-                            DataCell(
-           Icon(
-                                item.bookingSource == "dashboard"
-                                    ? Icons.laptop_chromebook_outlined
-                                    : Icons.mobile_screen_share,
-                                color: Colors.blue,
-                              ),
-                            ),
-
-                            /// REF # ✅
-                            DataCell(
-                              rightClickTextCell(
-                                item: item,
-                            tabIndex: controller.selectionIndex,
-                                onRightClick: () {
-                                  print("RIGHT CLICK REF #: ${item.referenceNumber}");
-                                },
-                                child: Text(item.referenceNumber ?? "-",
-                                style: TextStyle(
-                                  fontSize: widthss/140,
-                                ),
-                                ),
-                              ),
-                            ),
-
-                            /// DATETIME ✅
-                            DataCell(
-                              rightClickTextCell(
-                                item: item,
-                                tabIndex: controller.selectionIndex,
-                                onRightClick: () {
-                                  print("RIGHT CLICK DATETIME: ${item.pickupDate}");
-                                },
-                                child: Container(
-                                  width: widthss/20.5,
-                                  height: double.infinity,
-                                  alignment: Alignment.center,
-                                  // APPLY YOUR COLOR HERE
-                                  decoration: BoxDecoration(
-                                    color: DynamicColors.secondaryClr.withOpacity(0.7),
-                                    // Optional: borderRadius: BorderRadius.circular(2),
+                              cells: [
+                                /// Checkbox
+                                DataCell(
+                                  permissions.contains('create_trash_booking')?SizedBox.shrink(): Checkbox(
+                                    value: controller.selectedDeletesItems?.contains(item) ?? false,
+                                    onChanged: (bool? value) {
+                                      if (value == null) return;
+                                      setState(() {
+                                        controller.selectedDeletesItems ??= [];
+                                        if (value) {
+                                          controller.selectedDeletesItems!.add(item);
+                                          selectedRowIndex = index;
+                                        } else {
+                                          controller.selectedDeletesItems!.remove(item);
+                                        }
+                                      });
+                                    },
                                   ),
-                                  child: Text("${DateFormat('dd-MM-yyyy')
-                                      .format(item.pickupDate!)} ${item.pickupTime}",
-                                    style: TextStyle(
-                                      fontSize: widthss/140,
+                                ),
+                                /// TYPE
+                                DataCell(
+                                  Icon(
+                                    switch (item.bookingSource) {
+                                      'web' => Icons.language,
+                                      'app' => Icons.phone_android,
+                                      'ivr' => Icons.phone_in_talk,
+                                      'dashboard' => Icons.laptop_chromebook,
+                                      _ => Icons.help_outline,
+                                    },
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                                /// REF #
+                                DataCell(
+                                  rightClickTextCell(
+                                    item: item,
+                                    tabIndex: controller.selectionIndex,
+                                    onRightClick: () {},
+                                    child: Text(item.referenceNumber ?? "-", style: TextStyle(fontSize: widthss/140)),
+                                  ),
+                                ),
+                                /// DATETIME
+                                DataCell(
+                                  rightClickTextCell(
+                                    item: item,
+                                    tabIndex: controller.selectionIndex,
+                                    onRightClick: () {},
+                                    child: Container(
+                                      width: widthss/20.5,
+                                      height: double.infinity,
+                                      alignment: Alignment.center,
+                                      // Agar row selected ho to transparent take poori row ka select color visible ho
+                                      decoration: BoxDecoration(
+                                        color: isSelected ? Colors.transparent : DynamicColors.secondaryClr.withOpacity(0.7),
+                                      ),
+                                      child: Text("${DateFormat('dd-MM-yyyy').format(item.pickupDate!)} ${item.pickupTime}",
+                                        style: TextStyle(fontSize: widthss/140),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ),
-
-                            /// CUSTOMER ✅
-                            DataCell(
-                              SizedBox(
-                                width: widthss/20.5,
-                                child: rightClickTextCell(
-                                  item: item,
-                                  tabIndex: controller.selectionIndex,
-                                  onRightClick: () {
-                                    print("RIGHT CLICK CUSTOMER: ${item.name}");
-                                  },
-                                  child: Text((item.name ?? "-").toUpperCase(),
-                                    style: TextStyle(
-                                      fontSize: widthss/140,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            /// PICKUP ✅
-                            DataCell(
-                              rightClickTextCell(
-                                item: item,
-                                tabIndex: controller.selectionIndex,
-                                // onRightClick: () {
-                                //   print("RIGHT CLICK PICKUP: ${item.pickup}");
-                                //   showMenu(
-                                //     context: context,
-                                //     position: RelativeRect.fromLTRB(
-                                //       // event.position.dx,
-                                //       // event.position.dy,
-                                //       15,
-                                //       0,
-                                //       0,
-                                //       0,
-                                //     ),
-                                //     items: [
-                                //       const PopupMenuItem(value: 'edit', child: Text('Edit')),
-                                //       const PopupMenuItem(value: 'delete', child: Text('Delete')),
-                                //     ],
-                                //   );
-                                //
-                                // },
-                                child: Container(
-                                  width: widthss/20.5,
-                                  // width: double.infinity,
-                                  height: double.infinity,
-                                  alignment: Alignment.center,
-                                  // APPLY YOUR COLOR HERE
-                                  decoration: BoxDecoration(
-                                    color: item.airport!.pickup!.locationType!.backgroundColor == null?Colors.transparent:
-                                    Color(int.parse("0xFF${item.airport!.pickup!.locationType!.backgroundColor}")),
-                                    // Optional: borderRadius: BorderRadius.circular(2),
-                                  ),
-                                  child: Text(
-                                    (item.pickup ?? "-").toUpperCase(),
-                                    style: mozillaTextRegularText(
-                                      fontSize: widthss/140,
-                                      color: item.airport!.pickup!.locationType!.foregroundColor == null?DynamicColors.black:
-                                      Color(int.parse("0xFF${item.airport!.pickup!.locationType!.foregroundColor}")),
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            /// DROPOFF ✅
-                            DataCell(
-                              rightClickTextCell(
-                                item: item,
-                                tabIndex: controller.selectionIndex,
-                                onRightClick: () {
-                                  print("RIGHT CLICK DROPOFF: ${item.dropoff}");
-                                },
-                                child: Container(
-                                  width: widthss/20.5,
-                                  // width: double.infinity,
-                                  height: double.infinity,
-                                  alignment: Alignment.center,
-                                  // APPLY YOUR COLOR HERE
-                                  decoration: BoxDecoration(
-                                    color: item.airport!.dropoff!.locationType!.backgroundColor == null?Colors.transparent:
-                                    Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.backgroundColor}")),
-                                    // Optional: borderRadius: BorderRadius.circular(2),
-                                  ),
-                                  child: Text(
-                                    (item.dropoff ?? "-").toUpperCase(),
-                                    style: mozillaTextRegularText(
-                                      fontSize: widthss/140,
-                                      color: item.airport!.dropoff!.locationType!.foregroundColor == null?DynamicColors.black:
-                                      Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.foregroundColor}")),
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            /// ACCOUNT ✅
-                            DataCell(
-                              rightClickTextCell(
-                                item: item,
-                                tabIndex: controller.selectionIndex,
-                                onRightClick: () {
-                                  print("RIGHT CLICK ACCOUNT: ${item.account?.name}");
-                                },
-                                child: Container(
+                                /// CUSTOMER
+                                DataCell(
+                                  SizedBox(
                                     width: widthss/20.5,
-                                    height: double.infinity,
-                                    alignment: Alignment.center,
-
-                                    // APPLY YOUR COLOR HERE
-                                    decoration: BoxDecoration(
-                                      color: item.account!.backgroundColor == null?Colors.transparent: Color(int.parse("0xFF${item.account!.backgroundColor}")),
-                                      // Optional: borderRadius: BorderRadius.circular(2),
+                                    child: rightClickTextCell(
+                                      item: item,
+                                      tabIndex: controller.selectionIndex,
+                                      onRightClick: () {},
+                                      child: Text((item.name ?? "-").toUpperCase(), style: TextStyle(fontSize: widthss/140)),
                                     ),
-                                    child: Text((item.account?.name ?? "").toUpperCase(),
-                                      style: mozillaTextRegularText(
-                                        fontSize: widthss/140,
-                                        color: item.account!.foregroundColor == null?DynamicColors.black: Color(int.parse("0xFF${item.account!.foregroundColor}")),
+                                  ),
+                                ),
+                                /// PICKUP
+                                DataCell(
+                                  rightClickTextCell(
+                                    item: item,
+                                    tabIndex: controller.selectionIndex,
+                                    child: Container(
+                                      width: widthss/20.5,
+                                      height: double.infinity,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: isSelected ? Colors.transparent : (item.airport!.pickup!.locationType!.backgroundColor == null ? Colors.transparent : Color(int.parse("0xFF${item.airport!.pickup!.locationType!.backgroundColor}"))),
                                       ),
-                                    )),
-                              ),
-                            ),
-
-                            /// DRIVER ✅
-                            DataCell(
-                              SizedBox(
-                                width: widthss/20.5,
-                                child: rightClickTextCell(
-                                  item: item,
-                                  tabIndex: controller.selectionIndex,
-                                  onRightClick: () {
-                                    print("RIGHT CLICK DRIVER: ${item.driver?.name}");
-                                  },
-                                  child: Text((item.driver?.name ?? "").toUpperCase(),
-                                    style: TextStyle(
-                                      fontSize: widthss/140,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            /// VEHICLE ✅
-                            DataCell(
-                              rightClickTextCell(
-                                item: item,
-                                tabIndex: controller.selectionIndex,
-                                onRightClick: () {
-                                  print("RIGHT CLICK VEHICLE: ${item.vehicleType?.name}");
-                                },
-                                child: Container(
-                                  width: widthss/20.5,
-                                  height: double.infinity,
-                                  alignment: Alignment.center,
-
-                                  // APPLY YOUR COLOR HERE
-                                  decoration: BoxDecoration(
-                                    color: item.vehicleType!.backgroundColor == null?Colors.transparent: Color(int.parse("0xFF${item.vehicleType!.backgroundColor}")),
-                                    // Optional: borderRadius: BorderRadius.circular(2),
-                                  ),
-                                  child: Text((item.vehicleType?.name ?? "-").toUpperCase(),
-                                    style: mozillaTextRegularText(
-                                      fontSize: widthss/140,
-                                      color: item.vehicleType!.foregroundColor == null?DynamicColors.black: Color(int.parse("0xFF${item.vehicleType!.foregroundColor}")),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            /// NOTE ✅
-                            DataCell(
-                              rightClickTextCell(
-                                item: item,
-                                tabIndex: controller.selectionIndex,
-                                // onRightClick: () {
-                                //   print("RIGHT CLICK NOTE");
-                                // },
-                                child: SizedBox(
-                                  width: widthss/20.5,
-                                  child: Text(
-                                    (item.notes!.isEmpty ? "" : item.notes![0].note ?? "-").toUpperCase(),
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: widthss/140,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            /// FARE ✅
-                            DataCell(
-                              SizedBox(
-                                width: widthss/20.5,
-                                child: rightClickTextCell(
-                                  item: item,
-                                  tabIndex: controller.selectionIndex,
-                                  // onRightClick: () {
-                                  //   print("RIGHT CLICK FARE: ${item.fares}");
-                                  // },
-                                  child: Text("£ ${item.fares ?? "0.00"}",
-                                    style: TextStyle(
-                                      fontSize: widthss/140,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            /// STATUS ✅
-                            DataCell(
-                              rightClickTextCell(
-                                item: item,
-                                tabIndex: controller.selectionIndex,
-                                // onRightClick: () {
-                                //   print("RIGHT CLICK STATUS");
-                                // },
-                                child: Container(
-                                  width: widthss/20.5,
-                                  height: double.infinity,
-                                  alignment: Alignment.center,
-
-                                  // APPLY YOUR COLOR HERE
-                                  decoration: BoxDecoration(
-                                    color: DynamicColors.statusColor,
-                                    // Optional: borderRadius: BorderRadius.circular(2),
-                                  ),
-                                  child: Text(
-                                    "${item.bookingStatus!.bookingStatus}".toUpperCase(),
-                                    style: TextStyle(color: DynamicColors.whiteClr,
-                                      fontSize: widthss/140,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            /// J/T ✅
-                            DataCell(
-                              SizedBox(
-                                width: widthss/20.5,
-                                child: rightClickTextCell(
-                                  item: item,
-                                  tabIndex: controller.selectionIndex,
-                                  onRightClick: () {
-                                    print("RIGHT CLICK JOURNEY TYPE");
-                                  },
-                                  child: Text((item.journeyType?.journeyType ?? "-").toUpperCase(),
-                                    style: TextStyle(
-                                      fontSize: widthss/140,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            /// P/T ✅
-                            DataCell(
-                              rightClickTextCell(
-                                item: item,
-                                tabIndex: controller.selectionIndex,
-                                onRightClick: () {
-
-                                  print("RIGHT CLICK PAYMENT TYPE");
-                                },
-                                child: Container(
-                                    width: widthss/19.5,
-                                    height: double.infinity,
-                                    alignment: Alignment.center,
-
-                                    // APPLY YOUR COLOR HERE
-                                    decoration: BoxDecoration(
-                                      color: DynamicColors.primaryClr,
-                                      // Optional: borderRadius: BorderRadius.circular(2),
-                                    ),
-                                    child: Text((item.paymentType?.name ?? "-").toUpperCase(),
-                                      style: TextStyle(
-                                          color: DynamicColors.whiteClr,
-                                        fontSize: widthss/140,
+                                      child: Text(
+                                        (item.pickup ?? "-").toUpperCase(),
+                                        style: mozillaTextRegularText(
+                                          fontSize: widthss/140,
+                                          color: item.airport!.pickup!.locationType!.foregroundColor == null?DynamicColors.black: Color(int.parse("0xFF${item.airport!.pickup!.locationType!.foregroundColor}")),
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                    )),
-                              ),
-                            ),
-
-                            /// ACTIONS ❌
-                            DataCell(
-                              Row(
-
-                                children: [
-                                  IconButton(
-                                    icon:  Icon(Icons.arrow_forward, color: Colors.green),
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => DispatchBooking(bookingItem: item),
-                                      );
-                                    },
-                                  ),
-                                   Text("|"),
-                                  if(permissions.contains('delete_booking'))  IconButton(
-                                    icon:  Icon(Icons.delete_forever, color: Colors.red),
-                                    onPressed: () {
-                                      // showShortcutDialog(
-                                      //   context,
-                                      //   title: "Delete",
-                                      //   contentWidget: const Text("Are you sure?"),
-                                      // );
-                                      showDialog(
-                                        context: context,
-                                        builder: (_) =>
-                                            DeletePermissionAlert(
-                                              deleteFunctionName: (){
-                                                controller.deleteBooking(item.id);
-                                              },
-                                            ),
-                                      );
-                                    },
-                                  ),
-                                   Text("|"),
-                                  if(permissions.contains('update_booking')) Expanded(
-                                    child: IconButton(
-                                      icon:  Icon(Icons.more_horiz, color: Colors.green),
-                                      onPressed: () async {
-                                        controller.dashBoardDataBinding(id: item.id!);
-                                        // Get.to(UpdateBooking(data: item.id,));
-
-                                        //   final newTabUrl =
-                                        //       "${Uri.base.origin}${Routes.updateBooking}?data=${item.id}";
-                                        //     // final newTabUrl = Uri.base.origin + Routes.updateBooking;
-                                        // if (await canLaunchUrl(Uri.parse(newTabUrl))) {
-                                        //   await launchUrl(
-                                        //   Uri.parse(newTabUrl),
-                                        //   mode: LaunchMode.externalApplication,
-                                        //   );
-                                        //   } else {
-                                        //   throw 'Could not launch $newTabUrl';
-                                        //   }
-
-
-                                        // Instead of launchUrl
-                                        // Navigator.pushNamed(
-                                        //   context,
-                                        //   Routes.updateBooking,
-                                        //   arguments: item.id,
-                                        // );
-                                      },
                                     ),
                                   ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        );
-                      },
+                                ),
+                                /// DROPOFF
+                                DataCell(
+                                  rightClickTextCell(
+                                    item: item,
+                                    tabIndex: controller.selectionIndex,
+                                    child: Container(
+                                      width: widthss/20.5,
+                                      height: double.infinity,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: isSelected ? Colors.transparent : (item.airport!.dropoff!.locationType!.backgroundColor == null ? Colors.transparent : Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.backgroundColor}"))),
+                                      ),
+                                      child: Text(
+                                        (item.dropoff ?? "-").toUpperCase(),
+                                        style: mozillaTextRegularText(
+                                          fontSize: widthss/140,
+                                          color: item.airport!.dropoff!.locationType!.foregroundColor == null?DynamicColors.black: Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.foregroundColor}")),
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                /// ACCOUNT
+                                DataCell(
+                                  rightClickTextCell(
+                                    item: item,
+                                    tabIndex: controller.selectionIndex,
+                                    child: Container(
+                                        width: widthss/20.5,
+                                        height: double.infinity,
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                          color: isSelected ? Colors.transparent : (item.account!.backgroundColor == null ? Colors.transparent : Color(int.parse("0xFF${item.account!.backgroundColor}"))),
+                                        ),
+                                        child: Text((item.account?.name ?? "").toUpperCase(),
+                                          style: mozillaTextRegularText(
+                                            fontSize: widthss/140,
+                                            color: item.account!.foregroundColor == null?DynamicColors.black: Color(int.parse("0xFF${item.account!.foregroundColor}")),
+                                          ),
+                                        )),
+                                  ),
+                                ),
+                                /// DRIVER
+                                DataCell(
+                                  SizedBox(
+                                    width: widthss/20.5,
+                                    child: rightClickTextCell(
+                                      item: item,
+                                      tabIndex: controller.selectionIndex,
+                                      child: Text((item.driver?.name ?? "").toUpperCase(), style: TextStyle(fontSize: widthss/140)),
+                                    ),
+                                  ),
+                                ),
+                                /// VEHICLE
+                                DataCell(
+                                  rightClickTextCell(
+                                    item: item,
+                                    tabIndex: controller.selectionIndex,
+                                    child: Container(
+                                      width: widthss/20.5,
+                                      height: double.infinity,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: isSelected ? Colors.transparent : (item.vehicleType!.backgroundColor == null ? Colors.transparent : Color(int.parse("0xFF${item.vehicleType!.backgroundColor}"))),
+                                      ),
+                                      child: Text((item.vehicleType?.name ?? "-").toUpperCase(),
+                                        style: mozillaTextRegularText(
+                                          fontSize: widthss/140,
+                                          color: item.vehicleType!.foregroundColor == null?DynamicColors.black: Color(int.parse("0xFF${item.vehicleType!.foregroundColor}")),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                /// NOTE
+                                DataCell(
+                                  rightClickTextCell(
+                                    item: item,
+                                    tabIndex: controller.selectionIndex,
+                                    child: SizedBox(
+                                      width: widthss/20.5,
+                                      child: Text(
+                                        (item.notes!.isEmpty ? "" : item.notes![0].note ?? "-").toUpperCase(),
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(fontSize: widthss/140),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                /// FARE
+                                DataCell(
+                                  SizedBox(
+                                    width: widthss/20.5,
+                                    child: rightClickTextCell(
+                                      item: item,
+                                      tabIndex: controller.selectionIndex,
+                                      child: Text("£ ${item.fares ?? "0.00"}", style: TextStyle(fontSize: widthss/140)),
+                                    ),
+                                  ),
+                                ),
+                                /// STATUS
+                                DataCell(
+                                  rightClickTextCell(
+                                    item: item,
+                                    tabIndex: controller.selectionIndex,
+                                    child: Container(
+                                      width: widthss/20.5,
+                                      height: double.infinity,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: DynamicColors.statusColor,
+                                      ),
+                                      child: Text(
+                                        "${item.bookingStatus!.bookingStatus}".toUpperCase(),
+                                        style: TextStyle(color: DynamicColors.whiteClr, fontSize: widthss/140),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                /// J/T
+                                DataCell(
+                                  SizedBox(
+                                    width: widthss/20.5,
+                                    child: rightClickTextCell(
+                                      item: item,
+                                      tabIndex: controller.selectionIndex,
+                                      child: Text((item.journeyType?.journeyType ?? "-").toUpperCase(), style: TextStyle(fontSize: widthss/140)),
+                                    ),
+                                  ),
+                                ),
+                                /// P/T
+                                DataCell(
+                                  rightClickTextCell(
+                                    item: item,
+                                    tabIndex: controller.selectionIndex,
+                                    child: Container(
+                                        width: widthss/19.5,
+                                        height: double.infinity,
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                          color: DynamicColors.primaryClr,
+                                        ),
+                                        child: Text((item.paymentType?.name ?? "-").toUpperCase(),
+                                          style: TextStyle(color: DynamicColors.whiteClr, fontSize: widthss/140),
+                                        )),
+                                  ),
+                                ),
+                                /// ACTIONS
+                                DataCell(
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(Icons.arrow_forward, color: Colors.green),
+                                        onPressed: () {
+                                          showDialog(context: context, builder: (context) => DispatchBooking(bookingItem: item));
+                                        },
+                                      ),
+                                      Text("|"),
+                                      if(permissions.contains('delete_booking')) IconButton(
+                                        icon: Icon(Icons.delete_forever, color: Colors.red),
+                                        onPressed: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (_) => DeletePermissionAlert(deleteFunctionName: (){ controller.deleteBooking(item.id); }),
+                                          );
+                                        },
+                                      ),
+                                      Text("|"),
+                                      if(permissions.contains('update_booking')) Expanded(
+                                        child: IconButton(
+                                          icon: Icon(Icons.more_horiz, color: Colors.green),
+                                          onPressed: () async {
+                                            controller.dashBoardDataBinding(id: item.id!);
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
                     ),
                   ),
-                ),
                 PaginationWidget(
                     currentPage: controller.dashboardTableCurrentPage.value,
                     totalPages: controller.dashboardTableTotalPages.value,
@@ -736,7 +565,6 @@ double widthss = MediaQuery.of(context).size.width;
         }
     );
   }
-
 
 
 

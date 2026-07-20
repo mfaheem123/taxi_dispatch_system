@@ -156,96 +156,106 @@ onTap: () {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                    child: Wrap(
+                      spacing: 15,
+                      runSpacing: 15,
+                      alignment: WrapAlignment.start,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        Wrap(
-                          spacing: 15,
-                          runSpacing: 15,
+                        labeledField(
+                          context: context,
+                          isMobile: isMobile,
+                          label: AppText.from,
+                          width: fieldWidth / 1.8,
+                          child: SizedBox(
+                            height: 30,
+                            child: KeyboardDatePicker(
+                              initialDate: controller.invoiceListFromDate ?? DateTime.now(),
+                              onChanged: (fromDate) {
+                                controller.invoiceListFromDate = fromDate;
+                                controller.update();
+                              },
+                            ),
+                          ),
+                        ),
+                        labeledField(
+                          context: context,
+                          isMobile: isMobile,
+                          label: AppText.to,
+                          width: fieldWidth / 1.8,
+                          child: SizedBox(
+                            height: 30,
+                            child: KeyboardDatePicker(
+                              initialDate: controller.invoiceListToDate ?? DateTime.now(),
+                              onChanged: (toDate) {
+                                controller.invoiceListToDate = toDate;
+                                controller.update();
+                              },
+                            ),
+                          ),
+                        ),
+
+                        // Fixed & Formatted Dropdown Row
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            labeledField(
-                              context: context,
-                              isMobile: isMobile,
-                              label: AppText.from,
-                              width: fieldWidth / 1.8,
-                              child:
-                              SizedBox(height: 30, child: KeyboardDatePicker(
-
-                                  initialDate: controller.invoiceListFromDate ?? DateTime.now(),
-                                  onChanged: (fromDate) {
-                                    controller.invoiceListFromDate = fromDate;
-                                    controller.update();
-                                  }
-
-
-
-                              )),
-                            ),
-                            labeledField(
-                              context: context,
-                              isMobile: isMobile,
-                              label: AppText.to,
-                              width: fieldWidth / 1.8,
-                              child:
-                              SizedBox(height: 30, child: KeyboardDatePicker(
-                                  initialDate: controller.invoiceListToDate ?? DateTime.now(),
-                                  onChanged: (fromDate) {
-                                    controller.invoiceListToDate = fromDate;
-                                    controller.update();
-                                  }
-                              )),
-                            ),
-                            Row(
-                              children: [
                             Text("STATUS", style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                            SizedBox(width: 14),
-                                CustomDropdownField<String>(
-                                  width: fieldWidth / 4,
-                                  label: "STATUS",
-                                  items: ["all", "paid", "unpaid"],
-                                  value: controller.status,
-                                  itemLabel: (val) => val, // just show the string
-                                  onChanged: (val) {
-                                    controller.status = val!.toLowerCase();
-                                    controller.update();
-                                  },
-                                ),
-                              ],
+                            const SizedBox(width: 14),
+                            CustomDropdownField<String>(
+                              width: fieldWidth / 4,
+                              label: "STATUS",
+                              // Model database options uppercase me show karne ke liye
+                              items: ["ALL", "PAID", "UNPAID"],
+                              // Controller value ko check karte waqt fallback logic taake exact match ho
+                              value: (controller.status == null || controller.status!.isEmpty)
+                                  ? "ALL"
+                                  : controller.status!.toUpperCase(),
+                              itemLabel: (val) => val,
+                              onChanged: (val) {
+                                if (val != null) {
+                                  // API validation lowerCase accept karti hai isliye controller me lowercase save hoga
+                                  controller.status = val.toLowerCase();
+                                  controller.update();
+                                }
+                              },
                             ),
                           ],
                         ),
-                        Spacer(),
-                        CustomButton(
-                          onTap: () {
-                            controller.invoiceNumber.value = "";
-                            controller.searchAccount.value = "";
-                            controller.status = "all";
-                            controller.invoiceListFromDate = DateTime.now();
-                            controller.invoiceListToDate = DateTime.now();
-                            controller.listAccountInvoice();
-                          },
-                          verticalPadding: 0.0,
-                          width: 60,
-                          height: 40,
-                          borderRadius: 4,
-                          btnText: AppText.clear,
-                          style: mozillaTextRegularText(
-                              fontSize: 10, color: DynamicColors.whiteClr),
-                        ),
-                        SizedBox(
-                          width: 15,
-                        ),
-                        CustomButton(
-                          onTap: () {
-                            controller.listAccountInvoice();
-                          },
-                          verticalPadding: 0.0,
-                          width: 60,
-                          height: 40,
-                          borderRadius: 4,
-                          btnText: AppText.search,
-                          style: mozillaTextRegularText(
-                              fontSize: 10, color: DynamicColors.whiteClr),
+
+                        // Action Buttons
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CustomButton(
+                              onTap: () {
+                                controller.invoiceNumber.value = "";
+                                controller.searchAccount.value = "";
+                                controller.status = "all";
+                                controller.invoiceListFromDate = DateTime.now();
+                                controller.invoiceListToDate = DateTime.now();
+                                controller.listAccountInvoice();
+                              },
+                              verticalPadding: 0.0,
+                              width: 60,
+                              height: 40,
+                              borderRadius: 4,
+                              btnText: AppText.clear,
+                              style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
+                            ),
+                            const SizedBox(width: 15),
+                            CustomButton(
+                              onTap: () {
+                                // Yahan explicit status state parameter bheja ja raha hai text query filtering ke liye
+                                controller.listAccountInvoice(activeFilter: "status");
+                              },
+                              verticalPadding: 0.0,
+                              width: 60,
+                              height: 40,
+                              borderRadius: 4,
+                              btnText: AppText.search,
+                              style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
+                            ),
+                          ],
                         ),
                       ],
                     ),

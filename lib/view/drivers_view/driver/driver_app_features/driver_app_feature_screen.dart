@@ -36,8 +36,9 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
     double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-
-    return GetBuilder<DriverController>(
+    return FocusTraversalGroup(
+        policy: OrderedTraversalPolicy(),
+        child: GetBuilder<DriverController>(
       initState: (state) {
         permissions = Api().sp.read('all_permissions') ?? [];
         controller.getAllDrivers();
@@ -143,7 +144,7 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
             ],
           ),
         );
-      }
+      })
     );
   }
 }

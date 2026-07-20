@@ -1,6 +1,7 @@
 
 
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/view/fare_view/model/plotVehicleModel.dart';
@@ -39,6 +40,8 @@ class _PlotFareState extends State<PlotFare> {
   void initState() {
     super.initState();
     shortCutKeyValue.value = "plotFare";
+    controller.getPlotVehicleType();
+    controller.getAllPlotFare();
   }
 
   @override
@@ -55,17 +58,20 @@ class _PlotFareState extends State<PlotFare> {
 
 
 
-          return
+          if (controller.getAllPlotFareLoader.value ||
+              controller.getPlotVehicleTypeLoader.value) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
 
 
-           controller.getPlotVehicleTypeLoader.value
-              ? Center(
-            child: CircularProgressIndicator(),
-          )
-              :
 
-            LayoutBuilder(
-              builder: (context, constraints) {
+
+
+          return LayoutBuilder(
+
+          builder: (context, constraints) {
                 final double maxWidth = constraints.maxWidth;
                 final bool isMobile = maxWidth < 600;
                 final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
@@ -219,6 +225,8 @@ class _PlotFareState extends State<PlotFare> {
                                         side: BorderSide(color: DynamicColors.gryClr), // optional border color
                                       ),
                                       onPressed: (){
+                                        controller.ploteFareDescriptionController.clear();
+                                        controller.selectedPickupIds.clear();
                                         controller.Zoneevalue = null;
                                         controller.update();
                                       }, child: Icon(Icons.delete_forever,
@@ -289,7 +297,7 @@ class _PlotFareState extends State<PlotFare> {
                                         }
                                       }, child: Icon(Icons.add)
                                   ),
-
+                                  // Delete To Plot
                                   OutlinedButton(
                                       style: OutlinedButton.styleFrom(
                                         minimumSize: const Size(43, 42), // width & height
@@ -300,6 +308,8 @@ class _PlotFareState extends State<PlotFare> {
                                         side: BorderSide(color: DynamicColors.gryClr), // optional border color
                                       ),
                                       onPressed: (){
+                                        controller.ploteFareDescription2ndController.clear();
+                                        controller.selectedDropoffIds .clear();
                                         controller.Zonee1value = null;
                                         controller.update();
                                       }, child: Icon(Icons.delete_forever,
@@ -356,6 +366,8 @@ class _PlotFareState extends State<PlotFare> {
                           children: [
                             CustomButton(
                               onTap: (){
+                                controller.ploteFareDescription2ndController == null  || controller.ploteFareDescriptionController == null  ? BotToast.showText(text: "ADD PLOT"):
+
                                 controller.postPlotFare();
                               },
                               height: 35,

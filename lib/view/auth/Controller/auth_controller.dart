@@ -83,7 +83,7 @@ class AuthController extends GetxController {
       "web_device_id": fcmToken ?? "",
     };
 
-    var response = await Api().post(formData, 'employees/login', auth: false);
+    var response = await Api().post(formData, 'employees/login',sendCompanyId: true, auth: false);
 
     if (response.statusCode == 200) {
       var employeeData = response.data['employee'];
@@ -101,6 +101,7 @@ class AuthController extends GetxController {
 
       if (extensions.isEmpty) {
         Get.offAllNamed(Routes.myHomePage);
+        PostAuthLoader(false);
         Future.delayed(const Duration(milliseconds: 800), () {
           ExtensionAlert.show();
         });
@@ -109,9 +110,11 @@ class AuthController extends GetxController {
         Employee.selectedEmployee!.extensionNumber = latestExtension;
         print("Extension Found: $latestExtension");
         Get.offAllNamed(Routes.myHomePage);
+        PostAuthLoader(false);
         update();
       }
     } else {
+      PostAuthLoader(false);
       // Error handling behtar karne ke liye response message bhi dikha sakte hain
       BotToast.showText(text: response.data['message'] ?? "Login failed!");
     }

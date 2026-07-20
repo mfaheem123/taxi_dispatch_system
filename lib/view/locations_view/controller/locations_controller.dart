@@ -43,8 +43,6 @@ class LocationController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>LIST OF LOCATIONS Functionality
 
-  /// bool variables
-  RxBool blackList = false.obs;
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>LIST OF LOCATIONS Functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Create Location Form
@@ -69,7 +67,7 @@ class LocationController extends GetxController {
     update(); // UI ko loader dikhane ke liye
 
     try {
-      var response = await Api().get("locationtype/zone");
+      var response = await Api().get("locationtype/zone", sendCompanyId: true);
       if (response.statusCode == 200) {
         locationtypezoneModel = LocationtypezoneModel.fromJson(response.data);
 
@@ -161,7 +159,7 @@ class LocationController extends GetxController {
   final int locationLimit = 10;
   LocationListModel? locationListModel;
   RxBool getLocationLoader = false.obs;
-
+  RxBool blackList = false.obs;
   getLocationList() async {
       getLocationLoader(true);
       var response = await Api().get("locations/get", queryParameters: {
@@ -173,8 +171,9 @@ class LocationController extends GetxController {
         "address": searchAddress.value.toLowerCase(),
         "location_type": searchLocationType.value.toLowerCase(),
         "zone": searchZone.value.toLowerCase(),
+        "blacklist" : blackList.value,
       },
-
+       auth: true,
       sendCompanyId: true,
       );
       if (response.statusCode == 200) {
@@ -204,34 +203,68 @@ class LocationController extends GetxController {
   RxBool updateRNLocationValue = false.obs;
   RxBool updateRN1LocationValue = false.obs;
   RxInt locationUpdateId = 0.obs;
+  // bindLocationUpdateLocation({Location? locationUpdate}) async {
+  //   if (locationUpdate == null) return;
+  //
+  //   locationUpdateId.value = locationUpdate.id ?? 0;
+  //   locationNameCtrl.text = (locationUpdate.name ?? '').toUpperCase();
+  //   longitudeCtrl.text = locationUpdate.longitude ?? '';
+  //   latitudeCtrl.text = locationUpdate.latitude ?? '';
+  //   postcodeCtrl.text = (locationUpdate.postcode ?? '').toUpperCase();
+  //   shortcutCtrl.text = (locationUpdate.shortcut ?? '').toUpperCase();
+  //   addressCtrl.text = (locationUpdate.address ?? '').toUpperCase();
+  //   extraChargesCtrl.text = (locationUpdate.extraCharges.toString()).toUpperCase();
+  //
+  //   updateLocationValue(true);
+  //
+  //   await getLocationTypeZone();
+  //   if (locationtypezoneModel != null) {
+  //     zoneValue = locationtypezoneModel!.zonesList?.firstWhereOrNull(
+  //             (z) => z.id == locationUpdate.zoneId
+  //     );
+  //     locationTypeValue = locationtypezoneModel!.locationTypesList?.firstWhereOrNull(
+  //             (lt) => lt.id == locationUpdate.locationTypeId
+  //     );
+  //
+  //     print("Zone Found: ${zoneValue?.name}");
+  //   }
+  //   update();
+  // }
   bindLocationUpdateLocation({Location? locationUpdate}) async {
     if (locationUpdate == null) return;
 
     locationUpdateId.value = locationUpdate.id ?? 0;
+
     locationNameCtrl.text = (locationUpdate.name ?? '').toUpperCase();
     longitudeCtrl.text = locationUpdate.longitude ?? '';
     latitudeCtrl.text = locationUpdate.latitude ?? '';
     postcodeCtrl.text = (locationUpdate.postcode ?? '').toUpperCase();
     shortcutCtrl.text = (locationUpdate.shortcut ?? '').toUpperCase();
     addressCtrl.text = (locationUpdate.address ?? '').toUpperCase();
-    extraChargesCtrl.text = (locationUpdate.extraCharges.toString()).toUpperCase();
+    extraChargesCtrl.text = locationUpdate.extraCharges.toString();
 
     updateLocationValue(true);
 
-    await getLocationTypeZone();
-    if (locationtypezoneModel != null) {
-      zoneValue = locationtypezoneModel!.zonesList?.firstWhereOrNull(
-              (z) => z.id == locationUpdate.zoneId
-      );
-      locationTypeValue = locationtypezoneModel!.locationTypesList?.firstWhereOrNull(
-              (lt) => lt.id == locationUpdate.locationTypeId
-      );
 
-      print("Zone Found: ${zoneValue?.name}");
-    }
+    await getLocationTypeZone();
+
+
+    zoneValue = locationtypezoneModel?.zonesList?.firstWhereOrNull(
+          (z) => z.id == locationUpdate.zoneId,
+    );
+
+
+    locationTypeValue =
+        locationtypezoneModel?.locationTypesList?.firstWhereOrNull(
+              (lt) => lt.id == locationUpdate.locationTypeId,
+        );
+
+
+    print("EDIT ZONE => ${zoneValue?.name}");
+    print("EDIT TYPE => ${locationTypeValue?.name}");
+
     update();
   }
-
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Delete Location List Work
 

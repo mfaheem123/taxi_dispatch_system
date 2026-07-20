@@ -1,14 +1,15 @@
-importScripts("https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js");
-importScripts("https://www.gstatic.com/firebasejs/9.10.0/firebase-messaging-compat.js");
+// Compat SDKs ko import karein (Web Service Worker ke liye yehi standard hai)
+importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js");
 
-// Firebase initialize karein (Apni settings yahan dalein)
+// Firebase initialize karein
 firebase.initializeApp({
-  apiKey: "AIzaSyDDxZ8lPfTJ1XcUn_7HpyvExygoWxgQR-A",
-  authDomain: "texidispetchsystem.firebaseapp.com",
-  projectId: "texidispetchsystem",
-  storageBucket: "texidispetchsystem.firebasestorage.app",
-  messagingSenderId: "81697669010",
-  appId:"1:81697669010:web:388758b1deabeb4af60b4b",
+  apiKey: "AIzaSyBcPkD24z5Pd1hA3idX4ZnOw2zE4mcxrP4",
+  authDomain: "nexus-texh-group-ltd.firebaseapp.com",
+  projectId: "nexus-texh-group-ltd",
+  storageBucket: "nexus-texh-group-ltd.firebasestorage.app",
+  messagingSenderId: "532500206034",
+  appId: "1:532500206034:web:0c31feb5dbab22da97f80b",
 });
 
 const messaging = firebase.messaging();
@@ -17,10 +18,11 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] Received background message ', payload);
 
-  const notificationTitle = payload.notification.title;
+  // Payload check karein taake agar notification data khali ho to crash na ho
+  const notificationTitle = payload.notification ? payload.notification.title : "New Notification";
   const notificationOptions = {
-    body: payload.notification.body,
-    icon: '/icons/Icon-192.png' // Aapka app icon path
+    body: payload.notification ? payload.notification.body : "",
+    icon: '/icons/Icon-192.png' // App icon path
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);

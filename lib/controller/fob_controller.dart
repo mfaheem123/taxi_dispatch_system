@@ -15,7 +15,7 @@ class FobController extends GetxController {
   getDispatchFob() async {
     try {
       isLoading(true);
-      var response = await Api().get("drivers/fob-drivers");
+      var response = await Api().get("drivers/fob-drivers", sendCompanyId: true);
       if (response.statusCode == 200) {
         getFobModel = GetFobModel.fromJson(response.data);
         drivers.value = getFobModel?.drivers ?? [];
@@ -37,7 +37,7 @@ class FobController extends GetxController {
         "driver_id": driverId,
       };
       var response =
-          await Api().post(formData, "bookings/fob-driver", auth: true);
+          await Api().post(formData, "bookings/fob-driver", auth: true, sendCompanyId: true,);
       if (response.statusCode == 200) {
         BotToast.showText(text: 'Driver Assigned Successfully');
         Get.back();
@@ -60,7 +60,7 @@ class FobController extends GetxController {
     isLoadingDriver = true;
     update();
     try {
-      var response = await Api().get("drivers/get");
+      var response = await Api().get("drivers/get", sendCompanyId: true,);
       if (response.statusCode == 200) {
         allDriverData = RestricDriverModel.fromJson(response.data);
 

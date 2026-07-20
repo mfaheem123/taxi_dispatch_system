@@ -223,8 +223,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     width: 9,
                   ),
                   GestureDetector(
-                  onTap: () {
-                    authController.logout();
+                  onTap: () async{
+                    await authController.logout();
+                    controller.selectedMenuItems.clear();
+                    controller.currentPage.value = ByDefaultDashboard();
                   },
                     child: Icon(
                       Icons.power_settings_new,
@@ -1261,10 +1263,10 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('read_customer_invoice')){
-                controller.currentPage.value = CreateCustomerinvoice();
+                controller.currentPage.value = CreateCustomerInvoice();
                 controller.menuBarRefresh(
                     title: "CREATE CUSTOMER INVOICE",
-                    pageName: CreateCustomerinvoice());
+                    pageName: CreateCustomerInvoice());
               }
             });
           },

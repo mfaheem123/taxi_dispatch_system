@@ -229,7 +229,7 @@ class DriverController extends GetxController {
 
   getCombineVehicle({id}) async {
     getCombineVehicleLoading(true);
-    var response = await Api().get("driver-combine/get");
+    var response = await Api().get("driver-combine/get", sendCompanyId: true);
     if (response.statusCode == 200) {
       getCombineVehicleData = DriverFormModel.fromJson(response.data);
       if (id != null) {
@@ -697,6 +697,12 @@ class DriverController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create driver form functionality
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver list screen
+  /// Remove document image from a specific row by index
+  void removeDocument(int index) {
+    rows[index].fileName = null;
+    rows.refresh();
+    update();
+  }
 
   RxBool activeDrivers = false.obs;
   GetDriverModel? listDriverModel;
@@ -829,7 +835,7 @@ class DriverController extends GetxController {
   getAllDrivers() async {
     isDriversLoading = true;
     update();
-    var response = await Api().get("drivers/get");
+    var response = await Api().get("drivers/get", sendCompanyId: true);
     if (response.statusCode == 200) {
       allDriverData = RestricDriverModel.fromJson(response.data);
     }
@@ -943,13 +949,54 @@ class DriverController extends GetxController {
       BotToast.showText(text: 'DRIVER FEATURES UPDATED SUCCESSFULLY');
       print("Features Updated Successfully");
       saveFeaturesLoad(false);
+      selectDriverObject = null; // Reset dropdown to placeholder state
+      clearDriverFeaturesFields();
+      update();
+    } else {
       print("Error Updating Features");
       print(response);
+      saveFeaturesLoad(false);
       update();
     }
   }
 
+  void clearDriverFeaturesFields() {
+    showCustomerValue.value = false;
+    enableCustomerValue.value = false;
+    enableFlagDownValue.value = false;
+    showAccountFareValue.value = false;
+    hideBreakValue.value = false;
+    hideDeclineValue.value = false;
+    hideRecoverValue.value = false;
+    hideNoPickUpValue.value = false;
+    hidePickUpValue.value = false;
+    hideDropOffValue.value = false;
+    fareMeterValue.value = false;
+    diableFareMeterValue.value = false;
+    fareMeterWaitingValue.value = false;
+    payByCardValue.value = false;
+    waitingAfterArrivalValue.value = false;
+    disablePanicButtonValue.value = false;
+    showCompleteJobValue.value = false;
+    showNavigationValue.value = false;
+    showSwipeArriveValue.value = false;
+    shawFareValue.value = false;
+    hasCompanyCarValue.value = false;
+    hidePaymentTypeValue.value = false;
+    enableTollChargesValue.value = false;
 
+    bookingTimerController.clear();
+    breakController.clear();
+    imeController.clear();
+    makeController.clear();
+    modelController.clear();
+    simNetworkController.clear();
+    simNumberController.clear();
+    networkProviderController.clear();
+    dataAllowanceController.clear();
+    pdaDepositController.clear();
+    commentsController.clear();
+  }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER APP FEATURES screen functionality
 
@@ -1025,7 +1072,7 @@ class DriverController extends GetxController {
     isCreateDriverCommission = true;
     update();
     var response = await Api()
-        .get("drivers/commission?active=true&driver_type=Commission", sendCompanyId: true);
+        .get("drivers/commission?active=true&driver_type=COMMISSION", sendCompanyId: true);
     if (response.statusCode == 200) {
       // print("API Response: ${response.data}");
       listDriverCommission = ListDriverCommissionModel.fromJson(response.data);
@@ -1478,6 +1525,7 @@ class DriverController extends GetxController {
   driverCommissionDelete(int? id) async {
     var response = await Api().delete("driver_commission/delete/$id");
     if (response.statusCode == 200) {
+      getDriverCommission();
       BotToast.showText(text:"DRIVER COMMISSION DELETED SUCCESSFULLY!");
       print("DriverCommission deleted successfully!");
     }
@@ -2010,7 +2058,7 @@ class DriverController extends GetxController {
     isCreateDriverRent = true;
     update();
     var response =
-    await Api().get("drivers/commission?active=true&driver_type=Rent/Week", sendCompanyId: true,);
+    await Api().get("drivers/commission?active=true&driver_type=RENT/WEEK", sendCompanyId: true,);
     if (response.statusCode == 200) {
       print("API Response: ${response.data}");
       driverRentModel = DriverRentModel.fromJson(response.data);

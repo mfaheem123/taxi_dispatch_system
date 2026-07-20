@@ -51,7 +51,7 @@ class InvoiceController extends GetxController {
 
   getSubsidiary() async {
     isSubsidiary = true;
-    var response = await Api().get("subsidiaries/get");
+    var response = await Api().get("subsidiaries/get", sendCompanyId: true);
     if (response.statusCode == 200) {
       subsDiaryModel = SubsDiaryModel.fromJson(response.data);
       isSubsidiary = false;
@@ -65,7 +65,7 @@ class InvoiceController extends GetxController {
   DepartmentObject? selectDepartmentData;
 
   getAccountData({subsidiariesId}) async {
-    var response = await Api().get("accounts/subsidiary/$subsidiariesId");
+    var response = await Api().get("accounts/subsidiary/$subsidiariesId", sendCompanyId: true,);
     if (response.statusCode == 200) {
       selectDepartmentData = null;
       selectAccountValue = null;
@@ -233,6 +233,7 @@ class InvoiceController extends GetxController {
 
   listAccountInvoice({bool isFirstTime = false, String? activeFilter}) async {
     isLoadingListOfAccountInvoice.value = true;
+
     String? fromDateStr = isFirstTime
         ? null
         : invoiceListFromDate?.toIso8601String().split('T').first;
@@ -240,33 +241,29 @@ class InvoiceController extends GetxController {
         ? null
         : invoiceListToDate?.toIso8601String().split('T').first;
 
+    // Status payload value process logic
+    String? statusParam;
+    if (status != null && status != "all" && status!.isNotEmpty) {
+      statusParam = status!.toLowerCase();
+    }
+
     var response = await Api().get("account_invoice/get", queryParameters: {
       "limit": limit,
-      "invoice_number":
-          activeFilter == "invoice" ? invoiceNumber.value.toLowerCase() : null,
-      "account_name":
-          activeFilter == "account" ? searchAccount.value.toLowerCase() : null,
-      "department_name": activeFilter == "department"
-          ? searchDepartment.value.toLowerCase()
-          : null,
-      "order_number":
-          activeFilter == "order" ? searchOrder.value.toLowerCase() : null,
-      "amount":
-          activeFilter == "amount" ? searchAmount.value.toLowerCase() : null,
-      "subsidiary_name": activeFilter == "subsidiary"
-          ? searchSubsidiary.value.toLowerCase()
-          : null,
+      "invoice_number": activeFilter == "invoice" ? invoiceNumber.value.toLowerCase() : null,
+      "account_name": activeFilter == "account" ? searchAccount.value.toLowerCase() : null,
+      "department_name": activeFilter == "department" ? searchDepartment.value.toLowerCase() : null,
+      "order_number": activeFilter == "order" ? searchOrder.value.toLowerCase() : null,
+      "amount": activeFilter == "amount" ? searchAmount.value.toLowerCase() : null,
+      "subsidiary_name": activeFilter == "subsidiary" ? searchSubsidiary.value.toLowerCase() : null,
       "invoice_date": activeFilter == "invoicedate" ? searchDate.value : null,
-      "invoice_due_date":
-          activeFilter == "duedate" ? searchDueDate.value : null,
-      "status": activeFilter == "status"
-          ? (status == null || status == "all")
-              ? null
-              : status
-          : null,
+      "invoice_due_date": activeFilter == "duedate" ? searchDueDate.value : null,
+
+      // Status direct send hoga jab query match karegi bina string validation check failure ke
+      "status": activeFilter == "status" ? statusParam : statusParam,
       "from_date": fromDateStr,
       "to_date": toDateStr,
     }, sendCompanyId: true);
+
     if (response.statusCode == 200) {
       listOfAccountInvoice = ListOfAccountInvoiceModel.fromJson(response.data);
       totalPages.value = listOfAccountInvoice?.totalPages ?? 1;
@@ -305,8 +302,11 @@ class InvoiceController extends GetxController {
 
   var isPaid = false.obs;
 
-  void togglePaidStatus() {
+// 1. togglePaidStatus ko update karein taaki ye Invoice aur naya status accept kare
+  void togglePaidStatus(AccountInvoiceAccountInvoice invoice) {
     isPaid.value = !isPaid.value;
+    invoice.status = isPaid.value ? "PAID" : "UNPAID";
+    updateBookingAmount(invoice);
   }
 
   bool isFilterUpdateApplied = false;
@@ -426,13 +426,13 @@ class InvoiceController extends GetxController {
 
     // Admin fees from API (agar amount type AMOUNT hai)
     // Naya Logic (Direct API/Model se)
-    double adminFees = double.tryParse(accountData?.adminFees?.toString() ?? "0") ?? 0.0;
-    // double adminFees = 0;
-    // if (accountData?.adminFeesType == "AMOUNT") {
-    //   adminFees = (accountData?.adminFees ?? 0).toDouble();
-    // } else if (accountData?.adminFeesType == "PERCENTAGE") {
-    //   adminFees = (grandTotal * (accountData?.adminFees ?? 0) / 100);
-    // }
+    // double adminFees = double.tryParse(accountData?.adminFees?.toString() ?? "0") ?? 0.0;
+    double adminFees = 0;
+    if (accountData?.adminFeesType == "AMOUNT") {
+      adminFees = (accountData?.adminFees ?? 0).toDouble();
+    } else if (accountData?.adminFeesType == "PERCENTAGE") {
+      adminFees = (grandTotal * (accountData?.adminFees ?? 0) / 100);
+    }
 
     double finalTotal = grandTotal + adminFees;
 
@@ -660,6 +660,7 @@ CC: CONGESTION CHARGES
       totalMG = 0,
       totalCC = 0,
       subTotal = 0;
+  double adminFees = 0.0;
 
   void recalculateRowTotal(dynamic lineItem) {
     final booking = lineItem.booking;
@@ -700,11 +701,20 @@ CC: CONGESTION CHARGES
         subTotal += (b?.totalCharges ?? 0.0);
       }
 
-      double adminFees = double.tryParse(updateInvoiceByIdModel
-                  ?.accountInvoice?.accountInvoice?.account?.adminFees
-                  ?.toString() ??
-              "0") ??
-          0.0;
+      var accountData = updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.account;
+
+
+      double rawAdminFees = double.tryParse(accountData?.adminFees?.toString() ?? "0") ?? 0.0;
+      if (accountData?.adminFeesType == "AMOUNT") {
+        adminFees = rawAdminFees;
+      } else if (accountData?.adminFeesType == "PERCENTAGE") {
+        adminFees = (subTotal * rawAdminFees) / 100;
+      }
+      // double adminFees = double.tryParse(updateInvoiceByIdModel
+      //             ?.accountInvoice?.accountInvoice?.account?.adminFees
+      //             ?.toString() ??
+      //         "0") ??
+      //     0.0;
       updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.amount =
           (subTotal + adminFees).toStringAsFixed(2);
 
@@ -729,6 +739,7 @@ CC: CONGESTION CHARGES
     }
   }
 
+// 2. API Function (Jo aapka already likha hua hai)
   updateBookingAmount(AccountInvoiceAccountInvoice invoice) async {
     var formData = {
       if (invoice.amount != null) "amount": invoice.amount,
@@ -736,17 +747,17 @@ CC: CONGESTION CHARGES
       if (invoice.subsidiaryId != null) "subsidiary_id": invoice.subsidiaryId,
       if (invoice.departmentId != null) "department_id": invoice.departmentId,
       if (invoice.fromDate != null)
-        "from_date":
-            "${invoice.fromDate!.year}-${invoice.fromDate!.month}-${invoice.fromDate!.day}",
+        "from_date": "${invoice.fromDate!.year}-${invoice.fromDate!.month}-${invoice.fromDate!.day}",
       if (invoice.toDate != null)
-        "to_date":
-            "${invoice.toDate!.year}-${invoice.toDate!.month}-${invoice.toDate!.day}",
+        "to_date": "${invoice.toDate!.year}-${invoice.toDate!.month}-${invoice.toDate!.day}",
+      // Note: Agar ye controllers text fields hain, toh yahan .text lagana mat bhooliyega (e.g., invoiceDateController.text)
       if (invoiceDateController != null) "invoice_date": invoiceDateController,
-      if (invoiceDueDateController != null)
-        "invoice_due_date": invoiceDueDateController,
+      if (invoiceDueDateController != null) "invoice_due_date": invoiceDueDateController,
       if (invoice.invoiceType != null) "invoice_type": invoice.invoiceType,
+      // Yahan aapka status "PAID" ya "UNPAID" chala jayega form data me
       if (invoice.status != null) "status": invoice.status,
     };
+
     var response = await Api()
         .post(formData, "account_invoice/update/${invoice.id}", auth: true);
 

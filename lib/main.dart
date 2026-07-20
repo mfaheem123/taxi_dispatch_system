@@ -351,6 +351,7 @@ import 'alert/driver_break_alert.dart';
 import 'alert/driver_panic_alert.dart';
 import 'component/networks/Url.dart';
 import 'component/networks/api.dart' as Urls;
+import 'component/networks/api.dart';
 import 'view/auth/Controller/auth_controller.dart';
 
 // Background message handler (Top-level function)
@@ -379,12 +380,18 @@ void main() async {
   try {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
-        apiKey: "AIzaSyDDxZ8lPfTJ1XcUn_7HpyvExygoWxgQR-A",
-        authDomain: "texidispetchsystem.firebaseapp.com",
-        projectId: "texidispetchsystem",
-        storageBucket: "texidispetchsystem.firebasestorage.app",
-        messagingSenderId: "81697669010",
-        appId: "1:81697669010:web:388758b1deabeb4af60b4b",
+        // apiKey: "AIzaSyDDxZ8lPfTJ1XcUn_7HpyvExygoWxgQR-A",
+        // authDomain: "texidispetchsystem.firebaseapp.com",
+        // projectId: "texidispetchsystem",
+        // storageBucket: "texidispetchsystem.firebasestorage.app",
+        // messagingSenderId: "81697669010",
+        // appId: "1:81697669010:web:388758b1deabeb4af60b4b",
+        apiKey: "AIzaSyBcPkD24z5Pd1hA3idX4ZnOw2zE4mcxrP4",
+        authDomain: "nexus-texh-group-ltd.firebaseapp.com",
+        projectId: "nexus-texh-group-ltd",
+        storageBucket: "nexus-texh-group-ltd.firebasestorage.app",
+        messagingSenderId: "532500206034",
+        appId:"1:532500206034:web:0c31feb5dbab22da97f80b",
       ),
     );
 
@@ -400,8 +407,12 @@ void main() async {
   Get.put(ZoneController(), permanent: true);
   Get.put(AuthController(), permanent: true);
   Get.put(DashboardController(), permanent: true);
+
   runApp(const MyApp());
 }
+
+
+
 
 // Notification Setup Function
 Future<void> setupWebNotifications() async {
@@ -917,8 +928,48 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
   }
 }
 
-class MyApp extends StatelessWidget {
+String _getInitialRoute() {
+  final fragment = Uri.base.fragment; // everything after '#'
+  if (fragment.isNotEmpty) {
+    // Check if this hash matches any registered GetX route
+    final isValidRoute = AppPages.routes.any((page) => page.name == fragment);
+    if (isValidRoute) {
+      return fragment;
+    }
+  }
+  return AppPages.initial;
+}
+
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final sp = GetStorage();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if(sp.read('token') !=null){
+      refreshDeviceToken();
+    }
+  }
+
+  refreshDeviceToken() async{
+
+    // 1. FCM Token fetch karein
+    String? fcmToken = await FirebaseMessaging.instance.getToken();
+    print("FCM Token: $fcmToken");
+    var userInfo = await sp.read('userData');
+    var formData = {
+      "web_device_id": fcmToken ?? "",
+    };
+    await Api().post(formData,'employees/update/${userInfo['id']}');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -927,7 +978,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: false,
       ),
-      initialRoute: AppPages.initial,
+      initialRoute: _getInitialRoute(),
       debugShowCheckedModeBanner: false,
       builder: (context, child) {
         return ScrollConfiguration(
