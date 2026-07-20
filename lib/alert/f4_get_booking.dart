@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../Model/driver_earning_model.dart';
 import '../component/color.dart';
-import '../component/customButton.dart';
 import '../component/datatable_widget.dart';
 import '../component/textStyle.dart';
 import '../view/dashboard_view/booking_table.dart';
 
-class DriverBookingsAlert extends StatefulWidget {
-  const DriverBookingsAlert({super.key});
+class DriverBookingsAlert extends StatelessWidget {
+  final List<Booking> bookings;
 
-  @override
-  State<DriverBookingsAlert> createState() => _DriverBookingsAlertState();
+  const DriverBookingsAlert({super.key, required this.bookings});
 
-  static void show() {
+  static void show(List<Booking> bookings) {
     Get.dialog(
-      const DriverBookingsAlert(),
+      DriverBookingsAlert(bookings: bookings),
       barrierColor: Colors.black54,
     );
   }
-}
 
-class _DriverBookingsAlertState extends State<DriverBookingsAlert> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -60,7 +57,7 @@ class _DriverBookingsAlertState extends State<DriverBookingsAlert> {
             child: DatatableWidget(
               columns: [
                 buildHeaderWithSearch(title: "REF #", removeSearching: true),
-                buildHeaderWithSearch(title: "DATE/TIME", removeSearching: true),
+                buildHeaderWithSearch(title: "DATETIME", removeSearching: true),
                 buildHeaderWithSearch(title: "VEHICLE", removeSearching: true),
                 buildHeaderWithSearch(title: "PICKUP", removeSearching: true),
                 buildHeaderWithSearch(title: "DROPOFF", removeSearching: true),
@@ -71,154 +68,128 @@ class _DriverBookingsAlertState extends State<DriverBookingsAlert> {
                 buildHeaderWithSearch(title: "P/T", removeSearching: true),
                 buildHeaderWithSearch(title: "STATUS", removeSearching: true),
               ],
-              rows: [
-                _buildBookingRow("DCB76872", "04-07-25\n13:25", "SALOON", "D", "D", "£0.00", "CUSTOMER", "", "26", "", "COMPLETED"),
-                _buildBookingRow("DC572538", "16-06-26\n14:05", "SALOON", "NORTHWICK AVENUE HARROW HA3 0AA", "GREEN PARK WAY GREENFORD UB6 0AD", "£22.50", "CUSTOMER", "", "25", "", "COMPLETED"),
-                _buildBookingRow("DC572539", "17-06-26\n16:32", "SALOON", "NORTHWICK AVENUE HARROW HA3 0AA", "ROCKWARE AVENUE GREENFORD JBB6 0AA", "£4.50", "CUSTOMER", "", "25", "", "COMPLETED"),
-                _buildBookingRow("DCB76866", "04-07-26\n02:28", "SALOON", "1 MEADOW GARDENS EDGWARE HA8 9LQ", "WOODSIDE PARK, CASTLE POINT, ESSEX", "£0.00", "CUSTOMER", "", "25", "", "COMPLETED"),
-                _buildBookingRow("DCB75562", "01-07-26\n14:00", "SALOON", "NORTHWICK AVENUE HARROW HA3 0AA", "ACE CONTINENTAL EXPORTS RAYS HOUSE N...", "£4.50", "TEST", "", "25", "", "COMPLETED"),
-                _buildBookingRow("DCB72553", "01-07-26\n14:02", "SALOON", "BROMEFIELD STANMORE HA7 1AB", "HARMONDSWORTH LANE HARMONDSWORT...", "£4.50", "TEST", "", "25", "", "COMPLETED"),
-                _buildBookingRow("DCB75171", "04-07-25\n13:25", "SALOON", "D", "D", "£0.00", "CUSTOMER", "", "25", "", "COMPLETED"),
-                _buildBookingRow("DCB76667", "04-07-25\n02:28", "SALOON", "1 MEADOW GARDENS EDGWARE HA8 9LQ", "WOODSIDE PARK, CASTLE POINT, ESSEX", "£0.00", "CUSTOMER", "", "25", "", "COMPLETED"),
-                _buildBookingRow("DCB72568", "04-07-25\n02:22", "SALOON", "F", "F", "£0.00", "CUSTOMER", "", "25", "", "COMPLETED"),
-                _buildBookingRow("DCB76869", "04-07-25\n03:19", "SALOON", "D", "D", "£0.00", "CUSTOMER", "", "25", "", "COMPLETED"),
-                _buildBookingRow("DCB76870", "04-07-25\n03:32", "SALOON", "D", "D", "£0.00", "CUSTOMER", "", "25", "", "COMPLETED"),
-                _buildBookingRow("DCB76497", "04-06-26\n15:43", "SALOON", "NORTHWICK AVENUE HARROW HA3 0AA", "ROCKWARE AVENUE GREENFORD JBB6 0AA", "£10.50", "CUSTOMER", "ABC-12", "25", "", "COMPLETED"),
-                _buildBookingRow("DCB75028", "02-06-25\n15:31", "SALOON", "95 KINGSLEY SO, HOUNSLOW TW3 1QA, UK", "HIGH STREET BRENTFORD TW8 0AA", "£4.50", "JOHN DOE", "", "25", "", "COMPLETED"),
-                _buildBookingRow("DCB76531", "02-06-26\n13:23", "SALOON", "NORTHWICK AVENUE HARROW HA3 0AA", "ROCKWARE AVENUE GREENFORD JBB6 0AA", "£4.50", "CUSTOMER", "", "25", "", "COMPLETED"),
-                _buildBookingRow("DCB76532", "02-06-26\n13:26", "SALOON", "NORTHWICK AVENUE HARROW HA3 0AA", "ROCKWARE AVENUE GREENFORD JBB6 0AA", "£4.50", "CUSTOMER", "", "25", "", "COMPLETED"),
-              ],
+              totalRow: bookings.length,
+              rows: bookings.map((booking) {
+                String dateTime = "${booking.pickupDate ?? ''}\n${booking.pickupTime ?? ''}".trim();
+                String status = booking.bookingStatus?.bookingStatus ?? (booking.completed == true ? "COMPLETED" : "");
+
+                return DataRow(
+                  cells: [
+                    DataCell(
+                      Center(
+                        child: Text(
+                          (booking.referenceNumber ?? "").toUpperCase(),
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ),
+                    DataCell(
+                      Center(
+                        child: Text(
+                          dateTime.toUpperCase(),
+                          style: const TextStyle(fontSize: 12),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    DataCell(
+                      Center(
+                        child: Text(
+                          (booking.vehicleType?.name ?? "").toUpperCase(),
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ),
+                    DataCell(
+                      SizedBox(
+                        width: 180,
+                        child: Text(
+                          (booking.pickup ?? "").toUpperCase(),
+                          style: const TextStyle(fontSize: 12),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                    DataCell(
+                      SizedBox(
+                        width: 200,
+                        child: Text(
+                          (booking.dropoff ?? "").toUpperCase(),
+                          style: const TextStyle(fontSize: 12),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                    DataCell(
+                      Center(
+                        child: Text(
+                          "£${booking.fares ?? "0.00"}",
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ),
+                    DataCell(
+                      Center(
+                        child: Text(
+                          (booking.name ?? "").toUpperCase(),
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ),
+                    DataCell(
+                      Center(
+                        child: Text(
+                          (booking.account?.name ?? "").toUpperCase(),
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ),
+                    DataCell(
+                      Center(
+                        child: Text(
+                          (booking.driver?.name ?? "").toUpperCase(),
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ),
+                    DataCell(
+                      Center(
+                        child: Text(
+                          (booking.paymentType?.name ?? "").toUpperCase(),
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ),
+                    DataCell(
+                      Center(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: status.toUpperCase() == "COMPLETED"
+                                ? DynamicColors.greenClr.withOpacity(0.1)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            status.toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: status.toUpperCase() == "COMPLETED"
+                                  ? DynamicColors.greenClr
+                                  : DynamicColors.textClr,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }).toList(),
             ),
           ),
         ),
       ),
-    );
-  }
-
-  DataRow _buildBookingRow(
-      String ref,
-      String dateTime,
-      String vehicle,
-      String pickup,
-      String dropoff,
-      String fares,
-      String customer,
-      String account,
-      String driver,
-      String pt,
-      String status,
-      ) {
-    return DataRow(
-      cells: [
-        DataCell(
-          Center(
-            child: Text(
-              ref.toUpperCase(),
-              style: const TextStyle(fontSize: 12),
-            ),
-          ),
-        ),
-        DataCell(
-          Center(
-            child: Text(
-              dateTime.toUpperCase(),
-              style: const TextStyle(fontSize: 12),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-        DataCell(
-          Center(
-            child: Text(
-              vehicle.toUpperCase(),
-              style: const TextStyle(fontSize: 12),
-            ),
-          ),
-        ),
-        DataCell(
-          SizedBox(
-            width: 180,
-            child: Text(
-              pickup.toUpperCase(),
-              style: const TextStyle(fontSize: 12),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ),
-        DataCell(
-          SizedBox(
-            width: 200,
-            child: Text(
-              dropoff.toUpperCase(),
-              style: const TextStyle(fontSize: 12),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ),
-        DataCell(
-          Center(
-            child: Text(
-              fares,
-              style: const TextStyle(fontSize: 12),
-            ),
-          ),
-        ),
-        DataCell(
-          Center(
-            child: Text(
-              customer.toUpperCase(),
-              style: const TextStyle(fontSize: 12),
-            ),
-          ),
-        ),
-        DataCell(
-          Center(
-            child: Text(
-              account.toUpperCase(),
-              style: const TextStyle(fontSize: 12),
-            ),
-          ),
-        ),
-        DataCell(
-          Center(
-            child: Text(
-              driver,
-              style: const TextStyle(fontSize: 12),
-            ),
-          ),
-        ),
-        DataCell(
-          Center(
-            child: Text(
-              pt.toUpperCase(),
-              style: const TextStyle(fontSize: 12),
-            ),
-          ),
-        ),
-        DataCell(
-          Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: status == "COMPLETED"
-                    ? DynamicColors.greenClr.withOpacity(0.1)
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                status.toUpperCase(),
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: status == "COMPLETED"
-                      ? DynamicColors.greenClr
-                      : DynamicColors.textClr,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
