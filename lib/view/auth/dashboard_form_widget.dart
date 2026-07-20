@@ -908,7 +908,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 }
               }),
               tab('Via (${controller.viaPoints.length})', onTap: () {
-                showDialog(context: context, builder: (_) => ViaLocation());
+                if (controller.pickupController.text.isNotEmpty &&
+                    controller.dropOffController.text.isNotEmpty) {
+                  showDialog(context: context, builder: (_) => ViaLocation());
+                }
               }),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),

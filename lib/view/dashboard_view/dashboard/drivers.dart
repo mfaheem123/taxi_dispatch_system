@@ -16,6 +16,7 @@ import '../../../component/time_duration_method.dart';
 import '../Controller/dashboard_controller.dart';
 import 'package:flutter_map/flutter_map.dart';
 
+import '../models/account_darshboard_model.dart';
 import '../models/dashboard_model.dart';
 import '../models/tracking_drivers_model.dart';
 import 'defult_dashboard_view.dart';
@@ -28,7 +29,11 @@ class DriversView extends StatefulWidget {
 }
 
 class _DriversViewState extends State<DriversView> {
-  final FocusNode _focusNode = FocusNode();
+  // Shared with the booking form's Home/SAVE button. When the user Tabs off
+  // that button it calls `controller.driverPanelFocusNode.requestFocus()`,
+  // which hands focus to this panel's RawKeyboardListener below so the driver
+  // header icons / list become keyboard-active.
+  final DashboardController _driverController = Get.find<DashboardController>();
 
   // Header icons list
   final List<IconData> headerIcons = [
@@ -47,16 +52,50 @@ class _DriversViewState extends State<DriversView> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _focusNode.requestFocus();
-    });
+    // Do NOT auto-grab focus here — otherwise the driver panel would steal
+    // focus from the booking form on load. Focus arrives only when the user
+    // Tabs off the Home/SAVE button (see driverPanelFocusNode handoff).
   }
 
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
+  // driverPanelFocusNode is owned/disposed by DashboardController, so it is
+  // deliberately not disposed here.
+
+  /// Single source of truth for what each header icon does, keyed by its index
+  /// in [headerIcons]. Called both from the icon's onTap (mouse) and from the
+  /// keyboard Enter handler (so keyboard navigation activates the same action
+  /// "group number wise").
+  void _activateHeaderIcon(BuildContext context, int index) {
+    switch (index) {
+      case 0: // reset_tv_outlined
+        debugPrint("Header action: RESET");
+        break;
+      case 1: // refresh
+        debugPrint("Header action: REFRESH");
+        _driverController.dashboardData();
+        break;
+      case 2: // visibility_off_sharp
+        debugPrint("Header action: HIDE/SHOW");
+        break;
+      case 3: // mail
+        showDialog(
+          context: context,
+          builder: (_) => SendEmailAlert(),
+        );
+        break;
+      case 4: // send
+        showDialog(
+          context: context,
+          builder: (_) => SendMessageAlert(),
+        );
+        break;
+      case 5: // share
+        debugPrint("Header action: SHARE");
+        break;
+      default:
+        debugPrint("Header action: no handler for index $index");
+    }
   }
+
   String statusCarImage(String status) {
     switch (status) {
       case "Accepted":
@@ -83,58 +122,73 @@ class _DriversViewState extends State<DriversView> {
 
     return GetBuilder<DashboardController>(
       builder: (controller) {
-        return RawKeyboardListener(
-          focusNode: _focusNode,
-          onKey: (event) {
-            // if(shortCutKeyValue.value == ""){
-            if (event is RawKeyDownEvent) {
-              shortCutKeyValue.value = "driverIconSelect";
-              if (shortCutKeyValue.value == "driverIconSelect") {
-                if (event.logicalKey == LogicalKeyboardKey.tab) {
-                  // Tab dabane se Header <-> Driver list toggle ho jaye
+        // Number of drivers currently shown in the list (used to cap arrow
+        // navigation so every driver — not just the first few — is reachable).
+        final int driverCount = controller.driverSelectionTab.value !=
+                "activeDriver"
+            ? controller.busyDriversList.length
+            : controller.onlineDriversList.length;
+
+        return Focus(
+          focusNode: _driverController.driverPanelFocusNode,
+          // Use onKeyEvent (not RawKeyboardListener) and return
+          // KeyEventResult.handled so Tab / arrow / Enter are CONSUMED here.
+          // RawKeyboardListener never consumed them, so each arrow press also
+          // triggered Flutter's directional focus traversal and moved focus
+          // out of this panel — which is why only the first index ever stayed
+          // selected. Consuming the keys keeps focus on the panel.
+          onKeyEvent: (node, event) {
+            if (event is! KeyDownEvent) return KeyEventResult.ignored;
+            shortCutKeyValue.value = "driverIconSelect";
+
+            if (event.logicalKey == LogicalKeyboardKey.tab) {
+              // Tab toggles Header <-> Driver list.
+              setState(() {
+                isHeaderMode = !isHeaderMode;
+              });
+              return KeyEventResult.handled;
+            } else if (event.logicalKey == LogicalKeyboardKey.arrowRight ||
+                event.logicalKey == LogicalKeyboardKey.arrowDown) {
+              if (isHeaderMode) {
+                if (selectedHeaderIndex < headerIcons.length - 1) {
                   setState(() {
-                    isHeaderMode = !isHeaderMode;
+                    selectedHeaderIndex++;
                   });
-                } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-                  if (isHeaderMode) {
-                    if (selectedHeaderIndex < headerIcons.length - 1) {
-                      setState(() {
-                        selectedHeaderIndex++;
-                      });
-                    }
-                  } else {
-                    if (controller.selectedDriverIndex < 3) {
-                      controller.selectedDriverIndex++;
-                      controller.update();
-                    }
-                  }
-                } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-                  if (isHeaderMode) {
-                    if (selectedHeaderIndex > 0) {
-                      setState(() {
-                        selectedHeaderIndex--;
-                      });
-                    }
-                  } else {
-                    if (controller.selectedDriverIndex > 0) {
-                      controller.selectedDriverIndex--;
-                      controller.update();
-                    }
-                  }
-                } else if (event.logicalKey == LogicalKeyboardKey.enter) {
-                  if (isHeaderMode) {
-                    debugPrint(
-                        "Header Icon Selected: ${headerIcons[selectedHeaderIndex]}");
-                    // yahan aap har icon ka specific action karwa sakte ho
-                  } else {
-                    debugPrint(
-                        "Enter pressed on Driver ${controller.selectedDriverIndex}");
-                    // driver list action
-                  }
+                }
+              } else {
+                if (controller.selectedDriverIndex < driverCount - 1) {
+                  controller.selectedDriverIndex++;
+                  controller.update();
                 }
               }
+              return KeyEventResult.handled;
+            } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
+                event.logicalKey == LogicalKeyboardKey.arrowUp) {
+              if (isHeaderMode) {
+                if (selectedHeaderIndex > 0) {
+                  setState(() {
+                    selectedHeaderIndex--;
+                  });
+                }
+              } else {
+                if (controller.selectedDriverIndex > 0) {
+                  controller.selectedDriverIndex--;
+                  controller.update();
+                }
+              }
+              return KeyEventResult.handled;
+            } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+              if (isHeaderMode) {
+                // Fire the selected header icon's onTap action by its index.
+                _activateHeaderIcon(context, selectedHeaderIndex);
+              } else {
+                debugPrint(
+                    "Enter pressed on Driver ${controller.selectedDriverIndex}");
+                // driver list action
+              }
+              return KeyEventResult.handled;
             }
-            // }
+            return KeyEventResult.ignored;
           },
           child: SizedBox(
             width: screenWidth >= 1270 ? screenWidth / 5 : screenWidth / 4.8,
@@ -177,17 +231,13 @@ class _DriversViewState extends State<DriversView> {
 
                           return GestureDetector(
                             onTap: () {
-                              if (index == 3) {
-                                showDialog(
-                                  context: context,
-                                  builder: (_) => SendEmailAlert(),
-                                );
-                              } else if (index == 4) {
-                                showDialog(
-                                  context: context,
-                                  builder: (_) => SendMessageAlert(),
-                                );
-                              }
+                              // Keep the highlight in sync with mouse taps too,
+                              // and reuse the same per-index action as keyboard.
+                              setState(() {
+                                isHeaderMode = true;
+                                selectedHeaderIndex = index;
+                              });
+                              _activateHeaderIcon(context, index);
                               debugPrint("Clicked on header icon index $index");
                             },
                             child: Container(
@@ -209,7 +259,46 @@ class _DriversViewState extends State<DriversView> {
                       ],
                     ),
                   ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                    ),
+                    child: DropdownButtonFormField<DashboardSubsidiaryObject>(
+                      isExpanded: true, // Use true here so text reaches the icon and then clips
+                      decoration: const InputDecoration(
+                        /*border: OutlineInputBorder(),
+                                                                                            isDense: true,
+                                                                                            contentPadding: EdgeInsets.symmetric(horizontal: 2),
+                                                                                            */
+                        // Remove the internal border since you have a Container border
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                      ),
+                      // 3. You can also customize the icon to remove its default side padding
+                      icon: const Icon(Icons.arrow_drop_down, size: 20),
 
+                      padding: EdgeInsets.zero,
+
+                      value: controller.selectSubsidiariesValue,
+                      items: controller.dashboardAllData?.subsidiaries?.map((account) {
+                        return DropdownMenuItem<DashboardSubsidiaryObject>(
+                          value: account,
+                          child: Text(
+                            account.name ?? "",
+                            style: mozillaTextRegularText(fontSize: 12, color: DynamicColors.textClr),
+                          ),
+                        );
+                      }).toList() ?? [],
+                      onTap: () => controller.dropDownShow.value = false,
+                      onChanged: (v) {
+                        controller.selectSubsidiariesValue = v;
+                        // controller.selectDepartmentData = null;
+                        controller.update();
+                      },
+                    ),
+                  ),
                   // ----- Tabs -----
                   Container(
                     // width: double.infinity,
@@ -401,6 +490,10 @@ class _DriversViewState extends State<DriversView> {
                             );
                           }
 
+                          final bool isDriverSelected =
+                              !isHeaderMode &&
+                                  controller.selectedDriverIndex == index;
+
                           return GestureDetector(
                             onSecondaryTapDown: (details) {
                               _showContextMenu(
@@ -408,8 +501,17 @@ class _DriversViewState extends State<DriversView> {
                                   index: index);
                             },
                             child: Card(
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                              color: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                side: isDriverSelected
+                                    ? BorderSide(
+                                        color: DynamicColors.primaryClr,
+                                        width: 2)
+                                    : BorderSide.none,
+                              ),
+                              color: isDriverSelected
+                                  ? DynamicColors.secondaryClr
+                                  : Colors.white,
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1.0),
                                 child: Row(
