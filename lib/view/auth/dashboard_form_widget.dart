@@ -907,8 +907,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 }
               }),
               tab('Via (${controller.viaPoints.length})', onTap: () {
-                if (controller.pickupController.text.isNotEmpty &&
-                    controller.dropOffController.text.isNotEmpty) {
+                if (controller.pickupController.text.isNotEmpty
+                    // &&    controller.dropOffController.text.isNotEmpty
+                ) {
                   showDialog(context: context, builder: (_) => ViaLocation());
                 }
               }),
