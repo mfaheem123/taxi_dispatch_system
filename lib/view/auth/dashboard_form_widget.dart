@@ -201,7 +201,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             }
           },
           builder: (controller) {
-            return SafeArea(
+            return  SafeArea(
               child: SizedBox(
                 width: formWidth,
                 child: SingleChildScrollView(
@@ -232,10 +232,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   controller.pickupController,
                                   controller.allAddressesData,
                                   controller.dashboardZoneValue,
-                                  _controller.updateLocationValue.value == true
+                                  _controller.updateLocationValue.value == true || _controller.locationtypezoneModel == null
                                       ? []
-                                      : _controller
-                                      .locationtypezoneModel!.zonesList!,
+                                      : _controller.locationtypezoneModel!.zonesList!,
                                       (v) => setState(
                                           () => controller.dashboardZoneValue = v),
                                   isMobile,
@@ -350,7 +349,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   controller.dropOffController,
                                   controller.allAddressesData,
                                   controller.dashboardDZoneValue,
-                                  _controller.updateLocationValue.value == true
+                                  _controller.updateLocationValue.value == true || _controller.locationtypezoneModel == null
                                       ? []
                                       : _controller
                                       .locationtypezoneModel!.zonesList!,
