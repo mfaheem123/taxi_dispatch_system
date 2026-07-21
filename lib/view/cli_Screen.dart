@@ -1605,7 +1605,7 @@ class _CenterAreaState extends State<_CenterArea> {
                       }
 
                       final bookingId = selectedBooking!.id;
-                      final bookingDate = selectedBooking!.pickupDate;
+                      final bookingDate = selectedBooking!.pickupDate?.toIso8601String();
                       final bookingTime = selectedBooking!.pickupTime;
 
                       print("========== SUBMIT ==========");
