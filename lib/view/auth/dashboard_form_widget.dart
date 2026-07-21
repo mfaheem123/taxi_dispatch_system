@@ -8,6 +8,7 @@ import '../../../alert/restrict_drivers_alert.dart';
 import '../../alert/child_seats_alert.dart';
 import '../../alert/extra_fares_alert.dart';
 import '../../alert/extra_info_alert.dart';
+import '../../alert/search_booking.dart';
 import '../../component/marker_class.dart';
 import '../../component/text_field.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
@@ -17,6 +18,7 @@ import '../dashboard_view/models/account_darshboard_model.dart';
 import '../dashboard_view/models/all_addresses_model.dart';
 import '../dashboard_view/models/dashboard_model.dart';
 import '../dashboard_view/models/users_phone_numbers_model.dart';
+import '../dashboard_view/widgets/fare_configuration.dart';
 import '../dashboard_view/widgets/via_location.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
 import '../locations_view/controller/locations_controller.dart';
@@ -79,39 +81,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   void _showPickBookingAlert() {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        title: Row(
-          children: [
-            Icon(Icons.search, color: _purple, size: 22),
-            const SizedBox(width: 8),
-            const Text(
-              'Pick Booking',
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 16,
-                color: _purpleDark,
-              ),
-            ),
-          ],
-        ),
-        content: const Text(
-          'Please select a booking from the bookings list to pick.',
-          style: TextStyle(fontSize: 13),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(
-              'OK',
-              style: TextStyle(
-                color: _purple,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
+      builder: (ctx) => const SearchBookingAlert(),
     );
   }
   final DashboardController controller = Get.isRegistered<DashboardController>()
@@ -201,7 +171,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             }
           },
           builder: (controller) {
-            return SafeArea(
+            return  SafeArea(
               child: SizedBox(
                 width: formWidth,
                 child: SingleChildScrollView(
@@ -232,10 +202,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   controller.pickupController,
                                   controller.allAddressesData,
                                   controller.dashboardZoneValue,
-                                  _controller.updateLocationValue.value == true
+                                  _controller.updateLocationValue.value == true || _controller.locationtypezoneModel == null
                                       ? []
-                                      : _controller
-                                      .locationtypezoneModel!.zonesList!,
+                                      : _controller.locationtypezoneModel!.zonesList!,
                                       (v) => setState(
                                           () => controller.dashboardZoneValue = v),
                                   isMobile,
@@ -350,7 +319,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   controller.dropOffController,
                                   controller.allAddressesData,
                                   controller.dashboardDZoneValue,
-                                  _controller.updateLocationValue.value == true
+                                  _controller.updateLocationValue.value == true || _controller.locationtypezoneModel == null
                                       ? []
                                       : _controller
                                       .locationtypezoneModel!.zonesList!,
@@ -506,8 +475,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.selectJourneyTypeValue,
                                     controller.dashboardAllData!.journeyTypes ??
                                         const [],
-                                        (v) => setState(() =>
-                                    controller.selectJourneyTypeValue = v),
+                                        (v) => setState(() {
+                                          // controller.selectJourneyTypeValue = v;
+                                          controller.dropDownShow.value = false;
+                                          controller.jourValue = (v!.journeyType == "r/n") ? 'W/R' : null;
+                                          controller.selectJourneyTypeValue = v;
+                                        }),
                                     14,
                                     itemLabel: (p) => p.journeyType!,
                                   ),
@@ -790,7 +763,39 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   'Select R/VEH',
                    controller.selectVehicleValueReturn,
                   controller.dashboardAllData!.vehicleTypes!,
-                  (v) => setState(() =>  controller.selectVehicleValueReturn = v),
+                  (v) {
+                    print('tap 01');
+                    setState(() async{
+
+                      print('tap 02');
+                      // controller.selectVehicleValueReturn = v;
+                      if (v == null) return;
+
+                      print('tap 03');
+                      controller.selectVehicleValueReturn = v;
+                      controller.dropDownShow.value = false;
+
+                      // Jab user khud badlega tab naye wale ki ID direct jayegi
+                      final fare = await getActiveFareForVehicle(
+                        controller.dashboardAllData!.fareConfigurations!,
+                        v.id!,
+                      );
+                      print('tap 04');
+                      if (fare != null) {
+                        print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}');
+                        controller.getFaresCalculation();
+                        print('tap 05');
+                        double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+                        controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+                        print('tap 06');
+                      } else {
+                        print('tap 07');
+                        print('No active fare found for this vehicle');
+                      }
+                      print('tap 08');
+                      controller.update();
+                    }
+                    );},
                   32,
                   itemLabel: (p) => p.name!,
                 ),
@@ -812,7 +817,39 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                     'Select R/VEH',
                     controller.selectVehicleValueReturn,
                     controller.dashboardAllData!.vehicleTypes!,
-                    (v) => setState(() => controller.selectVehicleValueReturn = v),
+                        (v) {
+                      print('tap 01');
+                      setState(() async{
+
+                        print('tap 02');
+                        // controller.selectVehicleValueReturn = v;
+                        if (v == null) return;
+
+                        print('tap 03');
+                        controller.selectVehicleValueReturn = v;
+                        controller.dropDownShow.value = false;
+
+                        // Jab user khud badlega tab naye wale ki ID direct jayegi
+                        final fare = await getActiveFareForVehicle(
+                          controller.dashboardAllData!.fareConfigurations!,
+                          v.id!,
+                        );
+                        print('tap 04');
+                        if (fare != null) {
+                          print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}');
+                          controller.getFaresCalculation();
+                          print('tap 05');
+                          double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+                          controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+                          print('tap 06');
+                        } else {
+                          print('tap 07');
+                          print('No active fare found for this vehicle');
+                        }
+                        print('tap 08');
+                        controller.update();
+                      }
+                      );},
                     32,
                     itemLabel: (p) => p.name!,
                   ),
@@ -908,7 +945,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 }
               }),
               tab('Via (${controller.viaPoints.length})', onTap: () {
-                showDialog(context: context, builder: (_) => ViaLocation());
+                if (controller.pickupController.text.isNotEmpty
+                    // &&    controller.dropOffController.text.isNotEmpty
+                ) {
+                  showDialog(context: context, builder: (_) => ViaLocation());
+                }
               }),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),

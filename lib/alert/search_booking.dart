@@ -1,6 +1,8 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/datatable_widget.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
+import 'package:dashboard_new1/component/text_field.dart';
+import 'package:dashboard_new1/view/dashboard_view/widgets/time_picker_widget.dart';
 import 'package:flutter/material.dart';
 
 class SearchBookingAlert extends StatefulWidget {
@@ -105,48 +107,55 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
               child: Container(
                 width: double.infinity,
                 color: Colors.white,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: DatatableWidget(
-                        columns: [
-                          _buildDataColumn("REF #"),
-                          _buildDataColumn("DATETIME"),
-                          _buildDataColumn("VEHICLE"),
-                          _buildDataColumn("PICKUP"),
-                          _buildDataColumn("DROPOFF"),
-                          _buildDataColumn("FARES"),
-                          _buildDataColumn("CUSTOMER"),
-                          _buildDataColumn("ACCOUNT"),
-                          _buildDataColumn("DRIVER"),
-                          _buildDataColumn("P/T"),
-                          _buildDataColumn("STATUS"),
-                          _buildDataColumn("ACTIONS"),
-                        ],
-                        rows: [
-                          DataRow(
-                            cells: [
-                              DataCell(_buildTableTextField("REF", width: 60)),
-                              DataCell(_buildTableTextField("DATE/TIME", width: 100)),
-                              DataCell(_buildTableTextField("VEHICLE", width: 80)),
-                              DataCell(_buildTableTextField("PICKUP", width: 150)),
-                              DataCell(_buildTableTextField("DROPOFF", width: 150)),
-                              DataCell(_buildTableTextField("FARE", width: 60)),
-                              DataCell(_buildTableTextField("CUSTOMER", width: 90)),
-                              DataCell(_buildTableTextField("ACCOUNT", width: 90)),
-                              DataCell(_buildTableTextField("DRIVER", width: 90)),
-                              DataCell(_buildTableTextField("P/T", width: 50)),
-                              DataCell(_buildTableTextField("STATUS", width: 70)),
-                              const DataCell(SizedBox()), // Empty for ACTIONS
-                            ]
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SingleChildScrollView(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                            child: DatatableWidget(
+                              columns: [
+                                _buildDataColumn("REF #"),
+                                _buildDataColumn("DATETIME"),
+                                _buildDataColumn("VEHICLE"),
+                                _buildDataColumn("PICKUP"),
+                                _buildDataColumn("DROPOFF"),
+                                _buildDataColumn("FARES"),
+                                _buildDataColumn("CUSTOMER"),
+                                _buildDataColumn("ACCOUNT"),
+                                _buildDataColumn("DRIVER"),
+                                _buildDataColumn("P/T"),
+                                _buildDataColumn("STATUS"),
+                                _buildDataColumn("ACTIONS"),
+                              ],
+                              rows: [
+                                DataRow(
+                                  cells: [
+                                    DataCell(_buildTableTextField("REF", width: 60)),
+                                    DataCell(_buildTableTextField("DATE/TIME", width: 100)),
+                                    DataCell(_buildTableTextField("VEHICLE", width: 80)),
+                                    DataCell(_buildTableTextField("PICKUP", width: 150)),
+                                    DataCell(_buildTableTextField("DROPOFF", width: 150)),
+                                    DataCell(_buildTableTextField("FARE", width: 60)),
+                                    DataCell(_buildTableTextField("CUSTOMER", width: 90)),
+                                    DataCell(_buildTableTextField("ACCOUNT", width: 90)),
+                                    DataCell(_buildTableTextField("DRIVER", width: 90)),
+                                    DataCell(_buildTableTextField("P/T", width: 50)),
+                                    DataCell(_buildTableTextField("STATUS", width: 70)),
+                                    const DataCell(SizedBox()), // Empty for ACTIONS
+                                  ]
+                                ),
+                                // Empty rows to simulate empty space from screenshot if needed,
+                                // but the container will already expand to fill the modal.
+                              ],
+                            ),
                           ),
-                          // Empty rows to simulate empty space from screenshot if needed,
-                          // but the container will already expand to fill the modal.
-                        ],
-                      ),
-                    ),
+                        ),
+                      );
+                    }
                   ),
                 ),
               ),
@@ -184,42 +193,14 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
   }
 
   Widget _buildInputWithLabel(String label, TextEditingController controller, {double width = 120}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label, 
-          style: mozillaTextSemiBoldText(
-            fontSize: 10, 
-            color: Colors.grey.shade600, 
-            fontWeight: FontWeight.bold
-          )
-        ),
-        const SizedBox(height: 4),
-        SizedBox(
-          width: width,
-          height: 32,
-          child: TextField(
-            controller: controller,
-            style: mozillaTextSemiBoldText(fontSize: 12, color: Colors.black),
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4),
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4),
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4),
-                borderSide: const BorderSide(color: Color(0xFF4CAF50)),
-              ),
-            ),
-          ),
-        ),
-      ],
+    return CustomTextField(
+      borderRadius: 4,
+      controller: controller,
+      width: width,
+      height: 32,
+      hintText: label,
+      columnText: true,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
     );
   }
 
@@ -231,36 +212,32 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
           label, 
           style: mozillaTextSemiBoldText(
             fontSize: 10, 
-            color: Colors.grey.shade600, 
+            color: Colors.black,
             fontWeight: FontWeight.bold
           )
         ),
         const SizedBox(height: 4),
-        Container(
+        SizedBox(
           width: 140,
           height: 32,
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade300),
-            borderRadius: BorderRadius.circular(4),
-            color: Colors.white,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: controller,
-                  style: mozillaTextSemiBoldText(fontSize: 12, color: Colors.grey.shade700),
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-              ),
-              const Icon(Icons.calendar_today_outlined, size: 14, color: Colors.black87),
-            ],
+          child: KeyboardDatePicker(
+            key: ValueKey(controller.text),
+            initialDate: controller.text.isNotEmpty && controller.text != "MM/DD/YYYY"
+                ? DateTime.tryParse(controller.text) ?? DateTime.now()
+                : DateTime.now(),
+            borderClr: Colors.grey.shade300,
+            fontSize: 12,
+            iconSize: 14,
+            onChanged: (date) {
+              setState(() {
+                controller.text = date.toIso8601String().split("T").first;
+              });
+            },
+            onSubmitted: (date) {
+              setState(() {
+                controller.text = date.toIso8601String().split("T").first;
+              });
+            },
           ),
         ),
       ],

@@ -1,6 +1,7 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/datatable_widget.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
+import 'package:dashboard_new1/view/dashboard_view/widgets/time_picker_widget.dart';
 import 'package:flutter/material.dart';
 
 class ReportHistoryAlert extends StatefulWidget {
@@ -65,13 +66,13 @@ class _ReportHistoryAlertState extends State<ReportHistoryAlert> {
                     // FROM Date Picker
                     Text("FROM", style: mozillaTextSemiBoldText(fontSize: 12, color: Colors.grey.shade600)),
                     const SizedBox(width: 8),
-                    _buildDatePicker(_fromDateController, "--:-- --"),
+                    _buildDatePicker(_fromDateController,""),
                     const SizedBox(width: 8),
 
                     // TO Date Picker
                     Text("TO", style: mozillaTextSemiBoldText(fontSize: 12, color: Colors.grey.shade600)),
                     const SizedBox(width: 8),
-                    _buildDatePicker(_toDateController, "--:-- --"),
+                    _buildDatePicker(_toDateController, ""),
                     const SizedBox(width: 16),
 
                     // Mobile TextField
@@ -171,41 +172,27 @@ class _ReportHistoryAlertState extends State<ReportHistoryAlert> {
   }
 
   Widget _buildDatePicker(TextEditingController controller, String timeHint) {
-    return Container(
+    return SizedBox(
+      width: 140,
       height: 32,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade400),
-        borderRadius: BorderRadius.circular(4),
-        color: Colors.white,
-      ),
-      child: Row(
-        children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
-            child: Icon(Icons.calendar_today_outlined, size: 14, color: Colors.grey),
-          ),
-          SizedBox(
-            width: 80,
-            child: TextField(
-              controller: controller,
-              style: mozillaTextSemiBoldText(fontSize: 12, color: Colors.grey.shade800),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.zero,
-              ),
-            ),
-          ),
-          Container(width: 1, color: Colors.grey.shade300),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text(timeHint, style: mozillaTextSemiBoldText(fontSize: 12, color: Colors.grey)),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(right: 8.0),
-            child: Icon(Icons.access_time, size: 14, color: Colors.grey),
-          ),
-        ],
+      child: KeyboardDatePicker(
+        key: ValueKey(controller.text),
+        initialDate: controller.text.isNotEmpty && controller.text != ""
+            ? DateTime.tryParse(controller.text) ?? DateTime.now()
+            : DateTime.now(),
+        borderClr: Colors.grey.shade400,
+        fontSize: 12,
+        iconSize: 14,
+        onChanged: (date) {
+          setState(() {
+            controller.text = date.toIso8601String().split("T").first;
+          });
+        },
+        onSubmitted: (date) {
+          setState(() {
+            controller.text = date.toIso8601String().split("T").first;
+          });
+        },
       ),
     );
   }

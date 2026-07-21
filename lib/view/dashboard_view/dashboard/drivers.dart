@@ -14,8 +14,11 @@ import '../../../component/short_text.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/time_duration_method.dart';
 import '../Controller/dashboard_controller.dart';
+import '../../../routes/app_pages.dart';
+import '../../../utils/open_new_tab_web.dart';
 import 'package:flutter_map/flutter_map.dart';
 
+import '../models/account_darshboard_model.dart';
 import '../models/dashboard_model.dart';
 import '../models/tracking_drivers_model.dart';
 import 'defult_dashboard_view.dart';
@@ -28,7 +31,11 @@ class DriversView extends StatefulWidget {
 }
 
 class _DriversViewState extends State<DriversView> {
-  final FocusNode _focusNode = FocusNode();
+  // Shared with the booking form's Home/SAVE button. When the user Tabs off
+  // that button it calls `controller.driverPanelFocusNode.requestFocus()`,
+  // which hands focus to this panel's RawKeyboardListener below so the driver
+  // header icons / list become keyboard-active.
+  final DashboardController _driverController = Get.find<DashboardController>();
 
   // Header icons list
   final List<IconData> headerIcons = [
@@ -44,19 +51,87 @@ class _DriversViewState extends State<DriversView> {
   bool isHeaderMode =
   true; // true = header select ho raha hai, false = driver list
 
+  RxBool showSubsidairy = false.obs;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _focusNode.requestFocus();
-    });
+    // Do NOT auto-grab focus here — otherwise the driver panel would steal
+    // focus from the booking form on load. Focus arrives only when the user
+    // Tabs off the Home/SAVE button (see driverPanelFocusNode handoff).
   }
 
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
+  // driverPanelFocusNode is owned/disposed by DashboardController, so it is
+  // deliberately not disposed here.
+
+  /// Single source of truth for what each header icon does, keyed by its index
+  /// in [headerIcons]. Called both from the icon's onTap (mouse) and from the
+  /// keyboard Enter handler (so keyboard navigation activates the same action
+  /// "group number wise").
+  void _activateHeaderIcon(BuildContext context, int index) {
+    switch (index) {
+      case 0: // reset_tv_outlined
+        debugPrint("Header action: RESET");
+        break;
+      case 1: // refresh
+        debugPrint("Header action: REFRESH");
+        _driverController.dashboardData();
+        break;
+      case 2: // visibility_off_sharp
+        debugPrint("Header action: HIDE/SHOW");
+        break;
+      case 3: // mail
+        showDialog(
+          context: context,
+          builder: (_) => SendEmailAlert(),
+        );
+        break;
+      case 4: // send
+        showDialog(
+          context: context,
+          builder: (_) => SendMessageAlert(),
+        );
+        break;
+      case 5: // share
+        showSubsidairy.value = !showSubsidairy.value;
+        debugPrint("Header action: SHARE");
+        break;
+      default:
+        debugPrint("Header action: no handler for index $index");
+    }
   }
+
+  /// Number of map buttons the Tab sequence steps through (in order):
+  /// 0 = open-in-new-tab, 1 = zoom-in, 2 = zoom-out, 3 = camera recenter.
+  /// These live in the sibling MapViewWidget; the driver panel drives the
+  /// "virtual" selection via controller.selectedMapButtonIndex.
+  static const int _mapButtonCount = 4;
+
+  /// Single source of truth for what each map button does, keyed by its Tab
+  /// index. Mirrors the onPressed handlers in map_view_widget.dart so keyboard
+  /// Enter fires the exact same action as a mouse click.
+  void _activateMapButton(int index) {
+    switch (index) {
+      case 0: // open map in new browser tab — same as map_view_widget.dart:472
+        openInNewTab(Uri.base.origin + '/#' + Routes.viewDriversMap);
+        break;
+      case 1: // zoom in
+        _driverController.updateZoom(true);
+        break;
+      case 2: // zoom out
+        _driverController.updateZoom(false);
+        break;
+      case 3: // recenter camera — mirror map_view_widget.dart:524-527
+        final pts = _driverController.polylinePoints.isNotEmpty
+            ? _driverController.polylinePointsCoordinate
+            : <LatLng>[LatLng(51.2709722, 0.1893883)];
+        _driverController.mapController.move(pts.first, 13.0);
+        break;
+      default:
+        debugPrint("Map button action: no handler for index $index");
+    }
+  }
+
   String statusCarImage(String status) {
     switch (status) {
       case "Accepted":
@@ -83,58 +158,135 @@ class _DriversViewState extends State<DriversView> {
 
     return GetBuilder<DashboardController>(
       builder: (controller) {
-        return RawKeyboardListener(
-          focusNode: _focusNode,
-          onKey: (event) {
-            // if(shortCutKeyValue.value == ""){
-            if (event is RawKeyDownEvent) {
-              shortCutKeyValue.value = "driverIconSelect";
-              if (shortCutKeyValue.value == "driverIconSelect") {
-                if (event.logicalKey == LogicalKeyboardKey.tab) {
-                  // Tab dabane se Header <-> Driver list toggle ho jaye
-                  setState(() {
-                    isHeaderMode = !isHeaderMode;
-                  });
-                } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-                  if (isHeaderMode) {
-                    if (selectedHeaderIndex < headerIcons.length - 1) {
-                      setState(() {
-                        selectedHeaderIndex++;
-                      });
-                    }
+        // Number of drivers currently shown in the list (used to cap arrow
+        // navigation so every driver — not just the first few — is reachable).
+        final int driverCount = controller.driverSelectionTab.value !=
+                "activeDriver"
+            ? controller.busyDriversList.length
+            : controller.onlineDriversList.length;
+
+        return Focus(
+          focusNode: _driverController.driverPanelFocusNode,
+          // Leaving the panel (mouse click elsewhere, a createBooking map
+          // dialog, etc.) clears the map buttons' virtual highlight so a stale
+          // ring isn't left drawn on the sibling MapViewWidget.
+          onFocusChange: (hasFocus) {
+            if (!hasFocus && controller.selectedMapButtonIndex >= 0) {
+              controller.selectedMapButtonIndex = -1;
+              controller.update();
+            }
+          },
+          // Use onKeyEvent (not RawKeyboardListener) and return
+          // KeyEventResult.handled so Tab / arrow / Enter are CONSUMED here.
+          // RawKeyboardListener never consumed them, so each arrow press also
+          // triggered Flutter's directional focus traversal and moved focus
+          // out of this panel — which is why only the first index ever stayed
+          // selected. Consuming the keys keeps focus on the panel.
+          onKeyEvent: (node, event) {
+            if (event is! KeyDownEvent) return KeyEventResult.ignored;
+            shortCutKeyValue.value = "driverIconSelect";
+
+            if (event.logicalKey == LogicalKeyboardKey.tab) {
+              // Tab walks a single forward loop; Shift+Tab walks it in reverse:
+              //   header icons -> driver list -> map[0..3] -> (wrap) header.
+              // "Map mode" is when controller.selectedMapButtonIndex >= 0.
+              final bool reverse = HardwareKeyboard.instance.isShiftPressed;
+              final int mapIndex = controller.selectedMapButtonIndex;
+
+              if (!reverse) {
+                if (mapIndex >= 0) {
+                  if (mapIndex < _mapButtonCount - 1) {
+                    controller.selectedMapButtonIndex++;
+                    controller.update();
                   } else {
-                    if (controller.selectedDriverIndex < 3) {
-                      controller.selectedDriverIndex++;
-                      controller.update();
-                    }
+                    // Past the last map button: wrap back to the header icons.
+                    controller.selectedMapButtonIndex = -1;
+                    controller.update();
+                    setState(() {
+                      isHeaderMode = true;
+                      selectedHeaderIndex = 0;
+                    });
                   }
-                } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-                  if (isHeaderMode) {
-                    if (selectedHeaderIndex > 0) {
-                      setState(() {
-                        selectedHeaderIndex--;
-                      });
-                    }
-                  } else {
-                    if (controller.selectedDriverIndex > 0) {
-                      controller.selectedDriverIndex--;
-                      controller.update();
-                    }
-                  }
-                } else if (event.logicalKey == LogicalKeyboardKey.enter) {
-                  if (isHeaderMode) {
-                    debugPrint(
-                        "Header Icon Selected: ${headerIcons[selectedHeaderIndex]}");
-                    // yahan aap har icon ka specific action karwa sakte ho
-                  } else {
-                    debugPrint(
-                        "Enter pressed on Driver ${controller.selectedDriverIndex}");
-                    // driver list action
-                  }
+                } else if (isHeaderMode) {
+                  setState(() => isHeaderMode = false); // header -> driver list
+                } else {
+                  // driver list -> first map button
+                  controller.selectedMapButtonIndex = 0;
+                  controller.update();
+                }
+              } else {
+                if (mapIndex > 0) {
+                  controller.selectedMapButtonIndex--;
+                  controller.update();
+                } else if (mapIndex == 0) {
+                  // first map button -> driver list
+                  controller.selectedMapButtonIndex = -1;
+                  controller.update();
+                  setState(() => isHeaderMode = false);
+                } else if (!isHeaderMode) {
+                  setState(() => isHeaderMode = true); // driver list -> header
+                } else {
+                  // header -> wrap to last map button
+                  controller.selectedMapButtonIndex = _mapButtonCount - 1;
+                  controller.update();
                 }
               }
+              return KeyEventResult.handled;
+            } else if (event.logicalKey == LogicalKeyboardKey.arrowRight ||
+                event.logicalKey == LogicalKeyboardKey.arrowDown) {
+              if (controller.selectedMapButtonIndex >= 0) {
+                if (controller.selectedMapButtonIndex < _mapButtonCount - 1) {
+                  controller.selectedMapButtonIndex++;
+                  controller.update();
+                }
+              } else if (isHeaderMode) {
+                if (selectedHeaderIndex < headerIcons.length - 1) {
+                  setState(() {
+                    selectedHeaderIndex++;
+                  });
+                }
+              } else {
+                if (controller.selectedDriverIndex < driverCount - 1) {
+                  controller.selectedDriverIndex++;
+                  controller.update();
+                }
+              }
+              return KeyEventResult.handled;
+            } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
+                event.logicalKey == LogicalKeyboardKey.arrowUp) {
+              if (controller.selectedMapButtonIndex >= 0) {
+                if (controller.selectedMapButtonIndex > 0) {
+                  controller.selectedMapButtonIndex--;
+                  controller.update();
+                }
+              } else if (isHeaderMode) {
+                if (selectedHeaderIndex > 0) {
+                  setState(() {
+                    selectedHeaderIndex--;
+                  });
+                }
+              } else {
+                if (controller.selectedDriverIndex > 0) {
+                  controller.selectedDriverIndex--;
+                  controller.update();
+                }
+              }
+              return KeyEventResult.handled;
+            } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+              if (controller.selectedMapButtonIndex >= 0) {
+                // Fire the highlighted map button's action by its index.
+                _activateMapButton(controller.selectedMapButtonIndex);
+              } else if (isHeaderMode) {
+                // Fire the selected header icon's onTap action by its index.
+                _activateHeaderIcon(context, selectedHeaderIndex);
+              } else {
+                debugPrint(
+                    "Enter pressed on Driver ${controller.selectedDriverIndex}");
+                // driver list action
+              }
+              return KeyEventResult.handled;
             }
-            // }
+            return KeyEventResult.ignored;
           },
           child: SizedBox(
             width: screenWidth >= 1270 ? screenWidth / 5 : screenWidth / 4.8,
@@ -177,17 +329,13 @@ class _DriversViewState extends State<DriversView> {
 
                           return GestureDetector(
                             onTap: () {
-                              if (index == 3) {
-                                showDialog(
-                                  context: context,
-                                  builder: (_) => SendEmailAlert(),
-                                );
-                              } else if (index == 4) {
-                                showDialog(
-                                  context: context,
-                                  builder: (_) => SendMessageAlert(),
-                                );
-                              }
+                              // Keep the highlight in sync with mouse taps too,
+                              // and reuse the same per-index action as keyboard.
+                              setState(() {
+                                isHeaderMode = true;
+                                selectedHeaderIndex = index;
+                              });
+                              _activateHeaderIcon(context, index);
                               debugPrint("Clicked on header icon index $index");
                             },
                             child: Container(
@@ -209,7 +357,51 @@ class _DriversViewState extends State<DriversView> {
                       ],
                     ),
                   ),
+                  Obx(
+                    ()=> Visibility(
+                      visible: showSubsidairy.value,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                        ),
+                        child: DropdownButtonFormField<DashboardSubsidiaryObject>(
+                          isExpanded: true, // Use true here so text reaches the icon and then clips
+                          decoration: const InputDecoration(
+                            /*border: OutlineInputBorder(),
+                                                                                                isDense: true,
+                                                                                                contentPadding: EdgeInsets.symmetric(horizontal: 2),
+                                                                                                */
+                            // Remove the internal border since you have a Container border
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                          ),
+                          // 3. You can also customize the icon to remove its default side padding
+                          icon: const Icon(Icons.arrow_drop_down, size: 20),
 
+                          padding: EdgeInsets.zero,
+
+                          value: controller.selectSubsidiariesValue,
+                          items: controller.dashboardAllData?.subsidiaries?.map((account) {
+                            return DropdownMenuItem<DashboardSubsidiaryObject>(
+                              value: account,
+                              child: Text(
+                                account.name ?? "",
+                                style: mozillaTextRegularText(fontSize: 12, color: DynamicColors.textClr),
+                              ),
+                            );
+                          }).toList() ?? [],
+                          onTap: () => controller.dropDownShow.value = false,
+                          onChanged: (v) {
+                            controller.selectSubsidiariesValue = v;
+                            // controller.selectDepartmentData = null;
+                            controller.update();
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
                   // ----- Tabs -----
                   Container(
                     // width: double.infinity,
@@ -401,6 +593,11 @@ class _DriversViewState extends State<DriversView> {
                             );
                           }
 
+                          final bool isDriverSelected =
+                              !isHeaderMode &&
+                                  controller.selectedMapButtonIndex < 0 &&
+                                  controller.selectedDriverIndex == index;
+
                           return GestureDetector(
                             onSecondaryTapDown: (details) {
                               _showContextMenu(
@@ -408,8 +605,13 @@ class _DriversViewState extends State<DriversView> {
                                   index: index);
                             },
                             child: Card(
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                              color: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                side: BorderSide.none,
+                              ),
+                              color: isDriverSelected
+                                  ? DynamicColors.secondaryClr
+                                  : Colors.white,
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1.0),
                                 child: Row(
@@ -427,6 +629,12 @@ class _DriversViewState extends State<DriversView> {
                                           driver.bookingStatus == "STC"?Colors.blue:
                                           driver.driverStatus == "On Break"? Colors.red:
                                           Colors.green,
+                                          border: isDriverSelected
+                                              ? Border.all(
+                                            color: DynamicColors.primaryClr,
+                                            width: 2,
+                                          )
+                                              : null,
                                           borderRadius: const BorderRadius.all(Radius.circular(4)),
                                         ),
                                         child: Text(
