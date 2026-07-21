@@ -1,7 +1,10 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/tabbarview.dart';
-import 'package:dashboard_new1/view/accounts/Invoice/customer_pre_invoice.dart';
+import 'package:dashboard_new1/view/accounts/Invoice/list_customer_pre_invoices.dart';
+import 'package:dashboard_new1/view/accounts/Invoice/list_customer_invoices.dart';
+import 'package:dashboard_new1/view/accounts/Invoice/create_customer_pre_invoice.dart';
+
 import 'package:dashboard_new1/view/booking_view/multi_booking.dart';
 // import 'package:dashboard_new1/view/Invoice/create_accountinvoice.dart';
 // import 'package:dashboard_new1/view/User/create_userScreen.dart';
@@ -570,6 +573,10 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         return ListOfAccountScreen();
         case 'CREATE CUSTOMER INVOICE':
         return CustomerPreInvoice();
+        case 'CREATE CUSTOMER PRE INVOICE':
+        return CustomerPreInvoice();
+        case 'LIST OF CUSTOMER PRE INVOICES':
+        return PreInvoiceList();
         child = DriverAppFeatureScreen();
         break;
       case 'CREATE DRIVER COMMISSION':
@@ -649,7 +656,7 @@ final List<MenuItemData> menus = [
   MenuItemData("FARES", Icons.wallet_outlined, ["CREATE FARE SETTINGS", "CREATE FIXED FARE SETTINGS", "CREATE PLOT FARE", "CREATE FARE BY VEHICLE SETTINGS", "AIRPORT CHARGES", "FARE INCREMENT", "SUR CHARGES", "FARE METER"]),
   MenuItemData("LOCATIONS", Icons.location_pin, ["CREATE LOCATIONS", "LIST OF LOCATIONS", "CREATE ZONE", "LIST OF ZONES", "LOCALIZATION", "PLOTTING"]),
   MenuItemData("DRIVERS", Icons.person, ["CREATE DRIVER", "LIST OF DRIVERS", "DRIVER APP FEATURES", "2LIST OF LOGGED IN/OUT DRIVERS", "DRIVER ATTRIBUTES", "CREATE DRIVER COMMISSION", "CREATE DRIVER RENT", "DRIVER COMMISSIONS", "BULK DRIVER COMMISSION","DRIVER COMMISSION PAY","DRIVER RENT", "BULK DRIVER RENT","DRIVER RENT PAY", "DRIVER SIN BIN SETTINGS"]),
-  MenuItemData("ACCOUNTS", Icons.account_circle, ["CREATE ACCOUNT", "LIST OF ACCOUNTS", "CREATE CUSTOMER INVOICE", "LIST OF CUSTOMER INVOICES", "CREATE ACCOUNT INVOICE", "LIST OF ACCOUNT INVOICES"]),
+  MenuItemData("ACCOUNTS", Icons.account_circle, ["CREATE ACCOUNT", "LIST OF ACCOUNTS", "CREATE CUSTOMER INVOICE", "CREATE CUSTOMER PRE INVOICE", "LIST OF CUSTOMER PRE INVOICES", "LIST OF CUSTOMER INVOICES", "CREATE ACCOUNT INVOICE", "LIST OF ACCOUNT INVOICES"]),
   MenuItemData("VEHICLES", Icons.directions_car, ["CREATE VEHICLE TYPE", "LIST OF VEHICLE TYPES", "CREATE COMPANY VEHICLE", "LIST OF COMPANY VEHICLE"]),
   MenuItemData("INVOICE", Icons.supervised_user_circle, ["CREATE USER", "LIST OF USER", "AUTHORIZATION"]),
   MenuItemData("ADMINSTRATION", Icons.supervised_user_circle, ["CREATE SUBSIDIARY", "LIST OF SUBSIDIARIES"]),
