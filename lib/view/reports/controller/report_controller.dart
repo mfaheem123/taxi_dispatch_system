@@ -150,14 +150,16 @@ class ReportController extends GetxController {
   }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver logs functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver earning and info functionality
-  var earningFromDate = Rxn<DateTime>(DateTime.now());
+  var earningFromDate = Rxn<DateTime>(
+    DateTime(DateTime.now().year, DateTime.now().month, 1),
+  );
   var earningToDate = Rxn<DateTime>(DateTime.now());
   var selectedDate = Rxn<DateTime>(DateTime.now());
   String reportViewType = "daily";
   EarningInfoListModel? earningInfoListModel;
   bool isLoadingEarning = false;
 
-  getAllDriversEarnings({String? viewType, String? specificDate}) async {
+  getAllDriversEarnings({String? viewType}) async {
     if (selectDriverObject == null) {
       print("No driver selected");
       return;
@@ -170,21 +172,33 @@ class ReportController extends GetxController {
     }
 
     try {
-      String formattedDate = earningFromDate.value != null
+      String formattedFromDate = earningFromDate.value != null
           ? DateFormat('yyyy-MM-dd').format(earningFromDate.value!)
           : DateFormat('yyyy-MM-dd').format(DateTime.now());
 
-      print("Fetching earnings for Driver ID: ${selectDriverObject?.id}, View: $reportViewType, Date: $formattedDate");
+      String formattedToDate = earningToDate.value != null
+          ? DateFormat('yyyy-MM-dd').format(earningToDate.value!)
+          : DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+      String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+      print("Fetching earnings for Driver ID: ${selectDriverObject?.id}, FromDate: $formattedFromDate, ToDate: $formattedToDate,  View: $reportViewType, Date: $currentDate");
 
       var response = await Api().get("bookings/booking-driver-statistics",
           queryParameters: {
             "driver_id": selectDriverObject?.id.toString(),
+            "from_date": formattedFromDate,
+            "to_date": formattedToDate,
             "view": reportViewType,
-            "date": formattedDate,
+            "date": currentDate,
           });
 
       if(response.statusCode == 200) {
         earningInfoListModel = EarningInfoListModel.fromJson(response.data);
+
+        print("Status Code: ${response.statusCode}");
+        print("Response Data: ${response.data}");
+        print("==================================================");
         print("Driver Earning Data Loaded Successfully");
       }
     } catch (e) {
@@ -593,10 +607,12 @@ class ReportController extends GetxController {
   int totalCalls = 0;
   String totalWorkingHours = "";
 
-  final activityStartTimeController = TextEditingController();
-  final activityEndTimeController = TextEditingController();
+  final activityStartTimeController = TextEditingController(text: "00:00");
+  final activityEndTimeController = TextEditingController(text: "23:59");
+
   var activityFromDate = Rxn<DateTime>(DateTime(DateTime.now().year, DateTime.now().month, 1));
-  var activityToDate = Rxn<DateTime>(DateTime.now().add(const Duration(days: 1)));
+  var activityToDate = Rxn<DateTime>(DateTime.now());
+  // var activityToDate = Rxn<DateTime>(DateTime.now().add(const Duration(days: 1)));
 
   getEmployeeActivity() async {
     if (apiSelectedEmployee == null) {
@@ -614,17 +630,33 @@ class ReportController extends GetxController {
           ? DateFormat('yyyy-MM-dd').format(activityToDate.value!)
           : "";
 
+      String fromTime = activityStartTimeController.text.trim();
+      String toTime = activityEndTimeController.text.trim();
+
+      print("================== API REQUEST PARAMS ==================");
+      print("employee_id : ${apiSelectedEmployee?.id}");
+      print("from_date   : $formattedFromDate");
+      print("to_date     : $formattedToDate");
+      print("from_time   : $fromTime");
+      print("to_time     : $toTime");
+      print("========================================================");
+
       var response = await Api().get(
         "employee_shift_history/activity",
         queryParameters: {
           "employee_id": apiSelectedEmployee?.id.toString(),
           "from_date": formattedFromDate,
           "to_date": formattedToDate,
+          "from_time": fromTime,
+          "to_time": toTime,
         },
       );
 
       if (response.statusCode == 200) {
         employeeReportModel = EmployeeReportModel.fromJson(response.data);
+
+        print("Status Code: ${response.statusCode}");
+        print("Response Data: ${response.data}");
         employeeActivityList = employeeReportModel?.employeeShiftHistory ?? [];
         totalCreated = 0;
         totalDispatched = 0;
@@ -656,6 +688,9 @@ class ReportController extends GetxController {
           totalWorkingHours = "$totalMinutes minutes";
         }
       }
+
+      print("Status Code: ${response.statusCode}");
+      print("Response Data: ${response.data}");
     } catch (e) {
       print("Error fetching employee activity: $e");
     } finally {
