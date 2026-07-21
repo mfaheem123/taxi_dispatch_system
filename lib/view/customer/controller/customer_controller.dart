@@ -796,7 +796,7 @@ sendCompanyId: true,
 
     try {
       var response = await Api().get(
-        "complaint/get",
+        "complaint/get", sendCompanyId: true,auth: true,
       );
 
       print("Status Code => ${response.statusCode}");

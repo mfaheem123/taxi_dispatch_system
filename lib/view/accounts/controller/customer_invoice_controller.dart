@@ -82,9 +82,14 @@ class CustomerInvoiceController extends GetxController {
   Set<String> selectedIds = {};
   String filterFromDate = "";
   String filterToDate = "";
+
+  void setDefaultDates() {
+    DateTime now = DateTime.now();
+    filterFromDate = DateTime(now.year, now.month, 1).toIso8601String().split("T").first;
+    filterToDate = now.toIso8601String().split("T").first;
+  }
   bool isFilteredLoading = false;
   CustomerInvoiceFilterModel? customerInvoiceFilterModel;
-
   getCustomerInvoiceByFilter() async {
     if (selectedCustomerId == null) {
       BotToast.showText(text: "PLEASE SELECT A CUSTOMER FIRST");
@@ -218,7 +223,7 @@ class CustomerInvoiceController extends GetxController {
     };
     print("Submitting Payload: $formData");
     var response =
-    await Api().post(formData, "customer-invoice/add", auth: true);
+    await Api().post(formData, "customer-invoice/add",sendCompanyId: true, auth: true);
     if (response.statusCode == 200) {
       print("Response Data: ${response.data}");
       BotToast.showText(text: "CUSTOMER INVOICE ADDED SUCCESSFULLY!");
@@ -274,7 +279,7 @@ class CustomerInvoiceController extends GetxController {
     update();
 
     String statusParam = paid.value == true ? "paid" : "unpaid";
-    var response = await Api().get("customer-invoice/get", queryParameters: {
+    var response = await Api().get("customer-invoice/get", sendCompanyId: true, queryParameters: {
       "status": statusParam,
     });
     if (response.statusCode == 200) {
