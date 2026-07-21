@@ -113,14 +113,16 @@ class _InvoiceListState extends State<InvoiceList> {
                     child: CircularProgressIndicator(),
                   ),
                 )
-                    : invoices.isEmpty
-                    ? const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(40.0),
-                    child: Text("No Invoices Found"),
-                  ),
-                )
-                    : SingleChildScrollView(
+                    :
+                // invoices.isEmpty
+                //     ? const Center(
+                //   child: Padding(
+                //     padding: EdgeInsets.all(40.0),
+                //     child: Text("No Invoices Found"),
+                //   ),
+                // )
+                //     :
+                SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: SizedBox(
                     width: constraints.maxWidth,

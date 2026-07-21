@@ -49,6 +49,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "CreateCustomerInvoice";
+    controller.setDefaultDates();
   }
 
   List permissions = [];
@@ -495,19 +496,19 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                         context: context,
                         isMobile: isMobile,
                         label: AppText.from,
-                        width: maxWidth < 1366 ? fieldWidth / 2.2 :fieldWidth / 1.8,
+                        width: maxWidth < 1366 ? fieldWidth / 2.2 : fieldWidth / 1.8,
                         child: SizedBox(
                           height: 30,
                           child: KeyboardDatePicker(
-                            initialDate: DateTime.now(),
+                            initialDate: controller.filterFromDate.isNotEmpty
+                                ? DateTime.parse(controller.filterFromDate)
+                                : DateTime(DateTime.now().year, DateTime.now().month, 1),
                             onChanged: (date) {
-                              controller.filterFromDate =
-                                  date.toIso8601String().split("T").first;
+                              controller.filterFromDate = date.toIso8601String().split("T").first;
                               controller.update();
                             },
                             onSubmitted: (date) {
-                              controller.filterFromDate =
-                                  date.toIso8601String().split("T").first;
+                              controller.filterFromDate = date.toIso8601String().split("T").first;
                               controller.update();
                             },
                           ),
@@ -517,19 +518,19 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                         context: context,
                         isMobile: isMobile,
                         label: AppText.to,
-                        width: maxWidth < 1366 ? fieldWidth / 2.2 :fieldWidth / 1.8,
+                        width: maxWidth < 1366 ? fieldWidth / 2.2 : fieldWidth / 1.8,
                         child: SizedBox(
                           height: 30,
                           child: KeyboardDatePicker(
-                            initialDate: DateTime.now(),
+                            initialDate: controller.filterToDate.isNotEmpty
+                                ? DateTime.parse(controller.filterToDate)
+                                : DateTime.now(),
                             onChanged: (date) {
-                              controller.filterToDate =
-                                  date.toIso8601String().split("T").first;
+                              controller.filterToDate = date.toIso8601String().split("T").first;
                               controller.update();
                             },
                             onSubmitted: (date) {
-                              controller.filterToDate =
-                                  date.toIso8601String().split("T").first;
+                              controller.filterToDate = date.toIso8601String().split("T").first;
                               controller.update();
                             },
                           ),
