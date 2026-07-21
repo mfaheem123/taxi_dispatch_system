@@ -352,6 +352,7 @@ import 'alert/driver_panic_alert.dart';
 import 'component/networks/Url.dart';
 import 'component/networks/api.dart' as Urls;
 import 'component/networks/api.dart';
+import 'component/recover_alert.dart';
 import 'view/auth/Controller/auth_controller.dart';
 
 // Background message handler (Top-level function)
@@ -491,6 +492,56 @@ Future<void> setupWebNotifications() async {
             duration: const Duration(seconds: 15),
           );
         }
+      }
+      else if (type == 'DRIVER_RECOVER_BOOKING_REQUEST') {
+        String dName = message.data['driver_name'] ?? "Unknown";
+        String dUser = message.data['driver_username'] ?? "N/A";
+        String dMobile = message.data['driver_mobile'] ?? "N/A";
+        String dID = message.data['driver_id'] ?? "N/A";
+        String bRef = message.data['booking_ref'] ?? ""; // booking ref bhi extract kar lein
+
+        Get.dialog(
+          DriverRecoveryDialog(
+            driverName: dName,
+            driverUsername: dUser,
+            driverMobile: dMobile,
+            driverID: dID,
+            bookingRef: bRef,
+            onDecline: () {
+              // Handle Decline logic here
+            },
+            onApprove: () {
+              // Handle Approve logic here
+            },
+          ),
+          barrierColor: Colors.black54,
+          barrierDismissible: false,
+        );
+      }
+      else if (type == 'DRIVER_NOPICKUP_BOOKING_REQUEST') {
+        String dName = message.data['driver_name'] ?? "Unknown";
+        String dUser = message.data['driver_username'] ?? "N/A";
+        String dMobile = message.data['driver_mobile'] ?? "N/A";
+        String dID = message.data['driver_id'] ?? "N/A";
+        String bRef = message.data['booking_ref'] ?? ""; // booking ref bhi extract kar lein
+
+        Get.dialog(
+          DriverRecoveryDialog(
+            driverName: dName,
+            driverUsername: dUser,
+            driverMobile: dMobile,
+            driverID: dID,
+            bookingRef: bRef,
+            onDecline: () {
+              // Handle Decline logic here
+            },
+            onApprove: () {
+              // Handle Approve logic here
+            },
+          ),
+          barrierColor: Colors.black54,
+          barrierDismissible: false,
+        );
       }
 
       // 3. NEW_APP_BOOKING
