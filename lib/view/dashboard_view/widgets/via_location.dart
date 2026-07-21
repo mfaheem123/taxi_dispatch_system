@@ -250,12 +250,12 @@ class _ViaLocationState extends State<ViaLocation> {
                                 padding: EdgeInsets.only(right: 14), // CHANGE INFO: Right padding barhai taake dynamic textfields scroller thumb ke piche hide na hon
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     // --- LEFT COLUMN (O/W) ---
                                     SizedBox(
                                       // CHANGE INFO: Width ko slightly modify kiya (600->580, 280->265) taake newly embedded right scrollbar layout ko overlap na kare aur padding balanced rhey.
-                                      width: controller.selectJourneyTypeValue!.journeyType != 'W/R'? 580 : 265,
+                                      width: controller.jourValue != 'W/R'? 580 : 265,
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
@@ -397,7 +397,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                     // --- RIGHT COLUMN (R/N) ---
                                     Visibility(
                                       visible: controller.pickupTwoWayController.text.isNotEmpty &&
-                                          controller.selectJourneyTypeValue!.journeyType != 'W/R'  ,
+                                          controller.jourValue == 'W/R'  ?true:false,
                                       child: SizedBox(
                                         // CHANGE INFO: Width adjust ki taake space management dynamic rhey.
                                         width: 265,

@@ -17,6 +17,7 @@ import '../dashboard_view/models/account_darshboard_model.dart';
 import '../dashboard_view/models/all_addresses_model.dart';
 import '../dashboard_view/models/dashboard_model.dart';
 import '../dashboard_view/models/users_phone_numbers_model.dart';
+import '../dashboard_view/widgets/fare_configuration.dart';
 import '../dashboard_view/widgets/via_location.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
 import '../locations_view/controller/locations_controller.dart';
@@ -505,8 +506,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.selectJourneyTypeValue,
                                     controller.dashboardAllData!.journeyTypes ??
                                         const [],
-                                        (v) => setState(() =>
-                                    controller.selectJourneyTypeValue = v),
+                                        (v) => setState(() {
+                                          // controller.selectJourneyTypeValue = v;
+                                          controller.dropDownShow.value = false;
+                                          controller.jourValue = (v!.journeyType == "r/n") ? 'W/R' : null;
+                                          controller.selectJourneyTypeValue = v;
+                                        }),
                                     14,
                                     itemLabel: (p) => p.journeyType!,
                                   ),
@@ -789,7 +794,39 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   'Select R/VEH',
                    controller.selectVehicleValueReturn,
                   controller.dashboardAllData!.vehicleTypes!,
-                  (v) => setState(() =>  controller.selectVehicleValueReturn = v),
+                  (v) {
+                    print('tap 01');
+                    setState(() async{
+
+                      print('tap 02');
+                      // controller.selectVehicleValueReturn = v;
+                      if (v == null) return;
+
+                      print('tap 03');
+                      controller.selectVehicleValueReturn = v;
+                      controller.dropDownShow.value = false;
+
+                      // Jab user khud badlega tab naye wale ki ID direct jayegi
+                      final fare = await getActiveFareForVehicle(
+                        controller.dashboardAllData!.fareConfigurations!,
+                        v.id!,
+                      );
+                      print('tap 04');
+                      if (fare != null) {
+                        print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}');
+                        controller.getFaresCalculation();
+                        print('tap 05');
+                        double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+                        controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+                        print('tap 06');
+                      } else {
+                        print('tap 07');
+                        print('No active fare found for this vehicle');
+                      }
+                      print('tap 08');
+                      controller.update();
+                    }
+                    );},
                   32,
                   itemLabel: (p) => p.name!,
                 ),
@@ -811,7 +848,39 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                     'Select R/VEH',
                     controller.selectVehicleValueReturn,
                     controller.dashboardAllData!.vehicleTypes!,
-                    (v) => setState(() => controller.selectVehicleValueReturn = v),
+                        (v) {
+                      print('tap 01');
+                      setState(() async{
+
+                        print('tap 02');
+                        // controller.selectVehicleValueReturn = v;
+                        if (v == null) return;
+
+                        print('tap 03');
+                        controller.selectVehicleValueReturn = v;
+                        controller.dropDownShow.value = false;
+
+                        // Jab user khud badlega tab naye wale ki ID direct jayegi
+                        final fare = await getActiveFareForVehicle(
+                          controller.dashboardAllData!.fareConfigurations!,
+                          v.id!,
+                        );
+                        print('tap 04');
+                        if (fare != null) {
+                          print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}');
+                          controller.getFaresCalculation();
+                          print('tap 05');
+                          double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+                          controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+                          print('tap 06');
+                        } else {
+                          print('tap 07');
+                          print('No active fare found for this vehicle');
+                        }
+                        print('tap 08');
+                        controller.update();
+                      }
+                      );},
                     32,
                     itemLabel: (p) => p.name!,
                   ),
