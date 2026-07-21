@@ -356,6 +356,8 @@ sendCompanyId: true,
       saveLostPropertyLoad = true;
       update();
 
+    bool isUpdating = lostPropertyValue.value || lostPropertyUpdateId.value != 0;
+
       var formData = {
         // "booking_id": selectedBookingForLostProperty?.id.toString(),
         // "customer_id": selectedBookingForLostProperty?.customerId.toString(),
@@ -376,13 +378,13 @@ sendCompanyId: true,
 
       var response = await Api().post(
           formData,
-          lostPropertyModel != null
+          isUpdating
               ? "lost-property/update/${lostPropertyUpdateId.value}"
               : "lost-property/add",
           sendCompanyId: true,  auth: true);
       if (response.statusCode == 200) {
         BotToast.showText(
-            text: lostPropertyValue.value
+            text: isUpdating
                 ? "LOST PROPERTY UPDATED SUCCESSFULLY"
                 : 'LOST PROPERTY ADDED SUCCESSFULLY');
         refreshFields();
@@ -393,8 +395,14 @@ sendCompanyId: true,
   }
 
   refreshFields() {
-    lostPropertyModel == null;
+    lostPropertyModel = null;
     selectedBookingForLostProperty = null;
+    updateBookingId = null;
+    updateCustomerId = null;
+
+    lostPropertyUpdateId.value = 0;
+    lostPropertyValue(false);
+
     detailOfPropertyController.clear();
     methodOfDespositionController.clear();
     nameController.clear();
@@ -403,7 +411,12 @@ sendCompanyId: true,
     enquiryController.clear();
     checkedByController.clear();
     resultController.clear();
-    lostPropertyValue(false);
+
+    reportDateController = "";
+    lostDateController = "";
+
+    update();
+    // lostPropertyValue(false);
   }
   RxBool lostPropertyValue = false.obs;
   RxInt lostPropertyUpdateId = 0.obs;

@@ -32,7 +32,10 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "lostPropertyScreen";
-    controller.lostPropertyValue(false);
+    if (!controller.lostPropertyValue.value) {
+      controller.refreshFields();
+    }
+    // controller.lostPropertyValue(false);
   }
 
   int selectedRowIndex = 0;
@@ -536,10 +539,9 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                   fontSize: 17,
                   height: 30,
                   width: fieldWidth * 0.9,
-                  // lostPropertyValue jab true hoga to UPDATE dikhega, warna SAVE
-                  btnText: controller.
-                  lostPropertyModel != null
-                      ? "UPDATE" : AppText.save,
+                btnText: (controller.lostPropertyValue.value || controller.lostPropertyUpdateId.value != 0)
+                    ? "UPDATE"
+                    : AppText.save,
                 ),
                 SizedBox(
                   height: 10,
