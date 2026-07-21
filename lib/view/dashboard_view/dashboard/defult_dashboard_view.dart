@@ -6,6 +6,7 @@ import 'package:dashboard_new1/view/dashboard_view/dashboard/shortcut_key_widget
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../../alert/back_slash_alert.dart';
 import '../../../alert/child_seats_alert.dart';
 import '../../../alert/extra_fares_alert.dart';
 import '../../../alert/extra_info_alert.dart';
@@ -161,6 +162,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
               } else if (event.logicalKey.keyLabel == "F4") {
                 showDriverEarningsAlert();
                 return;
+              } else if (event.logicalKey.keyLabel == "/") {
+                showSystemShortcutsAlert();
+                return;
               }
               else if (event.logicalKey.keyLabel == "F9") {
                 if (controller.pickupController.text.isNotEmpty &&
@@ -201,26 +205,21 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                 ShortcutKeyWidget(
                                     keyss: "F2",
                                     valuess: "BOOKING FORM"),
-                                InkWell(
-                                  onTap: () {
-                                    showDriverInfoAlert();
-                                  },
-                                  child: ShortcutKeyWidget(
+                               ShortcutKeyWidget(
                                     keyss: "F3",
                                     valuess: "DRIVER VEHICLE",
                                   ),
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    showDriverEarningsAlert();
-                                  },
-                                  child:  ShortcutKeyWidget(
+                                 ShortcutKeyWidget(
                                       keyss: "F4",
                                       valuess: "DRIVER EARNING"),
-                                ),
                                 ShortcutKeyWidget(
                                     keyss: "F6",
                                     valuess: "QUOTATION"),
+
+                                ShortcutKeyWidget(
+                                    keyss: "/",
+                                    valuess: "QUICK HELP",
+                                  ),
                                 // width >= 1900
                                 //     ? Spacer()
                                 //     : SizedBox.shrink(),

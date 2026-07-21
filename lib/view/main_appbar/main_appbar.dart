@@ -544,37 +544,37 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       const SizedBox(width: 12),
                       // Shortcuts
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 3.0),
-                        child: SizedBox(
-                          height: kToolbarHeight,
-                          child: Row(
-                            children: [
-                              Text(
-                                "PRESS",
-                                style: mozillaTextRegularText(color: DynamicColors.textClr, fontSize: 14),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                                  decoration: BoxDecoration(
-                                      color: DynamicColors.textClr,
-                                      borderRadius: BorderRadius.circular(4)),
-                                  child: Text(
-                                    "/",
-                                    style: mozillaTextRegularText(color: DynamicColors.whiteClr, fontSize: 14),
-                                  ),
-                                ),
-                              ),
-                              Text(
-                                "SHORTCUTS",
-                                style: mozillaTextRegularText(color: DynamicColors.textClr, fontSize: 14),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                      //   child: SizedBox(
+                      //     height: kToolbarHeight,
+                      //     child: Row(
+                      //       children: [
+                      //         Text(
+                      //           "PRESS",
+                      //           style: mozillaTextRegularText(color: DynamicColors.textClr, fontSize: 14),
+                      //         ),
+                      //         Padding(
+                      //           padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      //           child: Container(
+                      //             padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                      //             decoration: BoxDecoration(
+                      //                 color: DynamicColors.textClr,
+                      //                 borderRadius: BorderRadius.circular(4)),
+                      //             child: Text(
+                      //               "/",
+                      //               style: mozillaTextRegularText(color: DynamicColors.whiteClr, fontSize: 14),
+                      //             ),
+                      //           ),
+                      //         ),
+                      //         Text(
+                      //           "SHORTCUTS",
+                      //           style: mozillaTextRegularText(color: DynamicColors.textClr, fontSize: 14),
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                   const Spacer(),

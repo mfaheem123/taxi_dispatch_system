@@ -456,7 +456,17 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
 
     final List<String> dailyLabels = List.generate(24, (i) => "${i.toString().padLeft(2, '0')}:00");
     final List<String> weeklyLabels = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
-    final List<String> monthlyLabels = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
+
+    DateTime baseFromDate = controller.earningFromDate.value ?? DateTime.now();
+    int daysInSelectedMonth = DateTime(baseFromDate.year, baseFromDate.month + 1, 0).day;
+
+    // Date Format
+    final List<String> monthlyLabels = List.generate(
+        daysInSelectedMonth,
+            // (index) => "${index + 1}/${baseFromDate.month}"
+            (index) => "${index + 1}/${baseFromDate.month}/${baseFromDate.year.toString().substring(2)}"
+    );
 
     List<String> activeLabels = dailyLabels;
     double xBottomInterval = 4.0;
@@ -490,6 +500,8 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
           if (numericIndex != null) {
             if (controller.reportViewType == "daily") {
               targetIndex = numericIndex;
+            } else if (controller.reportViewType == "monthly") {
+              targetIndex = numericIndex - 1;
             } else {
               targetIndex = numericIndex - 1;
             }
@@ -502,7 +514,6 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
 
           String exactDateText = "";
           String exactApiDateText = "";
-          DateTime baseFromDate = controller.earningFromDate.value ?? DateTime.now();
 
           if (controller.reportViewType == "weekly") {
             int baseWeekday = baseFromDate.weekday;
@@ -512,8 +523,11 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
             exactDateText = "${calculatedDate.day.toString().padLeft(2, '0')}-${calculatedDate.month.toString().padLeft(2, '0')}-${calculatedDate.year}";
             exactApiDateText = DateFormat('yyyy-MM-dd').format(calculatedDate);
           } else if (controller.reportViewType == "monthly") {
-            exactDateText = "${activeLabels[targetIndex]} ${baseFromDate.year}";
-            DateTime calculatedDate = DateTime(baseFromDate.year, targetIndex + 1, 1);
+            int dayNumber = targetIndex + 1;
+            DateTime calculatedDate = DateTime(baseFromDate.year, baseFromDate.month, dayNumber);
+
+            // Tooltip par poori date show hogi (e.g. 01-07-2026)
+            exactDateText = "${dayNumber.toString().padLeft(2, '0')}-${baseFromDate.month.toString().padLeft(2, '0')}-${baseFromDate.year}";
             exactApiDateText = DateFormat('yyyy-MM-dd').format(calculatedDate);
           } else {
             String formattedCurrentDate = "${baseFromDate.day.toString().padLeft(2, '0')}-${baseFromDate.month.toString().padLeft(2, '0')}-${baseFromDate.year}";
@@ -531,7 +545,7 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
       if (spots.isNotEmpty && spots.first.x > 0) {
         spots.insert(0, const FlSpot(0, 0));
         spotDisplayDates[0.0] = "Start";
-        spotApiDates[0.0] = DateFormat('yyyy-MM-dd').format(controller.earningFromDate.value ?? DateTime.now());
+        spotApiDates[0.0] = DateFormat('yyyy-MM-dd').format(baseFromDate);
       }
 
       if (maxEarningsValue > 60.0 && controller.reportViewType == "daily") {
@@ -613,7 +627,7 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 35,
+              reservedSize: 45, // Rotated labels
               interval: xBottomInterval,
               getTitlesWidget: (value, meta) {
                 if (controller.reportViewType == "daily") {
@@ -623,10 +637,17 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                 int index = value.toInt();
                 if (index >= 0 && index < activeLabels.length) {
                   return Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: Text(
-                        activeLabels[index],
-                        style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black54)
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Transform.rotate(
+                      angle: controller.reportViewType == "monthly" ? -0.7 : 0, // Approx -40 degrees rotate
+                      child: Text(
+                        activeLabels[index], // Format: e.g. "1/7", "2/7"
+                        style: TextStyle(
+                          fontSize: controller.reportViewType == "monthly" ? 10 : 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black54,
+                        ),
+                      ),
                     ),
                   );
                 }
@@ -683,6 +704,7 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
       ),
     );
   }
+
   Widget _buildStatCard({
     required String label,
     required String value,
