@@ -573,7 +573,7 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
 
               if (targetApiDate != null && !controller.isLoadingEarning) {
                 print("Graph point clicked! Date: $targetApiDate");
-                controller.getAllDriversEarnings(specificDate: targetApiDate);
+                controller.getAllDriversEarnings();
               }
             }
           },
