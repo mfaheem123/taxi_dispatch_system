@@ -199,13 +199,19 @@ class _DriversViewState extends State<DriversView> {
                     controller.selectedMapButtonIndex++;
                     controller.update();
                   } else {
-                    // Past the last map button: wrap back to the header icons.
+                    // Past the last map button: hand focus to the booking table
+                    // (its first row's checkbox). If the table isn't present
+                    // (iPad / mobile layout hides it) fall back to the old
+                    // behaviour of wrapping back to the header icons.
+                    final moved = controller.focusFirstTableRow?.call() ?? false;
                     controller.selectedMapButtonIndex = -1;
                     controller.update();
-                    setState(() {
-                      isHeaderMode = true;
-                      selectedHeaderIndex = 0;
-                    });
+                    if (!moved) {
+                      setState(() {
+                        isHeaderMode = true;
+                        selectedHeaderIndex = 0;
+                      });
+                    }
                   }
                 } else if (isHeaderMode) {
                   setState(() => isHeaderMode = false); // header -> driver list

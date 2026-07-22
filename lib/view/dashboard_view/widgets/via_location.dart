@@ -607,7 +607,7 @@ class _ViaLocationState extends State<ViaLocation> {
                       final RenderBox? fieldBox = activeKey?.currentContext?.findRenderObject() as RenderBox?;
                       final RenderBox? stackBox = controller.stackKey.currentContext?.findRenderObject() as RenderBox?;
                       double top = 0.0;
-                      double left = 0.0;
+                      double left = 28.0;
                       double width = Get.width/4;
                       if (fieldBox != null && stackBox != null) {
                         final Offset localOffset = fieldBox.localToGlobal(Offset.zero, ancestor: stackBox);
