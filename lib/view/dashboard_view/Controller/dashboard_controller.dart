@@ -654,6 +654,13 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   // -1 = not navigating the map buttons; 0..3 = the map button Tab-highlighted
   // from the driver panel (see drivers.dart key handler). Plain int + update().
   int selectedMapButtonIndex = -1;
+
+  // Handoff hook: BookingTable registers a callback here that moves keyboard
+  // focus to its first row's checkbox. The driver panel calls it when the user
+  // Tabs past the last map button, so focus flows map buttons -> booking table
+  // instead of wrapping back to the header icons. Returns true if focus was
+  // moved (false when the table isn't present, e.g. the iPad/mobile layout).
+  bool Function()? focusFirstTableRow;
   final pickupFieldKey = GlobalKey();
   final pickupTwoWayFieldKey = GlobalKey();
   final dropOffFieldKey = GlobalKey();
