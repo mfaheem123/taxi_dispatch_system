@@ -70,11 +70,9 @@ class PreInvoiceList extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
 
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: SizedBox(
-                    width: constraints.maxWidth,
-                    child: DatatableWidget(
+                SizedBox(
+                  width: constraints.maxWidth - 32, // Adjusting for 16.0 horizontal padding
+                  child: DatatableWidget(
                       columns: [
                         buildHeaderWithSearch(title: "INVOICE #", onChanged: (val) {
                           controller.searchQuery = val;
@@ -106,39 +104,48 @@ class PreInvoiceList extends StatelessWidget {
                       rows: controller.filteredPreInvoices.map((invoice) {
                         return DataRow(
                           cells: [
-                            DataCell(Text(invoice["invoiceNumber"], style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
-                            DataCell(Text(invoice["customer"], style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
-                            DataCell(Text(invoice["date"], style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
-                            DataCell(Text(invoice["dueDate"], style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
+                            DataCell(Center(child: Text(invoice["invoiceNumber"], style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)))),
+                            DataCell(Center(child: Text(invoice["customer"], style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)))),
+                            DataCell(Center(child: Text(invoice["date"], style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)))),
+                            DataCell(Center(child: Text(invoice["dueDate"], style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)))),
                             DataCell(
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: invoice["status"] == "UNPAID" ? Colors.red : Colors.green,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  invoice["status"],
-                                  style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                              Center(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: invoice["status"] == "UNPAID" ? Colors.red : Colors.green,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    invoice["status"],
+                                    style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                                  ),
                                 ),
                               )
                             ),
-                            DataCell(Text("£${invoice["amount"]}", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
+                            DataCell(Center(child: Text("£${invoice["amount"]}", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)))),
                             DataCell(
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  _actionButton(Icons.edit, Colors.green, onTap: () {
-                                    controller.setEditData(invoice);
-                                    dashboardController.currentPage.value = const CustomerPreInvoice();
-                                    dashboardController.menuBarRefresh(
-                                        title: "CREATE CUSTOMER PRE INVOICE",
-                                        pageName: const CustomerPreInvoice());
-                                  }),
-                                  _actionButton(Icons.delete, Colors.red),
-                                  _actionButton(Icons.copy, Colors.blue),
-                                  _actionButton(Icons.email, Colors.blue.shade800),
-                                ],
+                              Center(
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    _actionButton(Icons.edit, Colors.green, onTap: () {
+                                      controller.setEditData(invoice);
+                                      dashboardController.currentPage.value = const CustomerPreInvoice(isEdit: true);
+                                      dashboardController.menuBarRefresh(
+                                          title: "CREATE CUSTOMER PRE INVOICE",
+                                          pageName: const CustomerPreInvoice(isEdit: true));
+                                    }),
+                                    _actionButton(Icons.delete, Colors.red),
+                                    _actionButton(Icons.picture_as_pdf, Colors.blue, onTap: () {
+                                      controller.setEditData(invoice);
+                                      controller.downloadPdfFile();
+                                    }),
+                                    _actionButton(Icons.email, Colors.blue.shade800, onTap: () {
+                                      CustomerPreInvoice.showEmailDialog(context, controller);
+                                    }),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -146,7 +153,6 @@ class PreInvoiceList extends StatelessWidget {
                       }).toList(),
                     ),
                   ),
-                ),
               ],
             ),
           );

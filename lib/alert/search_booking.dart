@@ -92,7 +92,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                     const SizedBox(width: 12),
                     
                     // Filter Button
-                    _buildButton("FILTER", const Color(0xFF4CAF50), Colors.white, isWide: true),
+                    _buildButton("FILTER",  DynamicColors.primaryClr, Colors.white, isWide: true),
                     const SizedBox(width: 8),
                     
                     // Clear Button
@@ -103,7 +103,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
             ),
 
             // ── Data Table ──
-            Expanded(
+            Flexible(
               child: Container(
                 width: double.infinity,
                 color: Colors.white,

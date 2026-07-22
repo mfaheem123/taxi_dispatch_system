@@ -9,10 +9,12 @@ import '../../../component/text_widget.dart';
 import '../../booking_view/reusable_widget.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../dashboard_view/widgets/user_info_widget.dart';
-import '../controller/preinvoice_controller.dart'; 
+import '../controller/preinvoice_controller.dart';
+import 'customer_pre_invoice_view_screen.dart';
 
 class CustomerPreInvoice extends StatelessWidget {
-  const CustomerPreInvoice({super.key});
+  final bool isEdit;
+  const CustomerPreInvoice({super.key, this.isEdit = false});
 
   @override
   Widget build(BuildContext context) {
@@ -36,13 +38,138 @@ class CustomerPreInvoice extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(0.0),
                 child: Container(
                   width: Get.width,
                   padding: const EdgeInsets.symmetric(
                       vertical: 10, horizontal: 12),
                   color: DynamicColors.gryClr.withOpacity(0.5),
-                  child: Text("Customer Pre Invoice", style: titleDesign()),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Customer Pre Invoice", style: titleDesign()),
+                      if (isEdit)
+                        Row(
+                          children: [
+                            CustomButton( 
+                              verticalPadding: 0.0,
+                              width: 80,
+                              height: 30,
+                              borderRadius: 4,
+                              btnText: controller.isBookingPaid ? "PAID" : "UNPAID",
+                              btnColor: controller.isBookingPaid ? Colors.green : null,
+                              style: mozillaTextRegularText(
+                                  fontSize: 10, color: DynamicColors.whiteClr),
+                              onTap: () {
+                                controller.toggleBookingPaid();
+                              },
+                            ),
+                            const SizedBox(width: 8),
+                            CustomButton(
+                              verticalPadding: 0.0,
+                              width: 70,
+                              height: 30,
+                              borderRadius: 4,
+                              btnText: "EMAIL",
+                              style: mozillaTextRegularText(
+                                  fontSize: 10, color: DynamicColors.whiteClr),
+                              onTap: () {
+                                showEmailDialog(context, controller);
+                              },
+                            ),
+                            const SizedBox(width: 8),
+                            PopupMenuButton<String>(
+                              tooltip: "Export Options",
+                              offset: const Offset(0, 40),
+                              onSelected: (value) {
+                                if (value == 'pdf') {
+                                  controller.downloadPdfFile();
+                                } else if (value == 'excel') {
+                                  controller.downloadExel();
+                                }
+                              },
+                              itemBuilder: (BuildContext context) => [
+                                // --- PDF Option ---
+                                PopupMenuItem<String>(
+                                  value: 'pdf',
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.picture_as_pdf,
+                                          color: Colors.red,
+                                          size: 20),
+                                      const SizedBox(width: 10),
+                                      Text("Download PDF",
+                                          style:
+                                          mozillaTextRegularText(
+                                              fontSize: 12)),
+                                    ],
+                                  ),
+                                ),
+                                // --- Excel Option ---
+                                PopupMenuItem<String>(
+                                  value: 'excel',
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.table_view,
+                                          color: Colors.green,
+                                          size: 20),
+                                      const SizedBox(width: 10),
+                                      Text("Download Excel",
+                                          style:
+                                          mozillaTextRegularText(
+                                              fontSize: 12)),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                              child: Container(
+                                width: 75,
+                                height: 30,
+                                decoration: BoxDecoration(
+                                  color: DynamicColors.primaryClr,
+                                  borderRadius:
+                                  BorderRadius.circular(4),
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "EXPORT",
+                                  style: mozillaTextRegularText(
+                                      fontSize: 10,
+                                      color: DynamicColors.whiteClr),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            CustomButton(
+                              verticalPadding: 0.0,
+                              width: 70,
+                              height: 30,
+                              borderRadius: 4,
+                              btnText: "VIEW",
+                              style: mozillaTextRegularText(
+                                  fontSize: 10, color: DynamicColors.whiteClr),
+                              onTap: () {
+                                Get.dialog(
+                                  PreInvoiceViewWindowWrapper(controller: controller),
+                                  barrierDismissible: true,
+                                );
+                              },
+                            ),
+                            const SizedBox(width: 8),
+                            CustomButton(
+                              verticalPadding: 0.0,
+                              width: 70,
+                              height: 30,
+                              borderRadius: 4,
+                              btnText: "SAVE",
+                              style: mozillaTextRegularText(
+                                  fontSize: 10, color: DynamicColors.whiteClr),
+                              onTap: () {},
+                            ),
+                          ],
+                        ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -160,10 +287,11 @@ class CustomerPreInvoice extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 4.0),
+              if (!isEdit) ...[
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 4.0),
                 child: Wrap(
                   runSpacing: 10,
                   spacing: maxWidth < 1366 ? 6 : 10,
@@ -285,6 +413,7 @@ class CustomerPreInvoice extends StatelessWidget {
                   ],
                 ),
               ),
+              ],
               const SizedBox(height: 8),
               ResponsiveDataTableWidget(
                   totalWidth: totalAvailableWidth,
@@ -295,7 +424,7 @@ class CustomerPreInvoice extends StatelessWidget {
                         customHeader: Checkbox(
                           value: controller.selectedIds.isNotEmpty &&
                               controller.selectedIds.length ==
-                                  controller.bookings.length,
+                                  controller.filteredBookings.length,
                           onChanged: (bool? val) {
                             controller.selectAll(val ?? false);
                           },
@@ -335,8 +464,8 @@ class CustomerPreInvoice extends StatelessWidget {
                         removeSearching: true),
                   ],
                   items: [
-                    ...controller.bookings,
-                    if (controller.bookings.isNotEmpty) "TOTAL_ROW"
+                    ...controller.filteredBookings,
+                    if (controller.filteredBookings.isNotEmpty) "TOTAL_ROW"
                   ],
                   rowBuilder: (item, widths) {
                     if (item == "TOTAL_ROW") {
@@ -483,6 +612,97 @@ class CustomerPreInvoice extends StatelessWidget {
             ],
           ));
         });
+      },
+    );
+  }
+
+  static void showEmailDialog(BuildContext context, CustomerPreInvoiceController controller) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          child: Container(
+            width: 400,
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("EMAIL ACCOUNT INVOICE",
+                        style: mozillaTextSemiBoldText(
+                            context: context,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold)),
+                    InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Icon(Icons.close, color: Colors.grey, size: 20)),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                const Divider(),
+                const SizedBox(height: 10),
+                Text("RECIPIENT",
+                    style: mozillaTextRegularText(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                CustomTextField(
+                  controller: controller.emailController,
+                  hintText: "ABC@ABC.COM",
+                  height: 40,
+                  width: double.infinity,
+                  borderRadius: 4,
+                  //borderColor: const Color(0xFF4ADE80),
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 12),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    CustomButton(
+                      verticalPadding: 0,
+                      width: 90,
+                      height: 40,
+                      borderRadius: 4,
+                      btnColor: Colors.grey.shade200,
+                      btnText: "CANCEL",
+                      style: mozillaTextSemiBoldText(
+                          fontSize: 12,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    const SizedBox(width: 10),
+                    CustomButton(
+                      verticalPadding: 0,
+                      width: 90,
+                      height: 40,
+                      borderRadius: 4,
+                      btnText: "SEND",
+                      style: mozillaTextSemiBoldText(
+                          fontSize: 12,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
       },
     );
   }

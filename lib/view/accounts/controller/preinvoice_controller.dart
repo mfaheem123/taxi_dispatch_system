@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'dart:convert';
+import 'package:intl/intl.dart';
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html' as html;
+import 'package:excel/excel.dart';
 
 class CustomerPreInvoiceController extends GetxController {
   //==================== Invoice ====================//
@@ -22,6 +27,8 @@ class CustomerPreInvoiceController extends GetxController {
 
   String filterFromDate = DateTime.now().toString().split(" ")[0];
   String filterToDate = DateTime.now().toString().split(" ")[0];
+
+  final GlobalKey exportKey = GlobalKey();
 
   //==================== Payment ====================//
 
@@ -54,6 +61,7 @@ class CustomerPreInvoiceController extends GetxController {
       "meetAndGreet": "0",
       "congestionCharges": "0",
       "totalCharges": "45.00",
+      "status": "UNPAID",
     },
     {
       "id": 2,
@@ -72,10 +80,30 @@ class CustomerPreInvoiceController extends GetxController {
       "meetAndGreet": "10.00",
       "congestionCharges": "0",
       "totalCharges": "70.00",
+      "status": "PAID",
     },
   ];
 
   Set<String> selectedIds = {};
+
+  bool isBookingPaid = false;
+
+  void toggleBookingPaid() {
+    isBookingPaid = !isBookingPaid;
+    update();
+  }
+
+  List<Map<String, dynamic>> get filteredBookings {
+    return bookings.where((booking) {
+      // If status is not provided, default to UNPAID
+      final status = booking["status"] ?? "UNPAID";
+      if (isBookingPaid) {
+        return status == "PAID";
+      } else {
+        return status == "UNPAID";
+      }
+    }).toList();
+  }
 
   //==================== Dates ====================//
 
@@ -123,7 +151,7 @@ class CustomerPreInvoiceController extends GetxController {
 
   void selectAll(bool value) {
     if (value) {
-      selectedIds = bookings
+      selectedIds = filteredBookings
           .map((e) => e["id"].toString())
           .toSet();
     } else {
@@ -137,7 +165,7 @@ class CustomerPreInvoiceController extends GetxController {
   double getInvoiceTableColumnTotal(String key) {
     double total = 0;
 
-    for (var booking in bookings) {
+    for (var booking in filteredBookings) {
       if (selectedIds.isEmpty ||
           selectedIds.contains(booking["id"].toString())) {
         total +=
@@ -203,6 +231,265 @@ class CustomerPreInvoiceController extends GetxController {
 
   void saveInvoice() {
     // TODO : Save Invoice API
+  }
+
+  void downloadPdfFile({bool isView = false}) {
+    if (filteredBookings.isEmpty) {
+      Get.snackbar("ERROR", "NO DATA FOUND TO EXPORT.");
+      return;
+    }
+
+    double totalFare = 0;
+    double totalPC = 0;
+    double totalWC = 0;
+    double totalEDC = 0;
+    double totalMG = 0;
+    double totalCC = 0;
+    double grandTotal = 0;
+
+    String tableRows = "";
+
+    for (var b in filteredBookings) {
+      double fare = double.tryParse(b["fares"]?.toString() ?? "0") ?? 0.0;
+      double pc = double.tryParse(b["parkingCharges"]?.toString() ?? "0") ?? 0.0;
+      double wc = double.tryParse(b["waitingCharges"]?.toString() ?? "0") ?? 0.0;
+      double edc = double.tryParse(b["extraDropCharges"]?.toString() ?? "0") ?? 0.0;
+      double mg = double.tryParse(b["meetAndGreet"]?.toString() ?? "0") ?? 0.0;
+      double cc = double.tryParse(b["congestionCharges"]?.toString() ?? "0") ?? 0.0;
+      double total = double.tryParse(b["totalCharges"]?.toString() ?? "0") ?? 0.0;
+
+      totalFare += fare;
+      totalPC += pc;
+      totalWC += wc;
+      totalEDC += edc;
+      totalMG += mg;
+      totalCC += cc;
+      grandTotal += total;
+
+      String formattedDate = "-";
+      if (b["pickupDate"] != null && b["pickupDate"].toString().isNotEmpty) {
+        try {
+          DateTime parsedDate = DateFormat("yyyy-M-d").parse(b["pickupDate"].toString());
+          formattedDate = DateFormat("yyyy-MM-dd").format(parsedDate);
+        } catch (_) {
+          formattedDate = b["pickupDate"].toString();
+        }
+      }
+
+      String formattedTime = "-";
+      if (b["pickupTime"] != null && b["pickupTime"].toString().isNotEmpty) {
+        formattedTime = b["pickupTime"].toString().split('.')[0].substring(0, 5);
+      }
+
+      tableRows += """
+      <tr>
+        <td>${b["referenceNumber"] ?? ""}</td>
+        <td>$formattedDate<br>$formattedTime</td>
+        <td>${b["vehicleType"] ?? ""}</td>
+        <td>${b["pickup"] ?? ""}</td>
+        <td>${b["dropoff"] ?? ""}</td>
+        <td>${b["journeyType"] ?? ""}</td>
+        <td>${b["paymentType"] ?? ""}</td>
+        <td>£${fare.toStringAsFixed(2)}</td>
+        <td>£${pc.toStringAsFixed(2)}</td>
+        <td>£${wc.toStringAsFixed(2)}</td>
+        <td>£${edc.toStringAsFixed(2)}</td>
+        <td>£${mg.toStringAsFixed(2)}</td>
+        <td>£${cc.toStringAsFixed(2)}</td>
+        <td>£${total.toStringAsFixed(2)}</td>
+      </tr>
+    """;
+    }
+
+    final String finalHtml = """
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body { font-family: Arial; padding: 30px; font-size: 12px; }
+h2 { text-align: center; margin-bottom: 20px; }
+table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+th, td { border: 1px solid #ccc; padding: 6px; text-transform: uppercase; text-align: center; }
+th { background-color: #f2f2f2; }
+.right { text-align: right; }
+.no-border td { border: none; }
+.header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+.footer-note { font-size: 11px; text-align: right; margin-top: 30px; }
+.header div, p b { 
+  text-transform: uppercase; 
+}
+</style>
+</head>
+<body>
+
+<h2>CUSTOMER PRE INVOICE</h2>
+
+<div class="header">
+  <div>
+    <b>EMAIL:</b> ${emailController.text}<br>
+    <b>MOBILE:</b> ${mobileController.text}<br>
+    <b>TELEPHONE:</b> ${telController.text}
+  </div>
+
+  <div>
+      <b>CUSTOMER:</b> ${nameController.text}<br>
+    <b>DATE:</b> ${invoiceDate.toString().split(' ').first}<br>
+    <b>DUE DATE:</b> ${invoiceDueDate.toString().split(' ').first}
+  </div>
+</div>
+
+<p><b>PERIOD:</b> (${filterFromDate.toString().split(' ').first} TO ${filterToDate.toString().split(' ').first})</p>
+
+<table>
+<thead>
+<tr>
+  <th>REF #</th>
+  <th>DATETIME</th>
+  <th>VEHICLE</th>
+  <th>PICKUP</th>
+  <th>DROPOFF</th>
+  <th>J/T</th>
+  <th>P/T</th>
+  <th>FARE</th>
+  <th>PC</th>
+  <th>WC</th>
+  <th>EDC</th>
+  <th>M&G</th>
+  <th>CC</th>
+  <th>TOTAL</th>
+</tr>
+</thead>
+<tbody>
+
+$tableRows
+
+<tr style="font-weight:bold;">
+  <td colspan="7" class="right">TOTAL</td>
+  <td>£${totalFare.toStringAsFixed(2)}</td>
+  <td>£${totalPC.toStringAsFixed(2)}</td>
+  <td>£${totalWC.toStringAsFixed(2)}</td>
+  <td>£${totalEDC.toStringAsFixed(2)}</td>
+  <td>£${totalMG.toStringAsFixed(2)}</td>
+  <td>£${totalCC.toStringAsFixed(2)}</td>
+  <td>£${grandTotal.toStringAsFixed(2)}</td>
+</tr>
+
+</tbody>
+</table>
+
+<table class="no-border">
+</table>
+
+<div class="footer-note">
+PC: PARKING CHARGES<br>
+WC: WAITING CHARGES<br>
+EDC: EXTRA DROP CHARGES<br>
+M&G: MEET AND GREET<br>
+CC: CONGESTION CHARGES
+</div>
+
+</body>
+</html>
+""";
+
+    try {
+      final bytes = utf8.encode(finalHtml);
+      final blob = html.Blob([bytes], 'text/html');
+      final url = html.Url.createObjectUrlFromBlob(blob);
+      
+      if (isView) {
+        html.window.open(url, "_blank");
+      } else {
+        html.AnchorElement(href: url)
+          ..setAttribute("download", "PreInvoice_$invoiceNumber.html")
+          ..click();
+      }
+      
+      html.Url.revokeObjectUrl(url);
+    } catch (e) {
+      debugPrint("Download Error: $e");
+    }
+  }
+
+  void downloadExel() {
+    if (filteredBookings.isEmpty) {
+      Get.snackbar("ERROR", "NO DATA FOUND TO EXPORT.");
+      return;
+    }
+
+    var excel = Excel.createExcel();
+    Sheet sheetObject = excel['Invoice'];
+    excel.delete('Sheet1');
+
+    List<String> headers = [
+      "REF #",
+      "DATE",
+      "TIME",
+      "VEHICLE",
+      "PICKUP",
+      "DROPOFF",
+      "J/T",
+      "P/T",
+      "FARE",
+      "PC",
+      "WC",
+      "EDC",
+      "M&G",
+      "CC",
+      "TOTAL",
+    ];
+    sheetObject
+        .appendRow(headers.map((e) => TextCellValue(e.toUpperCase())).toList());
+
+    for (var b in filteredBookings) {
+      double fare = double.tryParse(b["fares"]?.toString() ?? "0") ?? 0.0;
+      double pc = double.tryParse(b["parkingCharges"]?.toString() ?? "0") ?? 0.0;
+      double wc = double.tryParse(b["waitingCharges"]?.toString() ?? "0") ?? 0.0;
+      double edc = double.tryParse(b["extraDropCharges"]?.toString() ?? "0") ?? 0.0;
+      double mg = double.tryParse(b["meetAndGreet"]?.toString() ?? "0") ?? 0.0;
+      double cc = double.tryParse(b["congestionCharges"]?.toString() ?? "0") ?? 0.0;
+      double total = double.tryParse(b["totalCharges"]?.toString() ?? "0") ?? 0.0;
+
+      sheetObject.appendRow([
+        TextCellValue(b["referenceNumber"]?.toString() ?? ""),
+        TextCellValue(b["pickupDate"]?.toString() ?? ""),
+        TextCellValue(b["pickupTime"]?.toString() ?? ""),
+        TextCellValue((b["vehicleType"]?.toString() ?? "").toUpperCase()),
+        TextCellValue((b["pickup"]?.toString() ?? "").toUpperCase()),
+        TextCellValue((b["dropoff"]?.toString() ?? "").toUpperCase()),
+        TextCellValue((b["journeyType"]?.toString() ?? "").toUpperCase()),
+        TextCellValue((b["paymentType"]?.toString() ?? "").toUpperCase()),
+        DoubleCellValue(fare),
+        DoubleCellValue(pc),
+        DoubleCellValue(wc),
+        DoubleCellValue(edc),
+        DoubleCellValue(mg),
+        DoubleCellValue(cc),
+        DoubleCellValue(total),
+      ]);
+    }
+
+    try {
+      var fileBytes = excel.save();
+
+      if (fileBytes != null) {
+        final blob = html.Blob([
+          fileBytes
+        ], 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        final url = html.Url.createObjectUrlFromBlob(blob);
+
+        html.AnchorElement(href: url)
+          ..setAttribute(
+              "download", "PreInvoice_$invoiceNumber.xlsx")
+          ..click();
+
+        html.Url.revokeObjectUrl(url);
+      }
+    } catch (e) {
+      debugPrint("Excel Download Error: $e");
+      Get.snackbar("ERROR", "FAILED TO DOWNLOAD EXCEL FILE");
+    }
   }
 
   void saveBookingRow(Map<String, dynamic> booking) {
