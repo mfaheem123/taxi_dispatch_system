@@ -314,7 +314,14 @@ class _IncomeScreenState extends State<IncomeScreen> {
                 // SingleChildScrollView(
                 //   scrollDirection: Axis.horizontal,
                 //   child:
-                ResponsiveDataTableWidget(
+                controller.isLoadingIncome
+                    ? const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 40),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+                    : ResponsiveDataTableWidget(
                   totalWidth: totalAvailableWidth,
                   columnConfigs: [
                     TableColumnConfig(title: "REF #", sizeType: ColumnSizeType.medium),

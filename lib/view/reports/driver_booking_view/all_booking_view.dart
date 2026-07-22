@@ -1,7 +1,9 @@
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
+import 'package:dashboard_new1/view/customer/model/search_customer_by_mobile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -213,11 +215,119 @@ class _AllBookingViewState extends State<AllBookingView> {
                             width: fieldWidth / 2.2,
                             hintText: AppText.customer,
                           ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.mobileController,
+                          // CustomTextField(
+                          //   borderRadius: 4,
+                          //   controller: controller.mobileController,
+                          //   width: fieldWidth / 2.2,
+                          //   hintText: "MOBILE",
+                          // ),
+
+                          labeledField(
+                            context: context,
+                            isMobile: isMobile,
+                            label: "",
+                            column: false,
                             width: fieldWidth / 2.2,
-                            hintText: "MOBILE",
+                            child: RawAutocomplete<SearchCustomer>(
+                              textEditingController: controller.mobileController,
+                              focusNode: FocusNode(),
+                              displayStringForOption: (SearchCustomer option) => option.mobile ?? '',
+                              optionsBuilder: (TextEditingValue textEditingValue) async {
+                                if (textEditingValue.text.trim().isEmpty) {
+                                  return const Iterable<SearchCustomer>.empty();
+                                }
+
+                                // API Search Call
+                                await controller.getCustomer(textEditingValue.text);
+
+                                return controller.searchCustomerByMobile?.customer ?? [];
+                              },
+                              onSelected: (SearchCustomer selection) {
+                                // Auto-fill selected data
+                                controller.mobileController.text = selection.mobile ?? '';
+                                controller.customerController.text = selection.name ?? '';
+                                controller.phoneController.text = selection.telephone ?? '';
+                                controller.update();
+                              },
+                              fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
+                                return CustomTextField(
+                                  borderRadius: 4,
+                                  controller: textEditingController,
+                                  focusNode: focusNode,
+                                  width: fieldWidth / 2.2,
+                                  hintText: "MOBILE",
+                                );
+                              },
+                              optionsViewBuilder: (context, onSelected, options) {
+                                return Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Material(
+                                    elevation: 6.0,
+                                    borderRadius: BorderRadius.circular(4),
+                                    child: Container(
+                                      width: fieldWidth / 2.2,
+                                      constraints: const BoxConstraints(maxHeight: 220),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(4),
+                                        border: Border.all(color: Colors.grey.shade300),
+                                      ),
+                                      child: ListView.builder(
+                                        padding: EdgeInsets.zero,
+                                        shrinkWrap: true,
+                                        itemCount: options.length,
+                                        itemBuilder: (BuildContext context, int index) {
+                                          final SearchCustomer option = options.elementAt(index);
+                                          final bool isHighlighted = AutocompleteHighlightedOption.of(context) == index;
+
+                                          if (isHighlighted) {
+                                            SchedulerBinding.instance.addPostFrameCallback((_) {
+                                              Scrollable.ensureVisible(context, alignment: 0.5);
+                                            });
+                                          }
+
+                                          return InkWell(
+                                            onTap: () => onSelected(option),
+                                            child: Container(
+                                              color: isHighlighted
+                                                  ? Colors.blue.withOpacity(0.15)
+                                                  : Colors.transparent,
+                                              padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  // Customer Name
+                                                  Flexible(
+                                                    child: Text(
+                                                      option.name ?? '',
+                                                      overflow: TextOverflow.ellipsis,
+                                                      style: const TextStyle(
+                                                        fontWeight: FontWeight.w600,
+                                                        fontSize: 13,
+                                                        color: Colors.black87,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  // Customer Mobile
+                                                  Text(
+                                                    option.mobile ?? '',
+                                                    style: TextStyle(
+                                                      color: Colors.grey.shade700,
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                           CustomTextField(
                             borderRadius: 4,
@@ -504,6 +614,25 @@ class _AllBookingViewState extends State<AllBookingView> {
                               ),
                             );
                           })(),
+
+                          CustomDropdownField<dynamic>(
+                            width: maxWidth < 1400 ? fieldWidth / 1.7 : fieldWidth / 1.9,
+                            label: AppText.selectSubsidiary,
+                            items:
+                            controller.apiDashboardData?.subsidiaries ?? [],
+                            value: controller.apiSelectedSubsidiary,
+                            itemLabel: (val) => (val.name ?? "").toUpperCase(),
+                            onChanged: (val) {
+                              controller.apiSelectedSubsidiary = val;
+                              controller.apiSelectedAccount = null;
+                              controller.apiSelectedDepartment = null;
+
+                              if (val != null && val.id != null) {
+                                controller.getAccountData(val.id);
+                              }
+                              controller.update();
+                            },
+                          ),
                           CustomDropdownField<dynamic>(
                             width: maxWidth < 1400 ? fieldWidth / 1.7 : fieldWidth / 1.9,
                             label: AppText.selectAccount,
@@ -556,24 +685,6 @@ class _AllBookingViewState extends State<AllBookingView> {
                                 (val.username ?? "").toUpperCase(),
                             onChanged: (val) {
                               controller.apiSelectedEmployee = val;
-                              controller.update();
-                            },
-                          ),
-                          CustomDropdownField<dynamic>(
-                            width: fieldWidth / 1.5,
-                            label: AppText.selectSubsidiary,
-                            items:
-                            controller.apiDashboardData?.subsidiaries ?? [],
-                            value: controller.apiSelectedSubsidiary,
-                            itemLabel: (val) => (val.name ?? "").toUpperCase(),
-                            onChanged: (val) {
-                              controller.apiSelectedSubsidiary = val;
-                              controller.apiSelectedAccount = null;
-                              controller.apiSelectedDepartment = null;
-
-                              if (val != null && val.id != null) {
-                                controller.getAccountData(val.id);
-                              }
                               controller.update();
                             },
                           ),
@@ -881,7 +992,7 @@ class _AllBookingViewState extends State<AllBookingView> {
                                           width: actionCellWidth - 5,
                                           child: ElevatedButton(
                                             style: ElevatedButton.styleFrom(
-                                              backgroundColor: isEditing ? Colors.grey : DynamicColors.primaryClr,
+                                              backgroundColor: isEditing ? Colors.green : DynamicColors.primaryClr,
                                               foregroundColor: Colors.white,
                                               padding: EdgeInsets.zero,
                                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),

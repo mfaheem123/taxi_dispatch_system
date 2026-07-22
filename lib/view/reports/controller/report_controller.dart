@@ -10,6 +10,7 @@ import '../../../component/networks/api.dart';
 import '../../administration/model/list_subsDiary.dart';
 import '../../administration/model/user_model.dart';
 import '../../customer/model/restricDriver.dart';
+import '../../customer/model/search_customer_by_mobile.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
 import '../../dashboard_view/models/dashboard_model.dart';
 import '../driver_booking_view/model/booking_graph_model.dart';
@@ -285,6 +286,10 @@ class ReportController extends GetxController {
       );
       if (response.statusCode == 200) {
         apiDashboardData = DashboardDataModel.fromJson(response.data);
+
+        if (apiDashboardData?.subsidiaries != null && apiDashboardData!.subsidiaries!.isNotEmpty) {
+          apiSelectedSubsidiary = apiDashboardData!.subsidiaries!.first;
+        }
       } else {
         print("Server Error: ${response.statusCode}");
       }
@@ -295,15 +300,31 @@ class ReportController extends GetxController {
       update();
     }
   }
-  void setSelectedStatusByName(String name) {
-    if (name == "ALL") {
-      apiSelectedBookingStatus = null;
-    } else {
-      String backendQuery = (name == "INCOMPLETE") ? "PENDING" : name;
 
-      apiSelectedBookingStatus = apiDashboardData?.bookingStatuses?.firstWhereOrNull(
-            (e) => e.bookingStatus?.toUpperCase() == backendQuery,
-      );
+  // booking status id func
+  String selectedBookingStatusIds = "1,3,4,5,6,8,10,11,12,13,14,15";
+  void setSelectedStatusByName(String name) {
+    switch (name.toUpperCase()) {
+      case "ALL":
+        selectedBookingStatusIds = "1,3,4,5,6,8,10,11,12,13,14,15";
+        break;
+      case "COMPLETED":
+        selectedBookingStatusIds = "11";
+        break;
+      case "INCOMPLETE":
+        selectedBookingStatusIds = "1,3,4,5,6,8,10,12,13,14,15";
+        break;
+      case "MISSED":
+        selectedBookingStatusIds = "4";
+        break;
+      case "DECLINED":
+        selectedBookingStatusIds = "5";
+        break;
+      case "CANCELLED":
+        selectedBookingStatusIds = "12";
+        break;
+      default:
+        selectedBookingStatusIds = "1,3,4,5,6,8,10,11,12,13,14,15";
     }
     update();
   }
@@ -432,7 +453,7 @@ class ReportController extends GetxController {
           "driver": searchDriver.value,
           "driver_id": selectDriverObject?.id?.toString() ?? "",
           "payment_type_id": paymentTypeIdsString,
-          "booking_status_id": apiSelectedBookingStatus?.id?.toString() ?? "",
+          "booking_status_id": selectedBookingStatusIds,
           "sort_order": apiSortOrder,
           "sort_by": apiSortBy
         },
@@ -586,7 +607,11 @@ class ReportController extends GetxController {
   }
 
   void clearDropdowns() {
-    apiSelectedSubsidiary = null;
+    if (apiDashboardData?.subsidiaries != null && apiDashboardData!.subsidiaries!.isNotEmpty) {
+      apiSelectedSubsidiary = apiDashboardData!.subsidiaries!.first;
+    } else {
+      apiSelectedSubsidiary = null;
+    }
     apiSelectedAccount = null;
     apiSelectedDepartment = null;
     apiSelectedEmployee = null;
@@ -594,6 +619,27 @@ class ReportController extends GetxController {
     accountDepartmentsList.clear();
     update();
   }
+
+
+  /// todo mobile search api
+
+  SearchCustomerByMobileModel? searchCustomerByMobile;
+  bool isSearchingCustomer = false;
+
+  getCustomer(String mobile) async {
+    isSearchingCustomer = true;
+    var response = await Api().get(
+      "customers/search-data?mobile=$mobile",
+      sendCompanyId: true,
+    );
+    if (response.statusCode == 200) {
+      searchCustomerByMobile =
+          SearchCustomerByMobileModel.fromJson(response.data);
+      isSearchingCustomer = false;
+      update();
+    }
+  }
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report booking functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report employee functionality
 

@@ -122,9 +122,34 @@ class _BookingStatisticsContentState extends State<BookingStatisticsContent> {
     });
   }
 
+  // void _triggerGraphApi() {
+  //   controller.setSelectedStatusByName(selectedStatus);
+  //   String? statusId = controller.apiSelectedBookingStatus?.id?.toString();
+  //   controller.getBookingStatisticsGraph(statusId: statusId);
+  // }
   void _triggerGraphApi() {
-    controller.setSelectedStatusByName(selectedStatus);
-    String? statusId = controller.apiSelectedBookingStatus?.id?.toString();
+    String statusId = "";
+
+    // Specific Status IDs Map
+    switch (selectedStatus.toUpperCase()) {
+      case "COMPLETED":
+        statusId = "11";
+        break;
+      case "INCOMPLETE":
+        statusId = "1,3,4,5,6,8,10,12,13,14,15";
+        break;
+      case "MISSED":
+        statusId = "4";
+        break;
+      case "DECLINED":
+        statusId = "5";
+        break;
+      case "CANCELLED":
+        statusId = "12";
+        break;
+      default:
+        statusId = "11";
+    }
     controller.getBookingStatisticsGraph(statusId: statusId);
   }
 

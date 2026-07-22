@@ -74,7 +74,9 @@ class Booking {
   factory Booking.fromJson(Map<String, dynamic> json) => Booking(
     id: json["id"],
     referenceNumber: json["reference_number"],
-    pickupDate: json["pickup_date"] == null ? null : DateTime.parse(json["pickup_date"]),
+    pickupDate: json["pickup_date"] == null
+        ? null
+        : DateTime.tryParse(json["pickup_date"].toString().replaceAllMapped(RegExp(r'-(\d)(?=-|$)'), (m) => '-0${m[1]}')),
     pickupTime: json["pickup_time"],
     pickup: json["pickup"],
     dropoff: json["dropoff"],
@@ -92,7 +94,7 @@ class Booking {
   Map<String, dynamic> toJson() => {
     "id": id,
     "reference_number": referenceNumber,
-    "pickup_date": "${pickupDate!.year.toString().padLeft(4, '0')}-${pickupDate!.month.toString().padLeft(2, '0')}-${pickupDate!.day.toString().padLeft(2, '0')}",
+    "pickup_date": pickupDate?.toIso8601String().split('T').first,
     "pickup_time": pickupTime,
     "pickup": pickup,
     "dropoff": dropoff,
