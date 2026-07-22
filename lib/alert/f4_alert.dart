@@ -115,8 +115,10 @@ class _DriverEarningsAlertState extends State<DriverEarningsAlert> {
                             child: SizedBox(
                               height: 30,
                               child: KeyboardDatePicker(
-                                initialDate: controller.fromDate.value ?? DateTime.now(),
-                                onChanged: (date) => controller.fromDate.value = date,
+                                initialDate: controller.fromDate.value ?? DateTime(DateTime.now().year, DateTime.now().month, 1),
+                                onChanged: (date) {
+                                  controller.fromDate.value = date;
+                                },
                               ),
                             ),
                           ),

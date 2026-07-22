@@ -149,9 +149,7 @@ import 'package:dashboard_new1/component/networks/api.dart';
 
 import '../dashboard_view/models/dashboard_model.dart';
 
-
 class CliController extends GetxController {
-
   WebSocketChannel? channel;
   RxBool isConnected = false.obs;
   RxBool isLoading = false.obs;
@@ -163,28 +161,16 @@ class CliController extends GetxController {
 
   RxBool CLIJOBLoader = false.obs;
 
-  /// 🔹 POST CLI JOB WITH DATE & TIME FORMATTING
+  /// 🔹 POST CLI JOB WITH CURRENT DATE & TIME
   postCLIJob(bid, dynamic date, dynamic time, did, vid) async {
     CLIJOBLoader(false);
 
     // Current Date and Time
     DateTime now = DateTime.now();
 
-    // 1. Format Pickup Date (YYYY-MM-DD)
+    // Force strictly current system date & time
     String formattedDate = DateFormat('yyyy-MM-dd').format(now);
-    if (date != null) {
-      if (date is DateTime) {
-        formattedDate = DateFormat('yyyy-MM-dd').format(date);
-      } else if (date is String && date.isNotEmpty) {
-        formattedDate = date;
-      }
-    }
-
-    // 2. Format Pickup Time (HH:mm / 24-hour)
     String formattedTime = DateFormat('HH:mm').format(now);
-    if (time != null && time.toString().isNotEmpty) {
-      formattedTime = time.toString();
-    }
 
     var formData = {
       'booking_id': bid,
@@ -192,7 +178,7 @@ class CliController extends GetxController {
       'pickup_date': formattedDate,
       'pickup_time': formattedTime,
       'driver_id': did,
-      'company_id': Api.singleton.globalCompanyId, // Using globalCompanyId
+      'company_id': Api.singleton.globalCompanyId,
     };
 
     print("--- POSTING CLI JOB DATA ---");
@@ -259,7 +245,6 @@ class CliController extends GetxController {
         uri,
         body: {
           "phone": phone,
-          // Global company ID used here dynamically
           "company_id": Api.singleton.globalCompanyId,
         },
       );

@@ -349,6 +349,7 @@ import 'dart:convert';
 // Imports for your components and Alerts
 import 'alert/driver_break_alert.dart';
 import 'alert/driver_panic_alert.dart';
+import 'alert/nopickup_alert.dart';
 import 'component/networks/Url.dart';
 import 'component/networks/api.dart' as Urls;
 import 'component/networks/api.dart';
@@ -498,7 +499,7 @@ Future<void> setupWebNotifications() async {
         String dUser = message.data['driver_username'] ?? "N/A";
         String dMobile = message.data['driver_mobile'] ?? "N/A";
         String dID = message.data['driver_id'] ?? "N/A";
-        String bRef = message.data['booking_ref'] ?? ""; // booking ref bhi extract kar lein
+        String bRef = message.data['reference_number'] ?? ""; // booking ref bhi extract kar lein
 
         Get.dialog(
           DriverRecoveryDialog(
@@ -523,10 +524,10 @@ Future<void> setupWebNotifications() async {
         String dUser = message.data['driver_username'] ?? "N/A";
         String dMobile = message.data['driver_mobile'] ?? "N/A";
         String dID = message.data['driver_id'] ?? "N/A";
-        String bRef = message.data['booking_ref'] ?? ""; // booking ref bhi extract kar lein
+        String bRef = message.data['reference_number']   ?? ""; // booking ref bhi extract kar lein
 
         Get.dialog(
-          DriverRecoveryDialog(
+          DriverNopickupDialog(
             driverName: dName,
             driverUsername: dUser,
             driverMobile: dMobile,

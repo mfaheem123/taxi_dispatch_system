@@ -41,8 +41,11 @@ class DashboardAlertController extends GetxController{
 
   DriverObject? displayedDriver;
 
-  var fromDate = Rxn<DateTime>(DateTime.now());
-  var toDate = Rxn<DateTime>(DateTime.now());
+  Rx<DateTime?> fromDate = Rx<DateTime?>(
+    DateTime(DateTime.now().year, DateTime.now().month, 1),
+  );
+
+  Rx<DateTime?> toDate = Rx<DateTime?>(DateTime.now());
 
   getDriverEarnings() async {
     if (selectedDriver.value == null) {

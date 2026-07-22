@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import '../alert/delete_permission_alert.dart';
 import '../component/color.dart';
 import '../component/datatable_widget.dart';
@@ -947,7 +948,7 @@ class _CenterAreaState extends State<_CenterArea> {
 
   bool isSwapped = false;
 
-  /// ✅ NEW TextEditingControllers
+  /// ✅ TextControllers & State Variables
   final TextEditingController pickupController = TextEditingController();
   LatLng? pickupPoints;
   String? name;
@@ -966,8 +967,24 @@ class _CenterAreaState extends State<_CenterArea> {
   void initState() {
     super.initState();
     _controller.cliJobHit = false;
+
+    // Helper function to set default vehicle
+    void setDefaultVehicle() {
+      if (dashboard.dashboardAllData?.vehicleTypes != null &&
+          dashboard.dashboardAllData!.vehicleTypes!.isNotEmpty) {
+        // Automatically select the first vehicle type by default
+        dashboard.selectVehicleValue = dashboard.dashboardAllData!.vehicleTypes!.first;
+        selectedVehicleId = dashboard.selectVehicleValue?.id;
+      }
+    }
+
     if (dashboard.dashboardAllData == null) {
-      dashboard.dashboardData();
+      dashboard.dashboardData().then((_) {
+        setDefaultVehicle();
+        setState(() {});
+      });
+    } else {
+      setDefaultVehicle();
     }
   }
 
@@ -982,366 +999,24 @@ class _CenterAreaState extends State<_CenterArea> {
   Widget build(BuildContext context) {
     return GetBuilder<DashboardController>(
       builder: (homeController) {
+        // Fallback safety for default vehicle selection if not set yet
+        if (selectedVehicleId == null &&
+            homeController.dashboardAllData?.vehicleTypes != null &&
+            homeController.dashboardAllData!.vehicleTypes!.isNotEmpty) {
+          homeController.selectVehicleValue ??=
+              homeController.dashboardAllData!.vehicleTypes!.first;
+          selectedVehicleId = homeController.selectVehicleValue?.id;
+        }
+
         return Padding(
           padding: const EdgeInsets.all(24),
           child: SingleChildScrollView(
             child: Column(
               children: [
                 /// HEADER
-
                 const SizedBox(height: 20),
 
                 /// BOOKINGS TABLE
-                // Obx(() {
-                //   if (controller.isLoading.value) {
-                //     return const CircularProgressIndicator();
-                //   }
-                //
-                //   if (controller.bookings.isEmpty) {
-                //     return Column(
-                //       children: [
-                //         Text("Unknown"),
-                //         Text(controller.customerMobile.value),
-                //       ],
-                //     );
-                //   } else {
-                //  Text(controller.customerName.value,
-                //  style: TextStyle(color: Colors.black),
-                //  );
-                //      Text(controller.customerMobile.value,
-                //        style: TextStyle(color: Colors.black),
-                //      );
-                //   }
-                //
-                //   return Column(
-                //     children: [
-                //       /// ✅ PICKUP & DROPOFF TEXTFIELDS
-                //       Row(
-                //         children: [
-                //           Expanded(
-                //             child: TextField(
-                //               controller: pickupController,
-                //               decoration: InputDecoration(
-                //                   labelText: "Pick Up",
-                //                   border: OutlineInputBorder(),
-                //                   suffixIcon: pickupController.text.isEmpty &&
-                //                           dropoffController.text.isEmpty
-                //                       ? SizedBox.shrink()
-                //                       : GestureDetector(
-                //                           onTap: () {
-                //                             pickupController.clear();
-                //                             dropoffController.clear();
-                //                             pickupPoints = null;
-                //                             dropoffPoints = null;
-                //                             setState(() {});
-                //                           },
-                //                           child: Icon(
-                //                             Icons.close,
-                //                             color: Colors.red,
-                //                           ),
-                //                         )),
-                //             ),
-                //           ),
-                //           const SizedBox(width: 16),
-                //           Expanded(
-                //             child: TextField(
-                //               controller: dropoffController,
-                //               decoration: InputDecoration(
-                //                   labelText: "Drop Off",
-                //                   border: OutlineInputBorder(),
-                //                   suffixIcon: pickupController.text.isEmpty &&
-                //                           dropoffController.text.isEmpty
-                //                       ? SizedBox.shrink()
-                //                       : GestureDetector(
-                //                           onTap: () {
-                //                             pickupController.clear();
-                //                             dropoffController.clear();
-                //                             pickupPoints = null;
-                //                             dropoffPoints = null;
-                //                             setState(() {});
-                //                           },
-                //                           child: Icon(
-                //                             Icons.close,
-                //                             color: Colors.red,
-                //                           ),
-                //                         )),
-                //             ),
-                //           ),
-                //         ],
-                //       ),
-                //
-                //       const SizedBox(height: 15),
-                //
-                //       /// SWAP BUTTON
-                //       Row(
-                //         mainAxisAlignment: MainAxisAlignment.center,
-                //         children: [
-                //           ElevatedButton(
-                //             onPressed: () {
-                //               setState(() {
-                //                 isSwapped = !isSwapped;
-                //
-                //                 /// swap textfields data also
-                //                 final temp = pickupController.text;
-                //                 pickupController.text = dropoffController.text;
-                //                 dropoffController.text = temp;
-                //                 submitBtnValue = true;
-                //               });
-                //             },
-                //             child: const Text("Swap Pickup/Drop"),
-                //           ),
-                //           SizedBox(
-                //             width: 20,
-                //           ),
-                //           Visibility(
-                //             visible: selectedBooking != null &&
-                //                     selectedBooking!.viapoints!.isNotEmpty &&
-                //                     actionValue == true &&
-                //                     isSwapped == false
-                //                 ? true
-                //                 : false,
-                //             child: ElevatedButton(
-                //               onPressed: () {
-                //                 // Use a slight delay to ensure the click event is fully processed
-                //                 // before the Dialog changes the UI tree.
-                //                 Future.delayed(const Duration(milliseconds: 50),
-                //                     () {
-                //                   if (!context.mounted) return; // Safety check
-                //
-                //                   showDialog(
-                //                     context: context,
-                //                     builder: (context) {
-                //                       return AlertDialog(
-                //                         title: const Text("VIA List"),
-                //                         content: SizedBox(
-                //                           width: MediaQuery.of(context)
-                //                                   .size
-                //                                   .width /
-                //                               2.5,
-                //                           // width: double.maxFinite, // Helps with sizing
-                //                           child: ListView.builder(
-                //                             itemCount: selectedBooking!
-                //                                 .viapoints!.length,
-                //                             shrinkWrap: true,
-                //                             // Necessary for ListView inside Alert
-                //                             physics:
-                //                                 const AlwaysScrollableScrollPhysics(),
-                //                             // Scrollable if list is long
-                //                             itemBuilder:
-                //                                 (BuildContext context, index) {
-                //                               return Column(
-                //                                 mainAxisSize: MainAxisSize.min,
-                //                                 children: [
-                //                                   Row(
-                //                                     children: [
-                //                                       Expanded(
-                //                                           child: Container(
-                //                                         margin: EdgeInsets
-                //                                             .symmetric(
-                //                                                 horizontal: 6),
-                //                                         padding: EdgeInsets
-                //                                             .symmetric(
-                //                                                 horizontal: 12,
-                //                                                 vertical: 10),
-                //                                         decoration:
-                //                                             BoxDecoration(
-                //                                           border: Border(
-                //                                             bottom: BorderSide(
-                //                                               color:
-                //                                                   DynamicColors
-                //                                                       .black,
-                //                                               width:
-                //                                                   1.0, // You can adjust the thickness here
-                //                                             ),
-                //                                           ),
-                //                                         ),
-                //                                         child: Text(
-                //                                             selectedBooking!
-                //                                                     .viapoints![
-                //                                                         index]
-                //                                                     .name ??
-                //                                                 ""),
-                //                                       )),
-                //                                       Expanded(
-                //                                           child: Container(
-                //                                         margin: EdgeInsets
-                //                                             .symmetric(
-                //                                                 horizontal: 6),
-                //                                         padding: EdgeInsets
-                //                                             .symmetric(
-                //                                                 horizontal: 12,
-                //                                                 vertical: 10),
-                //                                         decoration:
-                //                                             BoxDecoration(
-                //                                           border: Border(
-                //                                             bottom: BorderSide(
-                //                                               color:
-                //                                                   DynamicColors
-                //                                                       .black,
-                //                                               width:
-                //                                                   1.0, // You can adjust the thickness here
-                //                                             ),
-                //                                           ),
-                //                                         ),
-                //                                         child: Text(
-                //                                             selectedBooking!
-                //                                                     .viapoints![
-                //                                                         index]
-                //                                                     .mobile ??
-                //                                                 ""),
-                //                                       )),
-                //                                     ],
-                //                                   ),
-                //                                   Container(
-                //                                     width:
-                //                                         MediaQuery.of(context)
-                //                                                 .size
-                //                                                 .width /
-                //                                             2.5,
-                //                                     padding:
-                //                                         EdgeInsets.symmetric(
-                //                                             horizontal: 12,
-                //                                             vertical: 15),
-                //                                     decoration: BoxDecoration(
-                //                                       border: Border(
-                //                                         bottom: BorderSide(
-                //                                           color: DynamicColors
-                //                                               .black,
-                //                                           width:
-                //                                               1.0, // You can adjust the thickness here
-                //                                         ),
-                //                                       ),
-                //                                     ),
-                //                                     child: Text(selectedBooking!
-                //                                             .viapoints![index]
-                //                                             .viapoint ??
-                //                                         ""),
-                //                                   )
-                //                                 ],
-                //                               );
-                //                             },
-                //                           ),
-                //                         ),
-                //                         actions: [
-                //                           TextButton(
-                //                             onPressed: () =>
-                //                                 Navigator.pop(context),
-                //                             child: const Text("Cancel"),
-                //                           ),
-                //                           ElevatedButton(
-                //                             onPressed: () async {
-                //                               await _controller
-                //                                   .dashBoardDataBinding(
-                //                                       id: selectedBooking!.id,
-                //                                       jobData: selectedBooking);
-                //                               Get.back();
-                //                               Get.back();
-                //                             },
-                //                             child: const Text("Edit Via"),
-                //                           ),
-                //                         ],
-                //                       );
-                //                     },
-                //                   );
-                //                 });
-                //               },
-                //               child: const Text("Show Via"),
-                //             ),
-                //           ),
-                //         ],
-                //       ),
-                //
-                //       const SizedBox(height: 10),
-                //
-                //       SingleChildScrollView(
-                //         scrollDirection: Axis.horizontal,
-                //         child: DatatableWidget(
-                //           columns: [
-                //             buildHeaderWithSearch(
-                //                 title: "Pick-up", removeSearching: true),
-                //             buildHeaderWithSearch(
-                //                 title: "Drop off", removeSearching: true),
-                //             buildHeaderWithSearch(
-                //                 title: "Date", removeSearching: true),
-                //             buildHeaderWithSearch(
-                //                 title: "Fare", removeSearching: true),
-                //             buildHeaderWithSearch(
-                //                 title: "Action", removeSearching: true),
-                //           ],
-                //           totalRow: controller.bookings.length,
-                //           rows: List.generate(controller.bookings.length,
-                //               (index) {
-                //             // var booking = controller.bookings[index];
-                //             BookingObjectData cliBookingData =
-                //                 BookingObjectData.fromJson(
-                //                     controller.bookings[index]);
-                //
-                //             return DataRow(
-                //               cells: [
-                //                 DataCell(SizedBox(
-                //                   width: Get.width / 6,
-                //                   child: rightClickTextCell(
-                //                     item: cliBookingData,
-                //                     clickValue: 'pickUpClick',
-                //                     onRightClick: () {
-                //                       print("RIGHT CLICK JOURNEY TYPE");
-                //                     },
-                //                     child: Text(cliBookingData.pickup!),
-                //                   ),
-                //                 )),
-                //
-                //                 DataCell(SizedBox(
-                //                   width: Get.width / 6,
-                //                   child: rightClickTextCell(
-                //                     item: cliBookingData,
-                //                     clickValue: 'dropoffClick',
-                //                     onRightClick: () {
-                //                       print("RIGHT CLICK JOURNEY TYPE");
-                //                     },
-                //                     child: Text(cliBookingData.dropoff ?? ""),
-                //                   ),
-                //                 )),
-                //
-                //                 DataCell(Text(
-                //                     "${cliBookingData.pickupDate!.year}-${cliBookingData.pickupDate!.month}-${cliBookingData.pickupDate!.day}")),
-                //                 DataCell(Text("£${cliBookingData.fares ?? 0}")),
-                //
-                //                 /// ACTION
-                //                 DataCell(
-                //                   Obx(() => Checkbox(
-                //                         value: selectedIndex.value == index,
-                //                         onChanged: (value) {
-                //                           if (selectedIndex.value == index) {
-                //                             selectedIndex.value = -1;
-                //                             selectedBooking = null;
-                //                             submitBtnValue = false;
-                //                             pickupController.clear();
-                //                             dropoffController.clear();
-                //                             actionValue = false;
-                //                           } else {
-                //                             submitBtnValue = true;
-                //                             selectedIndex.value = index;
-                //                             selectedBooking = cliBookingData;
-                //                             actionValue = true;
-                //                             pickupController.text =
-                //                                 cliBookingData.pickup ?? "";
-                //                             dropoffController.text =
-                //                                 cliBookingData.dropoff ?? "";
-                //                             print(
-                //                                 "Selected booking: $selectedBooking");
-                //                           }
-                //                           setState(() {});
-                //                         },
-                //                       )),
-                //                 ),
-                //               ],
-                //             );
-                //           }),
-                //         ),
-                //       ),
-                //     ],
-                //   );
-                // }),
                 Obx(() {
                   if (controller.isLoading.value) {
                     return const CircularProgressIndicator();
@@ -1357,7 +1032,7 @@ class _CenterAreaState extends State<_CenterArea> {
                     );
                   }
 
-                  /// ✅ WHEN BOOKINGS AVAILABLE (FIXED RETURN)
+                  /// ✅ WHEN BOOKINGS AVAILABLE
                   return Column(
                     children: [
                       Text(
@@ -1372,10 +1047,8 @@ class _CenterAreaState extends State<_CenterArea> {
                             : controller.customerMobile.value,
                         style: const TextStyle(color: Colors.black),
                       ),
-
                       const SizedBox(height: 10),
 
-                      /// 🔽 BAQI TUMHARA ORIGINAL UI (UNCHANGED)
                       Column(
                         children: [
                           /// PICKUP & DROPOFF TEXTFIELDS
@@ -1386,7 +1059,7 @@ class _CenterAreaState extends State<_CenterArea> {
                                   controller: pickupController,
                                   decoration: InputDecoration(
                                     labelText: "Pick Up",
-                                    border: OutlineInputBorder(),
+                                    border: const OutlineInputBorder(),
                                     suffixIcon: pickupController.text.isEmpty &&
                                         dropoffController.text.isEmpty
                                         ? const SizedBox.shrink()
@@ -1409,7 +1082,7 @@ class _CenterAreaState extends State<_CenterArea> {
                                   controller: dropoffController,
                                   decoration: InputDecoration(
                                     labelText: "Drop Off",
-                                    border: OutlineInputBorder(),
+                                    border: const OutlineInputBorder(),
                                     suffixIcon: pickupController.text.isEmpty &&
                                         dropoffController.text.isEmpty
                                         ? const SizedBox.shrink()
@@ -1428,7 +1101,6 @@ class _CenterAreaState extends State<_CenterArea> {
                               ),
                             ],
                           ),
-
                           const SizedBox(height: 15),
 
                           /// SWAP BUTTON
@@ -1439,7 +1111,6 @@ class _CenterAreaState extends State<_CenterArea> {
                                 onPressed: () {
                                   setState(() {
                                     isSwapped = !isSwapped;
-
                                     final temp = pickupController.text;
                                     pickupController.text = dropoffController.text;
                                     dropoffController.text = temp;
@@ -1471,35 +1142,27 @@ class _CenterAreaState extends State<_CenterArea> {
 
                                 return DataRow(
                                   cells: [
-                                    // DataCell(Text(cliBookingData.pickup ?? "")),
-                                    // DataCell(Text(cliBookingData.dropoff ?? "")),
-
                                     DataCell(SizedBox(
-                                      width: Get.width/6,
-                                      child:
-                                      rightClickTextCell(
+                                      width: Get.width / 6,
+                                      child: rightClickTextCell(
                                         item: cliBookingData,
                                         clickValue: 'pickUpClick',
-                                        onRightClick: () {
-                                          print("RIGHT CLICK JOURNEY TYPE");
-                                        },
-                                        child: Text(cliBookingData.pickup!),
+                                        onRightClick: () {},
+                                        child: Text(cliBookingData.pickup ?? ""),
                                       ),
                                     )),
-
                                     DataCell(SizedBox(
-                                      width: Get.width/6,
+                                      width: Get.width / 6,
                                       child: rightClickTextCell(
                                         item: cliBookingData,
                                         clickValue: 'dropoffClick',
-                                        onRightClick: () {
-                                          print("RIGHT CLICK JOURNEY TYPE");
-                                        },
+                                        onRightClick: () {},
                                         child: Text(cliBookingData.dropoff ?? ""),
                                       ),
                                     )),
-                                    DataCell(Text(
-                                        "${cliBookingData.pickupDate!.year}-${cliBookingData.pickupDate!.month}-${cliBookingData.pickupDate!.day}")),
+                                    DataCell(Text(cliBookingData.pickupDate != null
+                                        ? "${cliBookingData.pickupDate!.year}-${cliBookingData.pickupDate!.month}-${cliBookingData.pickupDate!.day}"
+                                        : "")),
                                     DataCell(Text("£${cliBookingData.fares ?? 0}")),
                                     DataCell(
                                       Obx(() => Checkbox(
@@ -1546,11 +1209,11 @@ class _CenterAreaState extends State<_CenterArea> {
                           border: OutlineInputBorder(),
                         ),
                         value: homeController.selectDriverValue,
-                        items: homeController.dashboardAllData!.drivers!
-                            .map((d) => DropdownMenuItem(
-                                  value: d,
-                                  child: Text(d.name ?? ""),
-                                ))
+                        items: homeController.dashboardAllData?.drivers
+                            ?.map((d) => DropdownMenuItem(
+                          value: d,
+                          child: Text(d.name ?? ""),
+                        ))
                             .toList(),
                         onChanged: (v) {
                           homeController.selectDriverValue = v;
@@ -1561,18 +1224,17 @@ class _CenterAreaState extends State<_CenterArea> {
                     ),
                     const SizedBox(width: 16),
                     Expanded(
-                      child:
-                          DropdownButtonFormField<DashboardVehicleTypeObject>(
+                      child: DropdownButtonFormField<DashboardVehicleTypeObject>(
                         decoration: const InputDecoration(
                           labelText: "Select Vehicle",
                           border: OutlineInputBorder(),
                         ),
                         value: homeController.selectVehicleValue,
-                        items: homeController.dashboardAllData!.vehicleTypes!
-                            .map((v) => DropdownMenuItem(
-                                  value: v,
-                                  child: Text(v.name ?? ""),
-                                ))
+                        items: homeController.dashboardAllData?.vehicleTypes
+                            ?.map((v) => DropdownMenuItem(
+                          value: v,
+                          child: Text(v.name ?? ""),
+                        ))
                             .toList(),
                         onChanged: (v) {
                           homeController.selectVehicleValue = v;
@@ -1583,43 +1245,47 @@ class _CenterAreaState extends State<_CenterArea> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 30),
 
-                /// SUBMIT
+                /// SUBMIT BUTTON
                 if (actionValue == true && isSwapped == false)
                   ElevatedButton(
                     onPressed: () {
-                      // DashboardController _controller = Get.find();
-                      // _controller.dashBoardDataBinding(id: selectedBooking!.id,jobData: selectedBooking);
-
                       if (selectedBooking == null) {
                         Get.snackbar("Error", "Select booking first");
                         return;
                       }
 
-                      if (selectedDriverId == null ||
-                          selectedVehicleId == null) {
+                      // Dynamic vehicle fallback check
+                      if (selectedVehicleId == null &&
+                          homeController.dashboardAllData?.vehicleTypes != null &&
+                          homeController.dashboardAllData!.vehicleTypes!.isNotEmpty) {
+                        selectedVehicleId = homeController.dashboardAllData!.vehicleTypes!.first.id;
+                      }
+
+                      if (selectedDriverId == null || selectedVehicleId == null) {
                         Get.snackbar("Error", "Select driver & vehicle");
                         return;
                       }
 
-                      final bookingId = selectedBooking!.id;
-                      final bookingDate = selectedBooking!.pickupDate?.toIso8601String();
-                      final bookingTime = selectedBooking!.pickupTime;
+                      // Get Current Date and Time
+                      DateTime now = DateTime.now();
+                      String currentDate = DateFormat('yyyy-MM-dd').format(now);
+                      String currentTime = DateFormat('HH:mm').format(now);
 
                       print("========== SUBMIT ==========");
-                      print("Booking ID: $bookingId");
-                      print("Date: $bookingDate");
-                      print("Time: $bookingTime");
+                      print("Booking ID: ${selectedBooking!.id}");
+                      print("Current Date Sent: $currentDate");
+                      print("Current Time Sent: $currentTime");
                       print("Driver ID: $selectedDriverId");
                       print("Vehicle ID: $selectedVehicleId");
                       print("============================");
 
+                      /// Pass current date and time strictly to postCLIJob
                       controller.postCLIJob(
                         selectedBooking!.id,
-                        selectedBooking!.pickupDate,
-                        selectedBooking!.pickupTime,
+                        currentDate,
+                        currentTime,
                         selectedDriverId,
                         selectedVehicleId,
                       );
@@ -1629,35 +1295,11 @@ class _CenterAreaState extends State<_CenterArea> {
 
                 const SizedBox(height: 15),
 
-                /// ✅ EXTRA BUTTON AFTER SUBMIT
+                /// EXTRA BUTTON ("New Booking")
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey,
                   ),
-                  // onPressed: () async {
-                  //   if(pickupController.text.isNotEmpty && dropoffController.text.isNotEmpty && actionValue == false){
-                  //     if(pickupController.text == dropoffController.text){
-                  //       BotToast.showText(text: "Please write different address");
-                  //       return;
-                  //     }
-                  //     await _controller.cliDataBinding(
-                  //        pickup: pickupController.text,
-                  //        dropoff: dropoffController.text,
-                  //        pickupLatitude: pickupPoints!.latitude.toString(),
-                  //        pickupLongitude: pickupPoints!.longitude.toString(),
-                  //        dropoffLatitude: dropoffPoints!.latitude.toString(),
-                  //        dropoffLongitude: dropoffPoints!.longitude.toString(),
-                  //        name: name,
-                  //        mobile: mobileNumber,
-                  //        email: email,
-                  //        phoneNumber: telNumber,
-                  //     );
-                  //   } else {
-                  //
-                  //     await _controller.dashBoardDataBinding(id: selectedBooking!.id,jobData: selectedBooking);
-                  //     Get.back();
-                  //   }
-                  // },
                   onPressed: () async {
                     if (_isLoading) return;
                     try {
@@ -1666,8 +1308,7 @@ class _CenterAreaState extends State<_CenterArea> {
                           dropoffController.text.isNotEmpty &&
                           actionValue == false) {
                         if (pickupController.text == dropoffController.text) {
-                          BotToast.showText(
-                              text: "Please write different address");
+                          BotToast.showText(text: "Please write different address");
                           return;
                         }
                         if (pickupPoints == null || dropoffPoints == null) {
@@ -1720,16 +1361,16 @@ class _CenterAreaState extends State<_CenterArea> {
 
   Widget rightClickTextCell(
       {required Widget child,
-      required VoidCallback onRightClick,
-      required dynamic item,
-      clickValue}) {
+        required VoidCallback onRightClick,
+        required dynamic item,
+        clickValue}) {
     return Listener(
       behavior: HitTestBehavior.opaque,
       onPointerDown: (event) {
         if (event.kind == PointerDeviceKind.mouse &&
             event.buttons == kSecondaryMouseButton) {
           final RenderBox overlay =
-              Overlay.of(context).context.findRenderObject() as RenderBox;
+          Overlay.of(context).context.findRenderObject() as RenderBox;
 
           final RelativeRect position = RelativeRect.fromRect(
             Rect.fromPoints(
@@ -1738,7 +1379,6 @@ class _CenterAreaState extends State<_CenterArea> {
             ),
             Offset.zero & overlay.size,
           );
-          // onRightClick();
           showRowContextMenu(
               context: context,
               position: position,
@@ -1752,9 +1392,9 @@ class _CenterAreaState extends State<_CenterArea> {
 
   void showRowContextMenu(
       {required BuildContext context,
-      required RelativeRect position,
-      required dynamic item,
-      clickValue}) {
+        required RelativeRect position,
+        required dynamic item,
+        clickValue}) {
     showMenu(
       context: context,
       position: position,

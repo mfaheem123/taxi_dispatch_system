@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class DriverRecoveryDialog extends StatelessWidget {
+class DriverNopickupDialog extends StatelessWidget {
   final String driverName;
   final String driverUsername;
   final String driverMobile;
@@ -10,7 +10,7 @@ class DriverRecoveryDialog extends StatelessWidget {
   final VoidCallback? onDecline;
   final VoidCallback? onApprove;
 
-  const DriverRecoveryDialog({
+  const DriverNopickupDialog({
     super.key,
     required this.driverName,
     required this.driverUsername,
@@ -48,7 +48,7 @@ class DriverRecoveryDialog extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   const Text(
-                    'DRIVER RECOVERY REQUEST',
+                    'DRIVER NO PICKUP REQUEST',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
@@ -100,7 +100,7 @@ class DriverRecoveryDialog extends StatelessWidget {
                             text: '$driverName ',
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          const TextSpan(text: ' IS REQUESTING RECOVER OF BOOKING REFERENCE '),
+                          const TextSpan(text: ' IS REQUESTING NO PICKUP OF BOOKING REFERENCE '),
                           TextSpan(
                             text: bookingRef,
                             style: const TextStyle(fontWeight: FontWeight.bold),
@@ -125,7 +125,7 @@ class DriverRecoveryDialog extends StatelessWidget {
                         },
                         icon: const Icon(Icons.close, size: 16, color: Colors.white),
                         label: const Text(
-                          'DECLINE ',
+                          'DECLINE',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             letterSpacing: 0.5,

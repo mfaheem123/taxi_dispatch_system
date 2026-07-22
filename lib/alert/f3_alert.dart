@@ -26,6 +26,8 @@ class DriverInfoAlert extends StatefulWidget {
 
 class _DriverInfoAlertState extends State<DriverInfoAlert> {
   final controller = Get.find<DashboardAlertController>();
+
+  // Initially keeping selected driver as null so "SELECT DRIVER" is active
   DriverObject? localSelectedDriver;
 
   @override
@@ -50,6 +52,7 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
           }
 
           final drivers = controller.fetchDriver?.drivers ?? [];
+
           if (drivers.isEmpty) {
             return SizedBox(
               height: 200,
@@ -62,18 +65,20 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
             );
           }
 
-          final currentDriver = localSelectedDriver ?? controller.selectedDriver.value ?? drivers.first;
-
-          final String sessionRaw = (currentDriver.sessionStatus ?? "").toString().toLowerCase().trim();
-          final bool isLoggedIn = (currentDriver.active == true) ||
-              (sessionRaw == "login") ||
-              (sessionRaw == "online") ||
-              (sessionRaw == "active");
+          final currentDriver = localSelectedDriver;
+          final bool isDriverSelected = currentDriver != null;
+          final String sessionRaw = (currentDriver?.sessionStatus ?? "")
+              .toString()
+              .toLowerCase()
+              .trim()
+              .replaceAll(" ", "_");
+          final bool isLoggedIn = isDriverSelected &&
+              (sessionRaw == "logged_in" || sessionRaw == "login");
 
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-
+              // Header
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
@@ -96,14 +101,13 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
               ),
               Divider(height: 1, color: Colors.grey.shade500),
 
-
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
-
                     Row(
                       children: [
+                        // Dropdown with Default "SELECT DRIVER" Option
                         Container(
                           width: 250,
                           height: 42,
@@ -113,8 +117,16 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: DropdownButtonHideUnderline(
-                            child: DropdownButton<DriverObject>(
-                              value: drivers.contains(currentDriver) ? currentDriver : drivers.first,
+                            child: DropdownButton<DriverObject?>(
+                              value: currentDriver,
+                              hint: Text(
+                                "SELECT DRIVER",
+                                style: mozillaTextSemiBoldText(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey.shade700,
+                                ),
+                              ),
                               isExpanded: true,
                               icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
                               style: mozillaTextSemiBoldText(
@@ -122,58 +134,80 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                                 fontWeight: FontWeight.w600,
                                 color: Colors.black87,
                               ),
-                              items: drivers.map((DriverObject driver) {
-                                return DropdownMenuItem<DriverObject>(
-                                  value: driver,
+                              items: [
+                                // Placeholder Item: SELECT DRIVER
+                                DropdownMenuItem<DriverObject?>(
+                                  value: null,
                                   child: Text(
-                                    "${driver.id} ${driver.name ?? ''}".trim(),
+                                    "SELECT DRIVER",
                                     style: mozillaTextSemiBoldText(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.black87,
+                                      color: Colors.grey.shade700,
                                     ),
                                   ),
-                                );
-                              }).toList(),
+                                ),
+                                ...drivers.map((DriverObject driver) {
+                                  return DropdownMenuItem<DriverObject?>(
+                                    value: driver,
+                                    child: Text(
+                                      "${driver.id} ${driver.name ?? ''}".trim(),
+                                      style: mozillaTextSemiBoldText(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              ],
                               onChanged: (DriverObject? newValue) {
                                 if (newValue != null) {
-                                  setState(() {
-                                    localSelectedDriver = newValue;
-                                    controller.selectedDriver.value = newValue;
-                                  });
+                                  print("--- DRIVER DEBUG INFO ---");
+                                  print("Driver Name: ${newValue.name}");
+                                  print("Active Status: ${newValue.active}");
+                                  print("Session Status from API: '${newValue.sessionStatus}'");
                                 }
+                                setState(() {
+                                  localSelectedDriver = newValue;
+                                  controller.selectedDriver.value = newValue;
+                                });
                               },
                             ),
                           ),
                         ),
                         const Spacer(),
 
-                        Text(
-                          isLoggedIn ? "LOGGED IN" : "LOGGED OUT",
-                          style: mozillaTextSemiBoldText(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                            color: isLoggedIn ? DynamicColors.greenClr : DynamicColors.redClr,
+                        // Logged status text and button show only when a driver is selected
+                        if (isDriverSelected) ...[
+                          Text(
+                            isLoggedIn ? "LOGGED IN" : "LOGGED OUT",
+                            style: mozillaTextSemiBoldText(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                              color: isLoggedIn ? DynamicColors.greenClr : DynamicColors.redClr,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 16),
+                          const SizedBox(width: 16),
 
-                        CustomButton(
-                          onTap: () {
-                          },
-                          width: 130,
-                          height: 38,
-                          btnText: "FORCE LOGOUT",
-                          btnColor: DynamicColors.redClr,
-                          borderRadius: 4,
-                          verticalPadding: 0.0,
-                          fontSize: 12,
-                          style: mozillaTextSemiBoldText(
+                          CustomButton(
+                            onTap: () {
+                              // Perform Force Logout
+                            },
+                            width: 130,
+                            height: 38,
+                            btnText: "FORCE LOGOUT",
+                            btnColor: DynamicColors.redClr,
+                            borderRadius: 4,
+                            verticalPadding: 0.0,
                             fontSize: 12,
-                            color: DynamicColors.whiteClr,
-                            fontWeight: FontWeight.w600,
+                            style: mozillaTextSemiBoldText(
+                              fontSize: 12,
+                              color: DynamicColors.whiteClr,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
+                        ],
                       ],
                     ),
 
@@ -182,7 +216,7 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Vehicle Info
+                        // Vehicle Info Card
                         Expanded(
                           child: Container(
                             decoration: BoxDecoration(
@@ -196,6 +230,7 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                                   width: double.infinity,
                                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                                   decoration: BoxDecoration(
+                                    color: DynamicColors.primaryClr,
                                     border: Border(
                                       bottom: BorderSide(color: Colors.grey.shade500),
                                     ),
@@ -203,9 +238,9 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                                   child: Text(
                                     "VEHICLE INFO",
                                     style: mozillaTextSemiBoldText(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w800,
-                                      color: DynamicColors.primaryClr,
+                                        context: context,
+                                        fontSize: 14,
+                                        color: DynamicColors.whiteClr
                                     ),
                                   ),
                                 ),
@@ -214,15 +249,30 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      _buildInfoRow("VEHICLE #:", currentDriver.vehicle?.vehicleNumber ?? "-"),
+                                      _buildInfoRow(
+                                        "VEHICLE #:",
+                                        isDriverSelected ? (currentDriver.vehicle?.vehicleNumber ?? "-") : "-",
+                                      ),
                                       const SizedBox(height: 14),
-                                      _buildInfoRow("MAKE:", currentDriver.vehicle?.make ?? "-"),
+                                      _buildInfoRow(
+                                        "MAKE:",
+                                        isDriverSelected ? (currentDriver.vehicle?.make ?? "-") : "-",
+                                      ),
                                       const SizedBox(height: 14),
-                                      _buildInfoRow("MODEL:", currentDriver.vehicle?.model ?? "-"),
+                                      _buildInfoRow(
+                                        "MODEL:",
+                                        isDriverSelected ? (currentDriver.vehicle?.model ?? "-") : "-",
+                                      ),
                                       const SizedBox(height: 14),
-                                      _buildInfoRow("TYPE:", currentDriver.vehicle?.vehicleType?.name ?? "-"),
+                                      _buildInfoRow(
+                                        "TYPE:",
+                                        isDriverSelected ? (currentDriver.vehicle?.vehicleType?.name ?? "-") : "-",
+                                      ),
                                       const SizedBox(height: 14),
-                                      _buildInfoRow("COLOR:", currentDriver.vehicle?.color ?? "-"),
+                                      _buildInfoRow(
+                                        "COLOR:",
+                                        isDriverSelected ? (currentDriver.vehicle?.color ?? "-") : "-",
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -233,11 +283,12 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
 
                         const SizedBox(width: 16),
 
-                        // Driver Info
+                        // Driver Info Card
                         Expanded(
                           child: Container(
                             decoration: BoxDecoration(
                               border: Border.all(color: Colors.grey.shade500),
+
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Column(
@@ -247,6 +298,7 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                                   width: double.infinity,
                                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                                   decoration: BoxDecoration(
+                                    color: DynamicColors.primaryClr,
                                     border: Border(
                                       bottom: BorderSide(color: Colors.grey.shade500),
                                     ),
@@ -254,9 +306,9 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                                   child: Text(
                                     "DRIVER INFO",
                                     style: mozillaTextSemiBoldText(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.black87,
+                                        context: context,
+                                        fontSize: 14,
+                                        color: DynamicColors.whiteClr
                                     ),
                                   ),
                                 ),
@@ -277,7 +329,7 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                                           ),
                                           Expanded(
                                             child: Text(
-                                              currentDriver.mobile ?? "-",
+                                              isDriverSelected ? (currentDriver.mobile ?? "-") : "-",
                                               style: mozillaTextRegularText(
                                                 fontSize: 13,
                                                 color: Colors.black87,
@@ -285,29 +337,35 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
-                                          GestureDetector(
-                                            onTap: () {
-                                            },
-                                            child: Container(
-                                              width: 32,
-                                              height: 32,
-                                              decoration: BoxDecoration(
-                                                color: DynamicColors.greenClr,
-                                                shape: BoxShape.circle,
-                                              ),
-                                              child: Icon(
-                                                Icons.phone,
-                                                color: DynamicColors.whiteClr,
-                                                size: 18,
+                                          if (isDriverSelected)
+                                            GestureDetector(
+                                              onTap: () {},
+                                              child: Container(
+                                                width: 32,
+                                                height: 32,
+                                                decoration: BoxDecoration(
+                                                  color: DynamicColors.greenClr,
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: Icon(
+                                                  Icons.phone,
+                                                  color: DynamicColors.whiteClr,
+                                                  size: 18,
+                                                ),
                                               ),
                                             ),
-                                          ),
                                         ],
                                       ),
                                       const SizedBox(height: 14),
-                                      _buildInfoRow("TELEPHONE #:", currentDriver.telephone ?? "-"),
+                                      _buildInfoRow(
+                                        "TELEPHONE #:",
+                                        isDriverSelected ? (currentDriver.telephone ?? "-") : "-",
+                                      ),
                                       const SizedBox(height: 14),
-                                      _buildInfoRow("ADDRESS:", currentDriver.address ?? "-"),
+                                      _buildInfoRow(
+                                        "ADDRESS:",
+                                        isDriverSelected ? (currentDriver.address ?? "-") : "-",
+                                      ),
                                     ],
                                   ),
                                 ),
