@@ -492,6 +492,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   _field('No. of Passengers',
                                       tab: 16,
                                       prefix: Icons.person_outline,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                        LengthLimitingTextInputFormatter(2),
+                                      ],
                                       controller: controller.passController),
                                   _field('Fare',
                                       tab: 17,
@@ -1143,7 +1147,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     Widget luggageField(String label, IconData icon,
         TextEditingController controller, int tab) =>
         SizedBox(
-          width: 110,
+          width: 150,
           child:
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             // Text(label,
@@ -1158,7 +1162,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   style: const TextStyle(fontSize: _fsField),
                   keyboardType:
                   const TextInputType.numberWithOptions(decimal: false),
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(2),
+                  ],
                   decoration: _inputDecoration().copyWith(
                     label:
                     Text(label,
@@ -1222,29 +1229,29 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 (v) => setState(() => controller.smsCheckbox.value = v ?? false), tab: _isReturnJourney ? 35 : 20),
         checkbox('EMAIL', controller.emailCheckbox.value,
                 (v) => setState(() => controller.emailCheckbox.value = v ?? false), tab: _isReturnJourney ? 36 : 21),
-        luggageField('Passenger'.toUpperCase(), Icons.work, controller.passController, _isReturnJourney?37:22,),
-        luggageField('luggage'.toUpperCase(), Icons.luggage, controller.luggController,  _isReturnJourney?38:23,),
-        luggageField('small luggage'.toUpperCase(), Icons.luggage, controller.sluggController,  _isReturnJourney?39:24,),
+        // luggageField('Passenger'.toUpperCase(), Icons.work, controller.passController, _isReturnJourney?37:22,),
+        luggageField('luggage'.toUpperCase(), Icons.luggage, controller.luggController,  _isReturnJourney?37:22,),
+        luggageField('small luggage'.toUpperCase(), Icons.luggage, controller.sluggController,  _isReturnJourney?38:23,),
       ],
     );
     final right = Row(mainAxisSize: MainAxisSize.min, children: [
-      iconBtn(Icons.person, tab: _isReturnJourney ? 40 : 25, onPressed: () {
+      iconBtn(Icons.person, tab: _isReturnJourney ? 39 : 24, onPressed: () {
         showDialog(context: context, builder: (_) => RestrictDriversAlert());
       }),
-      iconBtn(Icons.attach_money, tab: _isReturnJourney ? 41 : 26, onPressed: () {
+      iconBtn(Icons.attach_money, tab: _isReturnJourney ? 40 : 25, onPressed: () {
         showDialog(
           context: context,
           builder: (_) => ChildSeatsAlert(),
         );
       }),
-      iconBtn(Icons.note_add, tab: _isReturnJourney ? 42 : 27, onPressed: () {
+      iconBtn(Icons.note_add, tab: _isReturnJourney ? 41 : 26, onPressed: () {
         showDialog(
           context: context,
           barrierDismissible: false,
           builder: (_) => ExtraFaresAlert(),
         );
       }),
-      iconBtn(Icons.calculate, tab: _isReturnJourney ? 43 : 28, onPressed: () {
+      iconBtn(Icons.calculate, tab: _isReturnJourney ? 42 : 27, onPressed: () {
         showDialog(
           context: context,
           builder: (_) => ExtraInfoAlert(),
@@ -1341,12 +1348,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       controller.selectDriverValue,
       controller.dashboardAllData!.drivers ?? const [],
           (v) => setState(() => controller.selectDriverValue = v),
-      _isReturnJourney ? 44 : 29,
+      _isReturnJourney ? 43 : 28,
       itemLabel: (p) => p.name ?? '',
       hint: 'Select Driver',
     );
     final clear = FocusTraversalOrder(
-      order: NumericFocusOrder((_isReturnJourney ? 45 : 30).toDouble()),
+      order: NumericFocusOrder((_isReturnJourney ? 44 : 29).toDouble()),
       child: _GlowFocus(
         child: ElevatedButton(
           onPressed: () {
@@ -1365,7 +1372,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ),
     );
     final home = FocusTraversalOrder(
-      order: NumericFocusOrder((_isReturnJourney ? 46 : 31).toDouble()),
+      order: NumericFocusOrder((_isReturnJourney ? 45 : 30).toDouble()),
       child: _GlowFocus(
         child: Focus(
           // Intercept Tab so focus jumps from the Home button directly to the
@@ -1556,7 +1563,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       {required num tab,
         IconData? prefix,
         VoidCallback? onPrefixTap,
-        TextEditingController? controller}) {
+        TextEditingController? controller,
+        List<TextInputFormatter>? inputFormatters,
+      }) {
     Widget? prefixWidget;
     if (prefix != null) {
       final iconPadding = Padding(
@@ -1581,9 +1590,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           child: TextField(
             controller: controller,
             textCapitalization: TextCapitalization.characters,
-            inputFormatters: [
-              UpperCaseTextFormatter(),
-            ],
+            inputFormatters: inputFormatters ??
+                [
+                  UpperCaseTextFormatter(),
+                ],
             style: const TextStyle(fontSize: _fsField),
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => onPrefixTap?.call(),
