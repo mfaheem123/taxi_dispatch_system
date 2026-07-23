@@ -159,8 +159,9 @@ class DriverController extends GetxController {
     rows.refresh();
   }
 
-  void updateExpiryTime(int index, time) {
-    rows[index].expiryTime.text = time;
+  void updateExpiryTime(int index, dynamic time) {
+    if (time == null) return;
+    rows[index].expiryTime.text = time.toString();
     rows.refresh();
   }
 
@@ -260,7 +261,7 @@ class DriverController extends GetxController {
         for (final action in rows) {
           if (action.fileName != null && action.fileName!.bytes.isNotEmpty) {
             rowsImageList["${action.paramTitle}_DOCUMENT"] =
-                await dio.MultipartFile.fromBytes(
+            await dio.MultipartFile.fromBytes(
               action.fileName!.bytes,
               filename: action.fileName!.name,
             );
@@ -284,8 +285,6 @@ class DriverController extends GetxController {
         "active": isActive.value,
         if (companyType != null) "subsidiary_id": companyType!.id,
         "username": driverUserNameController.text.trim(),
-        // "password": driverPasswordController.text.trim(),
-
         "name": driverFullNameController.text.trim(),
         "dob": dobDate,
         "email": driverEmailController.text.trim(),
@@ -297,8 +296,7 @@ class DriverController extends GetxController {
         "balance": driverBalanceController.text.trim(),
         "address": driverAddressController.text.trim(),
         "use_company_vehicle": vehicleInformation.value,
-        "start_date":
-            "${startDate!.year}-${startDate!.month}-${startDate!.day}",
+        "start_date": "${startDate!.year}-${startDate!.month}-${startDate!.day}",
         "end_date": "${endDate!.year}-${endDate!.month}-${endDate!.day}",
         "ni": driverNLController.text.trim(),
         if (noteList.isNotEmpty) "notes": noteList,
@@ -326,13 +324,23 @@ class DriverController extends GetxController {
       // 🧠 Step 3: Convert each row into JSON string (to preserve structure)
       if (vehicleInformation.value == false) {
         for (final action in rows) {
+          if (action.paramTitle == null) continue; // safety guard
+
+          String expiryFormatted = "";
+          if (action.expiryDate != null) {
+            try {
+              expiryFormatted =
+                  DateFormat("yyyy-MM-dd").format(action.expiryDate!);
+            } catch (_) {
+              expiryFormatted = "";
+            }
+          }
+
           final Map<String, dynamic> rowJson = {
             "${action.paramTitle!.toLowerCase()}_number": action.batchNo.text,
-            "${action.paramTitle!.toLowerCase()}_expiry":
-                DateFormat("yyyy-MM-dd")
-                    .format(DateTime.parse(action.expiryDate.toString())),
+            "${action.paramTitle!.toLowerCase()}_expiry": expiryFormatted,
             "${action.paramTitle!.toLowerCase()}_expiry_time":
-                action.expiryTime!.text,
+            action.expiryTime.text,
           };
 
           // 🔹 Encode to JSON string so it doesn't flatten
@@ -384,12 +392,12 @@ class DriverController extends GetxController {
         print("${field.key}: ${field.value}");
       });
       var response = await Api().post(
-          formData,
-          singleDriverData != null
-              ? "drivers/edit/${singleDriverData!.driver!.id}"
-              : "drivers/add",
-          multiPart: true,
-      sendCompanyId: true,
+        formData,
+        singleDriverData != null
+            ? "drivers/edit/${singleDriverData!.driver!.id}"
+            : "drivers/add",
+        multiPart: true,
+        sendCompanyId: true,
       );
       if (response.statusCode == 200) {
         clearAddDriverData();

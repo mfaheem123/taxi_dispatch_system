@@ -315,8 +315,10 @@ class _DriverFormState extends State<DriverForm> {
                       }),
                     ),
                     _buildValidityTable(),
+
                   ],
                 ),
+             SizedBox(height: 90,)
              /*   // TABLES SECTION
                 width < 1920
                     ? Column(
