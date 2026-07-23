@@ -160,9 +160,10 @@ class DriverController extends GetxController {
   }
 
   void updateExpiryTime(int index, time) {
-    rows[index].expiryTime = time;
+    rows[index].expiryTime.text = time;
     rows.refresh();
   }
+
 
   void addDocument(int index) async {
     await pickImage(singleImg: "profileImg", docImg: "docImg");

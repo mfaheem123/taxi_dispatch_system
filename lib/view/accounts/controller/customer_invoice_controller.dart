@@ -647,24 +647,17 @@ CC: CONGESTION CHARGES
     }
 
     try {
-      var fileBytes = excel.save();
-
+      var fileBytes = excel.encode();
       if (fileBytes != null) {
-        final blob = html.Blob([
-          fileBytes
-        ], 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        final url = html.Url.createObjectUrlFromBlob(blob);
-
-        html.AnchorElement(href: url)
-          ..setAttribute(
-              "download", "Invoice_${mainData?.invoiceNumber ?? 'Export'}.xlsx")
+        final content = base64Encode(fileBytes);
+        final anchor = html.AnchorElement(
+            href:
+            "data:application/octet-stream;charset=utf-16le;base64,$content")
+          ..setAttribute("download", "Customer_Invoice_Report.xlsx")
           ..click();
-
-        html.Url.revokeObjectUrl(url);
       }
     } catch (e) {
-      print("Excel Download Error: $e");
-      BotToast.showText(text: "FAILED TO DOWNLOAD EXCEL FILE");
+      print("Excel Error: $e");
     }
   }
 

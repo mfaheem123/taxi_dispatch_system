@@ -327,14 +327,18 @@ class FareController extends GetxController {
   postFixedFare() async {
     postFixedFareLoader(true); // loader start
 
+    dynamic finalArea1 = fromAddressList.isNotEmpty
+        ? fromAddressList
+        : addressController.text;
+
+    dynamic finalArea2 = toAddressList.isNotEmpty
+        ? toAddressList
+        : addressController1.text;
+
     var formData = {
       "vehicle_type_id": vehicleTypesFixedvalue!.id,
-      "area1": isUpdateFixedFare.value
-          ? addressController.text
-          : fromAddressList.toList(),
-      "area2": isUpdateFixedFare.value
-          ? addressController1.text
-          : toAddressList.toList(),
+      "area1":finalArea1,
+      "area2":finalArea2,
       "fares": fareController.text,
       "from_location_id": fromLocationTypeValue!.id,
       "to_location_id": toLocationTypeValue!.id,

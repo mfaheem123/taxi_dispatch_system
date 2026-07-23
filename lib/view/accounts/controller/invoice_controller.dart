@@ -638,19 +638,20 @@ CC: CONGESTION CHARGES
 
     // 5. Download for Web
     try {
-      var fileBytes = excel.save();
+      var fileBytes = excel.encode();
       if (fileBytes != null) {
         final content = base64Encode(fileBytes);
         final anchor = html.AnchorElement(
             href:
-                "data:application/octet-stream;charset=utf-16le;base64,$content")
-          ..setAttribute("download", "Invoice_${mainData.invoiceNumber}.xlsx")
+            "data:application/octet-stream;charset=utf-16le;base64,$content")
+          ..setAttribute("download", "Account_Invoice_Report.xlsx")
           ..click();
       }
     } catch (e) {
-      print("Excel Download Error: $e");
+      print("Excel Error: $e");
     }
   }
+
 
   /// Edit Charges Function
   double totalFare = 0,
