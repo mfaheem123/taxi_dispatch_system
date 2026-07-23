@@ -499,6 +499,7 @@ Future<void> setupWebNotifications() async {
         String dUser = message.data['driver_username'] ?? "N/A";
         String dMobile = message.data['driver_mobile'] ?? "N/A";
         String dID = message.data['driver_id'] ?? "N/A";
+        String bookingId = message.data['booking_id'] ?? "N/A";
         String bRef = message.data['reference_number'] ?? ""; // booking ref bhi extract kar lein
 
         Get.dialog(
@@ -510,8 +511,12 @@ Future<void> setupWebNotifications() async {
             bookingRef: bRef,
             onDecline: () {
               // Handle Decline logic here
+              DashboardController controler = Get.find();
+              controler.recoverBooking(dID, paramUrl: "bookings/reject-recover-driver/$bookingId");
             },
             onApprove: () {
+              DashboardController controler = Get.find();
+             controler.recoverBooking(bookingId);
               // Handle Approve logic here
             },
           ),
@@ -524,6 +529,7 @@ Future<void> setupWebNotifications() async {
         String dUser = message.data['driver_username'] ?? "N/A";
         String dMobile = message.data['driver_mobile'] ?? "N/A";
         String dID = message.data['driver_id'] ?? "N/A";
+        String bookingId = message.data['booking_id'] ?? "N/A";
         String bRef = message.data['reference_number']   ?? ""; // booking ref bhi extract kar lein
 
         Get.dialog(
@@ -535,8 +541,13 @@ Future<void> setupWebNotifications() async {
             bookingRef: bRef,
             onDecline: () {
               // Handle Decline logic here
+              DashboardController controler = Get.find();
+              controler.bookingRequests(dID, paramUrl: "bookings/reject-no-pickup-driver/$bookingId");
             },
             onApprove: () {
+              // Handle Decline logic here
+              DashboardController controler = Get.find();
+              controler.bookingRequests(bookingId);
               // Handle Approve logic here
             },
           ),

@@ -3057,7 +3057,7 @@ class DashboardController extends GetxController {
 
   bool isRecoverLoading = false;
 
-  recoverBooking(dynamic bookingId) async {
+  recoverBooking(dynamic bookingId, {paramUrl}) async {
     isRecoverLoading = true;
     update();
     try {
@@ -3065,7 +3065,7 @@ class DashboardController extends GetxController {
 
       var response = await Api().post(
         formData,
-        "bookings/recover-booking/$bookingId",
+        paramUrl??"bookings/recover-booking/$bookingId",
         auth: true,
       );
       if (response.statusCode == 200) {
@@ -3080,6 +3080,38 @@ class DashboardController extends GetxController {
       BotToast.showText(text: "SOMETHING WENT WRONG");
     } finally {
       isRecoverLoading = false;
+      update();
+    }
+  }
+
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo booking recover
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo booking recover
+
+  bool bookingRequest = false;
+
+  bookingRequests(dynamic bookingId, {paramUrl}) async {
+    bookingRequest = true;
+    update();
+    try {
+      var formData = {};
+
+      var response = await Api().post(
+        formData,
+        paramUrl??"bookings/no-pickup-booking/$bookingId",
+        auth: true,
+      );
+      if (response.statusCode == 200) {
+        BotToast.showText(text: "BOOKING RECOVERED SUCCESSFULLY");
+      } else if (response.statusCode == 404) {
+        BotToast.showText(text: "BOOKING NOT FOUND");
+      } else {
+        BotToast.showText(text: "FAILED TO RECOVER BOOKING");
+      }
+    } catch (e) {
+      print("Error recovering booking: $e");
+      BotToast.showText(text: "SOMETHING WENT WRONG");
+    } finally {
+      bookingRequest = false;
       update();
     }
   }
