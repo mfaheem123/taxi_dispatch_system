@@ -1,61 +1,7 @@
-
-// import 'package:get/get.dart';
-// import 'package:flutter/material.dart';
-// import '../../component/customButton.dart';
-// import '../../component/textStyle.dart';
-// import '../../component/text_field.dart';
-// import '../../component/text_widget.dart';
-// import '../../routes/app_pages.dart';
-//
-// class LoginScreen extends StatelessWidget {
-//   LoginScreen({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: SizedBox(
-//         width: Get.width,
-//         height: Get.height,
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             Text(AppText.login,
-//           style: headingText(
-//               fontWeight: FontWeight.w700),
-//         ),
-//             SizedBox(
-//               height: 40,
-//             ),
-//             CustomTextField(
-//               hintText: AppText.username,
-//               controller: TextEditingController(),),
-//             SizedBox(
-//               height: 30,
-//             ),
-//             CustomTextField(
-//               controller: TextEditingController(),
-//               hintText: AppText.password,
-//             ),
-//             SizedBox(
-//               height: 35,
-//             ),
-//             CustomButton(
-//               onTap: (){
-//                 Get.offAllNamed(Routes.dashBoarScreen);
-//               },
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/view/auth/Controller/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import '../../component/customButton.dart';
 import '../../component/images.dart';
 import '../../component/textStyle.dart';
@@ -71,9 +17,11 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-AuthController controller = Get.put(AuthController());
+  AuthController controller = Get.put(AuthController());
 
   RxBool loader = false.obs;
+  // Password ki visibility state (default: hidden/true)
+  RxBool isPasswordHidden = true.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +40,7 @@ AuthController controller = Get.put(AuthController());
               ),
             ),
           ),
-          //  Gradient Overlay for readability
+          // Gradient Overlay for readability
           Container(
             width: width,
             height: height,
@@ -107,7 +55,7 @@ AuthController controller = Get.put(AuthController());
               ),
             ),
           ),
-          //  Centered Card with form
+          // Centered Card with form
           Center(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -126,7 +74,6 @@ AuthController controller = Get.put(AuthController());
                       )
                     ],
                   ),
-
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -138,7 +85,6 @@ AuthController controller = Get.put(AuthController());
                           color: Colors.white,
                         ),
                       ),
-
                       const SizedBox(height: 30),
 
                       // Username
@@ -147,51 +93,64 @@ AuthController controller = Get.put(AuthController());
                         fillColor: Colors.white,
                         controller: controller.usernameController,
                         prefixIcon: const Icon(Icons.person),
+                        inputFormatters: [
+                          UpperCaseTextFormatter(),
+                        ],
                       ),
                       const SizedBox(height: 20),
 
-                      // Password
-                      CustomTextField(
-                        hintText: AppText.password,
-                        fillColor: Colors.white,
-                        controller: controller.passwordController,
-                        // obscureText: true,
-                        prefixIcon: const Icon(Icons.lock),
-                      ),
-                      const SizedBox(height: 15),
-                      const SizedBox(height: 25),
-
-                      // Login Button
-                      Obx(()=> CustomButton(
-                          height: 55,
-                          widget: loader.value == true? Center(
-                            child: CircularProgressIndicator(),
-                          ):null,
-                          // text: "Login",
-                          onTap: () async{
-                            loader(true);
-                            // GetStorage().write(
-                            //   'token',
-                            //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJuZXh1cyIsInJvbGVfaWQiOi0xLCJpYXQiOjE3Njc3MTkxMTEsImV4cCI6MTc2ODMyMzkxMX0.FLkrfOerQInZVtWeeQZ_jsiMZY3zIG3vjDUyufaDN1Q',
-                            // );
-
-                            if(controller.usernameController.text.isEmpty || controller.passwordController.text.isEmpty){
-                              BotToast.showText(text: "Please enter user name or password");
-                              loader(false);
-                              return;
-                            }
-                            if(controller.PostAuthLoader.value == false){
-                             await controller.postLoginDetails();
-                             loader(false);
-                            }
-                            // Get.offAllNamed(Routes.myHomePage);
-                            // Get.offAllNamed(Routes.createBooking);
-                          },
+                      // Password with Eye Icon Toggle
+                      Obx(
+                            () => CustomTextField(
+                          hintText: AppText.password,
+                          fillColor: Colors.white,
+                          controller: controller.passwordController,
+                          obscureText: isPasswordHidden.value,
+                          prefixIcon: const Icon(Icons.lock),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              isPasswordHidden.value
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: Colors.grey,
+                            ),
+                            onPressed: () {
+                              // Obx screen rebuild karega jab boolean state change hogi
+                              isPasswordHidden.value = !isPasswordHidden.value;
+                            },
+                          ),
                         ),
                       ),
 
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 25),
 
+                      // Login Button
+                      Obx(
+                            () => CustomButton(
+                          height: 55,
+                          widget: loader.value == true
+                              ? const Center(
+                            child: CircularProgressIndicator(),
+                          )
+                              : null,
+                          onTap: () async {
+                            loader(true);
+
+                            if (controller.usernameController.text.isEmpty ||
+                                controller.passwordController.text.isEmpty) {
+                              BotToast.showText(
+                                  text: "Please enter user name or password");
+                              loader(false);
+                              return;
+                            }
+                            if (controller.PostAuthLoader.value == false) {
+                              await controller.postLoginDetails();
+                              loader(false);
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 );
