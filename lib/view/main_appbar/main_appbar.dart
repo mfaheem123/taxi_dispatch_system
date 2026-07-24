@@ -1762,6 +1762,8 @@ import 'package:dashboard_new1/routes/app_pages.dart';
 import 'package:dashboard_new1/view/accounts/Invoice/create_customer_invoice.dart';
 import 'package:dashboard_new1/view/accounts/Invoice/list_of_account_invoice_screen.dart';
 import 'package:dashboard_new1/view/accounts/Invoice/create_account_invoice_screen.dart';
+import 'package:dashboard_new1/view/accounts/Invoice/create_account_pre_invoice.dart';
+import 'package:dashboard_new1/view/accounts/Invoice/list_account_pre_invoices.dart';
 import 'package:dashboard_new1/view/accounts/create_escort_screen.dart';
 import 'package:dashboard_new1/view/accounts/list_escorte_screen.dart';
 import 'package:dashboard_new1/view/administration/User/create_subsiDiary.dart';
@@ -3085,6 +3087,36 @@ class _MyHomePageState extends State<MyHomePage> {
                 controller.menuBarRefresh(
                     title: "LIST OF ACCOUNT INVOICES",
                     pageName: ListOfAccountInvoiceScreen());
+              }
+            });
+          },
+        ),
+        NestedMenuItem(
+          title: "CREATE ACCOUNT PRE INVOICE",
+          onTap: () {
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
+            setState(() {
+              if(permissions.contains('create_account_invoice')){
+                controller.currentPage.value = AccountPreInvoice();
+                controller.menuBarRefresh(
+                    title: "CREATE ACCOUNT PRE INVOICE",
+                    pageName: AccountPreInvoice());
+              }
+            });
+          },
+        ),
+        NestedMenuItem(
+          title: "LIST OF ACCOUNT PRE INVOICES",
+          onTap: () {
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
+            setState(() {
+              if(permissions.contains('read_account_invoice')){
+                controller.currentPage.value = ListAccountPreInvoice();
+                controller.menuBarRefresh(
+                    title: "LIST OF ACCOUNT PRE INVOICES",
+                    pageName: ListAccountPreInvoice());
               }
             });
           },

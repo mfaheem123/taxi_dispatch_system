@@ -1,3 +1,4 @@
+import 'package:dashboard_new1/view/accounts/Invoice/create_account_pre_invoice.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../component/color.dart';
@@ -8,16 +9,16 @@ import '../../../component/textStyle.dart';
 import '../../dashboard_view/booking_table.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import 'create_customer_pre_invoice.dart';
-import '../controller/preinvoice_controller.dart';
+import '../controller/account_preinvoice_controller.dart';
 
-class PreInvoiceList extends StatelessWidget {
-   PreInvoiceList({super.key});
+class ListAccountPreInvoice extends StatelessWidget {
+   ListAccountPreInvoice({super.key});
 
   final dashboardController = Get.find<DashboardController>();
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<CustomerPreInvoiceController>(
-      init: CustomerPreInvoiceController(),
+    return GetBuilder<AccountPreInvoiceController>(
+      init: AccountPreInvoiceController(),
       builder: (controller) {
         return LayoutBuilder(builder: (context, constraints) {
           return SingleChildScrollView(
@@ -34,7 +35,7 @@ class PreInvoiceList extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                          "CUSTOMER PRE INVOICES (${controller.filteredPreInvoices.length})",
+                          "ACCOUNT PRE INVOICES (${controller.filteredPreInvoices.length})",
                           style: titleDesign()
                       ),
                       const SizedBox(width: 120),
@@ -131,10 +132,10 @@ class PreInvoiceList extends StatelessWidget {
                                   children: [
                                     _actionButton(Icons.edit, Colors.green, onTap: () {
                                       controller.setEditData(invoice);
-                                      dashboardController.currentPage.value = const CustomerPreInvoice(isEdit: true);
+                                      dashboardController.currentPage.value = const AccountPreInvoice(isEdit: true);
                                       dashboardController.menuBarRefresh(
-                                          title: "UPDATE CUSTOMER PRE INVOICE",
-                                          pageName: const CustomerPreInvoice(isEdit: true));
+                                          title: "UPDATE ACCOUNT PRE INVOICE",
+                                          pageName: const AccountPreInvoice(isEdit: true));
                                     }),
                                     _actionButton(Icons.delete, Colors.red),
                                     _actionButton(Icons.picture_as_pdf, Colors.blue, onTap: () {
@@ -142,7 +143,7 @@ class PreInvoiceList extends StatelessWidget {
                                       controller.downloadPdfFile();
                                     }),
                                     _actionButton(Icons.email, Colors.blue.shade800, onTap: () {
-                                      CustomerPreInvoice.showEmailDialog(context, controller);
+                                      AccountPreInvoice.showEmailDialog(context, controller);
                                     }),
                                   ],
                                 ),
