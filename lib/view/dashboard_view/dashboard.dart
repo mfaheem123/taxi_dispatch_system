@@ -585,10 +585,10 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         return CreateAccountInvoiceScreen();
         case 'LIST OF ACCOUNT INVOICES':
          return ListOfAccountInvoiceScreen();
-        // case 'CREATE ACCOUNT PRE INVOICE':
-        // return AccountPreInvoice();
-        // case 'LIST OF ACCOUNT PRE INVOICES':
-        // return ListAccountPreInvoice();
+        case 'CREATE ACCOUNT PRE INVOICE':
+        return AccountPreInvoice();
+        case 'LIST OF ACCOUNT PRE INVOICES':
+        return ListAccountPreInvoice();
 
         child = DriverAppFeatureScreen();
         break;

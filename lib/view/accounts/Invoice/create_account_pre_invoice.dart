@@ -61,9 +61,9 @@ class AccountPreInvoice extends StatelessWidget {
                               btnText: "STRIPE PAYMENT",
                               style: mozillaTextRegularText(
                                   fontSize: 10, color: DynamicColors.whiteClr),
-                              onTap: () {
-                                StripePayment.show();
-                              },
+                              // onTap: () {
+                              //   StripePayment.show();
+                              // },
                             ),
                             const SizedBox(width: 8),
                             CustomButton( 
@@ -75,9 +75,9 @@ class AccountPreInvoice extends StatelessWidget {
                               btnColor: controller.isBookingPaid ? Colors.green : null,
                               style: mozillaTextRegularText(
                                   fontSize: 10, color: DynamicColors.whiteClr),
-                              onTap: () {
-                                controller.toggleBookingPaid();
-                              },
+                              // onTap: () {
+                              //   controller.toggleBookingPaid();
+                              // },
                             ),
                             const SizedBox(width: 8),
                             CustomButton(
@@ -88,9 +88,9 @@ class AccountPreInvoice extends StatelessWidget {
                               btnText: "EMAIL",
                               style: mozillaTextRegularText(
                                   fontSize: 10, color: DynamicColors.whiteClr),
-                              onTap: () {
-                                showEmailDialog(context, controller);
-                              },
+                              // onTap: () {
+                              //   showEmailDialog(context, controller);
+                              // },
                             ),
                             const SizedBox(width: 8),
                             PopupMenuButton<String>(
@@ -98,9 +98,9 @@ class AccountPreInvoice extends StatelessWidget {
                               offset: const Offset(0, 40),
                               onSelected: (value) {
                                 if (value == 'pdf') {
-                                  controller.downloadPdfFile();
+                                 // controller.downloadPdfFile();
                                 } else if (value == 'excel') {
-                                  controller.downloadExel();
+                                 // controller.downloadExel();
                                 }
                               },
                               itemBuilder: (BuildContext context) => [
@@ -164,10 +164,10 @@ class AccountPreInvoice extends StatelessWidget {
                               style: mozillaTextRegularText(
                                   fontSize: 10, color: DynamicColors.whiteClr),
                               onTap: () {
-                                Get.dialog(
-                                  PreInvoiceViewWindowWrapper(controller: controller),
-                                  barrierDismissible: true,
-                                );
+                                // Get.dialog(
+                                //   PreInvoiceViewWindowWrapper(controller: controller),
+                                //   barrierDismissible: true,
+                                // );
                               },
                             ),
                             const SizedBox(width: 8),
