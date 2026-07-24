@@ -443,6 +443,9 @@ class DashboardController extends GetxController {
   String selectedAccountType = 'Account';
   String selectedPaymentMethod = 'Cash';
   String selectedDriver = 'Select Driver';
+  String selectedDepartmentType = 'SELECT DEPARTMENT';
+  String selectedReturnVehicleType = 'SELECT R/VEHICLE';
+  String selectedReturnDriver = 'SELECT R/DRIVER';
 
   String? source;
 
@@ -453,6 +456,7 @@ class DashboardController extends GetxController {
   String? drvValue; // driver list
   String? payValue; // Cash, Credit Card, ...
 
+  bool get isOneWayJourney => jourValue == null || jourValue == 'O/W';
   ///bool
 
   RxBool isHovered = false.obs;
@@ -1309,6 +1313,7 @@ class DashboardController extends GetxController {
       withReturnPickUp: pickupTwoWayController.text.isEmpty ? null : pickupTwoWayController.text,
       withReturnDropOff: dropOffTwoWayController.text.isEmpty ? null : dropOffTwoWayController.text,
       returnMiles: dropOffTwoWayController.text.isNotEmpty || pickupTwoWayController.text.isNotEmpty ?tempStoreReturnMils: null,
+      isOneWay: isOneWayJourney,
     );
     var fareValue = jsonDecode(storedTemFare);
     fixedFare.value = fareValue['fare']?.toString() ?? "0";
@@ -2002,6 +2007,7 @@ class DashboardController extends GetxController {
                   double.parse(tempStoreMils.toString()))
               .toString()
           : null,
+      isOneWay: isOneWayJourney,
       // returnMiles: () {
       //   if (dropOffTwoWayController.text.isNotEmpty || pickupTwoWayController.text.isNotEmpty) {
       //     // Agar outbound pickup ya dropoff me se koi ek bhi khali ho gaya hai
@@ -2542,9 +2548,9 @@ class DashboardController extends GetxController {
 
   refreshPostAllFields() async {
     final LocationController _controller =
-        Get.isRegistered<LocationController>()
-            ? Get.find<LocationController>()
-            : Get.put(LocationController());
+    Get.isRegistered<LocationController>()
+        ? Get.find<LocationController>()
+        : Get.put(LocationController());
     pickupController.clear();
     tempStoreMils = null;
     pickUpNoteController.clear();
@@ -2560,8 +2566,8 @@ class DashboardController extends GetxController {
     pickupTwoWayController.clear();
     dropOffTwoWayController.clear();
     telController.clear();
-    // pickUpTimeController.clear();
     minController.clear();
+    minControllerReturn.clear();
     passController.clear();
     luggController.clear();
     sluggController.clear();
@@ -2572,12 +2578,20 @@ class DashboardController extends GetxController {
     extraDropChargesController.clear();
     creditCardChargesController.clear();
     companyPriceController.clear();
+    returnCompanyPriceController.clear();
     specialRequirementsController.clear();
+    specialRequirementsReturnController.clear();
+    controllerNoteController.clear();
+    controllerNoteReturnController.clear();
     slugController.clear();
+    slugControllerReturn.clear();
+    pickUpTimeControllerReturn.clear();
     viaPostList.clear();
+    viaReturnPostList.clear();
     restrictedDrivers.clear();
     childSeatList.clear();
     extraFaresList.clear();
+    extraFaresReturnList.clear();
     driversList.clear();
     childSeatAlert.clear();
     controllerAlert.clear();
@@ -2587,41 +2601,58 @@ class DashboardController extends GetxController {
     viaPoints.clear();
     dashboardZoneValue = null;
     dashboardDZoneValue = null;
+    dashboardRNZoneValue = null;
+    dashboardRN1ZoneValue = null;
     _controller.zoneValue = null;
     _controller.zoneDValue = null;
-    selectJourneyTypeValue = null;
     selectAccountValue = null;
     selectDepartmentData = null;
-    selectPaymentTypeValue = null;
-    selectVehicleValue = null;
-    selectDriverValue = null;
-    selectDriverValueReturn = null ;
-    selectSubsidiariesValue = null;
+    selectDriverValueReturn = null;
+    selectVehicleValueReturn = null;
     switchController.value = false;
     smsCheckbox.value = true;
     emailCheckbox.value = false;
     markers.clear();
     polylines.clear();
     polylinePointsCoordinate.clear();
-    markers.clear();
     polyLineMarkerInfo.clear();
-    polylines.clear();
     polylinePoints.clear();
     multiReservationToTimeController.clear();
     multiReservationDaysList.clear();
     multiReservationList.clear();
     viaTextEditingController.clear();
     totalDistance.value = "0";
-    totalDistance.value = "0";
     totalTimeDuration.value = "0";
     fixedFare.value = "0";
+    returnFareValue = "0";
+
+    // ---- FL (Flight) row hide ----
+    isAirportResponse.value = false;
+
+    // ---- Journey type reset to O/W & return section hidden ----
+    jourValue = 'O/W';
+    returnTrip.value = false;
+    selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
+
+    // ---- Dropdown labels reset back to placeholder text ----
+    selectedJourneyType = 'O/W';
+    selectedVehicleType = 'SELECT VEHICLE';
+    selectedAccountType = 'SELECT ACCOUNT';
+    selectedPaymentMethod = 'SELECT PAYMENT';
+    selectedDriver = 'SELECT DRIVER';
+
     selectSubsidiariesValue = dashboardAllData!.subsidiaries![0];
     selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
-    selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
     selectVehicleValue = dashboardAllData!.vehicleTypes![0];
+    selectDriverValue = null;
     jobDetails = null;
     dashboardDataLoader(false);
     update();
+  }
+
+  /// Clear button k liye alag call — same reset use hoga
+  clearAllFields() {
+    refreshPostAllFields();
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo data binding for update

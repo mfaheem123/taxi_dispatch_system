@@ -146,7 +146,7 @@ class _DriverEarningsAlertState extends State<DriverEarningsAlert> {
                             value: drivers.any((d) => d.id == currentDriver?.id)
                                 ? drivers.firstWhere((d) => d.id == currentDriver?.id)
                                 : null,
-                            itemLabel: (driver) => "${driver.id} ${driver.name ?? ''}".trim().toUpperCase(),
+                            itemLabel: (driver) => "${driver.username} ${driver.name ?? ''}".trim().toUpperCase(),
                             onChanged: (val) {
                               controller.selectedDriver.value = val;
                               controller.update();

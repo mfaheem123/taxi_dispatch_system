@@ -96,7 +96,7 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                                 hintStyle: mozillaTextRegularText(
                                   fontSize: 10
                                 ),
-                                contentPadding: EdgeInsets.symmetric(vertical: 4,horizontal: 4),
+                                contentPadding: EdgeInsets.symmetric(vertical: 4,horizontal: 10),
                                 borderRadius: 4,
                               ),
                             ],
@@ -127,7 +127,7 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                                 hintStyle: mozillaTextRegularText(
                                   fontSize: 10
                                 ),
-                                contentPadding: EdgeInsets.symmetric(vertical: 4,horizontal: 4),
+                                contentPadding: EdgeInsets.symmetric(vertical: 4,horizontal: 10),
                                 borderRadius: 4,
                               ),
                             ],
@@ -190,7 +190,7 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                               ],
                             ),
                             CustomTextField(
-                              contentPadding: EdgeInsets.only(left: 0),
+                              contentPadding: EdgeInsets.only(left: 12.0),
                               width: controller.jourValue == 'W/R'? 290: 600.0,
                               hintText: "ENTER YOUR NOTE HERE",
                               controller: controller.controllerNoteController,
@@ -248,7 +248,7 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                               ),
                               CustomTextField(
                                 width: 290,
-                                contentPadding: EdgeInsets.only(left: 0),
+                                contentPadding: EdgeInsets.only(left: 12),
                                 hintText: "ENTER YOUR RETURN NOTES HERE",
                                 controller: controller.controllerNoteReturnController,
                                 hintStyle: mozillaTextRegularText(
