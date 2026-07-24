@@ -240,7 +240,11 @@ class AccountController extends GetxController {
       contactAlertTelephoneCtrl.clear();
       orderCtrl.clear();
       accountType = null;
+      paymentType = null;
       subsidiaryStoreValue = null;
+      adminFeesDropDown = null;
+      accountTypeDropDown = null;
+      commissionDropDown = null;
       addressCtrl.clear();
       accountNameController.clear();
       accountCodeController.clear();

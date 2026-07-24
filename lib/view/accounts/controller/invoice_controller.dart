@@ -147,6 +147,7 @@ class InvoiceController extends GetxController {
             updateInvoiceByIdModel?.accountInvoice?.accountInvoice
                 ?.orderNumber ??
                 "";
+        clearInvoiceData();
         BotToast.showText(text: 'ACCOUNT INVOICE CREATED');
         print(' Account Invoice Created');
         update();
@@ -154,6 +155,13 @@ class InvoiceController extends GetxController {
     addAccountInvoiceLoad(false);
   }
 
+  void clearInvoiceData() {
+    subsidiaries = null;
+    selectAccountValue = null;
+    selectDepartmentData = null;
+    orderNumber.clear();
+    accountInvoiceBookingModel?.bookings?.clear();
+  }
   void recalculateCreateInvoiceTotal(dynamic booking) {
     if (booking == null) return;
     double pV(dynamic v) => double.tryParse(v?.toString().trim() ?? '') ?? 0.0;
@@ -294,7 +302,6 @@ class InvoiceController extends GetxController {
       BotToast.showText(text: "ACCOUNT INVOICE DELETED SUCCESSFULLY!");
     }
   }
-
   ///================================================ list of Account Invoice END
 
   ///================================================ Update Invoice Screen
