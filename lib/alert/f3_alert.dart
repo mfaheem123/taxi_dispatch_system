@@ -151,7 +151,7 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                                   return DropdownMenuItem<DriverObject?>(
                                     value: driver,
                                     child: Text(
-                                      "${driver.id} ${driver.name ?? ''}".trim(),
+                                      "${driver.username} ${driver.name ?? ''}".trim(),
                                       style: mozillaTextSemiBoldText(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
