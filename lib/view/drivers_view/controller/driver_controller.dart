@@ -91,63 +91,63 @@ class DriverController extends GetxController {
         paramTitle: "PHC_VEHICLE",
         expiryDate: DateFormat("yyyy-MM-dd")
             .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
-        expiryTime: TextEditingController(text: "09:08 AM")),
+        expiryTime: TextEditingController(text: "00:00")),
     DocumentRow(
         batchNo: TextEditingController(),
         documentTitle: "PHC DRIVER",
         paramTitle: "PHC_DRIVER",
         expiryDate: DateFormat("yyyy-MM-dd")
             .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
-        expiryTime: TextEditingController(text: "09:08 AM")),
+        expiryTime: TextEditingController(text: "00:00")),
     DocumentRow(
         batchNo: TextEditingController(),
         documentTitle: "MOT",
         paramTitle: "MOT",
         expiryDate: DateFormat("yyyy-MM-dd")
             .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
-        expiryTime: TextEditingController(text: "09:08 AM")),
+        expiryTime: TextEditingController(text: "00:00")),
     DocumentRow(
         batchNo: TextEditingController(),
         documentTitle: "MOT 2",
         paramTitle: "MOT2",
         expiryDate: DateFormat("yyyy-MM-dd")
             .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
-        expiryTime: TextEditingController(text: "09:08 AM")),
+        expiryTime: TextEditingController(text: "00:00")),
     DocumentRow(
         batchNo: TextEditingController(),
         documentTitle: "INSURANCE",
         paramTitle: "INSURANCE",
         expiryDate: DateFormat("yyyy-MM-dd")
             .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
-        expiryTime: TextEditingController(text: "09:08 AM")),
+        expiryTime: TextEditingController(text: "00:00")),
     DocumentRow(
         batchNo: TextEditingController(),
         documentTitle: "LICENSE",
         paramTitle: "LICENCE",
         expiryDate: DateFormat("yyyy-MM-dd")
             .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
-        expiryTime: TextEditingController(text: "09:08 AM")),
+        expiryTime: TextEditingController(text: "00:00")),
     DocumentRow(
         batchNo: TextEditingController(),
         documentTitle: "ROAD TAX",
         paramTitle: "ROAD_TAX",
         expiryDate: DateFormat("yyyy-MM-dd")
             .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
-        expiryTime: TextEditingController(text: "09:08 AM")),
+        expiryTime: TextEditingController(text: "00:00")),
     DocumentRow(
         batchNo: TextEditingController(),
         documentTitle: "V5 REGISTRATION",
         paramTitle: "V5_REGISTRATION",
         expiryDate: DateFormat("yyyy-MM-dd")
             .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
-        expiryTime: TextEditingController(text: "09:08 AM")),
+        expiryTime: TextEditingController(text: "00:00")),
     DocumentRow(
         batchNo: TextEditingController(),
         documentTitle: "RENTAL AGREEMENT",
         paramTitle: "RENTAL_AGREEMENT",
         expiryDate: DateFormat("yyyy-MM-dd")
             .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
-        expiryTime: TextEditingController(text: "09:08 AM")),
+        expiryTime: TextEditingController(text: "00:00")),
   ].obs;
 
   // void addEmptyRow() {

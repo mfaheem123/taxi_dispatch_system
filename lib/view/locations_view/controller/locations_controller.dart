@@ -92,6 +92,22 @@ class LocationController extends GetxController {
   RxBool postLocationForm = false.obs;
 
   postLocation() async {
+    if (locationNameCtrl.text.trim().isEmpty ||
+        latitudeCtrl.text.trim().isEmpty ||
+        longitudeCtrl.text.trim().isEmpty ||
+        postcodeCtrl.text.trim().isEmpty ||
+        addressCtrl.text.trim().isEmpty ||
+        shortcutCtrl.text.trim().isEmpty ||
+        extraChargesCtrl.text.trim().isEmpty ||
+        locationTypeValue == null ||
+        zoneValue == null) {
+
+      BotToast.showText(
+        text: "PLEASE FILL ALL FIELDS AND SELECT ALL DROPDOWNS!",
+      );
+      return;
+    }
+
     postLocationForm(true);
     var formData = {
       "name": locationNameCtrl.text,

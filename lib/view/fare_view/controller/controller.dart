@@ -1053,6 +1053,8 @@ class FareController extends GetxController {
     postCodeFareController.clear();
     startTimeSurCharge.clear();
     endTimeSurCharge.clear();
+    startDateSurCharges = DateTime.now();
+    endDateSurCharges = DateTime.now();
     postCodeWise = "POSTCODE WISE";
     selectDateWise = "TIME WISE";
     selectOperation = "SELECT OPERATION";

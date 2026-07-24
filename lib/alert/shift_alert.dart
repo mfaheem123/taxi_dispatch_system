@@ -373,7 +373,7 @@ class NoteAlert {
                                     borderRadius: BorderRadius.circular(6),
                                   ),
                                   contentPadding:
-                                  const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                                  const EdgeInsets.symmetric(horizontal: 6, vertical: 14),
                                 ),
                               )),
                               const SizedBox(width: 8),
