@@ -1798,7 +1798,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       ),
                                                                       child: DropdownButtonFormField<DashboardVehicleTypeObject>(
                                                                         isExpanded: true,
-                                                                        decoration: const InputDecoration(
+                                                                        decoration: InputDecoration(
                                                                           border: InputBorder.none,
                                                                           isDense: true,
                                                                           contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
@@ -1867,7 +1867,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                                                                   ),
                                                                   child: DropdownButtonFormField<DashboardDriverObject>(
-                                                                    hint: Text("Select Driver".toUpperCase()),
+                                                                      hint: Text("SELECT R/DRIVER".toUpperCase()),
                                                                     style: mozillaTextSemiBoldText(
                                                                       context: context,
                                                                       fontSize: 10,
@@ -1975,22 +1975,21 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 ),
                                                                 child: DropdownButtonFormField<DashboardAccountObject>(
                                                                   isExpanded: true,
-                                                                  // Use true here so text reaches the icon and then clips
                                                                   decoration: const InputDecoration(
-                                                                    /*border: OutlineInputBorder(),
-                                                                                              isDense: true,
-                                                                                              contentPadding: EdgeInsets.symmetric(horizontal: 2),
-                                                                                              */
-                                                                    // Remove the internal border since you have a Container border
                                                                     border: InputBorder.none,
                                                                     isDense: true,
                                                                     contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                                                                   ),
-                                                                  // 3. You can also customize the icon to remove its default side padding
                                                                   icon: const Icon(Icons.arrow_drop_down, size: 20),
 
                                                                   padding: EdgeInsets.zero,
 
+                                                                  hint: Text(
+                                                                    "SELECT ACCOUNT",
+                                                                    maxLines: 1,
+                                                                    overflow: TextOverflow.ellipsis,
+                                                                    style: mozillaTextRegularText(fontSize: 12, color: DynamicColors.textClr),
+                                                                  ),
                                                                   value: controller.selectAccountValue,
                                                                   items: controller.dashboardAccountData?.accounts?.map((account) {
                                                                     return DropdownMenuItem<DashboardAccountObject>(
@@ -2031,6 +2030,16 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                                                                 ),
                                                                 child: DropdownButtonFormField<PaymentTypeObject>(
+                                                                  hint: Text(
+                                                                    "SELECT PAYMENT",
+                                                                    overflow: TextOverflow.ellipsis,
+                                                                    maxLines: 1,
+                                                                    softWrap: false,
+                                                                    style: mozillaTextRegularText(
+                                                                      fontSize: 12,
+                                                                      color: DynamicColors.textClr,
+                                                                    ),
+                                                                  ),
                                                                   isExpanded: true,
                                                                   // Use true here so text reaches the icon and then clips
                                                                   decoration: const InputDecoration(
@@ -2625,7 +2634,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                     CustomButton(
                                                       onTap: () {
                                                         controller.dropDownShow.value = false;
-                                                        controller.refreshPostAllFields();
+                                                        controller.clearAllFields();
                                                       },
                                                       btnText: "CLEAR [F7]",
                                                       width: 110,
@@ -2649,7 +2658,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       onTap: () {
                                                         controller.dropDownShow.value = false;
                                                         if (controller.jourValue == 'W/R' && controller.pickupTwoWayController.text.isEmpty && controller.dropOffTwoWayController.text.isEmpty) {
-                                                          BotToast.showText(text: "Please chose waiting return");
+                                                          BotToast.showText(text: "please enter waiting return pickup and dropoff");
                                                           return;
                                                         }
                                                         controller.dashBoardApiValidation(

@@ -3219,7 +3219,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                   .text.isEmpty) {
                                             BotToast.showText(
                                                 text:
-                                                    "Please chose waiting return");
+                                                    "please enter waiting return pickup and dropoff");
                                             return;
                                           }
                                           controller.dashBoardApiValidation();

@@ -71,6 +71,7 @@ Future<String> getFares({
   String? returnCreditCardCharges,
   String? returnCompanyPrice,
   String? returnMiles,
+  bool isOneWay = false,
 }) async {
   print("one way mils $miles");
   print("two way mils $returnMiles");
@@ -118,8 +119,8 @@ Future<String> getFares({
     if (pickupDate != null) "pickup_date": pickupDate,
     if (pickupTime != null) "pickup_time": pickupTime,
     if (vehicleTypeId != null) "vehicle_type_id": vehicleTypeId,
-    if (returnVehicleTypeId != null)
-      "return_vehicle_type_id": returnVehicleTypeId,
+    // if (returnVehicleTypeId != null)
+    //   "return_vehicle_type_id": returnVehicleTypeId,
     if (day != null) "day": day,
     if (pickUpPlotId != null) "pickup_plot_id": pickUpPlotId,
     if (returnpickUpPlotId != null) "return_pickup_plot_id": returnpickUpPlotId,
@@ -145,44 +146,91 @@ Future<String> getFares({
     if (companyPrice != null) "company_price": companyPrice,
 
     /// waiting return fares
-    if (withReturnPickUp != null) "return_pickup": withReturnPickUp,
-    if (withReturnDropOff != null) "return_dropoff": withReturnDropOff,
-    if (withReturnPickUp != null && withReturnDropOff != null)
-      "return_pickup_date": returnPickupDate,
-    if (withReturnPickUp != null && withReturnDropOff != null)
-      "return_pickup_time": returnPickupTime,
-    if (withReturnPickUp != null && withReturnDropOff != null)
-      "return_pickup_time": returnPickupTime,
+    // if (withReturnPickUp != null) "return_pickup": withReturnPickUp,
+    // if (withReturnDropOff != null) "return_dropoff": withReturnDropOff,
     // if (withReturnPickUp != null && withReturnDropOff != null)
+    //   "return_pickup_date": returnPickupDate,
+    // if (withReturnPickUp != null && withReturnDropOff != null)
+    //   "return_pickup_time": returnPickupTime,
+    // if (withReturnPickUp != null && withReturnDropOff != null)
+    //   "return_pickup_time": returnPickupTime,
+    // // if (withReturnPickUp != null && withReturnDropOff != null)
+    //   "return_miles": returnMiles,
+    // if (withReturnPickUp != null &&
+    //     withReturnDropOff != null &&
+    //     returnParkingCharges != null)
+    //   "return_parking_charges": returnParkingCharges,
+    // if (withReturnPickUp != null &&
+    //     withReturnDropOff != null &&
+    //     returnWaitingCharges != null)
+    //   "return_waiting_charges": returnWaitingCharges,
+    // if (withReturnPickUp != null &&
+    //     withReturnDropOff != null &&
+    //     returnMeetAndGreet != null)
+    //   "return_meet_and_greet": returnMeetAndGreet,
+    // if (withReturnPickUp != null &&
+    //     withReturnDropOff != null &&
+    //     returnCongestionCharges != null)
+    //   "return_congestion_charges": returnCongestionCharges,
+    // if (withReturnPickUp != null &&
+    //     withReturnDropOff != null &&
+    //     returnExtraDropCharges != null)
+    //   "return_extra_drop_charges": returnExtraDropCharges,
+    // if (withReturnPickUp != null &&
+    //     withReturnDropOff != null &&
+    //     returnCreditCardCharges != null)
+    //   "return_credit_card_charges": returnCreditCardCharges,
+    // if (withReturnPickUp != null &&
+    //     withReturnDropOff != null &&
+    //     returnCompanyPrice != null)
+    //   "return_company_price": returnCompanyPrice,
+    /// waiting return fares
+    if (!isOneWay && withReturnPickUp != null) "return_pickup": withReturnPickUp,
+    if (!isOneWay && withReturnDropOff != null) "return_dropoff": withReturnDropOff,
+    if (!isOneWay && withReturnPickUp != null && withReturnDropOff != null)
+      "return_pickup_date": returnPickupDate,
+    if (!isOneWay && withReturnPickUp != null && withReturnDropOff != null)
+      "return_pickup_time": returnPickupTime,
+    if (!isOneWay && withReturnPickUp != null && withReturnDropOff != null)
       "return_miles": returnMiles,
-    if (withReturnPickUp != null &&
+    if (!isOneWay &&
+        withReturnPickUp != null &&
         withReturnDropOff != null &&
         returnParkingCharges != null)
       "return_parking_charges": returnParkingCharges,
-    if (withReturnPickUp != null &&
+    if (!isOneWay &&
+        withReturnPickUp != null &&
         withReturnDropOff != null &&
         returnWaitingCharges != null)
       "return_waiting_charges": returnWaitingCharges,
-    if (withReturnPickUp != null &&
+    if (!isOneWay &&
+        withReturnPickUp != null &&
         withReturnDropOff != null &&
         returnMeetAndGreet != null)
       "return_meet_and_greet": returnMeetAndGreet,
-    if (withReturnPickUp != null &&
+    if (!isOneWay &&
+        withReturnPickUp != null &&
         withReturnDropOff != null &&
         returnCongestionCharges != null)
       "return_congestion_charges": returnCongestionCharges,
-    if (withReturnPickUp != null &&
+    if (!isOneWay &&
+        withReturnPickUp != null &&
         withReturnDropOff != null &&
         returnExtraDropCharges != null)
       "return_extra_drop_charges": returnExtraDropCharges,
-    if (withReturnPickUp != null &&
+    if (!isOneWay &&
+        withReturnPickUp != null &&
         withReturnDropOff != null &&
         returnCreditCardCharges != null)
       "return_credit_card_charges": returnCreditCardCharges,
-    if (withReturnPickUp != null &&
+    if (!isOneWay &&
+        withReturnPickUp != null &&
         withReturnDropOff != null &&
         returnCompanyPrice != null)
       "return_company_price": returnCompanyPrice,
+    if (!isOneWay && returnVehicleTypeId != null)
+      "return_vehicle_type_id": returnVehicleTypeId,
+
   };
   print(pickUpPlotId);
   print(" form data ------${formData}");
