@@ -426,6 +426,8 @@ class FareController extends GetxController {
   final TextEditingController addressController = TextEditingController();
   final TextEditingController addressController1 = TextEditingController();
   final activeFieldKey = Rx<GlobalKey?>(null);
+  final GlobalKey fromFieldKey = GlobalKey();
+  final GlobalKey toFieldKey = GlobalKey();
   final stackKey = GlobalKey();
   final GlobalKey suggestionListKey = GlobalKey();
   final GlobalKey suggestionListKeyVia = GlobalKey();
@@ -579,6 +581,24 @@ class FareController extends GetxController {
     _scrollToHighlighted(
         scrollDown: false,
         viaCondition: viaConditionValue); // 👈 scroll to top when up
+  }
+
+  /// Commits the currently highlighted suggestion into whichever field
+  /// (from/to) is active, then closes the dropdown.
+  void selectHighlightedAddress() {
+    if (allAddressesData.isEmpty) return;
+    final i = highlightedIndex.value;
+    if (i < 0 || i >= allAddressesData.length) return;
+    final item = allAddressesData[i];
+    selectedModel = item;
+    final text = "${item.name} ${item.postcode}".toUpperCase();
+    if (activeField.value == "from") {
+      addressController.text = text;
+    } else {
+      addressController1.text = text;
+    }
+    allAddressesData.clear();
+    update();
   }
 
   void _scrollToHighlighted(

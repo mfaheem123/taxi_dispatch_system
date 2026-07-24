@@ -74,6 +74,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                 decoration: BoxDecoration(
                     border: Border.all(color: DynamicColors.gryClr)),
                 child: Stack(
+                  key: controller.stackKey,
                   children: [
                     Column(
                       children: [
@@ -233,58 +234,32 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                               style: mozillaTextSemiBoldText(
                                                   context: context,
                                                   fontSize: 13)),
-                                          RawKeyboardListener(
-                                            focusNode: controller
-                                                .searchingAddressViaFocusNode,
-                                            onKey: (event) {
-                                              if (event is RawKeyDownEvent) {
-                                                if (event.logicalKey ==
-                                                        LogicalKeyboardKey
-                                                            .arrowDown &&
-                                                    controller.highlightedIndex
-                                                            .value <
-                                                        controller.suggestions
-                                                                .length -
-                                                            1) {
-                                                  controller
-                                                      .highlightedIndex.value++;
-                                                } else if (event.logicalKey ==
-                                                        LogicalKeyboardKey
-                                                            .arrowUp &&
-                                                    controller.highlightedIndex
-                                                            .value >
-                                                        0) {
-                                                  controller
-                                                      .highlightedIndex.value--;
-                                                } else if (event.logicalKey ==
-                                                    LogicalKeyboardKey.enter) {
-                                                  final selected = controller
-                                                      .suggestions[controller
-                                                          .highlightedIndex
-                                                          .value]
-                                                      .name;
-                                                  controller.selectSuggestion(
-                                                      selected);
-                                                } else if (event
-                                                            .logicalKey ==
-                                                        LogicalKeyboardKey
-                                                            .arrowDown ||
-                                                    event.logicalKey ==
-                                                        LogicalKeyboardKey
-                                                            .arrowUp ||
-                                                    event.logicalKey ==
-                                                        LogicalKeyboardKey
-                                                            .tab) {
-                                                  FocusScope.of(Get.context!)
-                                                      .requestFocus(controller
-                                                          .viaFocusNode);
-                                                }
-                                                // }else if(event.logicalKey == LogicalKeyboardKey.tab){
-                                                //   FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
-                                                // }
-                                              }
+                                          CallbackShortcuts(
+                                            bindings: <ShortcutActivator,
+                                                VoidCallback>{
+                                              const SingleActivator(
+                                                  LogicalKeyboardKey
+                                                      .arrowDown): () {
+                                                controller.activeField.value =
+                                                    "from";
+                                                controller.moveHighlightDown();
+                                              },
+                                              const SingleActivator(
+                                                  LogicalKeyboardKey.arrowUp): () {
+                                                controller.activeField.value =
+                                                    "from";
+                                                controller.moveHighlightUp();
+                                              },
+                                              const SingleActivator(
+                                                  LogicalKeyboardKey.enter): () {
+                                                controller.activeField.value =
+                                                    "from";
+                                                controller
+                                                    .selectHighlightedAddress();
+                                              },
                                             },
                                             child: SizedBox(
+                                              key: controller.fromFieldKey,
                                               width: Get.width / 4,
                                               height: 35,
                                               child: TextField(
@@ -300,10 +275,16 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                                           fontWeight:
                                                               FontWeight.w800),
                                                   onTap: () {
-                                                    controller.activeField
-                                                        .value = "from";
+                                                    controller.activeField.value = "from";
+                                                    controller.activeFieldKey
+                                                        .value = controller
+                                                        .fromFieldKey;
                                                   },
                                                   onChanged: (v) {
+                                                    controller.activeField.value = "from";
+                                                    controller.activeFieldKey
+                                                        .value = controller
+                                                        .fromFieldKey;
                                                     controller.onChangeHandler(
                                                         fieldName: "via",
                                                         searchingText: v);
@@ -382,57 +363,32 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                               style: mozillaTextSemiBoldText(
                                                   context: context,
                                                   fontSize: 13)),
-                                          RawKeyboardListener(
-                                            focusNode: controller
-                                                .searchingAddress1ViaFocusNode,
-                                            onKey: (event) {
-                                              if (event is RawKeyDownEvent) {
-                                                if (event.logicalKey ==
-                                                        LogicalKeyboardKey
-                                                            .arrowDown &&
-                                                    controller.highlightedIndex1
-                                                            .value <
-                                                        controller.suggestions1
-                                                                .length -
-                                                            1) {
-                                                  controller.highlightedIndex1
-                                                      .value++;
-                                                } else if (event.logicalKey ==
-                                                        LogicalKeyboardKey
-                                                            .arrowUp &&
-                                                    controller.highlightedIndex1
-                                                            .value >
-                                                        0) {
-                                                  controller.highlightedIndex1
-                                                      .value--;
-                                                } else if (event.logicalKey ==
-                                                    LogicalKeyboardKey.enter) {
-                                                  final selected = controller
-                                                      .suggestions1[controller
-                                                          .highlightedIndex1
-                                                          .value]
-                                                      .name;
-                                                  controller.selectSuggestion(
-                                                      selected);
-                                                } else if (event.logicalKey ==
-                                                        LogicalKeyboardKey
-                                                            .arrowDown ||
-                                                    event.logicalKey ==
-                                                        LogicalKeyboardKey
-                                                            .arrowUp ||
-                                                    event.logicalKey ==
-                                                        LogicalKeyboardKey
-                                                            .tab) {
-                                                  FocusScope.of(Get.context!)
-                                                      .requestFocus(controller
-                                                          .viaFocusNode1);
-                                                }
-                                                // }else if(event.logicalKey == LogicalKeyboardKey.tab){
-                                                //   FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
-                                                // }
-                                              }
+                                          CallbackShortcuts(
+                                            bindings: <ShortcutActivator,
+                                                VoidCallback>{
+                                              const SingleActivator(
+                                                  LogicalKeyboardKey
+                                                      .arrowDown): () {
+                                                controller.activeField.value =
+                                                    "to";
+                                                controller.moveHighlightDown();
+                                              },
+                                              const SingleActivator(
+                                                  LogicalKeyboardKey.arrowUp): () {
+                                                controller.activeField.value =
+                                                    "to";
+                                                controller.moveHighlightUp();
+                                              },
+                                              const SingleActivator(
+                                                  LogicalKeyboardKey.enter): () {
+                                                controller.activeField.value =
+                                                    "to";
+                                                controller
+                                                    .selectHighlightedAddress();
+                                              },
                                             },
                                             child: SizedBox(
+                                              key: controller.toFieldKey,
                                               width: Get.width / 4,
                                               height: 35,
                                               child: TextField(
@@ -450,8 +406,16 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                                   onTap: () {
                                                     controller.activeField
                                                         .value = "to";
+                                                    controller.activeFieldKey
+                                                        .value = controller
+                                                        .toFieldKey;
                                                   },
                                                   onChanged: (v) {
+                                                    controller.activeField
+                                                        .value = "to";
+                                                    controller.activeFieldKey
+                                                        .value = controller
+                                                        .toFieldKey;
                                                     controller.onChangeHandler1(
                                                         fieldName: "via",
                                                         searchingText: v);
@@ -775,13 +739,12 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                       });
 
                       return Positioned(
-                        top: 240,
-                        // top: top,
+                        top: top,
                         left: left,
-                        width: Get.width / 4,
+                        width: width,
                         child: RawKeyboardListener(
                           focusNode: controller.viaFocusNode,
-                          autofocus: true,
+                          autofocus: false,
                           onKey: (RawKeyEvent event) {
                             if (event is RawKeyDownEvent) {
                               if (event.logicalKey ==
@@ -828,7 +791,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                           child: Container(
                             height: screenHeight * 0.3,
                             // height: screenHeight * 0.3,
-                            width: Get.width / 4,
+                            width: width,
                             decoration: BoxDecoration(
                               color: const Color(0xFFEFF0F2),
                               borderRadius: BorderRadius.circular(5),
