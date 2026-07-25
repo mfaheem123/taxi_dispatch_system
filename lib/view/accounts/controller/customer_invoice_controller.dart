@@ -227,15 +227,34 @@ class CustomerInvoiceController extends GetxController {
     if (response.statusCode == 200) {
       print("Response Data: ${response.data}");
       BotToast.showText(text: "CUSTOMER INVOICE ADDED SUCCESSFULLY!");
+      clearCustomerInvoice();
 
-      selectedIds.clear();
-      customerInvoiceFilterModel?.bookings?.clear();
+      // selectedIds.clear();
+      // customerInvoiceFilterModel?.bookings?.clear();
       getCustomerInvoiceNumber();
     }
     isCustomerInvoiceLoad = false;
     update();
   }
 
+  var datePickerKey = 0;
+
+  void clearCustomerInvoice() {
+    selectedIds.clear();
+    selectedPaymentTypeIds.clear();
+    customerNameController.clear();
+    customerEmailController.clear();
+    customerMobileController.clear();
+    customerTelephoneController.clear();
+    selectedCustomerId = null;
+    customerInvoiceFilterModel = null;
+    datePickerKey++;
+    customerInvoiceDateController = "";
+    customerInvoiceDueDateController = "";
+    filterFromDate = "";
+    filterToDate = "";
+    update();
+  }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo CREATE CUSTOMER INVOICE functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo LIST OF CUSTOMER INVOICE functionality
 
@@ -381,8 +400,7 @@ class CustomerInvoiceController extends GetxController {
 
   void clearUpdateData() {
     customerInvoiceByIdModel = null;
-    customerInvoiceDateController =
-    "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+    customerInvoiceDateController = "";
     customerInvoiceDueDateController =
     "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
     customerNameController.clear();

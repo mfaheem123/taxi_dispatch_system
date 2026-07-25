@@ -217,9 +217,14 @@ class _UpdateCustomerInvoiceState extends State<UpdateCustomerInvoice> {
                                     borderRadius: BorderRadius.circular(4),
                                     color: Colors.grey.shade100,
                                   ),
-                                  child: Text(controller.customerInvoiceDueDateController != null
-                                      ? DateFormat("yyyy-MM-dd").format(DateFormat("yyyy-M-d").parse(controller.customerInvoiceDueDateController!))
-                                      : "-"),
+                                  child: Text(
+                                    (controller.customerInvoiceDateController != null &&
+                                        controller.customerInvoiceDateController!.isNotEmpty)
+                                        ? DateFormat("yyyy-MM-dd").format(
+                                        DateFormat("yyyy-M-d").parse(controller.customerInvoiceDateController!))
+                                        : "",
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 12),

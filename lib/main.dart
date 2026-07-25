@@ -556,7 +556,7 @@ Future<void> setupWebNotifications() async {
         );
       }
 
-      // 3. NEW_APP_BOOKING 
+      // 3. NEW_APP_BOOKING
       else if (type == 'NEW_APP_BOOKING') {
         String bookingId = message.data['booking_id'] ?? "";
         String bookingMode = message.data['booking_mode'] ?? "N/A";

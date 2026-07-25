@@ -113,6 +113,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                         child: SizedBox(
                             height: 30,
                             child: KeyboardDatePicker(
+                              key: ValueKey("invoice_date_${controller.datePickerKey}"),
                               initialDate: DateTime.now(),
                               onChanged: (date) {
                                 setState(() {
@@ -139,6 +140,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                         child: SizedBox(
                             height: 30,
                             child: KeyboardDatePicker(
+                              key: ValueKey("invoice_due_date_${controller.datePickerKey}"),
                               initialDate: DateTime.now().add(Duration(days: 7)),
                               onChanged: (date) {
                                 setState(() {
@@ -238,7 +240,9 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                                         textEditingController,
                                         focusNode,
                                         onFieldSubmitted) {
-                                      if (textEditingController.text.isEmpty &&
+                                      if (controller.customerMobileController.text.isEmpty) {
+                                        textEditingController.clear();
+                                      } else if (textEditingController.text.isEmpty &&
                                           controller.customerMobileController.text
                                               .isNotEmpty) {
                                         textEditingController.text = controller
@@ -500,6 +504,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                         child: SizedBox(
                           height: 30,
                           child: KeyboardDatePicker(
+                            key: ValueKey("from_date_${controller.datePickerKey}"),
                             initialDate: controller.filterFromDate.isNotEmpty
                                 ? DateTime.parse(controller.filterFromDate)
                                 : DateTime(DateTime.now().year, DateTime.now().month, 1),
@@ -522,6 +527,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                         child: SizedBox(
                           height: 30,
                           child: KeyboardDatePicker(
+                            key: ValueKey("to_date_${controller.datePickerKey}"),
                             initialDate: controller.filterToDate.isNotEmpty
                                 ? DateTime.parse(controller.filterToDate)
                                 : DateTime.now(),

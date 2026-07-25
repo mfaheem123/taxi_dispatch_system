@@ -99,6 +99,7 @@ class _CreateAccountInvoiceScreenState
                     child: SizedBox(
                         height: 30,
                         child: KeyboardDatePicker(
+                          key: ValueKey("invoice_date_${controller.datePickerKey}"),
                           initialDate: DateTime.now(),
                           onChanged: (date) {
                             setState(() {
@@ -125,6 +126,7 @@ class _CreateAccountInvoiceScreenState
                     child: SizedBox(
                         height: 30,
                         child: KeyboardDatePicker(
+                          key: ValueKey("invoice_due_date_${controller.datePickerKey}"),
                           initialDate:
                               DateTime.now().add(Duration(days: 7)),
                           onChanged: (date) {
@@ -271,6 +273,7 @@ class _CreateAccountInvoiceScreenState
                     child: SizedBox(
                         height: 30,
                         child: KeyboardDatePicker(
+                            key: ValueKey("from_date_${controller.datePickerKey}"),
                             initialDate: controller.fromDate ?? DateTime.now(),
                             onChanged: (fromDate) {
                               controller.fromDate = fromDate;
@@ -289,6 +292,7 @@ class _CreateAccountInvoiceScreenState
                     child: SizedBox(
                         height: 30,
                         child: KeyboardDatePicker(
+                          key: ValueKey("to_date_${controller.datePickerKey}"),
                           initialDate: controller.toDate ?? DateTime.now(),
                           onChanged: (toDate) {
                             controller.toDate = toDate;

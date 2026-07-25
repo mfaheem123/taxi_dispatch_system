@@ -147,20 +147,31 @@ class InvoiceController extends GetxController {
             updateInvoiceByIdModel?.accountInvoice?.accountInvoice
                 ?.orderNumber ??
                 "";
-        clearInvoiceData();
+
         BotToast.showText(text: 'ACCOUNT INVOICE CREATED');
+        clearInvoiceData();
         print(' Account Invoice Created');
         update();
       }
     addAccountInvoiceLoad(false);
   }
 
+  var datePickerKey = 0;
+
   void clearInvoiceData() {
     subsidiaries = null;
     selectAccountValue = null;
     selectDepartmentData = null;
     orderNumber.clear();
-    accountInvoiceBookingModel?.bookings?.clear();
+    accountInvoiceBookingModel = null;
+    selectedCreateBookingIds.clear();
+    isAllSelected = false;
+    fromDate = DateTime.now();
+    toDate = DateTime.now();
+    invoiceDateController = null;
+    invoiceDueDateController = null;
+    datePickerKey++;
+    getInvoiceNumber();
   }
   void recalculateCreateInvoiceTotal(dynamic booking) {
     if (booking == null) return;
@@ -771,6 +782,31 @@ CC: CONGESTION CHARGES
 
     if (response.statusCode == 200) {
       BotToast.showText(text: "INVOICE UPDATED SUCCESSFULLY!");
+      clearUpdateInvoiceData();
     }
+  }
+
+
+  void clearUpdateInvoiceData() {
+    updateInvoiceByIdModel = null;
+    subsidiaries = null;
+    selectDepartmentData = null;
+    selectAccountValue = null;
+    invoiceDateController = null;
+    invoiceDueDateController = null;
+    orderNumber.clear();
+
+    totalFare = 0.0;
+    totalPC = 0.0;
+    totalWC = 0.0;
+    totalEDC = 0.0;
+    totalMG = 0.0;
+    totalCC = 0.0;
+    subTotal = 0.0;
+    adminFees = 0.0;
+
+    isPaid.value = false;
+
+    update();
   }
 }
