@@ -1097,7 +1097,7 @@ class DriverController extends GetxController {
   void autoFillDriverDetails(String selectedText) {
     if (selectedText.isEmpty) return;
     final driver = listDriverCommission?.drivers?.firstWhere(
-      (d) => "${d.id} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
+      (d) => "${d.username} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
       // orElse: () => null,
     );
 
@@ -1138,7 +1138,13 @@ class DriverController extends GetxController {
     isFilterLoading = true;
     update();
 
-    String dId = driverSelectionController.text.split(" ").first;
+    final selectedText = driverSelectionController.text;
+    final driver = listDriverCommission?.drivers?.firstWhere(
+          (d) => "${d.username} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
+      orElse: () => null as dynamic,
+    );
+
+    String dId = driver?.id?.toString() ?? "";
     String pIds = selectedPaymentTypeIds.isNotEmpty
         ? "[${selectedPaymentTypeIds.join(",")}]"
         : "";
@@ -1461,7 +1467,13 @@ class DriverController extends GetxController {
         ? DateTime.now().toIso8601String().split("T").first
         : transactionDate;
 
-    String dId = driverSelectionController.text.split(" ").first;
+    final selectedText = driverSelectionController.text;
+    final driver = listDriverCommission?.drivers?.firstWhere(
+          (d) => "${d.username} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
+      orElse: () => null as dynamic,
+    );
+
+    String dId = driver?.id?.toString() ?? "";
 
     var formData = {
       "transaction_date": finalDate,
@@ -1485,8 +1497,34 @@ class DriverController extends GetxController {
         await Api().post(formData, "driver_commission/add", sendCompanyId: true, auth: true);
     if (response.statusCode == 200) {
       BotToast.showText(text: "DRIVER COMMISSION ADDED SUCCESSFULLY!");
+      clearDriverCommission();
     }
     saveDriverCommissionLoad = false;
+    update();
+  }
+
+  var datePickerKey = 0;
+
+  void clearDriverCommission() {
+    driverSelectionController.clear();
+    selectedIds.clear();
+    selectedPaymentTypeIds.clear();
+    commissionController.clear();
+    pdaRentController.clear();
+    filterData = null;
+    transactionDate = "";
+    filterFromDate = "";
+    filterToDate = "";
+    cashTotalValue = 0.0;
+    grandTotalVar = 0.0;
+    owedVar = 0.0;
+    oldBalanceVar = 0.0;
+    newBalanceVar = 0.0;
+    accountFareTotalVar = 0.0;
+    accountWOCmmVar = 0.0;
+    parkingCongestionVar = 0.0;
+    totalCommissionVar = 0.0;
+    datePickerKey++;
     update();
   }
 

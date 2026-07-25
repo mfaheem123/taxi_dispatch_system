@@ -123,7 +123,79 @@ class _DriverCommissionState extends State<DriverCommission> {
                 scrollDirection: Axis.horizontal,
                 child: SizedBox(
                   width: Get.width,
-                  child: DatatableWidget(
+                  child:
+                  // DatatableWidget(
+                  //   columns: [
+                  //     buildHeaderWithSearch(title: "USERNAME"),
+                  //     buildHeaderWithSearch(title: "NAME"),
+                  //     buildHeaderWithSearch(title: "TYPE"),
+                  //     buildHeaderWithSearch(title: "COMMISSION"),
+                  //     buildHeaderWithSearch(title: "LAST MODIFIED"),
+                  //   ],
+                  //   totalRow: driverList.length,
+                  //   cells: [
+                  //     ...driverList.map((driverItem) {
+                  //       final countItem = countList.firstWhere(
+                  //         (c) => c.driverId == driverItem.driverId,
+                  //         orElse: () => Count(lastModified: "-"),
+                  //       );
+                  //
+                  //       return DataCell(
+                  //         Center(
+                  //             child: Text(driverItem.driverId?.toString() ?? "-")),
+                  //         onTap: () async {
+                  //           await controller.getDriverCommissionDetails(driverItem.driverId);
+                  //           DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
+                  //         },
+                  //       );
+                  //     }).toList(),
+                  //     ...driverList.map((driverItem) {
+                  //       return DataCell(
+                  //         Center(child: Text((driverItem.driver?.name ?? "-").toUpperCase())),
+                  //         onTap: () async {
+                  //           await controller.getDriverCommissionDetails(driverItem.driverId);
+                  //           DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
+                  //         },
+                  //       );
+                  //     }).toList(),
+                  //     ...driverList.map((driverItem) {
+                  //       return DataCell(
+                  //         Center(
+                  //             child:
+                  //                 Text((driverItem.driver?.driverType ?? "-").toUpperCase())),
+                  //         onTap: () async {
+                  //           await controller.getDriverCommissionDetails(driverItem.driverId);
+                  //           DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
+                  //         },
+                  //       );
+                  //     }).toList(),
+                  //     ...driverList.map((driverItem) {
+                  //       return DataCell(
+                  //         Center(
+                  //             child: Text(
+                  //                 "${driverItem.driver?.driverCommission ?? "0"}%")),
+                  //         onTap: () async {
+                  //           await controller.getDriverCommissionDetails(driverItem.driverId);
+                  //           DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
+                  //         },
+                  //       );
+                  //     }).toList(),
+                  //     ...driverList.map((driverItem) {
+                  //       final countItem = countList.firstWhere(
+                  //         (c) => c.driverId == driverItem.driverId,
+                  //         orElse: () => Count(lastModified: "-"),
+                  //       );
+                  //       return DataCell(
+                  //         Center(child: Text(countItem.lastModified ?? "-")),
+                  //         onTap: () async {
+                  //           await controller.getDriverCommissionDetails(driverItem.driverId);
+                  //           DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
+                  //         },
+                  //       );
+                  //     }).toList(),
+                  //   ],
+                  // ),
+                  DatatableWidget(
                     columns: [
                       buildHeaderWithSearch(title: "USERNAME"),
                       buildHeaderWithSearch(title: "NAME"),
@@ -132,67 +204,52 @@ class _DriverCommissionState extends State<DriverCommission> {
                       buildHeaderWithSearch(title: "LAST MODIFIED"),
                     ],
                     totalRow: driverList.length,
-                    cells: [
-                      ...driverList.map((driverItem) {
-                        final countItem = countList.firstWhere(
-                          (c) => c.driverId == driverItem.driverId,
-                          orElse: () => Count(lastModified: "-"),
-                        );
+                    rows: driverList.map((driverItem) {
+                      final countItem = countList.firstWhere(
+                            (c) => c.driverId == driverItem.driverId,
+                        orElse: () => Count(lastModified: "-"),
+                      );
 
-                        return DataCell(
-                          Center(
-                              child: Text(driverItem.driverId?.toString() ?? "-")),
-                          onTap: () async {
-                            await controller.getDriverCommissionDetails(driverItem.driverId);
-                            DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
-                          },
-                        );
-                      }).toList(),
-                      ...driverList.map((driverItem) {
-                        return DataCell(
-                          Center(child: Text((driverItem.driver?.name ?? "-").toUpperCase())),
-                          onTap: () async {
-                            await controller.getDriverCommissionDetails(driverItem.driverId);
-                            DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
-                          },
-                        );
-                      }).toList(),
-                      ...driverList.map((driverItem) {
-                        return DataCell(
-                          Center(
-                              child:
-                                  Text((driverItem.driver?.driverType ?? "-").toUpperCase())),
-                          onTap: () async {
-                            await controller.getDriverCommissionDetails(driverItem.driverId);
-                            DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
-                          },
-                        );
-                      }).toList(),
-                      ...driverList.map((driverItem) {
-                        return DataCell(
-                          Center(
-                              child: Text(
-                                  "${driverItem.driver?.driverCommission ?? "0"}%")),
-                          onTap: () async {
-                            await controller.getDriverCommissionDetails(driverItem.driverId);
-                            DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
-                          },
-                        );
-                      }).toList(),
-                      ...driverList.map((driverItem) {
-                        final countItem = countList.firstWhere(
-                          (c) => c.driverId == driverItem.driverId,
-                          orElse: () => Count(lastModified: "-"),
-                        );
-                        return DataCell(
-                          Center(child: Text(countItem.lastModified ?? "-")),
-                          onTap: () async {
-                            await controller.getDriverCommissionDetails(driverItem.driverId);
-                            DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
-                          },
-                        );
-                      }).toList(),
-                    ],
+                      return DataRow(
+                        cells: [
+                          DataCell(
+                            Center(child: Text(driverItem.driver?.username ?? "-")),
+                            onTap: () async {
+                              await controller.getDriverCommissionDetails(driverItem.driverId);
+                              DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
+                            },
+                          ),
+                          DataCell(
+                            Center(child: Text((driverItem.driver?.name ?? "-").toUpperCase())),
+                            onTap: () async {
+                              await controller.getDriverCommissionDetails(driverItem.driverId);
+                              DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
+                            },
+                          ),
+                          DataCell(
+                            Center(child: Text((driverItem.driver?.driverType ?? "-").toUpperCase())),
+                            onTap: () async {
+                              await controller.getDriverCommissionDetails(driverItem.driverId);
+                              DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
+                            },
+                          ),
+                          DataCell(
+                            Center(child: Text("${driverItem.driver?.driverCommission ?? "0"}%")),
+                            onTap: () async {
+                              await controller.getDriverCommissionDetails(driverItem.driverId);
+                              DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
+                            },
+                          ),
+                          DataCell(
+                            Center(child: Text(countItem.lastModified ?? "-")),
+                            onTap: () async {
+                              await controller.getDriverCommissionDetails(driverItem.driverId);
+                              DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
+                            },
+                          ),
+                        ],
+                      );
+                    }).toList(),
                   ),
                 ),
               ),

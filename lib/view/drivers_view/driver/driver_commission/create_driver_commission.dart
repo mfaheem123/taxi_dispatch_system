@@ -123,7 +123,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                                             .listDriverCommission?.drivers
                                             ?.map((driver) {
                                           final val =
-                                              "${driver.id} ${driver.name}";
+                                              "${driver.username} ${driver.name}";
                                           return DropdownMenuItem(
                                             value: val,
                                             child: Text(val.toUpperCase(),
@@ -155,6 +155,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                               width: fieldWidth,
                               height: 30,
                               child: KeyboardDatePicker(
+                                key: ValueKey("transaction_date_${controller.datePickerKey}"),
                                 initialDate: DateTime.now(),
                                 onChanged: (date) {
                                   controller.transactionDate =
@@ -220,6 +221,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                   width: fieldWidth / 1.2,
                   height: 30,
                   child: KeyboardDatePicker(
+                    key: ValueKey("from_date_${controller.datePickerKey}"),
                     initialDate: DateTime.now(),
                     onChanged: (date) {
                       controller.filterFromDate =
@@ -245,6 +247,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                   width: fieldWidth / 1.2,
                   height: 30,
                   child: KeyboardDatePicker(
+                    key: ValueKey("to_date_${controller.datePickerKey}"),
                     initialDate: DateTime.now(),
                     onChanged: (date) {
                       controller.filterToDate =
