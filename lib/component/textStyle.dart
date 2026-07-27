@@ -13,7 +13,7 @@ headingText({
   return TextStyle(
     fontSize: fontSize ?? 40,
     color: color ?? DynamicColors.textClr,
-    fontWeight: fontWeight ?? FontWeight.w600,
+    fontWeight: fontWeight ?? FontWeight.w900,
     fontFamily: 'headingText',
     letterSpacing: latterSpacing ?? 1.5,
   );
@@ -47,7 +47,7 @@ TextStyle mozillaTextSemiBoldText({
   return TextStyle(
     fontSize: finalFontSize,
     color: color ?? DynamicColors.textClr,
-    fontWeight: fontWeight ?? FontWeight.w700,
+    fontWeight: fontWeight ?? FontWeight.w900,
     fontFamily: "MozillaText-SemiBold"
   );
 }
@@ -79,7 +79,7 @@ TextStyle mozillaTextRegularText({
   return TextStyle(
     fontSize: finalFontSize,
     color: color ?? DynamicColors.textClr,
-    fontWeight: fontWeight ?? FontWeight.w700,
+    fontWeight: fontWeight ?? FontWeight.w900,
     fontFamily: "MozillaText-Regular"
   );
 }
