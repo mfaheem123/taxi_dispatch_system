@@ -131,6 +131,7 @@ class _UpdateDriverCommissionScreenState
                                                 .text
                                                 .toUpperCase(),
                                         style: TextStyle(
+                                            fontWeight: FontWeight.w900,
                                             fontSize: 13,
                                             color: Colors.black),
                                       ),
@@ -463,7 +464,7 @@ class _UpdateDriverCommissionScreenState
                                                   TextInputType.number,
                                               textAlign: TextAlign.center,
                                               style:
-                                                  const TextStyle(fontSize: 12),
+                                                  const TextStyle(fontSize: 12,fontWeight: FontWeight.w900,),
                                               decoration: const InputDecoration(
                                                 isDense: true,
                                                 contentPadding:

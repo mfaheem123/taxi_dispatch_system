@@ -57,7 +57,7 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
           return const Center(
             child: Text(
               "No Data Found",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
             ),
           );
         }

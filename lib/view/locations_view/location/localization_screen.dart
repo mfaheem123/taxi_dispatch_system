@@ -238,7 +238,7 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
             const Text(
               "ENTER POSTCODE",
               style: TextStyle(
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w900,
                 fontSize: 14,
               ),
             ),

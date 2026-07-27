@@ -128,9 +128,10 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                             children: [
                               Text(
                                 AppText.veh,
-                                style: mozillaTextSemiBoldText(
+                                style: mozillaTextRegularText(
                                   context: context,
                                   fontSize: 13,
+                                  fontWeight: FontWeight.w900,
                                 ),
                               ),
 
@@ -185,8 +186,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                               SizedBox(width: 10),
                               Text(
                                 AppText.quotation,
-                                style: mozillaTextSemiBoldText(
-                                    context: context, fontSize: 13),
+                                style: mozillaTextRegularText(
+                                    context: context, fontSize: 13, fontWeight: FontWeight.w900),
                               ),
                             ],
                           ),
@@ -217,8 +218,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                               ),
                               Text(
                                 AppText.sms,
-                                style: mozillaTextSemiBoldText(
-                                    context: context, fontSize: 13),
+                                style: mozillaTextRegularText(
+                                    context: context, fontSize: 13, fontWeight: FontWeight.w900),
                               ),
                             ],
                           ),
@@ -249,8 +250,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                               ),
                               Text(
                                 AppText.email,
-                                style: mozillaTextSemiBoldText(
-                                    context: context, fontSize: 13),
+                                style: mozillaTextRegularText(
+                                    context: context, fontSize: 13, fontWeight: FontWeight.w900),
                               ),
                             ],
                           ),
@@ -406,9 +407,9 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                                     color: DynamicColors.textClr, size: 18),
                                 SizedBox(width: 4),
                                 Text("ETA : 0.0 mins",
-                                    style: TextStyle(
+                                    style: mozillaTextRegularText(
                                         color: DynamicColors.textClr,
-                                        fontSize: 13)),
+                                        fontSize: 13, fontWeight: FontWeight.w900)),
                               ],
                             ),
                             Row(
@@ -418,9 +419,9 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                                     color: DynamicColors.textClr, size: 18),
                                 SizedBox(width: 4),
                                 Text("JOURNEY : 0.0 mins",
-                                    style: TextStyle(
+                                    style: mozillaTextRegularText(
                                         color: DynamicColors.textClr,
-                                        fontSize: 13)),
+                                        fontSize: 13, fontWeight: FontWeight.w900)),
                               ],
                             ),
                             Row(
@@ -430,9 +431,9 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                                     color: DynamicColors.textClr, size: 18),
                                 SizedBox(width: 4),
                                 Text("DISTANCE : 0.0 miles",
-                                    style: TextStyle(
+                                    style: mozillaTextRegularText(
                                         color: DynamicColors.textClr,
-                                        fontSize: 13)),
+                                        fontSize: 13, fontWeight: FontWeight.w900)),
                               ],
                             ),
                             Container(
@@ -446,8 +447,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                                 fit: BoxFit.scaleDown,
                                 child: Text(
                                   "PR: \$ 4.90",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
+                                  style: mozillaTextRegularText(
+                                    fontWeight: FontWeight.w900,
                                     color: Colors.black,
                                     fontSize: 13,
                                   ),

@@ -31,15 +31,15 @@ class CustomDropdownField<T> extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        text != null?Text(text!, style: mozillaTextSemiBoldText(context: context, fontSize: 13)):SizedBox.shrink(),
+        text != null?Text(text!, style: mozillaTextRegularText(context: context, fontSize: 13, fontWeight: FontWeight.bold)):SizedBox.shrink(),
         SizedBox(
           width: width ?? Get.width / 4,
           height: height ?? 30,
           child: InputDecorator(
             decoration: InputDecoration(
-              hintText: label,
+              hintText: label ,
               fillColor: Colors.transparent,
-              hintStyle: mozillaTextRegularText(fontSize: 10),
+              hintStyle: mozillaTextRegularText(fontSize: 13,fontWeight: FontWeight.bold),
               border: const OutlineInputBorder(),
               contentPadding: const EdgeInsets.all(12),
               enabledBorder: OutlineInputBorder(
@@ -55,7 +55,7 @@ class CustomDropdownField<T> extends StatelessWidget {
                 value: value,
                 isDense: true,
                 hint: Text(label ?? "",
-                  style: mozillaTextRegularText(fontSize: 10, fontWeight: FontWeight.w900),
+                  style: mozillaTextRegularText(fontSize: 13, fontWeight: FontWeight.bold),
                 ),
                 isExpanded: true,
                   alignment: Alignment.bottomCenter,
@@ -65,7 +65,7 @@ class CustomDropdownField<T> extends StatelessWidget {
                     value: val,
                     child: Text(
                       itemLabel(val), // ✅ how we display dynamic object
-                      style: mozillaTextRegularText(fontSize: 10, fontWeight: FontWeight.w900),
+                      style: mozillaTextRegularText(fontSize: 13, fontWeight: FontWeight.bold),
                     ),
                   );
                 }).toList(),

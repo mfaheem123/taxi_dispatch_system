@@ -111,6 +111,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                                     child: DropdownButton<String>(
                                       hint: Text("SELECT DRIVER",
                                           style: TextStyle(
+                                              fontWeight: FontWeight.w800,
                                               fontSize: 12,
                                               color: DynamicColors.black)),
                                       value: controller
@@ -131,6 +132,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                                               value: val,
                                               child: Text(val.toUpperCase(),
                                                   style: const TextStyle(
+                                                      fontWeight: FontWeight.w800,
                                                       fontSize: 12)),
                                             );
                                           }).toList() ??

@@ -351,6 +351,7 @@ class _FareChargesState extends State<FareCharges> {
                                             label: Text(
                                               item.dayName!,
                                               style: TextStyle(
+                                                fontWeight: FontWeight.w900,
                                                 color: item.selectedDay!.value
                                                     ? Colors.white
                                                     : DynamicColors.textClr,

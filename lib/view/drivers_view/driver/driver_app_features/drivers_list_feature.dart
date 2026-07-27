@@ -27,6 +27,7 @@ class DriversListFeature extends StatelessWidget {
           fontSize: 13,
         ),
         dataTextStyle: TextStyle(
+          fontWeight: FontWeight.w800,
           fontSize: 10,
         ),
         decoration: BoxDecoration(

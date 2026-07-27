@@ -366,7 +366,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                                                             const SizedBox(width: 10),
                                                             Text(
                                                               "${option.mobile ?? ''}",
-                                                              style: const TextStyle(color: Colors.black, fontSize: 13),
+                                                              style: const TextStyle(color: Colors.black, fontSize: 13, fontWeight: FontWeight.bold,),
                                                             ),
                                                           ],
                                                         ),

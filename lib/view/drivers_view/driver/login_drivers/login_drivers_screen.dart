@@ -97,7 +97,7 @@ class _LoginDriversScreenState extends State<LoginDriversScreen> {
                         children: [
                           Text(AppText.loggedInDrivers+" (${controller.driverLoginLogoutModel!.count.toString() ?? 0})",
                             style: mozillaTextSemiBoldText(
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w900,
                                 fontSize: 17
                             ),
                           ),
@@ -113,7 +113,7 @@ class _LoginDriversScreenState extends State<LoginDriversScreen> {
                           )),
                           Text(AppText.loggedOut,
                             style: mozillaTextSemiBoldText(
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w900,
                                 fontSize: 14,
                                 color: DynamicColors.redClr
                             ),

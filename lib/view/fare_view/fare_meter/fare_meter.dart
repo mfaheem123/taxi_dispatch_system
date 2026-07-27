@@ -80,10 +80,11 @@ class _FareMeterState extends State<FareMeter> {
                     width: 0.5,
                   ),
                   headingTextStyle: const TextStyle(
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w900,
                     fontSize: 13,
                   ),
                   dataTextStyle: const TextStyle(
+                    fontWeight: FontWeight.w900,
                     fontSize: 10,
                   ),
                   decoration: BoxDecoration(

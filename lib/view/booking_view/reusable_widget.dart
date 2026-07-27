@@ -23,6 +23,7 @@ Widget customWidget({value, ValueChanged<bool?>? onChanged, String? text, double
         ),
         Text(text ?? AppText.completed,
           style: mozillaTextRegularText(
+            fontWeight: FontWeight.bold,
             fontSize: 12,
           ),
         )

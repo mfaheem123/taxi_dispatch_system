@@ -1003,11 +1003,11 @@ DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget?
                     shortCutKeyValue.value = "tableSelected";
                   },
                   style: mozillaTextRegularText(
-                      fontWeight: FontWeight.w800, fontSize: 12),
+                      fontWeight: FontWeight.w900, fontSize: 12),
                   decoration: InputDecoration(
                     hintText: "Search",
                     hintStyle: mozillaTextRegularText(
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w900,
                         color: DynamicColors.textClr.withOpacity(0.8),
                         fontSize: 12),
                     contentPadding:

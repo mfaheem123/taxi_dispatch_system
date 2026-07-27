@@ -109,7 +109,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                 "DRIVERS" +
                                     " (${controller.listDriverModel?.count})",
                                 style: mozillaTextSemiBoldText(
-                                    fontWeight: FontWeight.w800, fontSize: 17),
+                                    fontWeight: FontWeight.w900, fontSize: 17),
                               ),
                               SizedBox(
                                 width: 20,
@@ -124,7 +124,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                               Text(
                                 "IN-ACTIVE",
                                 style: mozillaTextSemiBoldText(
-                                    fontWeight: FontWeight.w700,
+                                    fontWeight: FontWeight.w900,
                                     fontSize: 14,
                                     color: DynamicColors.redClr),
                               ),
