@@ -8,25 +8,24 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
+import 'controller/setting_controller.dart';
 
 class BookingClearingUtilityScreen extends StatefulWidget {
   const BookingClearingUtilityScreen({super.key});
 
   @override
   State<BookingClearingUtilityScreen> createState() =>
-
       _BookingClearingUtilityScreenState();
 }
 
 class _BookingClearingUtilityScreenState
     extends State<BookingClearingUtilityScreen> {
-  int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
+  int selectedRowIndex = 0;
+  final int totalRows = 5;
 
-  AdministrationController controller =
-      Get.isRegistered<AdministrationController>()
-          ? Get.find<AdministrationController>()
-          : Get.put(AdministrationController());
+  SettingController controller = Get.isRegistered<SettingController>()
+      ? Get.find<SettingController>()
+      : Get.put(SettingController());
 
   @override
   void initState() {
@@ -43,7 +42,15 @@ class _BookingClearingUtilityScreenState
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<AdministrationController>(builder: (controller) {
+    return GetBuilder<SettingController>(initState: (state) {
+      controller.getBookingsToClear();
+    }, builder: (controller) {
+      if (controller.isLoadingBooking || controller.clearBookingModel == null) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      final bookings = controller.clearBookingModel!.bookings ?? [];
+
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -67,7 +74,7 @@ class _BookingClearingUtilityScreenState
               child: Row(
                 children: [
                   Text(
-                    AppText.clearBooking,
+                    "${AppText.clearBooking} (${controller.clearBookingModel!.count.toString()})",
                     style: mozillaTextSemiBoldText(
                         fontWeight: FontWeight.w800, fontSize: 17),
                   ),
@@ -80,6 +87,9 @@ class _BookingClearingUtilityScreenState
                     btnText: AppText.clearSelected,
                     style: mozillaTextRegularText(
                         fontSize: 10, color: DynamicColors.whiteClr),
+                    onTap: () {
+                      controller.clearSelectedBookings();
+                    },
                   ),
                   SizedBox(width: 12),
                   CustomButton(
@@ -90,6 +100,9 @@ class _BookingClearingUtilityScreenState
                     btnText: AppText.clearAll,
                     style: mozillaTextRegularText(
                         fontSize: 10, color: DynamicColors.whiteClr),
+                    onTap: () {
+                      controller.clearAllBookings();
+                    },
                   ),
                 ],
               ),
@@ -102,8 +115,15 @@ class _BookingClearingUtilityScreenState
                   columns: [
                     DataColumn(
                       label: Checkbox(
-                        value: false, // a bool you keep in state
-                        onChanged: (val) {},
+                        value: bookings.isNotEmpty && controller.selectedBookingIds.length == bookings.length,
+                        onChanged: (val) {
+                          if (val == true) {
+                            controller.selectedBookingIds = bookings.map((b) => b.id.toString()).toList();
+                          } else {
+                            controller.selectedBookingIds.clear();
+                          }
+                          controller.update();
+                        },
                       ),
                     ),
                     buildHeaderWithSearch(title: "REF #"),
@@ -116,56 +136,47 @@ class _BookingClearingUtilityScreenState
                     buildHeaderWithSearch(
                         title: "ACTIONS", removeSearching: true),
                   ],
-                  totalRow: totalRows,
-                  cells: [
-                    DataCell(
-                      Checkbox(
-                        value: false, // ✅ controlled by your state
-                        onChanged: (val) {
-                          // update your selected index or list here
-                        },
-                      ),
-                    ),
-                    const DataCell(Text("SALOON")),
-                    const DataCell(Text("NW7")),
-                    const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                    const DataCell(Text("£55.00")),
-                    const DataCell(Text("1")),
-                    const DataCell(Text("45465")),
-                    const DataCell(Text("5")),
-                    DataCell(
-                      Row(
-                        children: [
-                          OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(
-                                color: Colors.transparent,
-                              ), // border color & thickness
-                            ),
-                            onPressed: () {},
-                            child: Icon(
-                              Icons.search,
-                              size: 28,
-                              color: DynamicColors.primaryClr,
-                            ),
+                  rows: bookings.map((booking) {
+                    final bookingId = booking.id.toString();
+                    final isSelected = controller.selectedBookingIds.contains(bookingId);
+
+                    return DataRow(
+                      cells: [
+                        DataCell(
+                          Checkbox(
+                            value: isSelected,
+                            onChanged: (val) {
+                              controller.toggleSelection(bookingId);
+                            },
                           ),
-                          OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(
-                                color: Colors.transparent,
-                              ), // border color & thickness
-                            ),
-                            onPressed: () {},
-                            child: Icon(
-                              Icons.clear,
-                              size: 28,
-                              color: DynamicColors.redClr,
-                            ),
+                        ),
+                        DataCell(Center(child: Text((booking.referenceNumber ?? "").toUpperCase()))),
+                        DataCell(Center(child: Text(
+                            "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}"))),
+                        DataCell(Center(child: Text((booking.name ?? "").toUpperCase()))),
+                        DataCell(Center(child: Text((booking.pickup ?? "").toUpperCase()))),
+                        DataCell(Center(child: Text((booking.dropoff ?? "").toUpperCase()))),
+                        DataCell(Center(child: Text((booking.driver?.name ?? "N/A").toUpperCase()))),
+                        DataCell(Center(child: Text((booking.bookingStatus?.bookingStatus ?? "").toUpperCase()))),
+                        DataCell(Center(child:
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.edit_calendar,
+                                    color: DynamicColors.primaryClr),
+                                onPressed: () {},
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.delete_forever,
+                                    color: DynamicColors.redClr),
+                                onPressed: () {},
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                  ],
+                        ),
+                        )],
+                    );
+                  }).toList(),
                 ),
               ),
             ),

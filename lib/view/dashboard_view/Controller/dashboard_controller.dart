@@ -47,6 +47,9 @@ class DashboardController extends GetxController {
 
 // Global company ID access karne ke liye Api singleton ka use karenge
   final String _companyId = Api.singleton.globalCompanyId;
+  final FocusNode driverPanelFocusNode = FocusNode(debugLabel: 'DriverPanel');
+  int selectedMapButtonIndex = -1;
+  bool Function()? focusFirstTableRow;
 
   // Helper method jo URL me company_id attach karega agar sendCompanyId true ho
   String _buildSocketUrl(String endpoint, {bool sendCompanyId = false}) {
