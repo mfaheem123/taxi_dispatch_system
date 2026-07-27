@@ -650,6 +650,17 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   var inputText = ''.obs;
   final highlightedIndex = 0.obs;
   int selectedDriverIndex = 0;
+
+  // -1 = not navigating the map buttons; 0..3 = the map button Tab-highlighted
+  // from the driver panel (see drivers.dart key handler). Plain int + update().
+  int selectedMapButtonIndex = -1;
+
+  // Handoff hook: BookingTable registers a callback here that moves keyboard
+  // focus to its first row's checkbox. The driver panel calls it when the user
+  // Tabs past the last map button, so focus flows map buttons -> booking table
+  // instead of wrapping back to the header icons. Returns true if focus was
+  // moved (false when the table isn't present, e.g. the iPad/mobile layout).
+  bool Function()? focusFirstTableRow;
   final pickupFieldKey = GlobalKey();
   final pickupTwoWayFieldKey = GlobalKey();
   final dropOffFieldKey = GlobalKey();
@@ -2027,47 +2038,112 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 //
 //    }
 
-  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get Fare API
-  getFaresCalculation() async{
+   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get Fare API
+   getFaresCalculation() async {
 
-   final storedTemFare = await getFares(
-      // day: ,
-      journeyTypeId: selectJourneyTypeValue!.id,
-      multiReservationList: multiReservationList.isEmpty?null: multiReservationList,
-      dropOff: pickupController.text,
-      pickup: dropOffController.text,
-      miles: totalDistance.value,
-      
-      dropoffPlotId:    dashboardDZoneValue != null ? dashboardDZoneValue!.id : null,
-      pickUpPlotId: dashboardZoneValue != null ? dashboardZoneValue!.id : null,
-      pickupDate:
-      "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
-      pickupTime: pickUpTimeController.text,
-      vehicleTypeId: selectVehicleValue == null?null: selectVehicleValue!.id,
-    congestionCharges: congestionChargesController.text.isEmpty?null: congestionChargesController.text,
-    partingCharges: parkingChargesController.text.isEmpty?null: parkingChargesController.text,
-    meetGreet: meetGreetController.text.isEmpty?null: meetGreetController.text,
-    waitingCharges: waitingChargesController.text.isEmpty?null: waitingChargesController.text,
-    extraDropCharges: extraDropChargesController.text.isEmpty?null: extraDropChargesController.text,
-    creditCardCharges: creditCardChargesController.text.isEmpty?null: creditCardChargesController.text,
-      companyPrice: companyPriceController.text.isEmpty?null: companyPriceController.text,
 
-      withReturnPickUp: pickupTwoWayController.text.isEmpty?null: pickupTwoWayController.text,
-      withReturnDropOff: dropOffTwoWayController.text.isEmpty?null: dropOffTwoWayController.text,
-      returnPickupDate: "${pickUpDateReturn!.year}-${pickUpDateReturn!.month}-${pickUpDateReturn!.day}",
-      returnPickupTime: pickUpTimeControllerReturn.text.isEmpty?null: pickUpTimeControllerReturn.text,
-        // selectVehicleValueReturn
-        returnCompanyPrice: companyPriceController.text.isEmpty?null: companyPriceController.text,
-      returnParkingCharges: returnCompanyPriceController.text.isEmpty?null: returnCompanyPriceController.text,
-    );
-    var fareValue = jsonDecode(storedTemFare);
-    fixedFare.value = fareValue['total_fare'].toString();
-   returnFareValue = fareValue== null?"0": fareValue['return_fare'].toString();
-   slugControllerReturn.text = fareValue== null?"0": fareValue['return_fare'].toString();
-    slugController.text = fareValue['fare'].toString();
-    print(fixedFare.value);
-    update();
-  }
+
+
+     final storedTemFare = await getFares(
+       // day: ,
+       journeyTypeId: selectJourneyTypeValue!.id,
+       multiReservationList:
+       multiReservationList.isEmpty ? null : multiReservationList,
+       dropOff: dropOffController.text,
+       pickup: pickupController.text,
+       miles: tempStoreMils,
+       dropoffPlotId:
+       dashboardDZoneValue != null ? dashboardDZoneValue!.id : null,
+       pickUpPlotId: dashboardZoneValue != null ? dashboardZoneValue!.id : null,
+       pickupDate: "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
+       pickupTime: pickUpTimeController.text,
+       vehicleTypeId: selectVehicleValue == null ? null : selectVehicleValue!.id,
+       returnVehicleTypeId :selectVehicleValueReturn == null ? null : selectVehicleValueReturn!.id,
+       congestionCharges: congestionChargesController.text.isEmpty
+           ? null
+           : congestionChargesController.text,
+       partingCharges: parkingChargesController.text.isEmpty
+           ? null
+           : parkingChargesController.text,
+       meetGreet:
+       meetGreetController.text.isEmpty ? null : meetGreetController.text,
+       waitingCharges: waitingChargesController.text.isEmpty
+           ? null
+           : waitingChargesController.text,
+       extraDropCharges: extraDropChargesController.text.isEmpty
+           ? null
+           : extraDropChargesController.text,
+       creditCardCharges: creditCardChargesController.text.isEmpty
+           ? null
+           : creditCardChargesController.text,
+       companyPrice: companyPriceController.text.isEmpty
+           ? null
+           : companyPriceController.text,
+
+       withReturnPickUp: pickupTwoWayController.text.isEmpty
+           ? null
+           : pickupTwoWayController.text,
+       withReturnDropOff: dropOffTwoWayController.text.isEmpty
+           ? null
+           : dropOffTwoWayController.text,
+       returnPickupDate:
+       "${pickUpDateReturn!.year}-${pickUpDateReturn!.month}-${pickUpDateReturn!.day}",
+       returnPickupTime:
+       // pickUpTimeControllerReturn.text.isEmpty
+       //     ? null
+       //     :
+       pickUpTimeControllerReturn.text,
+       // selectVehicleValueReturn
+       returnCompanyPrice: companyPriceController.text.isEmpty
+           ? null
+           : companyPriceController.text,
+       returnParkingCharges: returnCompanyPriceController.text.isEmpty
+           ? null
+           : returnCompanyPriceController.text,
+       returnMiles: dropOffTwoWayController.text.isNotEmpty &&
+           pickupTwoWayController.text.isNotEmpty
+           ? (double.parse(totalDistance.value) -
+           double.parse(tempStoreMils.toString()))
+           .toString()
+           : null,
+       // returnMiles: () {
+       //   if (dropOffTwoWayController.text.isNotEmpty || pickupTwoWayController.text.isNotEmpty) {
+       //     // Agar outbound pickup ya dropoff me se koi ek bhi khali ho gaya hai
+       //     if (pickupController.text.isEmpty || dropOffController.text.isEmpty) {
+       //       // Pure route (Via + Return) ka distance utha kar returnMiles me bhej do
+       //       double totalDist = double.tryParse(totalDistance.value) ?? 0.0;
+       //       return totalDist > 0 ? totalDist.toStringAsFixed(2) : null;
+       //     } else {
+       //       // Normal flow (Agar kuch delete nahi hua)
+       //       double totalDist = double.tryParse(totalDistance.value) ?? 0.0;
+       //       double mainMils = double.tryParse(tempStoreMils.toString()) ?? 0.0;
+       //       double diff = totalDist - mainMils;
+       //       return (diff > 0 ? diff : 0.0).toStringAsFixed(2);
+       //     }
+       //   }
+       //   return null;
+       // }(),
+     );
+     var fareValue = jsonDecode(storedTemFare);
+     // Extract fares safely
+     final totalFare =
+     fareValue == null ? "0" : (fareValue['total_fare'] ?? "0").toString();
+     final returnFare =
+     fareValue == null ? "0" : (fareValue['return_fare'] ?? "0").toString();
+     // Calculate one-way fare (excluding return segment)
+     double total = double.tryParse(totalFare) ?? 0.0;
+     double ret = double.tryParse(returnFare) ?? 0.0;
+     final oneWayFare = (total - ret).toStringAsFixed(2);
+     fixedFare.value = oneWayFare;
+     returnFareValue = returnFare;
+     slugControllerReturn.text = returnFare;
+     slugController.text = oneWayFare;
+     print("Fixed fare Value-- ${fixedFare.value}");
+     print("returnFareValue-- ${returnFareValue}");
+     print("slugControllerReturn-- ${slugControllerReturn.text}");
+     print("slugController-- ${slugController.text}");
+     update();
+   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Multi Reservation variables
    var datePickerResetKey = UniqueKey();
@@ -2602,6 +2678,9 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     dashboardDZoneValue = null;
     _controller.zoneValue = null;
     _controller.zoneDValue = null;
+    // return-journey zones shown in the RETURN section of the booking form
+    _controller.RNzoneValue = null;
+    _controller.RN1zoneValue = null;
     selectJourneyTypeValue = null;
     selectAccountValue = null;
     selectDepartmentData = null;
@@ -2631,6 +2710,19 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
     selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
     selectVehicleValue = dashboardAllData!.vehicleTypes![0];
+    // return-journey fields shown in the RETURN section of the booking form
+    selectVehicleValueReturn = null;
+    selectDriverValueReturn = null;
+    pickUpTimeControllerReturn.clear();
+    addReturnFare.value = true;
+    returnFareValue = "0";
+    // reset pickup / return dates back to today
+    pickUpDate = DateTime.now();
+    pickUpDateReturn = DateTime.now();
+    // hide the airport FL/ARP row and clear waiting-return / CLI job flags
+    isAirportResponse.value = false;
+    jourValue = null;
+    cliJobHit = false;
     jobDetails = null;
     dashboardDataLoader(false);
     update();

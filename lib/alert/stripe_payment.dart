@@ -1,4 +1,5 @@
 
+import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -59,7 +60,7 @@ class StripePayment {
                       Radio(
                         value: 0,
                         groupValue: stripRadio,
-                        activeColor: Colors.green,
+                        activeColor: DynamicColors.primaryClr,
                         onChanged: (int? v) {
                           setState(() => stripRadio = v!);
                         },
@@ -70,7 +71,7 @@ class StripePayment {
                       Radio(
                         value: 1,
                         groupValue: stripRadio,
-                        activeColor: Colors.green,
+                        activeColor: DynamicColors.primaryClr,
                         onChanged: (int? v) {
                           setState(() => stripRadio = v!);
                         },
@@ -117,7 +118,7 @@ class StripePayment {
                     alignment: Alignment.centerRight,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: DynamicColors.pink,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                       ),

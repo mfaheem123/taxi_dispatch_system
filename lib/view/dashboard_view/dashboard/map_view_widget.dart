@@ -465,6 +465,14 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6),
                     color: DynamicColors.secondaryClr,
+                    // Keyboard-Tab highlight ring (driven from the driver panel).
+                    // Always a 2px border so toggling doesn't shift the child.
+                    border: Border.all(
+                      color: controller.selectedMapButtonIndex == 0
+                          ? DynamicColors.primaryClr
+                          : Colors.transparent,
+                      width: 2,
+                    ),
                   ),
                   child: IconButton(
                     padding: EdgeInsets.zero,
@@ -486,47 +494,83 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                   children: [
 
                     // Zoom (+) Button
-                    SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: FloatingActionButton.small(
-                        heroTag: "zoom_in_btn",
-                        backgroundColor: Colors.white,
+                    Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: controller.selectedMapButtonIndex == 1
+                              ? DynamicColors.primaryClr
+                              : Colors.transparent,
+                          width: 2,
+                        ),
+                      ),
+                      child: SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: FloatingActionButton.small(
+                          heroTag: "zoom_in_btn",
+                          backgroundColor: Colors.white,
 
-                        onPressed: () {
-                          controller.updateZoom(true);
-                        },
-                        child: const Icon(Icons.add, color: Colors.black87,  size: 20,),
+                          onPressed: () {
+                            controller.updateZoom(true);
+                          },
+                          child: const Icon(Icons.add, color: Colors.black87,  size: 20,),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 8),
                     // Zoom (-) Button
-                    SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: FloatingActionButton.small(
-                        heroTag: "zoom_out_btn",
-                        backgroundColor: Colors.white,
-                        onPressed: () {
-                          controller.updateZoom(false);
-                        },
-                        child: const Icon(Icons.remove, color: Colors.black87, size: 20,),
+                    Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: controller.selectedMapButtonIndex == 2
+                              ? DynamicColors.primaryClr
+                              : Colors.transparent,
+                          width: 2,
+                        ),
+                      ),
+                      child: SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: FloatingActionButton.small(
+                          heroTag: "zoom_out_btn",
+                          backgroundColor: Colors.white,
+                          onPressed: () {
+                            controller.updateZoom(false);
+                          },
+                          child: const Icon(Icons.remove, color: Colors.black87, size: 20,),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
                     // Camera fouces
-                    SizedBox(
-                      height: 30,
-                      width: 30,
-                      child: FloatingActionButton.small(
-                        backgroundColor: Colors.black26,
-                        onPressed: () {
-                          controller.mapController.move(
-                            polylinePoints.first,
-                            13.0,
-                          );
-                        },
-                        child: const Icon(Icons.center_focus_strong, color: Colors.black87, size: 20,),
+                    Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: controller.selectedMapButtonIndex == 3
+                              ? DynamicColors.primaryClr
+                              : Colors.transparent,
+                          width: 2,
+                        ),
+                      ),
+                      child: SizedBox(
+                        height: 30,
+                        width: 30,
+                        child: FloatingActionButton.small(
+                          backgroundColor: Colors.black26,
+                          onPressed: () {
+                            controller.mapController.move(
+                              polylinePoints.first,
+                              13.0,
+                            );
+                          },
+                          child: const Icon(Icons.center_focus_strong, color: Colors.black87, size: 20,),
+                        ),
                       ),
                     ),
 

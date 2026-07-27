@@ -72,12 +72,28 @@ class _BookingTableState extends State<BookingTable> {
         ? Get.find<DashboardController>()
         : Get.put(DashboardController());
     permissions = Api().sp.read('all_permissions') ?? [];
+    // Let the driver panel Tab into this table (after the last map button).
+    controller.focusFirstTableRow = _focusFirstRow;
     setState(() {});
     super.initState();
   }
 
+  /// Moves keyboard focus to the first row's checkbox. Registered on the
+  /// controller so the driver panel can hand focus off when the user Tabs past
+  /// the last map button. Returns false if there are no rows to focus.
+  bool _focusFirstRow() {
+    if (_rowFocusNodes.isEmpty) return false;
+    setState(() => selectedRowIndex = 0);
+    _rowFocusNodes[0].requestFocus();
+    return true;
+  }
+
   @override
   void dispose() {
+    // Only clear the hook if it still points at this instance.
+    if (controller.focusFirstTableRow == _focusFirstRow) {
+      controller.focusFirstTableRow = null;
+    }
     _tableFocusNode.dispose();
     for (final fn in _rowFocusNodes) fn.dispose();
     super.dispose();

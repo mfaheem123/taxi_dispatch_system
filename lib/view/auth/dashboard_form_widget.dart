@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:timepickerfield/timepickerfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -7,6 +8,7 @@ import '../../../alert/restrict_drivers_alert.dart';
 import '../../alert/child_seats_alert.dart';
 import '../../alert/extra_fares_alert.dart';
 import '../../alert/extra_info_alert.dart';
+import '../../alert/search_booking.dart';
 import '../../component/marker_class.dart';
 import '../../component/text_field.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
@@ -16,6 +18,7 @@ import '../dashboard_view/models/account_darshboard_model.dart';
 import '../dashboard_view/models/all_addresses_model.dart';
 import '../dashboard_view/models/dashboard_model.dart';
 import '../dashboard_view/models/users_phone_numbers_model.dart';
+import '../dashboard_view/widgets/fare_configuration.dart';
 import '../dashboard_view/widgets/via_location.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
 import '../locations_view/controller/locations_controller.dart';
@@ -78,39 +81,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   void _showPickBookingAlert() {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        title: Row(
-          children: [
-            Icon(Icons.search, color: _purple, size: 22),
-            const SizedBox(width: 8),
-            const Text(
-              'Pick Booking',
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 16,
-                color: _purpleDark,
-              ),
-            ),
-          ],
-        ),
-        content: const Text(
-          'Please select a booking from the bookings list to pick.',
-          style: TextStyle(fontSize: 13),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(
-              'OK',
-              style: TextStyle(
-                color: _purple,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
+      builder: (ctx) => const SearchBookingAlert(),
     );
   }
   final DashboardController controller = Get.isRegistered<DashboardController>()
@@ -504,8 +475,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.selectJourneyTypeValue,
                                     controller.dashboardAllData!.journeyTypes ??
                                         const [],
-                                        (v) => setState(() =>
-                                    controller.selectJourneyTypeValue = v),
+                                        (v) => setState(() {
+                                          // controller.selectJourneyTypeValue = v;
+                                          controller.dropDownShow.value = false;
+                                          controller.jourValue = (v!.journeyType == "r/n") ? 'W/R' : null;
+                                          controller.selectJourneyTypeValue = v;
+                                        }),
                                     14,
                                     itemLabel: (p) => p.journeyType!,
                                   ),
@@ -517,6 +492,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   _field('No. of Passengers',
                                       tab: 16,
                                       prefix: Icons.person_outline,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                        LengthLimitingTextInputFormatter(2),
+                                      ],
                                       controller: controller.passController),
                                   _field('Fare',
                                       tab: 17,
@@ -788,7 +767,39 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   'Select R/VEH',
                    controller.selectVehicleValueReturn,
                   controller.dashboardAllData!.vehicleTypes!,
-                  (v) => setState(() =>  controller.selectVehicleValueReturn = v),
+                  (v) {
+                    print('tap 01');
+                    setState(() async{
+
+                      print('tap 02');
+                      // controller.selectVehicleValueReturn = v;
+                      if (v == null) return;
+
+                      print('tap 03');
+                      controller.selectVehicleValueReturn = v;
+                      controller.dropDownShow.value = false;
+
+                      // Jab user khud badlega tab naye wale ki ID direct jayegi
+                      final fare = await getActiveFareForVehicle(
+                        controller.dashboardAllData!.fareConfigurations!,
+                        v.id!,
+                      );
+                      print('tap 04');
+                      if (fare != null) {
+                        print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}');
+                        controller.getFaresCalculation();
+                        print('tap 05');
+                        double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+                        controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+                        print('tap 06');
+                      } else {
+                        print('tap 07');
+                        print('No active fare found for this vehicle');
+                      }
+                      print('tap 08');
+                      controller.update();
+                    }
+                    );},
                   32,
                   itemLabel: (p) => p.name!,
                 ),
@@ -810,7 +821,39 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                     'Select R/VEH',
                     controller.selectVehicleValueReturn,
                     controller.dashboardAllData!.vehicleTypes!,
-                    (v) => setState(() => controller.selectVehicleValueReturn = v),
+                        (v) {
+                      print('tap 01');
+                      setState(() async{
+
+                        print('tap 02');
+                        // controller.selectVehicleValueReturn = v;
+                        if (v == null) return;
+
+                        print('tap 03');
+                        controller.selectVehicleValueReturn = v;
+                        controller.dropDownShow.value = false;
+
+                        // Jab user khud badlega tab naye wale ki ID direct jayegi
+                        final fare = await getActiveFareForVehicle(
+                          controller.dashboardAllData!.fareConfigurations!,
+                          v.id!,
+                        );
+                        print('tap 04');
+                        if (fare != null) {
+                          print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}');
+                          controller.getFaresCalculation();
+                          print('tap 05');
+                          double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+                          controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+                          print('tap 06');
+                        } else {
+                          print('tap 07');
+                          print('No active fare found for this vehicle');
+                        }
+                        print('tap 08');
+                        controller.update();
+                      }
+                      );},
                     32,
                     itemLabel: (p) => p.name!,
                   ),
@@ -906,8 +949,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 }
               }),
               tab('Via (${controller.viaPoints.length})', onTap: () {
-                if (controller.pickupController.text.isNotEmpty &&
-                    controller.dropOffController.text.isNotEmpty) {
+                if (controller.pickupController.text.isNotEmpty
+                    // &&    controller.dropOffController.text.isNotEmpty
+                ) {
                   showDialog(context: context, builder: (_) => ViaLocation());
                 }
               }),
@@ -1103,7 +1147,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     Widget luggageField(String label, IconData icon,
         TextEditingController controller, int tab) =>
         SizedBox(
-          width: 110,
+          width: 150,
           child:
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             // Text(label,
@@ -1118,7 +1162,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   style: const TextStyle(fontSize: _fsField),
                   keyboardType:
                   const TextInputType.numberWithOptions(decimal: false),
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(2),
+                  ],
                   decoration: _inputDecoration().copyWith(
                     label:
                     Text(label,
@@ -1182,29 +1229,29 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 (v) => setState(() => controller.smsCheckbox.value = v ?? false), tab: _isReturnJourney ? 35 : 20),
         checkbox('EMAIL', controller.emailCheckbox.value,
                 (v) => setState(() => controller.emailCheckbox.value = v ?? false), tab: _isReturnJourney ? 36 : 21),
-        luggageField('Passenger'.toUpperCase(), Icons.work, controller.passController, _isReturnJourney?37:22,),
-        luggageField('luggage'.toUpperCase(), Icons.luggage, controller.luggController,  _isReturnJourney?38:23,),
-        luggageField('small luggage'.toUpperCase(), Icons.luggage, controller.sluggController,  _isReturnJourney?39:24,),
+        // luggageField('Passenger'.toUpperCase(), Icons.work, controller.passController, _isReturnJourney?37:22,),
+        luggageField('luggage'.toUpperCase(), Icons.luggage, controller.luggController,  _isReturnJourney?37:22,),
+        luggageField('small luggage'.toUpperCase(), Icons.luggage, controller.sluggController,  _isReturnJourney?38:23,),
       ],
     );
     final right = Row(mainAxisSize: MainAxisSize.min, children: [
-      iconBtn(Icons.person, tab: _isReturnJourney ? 40 : 25, onPressed: () {
+      iconBtn(Icons.person, tab: _isReturnJourney ? 39 : 24, onPressed: () {
         showDialog(context: context, builder: (_) => RestrictDriversAlert());
       }),
-      iconBtn(Icons.attach_money, tab: _isReturnJourney ? 41 : 26, onPressed: () {
+      iconBtn(Icons.attach_money, tab: _isReturnJourney ? 40 : 25, onPressed: () {
         showDialog(
           context: context,
           builder: (_) => ChildSeatsAlert(),
         );
       }),
-      iconBtn(Icons.note_add, tab: _isReturnJourney ? 42 : 27, onPressed: () {
+      iconBtn(Icons.note_add, tab: _isReturnJourney ? 41 : 26, onPressed: () {
         showDialog(
           context: context,
           barrierDismissible: false,
           builder: (_) => ExtraFaresAlert(),
         );
       }),
-      iconBtn(Icons.calculate, tab: _isReturnJourney ? 43 : 28, onPressed: () {
+      iconBtn(Icons.calculate, tab: _isReturnJourney ? 42 : 27, onPressed: () {
         showDialog(
           context: context,
           builder: (_) => ExtraInfoAlert(),
@@ -1301,12 +1348,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       controller.selectDriverValue,
       controller.dashboardAllData!.drivers ?? const [],
           (v) => setState(() => controller.selectDriverValue = v),
-      _isReturnJourney ? 44 : 29,
+      _isReturnJourney ? 43 : 28,
       itemLabel: (p) => p.name ?? '',
       hint: 'Select Driver',
     );
     final clear = FocusTraversalOrder(
-      order: NumericFocusOrder((_isReturnJourney ? 45 : 30).toDouble()),
+      order: NumericFocusOrder((_isReturnJourney ? 44 : 29).toDouble()),
       child: _GlowFocus(
         child: ElevatedButton(
           onPressed: () {
@@ -1325,7 +1372,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ),
     );
     final home = FocusTraversalOrder(
-      order: NumericFocusOrder((_isReturnJourney ? 46 : 31).toDouble()),
+      order: NumericFocusOrder((_isReturnJourney ? 45 : 30).toDouble()),
       child: _GlowFocus(
         child: Focus(
           // Intercept Tab so focus jumps from the Home button directly to the
@@ -1516,7 +1563,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       {required num tab,
         IconData? prefix,
         VoidCallback? onPrefixTap,
-        TextEditingController? controller}) {
+        TextEditingController? controller,
+        List<TextInputFormatter>? inputFormatters,
+      }) {
     Widget? prefixWidget;
     if (prefix != null) {
       final iconPadding = Padding(
@@ -1541,9 +1590,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           child: TextField(
             controller: controller,
             textCapitalization: TextCapitalization.characters,
-            inputFormatters: [
-              UpperCaseTextFormatter(),
-            ],
+            inputFormatters: inputFormatters ??
+                [
+                  UpperCaseTextFormatter(),
+                ],
             style: const TextStyle(fontSize: _fsField),
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => onPrefixTap?.call(),

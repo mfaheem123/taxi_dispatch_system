@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import '../../Model/driver_models/driver_model.dart' as hide;
 import 'package:dashboard_new1/view/customer/controller/get_driver_dropdown.dart';
 import '../../alert/back_slash_alert.dart';
+import '../../alert/driver_expiry_documents_alert.dart';
 import '../../alert/bell_icon_alert.dart';
 import '../../alert/customer_complaint_alert.dart';
 import '../../alert/f3.alert.dart';
@@ -749,6 +750,7 @@ class _CreateComplaintState extends State<CreateComplaint> {
                 ElevatedButton(onPressed: (){showDriverEarningsAlert();}, child: Text("F4")),
                 ElevatedButton(onPressed: (){DriverBookingsAlert.show();}, child: Text("F4 get")),
                 ElevatedButton(onPressed: (){showSystemShortcutsAlert();}, child: Text("back_slash_alert  ")),
+                ElevatedButton(onPressed: (){DriverExpiryDocumentsAlert.show();}, child: Text("Driver Expiry Docs")),
               
               ]
             ),

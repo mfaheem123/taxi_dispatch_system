@@ -1,8 +1,4 @@
-// import 'dart:io';
-//
-// import 'package:dashboard_new1/component/textStyle.dart';
-// import 'package:dashboard_new1/routes/app_pages.dart';
-// import 'package:dashboard_new1/view/accounts/Invoice/create_customer_invoice.dart';
+
 // import 'package:dashboard_new1/view/accounts/Invoice/list_of_account_invoice_screen.dart';
 // import 'package:dashboard_new1/view/accounts/Invoice/create_account_invoice_screen.dart';
 // import 'package:dashboard_new1/view/accounts/create_escort_screen.dart';
@@ -26,7 +22,8 @@
 // import '../../component/color.dart';
 // import '../../component/networks/api.dart';
 // import '../../tabbarview.dart';
-// import '../accounts/Invoice/list_customer_invoices.dart';
+// import '../accounts/Invoice/list_customer_pre_invoices.dart';
+import '../accounts/Invoice/list_customer_invoices.dart';
 // import '../accounts/account/account_view.dart';
 // import '../accounts/account/create_escopt.dart';
 // import '../accounts/list_of_accountScreen.dart';
@@ -1765,6 +1762,8 @@ import 'package:dashboard_new1/routes/app_pages.dart';
 import 'package:dashboard_new1/view/accounts/Invoice/create_customer_invoice.dart';
 import 'package:dashboard_new1/view/accounts/Invoice/list_of_account_invoice_screen.dart';
 import 'package:dashboard_new1/view/accounts/Invoice/create_account_invoice_screen.dart';
+import 'package:dashboard_new1/view/accounts/Invoice/create_account_pre_invoice.dart';
+import 'package:dashboard_new1/view/accounts/Invoice/list_account_pre_invoices.dart';
 import 'package:dashboard_new1/view/accounts/create_escort_screen.dart';
 import 'package:dashboard_new1/view/accounts/list_escorte_screen.dart';
 import 'package:dashboard_new1/view/administration/User/create_subsiDiary.dart';
@@ -1787,6 +1786,8 @@ import '../../alert/cli_extention_alert.dart';
 import '../../component/color.dart';
 import '../../component/networks/api.dart';
 import '../../tabbarview.dart';
+import '../accounts/Invoice/create_customer_pre_invoice.dart';
+import '../accounts/Invoice/list_customer_pre_invoices.dart';
 import '../accounts/Invoice/list_customer_invoices.dart';
 import '../accounts/account/account_view.dart';
 import '../accounts/account/create_escopt.dart';
@@ -3020,6 +3021,36 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
         NestedMenuItem(
+          title: "CREATE CUSTOMER PRE INVOICE",
+          onTap: () {
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
+            setState(() {
+              if(permissions.contains('read_customer_invoice')){
+                controller.currentPage.value = CustomerPreInvoice();
+                controller.menuBarRefresh(
+                    title: "CREATE CUSTOMER PRE INVOICE",
+                    pageName: CustomerPreInvoice());
+              }
+            });
+          },
+        ),
+        NestedMenuItem(
+          title: "LIST OF CUSTOMER PRE INVOICES",
+          onTap: () {
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
+            setState(() {
+              if(permissions.contains('read_customer_invoice')){
+                controller.currentPage.value = PreInvoiceList();
+                controller.menuBarRefresh(
+                    title: "LIST OF CUSTOMER PRE INVOICES",
+                    pageName: PreInvoiceList());
+              }
+            });
+          },
+        ),
+        NestedMenuItem(
           title: "LIST OF CUSTOMER INVOICES",
           onTap: () {
             setState(() {
@@ -3056,6 +3087,36 @@ class _MyHomePageState extends State<MyHomePage> {
                 controller.menuBarRefresh(
                     title: "LIST OF ACCOUNT INVOICES",
                     pageName: ListOfAccountInvoiceScreen());
+              }
+            });
+          },
+        ),
+        NestedMenuItem(
+          title: "CREATE ACCOUNT PRE INVOICE",
+          onTap: () {
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
+            setState(() {
+              if(permissions.contains('create_account_invoice')){
+                controller.currentPage.value = AccountPreInvoice();
+                controller.menuBarRefresh(
+                    title: "CREATE ACCOUNT PRE INVOICE",
+                    pageName: AccountPreInvoice());
+              }
+            });
+          },
+        ),
+        NestedMenuItem(
+          title: "LIST OF ACCOUNT PRE INVOICES",
+          onTap: () {
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
+            setState(() {
+              if(permissions.contains('read_account_invoice')){
+                controller.currentPage.value = ListAccountPreInvoice();
+                controller.menuBarRefresh(
+                    title: "LIST OF ACCOUNT PRE INVOICES",
+                    pageName: ListAccountPreInvoice());
               }
             });
           },

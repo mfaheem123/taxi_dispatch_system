@@ -14,6 +14,8 @@ import '../../../component/short_text.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/time_duration_method.dart';
 import '../Controller/dashboard_controller.dart';
+import '../../../routes/app_pages.dart';
+import '../../../utils/open_new_tab_web.dart';
 import 'package:flutter_map/flutter_map.dart';
 
 import '../models/account_darshboard_model.dart';
@@ -48,6 +50,8 @@ class _DriversViewState extends State<DriversView> {
   int selectedHeaderIndex = 0; // upar icons ke liye
   bool isHeaderMode =
   true; // true = header select ho raha hai, false = driver list
+
+  RxBool showSubsidairy = false.obs;
 
   @override
   void initState() {
@@ -89,10 +93,42 @@ class _DriversViewState extends State<DriversView> {
         );
         break;
       case 5: // share
+        showSubsidairy.value = !showSubsidairy.value;
         debugPrint("Header action: SHARE");
         break;
       default:
         debugPrint("Header action: no handler for index $index");
+    }
+  }
+
+  /// Number of map buttons the Tab sequence steps through (in order):
+  /// 0 = open-in-new-tab, 1 = zoom-in, 2 = zoom-out, 3 = camera recenter.
+  /// These live in the sibling MapViewWidget; the driver panel drives the
+  /// "virtual" selection via controller.selectedMapButtonIndex.
+  static const int _mapButtonCount = 4;
+
+  /// Single source of truth for what each map button does, keyed by its Tab
+  /// index. Mirrors the onPressed handlers in map_view_widget.dart so keyboard
+  /// Enter fires the exact same action as a mouse click.
+  void _activateMapButton(int index) {
+    switch (index) {
+      case 0: // open map in new browser tab — same as map_view_widget.dart:472
+        openInNewTab(Uri.base.origin + '/#' + Routes.viewDriversMap);
+        break;
+      case 1: // zoom in
+        _driverController.updateZoom(true);
+        break;
+      case 2: // zoom out
+        _driverController.updateZoom(false);
+        break;
+      case 3: // recenter camera — mirror map_view_widget.dart:524-527
+        final pts = _driverController.polylinePoints.isNotEmpty
+            ? _driverController.polylinePointsCoordinate
+            : <LatLng>[LatLng(51.2709722, 0.1893883)];
+        _driverController.mapController.move(pts.first, 13.0);
+        break;
+      default:
+        debugPrint("Map button action: no handler for index $index");
     }
   }
 
@@ -131,6 +167,15 @@ class _DriversViewState extends State<DriversView> {
 
         return Focus(
           focusNode: _driverController.driverPanelFocusNode,
+          // Leaving the panel (mouse click elsewhere, a createBooking map
+          // dialog, etc.) clears the map buttons' virtual highlight so a stale
+          // ring isn't left drawn on the sibling MapViewWidget.
+          onFocusChange: (hasFocus) {
+            if (!hasFocus && controller.selectedMapButtonIndex >= 0) {
+              controller.selectedMapButtonIndex = -1;
+              controller.update();
+            }
+          },
           // Use onKeyEvent (not RawKeyboardListener) and return
           // KeyEventResult.handled so Tab / arrow / Enter are CONSUMED here.
           // RawKeyboardListener never consumed them, so each arrow press also
@@ -142,14 +187,65 @@ class _DriversViewState extends State<DriversView> {
             shortCutKeyValue.value = "driverIconSelect";
 
             if (event.logicalKey == LogicalKeyboardKey.tab) {
-              // Tab toggles Header <-> Driver list.
-              setState(() {
-                isHeaderMode = !isHeaderMode;
-              });
+              // Tab walks a single forward loop; Shift+Tab walks it in reverse:
+              //   header icons -> driver list -> map[0..3] -> (wrap) header.
+              // "Map mode" is when controller.selectedMapButtonIndex >= 0.
+              final bool reverse = HardwareKeyboard.instance.isShiftPressed;
+              final int mapIndex = controller.selectedMapButtonIndex;
+
+              if (!reverse) {
+                if (mapIndex >= 0) {
+                  if (mapIndex < _mapButtonCount - 1) {
+                    controller.selectedMapButtonIndex++;
+                    controller.update();
+                  } else {
+                    // Past the last map button: hand focus to the booking table
+                    // (its first row's checkbox). If the table isn't present
+                    // (iPad / mobile layout hides it) fall back to the old
+                    // behaviour of wrapping back to the header icons.
+                    final moved = controller.focusFirstTableRow?.call() ?? false;
+                    controller.selectedMapButtonIndex = -1;
+                    controller.update();
+                    if (!moved) {
+                      setState(() {
+                        isHeaderMode = true;
+                        selectedHeaderIndex = 0;
+                      });
+                    }
+                  }
+                } else if (isHeaderMode) {
+                  setState(() => isHeaderMode = false); // header -> driver list
+                } else {
+                  // driver list -> first map button
+                  controller.selectedMapButtonIndex = 0;
+                  controller.update();
+                }
+              } else {
+                if (mapIndex > 0) {
+                  controller.selectedMapButtonIndex--;
+                  controller.update();
+                } else if (mapIndex == 0) {
+                  // first map button -> driver list
+                  controller.selectedMapButtonIndex = -1;
+                  controller.update();
+                  setState(() => isHeaderMode = false);
+                } else if (!isHeaderMode) {
+                  setState(() => isHeaderMode = true); // driver list -> header
+                } else {
+                  // header -> wrap to last map button
+                  controller.selectedMapButtonIndex = _mapButtonCount - 1;
+                  controller.update();
+                }
+              }
               return KeyEventResult.handled;
             } else if (event.logicalKey == LogicalKeyboardKey.arrowRight ||
                 event.logicalKey == LogicalKeyboardKey.arrowDown) {
-              if (isHeaderMode) {
+              if (controller.selectedMapButtonIndex >= 0) {
+                if (controller.selectedMapButtonIndex < _mapButtonCount - 1) {
+                  controller.selectedMapButtonIndex++;
+                  controller.update();
+                }
+              } else if (isHeaderMode) {
                 if (selectedHeaderIndex < headerIcons.length - 1) {
                   setState(() {
                     selectedHeaderIndex++;
@@ -164,7 +260,12 @@ class _DriversViewState extends State<DriversView> {
               return KeyEventResult.handled;
             } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
                 event.logicalKey == LogicalKeyboardKey.arrowUp) {
-              if (isHeaderMode) {
+              if (controller.selectedMapButtonIndex >= 0) {
+                if (controller.selectedMapButtonIndex > 0) {
+                  controller.selectedMapButtonIndex--;
+                  controller.update();
+                }
+              } else if (isHeaderMode) {
                 if (selectedHeaderIndex > 0) {
                   setState(() {
                     selectedHeaderIndex--;
@@ -178,7 +279,10 @@ class _DriversViewState extends State<DriversView> {
               }
               return KeyEventResult.handled;
             } else if (event.logicalKey == LogicalKeyboardKey.enter) {
-              if (isHeaderMode) {
+              if (controller.selectedMapButtonIndex >= 0) {
+                // Fire the highlighted map button's action by its index.
+                _activateMapButton(controller.selectedMapButtonIndex);
+              } else if (isHeaderMode) {
                 // Fire the selected header icon's onTap action by its index.
                 _activateHeaderIcon(context, selectedHeaderIndex);
               } else {
@@ -259,44 +363,49 @@ class _DriversViewState extends State<DriversView> {
                       ],
                     ),
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
-                    ),
-                    child: DropdownButtonFormField<DashboardSubsidiaryObject>(
-                      isExpanded: true, // Use true here so text reaches the icon and then clips
-                      decoration: const InputDecoration(
-                        /*border: OutlineInputBorder(),
-                                                                                            isDense: true,
-                                                                                            contentPadding: EdgeInsets.symmetric(horizontal: 2),
-                                                                                            */
-                        // Remove the internal border since you have a Container border
-                        border: InputBorder.none,
-                        isDense: true,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                      ),
-                      // 3. You can also customize the icon to remove its default side padding
-                      icon: const Icon(Icons.arrow_drop_down, size: 20),
-
-                      padding: EdgeInsets.zero,
-
-                      value: controller.selectSubsidiariesValue,
-                      items: controller.dashboardAllData?.subsidiaries?.map((account) {
-                        return DropdownMenuItem<DashboardSubsidiaryObject>(
-                          value: account,
-                          child: Text(
-                            account.name ?? "",
-                            style: mozillaTextRegularText(fontSize: 12, color: DynamicColors.textClr),
+                  Obx(
+                    ()=> Visibility(
+                      visible: showSubsidairy.value,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                        ),
+                        child: DropdownButtonFormField<DashboardSubsidiaryObject>(
+                          isExpanded: true, // Use true here so text reaches the icon and then clips
+                          decoration: const InputDecoration(
+                            /*border: OutlineInputBorder(),
+                                                                                                isDense: true,
+                                                                                                contentPadding: EdgeInsets.symmetric(horizontal: 2),
+                                                                                                */
+                            // Remove the internal border since you have a Container border
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                           ),
-                        );
-                      }).toList() ?? [],
-                      onTap: () => controller.dropDownShow.value = false,
-                      onChanged: (v) {
-                        controller.selectSubsidiariesValue = v;
-                        // controller.selectDepartmentData = null;
-                        controller.update();
-                      },
+                          // 3. You can also customize the icon to remove its default side padding
+                          icon: const Icon(Icons.arrow_drop_down, size: 20),
+
+                          padding: EdgeInsets.zero,
+
+                          value: controller.selectSubsidiariesValue,
+                          items: controller.dashboardAllData?.subsidiaries?.map((account) {
+                            return DropdownMenuItem<DashboardSubsidiaryObject>(
+                              value: account,
+                              child: Text(
+                                account.name ?? "",
+                                style: mozillaTextRegularText(fontSize: 12, color: DynamicColors.textClr),
+                              ),
+                            );
+                          }).toList() ?? [],
+                          onTap: () => controller.dropDownShow.value = false,
+                          onChanged: (v) {
+                            controller.selectSubsidiariesValue = v;
+                            // controller.selectDepartmentData = null;
+                            controller.update();
+                          },
+                        ),
+                      ),
                     ),
                   ),
                   // ----- Tabs -----
@@ -492,6 +601,7 @@ class _DriversViewState extends State<DriversView> {
 
                           final bool isDriverSelected =
                               !isHeaderMode &&
+                                  controller.selectedMapButtonIndex < 0 &&
                                   controller.selectedDriverIndex == index;
 
                           return GestureDetector(
@@ -503,11 +613,7 @@ class _DriversViewState extends State<DriversView> {
                             child: Card(
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
-                                side: isDriverSelected
-                                    ? BorderSide(
-                                        color: DynamicColors.primaryClr,
-                                        width: 2)
-                                    : BorderSide.none,
+                                side: BorderSide.none,
                               ),
                               color: isDriverSelected
                                   ? DynamicColors.secondaryClr
@@ -529,6 +635,12 @@ class _DriversViewState extends State<DriversView> {
                                           driver.bookingStatus == "STC"?Colors.blue:
                                           driver.driverStatus == "On Break"? Colors.red:
                                           Colors.green,
+                                          border: isDriverSelected
+                                              ? Border.all(
+                                            color: DynamicColors.primaryClr,
+                                            width: 2,
+                                          )
+                                              : null,
                                           borderRadius: const BorderRadius.all(Radius.circular(4)),
                                         ),
                                         child: Text(
