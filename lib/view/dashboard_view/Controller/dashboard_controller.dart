@@ -2678,6 +2678,9 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     dashboardDZoneValue = null;
     _controller.zoneValue = null;
     _controller.zoneDValue = null;
+    // return-journey zones shown in the RETURN section of the booking form
+    _controller.RNzoneValue = null;
+    _controller.RN1zoneValue = null;
     selectJourneyTypeValue = null;
     selectAccountValue = null;
     selectDepartmentData = null;
@@ -2707,6 +2710,19 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
     selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
     selectVehicleValue = dashboardAllData!.vehicleTypes![0];
+    // return-journey fields shown in the RETURN section of the booking form
+    selectVehicleValueReturn = null;
+    selectDriverValueReturn = null;
+    pickUpTimeControllerReturn.clear();
+    addReturnFare.value = true;
+    returnFareValue = "0";
+    // reset pickup / return dates back to today
+    pickUpDate = DateTime.now();
+    pickUpDateReturn = DateTime.now();
+    // hide the airport FL/ARP row and clear waiting-return / CLI job flags
+    isAirportResponse.value = false;
+    jourValue = null;
+    cliJobHit = false;
     jobDetails = null;
     dashboardDataLoader(false);
     update();
