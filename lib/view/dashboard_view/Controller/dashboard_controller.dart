@@ -1938,6 +1938,27 @@ class DashboardController extends GetxController {
       update();
     }
   }
+  TextEditingController newCustomController = TextEditingController();
+  FocusNode newCustomFieldKey = FocusNode();
+  FocusNode newCustomKeyboardFocusNode = FocusNode();
+  final Rx<FocusNode> suggestionNewCustomFocusNode = FocusNode().obs;
+  Timer? _newCustomDebounce;
+
+  // ==================== DEBOUNCE HANDLER ====================
+  Future<void> onNewCustomChangeHandler(
+      {required String fieldName, required String searchingText}) async {
+    const duration = Duration(milliseconds: 800);
+    if (_newCustomDebounce?.isActive ?? false) _newCustomDebounce!.cancel();
+    _newCustomDebounce = Timer(duration, () {
+      _stopNewCustomTyping(fieldName: fieldName, searchingText: searchingText);
+    });
+  }
+
+  void _stopNewCustomTyping(
+      {required String fieldName, required String searchingText}) {
+    getPhoneNumberOfUSers(fieldsName: fieldName, searchingText: searchingText);
+  }
+
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get Fare API
   getFaresCalculation() async {
