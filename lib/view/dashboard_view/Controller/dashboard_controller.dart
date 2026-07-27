@@ -1894,14 +1894,10 @@ class DashboardController extends GetxController {
 
   Timer? _phoneNumberBebounce;
 
-// 👇 ye function har baar text change hone par call hoga
   Future<void> onPhoneNoChangeHandler(
       {required String fieldName, required String searchingText}) async {
-    const duration = Duration(milliseconds: 800); // 800ms ka delay]
-// selectedTextFieldsValue.value = "";
-// 👇 Agar pehle se koi timer chal raha ho to usse cancel karo
+    const duration = Duration(milliseconds: 800);
     if (_phoneNumberBebounce?.isActive ?? false) _phoneNumberBebounce!.cancel();
-// 👇 Naya timer start karo
     _phoneNumberBebounce = Timer(duration, () {
       _stopPhoneNoTyping(fieldName: fieldName, searchingText: searchingText);
     });
@@ -1909,7 +1905,6 @@ class DashboardController extends GetxController {
 
   void _stopPhoneNoTyping(
       {required String fieldName, required String searchingText}) {
-// 👇 Yahan API call ya search function call karna hai
     getPhoneNumberOfUSers(fieldsName: fieldName, searchingText: searchingText);
   }
 
@@ -1942,22 +1937,7 @@ class DashboardController extends GetxController {
   FocusNode newCustomFieldKey = FocusNode();
   FocusNode newCustomKeyboardFocusNode = FocusNode();
   final Rx<FocusNode> suggestionNewCustomFocusNode = FocusNode().obs;
-  Timer? _newCustomDebounce;
 
-  // ==================== DEBOUNCE HANDLER ====================
-  Future<void> onNewCustomChangeHandler(
-      {required String fieldName, required String searchingText}) async {
-    const duration = Duration(milliseconds: 800);
-    if (_newCustomDebounce?.isActive ?? false) _newCustomDebounce!.cancel();
-    _newCustomDebounce = Timer(duration, () {
-      _stopNewCustomTyping(fieldName: fieldName, searchingText: searchingText);
-    });
-  }
-
-  void _stopNewCustomTyping(
-      {required String fieldName, required String searchingText}) {
-    getPhoneNumberOfUSers(fieldsName: fieldName, searchingText: searchingText);
-  }
 
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get Fare API

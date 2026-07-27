@@ -921,66 +921,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         //   ),
                                                         // ),
                                                         /// (8) Mobile Field
-                                                        // Expanded(
-                                                        //   child: Row(
-                                                        //     children: [
-                                                        //       Padding(
-                                                        //         padding: const EdgeInsets.only(
-                                                        //           right: 6.0,
-                                                        //         ),
-                                                        //         child: SizedBox(
-                                                        //           width: 40,
-                                                        //           // Dono labels ko ek barabar width di taake text boxes perfectly align hon
-                                                        //           child: Text(AppText.mobile, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                                                        //         ),
-                                                        //       ),
-                                                        //       Expanded(
-                                                        //         child: FocusTraversalOrder(
-                                                        //           order: const NumericFocusOrder(11),
-                                                        //           child: RawKeyboardListener(
-                                                        //               focusNode: controller.phoneKeyboardFocusNode,
-                                                        //               onKey: (event) {
-                                                        //                 if (event is RawKeyDownEvent) {
-                                                        //                   if (event.logicalKey == LogicalKeyboardKey.arrowDown && suggestion_controller.highlightedIndex.value < suggestion_controller.allListData.length - 1) {
-                                                        //                     suggestion_controller.highlightedIndex.value++;
-                                                        //                   } else if (event.logicalKey == LogicalKeyboardKey.arrowUp && suggestion_controller.highlightedIndex.value > 0) {
-                                                        //                     suggestion_controller.highlightedIndex.value--;
-                                                        //                   } else if (event.logicalKey == LogicalKeyboardKey.enter) {
-                                                        //                     final selected = suggestion_controller.allListData[suggestion_controller.highlightedIndex.value].name;
-                                                        //                     suggestion_controller.selectSuggestion(selected);
-                                                        //                   } else if (event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.tab) {
-                                                        //                     FocusScope.of(Get.context!).requestFocus(controller.suggestionPhoneFocusNode.value);
-                                                        //                     FocusScope.of(Get.context!).requestFocus(controller.suggestionPhoneFocusNode.value);
-                                                        //                     controller.update();
-                                                        //                   }
-                                                        //                 }
-                                                        //               },
-                                                        //               child: CustomTextField(
-                                                        //                 focusNode: controller.phoneNumberFieldKey,
-                                                        //                 controller: controller.mobileController,
-                                                        //                 borderRadius: 3,
-                                                        //                 inputFormatters: [
-                                                        //                   FilteringTextInputFormatter.digitsOnly
-                                                        //                 ],
-                                                        //                 onTap: () {
-                                                        //                   controller.dropDownShow.value = true;
-                                                        //                 },
-                                                        //                 onChanged: (v) {
-                                                        //                   if (v.isNotEmpty) {
-                                                        //                     controller.dropDownShow.value = true;
-                                                        //                     FocusScope.of(Get.context!).requestFocus(controller.phoneNumberFieldKey);
-                                                        //                     controller.onPhoneNoChangeHandler(fieldName: "Phone Number", searchingText: v);
-                                                        //                   } else {
-                                                        //                     controller.dropDownShow.value = false;
-                                                        //                   }
-                                                        //                 },
-                                                        //               )),
-                                                        //         ),
-                                                        //       ),
-                                                        //     ],
-                                                        //   ),
-                                                        // ),
-                                                        /// (9) New Custom Field
                                                         Expanded(
                                                           child: Row(
                                                             children: [
@@ -990,14 +930,15 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 ),
                                                                 child: SizedBox(
                                                                   width: 40,
-                                                                  child: Text("Custom", style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+                                                                  // Dono labels ko ek barabar width di taake text boxes perfectly align hon
+                                                                  child: Text(AppText.mobile, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                                                 ),
                                                               ),
                                                               Expanded(
                                                                 child: FocusTraversalOrder(
-                                                                  order: const NumericFocusOrder(12),
+                                                                  order: const NumericFocusOrder(11),
                                                                   child: RawKeyboardListener(
-                                                                      focusNode: controller.newCustomKeyboardFocusNode,
+                                                                      focusNode: controller.phoneKeyboardFocusNode,
                                                                       onKey: (event) {
                                                                         if (event is RawKeyDownEvent) {
                                                                           if (event.logicalKey == LogicalKeyboardKey.arrowDown && suggestion_controller.highlightedIndex.value < suggestion_controller.allListData.length - 1) {
@@ -1008,23 +949,27 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             final selected = suggestion_controller.allListData[suggestion_controller.highlightedIndex.value].name;
                                                                             suggestion_controller.selectSuggestion(selected);
                                                                           } else if (event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.tab) {
-                                                                            FocusScope.of(Get.context!).requestFocus(controller.suggestionNewCustomFocusNode.value);
+                                                                            FocusScope.of(Get.context!).requestFocus(controller.suggestionPhoneFocusNode.value);
+                                                                            FocusScope.of(Get.context!).requestFocus(controller.suggestionPhoneFocusNode.value);
                                                                             controller.update();
                                                                           }
                                                                         }
                                                                       },
                                                                       child: CustomTextField(
-                                                                        focusNode: controller.newCustomFieldKey,
-                                                                        controller: controller.newCustomController,
+                                                                        focusNode: controller.phoneNumberFieldKey,
+                                                                        controller: controller.mobileController,
                                                                         borderRadius: 3,
+                                                                        inputFormatters: [
+                                                                          FilteringTextInputFormatter.digitsOnly
+                                                                        ],
                                                                         onTap: () {
                                                                           controller.dropDownShow.value = true;
                                                                         },
                                                                         onChanged: (v) {
                                                                           if (v.isNotEmpty) {
                                                                             controller.dropDownShow.value = true;
-                                                                            FocusScope.of(Get.context!).requestFocus(controller.newCustomFieldKey);
-                                                                            controller.onNewCustomChangeHandler(fieldName: "New Custom Field", searchingText: v);
+                                                                            FocusScope.of(Get.context!).requestFocus(controller.phoneNumberFieldKey);
+                                                                            controller.onPhoneNoChangeHandler(fieldName: "Phone Number", searchingText: v);
                                                                           } else {
                                                                             controller.dropDownShow.value = false;
                                                                           }
@@ -1035,6 +980,61 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             ],
                                                           ),
                                                         ),
+                                                        /// (9) New Custom Field
+                                                        // Expanded(
+                                                        //   child: Row(
+                                                        //     children: [
+                                                        //       Padding(
+                                                        //         padding: const EdgeInsets.only(
+                                                        //           right: 6.0,
+                                                        //         ),
+                                                        //         child: SizedBox(
+                                                        //           width: 40,
+                                                        //           child: Text("Custom", style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+                                                        //         ),
+                                                        //       ),
+                                                        //       Expanded(
+                                                        //         child: FocusTraversalOrder(
+                                                        //           order: const NumericFocusOrder(12),
+                                                        //           child: RawKeyboardListener(
+                                                        //               focusNode: controller.newCustomKeyboardFocusNode,
+                                                        //               onKey: (event) {
+                                                        //                 if (event is RawKeyDownEvent) {
+                                                        //                   if (event.logicalKey == LogicalKeyboardKey.arrowDown && suggestion_controller.highlightedIndex.value < suggestion_controller.allListData.length - 1) {
+                                                        //                     suggestion_controller.highlightedIndex.value++;
+                                                        //                   } else if (event.logicalKey == LogicalKeyboardKey.arrowUp && suggestion_controller.highlightedIndex.value > 0) {
+                                                        //                     suggestion_controller.highlightedIndex.value--;
+                                                        //                   } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+                                                        //                     final selected = suggestion_controller.allListData[suggestion_controller.highlightedIndex.value].name;
+                                                        //                     suggestion_controller.selectSuggestion(selected);
+                                                        //                   } else if (event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.tab) {
+                                                        //                     FocusScope.of(Get.context!).requestFocus(controller.suggestionNewCustomFocusNode.value);
+                                                        //                     controller.update();
+                                                        //                   }
+                                                        //                 }
+                                                        //               },
+                                                        //               child: CustomTextField(
+                                                        //                 focusNode: controller.newCustomFieldKey,
+                                                        //                 controller: controller.newCustomController,
+                                                        //                 borderRadius: 3,
+                                                        //                 onTap: () {
+                                                        //                   controller.dropDownShow.value = true;
+                                                        //                 },
+                                                        //                 onChanged: (v) {
+                                                        //                   if (v.isNotEmpty) {
+                                                        //                     controller.dropDownShow.value = true;
+                                                        //                     FocusScope.of(Get.context!).requestFocus(controller.newCustomFieldKey);
+                                                        //                     controller.onPhoneNoChangeHandler(fieldName: "New Custom Field", searchingText: v);
+                                                        //                   } else {
+                                                        //                     controller.dropDownShow.value = false;
+                                                        //                   }
+                                                        //                 },
+                                                        //               )),
+                                                        //         ),
+                                                        //       ),
+                                                        //     ],
+                                                        //   ),
+                                                        // ),
                                                         // Tel fileds
                                                         // Expanded(
                                                         //   child: Padding(
@@ -2021,7 +2021,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               isMobile: isMobile,
                                                               label: "${AppText.acc}  ",
                                                               width: fieldWidthh / 11.7,
-                                                              // width: null,
                                                               heights: 32,
                                                               child: Container(
                                                                 decoration: BoxDecoration(
@@ -2036,9 +2035,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                                                                   ),
                                                                   icon: const Icon(Icons.arrow_drop_down, size: 20),
-
                                                                   padding: EdgeInsets.zero,
-
                                                                   hint: Text(
                                                                     "SELECT ACCOUNT",
                                                                     maxLines: 1,
@@ -2046,16 +2043,37 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     style: mozillaTextRegularText(fontSize: 12, color: DynamicColors.textClr),
                                                                   ),
                                                                   value: controller.selectAccountValue,
+
+                                                                  // 1. Select hone ke baad jo field me dikhega (6 letters + ...)
+                                                                  selectedItemBuilder: (BuildContext context) {
+                                                                    return controller.dashboardAccountData?.accounts?.map((account) {
+                                                                      final name = account.name ?? "";
+                                                                      final displayName = name.length > 6 ? "${name.substring(0, 6)}..." : name;
+
+                                                                      return Align(
+                                                                        alignment: Alignment.centerLeft,
+                                                                        child: Text(
+                                                                          displayName,
+                                                                          maxLines: 1,
+                                                                          overflow: TextOverflow.ellipsis,
+                                                                          style: mozillaTextRegularText(fontSize: 12, color: DynamicColors.textClr),
+                                                                        ),
+                                                                      );
+                                                                    }).toList() ??
+                                                                        [];
+                                                                  },
+
+                                                                  // 2. Dropdown list ke andar bilkul FULL name dikhega
                                                                   items: controller.dashboardAccountData?.accounts?.map((account) {
                                                                     return DropdownMenuItem<DashboardAccountObject>(
                                                                       value: account,
                                                                       child: Text(
-                                                                        account.name ?? "",
+                                                                        account.name ?? "", // Full Name
                                                                         style: mozillaTextRegularText(fontSize: 12, color: DynamicColors.textClr),
                                                                       ),
                                                                     );
-                                                                  }).toList() ??
-                                                                      [],
+                                                                  }).toList() ?? [],
+
                                                                   onTap: () => controller.dropDownShow.value = false,
                                                                   onChanged: (v) {
                                                                     controller.selectAccountValue = v;
@@ -2485,31 +2503,65 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
                                                     // SizedBox(width: 0.0),
-                                                    FocusTraversalOrder(
-                                                      order: NumericFocusOrder(controller.jourValue == 'W/R' ? 37 : 45),
-                                                      child: SizedBox(
-                                                        height: 40,
-                                                        child: KbdActivatable(
-                                                          focusNode: calendarFN,
-                                                          onActivate: () {
-                                                            controller.dropDownShow.value = false;
-                                                            // TODO: open your calendar modal/sheet
-                                                            // For demo:
-                                                            ScaffoldMessenger.of(context).showSnackBar(
-                                                              const SnackBar(content: Text("Calendar icon activated")),
-                                                            );
-                                                          },
-                                                          child: Container(
-                                                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                                                            decoration: BoxDecoration(
-                                                              color: Colors.grey.shade300,
-                                                              borderRadius: BorderRadius.circular(5),
+                                                    // FocusTraversalOrder(
+                                                    //   order: NumericFocusOrder(controller.jourValue == 'W/R' ? 37 : 45),
+                                                    //   child: SizedBox(
+                                                    //     height: 40,
+                                                    //     child: KbdActivatable(
+                                                    //       focusNode: calendarFN,
+                                                    //       onActivate: () {
+                                                    //         controller.dropDownShow.value = false;
+                                                    //
+                                                    //         ScaffoldMessenger.of(context).showSnackBar(
+                                                    //           const SnackBar(content: Text("Calendar icon activated")),
+                                                    //         );
+                                                    //       },
+                                                    //       child: Container(
+                                                    //         padding: const EdgeInsets.symmetric(horizontal: 8),
+                                                    //         decoration: BoxDecoration(
+                                                    //           color: Colors.grey.shade300,
+                                                    //           borderRadius: BorderRadius.circular(5),
+                                                    //         ),
+                                                    //         child: const Icon(Icons.calculate, size: 23),
+                                                    //       ),
+                                                    //     ),
+                                                    //   ),
+                                                    // ),
+                                                    UnconstrainedBox(
+                                                      child: FocusTraversalOrder(
+                                                        order: NumericFocusOrder(controller.jourValue == 'W/R' ? 37 : 45),
+                                                        child: SizedBox(
+                                                          height: 40,
+                                                          child: KbdActivatable(
+                                                            focusNode: calendarFN,
+                                                            onActivate: () {
+                                                              controller.dropDownShow.value = false;
+
+                                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                                const SnackBar(content: Text("Under process")),
+                                                              );
+                                                            },
+                                                            child: Container(
+                                                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                                                              alignment: Alignment.center,
+                                                              decoration: BoxDecoration(
+
+
+                                                                          color: Colors.grey.shade300,
+                                                                          borderRadius: BorderRadius.circular(5),
+                                                              ),
+                                                              child: const Text(
+                                                                'PICK BOOKING',
+                                                                style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  fontWeight: FontWeight.bold,
+                                                                ),
+                                                              ),
                                                             ),
-                                                            child: const Icon(Icons.calculate, size: 23),
                                                           ),
                                                         ),
                                                       ),
-                                                    ),
+                                                    )
                                                   ],
                                                 ),
                                               ),
@@ -2548,15 +2600,15 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       style: TextStyle(color: DynamicColors.textClr, fontSize: 13)),
                                                   SizedBox(
                                                       width: 30),
-                                                  Icon(
-                                                      Icons.access_time_filled_outlined,
-                                                      color: DynamicColors.textClr,
-                                                      size: 18),
-                                                  SizedBox(
-                                                      width: 2),
-                                                  Text(
-                                                      "JOURNEY : 0.0 mins",
-                                                      style: TextStyle(color: DynamicColors.textClr, fontSize: 13)),
+                                                  // Icon(
+                                                  //     Icons.access_time_filled_outlined,
+                                                  //     color: DynamicColors.textClr,
+                                                  //     size: 18),
+                                                  // SizedBox(
+                                                  //     width: 2),
+                                                  // Text(
+                                                  //     "JOURNEY : 0.0 mins",
+                                                  //     style: TextStyle(color: DynamicColors.textClr, fontSize: 13)),
                                                   SizedBox(
                                                       width: 30),
                                                   Icon(
