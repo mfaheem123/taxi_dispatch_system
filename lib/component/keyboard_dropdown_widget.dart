@@ -138,8 +138,10 @@ class _KeyboardDropdownState extends State<KeyboardDropdown> {
                       color: isSelected
                           ? Colors.blue.withOpacity(0.2)
                           : Colors.transparent,
-                      child: Text(widget.items[index]),
+                      child: Text(widget.items[index], style: mozillaTextRegularText(
+                        fontSize: 13,),
                     ),
+                    )
                   );
                 },
               ),
