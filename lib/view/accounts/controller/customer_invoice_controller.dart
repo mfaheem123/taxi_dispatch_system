@@ -206,13 +206,22 @@ class CustomerInvoiceController extends GetxController {
     isCustomerInvoiceLoad = true;
     update();
 
+    String currentDate = "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0 ')}".trim();
+    String finalInvoiceDate = (customerInvoiceDateController == null || customerInvoiceDateController!.isEmpty)
+        ? currentDate
+        : customerInvoiceDateController!;
+
+    String finalDueDate = (customerInvoiceDueDateController == null || customerInvoiceDueDateController!.isEmpty)
+        ? currentDate
+        : customerInvoiceDueDateController!;
+
     double totalAmount = getInvoiceTableColumnTotal('total');
 
     var formData = {
       "customer_id": selectedCustomerId,
       "invoice_number": customerInvoiceModel?.invoiceNumber ?? "",
-      "invoice_date": customerInvoiceDateController,
-      "invoice_due_date": customerInvoiceDueDateController,
+      "invoice_date": finalInvoiceDate,
+      "invoice_due_date": finalDueDate,
       "from_date": filterFromDate,
       "to_date": filterToDate,
       "invoice_type": "post",
@@ -337,10 +346,23 @@ class CustomerInvoiceController extends GetxController {
           // recalculateRowTotal(item);
         }
       }
-      customerInvoiceDateController =
-      "${data?.invoiceDate?.year}-${data?.invoiceDate?.month}-${data?.invoiceDate?.day}";
-      customerInvoiceDueDateController =
-      "${data?.invoiceDueDate?.year}-${data?.invoiceDueDate?.month}-${data?.invoiceDueDate?.day}";
+      // customerInvoiceDateController =
+      // "${data?.invoiceDate?.year}-${data?.invoiceDate?.month}-${data?.invoiceDate?.day}";
+      // customerInvoiceDueDateController =
+      // "${data?.invoiceDueDate?.year}-${data?.invoiceDueDate?.month}-${data?.invoiceDueDate?.day}";
+      if (data?.invoiceDate != null) {
+        customerInvoiceDateController =
+        "${data!.invoiceDate!.year}-${data.invoiceDate!.month.toString().padLeft(2, '0')}-${data.invoiceDate!.day.toString().padLeft(2, '0')}";
+      } else {
+        customerInvoiceDateController = "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
+      }
+
+      if (data?.invoiceDueDate != null) {
+        customerInvoiceDueDateController =
+        "${data!.invoiceDueDate!.year}-${data.invoiceDueDate!.month.toString().padLeft(2, '0')}-${data.invoiceDueDate!.day.toString().padLeft(2, '0')}";
+      } else {
+        customerInvoiceDueDateController = "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
+      }
       customerNameController.text = data?.customer?.name ?? "";
       customerEmailController.text = data?.customer?.email ?? "";
       customerMobileController.text = data?.customer?.mobile ?? "";
@@ -521,8 +543,7 @@ th { background-color: #f2f2f2; }
   </div>
 
   <div>
-      <b>CUSTOMER</b> ${accountData?.id ?? ""}<br>
-    <b></b> ${accountData?.name ?? ""}<br>
+      <b>CUSTOMER</b> ${accountData?.name ?? ""}<br>
     <b>DATE:</b> ${mainData.invoiceDate.toString().split(' ').first}<br>
     <b>DUE DATE:</b> ${mainData.invoiceDueDate.toString().split(' ').first}
   </div>

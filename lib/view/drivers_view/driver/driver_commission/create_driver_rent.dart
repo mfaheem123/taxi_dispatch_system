@@ -126,7 +126,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                                       items: controller.driverRentModel?.drivers
                                               ?.map((driver) {
                                             final val =
-                                                "${driver.id} ${driver.name}";
+                                                "${driver.username} ${driver.name}";
                                             return DropdownMenuItem(
                                               value: val,
                                               child: Text(val.toUpperCase(),
@@ -159,6 +159,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                                 width: fieldWidth,
                                 height: 30,
                                 child: KeyboardDatePicker(
+                                  key: ValueKey("transaction_date_${controller.datePickerKey}"),
                                   initialDate: DateTime.now(),
                                   onChanged: (date) {
                                     controller.rentTransactionDate =
@@ -225,6 +226,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                     width: fieldWidth / 1.2,
                     height: 30,
                     child: KeyboardDatePicker(
+                      key: ValueKey("from_date_${controller.datePickerKey}"),
                       initialDate: DateTime.now(),
                       onChanged: (date) {
                         controller.rentFilterFromDate =
@@ -250,6 +252,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                     width: fieldWidth / 1.2,
                     height: 30,
                     child: KeyboardDatePicker(
+                      key: ValueKey("to_date_${controller.datePickerKey}"),
                       initialDate: DateTime.now(),
                       onChanged: (date) {
                         controller.rentFilterToDate =

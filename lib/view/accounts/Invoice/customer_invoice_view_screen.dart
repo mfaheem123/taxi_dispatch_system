@@ -147,8 +147,7 @@ class CustomerInvoiceViewScreen extends StatelessWidget {
                     {"TELEPHONE": accountData?.telephone ?? ""},
                   ]),
                   _infoColumn([
-                    {"CUSTOMER": "(${mainData.customer?.id?.toString() ?? ""})"},
-                    {"${(mainData.customer?.name ?? "").toUpperCase()}": ""},
+                    {"CUSTOMER": "(${mainData.customer?.name?.toString() ?? ""})"},
                     {"DATE": mainData.invoiceDate.toString().split(' ').first},
                     {"DUE DATE": mainData.invoiceDueDate.toString().split(' ').first},
                   ], isRight: true),

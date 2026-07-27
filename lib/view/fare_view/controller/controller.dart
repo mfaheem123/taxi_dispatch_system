@@ -948,7 +948,12 @@ class FareController extends GetxController {
       BotToast.showText(text: msg);
       getFareIncrement();
       incrementValueVehicleController.clear();
+      operatorType = null;
       isFareIncrementEditMode = false;
+      editingId = null;
+      FareIncrementStart = "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
+      FareIncrementEnd = "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
+      update();
       print(response.data);
     }
   }

@@ -2142,7 +2142,7 @@ class DriverController extends GetxController {
   void fillDriverDetails(String selectedText) {
     if (selectedText.isEmpty) return;
     final driver = driverRentModel?.drivers?.firstWhere(
-      (d) => "${d.id} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
+      (d) => "${d.username} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
       // orElse: () => null,
     );
 
@@ -2167,7 +2167,13 @@ class DriverController extends GetxController {
     isRentFilterLoading = true;
     update();
 
-    String drId = rentDriverSelectionController.text.split(" ").first;
+    final selectedText = rentDriverSelectionController.text;
+    final driver = driverRentModel?.drivers?.firstWhere(
+          (d) => "${d.username} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
+      orElse: () => null as dynamic,
+    );
+
+    String drId = driver?.id?.toString() ?? "";
     String pIds = selectedPaymentTypeIds.isNotEmpty
         ? "[${selectedPaymentTypeIds.join(",")}]"
         : "";
@@ -2378,7 +2384,14 @@ class DriverController extends GetxController {
         ? DateTime.now().toIso8601String().split("T").first
         : rentTransactionDate;
 
-    String drId = rentDriverSelectionController.text.split(" ").first;
+    final selectedText = rentDriverSelectionController.text;
+    final driver = driverRentModel?.drivers?.firstWhere(
+          (d) => "${d.username} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
+      orElse: () => null as dynamic,
+    );
+
+    String drId = driver?.id?.toString() ?? "";
+
 
     var formData = {
       "transaction_date": finalTDate,
@@ -2402,10 +2415,36 @@ class DriverController extends GetxController {
     await Api().post(formData, "driver_rent/add",sendCompanyId: true, auth: true);
     if (response.statusCode == 200) {
       BotToast.showText(text: "DRIVER RENT ADDED SUCCESSFULLY!");
+      clearDriverRent();
     }
     saveDriverRentLoad = false;
     update();
   }
+
+  void clearDriverRent() {
+    rentDriverSelectionController.clear();
+    selectedIds.clear();
+    selectedPaymentTypeIds.clear();
+    rentWeekController.clear();
+    pdaRentWeekController.clear();
+    driverRentFilterModel = null;
+    rentTransactionDate = "";
+    rentFilterFromDate = "";
+    rentFilterToDate = "";
+    cashTotal = 0.0;
+    grandTotal = 0.0;
+    owed = 0.0;
+    oldBalance = 0.0;
+    newBalance = 0.0;
+    accountTotal = 0.0;
+    parkingCongestion = 0.0;
+    rentTotal = 0.0;
+    datePickerKey++;
+    update();
+  }
+
+
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Driver Rent Screen functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Driver Rent List functionality
 
@@ -2493,7 +2532,7 @@ class DriverController extends GetxController {
     updateAccountTotal  = parse(data.accountJobsTotal);
     // rTotal = parse(data.driver?.driverCommission);
     updateRentDriverSelectionController.text =
-    "${data.driver?.id ?? ''} ${data.driver?.name ?? ''}";
+    "${data.driver?.username ?? ''} ${data.driver?.name ?? ''}";
     updateRentWeekController.text =
         (data.driver?.driverCommission ?? "0").toString();
     updatePdaRentWeekController.text = (data.driver?.pdaRent ?? "0").toString();
@@ -2516,10 +2555,7 @@ class DriverController extends GetxController {
       saveUpdatedRentLoad = true;
       update();
 
-      // String drId = rentDriverSelectionController.text.split(" ").first;
-      String drId = rentDriverSelectionController.text.isNotEmpty
-          ? rentDriverSelectionController.text.split(" ").first
-          : updateDriverRentByIdModel?.driverRent?.driverId?.toString() ?? "";
+      String drId = updateDriverRentByIdModel?.driverRent?.driverId?.toString() ?? "";
       String todayDate = DateTime.now().toIso8601String().split("T").first;
 
       final updateItems = updateDriverRentByIdModel
@@ -2550,12 +2586,30 @@ class DriverController extends GetxController {
 
       if (response.statusCode == 200) {
         BotToast.showText(text: "DRIVER RENT UPDATED SUCCESSFULLY");
+        clearUpdateRentData();
       }
     } catch (err) {
       print("Error: $err");
       BotToast.showText(text: "Update Failed!");
     }
     saveUpdatedRentLoad = false;
+    update();
+  }
+
+  void clearUpdateRentData() {
+    updateRentDriverSelectionController.clear();
+    updateRentWeekController.clear();
+    updatePdaRentWeekController.clear();
+    rentTransactionDateController = DateTime.now().toIso8601String().split("T").first;
+    updateRentFilterFromDate = "";
+    updateRentFilterToDate = "";
+    updateDriverRentByIdModel = null;
+    updateCashTotal = 0.0;
+    updateGrandTotal = 0.0;
+    updateOwed = 0.0;
+    updateAccountTotal = 0.0;
+    updateParkingCongestion = 0.0;
+    rTotal = 0.0;
     update();
   }
 
@@ -2621,9 +2675,9 @@ class DriverController extends GetxController {
                 _buildInfoRentColumn(
                     "TO",
                     [
-                      "DRIVER: (${updateDriverRentByIdModel?.driverRent?.driver?.id ?? ""})",
+                      "DRIVER: (${updateDriverRentByIdModel?.driverRent?.driver?.username ?? ""})",
                       "${(updateDriverRentByIdModel?.driverRent?.driver?.name ?? "").toUpperCase()}",
-                      "DATE: $rentTransactionDateController",
+                      "DATE: ${rentTransactionDateController.toString().split("T").first.split(" ").first}",
                       "COMMISSION: ${updateDriverRentByIdModel?.driverRent?.driver?.driverCommission ?? ""}%",
                     ],
                     primaryColor,

@@ -124,10 +124,10 @@ class DriverRentViewScreen extends StatelessWidget {
                 Expanded(
                   flex: 3,
                   child: _buildUIInfoColumn("", [
-                    "DRIVER: (${data?.driver?.id ?? ""})",
+                    "DRIVER: (${data?.driver?.username ?? ""})",
                     "${(data?.driver?.name ?? "").toUpperCase()}",
                     "RENT: ${data?.driver?.driverCommission ?? ""}",
-                    "DATE: ${controller.rentTransactionDateController}",
+                    "DATE: ${controller.rentTransactionDateController.toString().split("T").first.split(" ").first}",
                   ], ),
                 ),
               ],
