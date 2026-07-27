@@ -125,7 +125,7 @@ class DriverCommissionViewScreen extends StatelessWidget {
                 Expanded(
                   flex: 3,
                   child: _buildUIInfoColumn("", [
-                    "DRIVER: (${data?.driver?.id ?? ""})",
+                    "DRIVER: (${data?.driver?.username ?? ""})",
                     "${(data?.driver?.name ?? "").toUpperCase()}",
                     "COMMISSION: ${data?.driver?.driverCommission ?? ""}%",
                     "DATE: ${controller.updateTransactionDateController}",

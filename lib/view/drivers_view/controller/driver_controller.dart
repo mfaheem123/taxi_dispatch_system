@@ -1592,6 +1592,7 @@ class DriverController extends GetxController {
   CreateDriverCommission? UpdatedDriverCommission;
   bool isLoadingUpdate = false;
 
+
   getDriverCommissionData({selectedId}) async {
     isLoadingUpdate = true;
     update();
@@ -1622,7 +1623,7 @@ class DriverController extends GetxController {
     updateAccountFareTotalVar = parse(data.accountJobsTotal);
     updateTotalCommissionVar = parse(data.commissionTotal);
     updateDriverSelectionController.text =
-        "${data.driver?.id ?? ''} ${data.driver?.name ?? ''}";
+        "${data.driver?.username ?? ''} ${data.driver?.name ?? ''}";
     UpdateCommissionController.text =
         (data.driver?.driverCommission ?? "0").toString();
     UpdatePdaRentController.text = (data.driver?.pdaRent ?? "0").toString();
@@ -1642,9 +1643,7 @@ class DriverController extends GetxController {
       saveUpdatedCommissionLoad = true;
       update();
 
-      String dId = driverSelectionController.text.isNotEmpty
-          ? driverSelectionController.text.split(" ").first
-          : updateDriverCommissionByIdModel?.driverCommission?.driverId?.toString() ?? "";
+      String dId = updateDriverCommissionByIdModel?.driverCommission?.driverId?.toString() ?? "";
 
       // String dId = driverSelectionController.text.split(" ").first;
       String todayDate = DateTime.now().toIso8601String().split("T").first;
@@ -1677,12 +1676,32 @@ class DriverController extends GetxController {
 
       if (response.statusCode == 200) {
         BotToast.showText(text: "DRIVER COMMISSION UPDATED SUCCESSFULLY");
+        clearUpdateCommissionData();
       }
     } catch (err) {
       print("Error: $err");
       BotToast.showText(text: "Update Failed!");
     }
     saveUpdatedCommissionLoad = false;
+    update();
+  }
+
+  void clearUpdateCommissionData() {
+    updateDriverSelectionController.clear();
+    UpdateCommissionController.clear();
+    UpdatePdaRentController.clear();
+    updateTransactionDateController = DateTime.now().toIso8601String().split("T").first;
+    updateFilterFromDate = "";
+    updateFilterToDate = "";
+    updateCashTotalValue = 0.0;
+    updateGrandTotalVar = 0.0;
+    updateOwedVar = 0.0;
+    oldBalanceVar = 0.0;
+    updateNewBalanceVar = 0.0;
+    updateAccountFareTotalVar = 0.0;
+    updateTotalCommissionVar = 0.0;
+
+    updateDriverCommissionByIdModel = null;
     update();
   }
 
@@ -1748,7 +1767,7 @@ class DriverController extends GetxController {
                 _buildInfoColumn(
                     "TO",
                     [
-                      "DRIVER: (${updateDriverCommissionByIdModel?.driverCommission?.driver?.id ?? ""})",
+                      "DRIVER: (${updateDriverCommissionByIdModel?.driverCommission?.driver?.username ?? ""})",
                       "${(updateDriverCommissionByIdModel?.driverCommission?.driver?.name ?? "").toUpperCase()}",
                       "DATE: $updateTransactionDateController",
                       "COMMISSION: ${updateDriverCommissionByIdModel?.driverCommission?.driver?.driverCommission ?? ""}%",

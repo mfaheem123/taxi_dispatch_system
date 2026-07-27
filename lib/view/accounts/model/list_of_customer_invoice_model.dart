@@ -65,29 +65,36 @@ class CustomerInvoice {
     this.customer,
   });
 
-  factory CustomerInvoice.fromJson(Map<String, dynamic> json) => CustomerInvoice(
-    id: json["id"],
-    invoiceNumber: json["invoice_number"],
-    customerId: json["customer_id"],
-    invoiceDate: json["invoice_date"] != null
-        ? DateFormat("yyyy-M-d").parse(json["invoice_date"].toString())
-        : null,
-    invoiceDueDate: json["invoice_due_date"] != null
-        ? DateFormat("yyyy-M-d").parse(json["invoice_due_date"].toString())
-        : null,
-    fromDate: json["from_date"] != null
-        ? DateFormat("yyyy-M-d").parse(json["from_date"].toString())
-        : null,
-    toDate: json["to_date"] != null
-        ? DateFormat("yyyy-M-d").parse(json["to_date"].toString())
-        : null,
-    invoiceType: json["invoice_type"],
-    amount: json["amount"],
-    status: json["status"],
-    createdAt: json["created_at"],
-    updatedAt: json["updated_at"],
-    customer: json["customer"] == null ? null : Customer.fromJson(json["customer"]),
-  );
+  factory CustomerInvoice.fromJson(Map<String, dynamic> json) {
+    DateTime? parseDate(dynamic dateStr) {
+      if (dateStr == null || dateStr.toString().trim().isEmpty) return null;
+      try {
+        return DateTime.parse(dateStr.toString());
+      } catch (_) {
+        try {
+          return DateFormat("yyyy-M-d").parse(dateStr.toString());
+        } catch (_) {
+          return null;
+        }
+      }
+    }
+
+    return CustomerInvoice(
+      id: json["id"],
+      invoiceNumber: json["invoice_number"],
+      customerId: json["customer_id"],
+      invoiceDate: parseDate(json["invoice_date"]),
+      invoiceDueDate: parseDate(json["invoice_due_date"]),
+      fromDate: parseDate(json["from_date"]),
+      toDate: parseDate(json["to_date"]),
+      invoiceType: json["invoice_type"],
+      amount: json["amount"],
+      status: json["status"],
+      createdAt: json["created_at"],
+      updatedAt: json["updated_at"],
+      customer: json["customer"] == null ? null : Customer.fromJson(json["customer"]),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     "id": id,
@@ -95,8 +102,8 @@ class CustomerInvoice {
     "customer_id": customerId,
     "invoice_date": invoiceDate,
     "invoice_due_date": invoiceDueDate,
-    "from_date": "${fromDate!.year.toString().padLeft(4, '0')}-${fromDate!.month.toString().padLeft(2, '0')}-${fromDate!.day.toString().padLeft(2, '0')}",
-    "to_date": "${toDate!.year.toString().padLeft(4, '0')}-${toDate!.month.toString().padLeft(2, '0')}-${toDate!.day.toString().padLeft(2, '0')}",
+    "from_date": fromDate != null ? "${fromDate!.year.toString().padLeft(4, '0')}-${fromDate!.month.toString().padLeft(2, '0')}-${fromDate!.day.toString().padLeft(2, '0')}" : null,
+    "to_date": toDate != null ? "${toDate!.year.toString().padLeft(4, '0')}-${toDate!.month.toString().padLeft(2, '0')}-${toDate!.day.toString().padLeft(2, '0')}" : null,
     "invoice_type": invoiceType,
     "amount": amount,
     "status": status,
