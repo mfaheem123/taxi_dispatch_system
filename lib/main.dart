@@ -350,6 +350,7 @@ import 'dart:convert';
 import 'alert/driver_break_alert.dart';
 import 'alert/driver_panic_alert.dart';
 import 'alert/nopickup_alert.dart';
+import 'component/authorization_alert.dart';
 import 'component/networks/Url.dart';
 import 'component/networks/api.dart' as Urls;
 import 'component/networks/api.dart';
@@ -625,6 +626,24 @@ Future<void> setupWebNotifications() async {
           BotToast.showSimpleNotification(
             title: message.notification?.title ?? " New Booking Received",
             subTitle: message.notification?.body ?? "Booking ID: $bookingId",
+            backgroundColor: Colors.blue,
+            titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            duration: const Duration(seconds: 15),
+          );
+        }
+      }
+      else if (type == 'PERMISSION_UPDATE'){
+
+        Get.dialog(
+          AuthorizationAlert(),
+          barrierColor: Colors.black54,
+          barrierDismissible: false,
+        );
+
+        if (isForeground) {
+          BotToast.showSimpleNotification(
+            title: message.notification?.title ?? " Authorization Alert Received",
+            subTitle: message.notification?.body ?? "Authorization Alert",
             backgroundColor: Colors.blue,
             titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             duration: const Duration(seconds: 15),
