@@ -103,7 +103,7 @@ class _KeyboardDropdownState extends State<KeyboardDropdown> {
                     : "No Data",
                 style: mozillaTextRegularText(
                   fontSize: 13,
-
+                  fontWeight: FontWeight.w900,
                 ),
               ),
             ),
@@ -139,7 +139,7 @@ class _KeyboardDropdownState extends State<KeyboardDropdown> {
                           ? Colors.blue.withOpacity(0.2)
                           : Colors.transparent,
                       child: Text(widget.items[index], style: mozillaTextRegularText(
-                        fontSize: 13,),
+                        fontSize: 13, fontWeight: FontWeight.w900),
                     ),
                     )
                   );

@@ -1,5 +1,6 @@
 
 import 'package:dashboard_new1/component/color.dart';
+import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -92,11 +93,11 @@ class CustomDropdown extends StatelessWidget {
               hint: hint,
               value: selecteditem,
               style: textStyle ??
-                  TextStyle(
-
+                  mozillaTextRegularText(
+                    context: context,
                     fontSize: MediaQuery.of(context).size.width * 0.0085,
                     color: DynamicColors.black,
-
+                    fontWeight: FontWeight.w900,
                   ),
               icon: Icon(
                 Icons.keyboard_arrow_down,

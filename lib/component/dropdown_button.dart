@@ -55,7 +55,7 @@ class CustomDropdownField<T> extends StatelessWidget {
                 value: value,
                 isDense: true,
                 hint: Text(label ?? "",
-                  style: mozillaTextRegularText(fontSize: 10),
+                  style: mozillaTextRegularText(fontSize: 10, fontWeight: FontWeight.w900),
                 ),
                 isExpanded: true,
                   alignment: Alignment.bottomCenter,
@@ -65,7 +65,7 @@ class CustomDropdownField<T> extends StatelessWidget {
                     value: val,
                     child: Text(
                       itemLabel(val), // ✅ how we display dynamic object
-                      style: mozillaTextRegularText(fontSize: 10),
+                      style: mozillaTextRegularText(fontSize: 10, fontWeight: FontWeight.w900),
                     ),
                   );
                 }).toList(),

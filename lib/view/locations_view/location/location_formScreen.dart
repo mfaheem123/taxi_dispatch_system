@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../component/dropdown_button.dart';
 import '../../../component/networks/api.dart';
+import '../../../component/textStyle.dart';
 
 class LocationForm extends StatelessWidget {
   LocationForm({super.key});
@@ -98,7 +99,7 @@ class LocationForm extends StatelessWidget {
                                 .map((zone) =>
                                 DropdownMenuItem<ZoneObject>(
                                   value: zone,
-                                  child: Text(zone.name ?? ""),
+                                  child: Text(zone.name ?? "", style: mozillaTextRegularText(fontWeight: FontWeight.w900)),
                                 ))
                                 .toList(),
                             onChanged: (v) {

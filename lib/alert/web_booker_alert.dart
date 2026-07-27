@@ -76,9 +76,9 @@ class WebBookerAlert extends StatelessWidget {
               isExpanded: true,
               underline: const SizedBox(),
               value: "MARK",
-              items: const [
-                DropdownMenuItem(value: "MARK", child: Text("MARK")),
-                DropdownMenuItem(value: "JOHN", child: Text("JOHN")),
+              items:  [
+                DropdownMenuItem(value: "MARK", child: Text("MARK", style: mozillaTextRegularText(fontWeight: FontWeight.w900))),
+                DropdownMenuItem(value: "JOHN", child: Text("JOHN", style: mozillaTextRegularText(fontWeight: FontWeight.w900))),
               ],
               onChanged: (value) {},
             ),

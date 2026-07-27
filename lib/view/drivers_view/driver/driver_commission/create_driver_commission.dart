@@ -127,8 +127,8 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                                           return DropdownMenuItem(
                                             value: val,
                                             child: Text(val.toUpperCase(),
-                                                style: const TextStyle(
-                                                    fontSize: 12)),
+                                                style: mozillaTextRegularText(
+                                                    fontSize: 12, fontWeight: FontWeight.w900)),
                                           );
                                         }).toList() ??
                                         [],

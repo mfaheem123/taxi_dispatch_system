@@ -82,11 +82,11 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                         Expanded(
                           child: DropdownButtonFormField<String>(
                             value: "YESTECH",
-                            items: const [
+                            items:  [
                               DropdownMenuItem(
-                                  value: "YESTECH", child: Text("YESTECH")),
+                                  value: "YESTECH", child: Text("YESTECH", style: mozillaTextRegularText(fontWeight: FontWeight.w900))),
                               DropdownMenuItem(
-                                  value: "OTHER", child: Text("OTHER")),
+                                  value: "OTHER", child: Text("OTHER", style: mozillaTextRegularText(fontWeight: FontWeight.w900))),
                             ],
                             onChanged: (v) {},
                             decoration: const InputDecoration(
@@ -112,11 +112,11 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                         Expanded(
                           child: DropdownButtonFormField<String>(
                             value: "RINGING",
-                            items: const [
+                            items:  [
                               DropdownMenuItem(
-                                  value: "RINGING", child: Text("RINGING")),
+                                  value: "RINGING", child: Text("RINGING", style: mozillaTextRegularText(fontWeight: FontWeight.w900))),
                               DropdownMenuItem(
-                                  value: "ACTIVE", child: Text("ACTIVE")),
+                                  value: "ACTIVE", child: Text("ACTIVE", style: mozillaTextRegularText(fontWeight: FontWeight.w900))),
                             ],
                             onChanged: (v) {},
                             decoration: const InputDecoration(
@@ -251,7 +251,7 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                               items: employeeList
                                   .map((e) =>
 
-                                  DropdownMenuItem(value: e, child: Text(e)))
+                                  DropdownMenuItem(value: e, child: Text(e, style: mozillaTextRegularText(fontWeight: FontWeight.w900))))
                                   .toList(),
                               onChanged: (val) {
                                 setState(() {
