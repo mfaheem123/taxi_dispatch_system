@@ -102,6 +102,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                   child: SizedBox(
                                     height: 32,
                                     child: KeyboardDatePicker(
+                                      key: ValueKey(controller.reportDateController),
                                       initialDate: controller
                                                   .reportDateController !=""
                                           ? DateTime.parse(
@@ -134,6 +135,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                   child: SizedBox(
                                     height: 32,
                                     child: KeyboardDatePicker(
+                                      key: ValueKey(controller.lostDateController + (controller.selectedBookingForLostProperty?.pickupDate ?? "")),
                                       initialDate: () {
                                         final bookingDate = controller.selectedBookingForLostProperty?.pickupDate;
                                         if (bookingDate != null && bookingDate.isNotEmpty) {

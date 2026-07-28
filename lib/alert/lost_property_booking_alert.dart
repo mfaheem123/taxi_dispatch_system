@@ -114,7 +114,12 @@ class _LostPropertyBookingAlertState extends State<LostPropertyBookingAlert> {
                         DataCell(Center(child: Text((booking.dropoff ?? "-").toUpperCase()))),
                         DataCell(Center(
                           child: InkWell(
-                            onTap: () => Get.back(result: booking),
+                            onTap: () {
+                              if (formattedDate != "-") {
+                                booking.pickupDate = formattedDate;
+                              }
+                              Get.back(result: booking);
+                            },
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                               child: const Text(

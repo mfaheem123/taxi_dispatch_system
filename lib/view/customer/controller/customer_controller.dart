@@ -629,12 +629,6 @@ sendCompanyId: true,
     customerNoteController.text =
     notes.isNotEmpty ? notes.first["note"] ?? "" : "";
 
-    // if (b.notes != null && b.notes is List) {
-    //   customerNoteController.text =
-    //       (b.notes as List).map((e) => e.toString()).join(", ");
-    // } else {
-    //   customerNoteController.text = "";
-    // }
 
     incidentedController.text = b.pickupDate ?? "";
 

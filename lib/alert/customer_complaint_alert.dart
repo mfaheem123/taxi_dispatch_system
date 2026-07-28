@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../component/color.dart';
 import '../component/datatable_widget.dart';
 import '../component/textStyle.dart';
@@ -97,6 +98,17 @@ class _ComplaintBookingAlertState extends State<ComplaintBookingAlert> {
 
                   rows: controller.getCustomerBookingModel!.bookings!
                       .map((booking) {
+                        
+                    String formattedDate = booking.pickupDate ?? '';
+                    if (booking.pickupDate != null && booking.pickupDate.toString().isNotEmpty) {
+                      try {
+                        DateTime parsedDate = DateFormat("yyyy-M-d").parse(booking.pickupDate.toString());
+                        formattedDate = DateFormat("yyyy-MM-dd").format(parsedDate);
+                      } catch (_) {
+                        formattedDate = booking.pickupDate.toString();
+                      }
+                    }
+
                     return DataRow(
                       cells: [
                         DataCell(
@@ -110,7 +122,7 @@ class _ComplaintBookingAlertState extends State<ComplaintBookingAlert> {
                         DataCell(
                           Center(
                             child: Text(
-                              "${booking.pickupDate ?? ''} ${booking.pickupTime ?? ''}"
+                              "$formattedDate ${booking.pickupTime ?? ''}"
                                   .toUpperCase(),
                             ),
                           ),
@@ -144,7 +156,12 @@ class _ComplaintBookingAlertState extends State<ComplaintBookingAlert> {
                         DataCell(
                           Center(
                             child: InkWell(
-                              onTap: () => Get.back(result: booking),
+                              onTap: () {
+                                if (formattedDate != "-") {
+                                  booking.pickupDate = formattedDate;
+                                }
+                                Get.back(result: booking);
+                              },
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                 child: const Text(
