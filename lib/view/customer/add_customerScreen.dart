@@ -5,7 +5,6 @@ import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
 import '../../component/text_widget.dart';
@@ -62,7 +61,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
               constraints: const BoxConstraints(maxWidth: 1100),
               margin: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: DynamicColors.whiteClr,
                 border: Border.all(color: Colors.grey.shade300),
               ),
               child: Column(
