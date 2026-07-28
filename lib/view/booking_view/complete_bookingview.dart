@@ -71,6 +71,8 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                 ? maxWidth / 2
                 : maxWidth / 4;
 
+        final double totalAvailableWidth = constraints.maxWidth;
+
         return
           controller.completedBookingModelData == null? Center(child: CircularProgressIndicator()):
           SingleChildScrollView(

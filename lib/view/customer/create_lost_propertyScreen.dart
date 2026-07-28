@@ -17,7 +17,6 @@ import 'controller/customer_controller.dart';
 
 class LostPropertyScreen extends StatefulWidget {
   const LostPropertyScreen({super.key});
-
   @override
   State<LostPropertyScreen> createState() => _LostPropertyScreenState();
 }
