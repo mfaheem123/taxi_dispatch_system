@@ -183,12 +183,10 @@ class AccountController extends GetxController {
       "clear_job_text": clearJobSmsCheckBox.value,
       "bank_information": bankInfoCheckBox.value,
       "web_logins": webLoginsTemp,
-      if (accountDepartmentList.isNotEmpty)
-        "departments": accountDepartmentPostList,
-      if (contactsList.isNotEmpty) "contacts": contactsList,
-      if (orderAccountList.isNotEmpty) "order_numbers": orderAccountList,
-      if (companyAddressesList.isNotEmpty)
-        "company_addresses": companyAddressesList,
+      "departments": accountDepartmentPostList.isEmpty ? [{"name": ""}] : accountDepartmentPostList,
+      "contacts": contactsList.isEmpty ? [{"name": ""}] : contactsList,
+      "order_numbers": orderAccountList.isEmpty ? [{"order_number": ""}] : orderAccountList,
+      "company_addresses": companyAddressesList.isEmpty ? [{"address": ""}] : companyAddressesList,
       "closed" : postactiveDrivers.value,
 
     };
@@ -212,6 +210,8 @@ class AccountController extends GetxController {
       BotToast.showText(text: message);
       print("$message");
       print("$response");
+      
+      listOFAccount();
 
       accountObjectData = null;
       escoptCheckBox.value = false;
@@ -522,26 +522,34 @@ class AccountController extends GetxController {
     bankInfoCheckBox.value = data.bankInformation!;
     accountDepartmentList.clear();
     for (var action in data.departments!) {
-      accountDepartmentList.add(action.name!);
+      if (action.name != null && action.name!.trim().isNotEmpty) {
+        accountDepartmentList.add(action.name!);
+      }
     }
     for (var action in data.contacts!) {
-      contactsList.add({
-        "name": action.name,
-        "email": action.email,
-        "password": action.password,
-        "mobile": action.mobile,
-        "telephone": action.telephone,
-      });
+      if (action.name != null && action.name!.trim().isNotEmpty) {
+        contactsList.add({
+          "name": action.name,
+          "email": action.email,
+          "password": action.password,
+          "mobile": action.mobile,
+          "telephone": action.telephone,
+        });
+      }
     }
     for (var action in data.orderNumbers!) {
-      orderAccountList.add({
-        "order_number": action.orderNumber,
-      });
+      if (action.orderNumber != null && action.orderNumber!.trim().isNotEmpty) {
+        orderAccountList.add({
+          "order_number": action.orderNumber,
+        });
+      }
     }
     for (var action in data.companyAddresses!) {
-      companyAddressesList.add({
-        "address": action.address,
-      });
+      if (action.address != null && action.address!.trim().isNotEmpty) {
+        companyAddressesList.add({
+          "address": action.address,
+        });
+      }
     }
     // webLoginDataList.addAll(data.web_logins)
     update();
