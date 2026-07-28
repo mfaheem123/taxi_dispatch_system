@@ -125,6 +125,7 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                                 ? "NO DRIVER"
                                                 : controller.updateRentDriverSelectionController.text.toUpperCase(),
                                             style: TextStyle(
+                                                fontWeight: FontWeight.w900,
                                                 fontSize: 13,
                                                 color: Colors.black),
                                           ),

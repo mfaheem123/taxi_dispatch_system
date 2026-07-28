@@ -86,6 +86,7 @@ TextStyle mozillaTextRegularText({
 
 TextStyle titleDesign(){
   return mozillaTextSemiBoldText(
-  fontSize: 16
+  fontSize: 16,
+      fontWeight:FontWeight.w900
   );
 }

@@ -273,7 +273,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                                           context: context,
                                                           fontSize: 10,
                                                           fontWeight:
-                                                              FontWeight.w800),
+                                                              FontWeight.w900),
                                                   onTap: () {
                                                     controller.activeField.value = "from";
                                                     controller.activeFieldKey

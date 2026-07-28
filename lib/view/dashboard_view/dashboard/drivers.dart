@@ -595,7 +595,12 @@ class _DriversViewState extends State<DriversView> {
 
                 Text(
                   "${driver!.username}",
-                  style: TextStyle(fontSize: 12, color: Colors.white),
+                  style: mozillaTextRegularText(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900,
+                      color: Colors.white
+                  ),
+
                 )
               ],
             ),

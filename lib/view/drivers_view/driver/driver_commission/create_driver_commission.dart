@@ -111,7 +111,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                                   child: DropdownButton<String>(
                                     hint: Text("SELECT DRIVER",
                                         style: TextStyle(
-                                            fontSize: 12, color: DynamicColors.black)),
+                                            fontSize: 12, color: DynamicColors.black, fontWeight: FontWeight.w800,)),
                                     value: controller.driverSelectionController
                                             .text.isEmpty
                                         ? null
@@ -430,7 +430,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                                             keyboardType: TextInputType.number,
                                             textAlign: TextAlign.center,
                                             style:
-                                                const TextStyle(fontSize: 12),
+                                                const TextStyle(fontSize: 12, fontWeight: FontWeight.w800,),
                                             decoration: const InputDecoration(
                                               isDense: true,
                                               contentPadding:

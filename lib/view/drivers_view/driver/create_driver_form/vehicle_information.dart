@@ -361,6 +361,7 @@ class VehicleInformation extends StatelessWidget {
                           child: Text(
                             "NO FILE CHOSEN",
                             style: TextStyle(
+                              fontWeight: FontWeight.bold,
                               fontSize: 13,
                               color: Colors.black54,
                             ),

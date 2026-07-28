@@ -97,7 +97,7 @@ class _ListOfAccountInvoiceScreenState
                         Text(
                           "ACCOUNT INVOICES (${controller.listOfAccountInvoice!.count ?? "0"})",
                           style: mozillaTextSemiBoldText(
-                              fontWeight: FontWeight.w800, fontSize: 17),
+                              fontWeight: FontWeight.w900, fontSize: 17),
                         ),
                         Spacer(),
                         if(permissions.contains('create_account_invoice')) CustomButton(

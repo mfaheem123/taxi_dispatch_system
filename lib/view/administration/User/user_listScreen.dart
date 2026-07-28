@@ -96,7 +96,7 @@ class _UserListscreenState extends State<UserListscreen> {
                     Text(
                       "USER" + " (${controller.userModel?.count})",
                       style: mozillaTextSemiBoldText(
-                          fontWeight: FontWeight.w800, fontSize: 17),
+                          fontWeight: FontWeight.w900, fontSize: 17),
                     ),
                     SizedBox(
                       width: 20,
@@ -114,7 +114,7 @@ class _UserListscreenState extends State<UserListscreen> {
                     Text(
                       AppText.active,
                       style: mozillaTextSemiBoldText(
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w900,
                           fontSize: 14,
                           color: DynamicColors.redClr),
                     ),

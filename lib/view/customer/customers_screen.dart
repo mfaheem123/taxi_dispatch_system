@@ -292,6 +292,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
+                              if(permissions.contains('update_customer'))
                               OutlinedButton(
                                 style: OutlinedButton.styleFrom(
                                   side: BorderSide(
@@ -299,13 +300,11 @@ class _CustomersScreenState extends State<CustomersScreen> {
                                   ), // border color & thickness
                                 ),
                                 onPressed: () {
-
-                                  if(permissions.contains('update_customer')){
                                     controller.customerUpdate(
                                         customerUpdate: item);
                                     int index = _controller.selectedMenuItems
                                         .indexWhere((element) =>
-                                    element.title == "CUSTOMERS");
+                                    element.title == "UPDATE CUSTOMER");
                                     if (index != -1) {
                                       _controller.selectedMenuItems[index]
                                           .selectedItem = true;
@@ -315,11 +314,10 @@ class _CustomersScreenState extends State<CustomersScreen> {
                                       _controller.currentPage.value =
                                           CustomerFormScreen();
                                       _controller.menuBarRefresh(
-                                          title: "CUSTOMERS",
+                                          title: "UPDATE CUSTOMER",
                                           pageName: CustomerFormScreen());
                                     }
                                     controller.update();
-                                  }
                                 },
                                 child: Icon(
                                   Icons.edit_calendar,

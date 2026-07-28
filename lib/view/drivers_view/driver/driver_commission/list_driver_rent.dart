@@ -87,7 +87,7 @@ class _DriverRentState extends State<DriverRent> {
                     Text(
                       "${AppText.driverRent} (${driverRentList.length})",
                       style: mozillaTextSemiBoldText(
-                          fontWeight: FontWeight.w800, fontSize: 17),
+                          fontWeight: FontWeight.w900, fontSize: 17),
                     ),
                     const SizedBox(width: 60),
                     Padding(

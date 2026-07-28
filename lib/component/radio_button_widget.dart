@@ -68,7 +68,7 @@ class _StatusRadioGroupState extends State<StatusRadioGroup> {
               ),
               Text(
                 widget.options[index],
-                style: mozillaTextRegularText(fontSize: 12),
+                style: mozillaTextRegularText(fontSize: 12,fontWeight: FontWeight.w900),
               ),
             ],
           );

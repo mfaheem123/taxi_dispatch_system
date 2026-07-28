@@ -302,7 +302,7 @@ class _AllBookingViewState extends State<AllBookingView> {
                                                       option.name ?? '',
                                                       overflow: TextOverflow.ellipsis,
                                                       style: const TextStyle(
-                                                        fontWeight: FontWeight.w600,
+                                                        fontWeight: FontWeight.w900,
                                                         fontSize: 13,
                                                         color: Colors.black87,
                                                       ),
@@ -313,6 +313,7 @@ class _AllBookingViewState extends State<AllBookingView> {
                                                   Text(
                                                     option.mobile ?? '',
                                                     style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
                                                       color: Colors.grey.shade700,
                                                       fontSize: 12,
                                                     ),
@@ -469,7 +470,7 @@ class _AllBookingViewState extends State<AllBookingView> {
                                     style: const TextStyle(fontSize: 13),
                                     decoration: InputDecoration(
                                       hintText: "PICKUP",
-                                      hintStyle: const TextStyle(fontSize: 12),
+                                      hintStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold,),
                                       contentPadding:
                                       const EdgeInsets.symmetric(
                                           horizontal: 10, vertical: 12),
@@ -570,7 +571,7 @@ class _AllBookingViewState extends State<AllBookingView> {
                                                     overflow:
                                                     TextOverflow.ellipsis,
                                                     style: const TextStyle(
-                                                        fontSize: 12),
+                                                        fontSize: 12, fontWeight: FontWeight.bold,),
                                                   ),
                                                 ),
                                               );
@@ -598,7 +599,7 @@ class _AllBookingViewState extends State<AllBookingView> {
                                     style: const TextStyle(fontSize: 13),
                                     decoration: InputDecoration(
                                       hintText: "DROPOFF",
-                                      hintStyle: const TextStyle(fontSize: 12),
+                                      hintStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold,),
                                       contentPadding:
                                       const EdgeInsets.symmetric(
                                           horizontal: 10, vertical: 12),
