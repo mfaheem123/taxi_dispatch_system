@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
@@ -44,9 +45,11 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 class DashboardController extends GetxController {
   WebSocketChannel? _channel;
   bool isConnected = false;
-
+// Controller me top par timer declare karein
+  Timer? _bookingCountTimer;
 // Global company ID access karne ke liye Api singleton ka use karenge
   final String _companyId = Api.singleton.globalCompanyId;
+  final Set<String> _playedBookingIds = {};
 
   // Helper method jo URL me company_id attach karega agar sendCompanyId true ho
   String _buildSocketUrl(String endpoint, {bool sendCompanyId = false}) {
@@ -1646,6 +1649,37 @@ class DashboardController extends GetxController {
 
   RxBool dashboardDataLoader = false.obs;
 
+
+  Future<void> getBookingCounts() async {
+    try {
+      var response = await Api().get("enumerations/booking-count", sendCompanyId: true);
+      if (response.statusCode == 200) {
+        List<dynamic> apiTabs = response.data['booking_tabs'] ?? [];
+        if (bookingTabsList != null && bookingTabsList!.isNotEmpty) {
+          for (var apiTab in apiTabs) {
+            int index = bookingTabsList!.indexWhere((element) => element.id == apiTab['id']);
+            if (index != -1) {
+              bookingTabsList![index].bookingCount = apiTab['booking_count'] ?? 0;
+              if (apiTab['booking_tabs'] != null) {
+                bookingTabsList![index].bookingTabs = apiTab['booking_tabs'];
+              }
+            }
+          }
+          update();
+        }
+      }
+    } catch (e) {
+      print("Error fetching booking counts: $e");
+    }
+  }
+
+  void startBookingCountTimer() {
+    _bookingCountTimer?.cancel();
+    _bookingCountTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
+      await getBookingCounts();
+    });
+  }
+
   dashboardData() async {
     dashboardDataLoader(true);
     var response = await Api().get("enumerations/get", sendCompanyId: true);
@@ -1681,14 +1715,15 @@ class DashboardController extends GetxController {
 
       selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
       selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
-
+      await getBookingCounts();
+      startBookingCountTimer();
       if (dashboardAllData!.vehicleTypes != null &&
           dashboardAllData!.vehicleTypes!.isNotEmpty) {
         try {
           // List me se 'saloon' naam ka vehicle object filter karein
           DashboardVehicleTypeObject saloonVehicle =
-              dashboardAllData!.vehicleTypes!.firstWhere(
-            (vehicle) => vehicle.name?.toLowerCase().trim() == 'saloon',
+          dashboardAllData!.vehicleTypes!.firstWhere(
+                (vehicle) => vehicle.name?.toLowerCase().trim() == 'saloon',
             orElse: () => dashboardAllData!.vehicleTypes!
                 .first, // Agar saloon na mile to pehla item select ho jaye
           );
@@ -1710,7 +1745,76 @@ class DashboardController extends GetxController {
       update();
     }
   }
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
+
+
+  /// Sound Notification Play Function
+  Future<void> playNotificationSound() async {
+    try {
+      String soundUrl = "http://158.220.92.206:5000/uploads/notification.mp3";
+      await _audioPlayer.stop(); // Pre-existing sound stop karein
+      await _audioPlayer.play(UrlSource(soundUrl));
+    } catch (e) {
+      print("Error playing sound: $e");
+    }
+  }
+
+
+
+  // dashboardData() async {
+  //   dashboardDataLoader(true);
+  //   var response = await Api().get("enumerations/get", sendCompanyId: true);
+  //   if (response.statusCode == 200) {
+  //     dashboardAllData = DashboardDataModel.fromJson(response.data);
+  //     selectSubsidiariesValue = dashboardAllData!.subsidiaries![0];
+  //
+  //     // Assign Base Tabs
+  //     bookingTabsList = dashboardAllData!.bookingTabs;
+  //
+  //     // Append Extra Control Tabs (JOB DUE BY & DELETE SELECTION)
+  //     if (bookingTabsList != null) {
+  //       bookingTabsList!.first.selectedClr!.value = true;
+  //
+  //       bookingTabsList!.add(
+  //         BookingTabObject(
+  //           bookingCount: 0,
+  //           bookingTabs: "JOB DUE BY",
+  //           id: 0,
+  //           deletedClr: false.obs,
+  //           selectedClr: true.obs,
+  //           dropDownList: [
+  //             "JOB DUE BY",
+  //             "15 MIN",
+  //             "30 MIN",
+  //             "60 MIN",
+  //           ],
+  //         ),
+  //       );
+  //
+  //       bookingTabsList!.add(
+  //         BookingTabObject(
+  //           bookingCount: 0,
+  //           bookingTabs: "DELETE SELECTION",
+  //           id: 0,
+  //           selectedClr: false.obs,
+  //           deletedClr: true.obs,
+  //           dropDownList: [],
+  //         ),
+  //       );
+  //     }
+  //
+  //     selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
+  //     selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
+  //     await getBookingCounts();
+  //     startBookingCountTimer();
+  //     if (bookingTabsList != null && bookingTabsList!.isNotEmpty) {
+  //       getDashboardTableData(tableId: bookingTabsList!.first.id);
+  //     }
+  //     dashboardDataLoader(false);
+  //     update();
+  //   }
+  // }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get account data
   DashboardAccountModel? dashboardAccountData;
   DashboardAccountObject? selectAccountValue;
@@ -1752,19 +1856,16 @@ class DashboardController extends GetxController {
   // 👇 ye function har baar text change hone par call hoga
   Future<void> onTableChangeHandler({required String tableId}) async {
     const duration = Duration(milliseconds: 800); // 800ms ka delay]
-    // selectedTextFieldsValue.value = "";
-    // 👇 Agar pehle se koi timer chal raha ho to usse cancel karo
+
     if (_tableDashboardBebounce?.isActive ?? false)
       _tableDashboardBebounce!.cancel();
 
-    // 👇 Naya timer start karo
     _tableDashboardBebounce = Timer(duration, () {
       _stopTableDataTyping(tableId: tableId);
     });
   }
 
   void _stopTableDataTyping({required String tableId}) {
-    // 👇 Yahan API call ya search function call karna hai
     getDashboardTableData(tableId: tableId);
   }
 
@@ -1807,10 +1908,11 @@ class DashboardController extends GetxController {
       selectedTabId = tableId;
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
       dashboardTableTotalPages.value = dashboardTableModelData!.total!;
-      // _timer?.cancel();
-      // _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      //   getDashboardTableData(tableId: selectedTabId);
-      // });
+      _checkBookingsTimeAndPlaySound(dashboardTableModelData?.data ?? []);
+      _timer?.cancel();
+      _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+        getDashboardTableData(tableId: selectedTabId);
+      });
       update();
     }
   }
@@ -1820,6 +1922,56 @@ class DashboardController extends GetxController {
     getDashboardTableData(tableId: selectedTabId);
   }
 
+  /// Current PC/Device Time se Match karne ki logic
+  void _checkBookingsTimeAndPlaySound(List<BookingObjectData> bookings) {
+    if (bookings.isEmpty) return;
+
+    // Current PC/System Date Time (Format: YYYY-MM-DD HH:mm)
+    DateTime now = DateTime.now();
+    String currentDateStr = DateFormat('yyyy-MM-dd').format(now);
+    String currentTimeStr = DateFormat('HH:mm').format(now);
+
+    bool shouldPlaySound = false;
+
+    for (var booking in bookings) {
+      if (booking.pickupDate == null || booking.pickupTime == null) continue;
+
+      try {
+        String bookingDateStr = DateFormat('yyyy-MM-dd').format(booking.pickupDate!);
+        String bookingTimeStr = booking.pickupTime!.trim(); // e.g. "14:30" or "02:30 PM"
+
+        // Handle 12-hour or 24-hour formats if required
+        if (bookingTimeStr.contains("AM") || bookingTimeStr.contains("PM")) {
+          DateTime parsedTime = DateFormat("hh:mm a").parse(bookingTimeStr);
+          bookingTimeStr = DateFormat("HH:mm").format(parsedTime);
+        }
+
+        // Logic 1: Exact Date and Time Match Check
+        bool isSameDate = (bookingDateStr == currentDateStr);
+        bool isSameTime = (bookingTimeStr == currentTimeStr);
+
+        // Logic 2: Dual condition (Same Time OR New Unplayed Booking Condition)
+        // Logic ke andar toString() ensure kar lein taake safe rahe:
+        // Logic 2: Dual condition (Same Time OR New/Updated Booking Condition)
+        if (isSameDate && isSameTime) {
+          // ID aur Time dono ko combine kar k unique key banayein
+          String uniqueBookingKey = "${booking.id}_${bookingTimeStr}";
+
+          if (!_playedBookingIds.contains(uniqueBookingKey)) {
+            _playedBookingIds.add(uniqueBookingKey);
+            shouldPlaySound = true;
+          }
+        }
+      } catch (e) {
+        print("Date/Time Parsing Error: $e");
+      }
+    }
+
+    // Single Notification Play for match
+    if (shouldPlaySound) {
+      playNotificationSound();
+    }
+  }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get table data status base
   int temSelectedTab = 1;
   int selectionIndex = 0;
@@ -1893,7 +2045,7 @@ class DashboardController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get phone numbers
 
   Timer? _phoneNumberBebounce;
-
+  final LayerLink mobileFieldLink = LayerLink();
   Future<void> onPhoneNoChangeHandler(
       {required String fieldName, required String searchingText}) async {
     const duration = Duration(milliseconds: 800);
@@ -1922,7 +2074,7 @@ class DashboardController extends GetxController {
             Get.isRegistered<SuggestionController>()
                 ? Get.find<SuggestionController>()
                 : Get.put(SuggestionController());
-        suggestion_controller.allListData = customerPhoneNumber!.customerInfo!;
+        suggestion_controller.allListData.assignAll(customerPhoneNumber!.customerInfo!);
         FocusScope.of(Get.context!).requestFocus(phoneNumberFieldKey);
 // FocusScope.of(Get.context!).requestFocus(phoneKeyboardFocusNode);
         selectedTextFieldsValue.value = fieldsName;
@@ -2995,6 +3147,8 @@ class DashboardController extends GetxController {
   void onClose() {
     // suggestionFocusNode.dispose();
     // keyboardFocusNode.dispose();
+    _bookingCountTimer?.cancel();
+    _audioPlayer.dispose();
     timer?.cancel();
     pickupFocusNode.dispose();
     dropoffFocusNode.dispose();
