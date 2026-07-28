@@ -13,7 +13,7 @@ class SuggestionView extends StatefulWidget {
     this.topPositions,
     this.leftPositions,
   });
-  List allListData = [].obs;
+  List allListData = [];
   final Function(dynamic value) onSelect;
   double? topPositions;
   double? leftPositions;
@@ -35,7 +35,7 @@ class _SuggestionViewState extends State<SuggestionView> {
   @override
   void initState() {
     super.initState();
-    controller.allListData = widget.allListData;
+    controller.allListData.assignAll(widget.allListData);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (dashboardController.selectedTextFieldsValue.value == "New Custom Field") {
         dashboardController.suggestionNewCustomFocusNode.value.requestFocus();
@@ -47,6 +47,7 @@ class _SuggestionViewState extends State<SuggestionView> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
 
     final screenWidth = MediaQuery.of(context).size.width;
@@ -56,31 +57,14 @@ class _SuggestionViewState extends State<SuggestionView> {
         return const SizedBox();
       }
 
-      final activeKey = controller.activeFieldKey.value;
-      final fieldBox = activeKey?.currentContext?.findRenderObject() as RenderBox?;
-      final stackBox = controller.stackKey.currentContext?.findRenderObject() as RenderBox?;
-
-      double top = screenHeight * 0.2;
-      double left = 0.0;
-      double width = screenWidth;
-
-      if (fieldBox != null && stackBox != null) {
-        final localOffset = fieldBox.localToGlobal(Offset.zero, ancestor: stackBox);
-        width = fieldBox.size.width;
-        top = localOffset.dy + fieldBox.size.height;
-        left = localOffset.dx;
-      } else {
-        left = width / 3.5;
-      }
+      final double fieldWidth = dashboardController.mobileFieldLink.leaderSize?.width ?? (screenWidth * 0.3);
+      final double fieldHeight = dashboardController.mobileFieldLink.leaderSize?.height ?? 40;
 
       const double itemHeight = 42.0;
       final double maxListHeight = screenHeight * 0.3;
       final double listHeight = (controller.allListData.length * itemHeight)
           .clamp(itemHeight, maxListHeight);
 
-      // 🔥 FIX: Poora Stack ab Positioned.fill ke andar hai, taake outer
-      // Stack(key: controller.stackKey) ko iski constraints bounded milein
-      // aur "Cannot hit test a render box with no size" wali exceptions na aayein
       return Positioned.fill(
         child: Stack(
           children: [
@@ -88,87 +72,64 @@ class _SuggestionViewState extends State<SuggestionView> {
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
                 onTap: () {
-                  controller.allListData = [];
+                  controller.allListData.clear();
                   dashboardController.dropDownShow.value = false;
                 },
               ),
             ),
-            Positioned(
-              top: widget.topPositions ?? top,
-              left: widget.leftPositions ?? left,
-              width: width/8,
+            CompositedTransformFollower(
+              link: dashboardController.mobileFieldLink,
+              showWhenUnlinked: false,
+              offset: Offset(0, fieldHeight),
               child: GestureDetector(
                 onTap: () {},
-                child: RawKeyboardListener(
-                  focusNode: dashboardController.suggestionPhoneFocusNode.value,
-                  autofocus: true,
-                  onKey: (RawKeyEvent event) async {
-                    if (event is RawKeyDownEvent) {
-                      if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                        controller.moveHighlightDown();
-                      } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                        controller.moveHighlightUp();
-                      }
-                      else if (event.logicalKey == LogicalKeyboardKey.enter ||
-                          event.logicalKey == LogicalKeyboardKey.space) {
+                child: Container(
+                  height: listHeight,
+                  width: fieldWidth,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEFF0F2),
+                    borderRadius: BorderRadius.circular(5),
+                    boxShadow: const [
+                      BoxShadow(color: Colors.black12, blurRadius: 5, offset: Offset(0, 2)),
+                    ],
+                  ),
+                  child: ListView.builder(
+                    key: controller.suggestionListKey,
+                    controller: controller.suggestionScrollController,
+                    itemCount: controller.allListData.length,
+                    padding: const EdgeInsets.only(top: 15),
+                    itemBuilder: (context, index) {
+                      final item = controller.allListData[index];
 
-                        if (controller.highlightedIndex.value >= 0 &&
-                            controller.highlightedIndex.value < controller.allListData.length) {
-
-                          final data = await controller.tapSelect(controller.highlightedIndex.value);
-                          widget.onSelect(data);
-                        }
-                      }
-                    }
-                  },
-                  child: Container(
-                    height: listHeight,
-                    width: screenWidth * 0.3,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEFF0F2),
-                      borderRadius: BorderRadius.circular(5),
-                      boxShadow: const [
-                        BoxShadow(color: Colors.black12, blurRadius: 5, offset: Offset(0, 2)),
-                      ],
-                    ),
-                    child: ListView.builder(
-                      key: controller.suggestionListKey,
-                      controller: controller.suggestionScrollController,
-                      itemCount: controller.allListData.length,
-                      padding: const EdgeInsets.only(top: 15),
-                      itemBuilder: (context, index) {
-                        final item = controller.allListData[index];
-
-                        return Obx(() {
-                          final isHighlighted = controller.highlightedIndex.value == index;
-                          return Container(
-                            key: (controller.suggestionItemKeys.length > index)
-                                ? controller.suggestionItemKeys[index]
-                                : UniqueKey(),
-                            color: isHighlighted ? const Color(0xffA0DCFF) : Colors.transparent,
-                            width: screenWidth * 0.3,
-                            child: ListTile(
-                                dense: true,
-                                visualDensity: VisualDensity.compact,
-                                title: AnimatedDefaultTextStyle(
-                                  duration: const Duration(milliseconds: 120),
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: isHighlighted ? FontWeight.bold : FontWeight.normal,
-                                    color: isHighlighted ? Colors.blue : Colors.black,
-                                  ),
-                                  child: Text("${item.name} -  ${item.mobile}"),
+                      return Obx(() {
+                        final isHighlighted = controller.highlightedIndex.value == index;
+                        return Container(
+                          key: (controller.suggestionItemKeys.length > index)
+                              ? controller.suggestionItemKeys[index]
+                              : UniqueKey(),
+                          color: isHighlighted ? const Color(0xffA0DCFF) : Colors.transparent,
+                          width: fieldWidth,
+                          child: ListTile(
+                              dense: true,
+                              visualDensity: VisualDensity.compact,
+                              title: AnimatedDefaultTextStyle(
+                                duration: const Duration(milliseconds: 120),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: isHighlighted ? FontWeight.bold : FontWeight.normal,
+                                  color: isHighlighted ? Colors.blue : Colors.black,
                                 ),
-                                onTap: () async {
-                                  final data = await controller.tapSelect(index);
-                                  widget.onSelect(data);
-                                  print("Selected value --> $data");
-                                }
-                            ),
-                          );
-                        });
-                      },
-                    ),
+                                child: Text("${item.name} -  ${item.mobile}"),
+                              ),
+                              onTap: () async {
+                                final data = await controller.tapSelect(index);
+                                widget.onSelect(data);
+                                print("Selected value --> $data");
+                              }
+                          ),
+                        );
+                      });
+                    },
                   ),
                 ),
               ),
@@ -179,7 +140,6 @@ class _SuggestionViewState extends State<SuggestionView> {
     });
   }
 }
-
 
 
 // class _SuggestionViewState extends State<SuggestionView> {

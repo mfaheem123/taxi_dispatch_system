@@ -3,10 +3,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class SuggestionController extends GetxController {
 
-  List allListData = [].obs;
+  RxList allListData = [].obs;
   final highlightedIndex = 0.obs;
   List<GlobalKey> suggestionItemKeys = [];
   final GlobalKey suggestionListKey = GlobalKey();
@@ -30,9 +32,9 @@ class SuggestionController extends GetxController {
     if (value.isEmpty) {
       allListData.clear();
     } else {
-      allListData = allListData
+      allListData.assignAll(allListData
           .where((loc) => loc.name!.toUpperCase().contains(value.toLowerCase()))
-          .toList();
+          .toList());
       highlightedIndex.value = 0;
     }
   }

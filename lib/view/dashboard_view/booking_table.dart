@@ -93,74 +93,94 @@ class _BookingTableState extends State<BookingTable> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // --- Booking Tabs Section ---
+                // --- Booking Tabs Section ---
                 SizedBox(
                   width: Get.width,
                   child: SizedBox(
                     height: 40,
-                    child: ListView.builder(
-                      itemCount: controller.bookingTabsList!.length,
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      itemBuilder: (BuildContext context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: controller.bookingTabsList![index].dropDownList!.isEmpty? CustomButton(
-                            width: widthss/11.5,
-                            verticalPadding: 0,
-                            borderRadius: 4,
-                            style: mozillaTextRegularText(
-                              fontSize: widthss/135,
-                              color: controller.bookingTabsList![index].deletedClr!.value == true?DynamicColors.whiteClr: DynamicColors.textClr,
-                            ),
-                            btnText: controller.bookingTabsList![index].deletedClr!.value == true ?controller.bookingTabsList![index].bookingTabs:
-                            "${controller.bookingTabsList![index].bookingTabs}(${controller.bookingTabsList![index].bookingCount.toString()})",
-                            btnColor: controller.bookingTabsList![index].deletedClr!.value == true ? DynamicColors.redClr:
-                            controller.bookingTabsList![index].selectedClr!.value == true ? DynamicColors.primaryClr.withOpacity(0.4) : DynamicColors.secondaryClr,
-                            onTap: () {
-                              controller.dropDownShow.value = false;
-                              if(controller.bookingTabsList![index].deletedClr!.value == true){
-                                controller.deleteJobs();
-                              }else{
-                                controller.selectionIndex = index;
-                                controller.temSelectedTab = index;
-                                controller.getTableDataStatus(index: index);
-                              }
-                            },
-                          ):
-                          SizedBox(
-                            width: widthss/11.5,
-                            child: Container(color: DynamicColors.secondaryClr,
-                              child: DropdownButton<String>(
-                                value: controller.bookingTabsList![index].selectedDropDownValue,
-                                icon: const Icon(Icons.arrow_drop_down),
-                                isExpanded: true,
-                                hint: Text("JOB DUE BY",
-                                  style: mozillaTextRegularText(
-                                      fontSize: widthss/135,
-                                      color: DynamicColors.textClr
+                    child: GetBuilder<DashboardController>(
+                      builder: (controller) {
+                        if (controller.bookingTabsList == null || controller.bookingTabsList!.isEmpty) {
+                          return const SizedBox();
+                        }
+                        return ListView.builder(
+                          itemCount: controller.bookingTabsList!.length,
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          physics: const BouncingScrollPhysics(),
+                          itemBuilder: (BuildContext context, index) {
+                            final tabItem = controller.bookingTabsList![index];
+                            final bool isDeletedTab = tabItem.deletedClr?.value == true;
+                            final bool isSelectedTab = tabItem.selectedClr?.value == true;
+
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: tabItem.dropDownList == null || tabItem.dropDownList!.isEmpty
+                                  ? CustomButton(
+                                width: widthss / 11.5,
+                                verticalPadding: 0,
+                                borderRadius: 4,
+                                style: mozillaTextRegularText(
+                                  fontSize: widthss / 135,
+                                  color: isDeletedTab
+                                      ? DynamicColors.whiteClr
+                                      : DynamicColors.textClr,
+                                ),
+                                btnText: isDeletedTab
+                                    ? tabItem.bookingTabs
+                                    : "${tabItem.bookingTabs} (${tabItem.bookingCount})",
+                                btnColor: isDeletedTab
+                                    ? DynamicColors.redClr
+                                    : isSelectedTab
+                                    ? DynamicColors.primaryClr.withOpacity(0.4)
+                                    : DynamicColors.secondaryClr,
+                                onTap: () {
+                                  controller.dropDownShow.value = false;
+                                  if (isDeletedTab) {
+                                    controller.deleteJobs();
+                                  } else {
+                                    controller.selectionIndex = index;
+                                    controller.temSelectedTab = index;
+                                    controller.getTableDataStatus(index: index);
+                                  }
+                                },
+                              )
+                                  : SizedBox(
+                                width: widthss / 11.5,
+                                child: Container(
+                                  color: DynamicColors.secondaryClr,
+                                  child: DropdownButton<String>(
+                                    value: tabItem.selectedDropDownValue,
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    isExpanded: true,
+                                    hint: Text(
+                                      "JOB DUE BY",
+                                      style: mozillaTextRegularText(
+                                          fontSize: widthss / 135,
+                                          color: DynamicColors.textClr),
+                                    ),
+                                    underline: const SizedBox(),
+                                    items: tabItem.dropDownList!.map((item) {
+                                      return DropdownMenuItem<String>(
+                                        value: item,
+                                        child: Text(
+                                          item,
+                                          style: mozillaTextRegularText(
+                                              fontSize: 13,
+                                              color: DynamicColors.textClr),
+                                        ),
+                                      );
+                                    }).toList(),
+                                    onChanged: (value) {
+                                      controller.dropDownShow.value = false;
+                                      controller.selectionIndex = index;
+                                      controller.getTableDataStatus(index: index, value: value);
+                                    },
                                   ),
                                 ),
-                                underline: const SizedBox(),
-                                items: controller.bookingTabsList![index].dropDownList!.map((item) {
-                                  return DropdownMenuItem<String>(
-                                    value: item,
-                                    child: Text(item,
-                                      style: mozillaTextRegularText(
-                                          fontSize: 13,
-                                          color: DynamicColors.textClr
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (value) {
-                                  controller.dropDownShow.value = false;
-                                  controller.selectionIndex = index;
-                                  controller.getTableDataStatus(index: index, value: value);
-                                },
                               ),
-                            ),
-                          ),
+                            );
+                          },
                         );
                       },
                     ),

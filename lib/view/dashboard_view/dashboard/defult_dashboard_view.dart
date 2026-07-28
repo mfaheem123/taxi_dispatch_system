@@ -937,44 +937,51 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               Expanded(
                                                                 child: FocusTraversalOrder(
                                                                   order: const NumericFocusOrder(11),
-                                                                  child: RawKeyboardListener(
-                                                                      focusNode: controller.phoneKeyboardFocusNode,
-                                                                      onKey: (event) {
-                                                                        if (event is RawKeyDownEvent) {
-                                                                          if (event.logicalKey == LogicalKeyboardKey.arrowDown && suggestion_controller.highlightedIndex.value < suggestion_controller.allListData.length - 1) {
-                                                                            suggestion_controller.highlightedIndex.value++;
-                                                                          } else if (event.logicalKey == LogicalKeyboardKey.arrowUp && suggestion_controller.highlightedIndex.value > 0) {
-                                                                            suggestion_controller.highlightedIndex.value--;
-                                                                          } else if (event.logicalKey == LogicalKeyboardKey.enter) {
-                                                                            final selected = suggestion_controller.allListData[suggestion_controller.highlightedIndex.value].name;
-                                                                            suggestion_controller.selectSuggestion(selected);
-                                                                          } else if (event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.tab) {
-                                                                            FocusScope.of(Get.context!).requestFocus(controller.suggestionPhoneFocusNode.value);
-                                                                            FocusScope.of(Get.context!).requestFocus(controller.suggestionPhoneFocusNode.value);
-                                                                            controller.update();
-                                                                          }
-                                                                        }
-                                                                      },
-                                                                      child: CustomTextField(
-                                                                        focusNode: controller.phoneNumberFieldKey,
-                                                                        controller: controller.mobileController,
-                                                                        borderRadius: 3,
-                                                                        inputFormatters: [
-                                                                          FilteringTextInputFormatter.digitsOnly
-                                                                        ],
-                                                                        onTap: () {
-                                                                          controller.dropDownShow.value = true;
-                                                                        },
-                                                                        onChanged: (v) {
-                                                                          if (v.isNotEmpty) {
-                                                                            controller.dropDownShow.value = true;
-                                                                            FocusScope.of(Get.context!).requestFocus(controller.phoneNumberFieldKey);
-                                                                            controller.onPhoneNoChangeHandler(fieldName: "Phone Number", searchingText: v);
-                                                                          } else {
-                                                                            controller.dropDownShow.value = false;
+                                                                  child: CompositedTransformTarget(
+                                                                    link: controller.mobileFieldLink,
+                                                                    child: RawKeyboardListener(
+                                                                        focusNode: controller.phoneKeyboardFocusNode,
+                                                                        onKey: (event) {
+                                                                          if (event is RawKeyDownEvent) {
+                                                                            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                                                                              suggestion_controller.moveHighlightDown();
+                                                                            } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                                                                              suggestion_controller.moveHighlightUp();
+                                                                            } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+                                                                              if (suggestion_controller.allListData.isNotEmpty &&
+                                                                                  suggestion_controller.highlightedIndex.value >= 0 ) {
+                                                                                final data = suggestion_controller.allListData[suggestion_controller.highlightedIndex.value];
+                                                                                suggestion_controller.allListData.clear();
+                                                                                controller.dropDownShow.value = false;
+                                                                                controller.suggestionPhoneFocusNode.value.unfocus();
+                                                                                controller.selectedTextFieldsValue.value = "";
+                                                                                FocusScope.of(Get.context!).requestFocus(controller.phoneKeyboardFocusNode);
+                                                                                controller.mobileController.text = data.mobile.toString();
+                                                                                controller.nameController.text = data.name.toString().toUpperCase();
+                                                                                controller.emailController.text = data.email.toString();
+                                                                                controller.telController.text = data.telephone.toString();
+                                                                              }
+                                                                            }
                                                                           }
                                                                         },
-                                                                      )),
+                                                                        child: CustomTextField(
+                                                                          focusNode: controller.phoneNumberFieldKey,
+                                                                          controller: controller.mobileController,
+                                                                          borderRadius: 3,
+                                                                          inputFormatters: [
+                                                                            FilteringTextInputFormatter.digitsOnly
+                                                                          ],
+                                                                          onChanged: (v) {
+                                                                            if (v.isNotEmpty) {
+                                                                              controller.dropDownShow.value = true;
+                                                                              FocusScope.of(Get.context!).requestFocus(controller.phoneNumberFieldKey);
+                                                                              controller.onPhoneNoChangeHandler(fieldName: "Phone Number", searchingText: v);
+                                                                            } else {
+                                                                              controller.dropDownShow.value = false;
+                                                                            }
+                                                                          },
+                                                                        )),
+                                                                  ),
                                                                 ),
                                                               ),
                                                             ],
