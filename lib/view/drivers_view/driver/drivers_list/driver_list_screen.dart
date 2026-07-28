@@ -257,11 +257,11 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                               item.vehicle?.vehicleType?.name ??
                                                   "-"))),
                                       DataCell(Center(
-                                          child: Text(item.vehicle?.endDate ??
+                                          child: Text(item.phcVehicleExpiry ??
                                               "-"))),
                                       DataCell(Center(
                                           child:
-                                              Text(item.endDate ?? "-"))),
+                                              Text(item.phcDriverExpiry ?? "-"))),
                                       DataCell(Center(
                                           child: Text(
                                               item.motExpiry ?? "-"))),

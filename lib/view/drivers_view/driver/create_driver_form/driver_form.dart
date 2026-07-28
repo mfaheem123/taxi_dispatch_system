@@ -26,6 +26,7 @@ class DriverForm extends StatefulWidget {
 
 class _DriverFormState extends State<DriverForm> {
   final _formKey = GlobalKey<FormState>();
+  bool _isInitialLoad = true;
 
   DriverController controller = Get.isRegistered<DriverController>()
       ? Get.find<DriverController>()
@@ -36,6 +37,13 @@ class _DriverFormState extends State<DriverForm> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "createDriver";
+    
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        _isInitialLoad = false;
+      }
+    });
+
     /// Listen for focus changes to auto-scroll the page to the focused widget
     FocusManager.instance.addListener(_onFocusChange);
   }
@@ -49,6 +57,8 @@ class _DriverFormState extends State<DriverForm> {
   /// Auto-scroll to the focused widget when focus changes (e.g. via Tab key)
   /// Wrapped in try-catch to handle cases where focused widget is outside a Scrollable (e.g. dialogs, overlays)
   void _onFocusChange() {
+    if (_isInitialLoad) return;
+    
     final focusNode = FocusManager.instance.primaryFocus;
     if (focusNode != null && focusNode.context != null && mounted) {
       try {

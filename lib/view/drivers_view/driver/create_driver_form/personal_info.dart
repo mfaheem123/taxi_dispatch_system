@@ -88,7 +88,6 @@ class DriverPersonalInfo extends StatelessWidget {
                      child: FocusTraversalOrder(
                        order: NumericFocusOrder(1),
                        child: Checkbox(
-                         autofocus: true,
                          value: controller.hasPDA.value,
                          onChanged: (val) {
                            controller.hasPDA.value = val!;
@@ -129,8 +128,8 @@ class DriverPersonalInfo extends StatelessWidget {
                      order: NumericFocusOrder(4),
                      child:
                      CustomDropdownField<SubsidiaryObject>(
-                       label: "COMPANY TYPE",
-                       text: "COMPANY ACCOUNTS",
+                       // label: "COMPANY TYPE",
+                       // text: "COMPANY ACCOUNTS",
                        width: fieldWidth/2,
                        height: 35,
                        items: controller.getCombineVehicleData!.subsidiaries!,

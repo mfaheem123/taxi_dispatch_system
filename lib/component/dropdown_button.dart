@@ -31,7 +31,10 @@ class CustomDropdownField<T> extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        text != null?Text(text!, style: mozillaTextRegularText(context: context, fontSize: 13, fontWeight: FontWeight.bold)):SizedBox.shrink(),
+        text != null ? Padding(
+          padding: const EdgeInsets.only(bottom: 6.0),
+          child: Text(text!, style: mozillaTextRegularText(context: context, fontSize: 13, fontWeight: FontWeight.bold)),
+        ) : const SizedBox.shrink(),
         SizedBox(
           width: width ?? Get.width / 4,
           height: height ?? 30,
@@ -41,7 +44,7 @@ class CustomDropdownField<T> extends StatelessWidget {
               fillColor: Colors.transparent,
               hintStyle: mozillaTextRegularText(fontSize: 13,fontWeight: FontWeight.bold),
               border: const OutlineInputBorder(),
-              contentPadding: const EdgeInsets.all(12),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(color:  DynamicColors.primaryClr),
               ),

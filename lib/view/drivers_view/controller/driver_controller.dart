@@ -236,6 +236,15 @@ class DriverController extends GetxController {
       getCombineVehicleData = DriverFormModel.fromJson(response.data);
       if (id != null) {
         driverDataBinding(id);
+      } else {
+        if (getCombineVehicleData?.subsidiaries != null &&
+            getCombineVehicleData!.subsidiaries!.isNotEmpty) {
+          companyType = getCombineVehicleData!.subsidiaries!.first;
+        }
+        if (getCombineVehicleData?.companyVehicles != null &&
+            getCombineVehicleData!.companyVehicles!.isNotEmpty) {
+          vehicleType = getCombineVehicleData!.companyVehicles!.first;
+        }
       }
       getCombineVehicleLoading(false);
       update();

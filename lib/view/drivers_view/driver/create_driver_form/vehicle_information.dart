@@ -77,10 +77,11 @@ class VehicleInformation extends StatelessWidget {
                   ),
                   Text(AppText.usedCompanyVehicle),
                   FocusTraversalOrder(
+
                     order: const NumericFocusOrder(19),
                     child: CustomDropdownField<CompanyVehicleObject>(
-                      text: "COMPANY ACCOUNTS",
-                      label: "SELECT COMPANY VEHICLE",
+                      text: "COMPANY TYPE",
+                      label: "SELECT COMPANY ",
                       width: fieldWidth/2,
                       height: 35,
                       // items: controller.vehicleInformation.value ==false?[]: controller.getCombineVehicleData!.companyVehicles!,
