@@ -1895,8 +1895,28 @@ class DashboardController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get phone numbers
 
-  Timer? _phoneNumberBebounce;
+//   Timer? _phoneNumberBebounce;
+//
+// // 👇 ye function har baar text change hone par call hoga
+//   Future<void>  onPhoneNoChangeHandler(
+//       {required String fieldName, required String searchingText}) async {
+//     const duration = Duration(milliseconds: 800); // 800ms ka delay]
+// // selectedTextFieldsValue.value = "";
+// // 👇 Agar pehle se koi timer chal raha ho to usse cancel karo
+//     if (_phoneNumberBebounce?.isActive ?? false) _phoneNumberBebounce!.cancel();
+// // 👇 Naya timer start karo
+//     _phoneNumberBebounce = Timer(duration, () {
+//       _stopPhoneNoTyping(fieldName: fieldName, searchingText: searchingText);
+//     });
+//   }
+//
+//   void _stopPhoneNoTyping(
+//       {required String fieldName, required String searchingText}) {
+// // 👇 Yahan API call ya search function call karna hai
+//     getPhoneNumberOfUSers(fieldsName: fieldName, searchingText: searchingText);
+//   }
 
+  Timer? _phoneNumberBebounce;
 // 👇 ye function har baar text change hone par call hoga
   Future<void> onPhoneNoChangeHandler(
       {required String fieldName, required String searchingText}) async {
@@ -1910,37 +1930,63 @@ class DashboardController extends GetxController {
     });
   }
 
-  void _stopPhoneNoTyping(
-      {required String fieldName, required String searchingText}) {
+
+
+  void _stopPhoneNoTyping( {required String fieldName, required String searchingText}) {
 // 👇 Yahan API call ya search function call karna hai
     getPhoneNumberOfUSers(fieldsName: fieldName, searchingText: searchingText);
   }
 
+
+//   GetPhoneNumbersModel? customerPhoneNumber;
+//   final Rx<FocusNode> suggestionPhoneFocusNode = FocusNode().obs;
+//
+//   getPhoneNumberOfUSers({fieldsName, searchingText}) async {
+//     dashboardDataLoader(true);
+//     var response = await Api().get("customers/search?mobile=$searchingText", sendCompanyId: true);
+//     if (response.statusCode == 200) {
+//       if (response.data['customer'].isNotEmpty) {
+//         dropDownShow.value = true;
+//         customerPhoneNumber = GetPhoneNumbersModel.fromJson(response.data);
+//         SuggestionController suggestion_controller =
+//             Get.isRegistered<SuggestionController>()
+//                 ? Get.find<SuggestionController>()
+//                 : Get.put(SuggestionController());
+//         suggestion_controller.allListData = customerPhoneNumber!.customerInfo!;
+//         FocusScope.of(Get.context!).requestFocus(phoneNumberFieldKey);
+// // FocusScope.of(Get.context!).requestFocus(phoneKeyboardFocusNode);
+//         selectedTextFieldsValue.value = fieldsName;
+//       } else {
+//         dropDownShow.value = false;
+//       }
+//       dashboardDataLoader(false);
+//       update();
+//     }
+//   }
+
+
   GetPhoneNumbersModel? customerPhoneNumber;
   final Rx<FocusNode> suggestionPhoneFocusNode = FocusNode().obs;
 
-  getPhoneNumberOfUSers({fieldsName, searchingText}) async {
+  Future<void> getPhoneNumberOfUSers({
+    required String fieldsName,
+    required String searchingText,
+  }) async {
     dashboardDataLoader(true);
-    var response = await Api().get("customers/search?mobile=$searchingText", sendCompanyId: true);
+
+    var response = await Api().get("customers/search?mobile=$searchingText",sendCompanyId: true,);
     if (response.statusCode == 200) {
-      if (response.data['customer'].isNotEmpty) {
-        dropDownShow.value = true;
+      final list = response.data['customer'];
+      if (list != null && list.isNotEmpty) {
         customerPhoneNumber = GetPhoneNumbersModel.fromJson(response.data);
-        SuggestionController suggestion_controller =
-            Get.isRegistered<SuggestionController>()
-                ? Get.find<SuggestionController>()
-                : Get.put(SuggestionController());
-        suggestion_controller.allListData = customerPhoneNumber!.customerInfo!;
-        FocusScope.of(Get.context!).requestFocus(phoneNumberFieldKey);
-// FocusScope.of(Get.context!).requestFocus(phoneKeyboardFocusNode);
-        selectedTextFieldsValue.value = fieldsName;
       } else {
-        dropDownShow.value = false;
+        customerPhoneNumber = null;   // empty → dropdown shows "No data"
       }
       dashboardDataLoader(false);
-      update();
+      update();                       // rebuild GetBuilder → autocomplete refilters
     }
   }
+
   TextEditingController newCustomController = TextEditingController();
   FocusNode newCustomFieldKey = FocusNode();
   FocusNode newCustomKeyboardFocusNode = FocusNode();
