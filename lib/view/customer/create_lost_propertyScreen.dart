@@ -33,7 +33,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
     super.initState();
     shortCutKeyValue.value = "lostPropertyScreen";
     if (!controller.lostPropertyValue.value) {
-      controller.refreshFields();
+      // controller.refreshFields();
     }
     // controller.lostPropertyValue(false);
   }
@@ -134,11 +134,19 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                   child: SizedBox(
                                     height: 32,
                                     child: KeyboardDatePicker(
-                                      initialDate:
-                                          controller.lostDateController != ""
-                                              ? DateTime.parse(
-                                                  controller.lostDateController)
-                                              : DateTime.now(),
+                                      initialDate: () {
+                                        final bookingDate = controller.selectedBookingForLostProperty?.pickupDate;
+                                        if (bookingDate != null && bookingDate.isNotEmpty) {
+                                          try {
+                                            return DateTime.parse(bookingDate);
+                                          } catch (e) {
+                                            // Fallback
+                                          }
+                                        }
+                                        return controller.lostDateController != ""
+                                            ? DateTime.parse(controller.lostDateController)
+                                            : DateTime.now();
+                                      }(),
                                       onChanged: (date) {
                                         controller.lostDateController = date
                                             .toIso8601String()
@@ -156,6 +164,28 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                     ),
                                   ),
                                 ),
+                                //       initialDate:
+                                //           controller.lostDateController != ""
+                                //               ? DateTime.parse(
+                                //                   controller.lostDateController)
+                                //               : DateTime.now(),
+                                //       onChanged: (date) {
+                                //         controller.lostDateController = date
+                                //             .toIso8601String()
+                                //             .split("T")
+                                //             .first;
+                                //         controller.update();
+                                //       },
+                                //       onSubmitted: (date) {
+                                //         controller.lostDateController = date
+                                //             .toIso8601String()
+                                //             .split("T")
+                                //             .first;
+                                //         controller.update();
+                                //       },
+                                //     ),
+                                //   ),
+                                // ),
                                 CustomTextField(
                                   borderRadius: 4,
                                   controller:
@@ -218,7 +248,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                               children: [
                                 CustomTextField(
                                   borderRadius: 4,
-                                  controller: controller.nameController,
+                                  controller: controller.propertyNameController,
                                   width: fieldWidth * 0.92,
                                   hintText: AppText.name,
                                   columnText: true,
@@ -235,18 +265,22 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                           onTap: () async {
                                             // GestureDetector(
                                             //   onTap: () async {
-                                            if (controller.nameController.text
+                                            if (controller.propertyNameController.text
                                                 .isNotEmpty) {
                                               var result = await Get.dialog(
                                                 LostPropertyBookingAlert(
                                                     searchQuery: controller
-                                                        .nameController.text),
+                                                        .propertyNameController.text),
                                               );
                                               if (result != null) {
                                                 controller
                                                         .selectedBookingForLostProperty =
                                                     result;
-                                                controller.mobileController
+                                                if (result.pickupDate != null && result.pickupDate.isNotEmpty) {
+                                                  controller.lostDateController = result.pickupDate;
+                                                }
+
+                                                controller.propertyMobileController
                                                     .text = result.mobile ?? "";
                                                 controller.update();
                                               }
@@ -311,12 +345,12 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                                       .getPhoneNumbersModel!
                                                       .customer![
                                                   controller.selectedIndex];
-                                              controller.nameController.text =
+                                              controller.propertyNameController.text =
                                               (selectedUser.name ?? "").toUpperCase();
-                                              controller.mobileController.text =
+                                              controller.propertyMobileController.text =
                                                   selectedUser.mobile ?? "";
                                               controller
-                                                      .address1Controller.text =
+                                                      .propertyAddressController.text =
                                               (selectedUser.address1 ?? "").toUpperCase();
                                               controller.getPhoneNumbersModel =
                                                   null;
@@ -328,7 +362,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                       },
                                       child: CustomTextField(
                                         borderRadius: 4,
-                                        controller: controller.mobileController,
+                                        controller: controller.propertyMobileController,
                                         width: fieldWidth * 0.92,
                                         hintText: AppText.mobileNo,
                                         columnText: true,
@@ -347,17 +381,21 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                         },
                                         suffixIcon: GestureDetector(
                                           onTap: () async {
-                                            if (controller.mobileController.text
+                                            if (controller.propertyMobileController.text
                                                 .isNotEmpty) {
                                               var result = await Get.dialog(
                                                 LostPropertyBookingAlert(
                                                     searchQuery: controller
-                                                        .mobileController.text),
+                                                        .propertyMobileController.text),
                                               );
                                               if (result != null) {
                                                 controller
                                                         .selectedBookingForLostProperty =
                                                     result;
+                                                if (result.pickupDate != null && result.pickupDate.isNotEmpty) {
+                                                  controller.reportDateController = result.pickupDate;
+                                                  controller.lostDateController = result.pickupDate;
+                                                }
                                                 controller.update();
                                               }
                                             } else {
@@ -384,7 +422,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                 ),
                                 CustomTextField(
                                   borderRadius: 4,
-                                  controller: controller.address1Controller,
+                                  controller: controller.propertyAddressController,
                                   width: fieldWidth * 0.92,
                                   hintText: AppText.address,
                                   columnText: true,
@@ -550,7 +588,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
             )),
             if (controller.getPhoneNumbersModel?.customer != null &&
                 controller.getPhoneNumbersModel!.customer!.isNotEmpty &&
-                controller.mobileController.text.isNotEmpty)
+                controller.propertyMobileController.text.isNotEmpty)
               Positioned(
                 // top: 120,
                 top: isMobile ? 250 : (isTablet ? 400 : 120),
@@ -584,10 +622,10 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
 
                         return InkWell(
                           onTap: () {
-                            controller.nameController.text = (user.name ?? "").toUpperCase();
-                            controller.mobileController.text =
+                            controller.propertyNameController.text = (user.name ?? "").toUpperCase();
+                            controller.propertyMobileController.text =
                                 user.mobile ?? "";
-                            controller.address1Controller.text =
+                            controller.propertyAddressController.text =
                             (user.address1 ?? "").toUpperCase();
 
                             controller.getPhoneNumbersModel = null;
