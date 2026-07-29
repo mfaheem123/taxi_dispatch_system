@@ -30,6 +30,13 @@ class DevConfig implements BaseConfig {
   // String get socketUrl => "ws://192.168.5.251:8086/com";
 // String get socketUrl => "wss://www.nexustechnologys.com/websocket";
   String get socketUrl => "ws://158.220.92.206:5000/websocket";
+
+
+  @override
+  // Base URL se "/api/" replace karke sound URL banayein
+  String get soundUrl => "${baseUrl.replaceAll('api/', '')}uploads/notification.mp3";
+
+
 }
 
 class ProductionConfig implements BaseConfig {
@@ -54,7 +61,8 @@ class ProductionConfig implements BaseConfig {
   // String get socketUrl => "wss://www.nexustechnologys.com/websocket";
   String get socketUrl => "ws://158.220.92.206:5000/websocket";
 
-
+  @override
+  String get soundUrl => "${baseUrl.replaceAll('api/', '')}uploads/notification.mp3";
 // String get mapKey => "AIzaSyDLtchj3AddQGK3mlMgqA6HKbLQlEkEa38";
 }
 //flutter run --dart-define=ENVIRONMENT=dev

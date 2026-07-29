@@ -2,7 +2,7 @@ import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show FilteringTextInputFormatter;
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../view/administration/User/create_subsiDiary.dart';
@@ -11,9 +11,22 @@ import '../view/dashboard_view/widgets/time_picker_widget.dart';
 import '../view/drivers_view/controller/driver_controller.dart';
 import '../view/drivers_view/driver/create_driver_form/driver_form.dart';
 
+/// Custom TextInputFormatter jo automatic text ko UPPERCASE me convert kar deta hai
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    return TextEditingValue(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
+    );
+  }
+}
+
 class BankDetailsAlert {
   static void show() {
-    // final List<Map<String, String>> shifts = [];
     final bank = TextEditingController();
     final accountTitle = TextEditingController();
     final account = TextEditingController();
@@ -82,22 +95,24 @@ class BankDetailsAlert {
                                   flex: 2, child: _buildField("BANK", bank, TextInputType.text)),
                               const SizedBox(width: 8),
                               Expanded(
-                                  flex: 2, child: _buildField("ACCOUNT TITLE", accountTitle,TextInputType.text )),
+                                  flex: 2, child: _buildField("ACCOUNT TITLE", accountTitle, TextInputType.text)),
                               const SizedBox(width: 8),
                               Expanded(
-                                  flex: 2, child: _buildField("ACCOUNT #", account,const TextInputType.numberWithOptions(decimal: true) )),
+                                  flex: 2, child: _buildField("ACCOUNT #", account, const TextInputType.numberWithOptions(decimal: true))),
                               const SizedBox(width: 8),
                               Expanded(
                                 flex: 2,
-                                // keyboardType ko badal kar TextInputType.text kar diya
                                 child: _buildField("IBAN", iban, TextInputType.text),
                               ),
-                              // const SizedBox(width: 8), Expanded(
-                              //     flex: 2, child: _buildField("IBAN", iban,const TextInputType.numberWithOptions(decimal: true))),
-                              const SizedBox(width: 8), Expanded(
-                                  flex: 2, child: _buildField("SORT CODE", sortCode, const TextInputType.numberWithOptions(decimal: true))),
-                              const SizedBox(width: 8), Expanded(
-                                  flex: 2, child: _buildField("VAT #", vat, const TextInputType.numberWithOptions(decimal: true))),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                flex: 2,
+                                // SORT CODE ab TextInputType.text use karega (alphanumeric input ke liye)
+                                child: _buildField("SORT CODE", sortCode, TextInputType.text),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                  flex: 2, child: _buildField("VAT #", vat, TextInputType.number)),
                               const SizedBox(width: 8),
 
                               Expanded(
@@ -147,11 +162,8 @@ class BankDetailsAlert {
                                       setState(() {});
                                     },
                                   ),
-
                                 ),
                               ),
-
-                              ///-------------------
                             ],
                           ),
 
@@ -159,8 +171,7 @@ class BankDetailsAlert {
 
                           /// Table Header
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 6,),
+                            padding: const EdgeInsets.symmetric(vertical: 6),
                             decoration: BoxDecoration(
                               color: Colors.grey.shade100,
                               borderRadius: BorderRadius.circular(4),
@@ -209,13 +220,12 @@ class BankDetailsAlert {
                           ),
 
                           /// Table Body
-
                           ...controller.bankDetailList.asMap().entries.map((entry) {
                             int index = entry.key;
-                            var row = entry.value; // This is a ShiftAlertClass object
+                            var row = entry.value;
 
                             return Container(
-                              padding: const EdgeInsets.symmetric(vertical: 6,),
+                              padding: const EdgeInsets.symmetric(vertical: 6),
                               decoration: BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(color: Colors.grey.shade200),
@@ -245,7 +255,6 @@ class BankDetailsAlert {
                                               iban.text = row.iban ?? "";
                                               sortCode.text = row.sortCode ?? "";
                                               vat.text = row.vat ?? "";
-
                                             });
                                           },
                                         ),
@@ -264,10 +273,7 @@ class BankDetailsAlert {
                                 ],
                               ),
                             );
-                          }
-
-                          ),
-
+                          }),
                         ],
                       ),
                     );
@@ -280,17 +286,29 @@ class BankDetailsAlert {
       barrierDismissible: false,
     );
   }
+
   static Widget _buildField(String label, TextEditingController controller, TextInputType keyboardType) {
+    // Basic formatters
+    List<TextInputFormatter> formatters = [];
+
+    // Selective filtering based on field
+    if (label == "IBAN" || label == "SORT CODE" ) {
+      // Letters + Numbers allow karega (Alphanumeric)
+      formatters.add(FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')));
+    } else if (keyboardType == TextInputType.number || keyboardType == const TextInputType.numberWithOptions(decimal: true)) {
+      // Sirf Numbers allow karega
+      formatters.add(FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')));
+    }
+
+    // Sabhi TextFields me Uppercase auto-convert hoga
+    formatters.add(UpperCaseTextFormatter());
+
     return SizedBox(
       height: 32,
       child: TextField(
         keyboardType: keyboardType,
         controller: controller,
-        inputFormatters: label == "IBAN"
-            ? [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]'))] // IBAN ke liye Letters + Numbers
-            : (keyboardType == TextInputType.number || keyboardType == const TextInputType.numberWithOptions(decimal: true)
-            ? [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))] // Normal numbers ke liye
-            : []),
+        inputFormatters: formatters,
         style: const TextStyle(fontSize: 12),
         decoration: InputDecoration(
           labelText: label,
@@ -303,40 +321,14 @@ class BankDetailsAlert {
       ),
     );
   }
-  // static Widget _buildField(String label, TextEditingController controller, TextInputType keyboardType) {
-  //   return SizedBox(
-  //     height: 32,
-  //     child: TextField(
-  //       keyboardType: keyboardType,
-  //       controller: controller,
-  //       inputFormatters: keyboardType == TextInputType.number || keyboardType == const TextInputType.numberWithOptions(decimal: true)
-  //           ? [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))]
-  //           : [],
-  //       style: const TextStyle(fontSize: 12),
-  //       decoration: InputDecoration(
-  //         labelText: label,
-  //         labelStyle: const TextStyle(fontSize: 11),
-  //         border: OutlineInputBorder(
-  //           borderRadius: BorderRadius.circular(6),
-  //         ),
-  //         contentPadding:
-  //         const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-  //       ),
-  //     ),
-  //   );
-  // }
 }
-
-
 
 class NoteAlert {
   static void show() {
-    // final List<Map<String, String>> shifts = [];
     DriverController controller = Get.isRegistered<DriverController>()
         ? Get.find<DriverController>()
         : Get.put(DriverController());
 
-    // int? editingIndex;
     Get.dialog(
       Dialog(
         insetPadding: const EdgeInsets.only(top: 40, left: 60, right: 60),
@@ -390,6 +382,7 @@ class NoteAlert {
                                 maxLines: 5,
                                 minLines: 5,
                                 controller: controller.notesCtrl,
+                                inputFormatters: [UpperCaseTextFormatter()], // Notes field bhi Uppercase hoga
                                 style: const TextStyle(fontSize: 12),
                                 decoration: InputDecoration(
                                   labelText: "NOTES",
@@ -422,14 +415,10 @@ class NoteAlert {
                                       ));
                                       controller.notesCtrl.clear();
                                       controller.update();
-                                      // saveShift;
                                     },
                                   ),
-
                                 ),
                               ),
-
-                              ///-------------------
                             ],
                           ),
 
@@ -476,7 +465,7 @@ class NoteAlert {
                           // Table Body
                           ...controller.noteList.asMap().entries.map((entry) {
                             int index = entry.key;
-                            var row = entry.value; // This is a ShiftAlertClass object
+                            var row = entry.value;
 
                             return Container(
                               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
@@ -493,25 +482,22 @@ class NoteAlert {
                                   Expanded(
                                     flex: 2,
                                     child: Row(
-
                                       children: [
                                         IconButton(
                                           icon: const Icon(Icons.edit,
                                               size: 18, color: Color(0xFF43489A)),
                                           onPressed: () {
                                             setState(() {
-
-                                              controller.notesCtrl.text = row.notesTitle.text;
+                                              controller.notesCtrl.text = row.notesTitle;
                                             });
                                           },
                                         ),
-
                                         IconButton(
                                           icon: const Icon(Icons.delete,
                                               size: 18, color: Colors.red),
                                           onPressed: () {
                                             setState(() {
-                                              controller.shiftList.removeAt(index);
+                                              controller.noteList.removeAt(index);
                                             });
                                           },
                                         ),
@@ -522,7 +508,6 @@ class NoteAlert {
                               ),
                             );
                           }),
-
                         ],
                       ),
                     );
@@ -536,5 +521,3 @@ class NoteAlert {
     );
   }
 }
-
-

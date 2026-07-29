@@ -18,6 +18,7 @@ import '../../../Model/via_point.dart';
 import '../../../alert/child_seats_alert.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/marker_class.dart';
+import '../../../component/networks/Url.dart' show Environment;
 import '../../../component/suggestion_widget/suggestion_controller.dart';
 import '../../../component/time_duration_method.dart';
 import '../../../tabbarview.dart';
@@ -471,6 +472,8 @@ class DashboardController extends GetxController {
   ///text editing controllers
   final pickupController = TextEditingController();
   final pickupTwoWayController = TextEditingController();
+  final selectAirportControllerReturn = TextEditingController();
+  final arrivalTimeControllerReturn = TextEditingController();
   final dropOffController = TextEditingController();
   final dropOffTwoWayController = TextEditingController();
   final selectAirportController = TextEditingController();
@@ -772,6 +775,7 @@ class DashboardController extends GetxController {
     }
   }
   var isAirportResponse = false.obs;
+  var isAirportResponseReturn = false.obs;
   List<AllAddressesModel> allAddressesData = <AllAddressesModel>[].obs;
 
   getAddresses({fieldsName, searchingText}) async {
@@ -786,6 +790,13 @@ class DashboardController extends GetxController {
       } else if (response.data['source'] != "airport" &&
           selectedTextFieldsValue.value == "PICKUP LOCATION") {
         isAirportResponse.value = false;
+      }
+      if (response.data['source'] == "airport" &&
+          selectedTextFieldsValue.value == "PICKUP TWO WAY LOCATION") {
+        isAirportResponseReturn.value = true;
+      } else if (response.data['source'] != "airport" &&
+          selectedTextFieldsValue.value == "PICKUP TWO WAY LOCATION") {
+        isAirportResponseReturn.value = false;
       }
       if (response.data.isNotEmpty) {
         allAddressesData.clear();
@@ -1712,7 +1723,6 @@ class DashboardController extends GetxController {
             deletedClr: true.obs,
             dropDownList: []),
       );
-
       selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
       selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
       await getBookingCounts();
@@ -1720,24 +1730,19 @@ class DashboardController extends GetxController {
       if (dashboardAllData!.vehicleTypes != null &&
           dashboardAllData!.vehicleTypes!.isNotEmpty) {
         try {
-          // List me se 'saloon' naam ka vehicle object filter karein
           DashboardVehicleTypeObject saloonVehicle =
           dashboardAllData!.vehicleTypes!.firstWhere(
                 (vehicle) => vehicle.name?.toLowerCase().trim() == 'saloon',
             orElse: () => dashboardAllData!.vehicleTypes!
-                .first, // Agar saloon na mile to pehla item select ho jaye
+                .first,
           );
-
-          // Dono Outward aur Return fields ko page load par Saloon assign kar diya
           selectVehicleValue = saloonVehicle;
           selectVehicleValueReturn = saloonVehicle;
         } catch (e) {
-          // Kisi unexpected crash se bachne k lye fallback safe index [0]
           selectVehicleValue = dashboardAllData!.vehicleTypes![0];
           selectVehicleValueReturn = dashboardAllData!.vehicleTypes![0];
         }
       }
-
       selectVehicleValue = dashboardAllData!.vehicleTypes![0];
       getAccountData(subsidiariesId: dashboardAllData!.subsidiaries![0].id);
       getDashboardTableData(tableId: bookingTabsList!.first.id);
@@ -1749,11 +1754,13 @@ class DashboardController extends GetxController {
 
 
 
-  /// Sound Notification Play Function
+  /// Sound Notification
   Future<void> playNotificationSound() async {
     try {
-      String soundUrl = "http://158.220.92.206:5000/uploads/notification.mp3";
-      await _audioPlayer.stop(); // Pre-existing sound stop karein
+      String baseApi = Environment().config.baseUrl;
+      String rootUrl = baseApi.replaceAll('api/', '');
+      String soundUrl = "${rootUrl}uploads/notification.mp3";
+      await _audioPlayer.stop();
       await _audioPlayer.play(UrlSource(soundUrl));
     } catch (e) {
       print("Error playing sound: $e");
@@ -1922,41 +1929,26 @@ class DashboardController extends GetxController {
     getDashboardTableData(tableId: selectedTabId);
   }
 
-  /// Current PC/Device Time se Match karne ki logic
+  /// Current Time
   void _checkBookingsTimeAndPlaySound(List<BookingObjectData> bookings) {
     if (bookings.isEmpty) return;
-
-    // Current PC/System Date Time (Format: YYYY-MM-DD HH:mm)
     DateTime now = DateTime.now();
     String currentDateStr = DateFormat('yyyy-MM-dd').format(now);
     String currentTimeStr = DateFormat('HH:mm').format(now);
-
     bool shouldPlaySound = false;
-
     for (var booking in bookings) {
       if (booking.pickupDate == null || booking.pickupTime == null) continue;
-
       try {
         String bookingDateStr = DateFormat('yyyy-MM-dd').format(booking.pickupDate!);
-        String bookingTimeStr = booking.pickupTime!.trim(); // e.g. "14:30" or "02:30 PM"
-
-        // Handle 12-hour or 24-hour formats if required
+        String bookingTimeStr = booking.pickupTime!.trim();
         if (bookingTimeStr.contains("AM") || bookingTimeStr.contains("PM")) {
           DateTime parsedTime = DateFormat("hh:mm a").parse(bookingTimeStr);
           bookingTimeStr = DateFormat("HH:mm").format(parsedTime);
         }
-
-        // Logic 1: Exact Date and Time Match Check
         bool isSameDate = (bookingDateStr == currentDateStr);
         bool isSameTime = (bookingTimeStr == currentTimeStr);
-
-        // Logic 2: Dual condition (Same Time OR New Unplayed Booking Condition)
-        // Logic ke andar toString() ensure kar lein taake safe rahe:
-        // Logic 2: Dual condition (Same Time OR New/Updated Booking Condition)
         if (isSameDate && isSameTime) {
-          // ID aur Time dono ko combine kar k unique key banayein
           String uniqueBookingKey = "${booking.id}_${bookingTimeStr}";
-
           if (!_playedBookingIds.contains(uniqueBookingKey)) {
             _playedBookingIds.add(uniqueBookingKey);
             shouldPlaySound = true;
@@ -1966,8 +1958,6 @@ class DashboardController extends GetxController {
         print("Date/Time Parsing Error: $e");
       }
     }
-
-    // Single Notification Play for match
     if (shouldPlaySound) {
       playNotificationSound();
     }
@@ -2472,8 +2462,12 @@ class DashboardController extends GetxController {
       'email': emailController.text.isNotEmpty
           ? emailController.text
           : 'Dumy@gmail.com',
-
-      if (mobileController.text.isNotEmpty) 'mobile': mobileController.text,
+      if (selectAirportController.text.isNotEmpty)
+        "flight_number": selectAirportController.text,
+      if (arrivalTimeController.text.isNotEmpty)
+        "arriving_from": arrivalTimeController.text,
+      if (mobileController.text.isNotEmpty)
+        'mobile': mobileController.text,
       if (telController.text.isNotEmpty) 'telephone': telController.text,
       'customer': // '[{name: "${nameController.text}", email: "${emailController.text}", mobile: "${mobileController.text}", telephone: "${telController.text}", blacklist: false}]',
           '[{name: "${nameController.text == "" ? "Passenger" : nameController.text}", email: "${emailController.text == '' ? "Dumy@gmail.com" : emailController.text}", mobile: "${mobileController.text}", telephone: "${telController.text}", blacklist: false}]',
@@ -2564,10 +2558,11 @@ class DashboardController extends GetxController {
         "return_fare": returnFareValue,
       if (extraFaresReturnList.isNotEmpty)
         "return_notes": jsonEncode(extraFaresReturnList),
-      if (selectAirportController.text.isNotEmpty)
-        "flight_number": selectAirportController.text,
-      if (arrivalTimeController.text.isNotEmpty)
-        "arriving_from": arrivalTimeController.text,
+
+      if (selectAirportControllerReturn.text.isNotEmpty)
+        "return_flight_number": selectAirportControllerReturn.text,
+      if (arrivalTimeControllerReturn.text.isNotEmpty)
+        "return_arriving_from": arrivalTimeControllerReturn.text,
       "total_charges": double.parse(fixedFare.value).toStringAsFixed(1)
 
 
@@ -2716,6 +2711,8 @@ class DashboardController extends GetxController {
     mobileController.clear();
     selectAirportController.clear();
     arrivalTimeController.clear();
+    selectAirportControllerReturn.clear();
+    arrivalTimeControllerReturn.clear();
     pickupTwoWayController.clear();
     dropOffTwoWayController.clear();
     telController.clear();
@@ -2781,7 +2778,8 @@ class DashboardController extends GetxController {
 
     // ---- FL (Flight) row hide ----
     isAirportResponse.value = false;
-
+    isAirportResponseReturn.value = false;
+    arrivalTimeControllerReturn.clear();
     // ---- Journey type reset to O/W & return section hidden ----
     jourValue = 'O/W';
     returnTrip.value = false;

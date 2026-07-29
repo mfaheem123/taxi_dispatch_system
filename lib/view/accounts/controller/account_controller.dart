@@ -227,7 +227,7 @@ class AccountController extends GetxController {
       vatCheckBox.value = false;
       dispatchSmsCheckBox.value = false;
       confirmSmsCheckBox.value = false;
-
+      accountAgentCommissionController.clear();
       dpartmentCtrl.clear();
       contactAlertNameCtrl.clear();
       contactAlertEmailCtrl.clear();

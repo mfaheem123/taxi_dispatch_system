@@ -859,7 +859,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             ),
                                                           ),
                                                         ),
-                                                        // MOB fields
                                                         // Expanded(
                                                         //   child: Row(
                                                         //     children: [
@@ -988,85 +987,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           ),
                                                         ),
                                                         /// (9) New Custom Field
-                                                        // Expanded(
-                                                        //   child: Row(
-                                                        //     children: [
-                                                        //       Padding(
-                                                        //         padding: const EdgeInsets.only(
-                                                        //           right: 6.0,
-                                                        //         ),
-                                                        //         child: SizedBox(
-                                                        //           width: 40,
-                                                        //           child: Text("Custom", style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                                                        //         ),
-                                                        //       ),
-                                                        //       Expanded(
-                                                        //         child: FocusTraversalOrder(
-                                                        //           order: const NumericFocusOrder(12),
-                                                        //           child: RawKeyboardListener(
-                                                        //               focusNode: controller.newCustomKeyboardFocusNode,
-                                                        //               onKey: (event) {
-                                                        //                 if (event is RawKeyDownEvent) {
-                                                        //                   if (event.logicalKey == LogicalKeyboardKey.arrowDown && suggestion_controller.highlightedIndex.value < suggestion_controller.allListData.length - 1) {
-                                                        //                     suggestion_controller.highlightedIndex.value++;
-                                                        //                   } else if (event.logicalKey == LogicalKeyboardKey.arrowUp && suggestion_controller.highlightedIndex.value > 0) {
-                                                        //                     suggestion_controller.highlightedIndex.value--;
-                                                        //                   } else if (event.logicalKey == LogicalKeyboardKey.enter) {
-                                                        //                     final selected = suggestion_controller.allListData[suggestion_controller.highlightedIndex.value].name;
-                                                        //                     suggestion_controller.selectSuggestion(selected);
-                                                        //                   } else if (event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.tab) {
-                                                        //                     FocusScope.of(Get.context!).requestFocus(controller.suggestionNewCustomFocusNode.value);
-                                                        //                     controller.update();
-                                                        //                   }
-                                                        //                 }
-                                                        //               },
-                                                        //               child: CustomTextField(
-                                                        //                 focusNode: controller.newCustomFieldKey,
-                                                        //                 controller: controller.newCustomController,
-                                                        //                 borderRadius: 3,
-                                                        //                 onTap: () {
-                                                        //                   controller.dropDownShow.value = true;
-                                                        //                 },
-                                                        //                 onChanged: (v) {
-                                                        //                   if (v.isNotEmpty) {
-                                                        //                     controller.dropDownShow.value = true;
-                                                        //                     FocusScope.of(Get.context!).requestFocus(controller.newCustomFieldKey);
-                                                        //                     controller.onPhoneNoChangeHandler(fieldName: "New Custom Field", searchingText: v);
-                                                        //                   } else {
-                                                        //                     controller.dropDownShow.value = false;
-                                                        //                   }
-                                                        //                 },
-                                                        //               )),
-                                                        //         ),
-                                                        //       ),
-                                                        //     ],
-                                                        //   ),
-                                                        // ),
-                                                        // Tel fileds
-                                                        // Expanded(
-                                                        //   child: Padding(
-                                                        //     padding:
-                                                        //     const EdgeInsets.only(left: 4),
-                                                        //     child:
-                                                        //     FocusTraversalOrder(
-                                                        //       order: const NumericFocusOrder(12),
-                                                        //       child: labeledTextField
-                                                        //         (context, isMobile, AppText.tel, controller.telController,
-                                                        //         width: fieldWidthh / 12,
-                                                        //         // width: fieldWidth / 3,
-                                                        //         textInputAction: TextInputAction.next,
-                                                        //         keyboardType: TextInputType.phone,
-                                                        //         formatDigitsOnly: false,
-                                                        //         onChanged: (v){
-                                                        //           controller.dropDownShow.value = false;
-                                                        //         },
-                                                        //         onTap: (){
-                                                        //           controller.dropDownShow.value = false;
-                                                        //         },
-                                                        //       ),
-                                                        //     ),
-                                                        //   ),
-                                                        // ),
                                                         Expanded(
                                                           child: Padding(
                                                             padding: const EdgeInsets.only(left: 30),
@@ -1366,6 +1286,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             }
                                                                             controller.pickupTwoWayController.clear();
                                                                             controller.clearReturnViaIfNoPickupAndDrop();
+                                                                            controller.selectAirportControllerReturn.clear();
+                                                                            controller.arrivalTimeControllerReturn.clear();
+                                                                            controller.isAirportResponse.value = false;
                                                                             // controller.dropOffTwoWayController.clear();
                                                                             controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "PICKUP TWO WAY LOCATION");
                                                                             if (controller.markers is List<CustomMarker>) {
@@ -1474,6 +1397,85 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           ],
                                                         ),
                                                       ),
+                                                      /// ================= Return Airport ROW ========================================================
+                                                      // Visibility(
+                                                      //   visible: controller
+                                                      //       .isAirportResponseReturn
+                                                      //       .value,
+                                                      //   child:
+                                                      //   Padding(
+                                                      //     padding:
+                                                      //     const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                                                      //     child:
+                                                      //     Row(
+                                                      //       children: [
+                                                      //         Padding(
+                                                      //           padding: const EdgeInsets.only(right: 10),
+                                                      //           child: Text(
+                                                      //             "R/FL",
+                                                      //             style: mozillaTextSemiBoldText(
+                                                      //               context: context,
+                                                      //               fontSize: 13,
+                                                      //             ),
+                                                      //           ),
+                                                      //         ),
+                                                      //         Padding(
+                                                      //           padding: EdgeInsets.only(left: 15),
+                                                      //           child: SizedBox(
+                                                      //             width: fieldWidth / 0.73,
+                                                      //             height: 30,
+                                                      //             child: CustomTextField(
+                                                      //               controller: controller.selectAirportControllerReturn,
+                                                      //               hintText: "Flight Number",
+                                                      //               inputFormatters: [
+                                                      //                 UpperCaseTextFormatter(),
+                                                      //               ],
+                                                      //               borderRadius: 6,
+                                                      //               textInputAction: TextInputAction.next,
+                                                      //               onTap: () {
+                                                      //                 controller.dropDownShow.value = false;
+                                                      //               },
+                                                      //               onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                                                      //             ),
+                                                      //           ),
+                                                      //         ),
+                                                      //         SizedBox(width: 14),
+                                                      //         Padding(
+                                                      //           padding: const EdgeInsets.only(right: 10, left: 5),
+                                                      //           child: Text(
+                                                      //             "R/ARR",
+                                                      //             style: mozillaTextSemiBoldText(
+                                                      //               context: context,
+                                                      //               fontSize: 13,
+                                                      //             ),
+                                                      //           ),
+                                                      //         ),
+                                                      //
+                                                      //         Padding(
+                                                      //           padding: EdgeInsets.only(left: 0),
+                                                      //           child: SizedBox(
+                                                      //             width: fieldWidth / 3.7,
+                                                      //             height: 30,
+                                                      //             child: CustomTextField(
+                                                      //               controller: controller.arrivalTimeControllerReturn,
+                                                      //               inputFormatters: [
+                                                      //                 UpperCaseTextFormatter(),
+                                                      //               ],
+                                                      //               hintText: "R/ARR",
+                                                      //               borderRadius: 6,
+                                                      //               onTap: () {
+                                                      //                 controller.dropDownShow.value = false;
+                                                      //               },
+                                                      //               textInputAction: TextInputAction.next,
+                                                      //               onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                                                      //             ),
+                                                      //           ),
+                                                      //         ),
+                                                      //       ],
+                                                      //     ),
+                                                      //   ),
+                                                      // ),
+
                                                       Padding(
                                                         padding: const EdgeInsets.only(right: 10.0),
                                                         child: Row(
@@ -1792,7 +1794,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           ),
                                                         ],
                                                       ),
-                                                      /// ---------------------------------------------------- checkBox
+                                                      /// ----- checkBox
                                                       Row(
                                                         mainAxisAlignment: MainAxisAlignment.start,
                                                         children: [
@@ -2227,7 +2229,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         context: context,
                                                         isMobile: isMobile,
                                                         label: "DEPT",
-                                                        width: fieldWidthh / 13,
+                                                        width: fieldWidthh / 11.5,
                                                         heights: 35,
                                                         child: Container(
                                                           // height: 35,
@@ -2505,10 +2507,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               },
                                                             ),
                                                           ),
-                                                          // (13) Calendar icon (keyboard clickable)
                                                         ],
                                                       ),
                                                     ),
+                                                          /// (13) Calendar icon (keyboard clickable)
                                                     // SizedBox(width: 0.0),
                                                     // FocusTraversalOrder(
                                                     //   order: NumericFocusOrder(controller.jourValue == 'W/R' ? 37 : 45),
@@ -2534,41 +2536,41 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                     //     ),
                                                     //   ),
                                                     // ),
-                                                    UnconstrainedBox(
-                                                      child: FocusTraversalOrder(
-                                                        order: NumericFocusOrder(controller.jourValue == 'W/R' ? 37 : 45),
-                                                        child: SizedBox(
-                                                          height: 40,
-                                                          child: KbdActivatable(
-                                                            focusNode: calendarFN,
-                                                            onActivate: () {
-                                                              controller.dropDownShow.value = false;
-
-                                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                                const SnackBar(content: Text("Under process")),
-                                                              );
-                                                            },
-                                                            child: Container(
-                                                              padding: const EdgeInsets.symmetric(horizontal: 8),
-                                                              alignment: Alignment.center,
-                                                              decoration: BoxDecoration(
-
-
-                                                                          color: Colors.grey.shade300,
-                                                                          borderRadius: BorderRadius.circular(5),
-                                                              ),
-                                                              child: const Text(
-                                                                'PICK BOOKING',
-                                                                style: TextStyle(
-                                                                  fontSize: 12,
-                                                                  fontWeight: FontWeight.bold,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    )
+                                                    // UnconstrainedBox(
+                                                    //   child: FocusTraversalOrder(
+                                                    //     order: NumericFocusOrder(controller.jourValue == 'W/R' ? 37 : 45),
+                                                    //     child: SizedBox(
+                                                    //       height: 40,
+                                                    //       child: KbdActivatable(
+                                                    //         focusNode: calendarFN,
+                                                    //         onActivate: () {
+                                                    //           controller.dropDownShow.value = false;
+                                                    //
+                                                    //           ScaffoldMessenger.of(context).showSnackBar(
+                                                    //             const SnackBar(content: Text("Under Process")),
+                                                    //           );
+                                                    //         },
+                                                    //         child: Container(
+                                                    //           padding: const EdgeInsets.symmetric(horizontal: 8),
+                                                    //           alignment: Alignment.center,
+                                                    //           decoration: BoxDecoration(
+                                                    //
+                                                    //
+                                                    //                       color: Colors.grey.shade300,
+                                                    //                       borderRadius: BorderRadius.circular(5),
+                                                    //           ),
+                                                    //           child: const Text(
+                                                    //             'PICK BOOKING',
+                                                    //             style: TextStyle(
+                                                    //               fontSize: 12,
+                                                    //               fontWeight: FontWeight.bold,
+                                                    //             ),
+                                                    //           ),
+                                                    //         ),
+                                                    //       ),
+                                                    //     ),
+                                                    //   ),
+                                                    // )
                                                   ],
                                                 ),
                                               ),
@@ -2577,91 +2579,175 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                               height:
                                               10,
                                             ),
-                                            Container(
-                                              width: Get
-                                                  .width,
-                                              padding: const EdgeInsets
-                                                  .symmetric(
-                                                  vertical:
-                                                  8),
-                                              decoration:
-                                              BoxDecoration(
-                                                  color: DynamicColors.secondaryClr),
-                                              child:
-                                              Wrap(
-                                                spacing:
-                                                10,
-                                                runSpacing:
-                                                16,
-                                                children: [
-                                                  SizedBox(
-                                                      width: 30),
-                                                  Icon(
-                                                      Icons.access_time_filled_outlined,
+                                            // Container(
+                                            //   width: Get
+                                            //       .width,
+                                            //   padding: const EdgeInsets
+                                            //       .symmetric(
+                                            //       vertical:
+                                            //       8),
+                                            //   decoration:
+                                            //   BoxDecoration(
+                                            //       color: DynamicColors.secondaryClr),
+                                            //   child:
+                                            //   Wrap(
+                                            //     spacing:
+                                            //     10,
+                                            //     runSpacing:
+                                            //     16,
+                                            //     children: [
+                                            //       SizedBox(
+                                            //           width: 30),
+                                            //       Icon(
+                                            //           Icons.access_time_filled_outlined,
+                                            //           color: DynamicColors.textClr,
+                                            //           size: 18),
+                                            //       SizedBox(
+                                            //           width: 2),
+                                            //       Text(
+                                            //           "ETA : ${controller.totalTimeDuration}",
+                                            //           style: TextStyle(color: DynamicColors.textClr, fontSize: 13)),
+                                            //       SizedBox(
+                                            //           width: 30),
+                                            //       // Icon(
+                                            //       //     Icons.access_time_filled_outlined,
+                                            //       //     color: DynamicColors.textClr,
+                                            //       //     size: 18),
+                                            //       // SizedBox(
+                                            //       //     width: 2),
+                                            //       // Text(
+                                            //       //     "JOURNEY : 0.0 mins",
+                                            //       //     style: TextStyle(color: DynamicColors.textClr, fontSize: 13)),
+                                            //       SizedBox(
+                                            //           width: 30),
+                                            //       Icon(
+                                            //           Icons.location_on,
+                                            //           color: DynamicColors.textClr,
+                                            //           size: 18),
+                                            //       SizedBox(
+                                            //           width: 2),
+                                            //       Text(
+                                            //           "DISTANCE : ${controller.totalDistance}",
+                                            //           style: TextStyle(color: DynamicColors.textClr, fontSize: 13)),
+                                            //       SizedBox(
+                                            //           width: 30),
+                                            //       ///
+                                            //       Container(
+                                            //         width:
+                                            //         fieldWidth / 3.5,
+                                            //         padding:
+                                            //         EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            //         decoration:
+                                            //         BoxDecoration(
+                                            //           color: Colors.white,
+                                            //           borderRadius: BorderRadius.circular(4),
+                                            //         ),
+                                            //         child:
+                                            //         FittedBox(
+                                            //           fit: BoxFit.scaleDown,
+                                            //           child: Text(
+                                            //             "FARE: \£ ${
+                                            //                 ((double.tryParse(controller.fixedFare.value) ?? 0.0) +
+                                            //                     (controller.pickupTwoWayController.text.isNotEmpty
+                                            //                         ? (double.tryParse(controller.returnFareValue.toString()) ?? 0.0)
+                                            //                         : 0.0))
+                                            //                     .toStringAsFixed(1)
+                                            //             }",
+                                            //             // "FARE: \£  ${double.parse(controller.fixedFare.value).toStringAsFixed(1)}",
+                                            //             style: TextStyle(
+                                            //               fontWeight: FontWeight.bold,
+                                            //               color: Colors.black,
+                                            //               fontSize: 13,
+                                            //             ),
+                                            //           ),
+                                            //         ),
+                                            //       ),
+                                            //     ],
+                                            //   ),
+                                            // ),
+                                      Container(
+                                        width: Get.width,
+                                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                                        decoration: BoxDecoration(
+                                          color: DynamicColors.secondaryClr,
+                                        ),
+                                        child: LayoutBuilder(
+                                          builder: (context, constraints) {
+                                            double fareBoxWidth = fieldWidth / 3.5;
+                                            double reservedWidth = 18 + 18 + 20 + fareBoxWidth;
+                                            double availableWidthForText = constraints.maxWidth - reservedWidth;
+                                            double etaWidth = availableWidthForText * 0.50;
+                                            double distanceWidth = availableWidthForText * 0.45;
+                                            return Wrap(
+                                              spacing: 4,
+                                              runSpacing: 0,
+                                              crossAxisAlignment: WrapCrossAlignment.center,
+                                              children: [
+                                                // 1. ETA Icon & Text
+                                                Icon(
+                                                  Icons.access_time_filled_outlined,
+                                                  color: DynamicColors.textClr,
+                                                  size: 18,
+                                                ),
+                                                const SizedBox(width: 2),
+                                                SizedBox(
+                                                  width: etaWidth,
+                                                  child: Text(
+                                                    "ETA : ${controller.totalTimeDuration}",
+                                                    style: TextStyle(
                                                       color: DynamicColors.textClr,
-                                                      size: 18),
-                                                  SizedBox(
-                                                      width: 2),
-                                                  Text(
-                                                      "ETA : ${controller.totalTimeDuration}",
-                                                      style: TextStyle(color: DynamicColors.textClr, fontSize: 13)),
-                                                  SizedBox(
-                                                      width: 30),
-                                                  // Icon(
-                                                  //     Icons.access_time_filled_outlined,
-                                                  //     color: DynamicColors.textClr,
-                                                  //     size: 18),
-                                                  // SizedBox(
-                                                  //     width: 2),
-                                                  // Text(
-                                                  //     "JOURNEY : 0.0 mins",
-                                                  //     style: TextStyle(color: DynamicColors.textClr, fontSize: 13)),
-                                                  SizedBox(
-                                                      width: 30),
-                                                  Icon(
-                                                      Icons.location_on,
-                                                      color: DynamicColors.textClr,
-                                                      size: 18),
-                                                  SizedBox(
-                                                      width: 2),
-                                                  Text(
-                                                      "DISTANCE : ${controller.totalDistance}",
-                                                      style: TextStyle(color: DynamicColors.textClr, fontSize: 13)),
-                                                  SizedBox(
-                                                      width: 30),
-                                                  Container(
-                                                    width:
-                                                    fieldWidth / 3.5,
-                                                    padding:
-                                                    EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                                    decoration:
-                                                    BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius: BorderRadius.circular(4),
+                                                      fontSize: 13,
                                                     ),
-                                                    child:
-                                                    FittedBox(
-                                                      fit: BoxFit.scaleDown,
-                                                      child: Text(
-                                                        "FARE: \£ ${
-                                                            ((double.tryParse(controller.fixedFare.value) ?? 0.0) +
-                                                                (controller.pickupTwoWayController.text.isNotEmpty
-                                                                    ? (double.tryParse(controller.returnFareValue.toString()) ?? 0.0)
-                                                                    : 0.0))
-                                                                .toStringAsFixed(1)
-                                                        }",
-                                                        // "FARE: \£  ${double.parse(controller.fixedFare.value).toStringAsFixed(1)}",
-                                                        style: TextStyle(
-                                                          fontWeight: FontWeight.bold,
-                                                          color: Colors.black,
-                                                          fontSize: 13,
-                                                        ),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+
+                                                // 2. DISTANCE Icon & Text
+                                                Icon(
+                                                  Icons.location_on,
+                                                  color: DynamicColors.textClr,
+                                                  size: 18,
+                                                ),
+                                                const SizedBox(width: 2),
+                                                SizedBox(
+                                                  width: distanceWidth,
+                                                  child: Text(
+                                                    "DISTANCE : ${controller.totalDistance}",
+                                                    style: TextStyle(
+                                                      color: DynamicColors.textClr,
+                                                      fontSize: 13,
+                                                    ),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+
+                                                // 3. FARE Box Container
+                                                Container(
+                                                  width: fareBoxWidth,
+                                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius: BorderRadius.circular(4),
+                                                  ),
+                                                  child: FittedBox(
+                                                    fit: BoxFit.scaleDown,
+                                                    child: Text(
+                                                      "FARE: £ ${((double.tryParse(controller.fixedFare.value) ?? 0.0) + (controller.pickupTwoWayController.text.isNotEmpty ? (double.tryParse(controller.returnFareValue.toString()) ?? 0.0) : 0.0)).toStringAsFixed(1)}",
+                                                      style: const TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                        color: Colors.black,
+                                                        fontSize: 13,
                                                       ),
                                                     ),
                                                   ),
-                                                ],
-                                              ),
-                                            ),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        ),
+                                      ),
                                             SizedBox(
                                               height:
                                               10,
