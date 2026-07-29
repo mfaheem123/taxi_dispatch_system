@@ -12,6 +12,7 @@ import '../../alert/restrict_drivers_alert.dart';
 import '../../component/color.dart';
 import '../../component/datatable_widget.dart';
 import '../../component/pagination.dart';
+import '../../component/responsive_datatable_widget.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
@@ -78,6 +79,7 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
           SingleChildScrollView(
           child: Container(
             color: const Color(0xFFF7F9FC),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -249,175 +251,201 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                 //   height: 10,
                 // ),
 
-                // 📋 Data Table
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child:
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    child: DatatableWidget(
-                      columns: [
-                        buildHeaderWithSearch(title: "SOURCE",
-                          onChanged: (v) {
-                            controller.completedSource.text = v;
-                            controller.completedBookingonSearch();
-                          },
-                        ),  buildHeaderWithSearch(title: "REF #",
-                          onChanged: (v) {
-                            controller.completedreferenceNumber.text = v;
-                            controller.completedBookingonSearch();
-                          },
-                        ),
-                        buildHeaderWithSearch(title: "DATETIME",
-                          onChanged: (v) {
-                            controller.completedpickupDate.text = v;
-                            controller.completedBookingonSearch();
-                          },
-                        ),
+                ResponsiveDataTableWidget(
+                  totalWidth: totalAvailableWidth,
+                  items: listToShow,
+                  columnConfigs: [
+                    TableColumnConfig(
+                        title: "SOURCE",
+                        sizeType: ColumnSizeType.small,
+                        onChanged: (v) {
+                          controller.completedSource.text = v;
+                          controller.completedBookingonSearch();
+                        }),
+                    TableColumnConfig(
+                        title: "REF #",
+                        sizeType: ColumnSizeType.small,
+                        onChanged: (v) {
+                          controller.completedreferenceNumber.text = v;
+                          controller.completedBookingonSearch();
+                        }),
+                    TableColumnConfig(
+                        title: "DATETIME",
+                        sizeType: ColumnSizeType.medium,
+                        onChanged: (v) {
+                          controller.completedpickupDate.text = v;
+                          controller.completedBookingonSearch();
+                        }),
+                    TableColumnConfig(
+                        title: "CUSTOMER",
+                        sizeType: ColumnSizeType.medium,
+                        onChanged: (v) {
+                          controller.completedname.text = v;
+                          controller.completedBookingonSearch();
+                        }),
+                    TableColumnConfig(
+                        title: "PICKUP",
+                        sizeType: ColumnSizeType.large,
+                        onChanged: (v) {
+                          controller.completedpickup.text = v;
+                          controller.completedBookingonSearch();
+                        }),
+                    TableColumnConfig(
+                        title: "DROPOFF",
+                        sizeType: ColumnSizeType.large,
+                        onChanged: (v) {
+                          controller.completeddropOff.text = v;
+                          controller.completedBookingonSearch();
+                        }),
+                    TableColumnConfig(
+                        title: "ACC",
+                        sizeType: ColumnSizeType.small,
+                        onChanged: (v) {
+                          controller.completedaccountName.text = v;
+                          controller.completedBookingonSearch();
+                        }),
+                    TableColumnConfig(
+                        title: "DRV",
+                        sizeType: ColumnSizeType.small,
+                        onChanged: (v) {
+                          controller.completeddriverName.text = v;
+                          controller.completedBookingonSearch();
+                        }),
+                    TableColumnConfig(
+                        title: "P/T",
+                        sizeType: ColumnSizeType.small,
+                        onChanged: (v) {
+                          controller.completedpaymentType.text = v;
+                          controller.completedBookingonSearch();
+                        }),
+                    TableColumnConfig(
+                        title: "VEH",
+                        sizeType: ColumnSizeType.small,
+                        onChanged: (v) {
+                          controller.completedvehicleTypeName.text = v;
+                          controller.completedBookingonSearch();
+                        }),
+                    TableColumnConfig(
+                        title: "NOTE",
+                        sizeType: ColumnSizeType.medium,
+                        onChanged: (v) {
+                          controller.completednotes.text = v;
+                          controller.completedBookingonSearch();
+                        }),
+                    TableColumnConfig(
+                        title: "FARE",
+                        sizeType: ColumnSizeType.small,
+                        onChanged: (v) {
+                          controller.completedfares.text = v;
+                          controller.completedBookingonSearch();
+                        }),
+                    TableColumnConfig(
+                        title: "STATUS",
+                        sizeType: ColumnSizeType.fixed,
+                        fixedWidth: 75.0,
+                        onChanged: (v) {
+                          controller.completedbookingStatus.text = v;
+                          controller.completedBookingonSearch();
+                        }),
+                    TableColumnConfig(
+                        title: "J/T",
+                        sizeType: ColumnSizeType.small,
+                        onChanged: (v) {
+                          controller.completedjourneyType.text = v;
+                          controller.completedBookingonSearch();
+                        }),
+                    TableColumnConfig(
+                        title: "SUBS",
+                        sizeType: ColumnSizeType.small,
+                        onChanged: (v) {
+                          controller.completedsubsidiary.text = v;
+                          controller.completedBookingonSearch();
+                        }),
+                    TableColumnConfig(
+                        title: "ACTIONS",
+                        sizeType: ColumnSizeType.small,
+                        fixedWidth: 70.0,
+                        removeSearching: true),
+                  ],
+                  rowBuilder: (item, widths) {
+                    String formattedDateTime = "-";
+                    if (item.pickupDate != null) {
+                      formattedDateTime =
+                          "${DateFormat('dd-MM-yyyy').format(item.pickupDate!)} ${item.pickupTime ?? ''}"
+                              .trim();
+                    }
+                    String firstNote =
+                    (item.notes != null && item.notes!.isNotEmpty)
+                        ? item.notes!.first.note ?? ''
+                        : '';
 
-                        buildHeaderWithSearch(title: "CUSTOMER",
-                          onChanged: (v) {
-                            controller.completedname.text = v;
-                            controller.completedBookingonSearch();
-                          },
+                    return [
+                      (item.bookingSource ?? '').toUpperCase(),
+                      item.referenceNumber ?? '',
+                      formattedDateTime,
+                      (item.name ?? '').toUpperCase(),
+                      (item.pickup ?? '').toUpperCase(),
+                      (item.dropoff ?? '').toUpperCase(),
+                      (item.account?.name ?? '').toUpperCase(),
+                      (item.driver?.name ?? '').toUpperCase(),
+                      (item.paymentType?.name ?? '').toUpperCase(),
+                      (item.vehicleType?.name ?? '').toUpperCase(),
+                      firstNote.toUpperCase(),
+                      "£${item.fares?.toString() ?? ''}",
+                      Container(
+                        width: widths["STATUS"]!,
+                        height: double.infinity,
+                        alignment: Alignment.center,
+                        color: DynamicColors.statusColor,
+                        child: Text(
+                          (item.bookingStatus?.bookingStatus
+                              .toString() ??
+                              '')
+                              .toUpperCase(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: DynamicColors.whiteClr,
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        buildHeaderWithSearch(title: "PICKUP",
-                          onChanged: (v) {
-                            controller.completedpickup.text = v;
-                            controller.completedBookingonSearch();
-                          },
-                        ),
-                        buildHeaderWithSearch(title: "DROPOFF",
-                          onChanged: (v) {
-                            controller.completeddropOff.text = v;
-                            controller.completedBookingonSearch();
-                          },
-                        ),
-                        buildHeaderWithSearch(title: "ACC",
-                          onChanged: (v) {
-                            controller.completedaccountName.text = v;
-                            controller.completedBookingonSearch();
-                          },
-                        ),
-                        buildHeaderWithSearch(title: "DRV",
-                          onChanged: (v) {
-                            controller.completeddriverName.text = v;
-                            controller.completedBookingonSearch();
-                          },
-                        ),
-                        buildHeaderWithSearch(title: "P/T",
-                          onChanged: (v) {
-                            controller.completedpaymentType.text = v;
-                            controller.completedBookingonSearch();
-                          },
-                        ),
-                        buildHeaderWithSearch(title: "VEH",
-                          onChanged: (v) {
-                            controller.completedvehicleTypeName.text = v;
-                            controller.completedBookingonSearch();
-                          },
-                        ),
-                        buildHeaderWithSearch(title: "NOTE",
-                          onChanged: (v) {
-                            controller.completednotes.text = v;
-                            controller.completedBookingonSearch();
-                          },
-                        ),
-                        buildHeaderWithSearch(title: "FARE",
-                          onChanged: (v) {
-                            controller.completedfares.text = v;
-                            controller.completedBookingonSearch();
-                          },
-                        ),
-                        buildHeaderWithSearch(title: "STATUS",
-                          onChanged: (v) {
-                            controller.completedbookingStatus.text = v;
-                            controller.completedBookingonSearch();
-                          },
-                        ),
-                        buildHeaderWithSearch(title: "J/T",
-                          onChanged: (v) {
-                            controller.completedjourneyType.text = v;
-                            controller.completedBookingonSearch();
-                          },
-                        ),
-                        buildHeaderWithSearch(title: "SUBS",
-
-                          onChanged: (v) {
-                            controller.completedsubsidiary.text = v;
-                            controller.completedBookingonSearch();
-                          },
-                        ),
-
-                        buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
-                      ],
-                      totalRow: listToShow.length,
-                      rows: listToShow.map((item) {
-                        return DataRow(
-                          cells: [
-                            DataCell(Center(child: Text((item.bookingSource ?? '').toUpperCase()))),
-                            DataCell(Center(child: Text(item.referenceNumber ?? ''))),
-                            DataCell(Center(child: Text("${DateFormat('dd-MM-yyyy').format(item.pickupDate!)} ${item.pickupTime}"))),
-                            DataCell(Center(child: Text((item.name ?? '').toUpperCase()))),
-                            DataCell(Center(child: Text((item.pickup ?? '').toUpperCase()))),
-                            DataCell(Center(child: Text((item.dropoff ?? '').toUpperCase()))),
-                            DataCell(Center(child: Text((item.account?.name ?? '').toUpperCase()))),
-                            DataCell(Center(child: Text((item.driver?.name ?? '').toUpperCase()))),
-                            DataCell(Center(child: Text((item.paymentType?.name ?? '').toUpperCase()))),
-                            DataCell(Center(child: Text((item.vehicleType?.name ?? '').toUpperCase()))),
-                            // DataCell(Center(child: Text((item.notes.toString() ?? 'N/A').toUpperCase()))),
-                            DataCell(Center(child: Text(
-                                ((item.notes != null && item.notes!.isNotEmpty)
-                                    ? item.notes!.first.note ?? ''
-                                    : ''
-                            ).toUpperCase()))),
-                            DataCell(Center(child: Text(item.fares?.toString() ?? ''))),
-                            DataCell(Center(child: Container(
-                              width: double.infinity,
-                              height: double.infinity,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: DynamicColors.statusColor,
-                                // Optional: borderRadius: BorderRadius.circular(2),
+                      ),
+                      (item.journeyType?.journeyType ?? '')
+                          .toUpperCase(),
+                      (item.subsidiary?.name ?? '').toUpperCase(),
+                      Center(
+                        child: SizedBox(
+                          width: widths["ACTIONS"]!,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                icon: Icon(Icons.edit_calendar,
+                                    size: 16, color: DynamicColors.primaryClr),
+                                onPressed: () {},
                               ),
-                              child: Text((
-                                item.bookingStatus?.bookingStatus.toString() ?? '').toUpperCase(),
-                                style: TextStyle(color: DynamicColors.whiteClr),
+                              const SizedBox(width: 2),
+                              const Text("|",
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12)),
+                              const SizedBox(width: 2),
+                              IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                icon: Icon(Icons.delete_forever,
+                                    size: 16, color: DynamicColors.primaryClr),
+                                onPressed: () {},
                               ),
-                            ),
-
-                            )),
-                            DataCell(Center(child: Text((item.journeyType?.journeyType ?? '').toUpperCase()))),
-                            DataCell(Center(child: Text((item.subsidiary?.name ?? '').toUpperCase()))),
-                            DataCell(
-                              Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(side: BorderSide(color: Colors.transparent),),
-                                      onPressed: () {},
-                                      child: Icon(Icons.edit_calendar,
-                                          size: 28),
-                                    ),
-                                    Text("|"),
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(color: Colors.transparent),
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(Icons.delete_forever,
-                                          size: 28),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      }).toList(),
-                    ),
-                  ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ];
+                  },
                 ),
                 PaginationWidget(
                     currentPage: controller.completedBookingCurrentPage.value,
