@@ -46,12 +46,24 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-        // Instead of fixed width, we calculate flexible field widths
-        final double fieldWidth = isMobile
-            ? maxWidth // full width
-            : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
+        final bool isLaptop = maxWidth >= 1024 && maxWidth < 1400;
+        final bool isLargeDesktop = maxWidth >= 1400;
+
+        // 125% scale checker
+        final bool isHighScale =
+            MediaQuery.of(context).devicePixelRatio >= 1.25;
+
+        double fieldWidth;
+
+        if (isMobile) {
+          fieldWidth = maxWidth;
+        } else if (isTablet) {
+          fieldWidth = isHighScale ? maxWidth / 1.8 : maxWidth / 2;
+        } else if (isLaptop) {
+          fieldWidth = isHighScale ? maxWidth / 3 : maxWidth / 3.4;
+        } else {
+          fieldWidth = isHighScale ? maxWidth / 3.8 : maxWidth / 4;
+        }
 
         return Container(
           color: Colors.grey[200],
@@ -102,9 +114,12 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                                         drivers: controller.apiDriversList
                                             .map((e) => {
                                                   'id': e['id'].toString(),
-                                                  'username':
-                                                      e['username'].toString().toUpperCase(),
-                                                  'name': e['name'].toString().toUpperCase(),
+                                                  'username': e['username']
+                                                      .toString()
+                                                      .toUpperCase(),
+                                                  'name': e['name']
+                                                      .toString()
+                                                      .toUpperCase(),
                                                 })
                                             .toList(),
                                       ),
@@ -123,7 +138,11 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                             ),
                             const SizedBox(height: 16),
                             Wrap(
-                              spacing: fieldWidth / 5.5, // horizontal space
+                              spacing:
+                                  MediaQuery.of(context).devicePixelRatio >=
+                                          1.25
+                                      ? fieldWidth / 2
+                                      : fieldWidth / 5.5,
                               runSpacing: 16,
                               children: [
                                 CustomTextField(
@@ -133,7 +152,8 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                                   hintText: AppText.name,
                                   columnText: true,
                                   inputFormatters: [
-                                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                                    FilteringTextInputFormatter.allow(
+                                        RegExp(r'[a-zA-Z\s]')),
                                     UpperCaseTextFormatter(),
                                   ],
                                 ),
@@ -144,7 +164,8 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                                   hintText: AppText.email,
                                   columnText: true,
                                   inputFormatters: [
-                                    FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                                    FilteringTextInputFormatter.deny(
+                                        RegExp(r'\s')),
                                     UpperCaseTextFormatter(),
                                   ],
                                 ),
@@ -170,68 +191,81 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                                 ),
                               ],
                             ),
+                            SizedBox(height: 15),
+                            //         ],
+                            //       );
+                            //     },
+                            //   ),
+                            // ),
+                            Container(
+                              color: DynamicColors.secondaryClr,
+                              padding: const EdgeInsets.all(12),
+                              child: Center(
+                                  child: Text(AppText.other,
+                                      style: titleDesign())),
+                            ),
+                            Wrap(
+                              spacing:
+                                  MediaQuery.of(context).devicePixelRatio >=
+                                          1.25
+                                      ? fieldWidth / 2
+                                      : fieldWidth / 5.5,
+                              runSpacing: 16,
+                              children: [
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.doorController,
+                                  width: fieldWidth,
+                                  hintText: AppText.door,
+                                  columnText: true,
+                                  inputFormatters: [
+                                    UpperCaseTextFormatter(),
+                                  ],
+                                ),
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.noteController,
+                                  width: fieldWidth,
+                                  hintText: AppText.note,
+                                  columnText: true,
+                                  inputFormatters: [
+                                    UpperCaseTextFormatter(),
+                                  ],
+                                ),
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.address1Controller,
+                                  width: fieldWidth,
+                                  hintText: AppText.address1,
+                                  columnText: true,
+                                  height: 80,
+                                  maxLines: 5,
+                                  contentPadding:
+                                      EdgeInsets.only(top: 15, left: 6),
+                                  inputFormatters: [
+                                    UpperCaseTextFormatter(),
+                                  ],
+                                ),
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.address2Controller,
+                                  width: fieldWidth,
+                                  hintText: AppText.address2,
+                                  columnText: true,
+                                  height: 80,
+                                  maxLines: 5,
+                                  contentPadding:
+                                      EdgeInsets.only(top: 15, left: 6),
+                                  inputFormatters: [
+                                    UpperCaseTextFormatter(),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ],
                         );
                       },
                     ),
-                  ),
-                  Container(
-                    color: DynamicColors.secondaryClr,
-                    padding: const EdgeInsets.all(12),
-                    child: Center(
-                        child: Text(AppText.other, style: titleDesign())),
-                  ),
-                  Wrap(
-                    spacing: fieldWidth / 5.5,
-                    runSpacing: 16,
-                    children: [
-                      CustomTextField(
-                        borderRadius: 4,
-                        controller: controller.doorController,
-                        width: fieldWidth,
-                        hintText: AppText.door,
-                        columnText: true,
-                        inputFormatters: [
-                          UpperCaseTextFormatter(),
-                        ],
-                      ),
-                      CustomTextField(
-                        borderRadius: 4,
-                        controller: controller.noteController,
-                        width: fieldWidth,
-                        hintText: AppText.note,
-                        columnText: true,
-                        inputFormatters: [
-                          UpperCaseTextFormatter(),
-                        ],
-                      ),
-                      CustomTextField(
-                        borderRadius: 4,
-                        controller: controller.address1Controller,
-                        width: fieldWidth,
-                        hintText: AppText.address1,
-                        columnText: true,
-                        height: 80,
-                        maxLines: 5,
-                        contentPadding: EdgeInsets.only(top: 15, left: 6),
-                        inputFormatters: [
-                          UpperCaseTextFormatter(),
-                        ],
-                      ),
-                      CustomTextField(
-                        borderRadius: 4,
-                        controller: controller.address2Controller,
-                        width: fieldWidth,
-                        hintText: AppText.address2,
-                        columnText: true,
-                        height: 80,
-                        maxLines: 5,
-                        contentPadding: EdgeInsets.only(top: 15, left: 6),
-                        inputFormatters: [
-                          UpperCaseTextFormatter(),
-                        ],
-                      ),
-                    ],
                   ),
                   SizedBox(
                     height: 10,
@@ -242,18 +276,18 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
 
                       if (email.isEmpty) {
                         BotToast.showText(text: "EMAIL IS REQUIRED");
-                      }
-                      else if (!email.contains('@')) {
-                        BotToast.showText(text:"INVALID EMAIL FORMAT");
-                      }
-                      else {
+                      } else if (!email.contains('@')) {
+                        BotToast.showText(text: "INVALID EMAIL FORMAT");
+                      } else {
                         controller.postCustomer();
                       }
                     },
                     height: 35,
                     fontSize: 12,
                     borderRadius: 4,
-                    width: fieldWidth * 1.5,
+                    width: MediaQuery.of(context).devicePixelRatio >= 1.25
+                        ? fieldWidth * 1.1
+                        : fieldWidth * 1.5,
                     btnText: controller.updateCustomerValue.value == false
                         ? AppText.save
                         : "UPDATE",
