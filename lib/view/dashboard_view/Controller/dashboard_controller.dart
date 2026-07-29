@@ -474,7 +474,9 @@ class DashboardController extends GetxController {
   final dropOffController = TextEditingController();
   final dropOffTwoWayController = TextEditingController();
   final selectAirportController = TextEditingController();
+  final selectReturnAirportController = TextEditingController();
   final arrivalTimeController = TextEditingController();
+  final arrivalReturnTimeController = TextEditingController();
   final switchController = ValueNotifier<bool>(false);
   RxBool smsCheckbox = true.obs;
   RxBool addReturnFare = true.obs;
@@ -772,6 +774,7 @@ class DashboardController extends GetxController {
     }
   }
   var isAirportResponse = false.obs;
+  var isReturnAirportResponse = false.obs;
   List<AllAddressesModel> allAddressesData = <AllAddressesModel>[].obs;
 
   getAddresses({fieldsName, searchingText}) async {
@@ -787,6 +790,14 @@ class DashboardController extends GetxController {
           selectedTextFieldsValue.value == "PICKUP LOCATION") {
         isAirportResponse.value = false;
       }
+      if (response.data['source'] == "airport" &&
+          selectedTextFieldsValue.value == "PICKUP TWO WAY LOCATION") {
+        isReturnAirportResponse.value = true;
+      } else if (response.data['source'] != "airport" &&
+          selectedTextFieldsValue.value == "PICKUP TWO WAY LOCATION") {
+        isReturnAirportResponse.value = false;
+      }
+
       if (response.data.isNotEmpty) {
         allAddressesData.clear();
         allAddressesData.addAll((response.data['result'] as List)

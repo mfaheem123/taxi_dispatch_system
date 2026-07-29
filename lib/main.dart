@@ -366,8 +366,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // URL strategy set karein
-  setUrlStrategy(const HashUrlStrategy());
+  // URL strategy set karein (clean URLs without the "#")
+  setUrlStrategy(PathUrlStrategy());
 
   // 1. Environment Config
   const String environment = String.fromEnvironment(

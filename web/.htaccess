@@ -1,0 +1,35 @@
+# Flutter web SPA routing (PathUrlStrategy)
+# Serves index.html for any route like /LoginScreen, /DashBoarScreen, etc.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Force HTTPS
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+  # Let real files and directories be served as-is (assets, .js, .json, images)
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Everything else falls back to the Flutter entry point
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# Never cache the entry point or the service worker, otherwise
+# users keep loading a stale build after each deploy.
+<FilesMatch "(index\.html|flutter_service_worker\.js|firebase-messaging-sw\.js|flutter_bootstrap\.js)$">
+  <IfModule mod_headers.c>
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+  </IfModule>
+</FilesMatch>
+
+# Correct MIME types
+<IfModule mod_mime.c>
+  AddType application/javascript .js
+  AddType application/wasm       .wasm
+  AddType application/manifest+json .webmanifest
+</IfModule>

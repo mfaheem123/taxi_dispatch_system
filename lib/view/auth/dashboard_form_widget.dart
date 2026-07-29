@@ -683,6 +683,57 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           },
           onCurrentLocation: () => debugPrint('Use current location → R/PICK'),
         ),
+        Visibility(
+          visible: controller.isReturnAirportResponse.value,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: isMobile
+                ? Column(
+              crossAxisAlignment:
+              CrossAxisAlignment.stretch,
+              children: [
+                _field('FL',
+                    tab: 4.3,
+                    controller: controller
+                        .selectReturnAirportController),
+                const SizedBox(height: 4),
+                _timeField('ARP',
+                    tab: 4.6,
+                    controller: controller
+                        .arrivalReturnTimeController),
+              ],
+            )
+                :
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(width: 80, child:  Row(mainAxisSize: MainAxisSize.min, children: [
+                  Icon(Icons.circle, size: 9, color: Colors.green),
+                  const SizedBox(width: 6),
+                  Text("FL",
+                      style:
+                      const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsLabel)),
+                ])),
+                const SizedBox(width: 2),
+                Expanded(
+                  flex: 3,
+                  child: _field('FL',
+                      tab: 4.3,
+                      controller: controller
+                          .selectAirportController),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  flex: 1,
+                  child: _timeField('ARP',
+                      tab: 4.6,
+                      controller: controller
+                          .arrivalTimeController),
+                ),
+              ],
+            ),
+          ),
+        ),
         const SizedBox(height: 4),
         _locationRow<ZoneObject>(
           'DROP',
