@@ -258,7 +258,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   },
                                   notesController: controller.pickUpNoteController,
                                   onCurrentLocation: () {
-                                    debugPrint('Use current location → PICKUP');
+                                    controller.swapeToChangeLocation();
                                   },
                                 ),
                                 Visibility(
@@ -380,7 +380,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   },
                                   notesController: controller.dropUpNoteController,
                                   onCurrentLocation: () {
-                                    debugPrint('Use current location → DROP');
+                                    controller.swapeToChangeLocation();
                                   },
                                 ),
                                 const Divider(height: 14),
@@ -681,7 +681,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             //     .requestFocus(controller.pickupTwoTextFieldFocusNode);
             // _clearTwoWayData(controller);
           },
-          onCurrentLocation: () => debugPrint('Use current location → R/PICK'),
+          onCurrentLocation: () async {
+            controller.swapeToChangeReturnLocation();
+            },
         ),
         const SizedBox(height: 4),
         _locationRow<ZoneObject>(
@@ -741,7 +743,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             //     .requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
             // _clearTwoWayData(controller, recalcRoute: true);
           },
-          onCurrentLocation: () => debugPrint('Use current location → R/DROP'),
+          onCurrentLocation: () async {
+            controller.swapeToChangeReturnLocation();
+          },
         ),
         const SizedBox(height: 8),
         _grid(cols, [
