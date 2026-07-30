@@ -21,6 +21,10 @@ class LocationForm extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         bool isMobile = constraints.maxWidth < 600;
+        double dropdownWidth = (MediaQuery.of(context).devicePixelRatio >= 1.25 || constraints.maxWidth < 750)
+            ? (Get.width / 4.2)
+            : (Get.width / 5);
+
         return GetBuilder<LocationController>(
             initState: (v) async{
               permissions = Api().sp.read('all_permissions') ?? [];
@@ -120,7 +124,7 @@ class LocationForm extends StatelessWidget {
                             CustomDropdownField<ZoneObject>(
                               text: "SELECT ZONE",
                               label: "SELECT ZONE",
-                              width: Get.width / 5,
+                              width: dropdownWidth,
                               height: 38,
                               items: controller.locationtypezoneModel!
                                   .zonesList!,
@@ -174,7 +178,7 @@ class LocationForm extends StatelessWidget {
                           CustomDropdownField<LocationTypeObject>(
                             text: "LOCATION TYPE",
                             label: "LOCATION TYPE",
-                            width: Get.width / 5,
+                            width: dropdownWidth,
                             height: 38,
                             items: controller.locationtypezoneModel!.locationTypesList!,
                             value: controller.locationTypeValue,
@@ -200,8 +204,8 @@ class LocationForm extends StatelessWidget {
                             text: "LOCATION TYPE",
                             label: "Location Type",
 
-                            width: Get.width / 5,
-                            height: 40,
+                            width: dropdownWidth,
+                            height: 38,
                             items: controller.locationtypezoneModel!
                                 .locationTypesList!,
                             value: controller.locationTypeValue,
@@ -263,7 +267,7 @@ class LocationForm extends StatelessWidget {
         "LOCATION",
         style: TextStyle(
           fontSize: 20,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w900,
         ),
       ),
     );
@@ -294,7 +298,7 @@ class LocationForm extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w900,
             fontSize: 13,
             letterSpacing: .5,
           ),
@@ -337,7 +341,7 @@ class LocationForm extends StatelessWidget {
       children: [
         Text(label,
             style: const TextStyle(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w900,
                 fontSize: 13,
                 letterSpacing: .5)),
         const SizedBox(height: 5),
