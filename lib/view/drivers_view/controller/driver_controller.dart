@@ -55,10 +55,11 @@ class DriverController extends GetxController {
 
   String? driverType;
   // String driverType = 'COMMISSION';
-  String? dobDate =
-      "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
-  String? vehicleStartDate;
-  String? vehicleEndeDate;
+  // String? dobDate =
+  //     "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? dobDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? vehicleStartDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? vehicleEndeDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
   DateTime? startDate = DateTime.now();
   DateTime? endDate = DateTime.now();
 
@@ -437,6 +438,8 @@ class DriverController extends GetxController {
     driverTelController.clear();
     driverCommissionController.clear();
     driverNLController.clear();
+    driverRendLimitController.clear();
+    dobDate = null;
     hasPDA.value = false;
     rentPaid.value = false;
     isActive.value = false;
@@ -638,6 +641,16 @@ class DriverController extends GetxController {
         driverFullNameController.text =
             singleDriverData!.driver!.name.toString().toUpperCase();
       }
+      if (singleDriverData!.driver!.dob != null) {
+        dobDate = formatDateForUi(singleDriverData!.driver!.dob);
+      }
+
+      if (singleDriverData!.driver!.vehicle?.startDate != null) {
+        vehicleStartDate = formatDateForUi(singleDriverData!.driver!.vehicle!.startDate);
+      }
+      if (singleDriverData!.driver!.vehicle?.endDate != null) {
+        vehicleEndeDate = formatDateForUi(singleDriverData!.driver!.vehicle!.endDate);
+      }
       if (singleDriverData!.driver!.email != null) {
         driverEmailController.text = singleDriverData!.driver!.email.toString().toUpperCase();
       }
@@ -712,6 +725,20 @@ class DriverController extends GetxController {
     }
   }
 
+
+  String formatDateForUi(dynamic dateInput) {
+    if (dateInput == null || dateInput.toString().isEmpty) {
+      return "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
+    }
+
+    String apiDate = dateInput.toString();
+    List<String> parts = apiDate.split('-');
+    if (parts.length == 3 && parts[0].length <= 2) {
+      return "${parts[2]}-${parts[1]}-${parts[0]}";
+    }
+
+    return apiDate;
+  }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create driver form functionality
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver list screen

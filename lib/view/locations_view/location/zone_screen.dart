@@ -1133,7 +1133,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                             BotToast.showText(text: 'ZONE DATA SUBMITTED SUCCESSFULLY');
                           },
                           child: Text(
-                              controller.updateZone.value ? "EDIT" : "SAVE"),
+                              controller.updateZone.value ? "UPDATE" : "SAVE"),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
                             backgroundColor: Colors.green[700],

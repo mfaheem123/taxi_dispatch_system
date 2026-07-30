@@ -184,19 +184,25 @@ class DriverPersonalInfo extends StatelessWidget {
                          isMobile: isMobile,
                          label: "DATE OF BIRTH",
                          width: fieldWidth/1.4,
-                         child: SizedBox(height: 30, child: KeyboardDatePicker(
-                           initialDate: DateTime.now(),
-                           onChanged: (date) {
-                             // jab bhi user change kare
-                               controller.dobDate = "${date.year}-${date.month}-${date.day}";
-                               print(date);
-                           },
-                           onSubmitted: (date) {
-                             // jab user enter press kare
-                               controller.dobDate = "${date.year}-${date.month}-${date.day}";
-                             print("User pressed enter: $date");
-                           },
-                         )
+                         child: SizedBox(height: 30, child:
+                         KeyboardDatePicker(
+                               initialDate: DateTime.tryParse(controller.dobDate ?? '') ?? DateTime.now(),
+                               onChanged: (date) => controller.dobDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                               onSubmitted: (date) => controller.dobDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                             )
+                         // KeyboardDatePicker(
+                         //   initialDate: DateTime.now(),
+                         //   onChanged: (date) {
+                         //     // jab bhi user change kare
+                         //       controller.dobDate = "${date.year}-${date.month}-${date.day}";
+                         //       print(date);
+                         //   },
+                         //   onSubmitted: (date) {
+                         //     // jab user enter press kare
+                         //       controller.dobDate = "${date.year}-${date.month}-${date.day}";
+                         //     print("User pressed enter: $date");
+                         //   },
+                         // )
                          ),
                          column: true
                      ),
@@ -339,9 +345,9 @@ class DriverPersonalInfo extends StatelessWidget {
                           height: 35,
                         onTap: (){
                             if(controller.driverUserNameController.text.isEmpty
-                                || controller.driverFullNameController.text.isEmpty || controller.driverMobileController.text.isEmpty
-                            ){
-                              BotToast.showText(text: "Please enter below fields is required\n user name, driver full name, driver mobile number,");
+                                || controller.driverFullNameController.text.isEmpty || controller.driverMobileController.text.isEmpty ||
+                                (controller.singleDriverData == null && controller.driverPasswordController.text.isEmpty)){
+                              BotToast.showText(text: "Please enter below fields is required\n user name, driver full name, driver mobile number${controller.singleDriverData==null ? ", password" : ""}");
                             }else if (!controller.driverEmailController.text.contains('@')) {
                               BotToast.showText(text: "Invalid Email Format");
                             }

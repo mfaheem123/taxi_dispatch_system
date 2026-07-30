@@ -107,19 +107,25 @@ class VehicleInformation extends StatelessWidget {
                         label: AppText.startDate,
                         width: fieldWidth / 1.4,
                         child:
-                            SizedBox(height: 30, child: KeyboardDatePicker(
-                              initialDate: DateTime.now(),
-                              onChanged: (date) {
-                                // jab bhi user change kare
-                                controller.vehicleStartDate = "${date.year}-${date.month}-${date.day}";
-                                print(date);
-                              },
-                              onSubmitted: (date) {
-                                // jab user enter press kare
-                                controller.vehicleStartDate = "${date.year}-${date.month}-${date.day}";
-                                print("User pressed enter: $date");
-                              },
+                            SizedBox(height: 30, child:
+                            KeyboardDatePicker(
+                              initialDate: DateTime.tryParse(controller.vehicleStartDate ?? '') ?? DateTime.now(),
+                              onChanged: (date) => controller.vehicleStartDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                              onSubmitted: (date) => controller.vehicleStartDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
                             )
+                            // KeyboardDatePicker(
+                            //   initialDate: DateTime.now(),
+                            //   onChanged: (date) {
+                            //     // jab bhi user change kare
+                            //     controller.vehicleStartDate = "${date.year}-${date.month}-${date.day}";
+                            //     print(date);
+                            //   },
+                            //   onSubmitted: (date) {
+                            //     // jab user enter press kare
+                            //     controller.vehicleStartDate = "${date.year}-${date.month}-${date.day}";
+                            //     print("User pressed enter: $date");
+                            //   },
+                            // )
                             ),
                         column: true),
                   ),
@@ -131,19 +137,26 @@ class VehicleInformation extends StatelessWidget {
                         label: AppText.endDate,
                         width: fieldWidth / 1.4,
                         child:
-                            SizedBox(height: 30, child: KeyboardDatePicker(
-                              initialDate: DateTime.now(),
-                              onChanged: (date) {
-                                // jab bhi user change kare
-                                controller.vehicleEndeDate = "${date.year}-${date.month}-${date.day}";
-                                print(date);
-                              },
-                              onSubmitted: (date) {
-                                // jab user enter press kare
-                                controller.vehicleEndeDate = "${date.year}-${date.month}-${date.day}";
-                                print("User pressed enter: $date");
-                              },
-                            )),
+                            SizedBox(height: 30, child:
+                            KeyboardDatePicker(
+                              initialDate: DateTime.tryParse(controller.vehicleEndeDate ?? '') ?? DateTime.now(),
+                              onChanged: (date) => controller.vehicleEndeDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                              onSubmitted: (date) => controller.vehicleEndeDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                            )
+                            // KeyboardDatePicker(
+                            //   initialDate: DateTime.now(),
+                            //   onChanged: (date) {
+                            //     // jab bhi user change kare
+                            //     controller.vehicleEndeDate = "${date.year}-${date.month}-${date.day}";
+                            //     print(date);
+                            //   },
+                            //   onSubmitted: (date) {
+                            //     // jab user enter press kare
+                            //     controller.vehicleEndeDate = "${date.year}-${date.month}-${date.day}";
+                            //     print("User pressed enter: $date");
+                            //   },
+                            // )
+                            ),
                         column: true),
                   ),
                   FocusTraversalOrder(
