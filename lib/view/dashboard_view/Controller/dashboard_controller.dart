@@ -51,7 +51,12 @@ class DashboardController extends GetxController {
 // Global company ID access karne ke liye Api singleton ka use karenge
   final String _companyId = Api.singleton.globalCompanyId;
   final Set<String> _playedBookingIds = {};
-
+  final FocusNode journeyDropdownFocusNode = FocusNode();
+  final FocusNode returnVehicleDropdownFocusNode = FocusNode();
+  final FocusNode accountDropdownFocusNode = FocusNode();
+  final FocusNode paymentDropdownFocusNode = FocusNode();
+  final FocusNode vehicleDropdownFocusNode = FocusNode();
+  final FocusNode departmentDropdownFocusNode = FocusNode();
   // Helper method jo URL me company_id attach karega agar sendCompanyId true ho
   String _buildSocketUrl(String endpoint, {bool sendCompanyId = false}) {
     String finalUrl = "$socketUrl$endpoint";
@@ -1686,7 +1691,7 @@ class DashboardController extends GetxController {
 
   void startBookingCountTimer() {
     _bookingCountTimer?.cancel();
-    _bookingCountTimer = Timer.periodic(const Duration(seconds: 2), (timer) async {
+    _bookingCountTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
       await getBookingCounts();
     });
   }

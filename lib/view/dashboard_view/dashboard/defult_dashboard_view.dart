@@ -394,6 +394,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.slugController.clear();
                                                                       controller.slugControllerReturn.clear();
                                                                       controller.tempStoreMils = null;
+                                                                      controller.isAirportResponse.value = false;
                                                                       controller.fetchRouteFromOSRM();
                                                                       FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
                                                                       controller.update();
@@ -513,7 +514,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                   child:
                                                   Padding(
                                                     padding:
-                                                    const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                                                    const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
                                                     child:
                                                     Row(
                                                       children: [
@@ -1288,7 +1289,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             controller.clearReturnViaIfNoPickupAndDrop();
                                                                             controller.selectAirportControllerReturn.clear();
                                                                             controller.arrivalTimeControllerReturn.clear();
-                                                                            controller.isAirportResponse.value = false;
+                                                                            controller.isAirportResponseReturn.value = false;
                                                                             // controller.dropOffTwoWayController.clear();
                                                                             controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "PICKUP TWO WAY LOCATION");
                                                                             if (controller.markers is List<CustomMarker>) {
@@ -1398,83 +1399,83 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ),
                                                       ),
                                                       /// ================= Return Airport ROW ========================================================
-                                                      // Visibility(
-                                                      //   visible: controller
-                                                      //       .isAirportResponseReturn
-                                                      //       .value,
-                                                      //   child:
-                                                      //   Padding(
-                                                      //     padding:
-                                                      //     const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                                                      //     child:
-                                                      //     Row(
-                                                      //       children: [
-                                                      //         Padding(
-                                                      //           padding: const EdgeInsets.only(right: 10),
-                                                      //           child: Text(
-                                                      //             "R/FL",
-                                                      //             style: mozillaTextSemiBoldText(
-                                                      //               context: context,
-                                                      //               fontSize: 13,
-                                                      //             ),
-                                                      //           ),
-                                                      //         ),
-                                                      //         Padding(
-                                                      //           padding: EdgeInsets.only(left: 15),
-                                                      //           child: SizedBox(
-                                                      //             width: fieldWidth / 0.73,
-                                                      //             height: 30,
-                                                      //             child: CustomTextField(
-                                                      //               controller: controller.selectAirportControllerReturn,
-                                                      //               hintText: "Flight Number",
-                                                      //               inputFormatters: [
-                                                      //                 UpperCaseTextFormatter(),
-                                                      //               ],
-                                                      //               borderRadius: 6,
-                                                      //               textInputAction: TextInputAction.next,
-                                                      //               onTap: () {
-                                                      //                 controller.dropDownShow.value = false;
-                                                      //               },
-                                                      //               onSubmitted: (_) => FocusScope.of(context).nextFocus(),
-                                                      //             ),
-                                                      //           ),
-                                                      //         ),
-                                                      //         SizedBox(width: 14),
-                                                      //         Padding(
-                                                      //           padding: const EdgeInsets.only(right: 10, left: 5),
-                                                      //           child: Text(
-                                                      //             "R/ARR",
-                                                      //             style: mozillaTextSemiBoldText(
-                                                      //               context: context,
-                                                      //               fontSize: 13,
-                                                      //             ),
-                                                      //           ),
-                                                      //         ),
-                                                      //
-                                                      //         Padding(
-                                                      //           padding: EdgeInsets.only(left: 0),
-                                                      //           child: SizedBox(
-                                                      //             width: fieldWidth / 3.7,
-                                                      //             height: 30,
-                                                      //             child: CustomTextField(
-                                                      //               controller: controller.arrivalTimeControllerReturn,
-                                                      //               inputFormatters: [
-                                                      //                 UpperCaseTextFormatter(),
-                                                      //               ],
-                                                      //               hintText: "R/ARR",
-                                                      //               borderRadius: 6,
-                                                      //               onTap: () {
-                                                      //                 controller.dropDownShow.value = false;
-                                                      //               },
-                                                      //               textInputAction: TextInputAction.next,
-                                                      //               onSubmitted: (_) => FocusScope.of(context).nextFocus(),
-                                                      //             ),
-                                                      //           ),
-                                                      //         ),
-                                                      //       ],
-                                                      //     ),
-                                                      //   ),
-                                                      // ),
+                                                      /// ================= Return Airport ROW ========================================================
+                                                      Visibility(
+                                                        visible: controller.isAirportResponseReturn.value,
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.only(left: 0, right: 12, top: 1, bottom: 1),
+                                                          child: Row(
+                                                            children: [
+                                                              Padding(
+                                                                padding: const EdgeInsets.only(right: 10),
+                                                                child: Text(
+                                                                  "R/FL",
+                                                                  style: mozillaTextSemiBoldText(
+                                                                    context: context,
+                                                                    fontSize: 13,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              Padding(
+                                                                padding: const EdgeInsets.only(left: 5),
+                                                                child: FocusTraversalOrder(
+                                                                  order: NumericFocusOrder(
+                                                                    controller.isAirportResponseReturn.value ? 0 : 20,
+                                                                  ),
+                                                                  child: SizedBox(
+                                                                    width: fieldWidth / 0.73,
+                                                                    height: 30,
+                                                                    child: CustomTextField(
+                                                                      controller: controller.selectAirportControllerReturn,
+                                                                      hintText: "Flight Number",
+                                                                      inputFormatters: [
+                                                                        UpperCaseTextFormatter(),
+                                                                      ],
+                                                                      borderRadius: 6,
+                                                                      textInputAction: TextInputAction.next,
+                                                                      onTap: () {
+                                                                        controller.dropDownShow.value = false;
+                                                                      },
+                                                                      onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              const SizedBox(width: 5),
+                                                              Padding(
+                                                                padding: const EdgeInsets.only(right: 8, left: 5),
+                                                                child: Text(
+                                                                  "R/ARR",
+                                                                  style: mozillaTextSemiBoldText(
+                                                                    context: context,
+                                                                    fontSize: 13,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              Padding(
+                                                                padding: const EdgeInsets.only(left: 0),
+                                                                child: SizedBox(
+                                                                  width: fieldWidth / 3.7,
+                                                                  height: 30,
+                                                                  child: CustomTextField(
+                                                                    controller: controller.arrivalTimeControllerReturn,
+                                                                    inputFormatters: [
+                                                                      UpperCaseTextFormatter(),
+                                                                    ],
+                                                                    hintText: "R/ARR",
+                                                                    borderRadius: 6,
+                                                                    onTap: () {
+                                                                      controller.dropDownShow.value = false;
+                                                                    },
+                                                                    textInputAction: TextInputAction.next,
+                                                                    onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
 
                                                       Padding(
                                                         padding: const EdgeInsets.only(right: 10.0),
