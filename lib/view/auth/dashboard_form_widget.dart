@@ -258,7 +258,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   },
                                   notesController: controller.pickUpNoteController,
                                   onCurrentLocation: () {
-                                    debugPrint('Use current location → PICKUP');
+                                    controller.swapeToChangeLocation();
                                   },
                                 ),
                                 Visibility(
@@ -380,7 +380,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   },
                                   notesController: controller.dropUpNoteController,
                                   onCurrentLocation: () {
-                                    debugPrint('Use current location → DROP');
+                                    controller.swapeToChangeLocation();
                                   },
                                 ),
                                 const Divider(height: 14),
@@ -681,7 +681,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             //     .requestFocus(controller.pickupTwoTextFieldFocusNode);
             // _clearTwoWayData(controller);
           },
-          onCurrentLocation: () => debugPrint('Use current location → R/PICK'),
+          onCurrentLocation: () async {
+            controller.swapeToChangeReturnLocation();
+            },
         ),
         Visibility(
           visible: controller.isReturnAirportResponse.value,
@@ -792,7 +794,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             //     .requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
             // _clearTwoWayData(controller, recalcRoute: true);
           },
-          onCurrentLocation: () => debugPrint('Use current location → R/DROP'),
+          onCurrentLocation: () async {
+            controller.swapeToChangeReturnLocation();
+          },
         ),
         const SizedBox(height: 8),
         _grid(cols, [
@@ -1004,6 +1008,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                     // &&    controller.dropOffController.text.isNotEmpty
                     ) {
                       showDialog(context: context, builder: (_) => ViaLocation());
+                    }else{
+                      BotToast.showText(text: "Please write pickup and dropoff location");
                     }
                   }),
                   const Padding(
@@ -1455,7 +1461,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                       : int.parse(controller.jobDetails!.id!));
             },
             icon: const Icon(Icons.home_outlined, size: 16),
-            label: const Text('SAVE[HOME]'),
+            label: const Text('SAVE [HOME]'),
             style: ElevatedButton.styleFrom(
               backgroundColor: _purple,
               foregroundColor: Colors.white,

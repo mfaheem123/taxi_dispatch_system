@@ -746,6 +746,7 @@ class DashboardController extends GetxController {
       polyLineMarkerInfo[dropIndex].markerType = "PICKUP LOCATION";
     }
   }
+
   void swapReturnPickupDropMarkers() {
     final returnPickupIndex = polyLineMarkerInfo.indexWhere(
           (e) => e.markerType == "PICKUP TWO WAY LOCATION",
@@ -864,6 +865,29 @@ class DashboardController extends GetxController {
       updateKeys();
       update();
     }
+  }
+
+
+  swapeToChangeReturnLocation() async{
+    String tempPic = pickupTwoWayController.text;
+    String tempDrop = dropOffTwoWayController.text;
+    pickupTwoWayController.text = tempDrop;
+    dropOffTwoWayController.text = tempPic;
+    dropDownShow.value = false;
+    swapReturnPickupDropMarkers();
+    await fetchRouteFromOSRM();
+    update();
+  }
+
+  swapeToChangeLocation() async{
+    String tempPic = pickupController.text;
+    String tempDrop = dropOffController.text;
+    pickupController.text = tempDrop;
+    dropOffController.text = tempPic;
+    dropDownShow.value = false;
+    swapPickupDropMarkers();
+    await fetchRouteFromOSRM();
+    update();
   }
 
 

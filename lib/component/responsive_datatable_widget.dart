@@ -85,8 +85,8 @@ class _ResponsiveDataTableWidgetState extends State<ResponsiveDataTableWidget> {
             headingRowColor: MaterialStateProperty.all(DynamicColors.secondaryClr),
             dataRowMinHeight: 40,
             dataRowMaxHeight: 52,
-            headingTextStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 10.5),
-            dataTextStyle: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w900),
+            headingTextStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
+            dataTextStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900),
             border: TableBorder(
               horizontalInside: BorderSide(width: 0.5, color: Colors.grey.shade400),
               verticalInside: BorderSide(width: 0.5, color: Colors.grey.shade400),
@@ -144,7 +144,7 @@ class _ResponsiveDataTableWidgetState extends State<ResponsiveDataTableWidget> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w900),
+                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900),
                       ),
                     ),
                   ));

@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 
 import '../../../../component/datatable_widget.dart';
 import '../../../../component/networks/api.dart';
+import '../../../../component/responsive_datatable_widget.dart';
 import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../../dashboard_view/booking_table.dart';
 import '../../controller/driver_controller.dart';
@@ -78,6 +79,8 @@ class _DriverListScreenState extends State<DriverListScreen> {
           final double maxWidth = constraints.maxWidth;
           final bool isMobile = maxWidth < 400;
           final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+
+          final double totalAvailableWidth = constraints.maxWidth;
 
           // Instead of fixed width, we calculate flexible field widths
           final double fieldWidth = isMobile
@@ -154,185 +157,138 @@ class _DriverListScreenState extends State<DriverListScreen> {
                           SizedBox(
                             height: 12,
                           ),
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: SizedBox(
-                              width: isMobile || isTablet
-                                  ? Get.width + 700
-                                  : Get.width,
-                              child: DatatableWidget(
-                                columns: [
-                                  buildHeaderWithSearch(
-                                    title: "USERNAME",
+                          ResponsiveDataTableWidget (
+                              totalWidth: totalAvailableWidth,
+                              items: listToShow,
+                              columnConfigs: [
+                                TableColumnConfig(title: "USERNAME",
+                                    sizeType: ColumnSizeType.medium,
                                     onChanged: (v) {
                                       controller.searchDriverUserName.value = v;
                                       controller.driverSearch();
-                                    },
-                                  ),
-                                  buildHeaderWithSearch(
-                                    title: "NAME",
+                                    }),
+                                TableColumnConfig(title: "NAME",
+                                    sizeType: ColumnSizeType.large,
                                     onChanged: (v) {
                                       controller.searchDriverName.value = v;
                                       controller.driverSearch();
-                                    },
-                                  ),
-                                  buildHeaderWithSearch(
-                                    title: "VEHICLE",
+                                    }),
+                                TableColumnConfig(title: "VEHICLE",
+                                    sizeType: ColumnSizeType.medium,
                                     onChanged: (v) {
                                       controller.searchVehicleName.value = v;
                                       controller.driverSearch();
-                                    },
-                                  ),
-                                  buildHeaderWithSearch(
-                                    title: "VEHICLE EXPIRY",
+                                    }),
+                                TableColumnConfig(title: "VEHICLE EXPIRY",
+                                    sizeType: ColumnSizeType.medium,
                                     onChanged: (v) {
                                       controller.searchVehicleExpiry.value = v;
                                       controller.driverSearch();
-                                    },
-                                  ),
-                                  buildHeaderWithSearch(
-                                    title: "DRIVER EXPIRY",
+                                    }),
+                                TableColumnConfig(title: "DRIVER EXPIRY",
+                                    sizeType: ColumnSizeType.medium,
                                     onChanged: (v) {
                                       controller.searchDriverExpiry.value = v;
                                       controller.driverSearch();
-                                    },
-                                  ),
-                                  buildHeaderWithSearch(
-                                    title: "MOT EXPIRY",
+                                    }),
+                                TableColumnConfig(title: "MOT EXPIRY",
+                                    sizeType: ColumnSizeType.medium,
                                     onChanged: (v) {
                                       controller.searchMOTExpiry.value = v;
                                       controller.driverSearch();
-                                    },
-                                  ),
-                                  buildHeaderWithSearch(
-                                    title: "MOT2 EXPIRY",
+                                    }),
+                                TableColumnConfig(title: "MOT2 EXPIRY",
+                                    sizeType: ColumnSizeType.medium,
                                     onChanged: (v) {
                                       controller.searchMOT2Expiry.value = v;
                                       controller.driverSearch();
-                                    },
-                                  ),
-                                  buildHeaderWithSearch(
-                                    title: "INSURANCE EXPIRY",
+                                    }),
+                                TableColumnConfig(title: "INSURANCE EXPIRY",
+                                    sizeType: ColumnSizeType.medium,
                                     onChanged: (v) {
-                                      controller.searchInsuranceExpiry.value =
-                                          v;
+                                      controller.searchInsuranceExpiry.value = v;
                                       controller.driverSearch();
-                                    },
-                                  ),
-                                  buildHeaderWithSearch(
-                                    title: "LICENSE EXPIRY",
+                                    }),
+                                TableColumnConfig(title: "LICENSE EXPIRY",
+                                    sizeType: ColumnSizeType.medium,
                                     onChanged: (v) {
                                       controller.searchLicenseExpiry.value = v;
                                       controller.driverSearch();
-                                    },
-                                  ),
-                                  buildHeaderWithSearch(
-                                    title: "MOBILE #",
+                                    }),
+                                TableColumnConfig(title: "MOBILE #",
+                                    sizeType: ColumnSizeType.medium,
                                     onChanged: (v) {
                                       controller.searchMobile.value = v;
                                       controller.driverSearch();
-                                    },
-                                  ),
-                                  buildHeaderWithSearch(
-                                    title: "DRIVER ACCESS",
+                                    }),
+                                TableColumnConfig(title: "DRIVER ACCESS",
+                                    sizeType: ColumnSizeType.medium,
                                     onChanged: (v) {
                                       controller.searchSubsiDiary.value = v;
                                       controller.driverSearch();
-                                    },
-                                  ),
-                                  buildHeaderWithSearch(
-                                      title: "ACTIONS", removeSearching: true),
-                                ],
-                                totalRow: listToShow.length ?? 0,
-                                rows: listToShow.map((item) {
-                                  return DataRow(
-                                    cells: [
-                                      DataCell(Center(
-                                          child: Text((
-                                              item.username ?? "-").toUpperCase()))),
-                                      DataCell(Center(
-                                          child: Text((item.name ?? "-").toUpperCase()))),
-                                      DataCell(Center(
-                                          child: Text(
-                                              item.vehicle?.vehicleType?.name ??
-                                                  "-"))),
-                                      DataCell(Center(
-                                          child: Text(item.vehicle?.endDate ??
-                                              "-"))),
-                                      DataCell(Center(
-                                          child:
-                                              Text(item.endDate ?? "-"))),
-                                      DataCell(Center(
-                                          child: Text(
-                                              item.motExpiry ?? "-"))),
-                                      DataCell(Center(
-                                          child: Text(
-                                              item.mot2Expiry ?? "-"))),
-                                      DataCell(Center(
-                                          child: Text(item.insuranceExpiry ??
-                                              "-"))),
-                                      DataCell(Center(
-                                          child: Text(item.licenceExpiry ??
-                                              "-"))),
-                                      DataCell(Center(
-                                          child:
-                                              Text(item.mobile ?? "-"))),
-                                      DataCell(Center(
-                                          child: Text(item.driverAccessToken ??
-                                              "-"))),
-                                      DataCell(
-                                        Center(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              if(permissions.contains('update_driver')) OutlinedButton(
-                                                style: OutlinedButton.styleFrom(
-                                                  side: BorderSide(
-                                                    color: Colors.transparent,
-                                                  ), // border color & thickness
-                                                ),
-                                                onPressed: () {
-                                                  controller.getCombineVehicle(
-                                                      id: item.id);
-                                                },
-                                                child: Icon(
-                                                  Icons.edit_calendar,
-                                                  size: 28,
-                                                ),
-                                              ),
-                                              Text("|"),
-                                              if(permissions.contains('delete_driver')) OutlinedButton(
-                                                style: OutlinedButton.styleFrom(
-                                                  side: BorderSide(
-                                                    color: Colors.transparent,
-                                                  ), // border color & thickness
-                                                ),
-                                                onPressed: () {
-                                                   showDialog(
-                                              context: context,
-                                              builder: (_) =>
-                                                  DeletePermissionAlert(
-                                                deleteFunctionName: () =>
-                                                    controller.deleteDriver(item.id!),
-                                              ),
-                                            );
-                                                },
-                                                child: Icon(
-                                                  Icons.delete_forever,
-                                                  size: 28,
-                                                  color: DynamicColors.redClr,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                                    }),
+                                TableColumnConfig(title: "ACTIONS",
+                                    sizeType: ColumnSizeType.medium,
+                                    removeSearching: true),
+                              ],
+                              rowBuilder: (item, widths) {
+                                return [
+                                  (item.username ?? '').toUpperCase(),
+                                  (item.name ?? '').toUpperCase(),
+                                  (item.vehicle?.vehicleType?.name ?? '').toUpperCase(),
+                                  item.vehicle?.endDate ?? '',
+                                  item.endDate ?? '',
+                                  item.motExpiry ?? '',
+                                  item.mot2Expiry ?? '',
+                                  item.insuranceExpiry ?? '',
+                                  item.licenceExpiry ?? '',
+                                  item.mobile ?? '',
+                                  (item.driverAccessToken ?? '').toUpperCase(),
+                                  Center(
+                                    child: SizedBox(
+                                      width: widths["ACTIONS"]!,
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          if(permissions.contains('update_driver'))
+                                            IconButton(
+                                              padding: EdgeInsets.zero,
+                                              constraints: const BoxConstraints(),
+                                              icon: Icon(Icons.edit_calendar,
+                                                  size: 16, color: DynamicColors.primaryClr),
+                                              onPressed: () {
+                                                controller.getCombineVehicle(id: item.id);
+                                              },
+                                            ),
+                                          const SizedBox(width: 2),
+                                          const Text("|",
+                                              style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 12)),
+                                          const SizedBox(width: 2),
+                                          if(permissions.contains('delete_driver'))
+                                            IconButton(
+                                              padding: EdgeInsets.zero,
+                                              constraints: const BoxConstraints(),
+                                              icon: Icon(Icons.delete_forever,
+                                                  size: 16, color: DynamicColors.redClr),
+                                              onPressed: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (_) =>
+                                                      DeletePermissionAlert(
+                                                        deleteFunctionName: () =>
+                                                            controller.deleteDriver(item.id!),
+                                                      ),
+                                                );
+                                              },
+                                            ),
+                                        ],
                                       ),
-                                    ],
-                                  );
-                                }).toList(),
-                              ),
-                            ),
+                                    ),
+                                  ),
+                                ];
+                              }
                           ),
                           PaginationWidget(
                             currentPage: controller.driverCurrentPage.value,
