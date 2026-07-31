@@ -2297,7 +2297,11 @@ class DashboardController extends GetxController {
   ZoneObject? dashboardDZoneValue;
   DateTime? pickUpDate = DateTime.now();
   DateTime? pickUpDateReturn = DateTime.now();
-  final pickUpTimeController = TextEditingController();
+  /// Pickup time defaults to the current time, matching [pickUpDate] above.
+  /// TimePickerField reads and writes this as a 24h `HH:mm` string.
+  final pickUpTimeController = TextEditingController(
+    text: DateFormat('HH:mm').format(DateTime.now()),
+  );
   final pickUpTimeControllerReturn = TextEditingController();
   final passController = TextEditingController();
   final luggController = TextEditingController();
@@ -2690,6 +2694,10 @@ class DashboardController extends GetxController {
     controllerNoteReturnController.clear();
     slugController.clear();
     slugControllerReturn.clear();
+    // Back to "now" rather than empty — the field is pre-filled for a new
+    // booking, and the controller can outlive the booking it was created for
+    // (a loaded job overwrites this via dashBoardDataBinding).
+    pickUpTimeController.text = DateFormat('HH:mm').format(DateTime.now());
     pickUpTimeControllerReturn.clear();
     viaPostList.clear();
     viaReturnPostList.clear();

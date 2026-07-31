@@ -36,6 +36,7 @@ import '../administration/model/user_model.dart';
 import '../auth/Controller/auth_controller.dart';
 import '../booking_view/app_booking.dart';
 import '../booking_view/complete_bookingview.dart';
+import '../booking_view/create_new_booking_form.dart';
 import '../booking_view/multi_booking.dart';
 import '../booking_view/pending_booking.dart';
 import '../booking_view/pre_booking.dart';
@@ -660,13 +661,14 @@ class _MyHomePageState extends State<MyHomePage> {
           onTap: () {
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
-            setState(() {
-              if(permissions.contains('create_booking_route')){
-                final newTabUrl = Uri.base.origin + Routes.createBooking;
-                html.window.open(newTabUrl, '_blank');
-              }
-            });
+            // setState(() {
+            //   if(permissions.contains('create_booking_route')){
+            //     final newTabUrl = Uri.base.origin + Routes.createBooking;
+            //     html.window.open(newTabUrl, '_blank');
+            //   }
+            // });
 
+            Get.to(CreateNewBookingForm());
             // Get.toNamed(Routes.createBooking);
           },
         ),
