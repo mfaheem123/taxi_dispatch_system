@@ -232,7 +232,7 @@ class DriverPersonalInfo extends StatelessWidget {
                                       label: "DRIVER TYPE",
                                       width: fieldWidth,
                                       height: 35,
-                                      items: const ['Commission', "Rent/Week"],
+                                      items: const ['COMMISSION', "RENT/WEEK"],
                                       value: controller.driverType,
                                       itemLabel: (templateList) => templateList,
                                       onChanged: (val) {
@@ -290,10 +290,9 @@ class DriverPersonalInfo extends StatelessWidget {
                       height: 38,
                       onTap: () {
                         if (controller.driverUserNameController.text.isEmpty ||
-                            controller.driverPasswordController.text.isEmpty ||
                             controller.driverFullNameController.text.isEmpty ||
-                            controller.driverMobileController.text.isEmpty) {
-                          BotToast.showText(text: "PLEASE ENTER BELOW FIELDS IS REQUIRED\n USERNAME, DRIVER FULL NAME, DRIVER MOBILE NUMBER,");
+                            controller.driverMobileController.text.isEmpty || (controller.singleDriverData == null && controller.driverPasswordController.text.isEmpty )) {
+                          BotToast.showText(text: "PLEASE ENTER BELOW FIELDS IS REQUIRED\n USERNAME, DRIVER FULL NAME, DRIVER MOBILE NUMBER ${controller.singleDriverData == null ? ", password" : ""}");
                         } else if (!controller.driverEmailController.text.contains('@')) {
                           BotToast.showText(text: "INVALID EMAIL FORMAT");
                         } else {
