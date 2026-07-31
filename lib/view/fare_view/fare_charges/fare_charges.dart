@@ -69,12 +69,14 @@ class _FareChargesState extends State<FareCharges> {
               children: [
                 Wrap(
                   children: [
-                    SizedBox(
-                      width: fieldWidth*2,
-                      child: Column(
+                    // SizedBox(
+                    //   width: fieldWidth*2,
+                    //   child:
+                      Column(
                         children: [
                           Container(
                             width: Get.width,
+                            decoration: BoxDecoration(border: Border.all(color: DynamicColors.gryClr)),
                             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                             color: DynamicColors.gryClr.withOpacity(0.5),
                             child: Text(AppText.surCharges, style: titleDesign()),
@@ -387,7 +389,7 @@ class _FareChargesState extends State<FareCharges> {
                           ),
                         ],
                       ),
-                    ),
+                    // ),
                   ],
                 ),
                 SizedBox(
