@@ -219,6 +219,11 @@ sendCompanyId: true,
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo customers list functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create lost property functionality
 
+  final propertyNameController = TextEditingController();
+  final propertyMobileController = TextEditingController();
+  final propertyAddressController = TextEditingController();
+
+
   int? updateBookingId;
   int? updateCustomerId;
   final ScrollController listScrollController = ScrollController();
@@ -405,9 +410,9 @@ sendCompanyId: true,
 
     detailOfPropertyController.clear();
     methodOfDespositionController.clear();
-    nameController.clear();
-    mobileController.clear();
-    address1Controller.clear();
+    propertyNameController.clear();
+    propertyMobileController.clear();
+    propertyAddressController.clear();
     enquiryController.clear();
     checkedByController.clear();
     resultController.clear();
@@ -499,7 +504,7 @@ sendCompanyId: true,
     update(); // Yeh call button ka text badal degi instantly
 
     // 2. Form fields ki basic binding
-    nameController.text = lostPropertyUpdate.customer?.name ?? "";
+    propertyNameController.text = lostPropertyUpdate.customer?.name ?? "";
     detailOfPropertyController.text = lostPropertyUpdate.itemDescription ?? "";
 
     lostDateController = lostPropertyUpdate.lostDate != null
@@ -522,9 +527,9 @@ sendCompanyId: true,
         if (detail != null) {
           updateBookingId = detail.bookingId;
           updateCustomerId = detail.customerId;
-          mobileController.text = detail.mobile ?? "";
+          propertyMobileController.text = detail.mobile ?? "";
 
-          address1Controller.text = detail.address1?.toString() ??
+          propertyAddressController.text = detail.address1?.toString() ??
               detail.customer?.address1?.toString() ??
               "";
 

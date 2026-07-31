@@ -46,13 +46,25 @@ class _FareMeterState extends State<FareMeter> {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+        final bool isLaptop = maxWidth >= 1024 && maxWidth < 1400;
 
-        // Instead of fixed width, we calculate flexible field widths
-        final double fieldWidth = isMobile
-            ? maxWidth // full width
+        final double dynamicColumnSpacing = isMobile
+            ? 10.0
             : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
+            ? 15.0
+            : isLaptop
+            ? 14.0
+            : 30.0;
+
+        // Flexible field widths based on layout size
+        final double fieldWidth = isMobile
+            ? maxWidth
+            : isTablet
+            ? maxWidth / 2
+            : isLaptop
+            ? maxWidth / 4.8
+            : maxWidth / 4;
+
 
         return Column(
           children: [
@@ -74,14 +86,14 @@ class _FareMeterState extends State<FareMeter> {
                   headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
                   dataRowMinHeight: 48,
                   dataRowMaxHeight: 56,
-                  columnSpacing: 30.0,
+                  columnSpacing: dynamicColumnSpacing,
                   border: TableBorder.all(
                     color: DynamicColors.gryClr,
                     width: 0.5,
                   ),
-                  headingTextStyle: const TextStyle(
+                  headingTextStyle: TextStyle(
                     fontWeight: FontWeight.w800,
-                    fontSize: 13,
+                    fontSize: isLaptop ? 11 : 13,
                   ),
                   dataTextStyle: const TextStyle(
                     fontSize: 10,
@@ -96,40 +108,40 @@ class _FareMeterState extends State<FareMeter> {
                     buildHeaderWithSearch(
                         title: " VEHICLES ",
                         removeSearching: true,
-                        fontSize: 13),
+                      fontSize: isLaptop ? 11 : 13,),
                     buildHeaderWithSearch(
                         title: " METERED ",
                         removeSearching: true,
-                        fontSize: 13),
+                      fontSize: isLaptop ? 11 : 13,),
                     buildHeaderWithSearch(
                         title: " AUTO WAIT ",
                         removeSearching: true,
-                        fontSize: 13),
+                      fontSize: isLaptop ? 11 : 13,),
                     buildHeaderWithSearch(
                         title: " ACTIVATE WAITING ON SPEED ",
                         removeSearching: true,
-                        fontSize: 13),
+                      fontSize: isLaptop ? 11 : 13,),
                     buildHeaderWithSearch(
                         title: " INITIATE WAITING AFTER ",
                         removeSearching: true,
-                        fontSize: 13),
+                      fontSize: isLaptop ? 11 : 13,),
                     buildHeaderWithSearch(
                         title: " SUSPEND WAITING ON SPEED ",
                         removeSearching: true,
-                        fontSize: 13),
+                      fontSize: isLaptop ? 11 : 13,),
                     buildHeaderWithSearch(
                         title: " WAITING CHAREGES/INTERVAL ",
                         removeSearching: true,
-                        fontSize: 13),
+                      fontSize: isLaptop ? 11 : 13,),
                     buildHeaderWithSearch(
                         title: " INTERVALS ",
                         removeSearching: true,
-                        fontSize: 13),
+                      fontSize: isLaptop ? 11 : 13,),
 
                     buildHeaderWithSearch(
                         title: " ACTIONS ",
                         removeSearching: true,
-                        fontSize: 13),
+                      fontSize: isLaptop ? 11 : 13,),
                   ],
                   rows: List.generate(controller.getAllFareMeterRateModel!.fareMeters!.length, (index) {
 
@@ -185,7 +197,7 @@ class _FareMeterState extends State<FareMeter> {
                           child: customRow(
                             icons: Icons.speed,
                             controller.getAllFareMeterRateModel!.fareMeters![index].activeWaitingController,
-                            width: fieldWidth / 3.9,
+                            width: isLaptop ? 45 : (fieldWidth / 3.9),
                             unitText: "MPH",
                           ),
                         )),
@@ -193,7 +205,7 @@ class _FareMeterState extends State<FareMeter> {
                           child: customRow(
                             icons: Icons.alarm,
                             controller.getAllFareMeterRateModel!.fareMeters![index].autostartWaitingTimeController,
-                            width: fieldWidth / 3.9,
+                            width: isLaptop ? 45 : (fieldWidth / 3.9),
                             unitText: "SECS",
                           ),
                         )),
@@ -201,13 +213,13 @@ class _FareMeterState extends State<FareMeter> {
                           child: customRow(
                             icons: Icons.speed,
                             controller.getAllFareMeterRateModel!.fareMeters![index].suspendWaitingSpeedController,
-                            width: fieldWidth / 3.9,
+                            width: isLaptop ? 45 : (fieldWidth / 3.9),
                             unitText: "MPH",
                           ),
                         )),
                         DataCell(Center(
                           child: CustomButton(
-                            width: fieldWidth / 1.9,
+                            width: isLaptop ? 130 : (fieldWidth / 1.9),
                             onTap: () {
                               WaitingConfigurationAlert.show(
                                   waitingCharges: controller.getAllFareMeterRateModel!.fareMeters![index].waitingCharges
@@ -227,7 +239,7 @@ class _FareMeterState extends State<FareMeter> {
                           child: customRow(
                             icons: Icons.alarm,
                             controller.getAllFareMeterRateModel!.fareMeters![index].waitingIntervalsController,
-                            width: fieldWidth / 3.9,
+                            width: isLaptop ? 45 : (fieldWidth / 3.9),
                             unitText: "SEC",
                           ),
                         )),

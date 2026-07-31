@@ -60,7 +60,9 @@ class _FareIncrementState extends State<FareIncrement> {
               return Column(
                 children: [
                   Container(
-                    width: Get.width / 1.5,
+                    width: constraints.maxWidth >= 1024 && constraints.maxWidth < 1400
+                        ? Get.width / 1.2
+                        : Get.width / 1.41,
                     decoration: BoxDecoration(
                         border: Border.all(color: DynamicColors.gryClr)),
                     child: Column(
@@ -133,7 +135,7 @@ class _FareIncrementState extends State<FareIncrement> {
 
                             /// Operator Dropdown
                             SizedBox(
-                              width: fieldWidth / 2.5,
+                              width: (fieldWidth / 2.5) > 150 ? fieldWidth / 2.5 : 150,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

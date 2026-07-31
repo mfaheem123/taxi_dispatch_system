@@ -693,12 +693,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               CrossAxisAlignment.stretch,
               children: [
                 _field('FL',
-                    tab: 4.3,
+                    tab: 22.3,
                     controller: controller
                         .selectReturnAirportController),
                 const SizedBox(height: 4),
                 _timeField('ARP',
-                    tab: 4.6,
+                    tab: 22.6,
                     controller: controller
                         .arrivalReturnTimeController),
               ],
@@ -718,7 +718,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 Expanded(
                   flex: 3,
                   child: _field('FL',
-                      tab: 4.3,
+                      tab: 22.3,
                       controller: controller
                           .selectAirportController),
                 ),
@@ -726,7 +726,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 Expanded(
                   flex: 1,
                   child: _timeField('ARP',
-                      tab: 4.6,
+                      tab: 22.6,
                       controller: controller
                           .arrivalTimeController),
                 ),
