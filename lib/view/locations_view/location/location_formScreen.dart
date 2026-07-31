@@ -278,13 +278,12 @@ class LocationForm extends StatelessWidget {
     Pattern pattern;
     switch (inputType) {
       case "number":
-      // Yeh pattern digits, ek dot, aur ek leading minus sign allow karega
         pattern = RegExp(r'^[-+]?[0-9]*\.?[0-9]*');
         break;
       case "both":
         pattern = RegExp(r'[a-zA-Z0-9 ]');
         break;
-      default: // text
+      default:
         pattern = RegExp(r'[a-zA-Z ]');
     }
 

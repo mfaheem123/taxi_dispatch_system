@@ -256,6 +256,83 @@ class DashboardController extends GetxController {
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all online drivers
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Future Booking Dispatch (Tab 2 - PRE BOOKING) Alert Data
+  RxList<DashboardDriverObject> futureDispatchDriversList = <DashboardDriverObject>[].obs;
+  RxBool futureDispatchLoader = false.obs;
+  RxBool futureDispatchSubmitLoader = false.obs;
+
+  Future<void> getAvailableDriversForFutureDispatch() async {
+    futureDispatchLoader(true);
+    futureDispatchDriversList.clear();
+
+    var response = await Api().get("drivers/login-busy", sendCompanyId: true);
+
+    if (response.statusCode == 200) {
+      if (response.data['login_drivers'] != null &&
+          response.data['login_drivers'].isNotEmpty) {
+        response.data['login_drivers'].forEach((element) {
+          futureDispatchDriversList.add(
+            DashboardDriverObject(
+              id: element['id'],
+              name: element['name'],
+              username: element['username'],
+              vehicleType: element['vehicle_type'],
+              zone: element['zone'],
+              latitude: element['latitude'],
+              longitude: element['longitude'],
+              bookingStatus: element['booking_status'],
+              sessionStatus: element['session_status'],
+              driverStatus: element['driver_status'],
+              lastLoginAt: element['last_login_at'] != null
+                  ? DateTime.parse(element['last_login_at']).toLocal()
+                  : null,
+            ),
+          );
+        });
+      }
+    }
+
+    futureDispatchLoader(false);
+    update();
+  }
+
+  Future<void> dispatchFutureBooking({
+    required dynamic bookingId,
+    required dynamic driverId,
+  }) async {
+    futureDispatchSubmitLoader(true);
+    update();
+
+    var formData = {
+      "driver_id": driverId,
+      "booking_id": bookingId,
+    };
+
+
+    var response = await Api().post(
+      formData,
+      "bookings/assign-future-booking",
+      auth: true,
+      sendCompanyId: true,
+    );
+
+    if (response.statusCode == 200) {
+      BotToast.showText(text: "BOOKING DISPATCHED SUCCESSFULLY");
+      Get.back();
+      getDashboardTableData(tableId: selectedTabId);
+    } else {
+      BotToast.showText(text: "FAILED TO DISPATCH BOOKING");
+    }
+
+    futureDispatchSubmitLoader(false);
+    update();
+  }
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Future Booking Dispatch (Tab 2 - PRE BOOKING) Alert Data
+
+
+
   RxInt timerTick = 0.obs;
   Timer? timer;
 
@@ -2704,6 +2781,10 @@ class DashboardController extends GetxController {
     Get.isRegistered<LocationController>()
         ? Get.find<LocationController>()
         : Get.put(LocationController());
+
+
+    String currentTime = DateFormat('HH:mm').format(DateTime.now());
+
     pickupController.clear();
     tempStoreMils = null;
     pickUpNoteController.clear();
@@ -2740,7 +2821,11 @@ class DashboardController extends GetxController {
     controllerNoteReturnController.clear();
     slugController.clear();
     slugControllerReturn.clear();
-    pickUpTimeControllerReturn.clear();
+
+    // 2. Clear karne ki jagah current time set kar dain:
+    pickUpTimeController.text = currentTime;
+    pickUpTimeControllerReturn.text = currentTime;
+
     viaPostList.clear();
     viaReturnPostList.clear();
     restrictedDrivers.clear();

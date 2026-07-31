@@ -20,6 +20,7 @@ import '../../alert/dispatch_booking.dart';
 import '../../alert/dispatch_booking_alert.dart';
 import '../../alert/edit_booking_fare.dart';
 import '../../alert/fob_alert.dart';
+import '../../alert/future_alert.dart';
 import '../../component/images.dart';
 import '../../component/networks/api.dart';
 import '../../component/pagination.dart';
@@ -967,6 +968,15 @@ class _BookingTableState extends State<BookingTable> {
     else if(title == "RECOVER"){
       controller.recoverBooking(item.id);
     }
+    else if (title == "FUTURE") {
+      showDialog(
+        context: context,
+        builder: (context) => DispatchFutureBookingAlert(bookingItem: item),
+      );
+    }
+
+
+
   }
 
 

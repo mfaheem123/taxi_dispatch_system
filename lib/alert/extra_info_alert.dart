@@ -49,7 +49,9 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(AppText.extraFears,
+                      Text(
+                        // AppText.extraFears,
+                        "ADDITIONAL BOOKING INFO",
                         style: mozillaTextSemiBoldText(
                           fontWeight: FontWeight.w700,
                           fontSize: 11,

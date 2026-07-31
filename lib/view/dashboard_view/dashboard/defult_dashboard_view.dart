@@ -1188,7 +1188,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.dropDownShow.value = false;
                                                                       controller.jourValue = (v!.journeyType == "r/n") ? 'W/R' : null;
                                                                       controller.selectJourneyTypeValue = v;
-                                                                      // controller.getFaresCalculation();
+                                                                      controller.getFaresCalculation();
                                                                     },
                                                                   ),
                                                                 ),
