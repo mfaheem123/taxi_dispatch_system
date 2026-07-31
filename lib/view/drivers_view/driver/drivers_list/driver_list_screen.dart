@@ -255,7 +255,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                               padding: EdgeInsets.zero,
                                               constraints: const BoxConstraints(),
                                               icon: Icon(Icons.edit_calendar,
-                                                  size: 16, color: DynamicColors.primaryClr),
+                                                  size: 22, color: DynamicColors.primaryClr),
                                               onPressed: () {
                                                 controller.getCombineVehicle(id: item.id);
                                               },
@@ -271,7 +271,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                               padding: EdgeInsets.zero,
                                               constraints: const BoxConstraints(),
                                               icon: Icon(Icons.delete_forever,
-                                                  size: 16, color: DynamicColors.redClr),
+                                                  size: 22, color: DynamicColors.redClr),
                                               onPressed: () {
                                                 showDialog(
                                                   context: context,
