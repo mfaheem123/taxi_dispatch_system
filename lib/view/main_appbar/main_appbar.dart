@@ -13,6 +13,7 @@ import 'package:dashboard_new1/view/authorization/authorization_Screen.dart';
 import 'package:dashboard_new1/view/booking_view/trash_booking.dart';
 import 'package:dashboard_new1/view/main_appbar/slash_shortcut_key_alert.dart';
 import 'package:dashboard_new1/view/setting/booking_clearing_utility_screen.dart';
+import '../customer/controller/customer_controller.dart';
 import 'package:dashboard_new1/view/setting/chat_with_driver_passenger.dart';
 import 'package:dashboard_new1/view/setting/document_number_screen.dart';
 import 'package:dashboard_new1/view/setting/company_information_screen.dart';
@@ -772,6 +773,9 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('create_customer')){
+                if (Get.isRegistered<CustomerController>()) {
+                  Get.find<CustomerController>().clearForm();
+                }
                 controller.currentPage.value = CustomerFormScreen();
                 controller.menuBarRefresh(
                     title: "ADD CUSTOMER", pageName: CustomerFormScreen());

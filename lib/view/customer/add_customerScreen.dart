@@ -23,12 +23,16 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
   CustomerController controller = Get.isRegistered<CustomerController>()
       ? Get.find<CustomerController>()
       : Get.put(CustomerController());
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "customerFormScreen";
+    if (!controller.updateCustomerValue.value) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.clearForm();
+      });
+    }
   }
 
 // Example API se data aaya
