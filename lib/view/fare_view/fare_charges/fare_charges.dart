@@ -69,8 +69,12 @@ class _FareChargesState extends State<FareCharges> {
               children: [
                 Wrap(
                   children: [
-                    SizedBox(
-                      width: fieldWidth*2,
+                    // SizedBox(
+                    //   width: fieldWidth*2,
+                    Container(
+                      width: Get.width / 1.5,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: DynamicColors.gryClr)),
                       child: Column(
                         children: [
                           Container(
@@ -251,6 +255,39 @@ class _FareChargesState extends State<FareCharges> {
                                     ],
                                   ),
                                 ),
+                                labeledField(
+                                  context: context,
+                                  isMobile: isMobile,
+                                  column: true,
+                                  label: "FROM",
+                                  width: fieldWidth/1.8,
+                                  child: SizedBox(height: 30,
+                                      child: CustomTimePicker(
+                                        controller: controller.startTimeSurCharge, // optional
+                                        onTimeSelected: (time) {
+                                          setState(() {
+                                            print(controller.startTimeSurCharge.text);
+                                            print(time);
+                                          });
+                                        },
+                                      )),
+                                ),
+                                labeledField(
+                                  context: context,
+                                  isMobile: isMobile,
+                                  column: true,
+                                  label: "TO",
+                                  width: fieldWidth/1.8,
+                                  child: SizedBox(height: 30, child: CustomTimePicker(
+                                    controller: controller.endTimeSurCharge, // optional
+                                    onTimeSelected: (time) {
+                                      setState(() {
+                                        print(controller.endTimeSurCharge.text);
+                                        print(time);
+                                      });
+                                    },
+                                  )),
+                                ),
                                 Visibility(
                                   visible: controller.selectDateWise !="DATE WISE"?false:true,
                                   child: labeledField(
@@ -267,23 +304,6 @@ class _FareChargesState extends State<FareCharges> {
                                       },
                                     )),
                                   ),
-                                ),
-                                labeledField(
-                                  context: context,
-                                  isMobile: isMobile,
-                                  column: true,
-                                  label: "FROM",
-                                  width: fieldWidth/1.8,
-                                  child: SizedBox(height: 30,
-                                      child: CustomTimePicker(
-                                    controller: controller.startTimeSurCharge, // optional
-                                    onTimeSelected: (time) {
-                                      setState(() {
-                                        print(controller.startTimeSurCharge.text);
-                                        print(time);
-                                      });
-                                    },
-                                  )),
                                 ),
                                 Visibility(
                                   visible: controller.selectDateWise !="DATE WISE"?false:true,
@@ -302,22 +322,7 @@ class _FareChargesState extends State<FareCharges> {
                                     )),
                                   ),
                                 ),
-                                 labeledField(
-                                  context: context,
-                                  isMobile: isMobile,
-                                  column: true,
-                                  label: "TO",
-                                  width: fieldWidth/1.8,
-                                  child: SizedBox(height: 30, child: CustomTimePicker(
-                                    controller: controller.endTimeSurCharge, // optional
-                                    onTimeSelected: (time) {
-                                      setState(() {
-                                        print(controller.endTimeSurCharge.text);
-                                        print(time);
-                                      });
-                                    },
-                                  )),
-                                 ),
+
                                 Visibility(
                                   visible: controller.selectDateWise == "DAY WISE"?true:false,
                                   child: Wrap(
