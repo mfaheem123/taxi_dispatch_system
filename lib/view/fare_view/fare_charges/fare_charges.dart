@@ -33,8 +33,7 @@ class _FareChargesState extends State<FareCharges> {
       : Get.put(FareController());
 
   int selectedRowIndex = 0; // currently selected row
-  final int totalRows =
-  50; // total rows (dynamic list ke hisaab se change hoga)
+  final int totalRows = 50; // total rows (dynamic list ke hisaab se change hoga)
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -48,10 +47,7 @@ class _FareChargesState extends State<FareCharges> {
     return GetBuilder<FareController>(
         initState: (v){
           controller.getSurcharges();
-        },
-
-
-        builder: (controller) {
+        }, builder: (controller) {
 
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
@@ -72,7 +68,7 @@ class _FareChargesState extends State<FareCharges> {
                     // SizedBox(
                     //   width: fieldWidth*2,
                     Container(
-                      width: Get.width / 1.5,
+                      width: Get.width / 1.2,
                       decoration: BoxDecoration(
                           border: Border.all(color: DynamicColors.gryClr)),
                       child: Column(
@@ -88,7 +84,8 @@ class _FareChargesState extends State<FareCharges> {
                             child: Wrap(
                               verticalDirection: VerticalDirection.down,
                               runSpacing: 10,
-                              spacing: fieldWidth/10,
+                              spacing: fieldWidth/8,
+                              crossAxisAlignment: WrapCrossAlignment.end,
                               children: [
                                 SizedBox(
                                   width: fieldWidth/1.8,
@@ -368,11 +365,11 @@ class _FareChargesState extends State<FareCharges> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(
-                                  width: 40,
-                                ),
+                                // SizedBox(
+                                //   width: 40,
+                                // ),
 
-                                CustomButton(
+                           CustomButton(
                                   onTap: (){
                                     controller.postSurchargeData();
                                   },
@@ -384,9 +381,9 @@ class _FareChargesState extends State<FareCharges> {
                                   verticalPadding: 0.0,
                                   fontSize: 14,
                                 ),
-                                SizedBox(
-                                  width: 40,
-                                ),
+                                // SizedBox(
+                                //   width: 40,
+                                // ),
                               ],
                             ),
                           ),
@@ -534,3 +531,4 @@ class DaysClass {
   RxBool? selectedDay = false.obs;
   DaysClass({this.dayName,this.selectedDay});
 }
+
