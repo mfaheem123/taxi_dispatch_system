@@ -34,10 +34,13 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
   @override
   void initState() {
     // TODO: implement initState
-
     super.initState();
-
     shortCutKeyValue.value = "createCompanyVehicle";
+    if(_controller.singleVehicleData == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _controller.clearCompanyVehicleForm();
+      });
+    }
   }
 
   @override
@@ -123,10 +126,10 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                         contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       ),
                       // YAHAN BADLAO KIYA HAI: Direct reference check karne ki jagah ID se match karwaya hai
-                      value: controller.selectVehicleValue != null
-                          ? controller.allVehicleTypes.firstWhereOrNull(
-                              (element) => element.id == controller.selectVehicleValue!.id)
-                          : null,
+                      value: controller.selectVehicleValue == null
+                          ? null
+                          : controller.allVehicleTypes.firstWhereOrNull(
+                        (element) => element.id == controller.selectVehicleValue!.id),
                       hint: Text(
                         "Select Vehicle Type",
                         style: mozillaTextRegularText(fontSize: 12, color: DynamicColors.textClr.withOpacity(0.6)),

@@ -63,6 +63,33 @@ class VehicleController extends GetxController {
   final insuranceExpiryTimeController = TextEditingController();
   DashboardDataModel? dashboardAllData;
 
+  void clearCompanyVehicleForm() {
+    singleVehicleData = null;
+    selectVehicleValue = null;
+    vehicleNumberController.clear();
+    colorController.clear();
+    vehicleMakeController.clear();
+    vehicleModelController.clear();
+    logBookingDocController.clear();
+    phcVehicleNumberController.clear();
+    motNumberController.clear();
+    mot2NumberController.clear();
+    insuranceNumberController.clear();
+    phcVehicleDocPic = null;
+    motDocPic = null;
+    mot2DocPic = null;
+    insuranceDocPic = null;
+    phcVehicleExpireTimeController.clear();
+    motExpiryExpireTimeController.clear();
+    mot2ExpiryExpireTimeController.clear();
+    insuranceExpiryTimeController.clear();
+    phcVehicleExpireDate = "2000-01-01";
+    motExpiryExpireDate = "2000-01-01";
+    mot2ExpiryExpireDate = "2000-01-01";
+    insuranceExpiryDate = "2000-01-01";
+    update();
+  }
+
   VehicleType? selectVehicleValue;
 
   postCompanyVehicle() async {
@@ -172,10 +199,14 @@ class VehicleController extends GetxController {
   companyDataBinding({Vehicles? data}) async {
     if (data == null) return;
 
-    // filteredVehicleTypes me se id match karwa kar selectVehicleValue set karenge
+
+    if (allVehicleTypes.isEmpty) {
+      await getVehicleTypes();
+    }
+
     if (data.vehicleTypeId != null) {
       selectVehicleValue = allVehicleTypes.firstWhereOrNull(
-              (element) => element.id == data.vehicleTypeId
+            (element) => element.id == data.vehicleTypeId,
       );
     }
 
@@ -348,6 +379,27 @@ class VehicleController extends GetxController {
   final driverWaitingChargesController = TextEditingController();
   final accountWaitingChargesController = TextEditingController();
   final waitingTimeController = TextEditingController();
+
+  void clearForm() {
+    vehicleTypeController.clear();
+    passengersController.clear();
+    luggagesController.clear();
+    handLuggagesController.clear();
+    minimumFaresController.clear();
+    minimumMilesController.clear();
+    waitingTimeController.clear();
+    pickerColor = Colors.blue;
+    foregroundColor = Colors.blue;
+    driverWaitingChargesController.clear();
+    accountWaitingChargesController.clear();
+    defaultVehicleValue.value = false;
+    minimumMilesValue.value = false;
+    minimumFaresValue.value = false;
+    profileImg = null;
+    singleVehicle = null;
+  }
+
+
 
   createVehicleType() async {
     isLoadVehicleType.value = false;
