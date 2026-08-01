@@ -493,6 +493,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                 borderRadius: 4,
                                 controller:
                                     controller.fareDescriptionController,
+                                readOnly: true,
                                 width: fieldWidth,
                                 hintText: "",
                                 columnText: true,
@@ -504,6 +505,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                 borderRadius: 4,
                                 controller:
                                     controller.fareDescription2ndController,
+                                readOnly: true,
                                 width: fieldWidth,
                                 hintText: "",
                                 columnText: true,

@@ -242,6 +242,7 @@ class _PlotFareState extends State<PlotFare> {
                               // height: 30,
                               child: Wrap(
                                 crossAxisAlignment: WrapCrossAlignment.end,
+
                                 children: [
                                   SizedBox(
                                     width: fieldWidth/1.2,
@@ -336,6 +337,7 @@ class _PlotFareState extends State<PlotFare> {
                               borderRadius: 4,
                               contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                               controller: controller.ploteFareDescriptionController,
+                              readOnly: true,
                               width: fieldWidth,
                               hintText: "",
                               columnText: true,
@@ -347,6 +349,7 @@ class _PlotFareState extends State<PlotFare> {
                               borderRadius: 4,
                               contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                               controller: controller.ploteFareDescription2ndController,
+                              readOnly: true,
                               width: fieldWidth,
                               hintText: "",
                               columnText: true,

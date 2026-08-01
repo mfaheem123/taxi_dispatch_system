@@ -1186,8 +1186,31 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                         .toList(),
                                                                     onChanged: (v) {
                                                                       controller.dropDownShow.value = false;
-                                                                      controller.jourValue = (v!.journeyType == "r/n") ? 'W/R' : null;
                                                                       controller.selectJourneyTypeValue = v;
+
+                                                                      // 👇 DEBUG: raw value dekhne ke liye — console me exact string check karein
+                                                                      print("RAW journeyType from API => '${v!.journeyType}'");
+
+                                                                      // trim() add kiya taake agar aage/peeche space ho to comparison fail na ho
+                                                                      final type = (v.journeyType ?? "").trim().toLowerCase();
+
+                                                                      print("NORMALIZED type => '$type'");
+
+                                                                      if (type == "o/w") {
+                                                                        controller.jourValue = "O/W";
+                                                                      } else if (type == "r/n") {
+                                                                        controller.jourValue = "R/N";
+                                                                      } else if (type == "w/r") {
+                                                                        controller.jourValue = "W/R";
+                                                                      } else {
+                                                                        controller.jourValue = null;
+                                                                        // 👇 DEBUG: agar ye print chala to matlab koi bhi condition match nahi hui
+                                                                        print("⚠️ NO MATCH FOUND for type: '$type' — jourValue set to null");
+                                                                      }
+
+                                                                      // 👇 DEBUG: final confirm ke jourValue kya bana
+                                                                      print("FINAL controller.jourValue => ${controller.jourValue}");
+
                                                                       controller.getFaresCalculation();
                                                                     },
                                                                   ),
@@ -1201,7 +1224,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                     // (9) Driver dropdown
                                                     if (controller.jourValue ==
-                                                        'W/R') ...[
+                                                        'R/N') ...[
                                                       // SizedBox(
                                                       //   height: 6,
                                                       //   // height: screenHeight * 0.01,

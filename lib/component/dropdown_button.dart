@@ -57,17 +57,37 @@ class CustomDropdownField<T> extends StatelessWidget {
 
                 value: value,
                 isDense: true,
-                hint: Text(label ?? "",
+                hint: Text(
+                  label ?? "",
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                   style: mozillaTextRegularText(fontSize: 13, fontWeight: FontWeight.bold),
                 ),
                 isExpanded: true,
-                  alignment: Alignment.bottomCenter,
+                alignment: Alignment.center,
                 icon: const Icon(Icons.arrow_drop_down, size: 16),
+
+                selectedItemBuilder: (BuildContext context) {
+                  return items.map((T val) {
+                    return Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        itemLabel(val),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        softWrap: false,
+                        style: mozillaTextRegularText(fontSize: 13, fontWeight: FontWeight.bold),
+                      ),
+                    );
+                  }).toList();
+                },
+
                 items: items.map((T val) {
                   return DropdownMenuItem<T>(
                     value: val,
                     child: Text(
                       itemLabel(val), // ✅ how we display dynamic object
+                      softWrap: true,
                       style: mozillaTextRegularText(fontSize: 13, fontWeight: FontWeight.bold),
                     ),
                   );

@@ -1,7 +1,3 @@
-
-
-
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -83,184 +79,202 @@ class WaitingConfigurationAlert {
                       ),
                       const SizedBox(height: 16),
 
-                      // Input Fields Row/Wrap Section (Fixes the Right Overflow)
-                      Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
-                        alignment: WrapAlignment.start,
-                        crossAxisAlignment: WrapCrossAlignment.end,
-                        children: [
-                          // Special Day Checkbox
-                          SizedBox(
-                            width: 130,
-                            child: KeyboardCheckbox(
-                              width: 120,
-                              label: "SPECIAL DAY",
-                              focusNode: controller.specialDayNode,
-                              value: controller.specialDayValue.value,
-                              onChanged: (v) {
-                                controller.specialDayValue.value = v;
-                                controller.update();
-                              },
-                            ),
-                          ),
-
-                          // Day / Date Selector
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                controller.specialDayValue.value ? "DATE" : "DAY",
-                                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
-                              ),
-                              const SizedBox(height: 4),
-                              controller.specialDayValue.value
-                                  ? KeyboardDatePicker(
-                                initialDate: controller.specialDate ?? DateTime.now(),
-                                onChanged: (date) {
-                                  controller.specialDate = date;
-                                  controller.update();
-                                },
-                              )
-                                  : CustomDropdownField<String>(
-                                label: "DAY",
-                                width: 160,
-                                height: 30,
-                                items: const [
-                                  "TUESDAY", "WEDNESDAY", "THURSDAY",
-                                  "FRIDAY", "SATURDAY", "SUNDAY", "MONDAY"
-                                ],
-                                value: controller.selectFareMeterDay,
-                                itemLabel: (data) => data,
-                                onChanged: (val) {
-                                  controller.selectFareMeterDay = val;
+                      // 👇 FIX: Poora form ab ek hi ROW me hai (Wrap ki jaga Row +
+                      // horizontal scroll). Agar screen chota ho to fields wrap
+                      // hoke neeche nahi jayengi, balke row horizontally scroll
+                      // ho jayegi.
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            // Special Day Checkbox
+                            SizedBox(
+                              width: 130,
+                              child: KeyboardCheckbox(
+                                width: 120,
+                                label: "SPECIAL DAY",
+                                focusNode: controller.specialDayNode,
+                                value: controller.specialDayValue.value,
+                                onChanged: (v) {
+                                  controller.specialDayValue.value = v;
                                   controller.update();
                                 },
                               ),
-                            ],
-                          ),
-
-                          // From Time
-                          SizedBox(
-                            width: 120,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text("FROM TIME", style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
-                                const SizedBox(height: 4),
-                                SizedBox(
-                                  height: 30,
-                                  child: CustomTimePicker(
-                                    controller: startTimeCtrl,
-                                    onTimeSelected: (time) {},
-                                  ),
-                                ),
-                              ],
                             ),
-                          ),
+                            const SizedBox(width: 12),
 
-                          // To Time
-                          SizedBox(
-                            width: 120,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text("TO TIME", style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
-                                const SizedBox(height: 4),
-                                SizedBox(
-                                  height: 30,
-                                  child: CustomTimePicker(
-                                    controller: endTimeCtrl,
-                                    onTimeSelected: (time) {},
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // Charges Input with Euro Prefix and Penny Suffix
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text("CHARGES", style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
-                              const SizedBox(height: 4),
-                              Row(
+                            // Day / Date Selector
+                            // 👇 FIX: fixed width SizedBox diya hai (160) taake
+                            // KeyboardDatePicker khud-ba-khud lambi na ho jaye —
+                            // ab ye dropdown jitni hi width leti hai.
+                            SizedBox(
+                              width: 160,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Container(
-                                    height: 30,
-                                    padding: const EdgeInsets.symmetric(horizontal: 6),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: DynamicColors.primaryClr),
-                                      borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(4),
-                                        bottomLeft: Radius.circular(4),
-                                      ),
-                                    ),
-                                    child: const Center(child: Icon(Icons.euro_outlined, size: 16)),
+                                  Text(
+                                    controller.specialDayValue.value ? "DATE" : "DAY",
+                                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
                                   ),
-                                  CustomTextField(
-                                    borderRadius: 0,
-                                    controller: shiftCtrl,
-                                    width: 110,
+                                  const SizedBox(height: 4),
+                                  controller.specialDayValue.value
+                                      ? SizedBox(
+                                    width: 160,
                                     height: 30,
-                                    hintText: "",
-                                  ),
-                                  Container(
-                                    height: 30,
-                                    padding: const EdgeInsets.symmetric(horizontal: 6),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: DynamicColors.primaryClr),
-                                      borderRadius: const BorderRadius.only(
-                                        topRight: Radius.circular(4),
-                                        bottomRight: Radius.circular(4),
-                                      ),
+                                    child: KeyboardDatePicker(
+                                      initialDate: controller.specialDate ?? DateTime.now(),
+                                      onChanged: (date) {
+                                        controller.specialDate = date;
+                                        controller.update();
+                                      },
                                     ),
-                                    child: const Center(
-                                      child: Text("PENNY", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                                  )
+                                      : CustomDropdownField<String>(
+                                    label: "DAY",
+                                    width: 160,
+                                    height: 30,
+                                    items: const [
+                                      "TUESDAY", "WEDNESDAY", "THURSDAY",
+                                      "FRIDAY", "SATURDAY", "SUNDAY", "MONDAY"
+                                    ],
+                                    value: controller.selectFareMeterDay,
+                                    itemLabel: (data) => data,
+                                    onChanged: (val) {
+                                      controller.selectFareMeterDay = val;
+                                      controller.update();
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+
+                            // From Time
+                            SizedBox(
+                              width: 120,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text("FROM TIME", style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
+                                  const SizedBox(height: 4),
+                                  SizedBox(
+                                    height: 30,
+                                    child: CustomTimePicker(
+                                      controller: startTimeCtrl,
+                                      onTimeSelected: (time) {},
                                     ),
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
-
-                          // Save Button
-                          CustomButton(
-                            width: 70,
-                            height: 30,
-                            verticalPadding: 0.0,
-                            btnText: "SAVE",
-                            borderRadius: 4,
-                            style: mozillaTextRegularText(
-                                fontSize: 13,
-                                color: DynamicColors.whiteClr
                             ),
-                            onTap: () {
-                              if (shiftCtrl.text.isNotEmpty && startTimeCtrl.text.isNotEmpty && endTimeCtrl.text.isNotEmpty) {
-                                String finalDay = controller.specialDayValue.value
-                                    ? "${controller.specialDate?.day ?? DateTime.now().day}-${controller.specialDate?.month ?? DateTime.now().month}-${controller.specialDate?.year ?? DateTime.now().year}"
-                                    : (controller.selectFareMeterDay ?? "MONDAY");
+                            const SizedBox(width: 12),
 
-                                listToManage.add(WaitingCharge(
-                                  charge: double.tryParse(shiftCtrl.text) ?? 0.0,
-                                  fromTime: startTimeCtrl.text,
-                                  toTime: endTimeCtrl.text,
-                                  day: finalDay,
-                                ));
+                            // To Time
+                            SizedBox(
+                              width: 120,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text("TO TIME", style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
+                                  const SizedBox(height: 4),
+                                  SizedBox(
+                                    height: 30,
+                                    child: CustomTimePicker(
+                                      controller: endTimeCtrl,
+                                      onTimeSelected: (time) {},
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 12),
 
-                                shiftCtrl.clear();
-                                startTimeCtrl.clear();
-                                endTimeCtrl.clear();
-                                controller.update();
-                              }
-                            },
-                          ),
-                        ],
+                            // Charges Input with Euro Prefix and Penny Suffix
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text("CHARGES", style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
+                                const SizedBox(height: 4),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      height: 30,
+                                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: DynamicColors.primaryClr),
+                                        borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(4),
+                                          bottomLeft: Radius.circular(4),
+                                        ),
+                                      ),
+                                      child: const Center(child: Icon(Icons.euro_outlined, size: 16)),
+                                    ),
+                                    CustomTextField(
+                                      borderRadius: 0,
+                                      controller: shiftCtrl,
+                                      width: 110,
+                                      height: 30,
+                                      hintText: "",
+                                    ),
+                                    Container(
+                                      height: 30,
+                                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: DynamicColors.primaryClr),
+                                        borderRadius: const BorderRadius.only(
+                                          topRight: Radius.circular(4),
+                                          bottomRight: Radius.circular(4),
+                                        ),
+                                      ),
+                                      child: const Center(
+                                        child: Text("PENNY", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 12),
+
+                            // Save Button
+                            CustomButton(
+                              width: 70,
+                              height: 30,
+                              verticalPadding: 0.0,
+                              btnText: "SAVE",
+                              borderRadius: 4,
+                              style: mozillaTextRegularText(
+                                  fontSize: 13,
+                                  color: DynamicColors.whiteClr
+                              ),
+                              onTap: () {
+                                if (shiftCtrl.text.isNotEmpty && startTimeCtrl.text.isNotEmpty && endTimeCtrl.text.isNotEmpty) {
+                                  String finalDay = controller.specialDayValue.value
+                                      ? "${controller.specialDate?.day ?? DateTime.now().day}-${controller.specialDate?.month ?? DateTime.now().month}-${controller.specialDate?.year ?? DateTime.now().year}"
+                                      : (controller.selectFareMeterDay ?? "MONDAY");
+
+                                  listToManage.add(WaitingCharge(
+                                    charge: double.tryParse(shiftCtrl.text) ?? 0.0,
+                                    fromTime: startTimeCtrl.text,
+                                    toTime: endTimeCtrl.text,
+                                    day: finalDay,
+                                  ));
+
+                                  shiftCtrl.clear();
+                                  startTimeCtrl.clear();
+                                  endTimeCtrl.clear();
+                                  controller.update();
+                                }
+                              },
+                            ),
+                          ],
+                        ),
                       ),
 
                       const SizedBox(height: 20),
@@ -283,6 +297,8 @@ class WaitingConfigurationAlert {
                       ),
 
                       // Dynamic Table Items
+                      // 👇 FIX: row text ab bold hai taake table saaf/clear
+                      // nazar aaye.
                       ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
@@ -296,9 +312,27 @@ class WaitingConfigurationAlert {
                             ),
                             child: Row(
                               children: [
-                                Expanded(flex: 3, child: Text(row.day ?? "", style: const TextStyle(fontSize: 12))),
-                                Expanded(flex: 3, child: Text("${row.fromTime} ~ ${row.toTime}", style: const TextStyle(fontSize: 12))),
-                                Expanded(flex: 3, child: Text("${row.charge}", style: const TextStyle(fontSize: 12))),
+                                Expanded(
+                                  flex: 3,
+                                  child: Text(
+                                    row.day ?? "",
+                                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 3,
+                                  child: Text(
+                                    "${row.fromTime} ~ ${row.toTime}",
+                                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 3,
+                                  child: Text(
+                                    "${row.charge}",
+                                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
                                 SizedBox(
                                   width: 40,
                                   child: IconButton(

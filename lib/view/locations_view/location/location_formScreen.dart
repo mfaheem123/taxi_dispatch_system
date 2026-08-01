@@ -8,13 +8,34 @@ import '../../../component/dropdown_button.dart';
 import '../../../component/networks/api.dart';
 import '../../../component/textStyle.dart';
 
+import 'package:dashboard_new1/component/color.dart';
+import 'package:dashboard_new1/view/locations_view/Model/location_types_zoneModel.dart';
+import 'package:dashboard_new1/view/locations_view/controller/locations_controller.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import '../../../component/dropdown_button.dart';
+import '../../../component/networks/api.dart';
+import '../../../component/textStyle.dart';
+
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    return TextEditingValue(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
+    );
+  }
+}
+
 class LocationForm extends StatelessWidget {
   LocationForm({super.key});
 
   LocationController _controller = Get.isRegistered<LocationController>()
       ? Get.find<LocationController>()
       : Get.put(LocationController());
-    List permissions = [];
+  List permissions = [];
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +49,7 @@ class LocationForm extends StatelessWidget {
               if (_controller.locationtypezoneModel == null) {
                 await _controller.getLocationTypeZone();
               }
-                  permissions = Api().sp.read('all_permissions') ?? [];
+              permissions = Api().sp.read('all_permissions') ?? [];
               if (_controller.updateLocationValue.value == false && _controller.locationtypezoneModel == null) {
                 _controller.getLocationTypeZone();
               }
@@ -79,7 +100,7 @@ class LocationForm extends StatelessWidget {
                         ],
                       ),
 
-                       SizedBox(height: 15),
+                      SizedBox(height: 15),
 
                       isMobile
                           ? Column(
@@ -117,23 +138,23 @@ class LocationForm extends StatelessWidget {
                                   inputType: "both")),
 
                           const SizedBox(width: 10),
-                            CustomDropdownField<ZoneObject>(
-                              text: "SELECT ZONE",
-                              label: "SELECT ZONE",
-                              width: Get.width / 5,
-                              height: 38,
-                              items: controller.locationtypezoneModel!
-                                  .zonesList!,
+                          CustomDropdownField<ZoneObject>(
+                            text: "SELECT ZONE",
+                            label: "SELECT ZONE",
+                            width: Get.width / 5,
+                            height: 38,
+                            items: controller.locationtypezoneModel!
+                                .zonesList!,
 
-                              value: controller.zoneValue,
-                              itemLabel: (templateList) =>
-                              templateList.name!.toUpperCase(),
+                            value: controller.zoneValue,
+                            itemLabel: (templateList) =>
+                                templateList.name!.toUpperCase(),
 
-                              onChanged: (val) {
-                                controller.zoneValue = val;
-                                controller.update();
-                              },
-                            ),
+                            onChanged: (val) {
+                              controller.zoneValue = val;
+                              controller.update();
+                            },
+                          ),
 
                         ],
                       ),
@@ -179,7 +200,7 @@ class LocationForm extends StatelessWidget {
                             items: controller.locationtypezoneModel!.locationTypesList!,
                             value: controller.locationTypeValue,
                             itemLabel: (templateList) =>
-                            templateList.name!.toUpperCase(),
+                                templateList.name!.toUpperCase(),
                             onChanged: (val) {
                               controller.locationTypeValue = val;
                               controller.update();
@@ -206,7 +227,7 @@ class LocationForm extends StatelessWidget {
                                 .locationTypesList!,
                             value: controller.locationTypeValue,
                             itemLabel: (templateList) =>
-                            templateList.name!.toUpperCase(),
+                                templateList.name!.toUpperCase(),
                             onChanged: (val) {
                               controller.locationTypeValue = val;
                               controller.update();
@@ -214,9 +235,9 @@ class LocationForm extends StatelessWidget {
                           ),
                           const SizedBox(width: 10),
                           Expanded(
-                              child: _buildField("LATITUDE",
-                                  controller.latitudeCtrl,
-                                  inputType: "number"),
+                            child: _buildField("LATITUDE",
+                                controller.latitudeCtrl,
+                                inputType: "number"),
                           ),
                         ],
                       ),
@@ -230,7 +251,7 @@ class LocationForm extends StatelessWidget {
 
                       ElevatedButton(
                         onPressed: () async{
-                         await controller.postLocation();
+                          await controller.postLocation();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
@@ -269,23 +290,32 @@ class LocationForm extends StatelessWidget {
     );
   }
 
+  /// inputType:
+  /// - "text"   -> sirf letters + spaces, uppercase
+  /// - "number" -> sirf numbers (decimal + minus allowed), uppercase ka koi asar nahi
+  /// - "both"   -> letters + numbers + spaces, uppercase
   static Widget _buildField(
       String label,
       TextEditingController controller, {
         String inputType = "text", // text, number, both
       }) {
-    // Pattern selection
-    Pattern pattern;
+    // Allowed-characters pattern selection
+    RegExp allowedPattern;
     switch (inputType) {
       case "number":
-        pattern = RegExp(r'^[-+]?[0-9]*\.?[0-9]*');
+        allowedPattern = RegExp(r'[0-9.\-]');
         break;
       case "both":
-        pattern = RegExp(r'[a-zA-Z0-9 ]');
+        allowedPattern = RegExp(r'[a-zA-Z0-9 ]');
         break;
       default:
-        pattern = RegExp(r'[a-zA-Z ]');
+        allowedPattern = RegExp(r'[a-zA-Z ]');
     }
+
+    final List<TextInputFormatter> formatters = [
+      FilteringTextInputFormatter.allow(allowedPattern),
+      if (inputType != "number") UpperCaseTextFormatter(),
+    ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -301,23 +331,13 @@ class LocationForm extends StatelessWidget {
         const SizedBox(height: 5),
         TextField(
           controller: controller,
-          textCapitalization: TextCapitalization.characters,
-          onChanged: (value) {
-            controller.value = controller.value.copyWith(
-              text: value.toUpperCase(),
-              selection: TextSelection.collapsed(offset: value.length),
-            );
-          },
-          // Number ke liye decimal aur signed (minus) options enable karein
+          // Manual onChanged hata diya gaya hai — ye hi cursor ko end pe
+          // bhej raha tha. Ab uppercase conversion sirf formatter se hoti
+          // hai jo current cursor/selection ko preserve karta hai.
           keyboardType: inputType == "number"
               ? const TextInputType.numberWithOptions(decimal: true, signed: true)
               : TextInputType.text,
-          inputFormatters: [
-            // Filter use karne ka sahi tarika
-            inputType == "number"
-                ? FilteringTextInputFormatter.allow(RegExp(r'[0-9.-]'))
-                : FilteringTextInputFormatter.allow(pattern),
-          ],
+          inputFormatters: formatters,
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
             isDense: true,
@@ -343,14 +363,10 @@ class LocationForm extends StatelessWidget {
         TextField(
           controller: controller,
           maxLines: 3,
-          textCapitalization: TextCapitalization.characters,
-          onChanged: (value) {
-            controller.value = controller.value.copyWith(
-              text: value.toUpperCase(),
-              selection: TextSelection.collapsed(offset: value.length),
-            );
-          },
           keyboardType: TextInputType.text,
+          inputFormatters: [
+            UpperCaseTextFormatter(),
+          ],
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
           ),
