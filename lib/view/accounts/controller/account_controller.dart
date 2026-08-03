@@ -113,6 +113,7 @@ class AccountController extends GetxController {
   String? accountType;
   String? paymentType;
   String? adminFeesDropDown;
+
   String? accountTypeDropDown;
   String? commissionDropDown;
   RxBool updateescortValue = false.obs;
