@@ -13,6 +13,7 @@ import 'package:dashboard_new1/view/authorization/authorization_Screen.dart';
 import 'package:dashboard_new1/view/booking_view/trash_booking.dart';
 import 'package:dashboard_new1/view/main_appbar/slash_shortcut_key_alert.dart';
 import 'package:dashboard_new1/view/setting/booking_clearing_utility_screen.dart';
+import '../accounts/controller/account_controller.dart';
 import '../administration/controller/administration_controller.dart';
 import '../customer/controller/customer_controller.dart';
 import 'package:dashboard_new1/view/setting/chat_with_driver_passenger.dart';
@@ -1209,6 +1210,9 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('create_account')){
+                if (Get.isRegistered<AccountController>()) {
+                  Get.find<AccountController>().clearAccountForm();
+                }
                 controller.currentPage.value = AccountView();
                 controller.menuBarRefresh(
                     title: "CREATE ACCOUNT", pageName: AccountView());
