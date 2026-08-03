@@ -38,6 +38,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
     permissions = Api().sp.read('all_permissions') ?? [];
     super.initState();
     shortCutKeyValue.value = "createFixedFareSetting";
+    controller.clearForm();
   }
 
   @override

@@ -258,14 +258,14 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
                                                 // 🔥 SAFE: clear sensitive fields before navigation
                                                 controller.accountPasswordController.clear();
                                                 int index = _controller.selectedMenuItems.indexWhere(
-                                                        (element) => element.title == "CREATE ACCOUNT");
+                                                        (element) => element.title == "UPDATE ACCOUNT");
                                                 if (index != -1) {
                                                   _controller.selectedMenuItems[index].selectedItem = true;
                                                   _controller.currentPage.value = AccountView();
                                                 }else{
                                                   _controller.currentPage.value = AccountView();
                                                   _controller.menuBarRefresh(
-                                                      title: "CREATE ACCOUNT", pageName: AccountView());
+                                                      title: "UPDATE ACCOUNT", pageName: AccountView());
                                                 }
                                                 controller.update();
                                               },
