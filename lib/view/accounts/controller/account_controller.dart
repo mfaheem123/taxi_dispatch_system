@@ -13,7 +13,6 @@ import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/multipart/multipart_file.dart' as dio
     hide MultipartFile;
 import 'package:dio/dio.dart' as dio_package;
-import 'package:intl/intl.dart';
 import 'dart:html' as html;
 import '../../../Model/image_model.dart';
 import '../../administration/model/list_subsDiary.dart';
@@ -211,7 +210,7 @@ class AccountController extends GetxController {
       BotToast.showText(text: message);
       print("$message");
       print("$response");
-      
+
       listOFAccount();
 
       accountObjectData = null;
@@ -677,7 +676,20 @@ class AccountController extends GetxController {
       String message = selectedEscort != null
           ? "ESCORT UPDATED SUCCESSFULLY"
           : "ESCORT CREATED SUCCESSFULLY";
-      clearAllFields();
+      escortName.clear();
+      escortEmail.clear();
+      escortMobile.clear();
+      escortAddress.clear();
+      safeguardingBatch.clear();
+      PATBatch.clear();
+      firstAidBatch.clear();
+      DBSBatch.clear();
+      profileImg = null;
+      safeguardingDocPic = null;
+      patDocPic = null;
+      firstAidDocPic = null;
+      dbsDocPic = null;
+      selectedEscort = null;
       listEscort();
       BotToast.showText(text: message);
       isEscortUpdating.value = false;
@@ -756,40 +768,7 @@ class AccountController extends GetxController {
   }
 
 
-  void clearAllFields() {
-    escortName.clear();
-    escortEmail.clear();
-    escortMobile.clear();
-    escortAddress.clear();
-    safeguardingBatch.clear();
-    PATBatch.clear();
-    firstAidBatch.clear();
-    DBSBatch.clear();
 
-    final now = DateTime.now();
-    final currentDate = "${now.year}-${now.month}-${now.day}";
-
-
-    dobDate = currentDate;
-    safeguardingExpiryExpireDate = currentDate;
-    patExpiryDate = currentDate;
-    firstAidDate = currentDate;
-
-
-    dbsExpireTime.text = DateFormat.jm().format(now);
-
-
-    profileImg = null;
-    safeguardingDocPic = null;
-    patDocPic = null;
-    firstAidDocPic = null;
-    dbsDocPic = null;
-
-    selectedEscort = null;
-
-    update();
-
-  }
 
   void setEscortData(Escorts escort) {
     selectedEscort = escort;
