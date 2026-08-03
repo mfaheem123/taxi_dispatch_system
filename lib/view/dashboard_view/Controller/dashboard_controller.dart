@@ -1049,10 +1049,6 @@ class DashboardController extends GetxController {
 // BUSINESS RULE IMPLEMENTATION: DETACHED OUTBOUND & RETURN SEGMENT ROUTES WITH SEQUENTIAL VIAS
 /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
  Future<void> fetchRouteFromOSRM() async {
-    // 👇 DEBUG: function shuru hote hi jourValue kya hai, ye pehle check karein.
-    // Agar yahan bhi false/null aaya to matlab ye function purani/stale
-    // state ke sath call ho raha hai (race condition) — jourValue set hone
-    // se PEHLE hi ye chal chuka tha.
     print("🔎 fetchRouteFromOSRM START -> jourValue = '$jourValue'");
 
     markers.clear();
@@ -1400,9 +1396,7 @@ class DashboardController extends GetxController {
     //   return;
     // }
 
-    // 👇 DEBUG: getFares() call hone se AIN pehle jourValue ki exact value
-    // aur uska type/length print karo — taake pata chale ke isme koi
-    // hidden character (jaise extra space) to nahi, aur ye null to nahi.
+
     print("🔎 RIGHT BEFORE getFares() -> jourValue = '$jourValue' "
         "(isNull: ${jourValue == null}, length: ${jourValue?.length}), "
         "isOneWayJourney = $isOneWayJourney");
@@ -1780,12 +1774,12 @@ class DashboardController extends GetxController {
     }
   }
 
-  // void startBookingCountTimer() {
-  //   _bookingCountTimer?.cancel();
-  //   _bookingCountTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
-  //     await getBookingCounts();
-  //   });
-  // }
+  void startBookingCountTimer() {
+    _bookingCountTimer?.cancel();
+    _bookingCountTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+      await getBookingCounts();
+    });
+  }
 
   dashboardData() async {
     dashboardDataLoader(true);
@@ -1822,7 +1816,7 @@ class DashboardController extends GetxController {
       selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
       selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
       await getBookingCounts();
-      // startBookingCountTimer();
+      startBookingCountTimer();
       if (dashboardAllData!.vehicleTypes != null &&
           dashboardAllData!.vehicleTypes!.isNotEmpty) {
         try {
@@ -2012,10 +2006,10 @@ class DashboardController extends GetxController {
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
       dashboardTableTotalPages.value = dashboardTableModelData!.total!;
       _checkBookingsTimeAndPlaySound(dashboardTableModelData?.data ?? []);
-      // _timer?.cancel();
-      // _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      //   getDashboardTableData(tableId: selectedTabId);
-      // });
+      _timer?.cancel();
+      _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+        getDashboardTableData(tableId: selectedTabId);
+      });
       update();
     }
   }

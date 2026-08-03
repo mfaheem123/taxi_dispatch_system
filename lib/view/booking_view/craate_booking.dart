@@ -3212,7 +3212,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                       ),
                                       if(permissions.contains('create_booking_route'))  CustomButton(
                                         onTap: () {
-                                          if (controller.jourValue == 'W/R' &&
+                                          if (controller.jourValue == 'R/N' &&
                                               controller.pickupTwoWayController
                                                   .text.isEmpty &&
                                               controller.dropOffTwoWayController
