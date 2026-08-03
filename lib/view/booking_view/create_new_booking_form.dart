@@ -15,6 +15,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:timepickerfield/timepickerfield.dart';
 
+import '../../alert/child_seats_alert.dart';
+import '../../alert/extra_fares_alert.dart';
+import '../../alert/extra_info_alert.dart';
+import '../../alert/restrict_drivers_alert.dart';
+
 
 /// Dense, form-friendly input styling shared by every field.
 ///
@@ -223,7 +228,8 @@ class _FocusRingState extends State<_FocusRing> {
 class SpanField {
   final int span;
   final Widget child;
-  const SpanField(this.child, {this.span = 1});
+  double? widths;
+  SpanField(this.child, {this.span = 1, this.widths});
 }
 
 /// Lays SpanField children out on a base grid of [columns] columns and
@@ -266,7 +272,7 @@ class ResponsiveGrid extends StatelessWidget {
           children: [
             for (final (i, f) in children.indexed)
               SizedBox(
-                width: widthForSpan(f.span),
+                width: f.widths ?? widthForSpan(f.span),
                 child: FocusTraversalOrder(
                   order: NumericFocusOrder((orderBase + i).toDouble()),
                   child: _FocusRing(child: f.child),
@@ -1845,7 +1851,9 @@ class _CalendarDropdownFieldState extends State<_CalendarDropdownField> {
 class LabeledCheckbox extends StatefulWidget {
   final String label;
   final bool value;
-  const LabeledCheckbox(this.label, {super.key, this.value = false});
+  final MainAxisAlignment mainAxisAlignment;
+  const LabeledCheckbox(this.label, {super.key, this.value = false,
+    this.mainAxisAlignment = MainAxisAlignment.start});
 
   @override
   State<LabeledCheckbox> createState() => _LabeledCheckboxState();
@@ -1870,6 +1878,8 @@ class _LabeledCheckboxState extends State<LabeledCheckbox> {
         canRequestFocus: false,
         onTap: () => setState(() => _v = !_v),
         child: Row(
+          // mainAxisAlignment: widget.mainAxisAlignment,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Checkbox(
               value: _v,
@@ -2057,7 +2067,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                           SectionCard(
                             child: ResponsiveGrid(
                               orderBase: 100,
-                              children: const [
+                              children: [
                                 SpanField(_HeaderTitle('BOOKING'), span: 2),
                                 SpanField(LabeledDropdown('SOURCE',
                                     items: ['OPT', 'WEB', 'APP', 'PHONE'])),
@@ -2084,9 +2094,9 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                                       onSwap: () => _swap(_pick, _drop),
                                     ),
                                     span: 2),
-                                const SpanField(
+                                SpanField(
                                     LabeledDropdown('PICK ZONE', items: zones)),
-                                const SpanField(
+                                SpanField(
                                     LabeledInput('PICKUP NOTES',
                                         uppercase: true)),
                                 SpanField(
@@ -2098,9 +2108,9 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                                       onSwap: () => _swap(_pick, _drop),
                                     ),
                                     span: 2),
-                                const SpanField(
+                                SpanField(
                                     LabeledDropdown('DROP ZONE', items: zones)),
-                                const SpanField(
+                                SpanField(
                                     LabeledInput('DROPOFF NOTES',
                                         uppercase: true)),
                                 SpanField(
@@ -2126,10 +2136,10 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                             child: ResponsiveGrid(
                               orderBase: 300,
                               children: [
-                                const SpanField(LabeledDatePicker('DATE')),
-                                const SpanField(LabeledTimePicker('TIME')),
-                                const SpanField(LabeledDatePicker('R/DATE')),
-                                const SpanField(LabeledTimePicker('R/TIME')),
+                                SpanField(LabeledDatePicker('DATE')),
+                                SpanField(LabeledTimePicker('TIME')),
+                                SpanField(LabeledDatePicker('R/DATE')),
+                                SpanField(LabeledTimePicker('R/TIME')),
                                 SpanField(
                                     LabeledAddressField(
                                       'R/PICK',
@@ -2139,9 +2149,9 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                                       onSwap: () => _swap(_rPick, _rDrop),
                                     ),
                                     span: 2),
-                                const SpanField(LabeledDropdown('R/PICK ZONE',
+                                SpanField(LabeledDropdown('R/PICK ZONE',
                                     items: zones)),
-                                const SpanField(
+                                SpanField(
                                     LabeledInput('R/PICK NOTES',
                                         uppercase: true)),
                                 SpanField(
@@ -2153,9 +2163,9 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                                       onSwap: () => _swap(_rPick, _rDrop),
                                     ),
                                     span: 2),
-                                const SpanField(LabeledDropdown('R/DROP ZONE',
+                                SpanField(LabeledDropdown('R/DROP ZONE',
                                     items: zones)),
-                                const SpanField(
+                                SpanField(
                                     LabeledInput('R/DROP NOTES',
                                         uppercase: true)),
                               ],
@@ -2166,7 +2176,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                           SectionCard(
                             child: ResponsiveGrid(
                               orderBase: 400,
-                              children: const [
+                              children: [
                                 SpanField(LabeledInput('LEAD (MINS)',
                                     keyboardType: TextInputType.number)),
                                 SpanField(LabeledDropdown('JOUR',
@@ -2194,7 +2204,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                           SectionCard(
                             child: ResponsiveGrid(
                               orderBase: 500,
-                              children: const [
+                              children: [
                                 SpanField(LabeledDropdown('PAY', items: [
                                   'CASH',
                                   'CARD',
@@ -2203,10 +2213,11 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                                 ])),
                                 SpanField(LabeledInput('R/LEAD (MINS)',
                                     keyboardType: TextInputType.number)),
-                                SpanField(LabeledCheckbox('QUOTATION')),
-                                SpanField(LabeledCheckbox('SMS', value: true)),
-                                SpanField(LabeledCheckbox('EMAIL')),
-                                SpanField(LabeledCheckbox('ADD RETURN FARE')),
+                                SpanField(LabeledCheckbox('QUOTATION'),widths: 110),
+                                SpanField(LabeledCheckbox('SMS', value: true),widths: 80),
+                                SpanField(LabeledCheckbox('EMAIL'),widths: 80),
+                                SpanField(ASDF()),
+                                // SpanField(LabeledCheckbox('ADD RETURN FARE')),
                               ],
                             ),
                           ),
@@ -2214,7 +2225,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                           // ---- Fares row ----
                           SectionCard(
                             child: Column(
-                              children: const [
+                              children: [
                                 _StatStrip(),
                                 SizedBox(height: Density.gridSpacing),
                                 ResponsiveGrid(
@@ -2268,6 +2279,118 @@ class _HeaderTitle extends StatelessWidget {
     );
   }
 }
+
+class _GlowFocus extends StatelessWidget {
+  const _GlowFocus({required this.child});
+  final Widget child;
+  @override
+  Widget build(BuildContext context) => child;
+}
+
+class ASDF extends StatelessWidget {
+  const ASDF({super.key});
+  static const _border = Colors.black;
+  static const _purpleSoft = Color(0xFFEEF2FF);
+
+  @override
+  Widget build(BuildContext context) {
+    Widget commsAndLuggageRow(bool isMobile) {
+      Widget iconBtn(
+          IconData icon, {
+            VoidCallback? onPressed,
+            required int tab,
+          }) {
+        return FocusTraversalOrder(
+          order: NumericFocusOrder(tab.toDouble()),
+          child: _GlowFocus(
+            child: Focus(
+              onKeyEvent: (node, event) {
+                if (event is KeyDownEvent &&
+                    (event.logicalKey == LogicalKeyboardKey.enter ||
+                        event.logicalKey == LogicalKeyboardKey.space)) {
+                  onPressed?.call();
+                  return KeyEventResult.handled;
+                }
+                return KeyEventResult.ignored;
+              },
+              child: Container(
+                margin: const EdgeInsets.only(left: 6),
+                decoration: BoxDecoration(
+                  color: _purpleSoft,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: _border),
+                ),
+                child: IconButton(
+                  onPressed: onPressed,
+                  padding: const EdgeInsets.all(4),
+                  visualDensity: VisualDensity.compact,
+                  splashRadius: 18,
+                  icon: Icon(
+                    icon,
+                    size: 22,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+
+      final right = Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          iconBtn(
+            Icons.person,
+            tab: 24,
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (_) => RestrictDriversAlert(),
+              );
+            },
+          ),
+          iconBtn(
+            Icons.attach_money,
+            tab: 25,
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (_) => ChildSeatsAlert(),
+              );
+            },
+          ),
+          iconBtn(
+            Icons.note_add,
+            tab: 26,
+            onPressed: () {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) => ExtraFaresAlert(),
+              );
+            },
+          ),
+          iconBtn(
+            Icons.calculate,
+            tab: 27,
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (_) => ExtraInfoAlert(),
+              );
+            },
+          ),
+        ],
+      );
+
+      return right;
+    }
+
+    return commsAndLuggageRow(false);
+  }
+}
+
 
 class _TopTabs extends StatelessWidget {
   const _TopTabs();
