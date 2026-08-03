@@ -152,6 +152,85 @@ class _FieldShell extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
+// Keyboard traversal.
+//
+// Tab walks the form in visual order: every field, then the action buttons.
+// Two things make it feel smooth rather than jumpy:
+//   * [smoothTraversalFocus] animates the scroll that brings the next field
+//     into view, instead of Flutter's default instant jump.
+//   * [_FocusRing] fades a highlight in behind whichever field has focus.
+// ---------------------------------------------------------------------------
+
+/// Same behaviour as Flutter's default traversal scroll — including only
+/// scrolling when the target is actually off-screen — but animated.
+void smoothTraversalFocus(
+  FocusNode node, {
+  ScrollPositionAlignmentPolicy? alignmentPolicy,
+  double? alignment,
+  Duration? duration,
+  Curve? curve,
+}) {
+  FocusTraversalPolicy.defaultTraversalRequestFocusCallback(
+    node,
+    // Passed straight through: the policy sends keepVisibleAtEnd going
+    // forward and keepVisibleAtStart going back, which is what stops an
+    // already-visible field from being yanked to the edge of the viewport.
+    alignmentPolicy: alignmentPolicy,
+    alignment: alignment,
+    duration: duration ?? const Duration(milliseconds: 200),
+    curve: curve ?? Curves.easeOutCubic,
+  );
+}
+
+/// Fades a soft highlight in behind [child] while it (or anything inside it)
+/// holds focus, so the eye can follow Tab from field to field.
+///
+/// Draws with a shadow only — no border, no padding — so adding it cannot
+/// change any field's height.
+class _FocusRing extends StatefulWidget {
+  final Widget child;
+  const _FocusRing({required this.child});
+
+  @override
+  State<_FocusRing> createState() => _FocusRingState();
+}
+
+class _FocusRingState extends State<_FocusRing> {
+  bool _focused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = Theme.of(context).colorScheme.primary;
+    return Focus(
+      // Not a tab stop itself — it only listens for focus landing on the
+      // real field inside it.
+      canRequestFocus: false,
+      skipTraversal: true,
+      onFocusChange: (has) {
+        if (has != _focused) setState(() => _focused = has);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        curve: Curves.easeOut,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4),
+          boxShadow: _focused
+              ? [
+                  BoxShadow(
+                    color: accent.withValues(alpha: 0.35),
+                    blurRadius: 6,
+                    spreadRadius: 2,
+                  ),
+                ]
+              : const [],
+        ),
+        child: widget.child,
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
 // A field that knows how many base columns it wants to occupy.
 // span is clamped to the available column count, so a span-2 field
 // becomes full-width on a 1-column phone automatically.
@@ -169,9 +248,15 @@ class ResponsiveGrid extends StatelessWidget {
   final double spacing;
   final double runSpacing;
 
+  /// Tab order of this grid's first field. Each following field takes the
+  /// next number, so sections stay in order as long as their bases are
+  /// spaced further apart than any section is long.
+  final int orderBase;
+
   const ResponsiveGrid({
     super.key,
     required this.children,
+    this.orderBase = 0,
     this.spacing = Density.gridSpacing,
     this.runSpacing = Density.gridSpacing,
   });
@@ -194,8 +279,14 @@ class ResponsiveGrid extends StatelessWidget {
           spacing: spacing,
           runSpacing: runSpacing,
           children: [
-            for (final f in children)
-              SizedBox(width: widthForSpan(f.span), child: f.child),
+            for (final (i, f) in children.indexed)
+              SizedBox(
+                width: widthForSpan(f.span),
+                child: FocusTraversalOrder(
+                  order: NumericFocusOrder((orderBase + i).toDouble()),
+                  child: _FocusRing(child: f.child),
+                ),
+              ),
           ],
         );
       },
@@ -219,6 +310,9 @@ class LabeledInput extends StatelessWidget {
       child: TextField(
         keyboardType: keyboardType,
         style: const TextStyle(fontSize: Density.fieldFont),
+        // So the on-screen keyboard's "next" key walks the form too, not
+        // just a hardware Tab.
+        textInputAction: TextInputAction.next,
         decoration: InputDecoration(hintText: hint),
       ),
     );
@@ -380,6 +474,9 @@ class _LabeledCheckboxState extends State<LabeledCheckbox> {
             : Density.labelFont + Density.labelGap,
       ),
       child: InkWell(
+        // The Checkbox inside is already a tab stop; letting the InkWell take
+        // focus too would make every checkbox cost two Tab presses.
+        canRequestFocus: false,
         onTap: () => setState(() => _v = !_v),
         child: Row(
           children: [
@@ -476,148 +573,162 @@ class BookingFormScreen extends StatelessWidget {
                   // into an unusable full-bleed layout on big monitors.
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 1200),
-                    child: Column(
-                      children: [
-                        const _TopTabs(),
-                        const SizedBox(height: Density.cardGap),
+                    child: FocusTraversalGroup(
+                      // Explicit order rather than geometry: a Wrap can place
+                      // a short field (a checkbox) above a tall one, which is
+                      // enough to confuse reading-order traversal.
+                      policy: OrderedTraversalPolicy(
+                        requestFocusCallback: smoothTraversalFocus,
+                      ),
+                      child: Column(
+                        children: [
+                          const _TopTabs(),
+                          const SizedBox(height: Density.cardGap),
 
-                        // ---- Booking header: source + sub ----
-                        SectionCard(
-                          child: ResponsiveGrid(
-                            children: const [
-                              SpanField(_HeaderTitle('BOOKING'), span: 2),
-                              SpanField(LabeledDropdown('SOURCE',
-                                  items: ['OPT', 'WEB', 'APP', 'PHONE'])),
-                              SpanField(LabeledDropdown('SUB', items: [
-                                'DEMO COMPANY',
-                                'Company 2',
-                                'Company 3'
-                              ])),
-                            ],
+                          // ---- Booking header: source + sub ----
+                          SectionCard(
+                            child: ResponsiveGrid(
+                              orderBase: 100,
+                              children: const [
+                                SpanField(_HeaderTitle('BOOKING'), span: 2),
+                                SpanField(LabeledDropdown('SOURCE',
+                                    items: ['OPT', 'WEB', 'APP', 'PHONE'])),
+                                SpanField(LabeledDropdown('SUB', items: [
+                                  'DEMO COMPANY',
+                                  'Company 2',
+                                  'Company 3'
+                                ])),
+                              ],
+                            ),
                           ),
-                        ),
 
-                        // ---- Pick / Drop + contact ----
-                        SectionCard(
-                          child: ResponsiveGrid(
-                            children: const [
-                              SpanField(LabeledInput('PICK'), span: 2),
-                              SpanField(
-                                  LabeledDropdown('PICK ZONE', items: zones)),
-                              SpanField(LabeledInput('PICKUP NOTES')),
-                              SpanField(LabeledInput('DROP'), span: 2),
-                              SpanField(
-                                  LabeledDropdown('DROP ZONE', items: zones)),
-                              SpanField(LabeledInput('DROPOFF NOTES')),
-                              SpanField(LabeledInput('NAME')),
-                              SpanField(LabeledInput('EMAIL',
-                                  keyboardType: TextInputType.emailAddress)),
-                              SpanField(LabeledInput('MOBILE',
-                                  keyboardType: TextInputType.phone)),
-                              SpanField(LabeledInput('TEL',
-                                  keyboardType: TextInputType.phone)),
-                            ],
+                          // ---- Pick / Drop + contact ----
+                          SectionCard(
+                            child: ResponsiveGrid(
+                              orderBase: 200,
+                              children: const [
+                                SpanField(LabeledInput('PICK'), span: 2),
+                                SpanField(
+                                    LabeledDropdown('PICK ZONE', items: zones)),
+                                SpanField(LabeledInput('PICKUP NOTES')),
+                                SpanField(LabeledInput('DROP'), span: 2),
+                                SpanField(
+                                    LabeledDropdown('DROP ZONE', items: zones)),
+                                SpanField(LabeledInput('DROPOFF NOTES')),
+                                SpanField(LabeledInput('NAME')),
+                                SpanField(LabeledInput('EMAIL',
+                                    keyboardType: TextInputType.emailAddress)),
+                                SpanField(LabeledInput('MOBILE',
+                                    keyboardType: TextInputType.phone)),
+                                SpanField(LabeledInput('TEL',
+                                    keyboardType: TextInputType.phone)),
+                              ],
+                            ),
                           ),
-                        ),
 
-                        // ---- Dates & times ----
-                        SectionCard(
-                          child: ResponsiveGrid(
-                            children: const [
-                              SpanField(LabeledDatePicker('DATE')),
-                              SpanField(LabeledTimePicker('TIME')),
-                              SpanField(LabeledDatePicker('R/DATE')),
-                              SpanField(LabeledTimePicker('R/TIME')),
-                              SpanField(LabeledInput('R/PICK'), span: 2),
-                              SpanField(
-                                  LabeledDropdown('R/PICK ZONE', items: zones)),
-                              SpanField(LabeledInput('R/PICK NOTES')),
-                              SpanField(LabeledInput('R/DROP'), span: 2),
-                              SpanField(
-                                  LabeledDropdown('R/DROP ZONE', items: zones)),
-                              SpanField(LabeledInput('R/DROP NOTES')),
-                            ],
+                          // ---- Dates & times ----
+                          SectionCard(
+                            child: ResponsiveGrid(
+                              orderBase: 300,
+                              children: const [
+                                SpanField(LabeledDatePicker('DATE')),
+                                SpanField(LabeledTimePicker('TIME')),
+                                SpanField(LabeledDatePicker('R/DATE')),
+                                SpanField(LabeledTimePicker('R/TIME')),
+                                SpanField(LabeledInput('R/PICK'), span: 2),
+                                SpanField(LabeledDropdown('R/PICK ZONE',
+                                    items: zones)),
+                                SpanField(LabeledInput('R/PICK NOTES')),
+                                SpanField(LabeledInput('R/DROP'), span: 2),
+                                SpanField(LabeledDropdown('R/DROP ZONE',
+                                    items: zones)),
+                                SpanField(LabeledInput('R/DROP NOTES')),
+                              ],
+                            ),
                           ),
-                        ),
 
-                        // ---- Journey details ----
-                        SectionCard(
-                          child: ResponsiveGrid(
-                            children: const [
-                              SpanField(LabeledInput('LEAD (MINS)',
-                                  keyboardType: TextInputType.number)),
-                              SpanField(LabeledDropdown('JOUR',
-                                  items: ['R/N', 'ONE WAY'])),
-                              SpanField(
-                                  LabeledDropdown('VEH', items: vehicles)),
-                              SpanField(
-                                  LabeledDropdown('R/VEH', items: vehicles)),
-                              SpanField(LabeledDropdown('ACC', items: [
-                                'SELECT ACCOUNT',
-                                'Account 1',
-                                'Account 2'
-                              ])),
-                              SpanField(LabeledInput('PASS',
-                                  keyboardType: TextInputType.number)),
-                              SpanField(LabeledInput('LUGG',
-                                  keyboardType: TextInputType.number)),
-                              SpanField(LabeledInput('SLGG',
-                                  keyboardType: TextInputType.number)),
-                            ],
+                          // ---- Journey details ----
+                          SectionCard(
+                            child: ResponsiveGrid(
+                              orderBase: 400,
+                              children: const [
+                                SpanField(LabeledInput('LEAD (MINS)',
+                                    keyboardType: TextInputType.number)),
+                                SpanField(LabeledDropdown('JOUR',
+                                    items: ['R/N', 'ONE WAY'])),
+                                SpanField(
+                                    LabeledDropdown('VEH', items: vehicles)),
+                                SpanField(
+                                    LabeledDropdown('R/VEH', items: vehicles)),
+                                SpanField(LabeledDropdown('ACC', items: [
+                                  'SELECT ACCOUNT',
+                                  'Account 1',
+                                  'Account 2'
+                                ])),
+                                SpanField(LabeledInput('PASS',
+                                    keyboardType: TextInputType.number)),
+                                SpanField(LabeledInput('LUGG',
+                                    keyboardType: TextInputType.number)),
+                                SpanField(LabeledInput('SLGG',
+                                    keyboardType: TextInputType.number)),
+                              ],
+                            ),
                           ),
-                        ),
 
-                        // ---- Payment + options ----
-                        SectionCard(
-                          child: ResponsiveGrid(
-                            children: const [
-                              SpanField(LabeledDropdown('PAY', items: [
-                                'CASH',
-                                'CARD',
-                                'ACCOUNT',
-                                'INVOICE'
-                              ])),
-                              SpanField(LabeledInput('R/LEAD (MINS)',
-                                  keyboardType: TextInputType.number)),
-                              SpanField(LabeledCheckbox('QUOTATION')),
-                              SpanField(LabeledCheckbox('SMS', value: true)),
-                              SpanField(LabeledCheckbox('EMAIL')),
-                              SpanField(LabeledCheckbox('ADD RETURN FARE')),
-                            ],
+                          // ---- Payment + options ----
+                          SectionCard(
+                            child: ResponsiveGrid(
+                              orderBase: 500,
+                              children: const [
+                                SpanField(LabeledDropdown('PAY', items: [
+                                  'CASH',
+                                  'CARD',
+                                  'ACCOUNT',
+                                  'INVOICE'
+                                ])),
+                                SpanField(LabeledInput('R/LEAD (MINS)',
+                                    keyboardType: TextInputType.number)),
+                                SpanField(LabeledCheckbox('QUOTATION')),
+                                SpanField(LabeledCheckbox('SMS', value: true)),
+                                SpanField(LabeledCheckbox('EMAIL')),
+                                SpanField(LabeledCheckbox('ADD RETURN FARE')),
+                              ],
+                            ),
                           ),
-                        ),
 
-                        // ---- Fares row ----
-                        SectionCard(
-                          child: Column(
-                            children: const [
-                              _StatStrip(),
-                              SizedBox(height: Density.gridSpacing),
-                              ResponsiveGrid(
-                                children: [
-                                  SpanField(LabeledInput('FARE (£)',
-                                      keyboardType: TextInputType.number)),
-                                  SpanField(LabeledInput('R/FARE (£)',
-                                      keyboardType: TextInputType.number)),
-                                  SpanField(LabeledDropdown('DRV', items: [
-                                    'SELECT DRIVER',
-                                    'Driver 1',
-                                    'Driver 2'
-                                  ])),
-                                  SpanField(LabeledDropdown('R/DRV', items: [
-                                    'SELECT DRIVER',
-                                    'Driver 1',
-                                    'Driver 2'
-                                  ])),
-                                ],
-                              ),
-                            ],
+                          // ---- Fares row ----
+                          SectionCard(
+                            child: Column(
+                              children: const [
+                                _StatStrip(),
+                                SizedBox(height: Density.gridSpacing),
+                                ResponsiveGrid(
+                                  orderBase: 600,
+                                  children: [
+                                    SpanField(LabeledInput('FARE (£)',
+                                        keyboardType: TextInputType.number)),
+                                    SpanField(LabeledInput('R/FARE (£)',
+                                        keyboardType: TextInputType.number)),
+                                    SpanField(LabeledDropdown('DRV', items: [
+                                      'SELECT DRIVER',
+                                      'Driver 1',
+                                      'Driver 2'
+                                    ])),
+                                    SpanField(LabeledDropdown('R/DRV', items: [
+                                      'SELECT DRIVER',
+                                      'Driver 1',
+                                      'Driver 2'
+                                    ])),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
 
-                        // ---- Action buttons ----
-                        const _ActionButtons(),
-                      ],
+                          // ---- Action buttons ----
+                          const _ActionButtons(),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -727,11 +838,14 @@ class _ActionButtons extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final wide = constraints.maxWidth >= Breakpoints.tablet;
+        // 700+ keeps the buttons last in the tab order, after every field.
         final buttons = <Widget>[
-          _btn('MULTI BOOKING [F8]', const Color(0xFFBDBDBD), Colors.black87),
-          _btn('MULTI VEHICLE [F9]', const Color(0xFFBDBDBD), Colors.black87),
-          _btn('CLEAR [F7]', const Color(0xFFD32F2F), Colors.white),
-          _btn('SAVE [HOME]', const Color(0xFF2E7D32), Colors.white),
+          _btn(700, 'MULTI BOOKING [F8]', const Color(0xFFBDBDBD),
+              Colors.black87),
+          _btn(701, 'MULTI VEHICLE [F9]', const Color(0xFFBDBDBD),
+              Colors.black87),
+          _btn(702, 'CLEAR [F7]', const Color(0xFFD32F2F), Colors.white),
+          _btn(703, 'SAVE [HOME]', const Color(0xFF2E7D32), Colors.white),
         ];
         return wide
             ? Row(
@@ -755,19 +869,27 @@ class _ActionButtons extends StatelessWidget {
     );
   }
 
-  Widget _btn(String label, Color bg, Color fg) => ElevatedButton(
-        onPressed: () {},
-        style: ElevatedButton.styleFrom(
-          backgroundColor: bg,
-          foregroundColor: fg,
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          minimumSize: const Size(0, 34),
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+  Widget _btn(int order, String label, Color bg, Color fg) =>
+      FocusTraversalOrder(
+        order: NumericFocusOrder(order.toDouble()),
+        child: _FocusRing(
+          child: ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: bg,
+              foregroundColor: fg,
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              minimumSize: const Size(0, 34),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6)),
+            ),
+            child: Text(label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+          ),
         ),
-        child: Text(label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
       );
 }
