@@ -212,13 +212,13 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
                                         int index = _controller.selectedMenuItems
                                             .indexWhere((element) =>
                                         element.title ==
-                                            "CREATE SUBSIDIARY");
+                                            "UPDATE SUBSIDIARY");
                                         if (index != -1) {
                                           _controller.selectedMenuItems[index]
                                               .selectedItem = true;
                                         } else {
                                           _controller.menuBarRefresh(
-                                              title: "CREATE SUBSIDIARY",
+                                              title: "UPDATE SUBSIDIARY",
                                               pageName: CreateSubsiDiary());
                                         }
                                         // Page switch karein

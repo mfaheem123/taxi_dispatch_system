@@ -13,16 +13,33 @@ import 'package:get/get.dart';
 import '../../../component/dropdown_button.dart';
 import '../../../component/keyboard_checkBox_widget.dart';
 import '../../../component/networks/api.dart';
+import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../model/get_role.dart';
 import '../model/list_subsDiary.dart';
 
-class CreateUserScreen extends StatelessWidget {
+class CreateUserScreen extends StatefulWidget {
   CreateUserScreen({super.key});
 
+  @override
+  State<CreateUserScreen> createState() => _CreateUserScreenState();
+}
+class _CreateUserScreenState extends State<CreateUserScreen> {
   final AdministrationController controller = Get.isRegistered<AdministrationController>()
       ? Get.find<AdministrationController>()
       : Get.put(AdministrationController());
   List permissions = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    shortCutKeyValue.value = "userFormScreen";
+    if (controller.employee == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.clearUserForm();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -255,14 +255,14 @@ class _UserListscreenState extends State<UserListscreen> {
                                               .selectedMenuItems
                                               .indexWhere((element) =>
                                                   element.title ==
-                                                  "CREATE USER");
+                                                  "UPDATE USER");
 
                                           if (index != -1) {
                                             _controller.selectedMenuItems[index]
                                                 .selectedItem = true;
                                           } else {
                                             _controller.menuBarRefresh(
-                                                title: "CREATE USER",
+                                                title: "UPDATE USER",
                                                 pageName: CreateUserScreen());
                                           }
 

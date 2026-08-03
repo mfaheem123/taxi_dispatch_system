@@ -186,6 +186,7 @@ class DriverPersonalInfo extends StatelessWidget {
                          width: fieldWidth/1.4,
                          child: SizedBox(height: 30, child:
                          KeyboardDatePicker(
+                           key: ValueKey("dob_date_${controller.datePickerKey}"),
                                initialDate: DateTime.tryParse(controller.dobDate ?? '') ?? DateTime.now(),
                                onChanged: (date) => controller.dobDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
                                onSubmitted: (date) => controller.dobDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",

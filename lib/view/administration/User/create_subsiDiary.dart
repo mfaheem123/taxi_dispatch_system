@@ -36,6 +36,11 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "vehicleTypes";
+    if (!controller.isSubsiDiaryUpdating.value) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.clearSubsidiaryForm();
+      });
+    }
   }
 
   @override

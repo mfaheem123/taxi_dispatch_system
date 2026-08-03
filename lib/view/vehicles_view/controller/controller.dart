@@ -397,6 +397,7 @@ class VehicleController extends GetxController {
     minimumFaresValue.value = false;
     profileImg = null;
     singleVehicle = null;
+    update();
   }
 
 
@@ -439,20 +440,7 @@ class VehicleController extends GetxController {
       String message = singleVehicle != null
           ? "VEHICLE UPDATED SUCCESSFULLY"
           : "VEHICLE CREATED SUCCESSFULLY";
-      vehicleTypeController.clear();
-      passengersController.clear();
-      luggagesController.clear();
-      handLuggagesController.clear();
-      minimumFaresController.clear();
-      minimumMilesController.clear();
-      waitingTimeController.clear();
-      driverWaitingChargesController.clear();
-      accountWaitingChargesController.clear();
-      defaultVehicleValue.value = false;
-      minimumMilesValue.value = false;
-      minimumFaresValue.value = false;
-      profileImg = null;
-      singleVehicle = null;
+      clearForm();
       BotToast.showText(text: message);
       update();
       print("response of body -------------------------${response.data}");

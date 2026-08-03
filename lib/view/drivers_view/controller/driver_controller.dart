@@ -457,6 +457,7 @@ class DriverController extends GetxController {
     for (var action in rows) {
       action.fileName = null;
     }
+    datePickerKey++;
     update();
   }
 

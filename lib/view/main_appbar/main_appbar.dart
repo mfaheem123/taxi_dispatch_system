@@ -13,6 +13,7 @@ import 'package:dashboard_new1/view/authorization/authorization_Screen.dart';
 import 'package:dashboard_new1/view/booking_view/trash_booking.dart';
 import 'package:dashboard_new1/view/main_appbar/slash_shortcut_key_alert.dart';
 import 'package:dashboard_new1/view/setting/booking_clearing_utility_screen.dart';
+import '../administration/controller/administration_controller.dart';
 import '../customer/controller/customer_controller.dart';
 import 'package:dashboard_new1/view/setting/chat_with_driver_passenger.dart';
 import 'package:dashboard_new1/view/setting/document_number_screen.dart';
@@ -1408,6 +1409,9 @@ class _MyHomePageState extends State<MyHomePage> {
               print(permissions);
               setState(() {
                 if(permissions.contains('create_user')){
+                  if (Get.isRegistered<AdministrationController>()) {
+                    Get.find<AdministrationController>().clearUserForm();
+                  }
                   controller.currentPage.value = CreateUserScreen();
                   controller.menuBarRefresh(
                       title: "CREATE USER", pageName: CreateUserScreen());
@@ -1441,6 +1445,9 @@ class _MyHomePageState extends State<MyHomePage> {
               permissions = Api().sp.read('all_permissions') ?? [];
               setState(() {
                 if(permissions.contains('create_subsidiary')){
+                  if (Get.isRegistered<AdministrationController>()) {
+                    Get.find<AdministrationController>().clearSubsidiaryForm();
+                  }
                   controller.currentPage.value = CreateSubsiDiary();
                   controller.menuBarRefresh(
                       title: "CREATE SUBSIDIARY", pageName: CreateSubsiDiary());
