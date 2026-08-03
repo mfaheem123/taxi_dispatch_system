@@ -37,6 +37,7 @@ class _FareChargesState extends State<FareCharges> {
   void initState() {
     super.initState();
     shortCutKeyValue.value = "fareCharges";
+    controller.clearSurchargesData();
   }
 
   @override

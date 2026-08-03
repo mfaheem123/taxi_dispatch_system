@@ -1241,6 +1241,9 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('create_escort')){
+                if (Get.isRegistered<AccountController>()) {
+                  Get.find<AccountController>().clearAllFields();
+                }
                 controller.currentPage.value = CreateEscortScreen();
                 controller.menuBarRefresh(
                     title: "CREATE ESCORT", pageName: CreateEscortScreen());

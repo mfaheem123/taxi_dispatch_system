@@ -14,6 +14,7 @@ import 'package:get/get_connect/http/src/multipart/multipart_file.dart' as dio
     hide MultipartFile;
 import 'package:dio/dio.dart' as dio_package;
 import 'package:get_storage/get_storage.dart';
+import 'package:intl/intl.dart';
 import 'dart:html' as html;
 import '../../../Model/image_model.dart';
 import '../../administration/model/list_subsDiary.dart';
@@ -114,6 +115,47 @@ class AccountController extends GetxController {
   String? adminFeesDropDown;
   String? accountTypeDropDown;
   String? commissionDropDown;
+  RxBool updateescortValue = false.obs;
+  RxInt escortUpdateId = 0.obs;
+  void clearAllFields() {
+    // Text fields
+    escortName.clear();
+    escortEmail.clear();
+    escortMobile.clear();
+    escortAddress.clear();
+    safeguardingBatch.clear();
+    PATBatch.clear();
+    firstAidBatch.clear();
+    DBSBatch.clear();
+
+    // Current date/time
+    final now = DateTime.now();
+    final currentDate = "${now.year}-${now.month}-${now.day}";
+
+    // Date fields -> set to current date
+    dobDate = currentDate;
+    safeguardingExpiryExpireDate = currentDate;
+    patExpiryDate = currentDate;
+    firstAidDate = currentDate;
+
+    // Time field -> set to current time
+    dbsExpireTime.text = DateFormat.jm().format(now);
+
+    // Images / documents
+    profileImg = null;
+    safeguardingDocPic = null;
+    patDocPic = null;
+    firstAidDocPic = null;
+    dbsDocPic = null;
+
+    // Selected escort (edit mode)
+    selectedEscort = null;
+
+    update();
+
+  }
+
+
 
 
   void clearAccountForm() {
