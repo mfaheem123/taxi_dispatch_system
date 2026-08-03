@@ -322,7 +322,7 @@ class AccountController extends GetxController {
       BotToast.showText(text: message);
       print("$message");
       print("$response");
-      
+
       listOFAccount();
       clearAccountForm();
 

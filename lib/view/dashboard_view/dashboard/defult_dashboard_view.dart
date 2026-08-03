@@ -1422,7 +1422,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ),
                                                       ),
                                                       /// ================= Return Airport ROW ========================================================
-                                                      /// ================= Return Airport ROW ========================================================
                                                       Visibility(
                                                         visible: controller.isAirportResponseReturn.value,
                                                         child: Padding(
@@ -2881,7 +2880,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                     CustomButton(
                                                       onTap: () {
                                                         controller.dropDownShow.value = false;
-                                                        if (controller.jourValue == 'W/R' && controller.pickupTwoWayController.text.isEmpty && controller.dropOffTwoWayController.text.isEmpty) {
+                                                        if (controller.jourValue == 'R/N' && controller.pickupTwoWayController.text.isEmpty && controller.dropOffTwoWayController.text.isEmpty) {
                                                           BotToast.showText(text: "please enter waiting return pickup and dropoff");
                                                           return;
                                                         }
