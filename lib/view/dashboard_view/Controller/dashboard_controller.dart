@@ -680,6 +680,31 @@ class DashboardController extends GetxController {
   final via1FieldKey = GlobalKey();
   final via2FieldKey = GlobalKey();
   final stackKey = GlobalKey();
+
+  /// Bumped from a post frame callback when the anchor field has not been laid
+  /// out yet, so the suggestion dropdown re-measures instead of drawing at 0,0.
+  final suggestionAnchorTick = 0.obs;
+
+  /// The field the address suggestion dropdown must hang under.
+  /// Driven by [selectedTextFieldsValue] because that is set for every field
+  /// (two way ones included), unlike [activeFieldKey] which is only updated by
+  /// the pickup / drop / via text controller listeners.
+  GlobalKey? get suggestionAnchorKey {
+    switch (selectedTextFieldsValue.value) {
+      case "PICKUP LOCATION":
+        return pickupFieldKey;
+      case "DROP LOCATION":
+        return dropOffFieldKey;
+      case "PICKUP TWO WAY LOCATION":
+        return pickupTwoWayFieldKey;
+      case "DROP TWO WAY LOCATION":
+        return dropOffTwoFieldKey;
+      case "VIA":
+        return activeFieldKey.value ?? via1FieldKey;
+      default:
+        return activeFieldKey.value;
+    }
+  }
   final pickupFocusNode = FocusNode();
   final dropoffFocusNode = FocusNode();
   final via1FocusNode = FocusNode();

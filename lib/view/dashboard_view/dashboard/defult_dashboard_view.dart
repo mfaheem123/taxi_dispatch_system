@@ -2999,41 +2999,44 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                       if (controller.allAddressesData.isEmpty)
                         return SizedBox();
 
+                      // Observed so the measure below is retried on the next
+                      // frame when the anchor field is not laid out yet.
+                      controller.suggestionAnchorTick.value;
+
                       final activeKey =
-                          controller.activeFieldKey.value;
+                          controller.suggestionAnchorKey;
                       final fieldBox = activeKey
                           ?.currentContext
                           ?.findRenderObject() as RenderBox?;
                       final stackBox = controller
                           .stackKey.currentContext
                           ?.findRenderObject() as RenderBox?;
-                      double top = 0.0;
-                      double left = 0.0;
-                      double width =
-                          screenWidth; // define early
 
-                      if (fieldBox != null &&
-                          stackBox != null) {
-                        final localOffset = fieldBox
-                            .localToGlobal(Offset.zero,
-                            ancestor: stackBox);
-                        width = fieldBox.size.width;
-                        top = localOffset.dy +
-                            fieldBox.size.height;
-                        left = localOffset.dx;
+                      if (fieldBox == null ||
+                          !fieldBox.hasSize ||
+                          stackBox == null ||
+                          !stackBox.hasSize) {
+                        // Without a measurable anchor the dropdown would be
+                        // pinned to the top of the screen, so wait a frame.
+                        WidgetsBinding.instance
+                            .addPostFrameCallback((_) {
+                          controller.suggestionAnchorTick
+                              .value++;
+                        });
+                        return const SizedBox();
                       }
 
+                      final localOffset =
+                          fieldBox.localToGlobal(Offset.zero,
+                              ancestor: stackBox);
+                      final double width =
+                          fieldBox.size.width;
+                      final double top = localOffset.dy +
+                          fieldBox.size.height;
+                      final double left = localOffset.dx;
+
                       return Positioned(
-                        top: controller
-                            .selectedTextFieldsValue
-                            .value ==
-                            "PICKUP TWO WAY LOCATION"
-                            ? top * 1.8
-                            : controller.selectedTextFieldsValue
-                            .value ==
-                            "DROP TWO WAY LOCATION"
-                            ? top * 2.05
-                            : top,
+                        top: top,
                         left: left,
                         width: width,
                         child: RawKeyboardListener(
