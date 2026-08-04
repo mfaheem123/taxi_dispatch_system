@@ -939,6 +939,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   order: const NumericFocusOrder(11),
                                                                   child: CompositedTransformTarget(
                                                                     link: controller.mobileFieldLink,
+
                                                                     child: RawKeyboardListener(
                                                                         focusNode: controller.phoneKeyboardFocusNode,
                                                                         onKey: (event) {
@@ -2190,58 +2191,74 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         SizedBox(width: fieldWidthh / 55),
 
                                                         /// (13) Vehicle Dropdown
-                                                        SizedBox(
-                                                          child: FocusTraversalOrder(
-                                                            order: NumericFocusOrder(controller.jourValue == 'W/R' ? 38 : 33),
-                                                            child: labeledField(
-                                                              context: context,
-                                                              isMobile: isMobile,
-                                                              label: AppText.veh,
-                                                              width: fieldWidthh / 15,
-                                                              // width: null,
-                                                              heights: 32,
-                                                              child: Container(
-                                                                decoration: BoxDecoration(
-                                                                  borderRadius: BorderRadius.circular(6),
-                                                                  border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
-                                                                ),
-                                                                child: DropdownButtonFormField<DashboardVehicleTypeObject>(
-                                                                  isExpanded: true,
-                                                                  // Use true here so text reaches the icon and then clips
-                                                                  decoration: const InputDecoration(
-                                                                    /*border: OutlineInputBorder(),
-                                                                                              isDense: true,
-                                                                                              contentPadding: EdgeInsets.symmetric(horizontal: 2),
-                                                                                              */
-                                                                    // Remove the internal border since you have a Container border
-                                                                    border: InputBorder.none,
-                                                                    isDense: true,
-                                                                    contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                                                                  ),
-                                                                  // 3. You can also customize the icon to remove its default side padding
-                                                                  icon: const Icon(Icons.arrow_drop_down, size: 20),
+                            /// (13) Vehicle Dropdown
+                            SizedBox(
+                              child: FocusTraversalOrder(
+                                order: NumericFocusOrder(controller.jourValue == 'W/R' ? 38 : 33),
+                                child: labeledField(
+                                  context: context,
+                                  isMobile: isMobile,
+                                  label: AppText.veh,
+                                  width: fieldWidthh / 15,
+                                  // width: null,
+                                  heights: 32,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(6),
+                                      border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                                    ),
+                                    child: DropdownButtonFormField<DashboardVehicleTypeObject>(
+                                      isExpanded: true,
+                                      decoration: const InputDecoration(
+                                        border: InputBorder.none,
+                                        isDense: true,
+                                        contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                                      ),
+                                      icon: const Icon(Icons.arrow_drop_down, size: 20),
+                                      padding: EdgeInsets.zero,
+                                      value: controller.selectVehicleValue,
 
-                                                                  padding: EdgeInsets.zero,
-                                                                  value: controller.selectVehicleValue,
-                                                                  items: controller.dashboardAllData!.vehicleTypes!.map((vehicle) {
-                                                                    return DropdownMenuItem<DashboardVehicleTypeObject>(
-                                                                      value: vehicle,
-                                                                      child: Text(
-                                                                        vehicle.name ?? "",
-                                                                        style: mozillaTextRegularText(fontSize: 12, color: DynamicColors.textClr),
-                                                                      ),
-                                                                    );
-                                                                  }).toList(),
-                                                                  onTap: () => controller.dropDownShow.value = false,
-                                                                  onChanged: (v) async {
-                                                                    controller.selectVehicleValue = v;
-                                                                    controller.getFaresCalculation();
-                                                                  },
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
+                                      // 1. SELECT HONE KE BAAD (Screen par 10 letters + ...)
+                                      selectedItemBuilder: (BuildContext context) {
+                                        return controller.dashboardAllData!.vehicleTypes!.map((vehicle) {
+                                          final name = vehicle.name ?? "";
+                                          final truncatedName = name.length > 7
+                                              ? "${name.substring(0, 7)}..."
+                                              : name;
+                                          return Text(
+                                            truncatedName,
+                                            style: mozillaTextRegularText(
+                                              fontSize: 12,
+                                              color: DynamicColors.textClr,
+                                            ),
+                                          );
+                                        }).toList();
+                                      },
+
+                                      // 2. DROPDOWN LIST OPEN HONE PAR (Poora Naaam)
+                                      items: controller.dashboardAllData!.vehicleTypes!.map((vehicle) {
+                                        return DropdownMenuItem<DashboardVehicleTypeObject>(
+                                          value: vehicle,
+                                          child: Text(
+                                            vehicle.name ?? "", // Yahan complete name dikhega
+                                            style: mozillaTextRegularText(
+                                              fontSize: 12,
+                                              color: DynamicColors.textClr,
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
+
+                                      onTap: () => controller.dropDownShow.value = false,
+                                      onChanged: (v) async {
+                                        controller.selectVehicleValue = v;
+                                        controller.getFaresCalculation();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                                                       ],
                                                     ),
                                                     controller.selectAccountValue == null

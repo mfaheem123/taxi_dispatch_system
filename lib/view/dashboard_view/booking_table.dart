@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'dart:ui' as html show window;
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
@@ -969,10 +970,13 @@ class _BookingTableState extends State<BookingTable> {
       controller.recoverBooking(item.id);
     }
     else if (title == "FUTURE") {
-      showDialog(
-        context: context,
-        builder: (context) => DispatchFutureBookingAlert(bookingItem: item),
-      );
+      BotToast.showText(text: "IN PROCESS");
+
+    // showDialog(
+      //   context: context,
+      //   builder: (context) =>
+      // DispatchFutureBookingAlert(bookingItem: item),
+      // );
     }
 
 

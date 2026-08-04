@@ -60,7 +60,7 @@ class _SuggestionViewState extends State<SuggestionView> {
       final double fieldWidth = dashboardController.mobileFieldLink.leaderSize?.width ?? (screenWidth * 0.3);
       final double fieldHeight = dashboardController.mobileFieldLink.leaderSize?.height ?? 40;
 
-      const double itemHeight = 42.0;
+      const double itemHeight = 55.0;
       final double maxListHeight = screenHeight * 0.3;
       final double listHeight = (controller.allListData.length * itemHeight)
           .clamp(itemHeight, maxListHeight);

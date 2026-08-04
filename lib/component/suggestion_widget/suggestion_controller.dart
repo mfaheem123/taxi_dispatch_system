@@ -150,20 +150,34 @@ class SuggestionController extends GetxController {
     final visibleStart = currentOffset;
     final visibleEnd = currentOffset + viewport;
 
-    final itemTop = topPadding + index * itemHeight;
-    final itemBottom = itemTop + itemHeight;
+    // final itemTop = topPadding + index * itemHeight;
+    // final itemBottom = itemTop + itemHeight;
+    //
+    // double target = currentOffset;
+    // const double margin = itemHeight * 0.12;
+    //
+    // if (itemBottom > visibleEnd) {
+    //   target = itemBottom - viewport + margin;
+    // } else if (itemTop < visibleStart) {
+    //   target = itemTop - margin;
+    // } else {
+    //   return;
+    // }
+    final double itemTop = topPadding + (index * itemHeight);
+    final double itemBottom = itemTop + itemHeight;
 
     double target = currentOffset;
-    const double margin = itemHeight * 0.12;
 
-    if (itemBottom > visibleEnd) {
-      target = itemBottom - viewport + margin;
-    } else if (itemTop < visibleStart) {
-      target = itemTop - margin;
-    } else {
-      return;
+    // Agar item screen se neeche chala gaya hai
+    if (itemBottom > currentOffset + viewport) {
+      target = itemBottom - viewport;
     }
-
+    // Agar item screen se ooper chala gaya hai
+    else if (itemTop < currentOffset) {
+      target = itemTop;
+    } else {
+      return; // Already visible hai, scroll karne ki zaroorat nahi
+    }
     target = target.clamp(
       suggestionScrollController.position.minScrollExtent,
       suggestionScrollController.position.maxScrollExtent,
