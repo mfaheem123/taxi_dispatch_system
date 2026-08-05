@@ -2295,26 +2295,24 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
         fieldName: 'DROP TWO WAY LOCATION', searchingText: value);
   }
 
-  // Stand-in for the customer lookup the dashboard form gets from the backend.
-  // Replace with real results and call setState (or pass a fresh list in) —
-  // LabeledMobileField re-filters whenever the list changes.
-  static const _customers = <CustomerSuggestion>[
-    CustomerSuggestion(
-        mobile: '07700 900111',
-        name: 'JOHN SMITH',
-        email: 'john.smith@example.com',
-        telephone: '0121 496 0111'),
-    CustomerSuggestion(
-        mobile: '07700 900222',
-        name: 'SARAH JONES',
-        email: 'sarah.jones@example.com',
-        telephone: '0121 496 0222'),
-    CustomerSuggestion(
-        mobile: '07700 900333',
-        name: 'DAVID BROWN',
-        email: 'd.brown@example.com',
-        telephone: '0121 496 0333'),
-  ];
+  // Backed by controller.customerPhoneNumber — the same lookup the dashboard
+  // form's MOBILE field feeds its autocomplete from, refreshed every time a
+  // search resolves.
+  List<CustomerSuggestion> get _customers =>
+      (controller.customerPhoneNumber?.customerInfo ?? const [])
+          .map((c) => CustomerSuggestion(
+                mobile: c.mobile ?? '',
+                name: c.name ?? '',
+                email: c.email ?? '',
+                telephone: c.telephone ?? '',
+              ))
+          .toList();
+
+  void _onMobileSearch(String value) {
+    if (value.trim().isEmpty) return;
+    controller.onPhoneNoChangeHandler(
+        fieldName: 'Phone Number', searchingText: value);
+  }
 
   // ---- Journey type -------------------------------------------------------
   // JOUR picks between a return ('R/N') and a one-way booking. On ONE WAY every
@@ -2501,6 +2499,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                                   'MOBILE',
                                   controller: _mobile,
                                   customers: _customers,
+                                  onSearch: _onMobileSearch,
                                   onPicked: _onCustomerPicked,
                                 )),
                                 SpanField(LabeledInput('TEL',
