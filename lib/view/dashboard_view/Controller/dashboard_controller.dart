@@ -1800,12 +1800,12 @@ class DashboardController extends GetxController {
     }
   }
 
-  void startBookingCountTimer() {
-    _bookingCountTimer?.cancel();
-    _bookingCountTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
-      await getBookingCounts();
-    });
-  }
+  // void startBookingCountTimer() {
+  //   _bookingCountTimer?.cancel();
+  //   _bookingCountTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+  //     await getBookingCounts();
+  //   });
+  // }
 
   dashboardData() async {
     dashboardDataLoader(true);
@@ -1842,7 +1842,7 @@ class DashboardController extends GetxController {
       selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
       selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
       await getBookingCounts();
-      startBookingCountTimer();
+      // startBookingCountTimer();
       if (dashboardAllData!.vehicleTypes != null &&
           dashboardAllData!.vehicleTypes!.isNotEmpty) {
         try {
@@ -2032,10 +2032,10 @@ class DashboardController extends GetxController {
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
       dashboardTableTotalPages.value = dashboardTableModelData!.total!;
       _checkBookingsTimeAndPlaySound(dashboardTableModelData?.data ?? []);
-      _timer?.cancel();
-      _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-        getDashboardTableData(tableId: selectedTabId);
-      });
+      // _timer?.cancel();
+      // _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      //   getDashboardTableData(tableId: selectedTabId);
+      // });
       update();
     }
   }
@@ -2199,9 +2199,21 @@ class DashboardController extends GetxController {
 
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get Fare API
+  bool isTimeEdited = false;
+  bool isDateEdited = false;
   getFaresCalculation() async {
 
+    final now = DateTime.now();
 
+    // 1. Date - اگر user نے pick کیا تو وہ، ورنہ آج کی date
+    final finalDate = pickUpDate != null
+        ? "${pickUpDate!.year}-${pickUpDate!.month.toString().padLeft(2, '0')}-${pickUpDate!.day.toString().padLeft(2, '0')}"
+        : "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+
+    // 2. Time - اگر user نے manually input کیا (isTimeEdited = true) تو وہ، ورنہ current time
+    final finalTime = isTimeEdited && pickUpTimeController.text.trim().isNotEmpty
+        ? pickUpTimeController.text.trim()
+        : "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
 
 
     final storedTemFare = await getFares(
@@ -2215,8 +2227,15 @@ class DashboardController extends GetxController {
       dropoffPlotId:
           dashboardDZoneValue != null ? dashboardDZoneValue!.id : null,
       pickUpPlotId: dashboardZoneValue != null ? dashboardZoneValue!.id : null,
-      pickupDate: "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
-      pickupTime: pickUpTimeController.text,
+
+      // pickupDate: "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
+      // pickupTime: pickUpTimeController.text,
+
+
+      pickupDate: finalDate,
+      pickupTime: finalTime,
+
+
       vehicleTypeId: selectVehicleValue == null ? null : selectVehicleValue!.id,
       returnVehicleTypeId :selectVehicleValueReturn == null ? null : selectVehicleValueReturn!.id,
       congestionCharges: congestionChargesController.text.isEmpty
@@ -2491,9 +2510,12 @@ class DashboardController extends GetxController {
     if (mobileController.text.isEmpty) {
       return BotToast.showText(text: "Please write mobile");
     }
-    if (pickUpTimeController.text.isEmpty) {
-      return BotToast.showText(text: "Please select pickup time");
+    if (!isTimeEdited) {
+      final now = DateTime.now();
+      pickUpTimeController.text =
+      "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
     }
+
     if (selectJourneyTypeValue == null) {
       return BotToast.showText(text: "Please select journey type");
     }
@@ -2557,6 +2579,17 @@ class DashboardController extends GetxController {
       dropOffLatTwoLat = markers[dropOffTwoIndex].point.longitude;
       dropOffLngTwoLat = markers[dropOffTwoIndex].point.longitude;
     }
+
+
+    if (!isTimeEdited && pickUpTimeController.text.trim().isNotEmpty) {
+      // اگر user نے manually time select نہیں کیا اور field میں کوئی پرانا time ہے
+      // تو current time سے overwrite کر دو
+      final now = DateTime.now();
+      pickUpTimeController.text =
+      "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
+    }
+
+
 
     var formData = {
       'pickup': pickupController.text,
@@ -2818,7 +2851,14 @@ class DashboardController extends GetxController {
         : Get.put(LocationController());
 
 
+
+
     String currentTime = DateFormat('HH:mm').format(DateTime.now());
+    pickUpTimeController.text = currentTime;
+    pickUpTimeControllerReturn.text = currentTime;
+
+
+
 
     pickupController.clear();
     tempStoreMils = null;
@@ -2857,9 +2897,7 @@ class DashboardController extends GetxController {
     slugController.clear();
     slugControllerReturn.clear();
 
-    // 2. Clear karne ki jagah current time set kar dain:
-    pickUpTimeController.text = currentTime;
-    pickUpTimeControllerReturn.text = currentTime;
+
 
     viaPostList.clear();
     viaReturnPostList.clear();
@@ -2901,6 +2939,12 @@ class DashboardController extends GetxController {
     fixedFare.value = "0";
     returnFareValue = "0";
 
+///-----------------------------------------------------------------------
+    isTimeEdited = false;
+    isDateEdited = false;
+
+
+
     // ---- FL (Flight) row hide ----
     isAirportResponse.value = false;
     isAirportResponseReturn.value = false;
@@ -2929,6 +2973,7 @@ class DashboardController extends GetxController {
   /// Clear button k liye alag call — same reset use hoga
   clearAllFields() {
     refreshPostAllFields();
+    isTimeEdited = false;
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo data binding for update

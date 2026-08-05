@@ -234,6 +234,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                 borderRadius: 6,
                                 verticalPadding: 0,
                                 style: mozillaTextSemiBoldText(
+
                                     fontSize: 11,
                                     color: DynamicColors.whiteClr),
                                 onTap: () {
@@ -998,7 +999,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 context,
                                                                 isMobile,
                                                                 AppText.tel,
-                                                                // Agar controller me text 'null' ya null hai, to usse empty '' kar do
+
                                                                 (controller.telController.text == 'null' || controller.telController.text.isEmpty) ? (controller.telController..text = '') : controller.telController,
                                                                 width: fieldWidthh / 15,
                                                                 textInputAction: TextInputAction.next,
@@ -1064,9 +1065,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             ),
                                                           ),
                                                         ),
-
-                                                        // const SizedBox(width: 12), // Uniform spacing
-
                                                         // (6) Time Field
                                                         Expanded(
                                                           child: Padding(
@@ -1085,11 +1083,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     controller: controller.pickUpTimeController,
                                                                     onTimeSelected: (time) async {
                                                                       controller.pickUpTimeController.text = time;
+                                                                      controller.isTimeEdited = true;
                                                                       controller.getFaresCalculation();
                                                                       controller.dropDownShow.value = false;
                                                                       setState(() {});
                                                                     },
-                                                                  ),
+                                                                  )
                                                                 ),
                                                               ),
                                                             ),
@@ -2189,8 +2188,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           ),
                                                         ),
                                                         SizedBox(width: fieldWidthh / 55),
-
-                                                        /// (13) Vehicle Dropdown
                             /// (13) Vehicle Dropdown
                             SizedBox(
                               child: FocusTraversalOrder(
@@ -2217,8 +2214,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                       icon: const Icon(Icons.arrow_drop_down, size: 20),
                                       padding: EdgeInsets.zero,
                                       value: controller.selectVehicleValue,
-
-                                      // 1. SELECT HONE KE BAAD (Screen par 10 letters + ...)
                                       selectedItemBuilder: (BuildContext context) {
                                         return controller.dashboardAllData!.vehicleTypes!.map((vehicle) {
                                           final name = vehicle.name ?? "";
@@ -2234,13 +2229,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                           );
                                         }).toList();
                                       },
-
-                                      // 2. DROPDOWN LIST OPEN HONE PAR (Poora Naaam)
                                       items: controller.dashboardAllData!.vehicleTypes!.map((vehicle) {
                                         return DropdownMenuItem<DashboardVehicleTypeObject>(
                                           value: vehicle,
                                           child: Text(
-                                            vehicle.name ?? "", // Yahan complete name dikhega
+                                            vehicle.name ?? "",
                                             style: mozillaTextRegularText(
                                               fontSize: 12,
                                               color: DynamicColors.textClr,
@@ -2735,6 +2728,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                   child: Text(
                                                     "ETA : ${controller.totalTimeDuration}",
                                                     style: TextStyle(
+                                                      fontFamily: 'Outfit',
+                                                      fontWeight: FontWeight.bold,
                                                       color: DynamicColors.textClr,
                                                       fontSize: 13,
                                                     ),

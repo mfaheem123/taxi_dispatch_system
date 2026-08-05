@@ -52,7 +52,8 @@ TextStyle mozillaTextSemiBoldText({
   );
 }
 
-TextStyle mozillaTextRegularText({
+TextStyle
+mozillaTextRegularText({
   BuildContext? context, // context lena zaroori hai for MediaQuery
   double? fontSize,
   Color? color,
