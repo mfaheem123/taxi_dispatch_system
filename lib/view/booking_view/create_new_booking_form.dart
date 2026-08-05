@@ -13,12 +13,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:timepickerfield/timepickerfield.dart';
 
 import '../../alert/child_seats_alert.dart';
 import '../../alert/extra_fares_alert.dart';
 import '../../alert/extra_info_alert.dart';
 import '../../alert/restrict_drivers_alert.dart';
+import '../dashboard_view/Controller/dashboard_controller.dart';
+import '../dashboard_view/models/all_addresses_model.dart';
+import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
+import '../locations_view/controller/locations_controller.dart';
 
 
 /// Dense, form-friendly input styling shared by every field.
@@ -225,11 +230,40 @@ class _FocusRingState extends State<_FocusRing> {
 // span is clamped to the available column count, so a span-2 field
 // becomes full-width on a 1-column phone automatically.
 // ---------------------------------------------------------------------------
+/// A field that can tell the grid what it is called.
+///
+/// [ResponsiveGrid] keys each cell by this label, which is what lets a section
+/// add or drop a field at runtime — the return fields on a ONE WAY booking —
+/// without the fields after it inheriting the wrong State. Without a key,
+/// children are matched by list position, so removing R/VEH would hand its
+/// 'SALOON' selection to ACC and trip DropdownButton's one-item-per-value
+/// assertion.
+abstract interface class LabelledField {
+  String get label;
+}
+
 class SpanField {
   final int span;
   final Widget child;
   double? widths;
-  SpanField(this.child, {this.span = 1, this.widths});
+
+  /// Identity of this cell, for the grid's key. Defaults to the child's label
+  /// when it is a [LabelledField]; set it by hand for anything else that sits
+  /// in a section whose field list can change.
+  final Object? id;
+
+  SpanField(this.child, {this.span = 1, this.widths, this.id});
+
+  /// Null for a child with no identity — those still match by position, which
+  /// is fine as long as they are not in a list that grows and shrinks.
+  Key? get cellKey {
+    if (id != null) return ValueKey(id);
+    // Cast rather than promote: LabelledField is not a subtype of Widget, so
+    // `is` alone leaves the static type as Widget.
+    final field = child;
+    if (field is LabelledField) return ValueKey((field as LabelledField).label);
+    return null;
+  }
 }
 
 /// Lays SpanField children out on a base grid of [columns] columns and
@@ -272,6 +306,9 @@ class ResponsiveGrid extends StatelessWidget {
           children: [
             for (final (i, f) in children.indexed)
               SizedBox(
+                // Keyed by the field, not by its slot, so a section can drop a
+                // field without the ones after it picking up its State.
+                key: f.cellKey,
                 width: f.widths ?? widthForSpan(f.span),
                 child: FocusTraversalOrder(
                   order: NumericFocusOrder((orderBase + i).toDouble()),
@@ -288,7 +325,8 @@ class ResponsiveGrid extends StatelessWidget {
 // ---------------------------------------------------------------------------
 // Small reusable field widgets so the form body stays readable.
 // ---------------------------------------------------------------------------
-class LabeledInput extends StatelessWidget {
+class LabeledInput extends StatelessWidget implements LabelledField {
+  @override
   final String label;
   final String? hint;
   final TextInputType? keyboardType;
@@ -372,7 +410,8 @@ class AddressSuggestion {
   }
 }
 
-class LabeledAddressField extends StatefulWidget {
+class LabeledAddressField extends StatefulWidget implements LabelledField {
+  @override
   final String label;
   final TextEditingController controller;
 
@@ -794,7 +833,8 @@ class CustomerSuggestion {
   });
 }
 
-class LabeledMobileField extends StatefulWidget {
+class LabeledMobileField extends StatefulWidget implements LabelledField {
+  @override
   final String label;
   final TextEditingController controller;
 
@@ -1145,12 +1185,19 @@ class _LabeledMobileFieldState extends State<LabeledMobileField> {
   }
 }
 
-class LabeledDropdown extends StatefulWidget {
+class LabeledDropdown extends StatefulWidget implements LabelledField {
+  @override
   final String label;
   final List<String> items;
   final String? value;
+
+  /// Fired with the new selection. Optional, so the dropdowns nobody listens to
+  /// can keep their own state and nothing else — JOUR needs it to tell the form
+  /// whether the booking has a return leg.
+  final ValueChanged<String?>? onChanged;
+
   const LabeledDropdown(this.label,
-      {super.key, required this.items, this.value});
+      {super.key, required this.items, this.value, this.onChanged});
 
   @override
   State<LabeledDropdown> createState() => _LabeledDropdownState();
@@ -1158,6 +1205,20 @@ class LabeledDropdown extends StatefulWidget {
 
 class _LabeledDropdownState extends State<LabeledDropdown> {
   late String? _value = widget.value ?? widget.items.first;
+
+  @override
+  void didUpdateWidget(LabeledDropdown oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Belt and braces for a State that ends up paired with a different item
+    // list — an unkeyed cell moving position, or an items list fed from a
+    // future backend call. DropdownButtonFormField asserts that its value
+    // appears exactly once among its items, so re-seed instead of crashing.
+    if (!widget.items.contains(_value)) {
+      _value = widget.items.contains(widget.value)
+          ? widget.value
+          : (widget.items.isEmpty ? null : widget.items.first);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1185,7 +1246,67 @@ class _LabeledDropdownState extends State<LabeledDropdown> {
               child: Text(i, overflow: TextOverflow.ellipsis),
             ),
         ],
-        onChanged: (v) => setState(() => _value = v),
+        onChanged: (v) {
+          setState(() => _value = v);
+          widget.onChanged?.call(v);
+        },
+      ),
+    );
+  }
+}
+
+/// Zone dropdown bound straight to a [ZoneObject] — the same dynamic list the
+/// dashboard form's PICKUP/DROP zone dropdowns read from
+/// (`LocationController.locationtypezoneModel.zonesList`), fed by whichever
+/// controller field this instance is wired to (`dashboardZoneValue`,
+/// `dashboardDZoneValue`, `RNzoneValue`, `RN1zoneValue`).
+///
+/// Deliberately stateless: unlike [LabeledDropdown] it must always show
+/// whatever the bound controller field currently holds (that field can be
+/// reset from outside — cleared, swapped, reloaded), so there is no internal
+/// `_value` to fall out of sync. `initialValue` still reacts to changes
+/// because DropdownButtonFormField re-seeds itself whenever `initialValue`
+/// differs from the previous build (see Flutter's dropdown.dart).
+class LabeledZoneDropdown extends StatelessWidget implements LabelledField {
+  @override
+  final String label;
+  final List<ZoneObject> items;
+  final ZoneObject? value;
+  final ValueChanged<ZoneObject?>? onChanged;
+
+  const LabeledZoneDropdown(this.label,
+      {super.key, required this.items, this.value, this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    // A value that no longer appears in `items` (list just reloaded, or
+    // nothing loaded yet) would make DropdownButtonFormField assert — show no
+    // selection instead of crashing, exactly like LabeledDropdown does.
+    final selected = value != null && items.contains(value) ? value : null;
+    return _FieldShell(
+      label: label,
+      child: DropdownButtonFormField<ZoneObject>(
+        initialValue: selected,
+        isExpanded: true,
+        isDense: true,
+        itemHeight: null,
+        iconSize: 16,
+        hint: const Text('SELECT ZONE',
+            style: TextStyle(fontSize: Density.fieldFont, color: Colors.black45)),
+        decoration: const InputDecoration(
+          contentPadding:
+              EdgeInsets.symmetric(horizontal: 8, vertical: Density.dropPadY),
+        ),
+        style:
+            const TextStyle(fontSize: Density.fieldFont, color: Colors.black87),
+        items: [
+          for (final z in items)
+            DropdownMenuItem(
+              value: z,
+              child: Text(z.name ?? '', overflow: TextOverflow.ellipsis),
+            ),
+        ],
+        onChanged: onChanged,
       ),
     );
   }
@@ -1194,7 +1315,8 @@ class _LabeledDropdownState extends State<LabeledDropdown> {
 /// Date field backed by the same dropdown calendar the dashboard booking form
 /// uses: one Tab stop, Enter / Space / Down opens a calendar anchored under the
 /// field, arrow keys move the day, Enter confirms and Esc closes.
-class LabeledDatePicker extends StatefulWidget {
+class LabeledDatePicker extends StatefulWidget implements LabelledField {
+  @override
   final String label;
   final DateTime? initialDate;
   final ValueChanged<DateTime>? onChanged;
@@ -1231,7 +1353,8 @@ class _LabeledDatePickerState extends State<LabeledDatePicker> {
 
 /// Time field backed by the shared `TimePickerField` (HOURS / MINUTES dropdown
 /// panel, `HH:mm` 24-hour value) — the same widget the dashboard form uses.
-class LabeledTimePicker extends StatefulWidget {
+class LabeledTimePicker extends StatefulWidget implements LabelledField {
+  @override
   final String label;
   final String? initialTime; // 'HH:mm'
   final ValueChanged<String>? onChanged;
@@ -1848,7 +1971,8 @@ class _CalendarDropdownFieldState extends State<_CalendarDropdownField> {
       );
 }
 
-class LabeledCheckbox extends StatefulWidget {
+class LabeledCheckbox extends StatefulWidget implements LabelledField {
+  @override
   final String label;
   final bool value;
   final MainAxisAlignment mainAxisAlignment;
@@ -1896,6 +2020,130 @@ class _LabeledCheckboxState extends State<LabeledCheckbox> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Icon-only actions that sit inline with the fields.
+//
+// Each icon is a real tab stop: Tab walks onto it, Enter or Space fires its
+// onTap, and a focus border marks which one is armed — so the row works with
+// no mouse. The three of them share the grid cell's NumericFocusOrder, and
+// OrderedTraversalPolicy breaks that tie with its secondary reading-order
+// sort, which walks them left to right.
+// ---------------------------------------------------------------------------
+
+/// One entry in a [LabeledIconActions] row.
+class IconAction {
+  final IconData icon;
+
+  /// Shown on hover / long-press and read out by screen readers, so the icon
+  /// never has to carry its meaning alone.
+  final String tooltip;
+  final VoidCallback onTap;
+
+  const IconAction({
+    required this.icon,
+    required this.tooltip,
+    required this.onTap,
+  });
+}
+
+class LabeledIconActions extends StatelessWidget {
+  final List<IconAction> actions;
+
+  /// Gap between icons. Also what [width] below assumes.
+  static const double gap = 6;
+
+  /// Square side of one icon button — matches a text field's rendered height
+  /// (roughly 20 + 2 * fieldPadY) so the row lines up with the inputs.
+  static const double buttonSide = 20 + 2 * Density.fieldPadY;
+
+  const LabeledIconActions(this.actions, {super.key});
+
+  /// Exact width [count] icons need, for the grid cell's `widths`.
+  static double width(int count) =>
+      buttonSide * count + gap * (count - 1);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      // Same nudge the checkboxes take: in stacked mode the fields beside this
+      // one carry a label above them, so drop down to stay aligned.
+      padding: EdgeInsets.only(
+        top: FormLayout.inlineOf(context)
+            ? 0
+            : Density.labelFont + Density.labelGap,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final (i, a) in actions.indexed)
+            Padding(
+              padding: EdgeInsets.only(
+                  right: i == actions.length - 1 ? 0 : gap),
+              child: _IconActionButton(a),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _IconActionButton extends StatefulWidget {
+  final IconAction action;
+  const _IconActionButton(this.action);
+
+  @override
+  State<_IconActionButton> createState() => _IconActionButtonState();
+}
+
+class _IconActionButtonState extends State<_IconActionButton> {
+  bool _focused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = Theme.of(context).colorScheme.primary;
+    return Tooltip(
+      message: widget.action.tooltip,
+      waitDuration: const Duration(milliseconds: 400),
+      child: Semantics(
+        button: true,
+        label: widget.action.tooltip,
+        child: InkWell(
+          // Enter / Space reach a focused InkWell as an ActivateIntent, which
+          // it already turns into a tap — no extra Shortcuts wiring needed.
+          onTap: widget.action.onTap,
+          onFocusChange: (has) {
+            if (has != _focused) setState(() => _focused = has);
+          },
+          borderRadius: BorderRadius.circular(6),
+          // The border below is the focus cue; Material's default focus fill
+          // would only muddy it.
+          focusColor: Colors.transparent,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 140),
+            curve: Curves.easeOut,
+            width: LabeledIconActions.buttonSide,
+            height: LabeledIconActions.buttonSide,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: _focused ? accent.withValues(alpha: 0.08) : Colors.white,
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(
+                color: _focused ? accent : const Color(0xFFBDBDBD),
+                width: _focused ? 1.4 : 1,
+              ),
+            ),
+            child: Icon(
+              widget.action.icon,
+              size: 17,
+              color: _focused ? accent : Colors.grey.shade700,
+            ),
+          ),
         ),
       ),
     );
@@ -1955,6 +2203,38 @@ class CreateNewBookingForm extends StatefulWidget {
 }
 
 class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
+  // Same controller the dashboard booking form uses, so PICK/DROP/R-PICK/
+  // R-DROP hit the exact same backend search — reuse it if the dashboard
+  // already registered one, otherwise stand it up here.
+  final DashboardController controller =
+      Get.isRegistered<DashboardController>()
+          ? Get.find<DashboardController>()
+          : Get.put(DashboardController());
+
+  // Same zone/location-type controller the dashboard form reads
+  // locationtypezoneModel.zonesList from for its zone dropdowns.
+  final LocationController _locationController =
+      Get.isRegistered<LocationController>()
+          ? Get.find<LocationController>()
+          : Get.put(LocationController());
+
+  @override
+  void initState() {
+    super.initState();
+    if (_locationController.locationtypezoneModel == null) {
+      _locationController.getLocationTypeZone();
+    }
+  }
+
+  // The zone list feeding all four zone dropdowns — empty until the fetch
+  // above resolves, or while a fresh update-mode fetch is in flight, exactly
+  // like the dashboard form's own guard around this same field.
+  List<ZoneObject> get _zones =>
+      _locationController.updateLocationValue.value == true ||
+              _locationController.locationtypezoneModel == null
+          ? []
+          : (_locationController.locationtypezoneModel!.zonesList ?? []);
+
   // The contact block is controller-driven because picking a customer in the
   // MOBILE field has to write into the three fields beside it.
   final _name = TextEditingController();
@@ -1968,11 +2248,52 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
   final _rPick = TextEditingController();
   final _rDrop = TextEditingController();
 
-  // Deliberately empty: this screen makes no API call, so there is nothing to
-  // suggest and the fields behave as plain (upper-cased) text inputs. Feed a
-  // real list into each LabeledAddressField's `addresses` and the lookup panel
-  // starts working with no other change.
-  static const _addresses = <AddressSuggestion>[];
+  // Whichever AllAddressesModel the user last picked for each field — kept
+  // around (lat/lon and all) for whatever consumes the booking payload later,
+  // exactly like the dashboard form's _selectedPickup / _selectedDrop.
+  AllAddressesModel? _selectedPickup;
+  AllAddressesModel? _selectedDrop;
+  AllAddressesModel? _selectedReturnPickup;
+  AllAddressesModel? _selectedReturnDrop;
+
+  // Backed by controller.allAddressesData — the same list the dashboard form
+  // feeds its PICK/DROP rows from, refreshed every time a search resolves.
+  List<AddressSuggestion> get _addresses => controller.allAddressesData
+      .map((a) => AddressSuggestion(name: a.name ?? '', postcode: a.postcode ?? ''))
+      .toList();
+
+  /// Finds the AllAddressesModel behind a picked suggestion, so lat/lon is not
+  /// lost just because LabeledAddressField only hands back display strings.
+  AllAddressesModel? _modelFor(AddressSuggestion a) {
+    for (final m in controller.allAddressesData) {
+      if (m.name == a.name && (m.postcode ?? '') == a.postcode) return m;
+    }
+    return null;
+  }
+
+  void _onPickupSearch(String value) {
+    if (value.trim().isEmpty) return;
+    controller.onChangeHandler(
+        fieldName: 'PICKUP LOCATION', searchingText: value);
+  }
+
+  void _onDropSearch(String value) {
+    if (value.trim().isEmpty) return;
+    controller.onChangeHandler(
+        fieldName: 'DROP LOCATION', searchingText: value);
+  }
+
+  void _onReturnPickupSearch(String value) {
+    if (value.trim().isEmpty) return;
+    controller.onChangeHandler(
+        fieldName: 'PICKUP TWO WAY LOCATION', searchingText: value);
+  }
+
+  void _onReturnDropSearch(String value) {
+    if (value.trim().isEmpty) return;
+    controller.onChangeHandler(
+        fieldName: 'DROP TWO WAY LOCATION', searchingText: value);
+  }
 
   // Stand-in for the customer lookup the dashboard form gets from the backend.
   // Replace with real results and call setState (or pass a fresh list in) —
@@ -1994,6 +2315,38 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
         email: 'd.brown@example.com',
         telephone: '0121 496 0333'),
   ];
+
+  // ---- Journey type -------------------------------------------------------
+  // JOUR picks between a return ('R/N') and a one-way booking. On ONE WAY every
+  // return field disappears — there is no second leg to describe — so the form
+  // gets shorter and Tab stops walking over inputs that cannot apply.
+  static const _journeyTypes = ['R/N', 'ONE WAY'];
+  static const _oneWay = 'ONE WAY';
+
+  /// True while the booking has a return leg. Starts true because JOUR opens on
+  /// 'R/N', the first item.
+  bool _hasReturn = true;
+
+  void _onJourneyChanged(String? value) {
+    final hasReturn = value != _oneWay;
+    if (hasReturn == _hasReturn) return;
+    setState(() {
+      _hasReturn = hasReturn;
+      if (!hasReturn) {
+        // The return fields are removed from the tree, so the ones holding
+        // their own state lose it anyway. Clearing the two parent-owned
+        // addresses as well keeps the whole return leg consistently empty
+        // instead of leaving stale text to reappear — and stops a one-way
+        // booking from carrying return data it should not have.
+        _rPick.clear();
+        _rDrop.clear();
+      }
+    });
+  }
+
+  /// [field] when the booking has a return leg, nothing when it does not.
+  /// Returning a list lets it be spread straight into a grid's children.
+  List<SpanField> _ifReturn(SpanField field) => _hasReturn ? [field] : const [];
 
   @override
   void dispose() {
@@ -2029,7 +2382,6 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
 
   @override
   Widget build(BuildContext context) {
-    const zones = ['SELECT ZONE', 'Zone A', 'Zone B', 'Zone C'];
     const vehicles = ['SALOON', 'ESTATE', 'MPV', 'EXECUTIVE'];
 
     return Scaffold(
@@ -2058,7 +2410,18 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                       policy: OrderedTraversalPolicy(
                         requestFocusCallback: smoothTraversalFocus,
                       ),
-                      child: Column(
+                      // Two nested GetBuilders: the outer rebuilds whenever
+                      // LocationController.update() fires — i.e. when
+                      // getLocationTypeZone() resolves and refills
+                      // locationtypezoneModel.zonesList, feeding all four zone
+                      // dropdowns. The inner rebuilds on
+                      // DashboardController.update() — i.e. when
+                      // getAddresses() finishes and refills
+                      // controller.allAddressesData, feeding PICK/DROP/R-PICK/
+                      // R-DROP's suggestion lists.
+                      child: GetBuilder<LocationController>(
+                        builder: (_) => GetBuilder<DashboardController>(
+                        builder: (controller) => Column(
                         children: [
                           const _TopTabs(),
                           const SizedBox(height: Density.cardGap),
@@ -2092,10 +2455,18 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                                       addresses: _addresses,
                                       dotColor: Colors.green,
                                       onSwap: () => _swap(_pick, _drop),
+                                      onSearch: _onPickupSearch,
+                                      onPicked: (a) =>
+                                          _selectedPickup = _modelFor(a),
                                     ),
                                     span: 2),
-                                SpanField(
-                                    LabeledDropdown('PICK ZONE', items: zones)),
+                                SpanField(LabeledZoneDropdown(
+                                  'PICK ZONE',
+                                  items: _zones,
+                                  value: controller.dashboardZoneValue,
+                                  onChanged: (v) =>
+                                      setState(() => controller.dashboardZoneValue = v),
+                                )),
                                 SpanField(
                                     LabeledInput('PICKUP NOTES',
                                         uppercase: true)),
@@ -2106,10 +2477,18 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                                       addresses: _addresses,
                                       dotColor: Colors.red,
                                       onSwap: () => _swap(_pick, _drop),
+                                      onSearch: _onDropSearch,
+                                      onPicked: (a) =>
+                                          _selectedDrop = _modelFor(a),
                                     ),
                                     span: 2),
-                                SpanField(
-                                    LabeledDropdown('DROP ZONE', items: zones)),
+                                SpanField(LabeledZoneDropdown(
+                                  'DROP ZONE',
+                                  items: _zones,
+                                  value: controller.dashboardDZoneValue,
+                                  onChanged: (v) =>
+                                      setState(() => controller.dashboardDZoneValue = v),
+                                )),
                                 SpanField(
                                     LabeledInput('DROPOFF NOTES',
                                         uppercase: true)),
@@ -2138,36 +2517,56 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                               children: [
                                 SpanField(LabeledDatePicker('DATE')),
                                 SpanField(LabeledTimePicker('TIME')),
-                                SpanField(LabeledDatePicker('R/DATE')),
-                                SpanField(LabeledTimePicker('R/TIME')),
-                                SpanField(
+                                // Everything below describes the return leg, so
+                                // ONE WAY drops the lot.
+                                ..._ifReturn(
+                                    SpanField(LabeledDatePicker('R/DATE'))),
+                                ..._ifReturn(
+                                    SpanField(LabeledTimePicker('R/TIME'))),
+                                ..._ifReturn(SpanField(
                                     LabeledAddressField(
                                       'R/PICK',
                                       controller: _rPick,
                                       addresses: _addresses,
                                       dotColor: Colors.green,
                                       onSwap: () => _swap(_rPick, _rDrop),
+                                      onSearch: _onReturnPickupSearch,
+                                      onPicked: (a) =>
+                                          _selectedReturnPickup = _modelFor(a),
                                     ),
-                                    span: 2),
-                                SpanField(LabeledDropdown('R/PICK ZONE',
-                                    items: zones)),
-                                SpanField(
+                                    span: 2)),
+                                ..._ifReturn(SpanField(LabeledZoneDropdown(
+                                  'R/PICK ZONE',
+                                  items: _zones,
+                                  value: _locationController.RNzoneValue,
+                                  onChanged: (v) => setState(
+                                      () => _locationController.RNzoneValue = v),
+                                ))),
+                                ..._ifReturn(SpanField(
                                     LabeledInput('R/PICK NOTES',
-                                        uppercase: true)),
-                                SpanField(
+                                        uppercase: true))),
+                                ..._ifReturn(SpanField(
                                     LabeledAddressField(
                                       'R/DROP',
                                       controller: _rDrop,
                                       addresses: _addresses,
                                       dotColor: Colors.red,
                                       onSwap: () => _swap(_rPick, _rDrop),
+                                      onSearch: _onReturnDropSearch,
+                                      onPicked: (a) =>
+                                          _selectedReturnDrop = _modelFor(a),
                                     ),
-                                    span: 2),
-                                SpanField(LabeledDropdown('R/DROP ZONE',
-                                    items: zones)),
-                                SpanField(
+                                    span: 2)),
+                                ..._ifReturn(SpanField(LabeledZoneDropdown(
+                                  'R/DROP ZONE',
+                                  items: _zones,
+                                  value: _locationController.RN1zoneValue,
+                                  onChanged: (v) => setState(
+                                      () => _locationController.RN1zoneValue = v),
+                                ))),
+                                ..._ifReturn(SpanField(
                                     LabeledInput('R/DROP NOTES',
-                                        uppercase: true)),
+                                        uppercase: true))),
                               ],
                             ),
                           ),
@@ -2180,11 +2579,13 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                                 SpanField(LabeledInput('LEAD (MINS)',
                                     keyboardType: TextInputType.number)),
                                 SpanField(LabeledDropdown('JOUR',
-                                    items: ['R/N', 'ONE WAY'])),
+                                    items: _journeyTypes,
+                                    onChanged: _onJourneyChanged)),
                                 SpanField(
                                     LabeledDropdown('VEH', items: vehicles)),
-                                SpanField(
-                                    LabeledDropdown('R/VEH', items: vehicles)),
+                                ..._ifReturn(SpanField(
+                                    LabeledDropdown('R/VEH',
+                                        items: vehicles))),
                                 SpanField(LabeledDropdown('ACC', items: [
                                   'SELECT ACCOUNT',
                                   'Account 1',
@@ -2211,12 +2612,43 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                                   'ACCOUNT',
                                   'INVOICE'
                                 ])),
-                                SpanField(LabeledInput('R/LEAD (MINS)',
-                                    keyboardType: TextInputType.number)),
+                                ..._ifReturn(SpanField(
+                                    LabeledInput('R/LEAD (MINS)',
+                                        keyboardType: TextInputType.number))),
                                 SpanField(LabeledCheckbox('QUOTATION'),widths: 110),
                                 SpanField(LabeledCheckbox('SMS', value: true),widths: 80),
                                 SpanField(LabeledCheckbox('EMAIL'),widths: 80),
-                                SpanField(ASDF()),
+                                // Three keyboard-reachable shortcuts into the
+                                // booking's extra detail dialogs. They come
+                                // last in this section, so Tab reaches them
+                                // after the checkboxes and before the fares.
+                                SpanField(
+                                  LabeledIconActions([
+                                    IconAction(
+                                      icon: Icons.person,
+                                      tooltip: 'EXTRA INFO',
+                                      onTap: () => showDialog(context: context, builder: (_) => RestrictDriversAlert()),
+                                    ),
+                                    IconAction(
+                                      icon: Icons.attach_money,
+                                      tooltip: 'EXTRA FARES',
+                                      onTap: () => showDialog(
+                                        context: context,
+                                        builder: (_) => ChildSeatsAlert(),
+                                      ),
+                                    ),
+                                    IconAction(
+                                      icon: Icons.note_add,
+                                      tooltip: 'CHILD SEATS',
+                                      onTap: () => showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (_) => ExtraFaresAlert(),
+                                      ),
+                                    ),
+                                  ]),
+                                  widths: LabeledIconActions.width(3),
+                                ),
                                 // SpanField(LabeledCheckbox('ADD RETURN FARE')),
                               ],
                             ),
@@ -2233,18 +2665,22 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                                   children: [
                                     SpanField(LabeledInput('FARE (£)',
                                         keyboardType: TextInputType.number)),
-                                    SpanField(LabeledInput('R/FARE (£)',
-                                        keyboardType: TextInputType.number)),
+                                    ..._ifReturn(SpanField(
+                                        LabeledInput('R/FARE (£)',
+                                            keyboardType:
+                                                TextInputType.number))),
                                     SpanField(LabeledDropdown('DRV', items: [
                                       'SELECT DRIVER',
                                       'Driver 1',
                                       'Driver 2'
                                     ])),
-                                    SpanField(LabeledDropdown('R/DRV', items: [
-                                      'SELECT DRIVER',
-                                      'Driver 1',
-                                      'Driver 2'
-                                    ])),
+                                    ..._ifReturn(
+                                        SpanField(LabeledDropdown('R/DRV',
+                                            items: [
+                                          'SELECT DRIVER',
+                                          'Driver 1',
+                                          'Driver 2'
+                                        ]))),
                                   ],
                                 ),
                               ],
@@ -2254,6 +2690,8 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                           // ---- Action buttons ----
                           const _ActionButtons(),
                         ],
+                      ),
+                      ),
                       ),
                     ),
                   ),
@@ -2277,117 +2715,6 @@ class _HeaderTitle extends StatelessWidget {
       child: Text(text,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
     );
-  }
-}
-
-class _GlowFocus extends StatelessWidget {
-  const _GlowFocus({required this.child});
-  final Widget child;
-  @override
-  Widget build(BuildContext context) => child;
-}
-
-class ASDF extends StatelessWidget {
-  const ASDF({super.key});
-  static const _border = Colors.black;
-  static const _purpleSoft = Color(0xFFEEF2FF);
-
-  @override
-  Widget build(BuildContext context) {
-    Widget commsAndLuggageRow(bool isMobile) {
-      Widget iconBtn(
-          IconData icon, {
-            VoidCallback? onPressed,
-            required int tab,
-          }) {
-        return FocusTraversalOrder(
-          order: NumericFocusOrder(tab.toDouble()),
-          child: _GlowFocus(
-            child: Focus(
-              onKeyEvent: (node, event) {
-                if (event is KeyDownEvent &&
-                    (event.logicalKey == LogicalKeyboardKey.enter ||
-                        event.logicalKey == LogicalKeyboardKey.space)) {
-                  onPressed?.call();
-                  return KeyEventResult.handled;
-                }
-                return KeyEventResult.ignored;
-              },
-              child: Container(
-                margin: const EdgeInsets.only(left: 6),
-                decoration: BoxDecoration(
-                  color: _purpleSoft,
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: _border),
-                ),
-                child: IconButton(
-                  onPressed: onPressed,
-                  padding: const EdgeInsets.all(4),
-                  visualDensity: VisualDensity.compact,
-                  splashRadius: 18,
-                  icon: Icon(
-                    icon,
-                    size: 22,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      }
-
-      final right = Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          iconBtn(
-            Icons.person,
-            tab: 24,
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (_) => RestrictDriversAlert(),
-              );
-            },
-          ),
-          iconBtn(
-            Icons.attach_money,
-            tab: 25,
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (_) => ChildSeatsAlert(),
-              );
-            },
-          ),
-          iconBtn(
-            Icons.note_add,
-            tab: 26,
-            onPressed: () {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (_) => ExtraFaresAlert(),
-              );
-            },
-          ),
-          iconBtn(
-            Icons.calculate,
-            tab: 27,
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (_) => ExtraInfoAlert(),
-              );
-            },
-          ),
-        ],
-      );
-
-      return right;
-    }
-
-    return commsAndLuggageRow(false);
   }
 }
 
