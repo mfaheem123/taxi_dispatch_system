@@ -71,8 +71,8 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
                           value: controller.allDriverData!.drivers!.contains(controller.selectDriverObject)
                               ? controller.selectDriverObject
                               : null,
-                          itemLabel: (driver) =>
-                          driver.name!,
+                          itemLabel: (driver) =>  "${driver.username ?? ""} ${driver.name ?? ""}" .toUpperCase(),
+                          // driver.name!,
                           onChanged: (val) {
                             controller.selectDriverObject = val;
                             controller.getDriversAppFuture(val!.id!);

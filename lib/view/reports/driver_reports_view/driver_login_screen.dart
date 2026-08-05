@@ -169,7 +169,7 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                               ? controller.allDriverData!.drivers!.firstWhere((d) => d.id == controller.selectDriverObject?.id)
                               : null,
                           itemLabel: (driver) =>
-                              (driver.name ?? "").toUpperCase(),
+                              "${driver.username ?? ""} ${driver.name ?? ""}" .toUpperCase(),
                           onChanged: (val) {
                             controller.selectDriverObject = val;
                             controller.update();

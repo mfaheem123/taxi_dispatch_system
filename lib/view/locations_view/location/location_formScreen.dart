@@ -17,6 +17,7 @@ import 'package:get/get.dart';
 import '../../../component/dropdown_button.dart';
 import '../../../component/networks/api.dart';
 import '../../../component/textStyle.dart';
+import '../../dashboard_view/Controller/dashboard_controller.dart';
 
 class UpperCaseTextFormatter extends TextInputFormatter {
   @override
@@ -29,12 +30,28 @@ class UpperCaseTextFormatter extends TextInputFormatter {
   }
 }
 
-class LocationForm extends StatelessWidget {
+class LocationForm extends StatefulWidget {
   LocationForm({super.key});
+  @override
+  State<LocationForm> createState() => _LocationFormState();
+}
 
+class _LocationFormState extends State<LocationForm> {
   LocationController _controller = Get.isRegistered<LocationController>()
       ? Get.find<LocationController>()
       : Get.put(LocationController());
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if (!_controller.updateLocationValue.value) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _controller.clearLocationForm();
+      });
+    }
+  }
+
   List permissions = [];
 
   @override

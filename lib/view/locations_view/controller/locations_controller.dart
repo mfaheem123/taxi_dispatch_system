@@ -140,22 +140,36 @@ class LocationController extends GetxController {
               : "LOCATION ADDED SUCCESSFULLY"
       );
       print(formData);
-      locationNameCtrl.clear();
-      longitudeCtrl.clear();
-      postcodeCtrl.clear();
-      shortcutCtrl.clear();
-      extraChargesCtrl.clear();
-      latitudeCtrl.clear();
-      addressCtrl.clear();
-      locationTypeValue = null;
-      zoneValue = null;
-      updateLocationValue(false);
+      clearLocationForm();
+      // locationNameCtrl.clear();
+      // longitudeCtrl.clear();
+      // postcodeCtrl.clear();
+      // shortcutCtrl.clear();
+      // extraChargesCtrl.clear();
+      // latitudeCtrl.clear();
+      // addressCtrl.clear();
+      // locationTypeValue = null;
+      // zoneValue = null;
+      // updateLocationValue(false);
       update();
       print(response);
     } else {
       print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
       print(response);
     }
+  }
+  void clearLocationForm() {
+    locationNameCtrl.clear();
+    longitudeCtrl.clear();
+    postcodeCtrl.clear();
+    shortcutCtrl.clear();
+    extraChargesCtrl.clear();
+    latitudeCtrl.clear();
+    addressCtrl.clear();
+    locationTypeValue = null;
+    zoneValue = null;
+    updateLocationValue(false);
+    locationUpdateId.value = 0;
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Create Location Form

@@ -53,6 +53,7 @@ import '../customer/lost_property.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import 'package:nested_menu_bar/nested_menu_bar.dart';
 import '../dashboard_view/dashboard/defult_dashboard_view.dart';
+import '../drivers_view/controller/driver_controller.dart';
 import '../drivers_view/driver/bulk_driver_commission/bulk_driver_commission.dart';
 import '../drivers_view/driver/bulk_driver_commission/bulk_driver_rent.dart';
 import '../drivers_view/driver/create_driver_form/driver_form.dart';
@@ -74,6 +75,7 @@ import '../fare_view/fare_increment/fare_increment.dart';
 import '../fare_view/fare_meter/fare_meter.dart';
 import '../fare_view/plot_fare/create_fixed_fare_setting.dart';
 import '../fare_view/plot_fare/plot_fare.dart';
+import '../locations_view/controller/locations_controller.dart';
 import '../locations_view/location/localization_screen.dart';
 import '../locations_view/location/location_formScreen.dart';
 import '../locations_view/location/location_listScreen.dart';
@@ -1044,6 +1046,9 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('create_location')){
+                if (Get.isRegistered<LocationController>()) {
+                  Get.find<LocationController>().clearLocationForm();
+                }
                 controller.currentPage.value = LocationForm();
                 controller.menuBarRefresh(
                     title: "CREATE LOCATIONS", pageName: LocationForm());
@@ -1151,6 +1156,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 permissions = Api().sp.read('all_permissions') ?? [];
                 setState(() {
                   if(permissions.contains('create_driver')){
+                    if (Get.isRegistered<DriverController>()) {
+                      Get.find<DriverController>().clearAddDriverData();
+                    }
                     controller.currentPage.value = DriverForm();
                     controller.menuBarRefresh(
                         title: "ADD DRIVER", pageName: DriverForm());
