@@ -37,6 +37,11 @@ class _DriverFormState extends State<DriverForm> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "createDriver";
+    if (controller.singleDriverData == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.clearAddDriverData();
+      });
+    }
     
     Future.delayed(const Duration(milliseconds: 500), () {
       if (mounted) {

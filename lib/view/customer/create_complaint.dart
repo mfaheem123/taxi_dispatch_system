@@ -582,9 +582,10 @@ class _CreateComplaintState extends State<CreateComplaint> {
                               width: fieldWidth / 2.5,
                               label: "SELECT DRIVER",
                               items: controller.driverList,
-                              itemLabel: (Driver d) => controller.capitalizeWords(d.name ?? ""),
+                              // itemLabel: (Driver d) => controller.capitalizeWords(d.name ?? ""),
+                              itemLabel: (d) => "${d.username} ${d.name}" .toUpperCase(),
                               value: controller.selectedDriver,
-                              onChanged: (Driver? val) {
+                              onChanged: ( val) {
                                 controller.selectedDriver = val;
                                 controller.update();
                               },

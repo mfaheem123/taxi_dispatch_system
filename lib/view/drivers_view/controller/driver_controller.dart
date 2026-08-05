@@ -456,6 +456,10 @@ class DriverController extends GetxController {
     imageList.clear();
     for (var action in rows) {
       action.fileName = null;
+      action.batchNo.clear();
+      action.expiryDate = DateFormat("yyyy-MM-dd")
+          .parse(DateFormat("yyyy-MM-dd").format(DateTime.now()));
+      action.expiryTime.text = "00:00";
     }
     datePickerKey++;
     update();
