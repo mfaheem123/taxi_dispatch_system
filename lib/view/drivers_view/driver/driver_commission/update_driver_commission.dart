@@ -13,6 +13,7 @@ import 'package:get/get_state_manager/src/simple/get_state.dart';
 import '../../../../alert/pay_driver_commission.dart';
 import '../../../../alert/update_driver_commission_email.dart';
 import '../../../../component/datatable_widget.dart';
+import '../../../../component/responsive_datatable_widget.dart';
 import '../../../../component/text_field.dart';
 import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../../dashboard_view/booking_table.dart';
@@ -60,14 +61,21 @@ class _UpdateDriverCommissionScreenState
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
         final bool isLaptop = maxWidth >= 1024 && maxWidth < 1440;
         final bool isLargeScreen = maxWidth >= 1440;
+        final double totalAvailableWidth = constraints.maxWidth;
+        final bool isHighScale = MediaQuery.of(context).devicePixelRatio >= 1.25;
 
-        final double fieldWidth = isMobile
-            ? maxWidth * 0.9 // almost full width on mobile
-            : isTablet
-                ? 200 // smaller fixed size on tablet
-                : isLaptop
-                    ? 250 // medium size on laptop
-                    : 330; // larger on LCD
+        // Responsive field width calculation according to screen and scale
+        double fieldWidth;
+        if (isMobile) {
+          fieldWidth = maxWidth * 0.9;
+        } else if (isTablet) {
+          fieldWidth = isHighScale ? maxWidth / 2.3 : 200;
+        } else if (isLaptop) {
+          fieldWidth = isHighScale ? maxWidth / 4.9 : 220;
+        } else {
+          fieldWidth = isHighScale ? maxWidth / 4.6 : 330;
+        }
+
         print(fieldWidth);
         return Column(
           children: [
@@ -95,8 +103,9 @@ class _UpdateDriverCommissionScreenState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Wrap(
-                            runSpacing: 20,
-                            spacing: 50,
+                            runSpacing: 16,
+                            spacing: isHighScale ? 16 : 24,
+                            crossAxisAlignment: WrapCrossAlignment.end,
                             children: [
                               SizedBox(
                                 width: fieldWidth,
@@ -110,7 +119,7 @@ class _UpdateDriverCommissionScreenState
                                     ),
                                     SizedBox(height: 5),
                                     Container(
-                                      height: 35,
+                                      height: 30,
                                       padding: EdgeInsetsGeometry.symmetric(
                                           horizontal: 10),
                                       decoration: BoxDecoration(
@@ -213,7 +222,7 @@ class _UpdateDriverCommissionScreenState
                                       const SizedBox(height: 5),
                                       SizedBox(
                                         width: fieldWidth / 1.2,
-                                        height: 35,
+                                        height: 30,
                                         child: TextField(
                                           readOnly: true,
                                           controller: TextEditingController(text: controller.updateFilterFromDate),
@@ -242,7 +251,7 @@ class _UpdateDriverCommissionScreenState
                                       const SizedBox(height: 5),
                                       SizedBox(
                                         width: fieldWidth / 1.2,
-                                        height: 35,
+                                        height: 30,
                                         child: TextField(
                                           readOnly: true,
                                           controller: TextEditingController(text: controller.updateFilterToDate),
@@ -414,218 +423,161 @@ class _UpdateDriverCommissionScreenState
                     controller.isLoadingUpdate
                         ? const Center(child: CircularProgressIndicator())
                         : SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: SizedBox(
-                              width: Get.width,
-                              child: DatatableWidget(
-                                columns: [
-                                  buildHeaderWithSearch(title: "COMM"),
-                                  buildHeaderWithSearch(title: "REF#"),
-                                  buildHeaderWithSearch(title: "DATETIME"),
-                                  buildHeaderWithSearch(title: "PICKUP"),
-                                  buildHeaderWithSearch(title: "DROPOFF"),
-                                  buildHeaderWithSearch(title: "VEH"),
-                                  buildHeaderWithSearch(title: "ACC"),
-                                  buildHeaderWithSearch(title: "J/T"),
-                                  buildHeaderWithSearch(title: "P/T"),
-                                  buildHeaderWithSearch(title: "FARE"),
-                                  buildHeaderWithSearch(title: "PC"),
-                                  buildHeaderWithSearch(title: "WC"),
-                                  buildHeaderWithSearch(title: "EDC"),
-                                  buildHeaderWithSearch(title: "CC"),
-                                  buildHeaderWithSearch(title: "W/COMM"),
-                                  buildHeaderWithSearch(title: "COMM"),
-                                  buildHeaderWithSearch(title: "TOTAL"),
-                                  buildHeaderWithSearch(title: "ACTION", removeSearching: true),
-                                ],
-                                rows: [
-                                  ...(controller
-                                              .updateDriverCommissionByIdModel
-                                              ?.driverCommission
-                                              ?.driverCommissionLineitems ??
-                                          [])
-                                      .map((lineItem) {
-                                    final booking = lineItem.booking;
-                                    if (booking == null) {
-                                      return const DataRow(cells: []);
-                                    }
-                                    DataCell editableCell(dynamic initialValue,
-                                        Function(String) onChanged) {
-                                      return DataCell(
-                                        Center(
-                                          child: SizedBox(
-                                            width: 70,
-                                            child: TextFormField(
-                                              initialValue:
-                                                  initialValue?.toString() ??
-                                                      "0",
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              textAlign: TextAlign.center,
-                                              style:
-                                                  const TextStyle(fontSize: 12),
-                                              decoration: const InputDecoration(
-                                                isDense: true,
-                                                contentPadding:
-                                                    EdgeInsets.symmetric(
-                                                        vertical: 8,
-                                                        horizontal: 4),
-                                                border: OutlineInputBorder(),
-                                              ),
-                                              onChanged: onChanged,
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }
+                      scrollDirection: Axis.horizontal,
+                      child: ResponsiveDataTableWidget(
+                        totalWidth: totalAvailableWidth,
+                        columnConfigs: [
+                          TableColumnConfig(title: "COMM", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "REF#", sizeType: ColumnSizeType.medium),
+                          TableColumnConfig(title: "DATETIME", sizeType: ColumnSizeType.medium),
+                          TableColumnConfig(title: "PICKUP", sizeType: ColumnSizeType.large),
+                          TableColumnConfig(title: "DROPOFF", sizeType: ColumnSizeType.large),
+                          TableColumnConfig(title: "VEH", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "ACC", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "J/T", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "P/T", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "FARE", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "PC", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "WC", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "EDC", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "CC", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "W/COMM", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "COMM", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium),
+                          TableColumnConfig(title: "ACTION", sizeType: ColumnSizeType.fixed, fixedWidth: 65, removeSearching: true),
+                        ],
+                        items: [
+                          ...(controller.updateDriverCommissionByIdModel?.driverCommission?.driverCommissionLineitems ?? []),
+                          if (controller.updateDriverCommissionByIdModel?.driverCommission?.driverCommissionLineitems != null) "TOTAL_ROW"
+                        ],
+                        rowBuilder: (item, widths) {
+                          if (item == "TOTAL_ROW") {
+                            final totalKeys = [
+                              'fare',
+                              'pc',
+                              'wc',
+                              'edc',
+                              'cc',
+                              'wcomm',
+                              'finalcomm',
+                              'total'
+                            ];
 
-                                    return DataRow(
-                                        // selected: isRowSelected,
-                                        cells: [
-                                          DataCell(Center(
-                                            child: Checkbox(
-                                              value:
-                                                  booking.commission ?? false,
-                                              activeColor:
-                                                  DynamicColors.primaryClr,
-                                              onChanged: (bool? newValue) {
-                                                booking.commission = newValue;
-                                                controller
-                                                    .updateCommissionOnToggle();
-                                                controller.update();
-                                              },
-                                            ),
-                                          )),
-                                          DataCell(Center(
-                                              child: Text(
-                                                  booking.referenceNumber ??
-                                                      ""))),
-                                          DataCell(Center(
-                                              child: Text(
-                                                  "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}"))),
-                                          DataCell(Text((booking.pickup ?? "").toUpperCase())),
-                                          DataCell(Text((booking.dropoff ?? "").toUpperCase())),
-                                          DataCell(Center(
-                                              child: Text((
-                                                  booking.vehicleType?.name ??
-                                                      "").toUpperCase()))),
-                                          DataCell(Center(
-                                              child: Text((
-                                                  booking.account?.name ??
-                                                      "").toUpperCase()))),
-                                          DataCell(Center(
-                                              child: Text((booking.journeyType
-                                                      ?.journeyType ??
-                                                  "").toUpperCase()))),
-                                          DataCell(Center(
-                                              child: Text((
-                                                  booking.paymentType?.name ??
-                                                      "").toUpperCase()))),
-                                          editableCell(booking.fares, (val) {
-                                            booking.fares = val;
-                                            controller
-                                                .recalculateDriverCommissionRow(
-                                                    booking);
-                                          }),
-                                          editableCell(booking.parkingCharges,
-                                              (val) {
-                                            booking.parkingCharges = val;
-                                            controller
-                                                .recalculateDriverCommissionRow(
-                                                    booking);
-                                          }),
-                                          editableCell(booking.waitingCharges,
-                                              (val) {
-                                            booking.waitingCharges = val;
-                                            controller
-                                                .recalculateDriverCommissionRow(
-                                                    booking);
-                                          }),
-                                          editableCell(booking.extraDropCharges,
-                                              (val) {
-                                            booking.extraDropCharges = val;
-                                            controller
-                                                .recalculateDriverCommissionRow(
-                                                    booking);
-                                          }),
-                                          editableCell(
-                                              booking.congestionCharges, (val) {
-                                            booking.congestionCharges = val;
-                                            controller
-                                                .recalculateDriverCommissionRow(
-                                                    booking);
-                                          }),
-                                          DataCell(Center(
-                                              child: Text(
-                                                  "£ ${controller.calculateWithoutCommission(booking)}"))),
-                                          DataCell(Center(
-                                              child: Text(
-                                                  "£ ${controller.calculateFinalDriverComm(booking)}"))),
-                                          DataCell(Center(
-                                              child: Text(
-                                                  "£ ${booking.totalCharges ?? "0"}"))),
-                                          DataCell(
-                                            Center(
-                                              child: CustomButton(
-                                                verticalPadding: 0.0,
-                                                width: 60,
-                                                height: 30,
-                                                borderRadius: 4,
-                                                btnText: "SAVE",
-                                                btnColor:
-                                                    DynamicColors.primaryClr,
-                                                style: mozillaTextRegularText(
-                                                    fontSize: 10,
-                                                    color:
-                                                        DynamicColors.whiteClr),
-                                                onTap: () async {
-                                                  if (booking != null) {
-                                                    await controller
-                                                        .updateBookingCharges(
-                                                            booking);
-                                                    controller
-                                                        .calculateUpdateTotals();
-                                                    controller.update();
-                                                    print(
-                                                        "Updating Booking ID: ${booking.id}");
-                                                  }
-                                                },
-                                              ),
-                                            ),
-                                          ),
-                                        ]);
-                                  }).toList(),
-                                  DataRow(
-                                    cells: [
-                                      for (var i = 0; i < 8; i++)
-                                        DataCell.empty,
-                                      DataCell(Center(
-                                          child: Text("TOTAL",
-                                              style: TextStyle(
-                                                  fontWeight:
-                                                      FontWeight.bold)))),
-                                      ...[
-                                        'fare',
-                                        'pc',
-                                        'wc',
-                                        'edc',
-                                        'cc',
-                                        'wcomm',
-                                        'finalcomm',
-                                        'total'
-                                      ].map((field) => DataCell(Center(
-                                          child: Text(
-                                              "£ ${controller.getUpdateColumnTotal(field).toStringAsFixed(2)}",
-                                              style: const TextStyle(
-                                                  fontWeight:
-                                                      FontWeight.bold))))),
-                                      DataCell.empty,
-                                    ],
+                            return [
+                              "", "", "", "", "", "", "", "",
+                              const Center(
+                                child: Text("TOTAL", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                              ),
+                              ...totalKeys.map((key) {
+
+                                return Center(
+                                  child: Text(
+                                      "£ ${controller
+                                          .getUpdateColumnTotal(key)
+                                          .toStringAsFixed(2)}",
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13)),
+                                );
+                              }),
+                              "",
+                            ];
+                          }
+
+                          // DATA ROWS
+                          final lineItem = item;
+                          final booking = lineItem.booking;
+
+                          if (booking == null) {
+                            return List.generate(18, (_) => "");
+                          }
+
+                          Widget editableCell(dynamic initialValue, Function(String) onChanged) {
+                            return Center(
+                              child: SizedBox(
+                                width: 50,
+                                child: TextFormField(
+                                  initialValue: initialValue?.toString() ?? "0",
+                                  keyboardType: TextInputType.number,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(fontSize: 11),
+                                  decoration: const InputDecoration(
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                                    border: OutlineInputBorder(),
                                   ),
-                                ],
+                                  onChanged: onChanged,
+                                ),
+                              ),
+                            );
+                          }
+
+                          return [
+                            Center(
+                              child: Checkbox(
+                                value: booking.commission ?? false,
+                                activeColor: DynamicColors.primaryClr,
+                                onChanged: (bool? newValue) {
+                                  booking.commission = newValue;
+                                  controller.updateCommissionOnToggle();
+                                  controller.update();
+                                },
                               ),
                             ),
-                          ),
+                            booking.referenceNumber ?? "",
+                            // "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}",
+                            "${(booking.pickupDate ?? "").toString().split(' ')[0]} ${(booking.pickupTime ?? "").toString().split('.')[0].substring(0, 5)}",
+                            (booking.pickup ?? "").toUpperCase(),
+                            (booking.dropoff ?? "").toUpperCase(),
+                            (booking.vehicleType?.name ?? "").toUpperCase(),
+                            (booking.account?.name ?? "").toUpperCase(),
+                            (booking.journeyType?.journeyType ?? "").toUpperCase(),
+                            (booking.paymentType?.name ?? "").toUpperCase(),
+                            editableCell(booking.fares, (val) {
+                              booking.fares = val;
+                              controller.recalculateDriverCommissionRow(booking);
+                            }),
+                            editableCell(booking.parkingCharges, (val) {
+                              booking.parkingCharges = val;
+                              controller.recalculateDriverCommissionRow(booking);
+                            }),
+                            editableCell(booking.waitingCharges, (val) {
+                              booking.waitingCharges = val;
+                              controller.recalculateDriverCommissionRow(booking);
+                            }),
+                            editableCell(booking.extraDropCharges, (val) {
+                              booking.extraDropCharges = val;
+                              controller.recalculateDriverCommissionRow(booking);
+                            }),
+                            editableCell(booking.congestionCharges, (val) {
+                              booking.congestionCharges = val;
+                              controller.recalculateDriverCommissionRow(booking);
+                            }),
+                            Center(child: Text(controller.calculateWithoutCommission(booking))),
+                            Center(child: Text(controller.calculateFinalDriverComm(booking))),
+                            Center(child: Text("${booking.totalCharges ?? "0"}")),
+                            Center(
+                              child: CustomButton(
+                                verticalPadding: 0.0,
+                                width: 55,
+                                height: 26,
+                                borderRadius: 4,
+                                btnText: "SAVE",
+                                btnColor: DynamicColors.primaryClr,
+                                style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
+                                onTap: () async {
+                                  if (booking != null) {
+                                    await controller.updateBookingCharges(booking);
+                                    controller.calculateUpdateTotals();
+                                    controller.update();
+                                  }
+                                },
+                              ),
+                            ),
+                          ];
+                        },
+                      ),
+                    ),
                     SizedBox(
                       height: 30,
                     ),
@@ -698,7 +650,7 @@ class _UpdateDriverCommissionScreenState
             // title ?? AppText.cashTotal,
             title ?? "",
             style: mozillaTextSemiBoldText(
-                fontSize: 20,
+                fontSize: 17,
                 color: DynamicColors.textClr.withOpacity(0.8),
                 fontWeight: FontWeight.w800),
           ),
@@ -708,7 +660,7 @@ class _UpdateDriverCommissionScreenState
           child: Text(
             value ?? "0",
             style: mozillaTextSemiBoldText(
-                fontSize: 20,
+                fontSize: 16,
                 color: DynamicColors.textClr.withOpacity(0.8),
                 fontWeight: FontWeight.w800),
           ),

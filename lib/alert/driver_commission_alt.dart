@@ -23,14 +23,20 @@ class DriverCommissionAlt {
 
     Get.dialog(
       Dialog(
-        insetPadding: const EdgeInsets.only(top: 40, left: 60, right: 60),
+        insetPadding: const EdgeInsets.only(top: 40, left: 20, right: 20),
         backgroundColor: Colors.transparent,
         child: GetBuilder<DriverController>( // Wrap with GetBuilder
             builder: (controller) {
+              bool isLaptop = Get.width <= 1400;
+
+
+              double headerFontSize = isLaptop ? 12 : 16;
+              double cellFontSize = isLaptop ? 11 : 14;
+              double iconSize = isLaptop ? 15 : 18;
               return Align(
                 alignment: Alignment.topCenter,
                 child: Container(
-                  width: Get.width * 0.95,
+                  width: Get.width * 0.98,
                   // width: 500,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -75,32 +81,32 @@ class DriverCommissionAlt {
                                     label: Text("    TRANSACTION #",
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 18))),
+                                            fontSize: headerFontSize))),
                                 DataColumn(
                                     label: Text("    TRANSACTION DATE",
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 18))),
+                                            fontSize: headerFontSize))),
                                 DataColumn(
                                     label: Text("    DRIVER",
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 18))),
+                                            fontSize: headerFontSize))),
                                 DataColumn(
                                     label: Text("    JOB TOTAL",
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 18))),
+                                            fontSize: headerFontSize))),
                                 DataColumn(
                                     label: Text("    COMMISSION TOTAL",
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 18))),
+                                            fontSize: headerFontSize))),
                                 DataColumn(
                                     label: Text("    PREVIOUS BALANCE",
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 18))),
+                                            fontSize: headerFontSize))),
                                 DataColumn(
                                     label: Text("    CURRENT BALANCE",
                                         style: TextStyle(
@@ -110,7 +116,7 @@ class DriverCommissionAlt {
                                     label: Text("    ACTIONS",
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 18))),
+                                            fontSize: headerFontSize))),
                               ],
                               totalRow: controller.driverCommissionAlert!
                                   .driverCommissions?.length,
@@ -124,28 +130,28 @@ class DriverCommissionAlt {
                                   cells: [
                                     DataCell(Center(
                                         child: Text((
-                                            item.transactionNumber ?? "-").toUpperCase()))),
+                                            item.transactionNumber ?? "-").toUpperCase(), style: TextStyle(fontSize: cellFontSize)))),
                                     DataCell(Center(
                                         child: Text(item.transactionDate
                                             ?.toIso8601String()
                                             .split('T')[0] ??
-                                            "-"))),
+                                            "-", style: TextStyle(fontSize: cellFontSize)))),
                                     DataCell(Center(
                                         child: Text(
-                                            item.driverId.toString() ?? "-"))),
+                                            item.driverId.toString() ?? "-", style: TextStyle(fontSize: cellFontSize)))),
                                     DataCell(Center(
                                         child:
-                                        Text("£${item.jobsTotal ?? "0"}"))),
+                                        Text("£${item.jobsTotal ?? "0"}", style: TextStyle(fontSize: cellFontSize)))),
                                     DataCell(Center(
                                         child: Text(
                                             "£${item.commissionTotal ??
-                                                "0"}"))),
+                                                "0"}", style: TextStyle(fontSize: cellFontSize)))),
                                     DataCell(Center(
                                         child: Text(
-                                            "£${item.oldBalance ?? "0"}"))),
+                                            "£${item.oldBalance ?? "0"}", style: TextStyle(fontSize: cellFontSize)))),
                                     DataCell(Center(
                                         child: Text(
-                                            "£${item.currentBalance ?? "0"}"))),
+                                            "£${item.currentBalance ?? "0"}", style: TextStyle(fontSize: cellFontSize)))),
                                     DataCell(Center(
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,
@@ -155,7 +161,7 @@ class DriverCommissionAlt {
                                             if(permissions.contains('update_driver_commission')) IconButton(
                                               padding: EdgeInsets.zero,
                                               icon: Icon(Icons.edit,
-                                                  size: 18,
+                                                  size: iconSize,
                                                   color: Color(0xFF43489A)),
                                               onPressed: () {
                                                 Get.back();
@@ -191,7 +197,7 @@ class DriverCommissionAlt {
                                             if(permissions.contains('delete_driver_commission')) IconButton(
                                                 padding: EdgeInsets.zero,
                                                 icon: Icon(
-                                                    Icons.delete, size: 18,
+                                                    Icons.delete, size: iconSize,
                                                     color: Colors.red),
                                                 onPressed: () {
                                                   Get.back();
@@ -204,7 +210,7 @@ class DriverCommissionAlt {
                                             IconButton(
                                                 padding: EdgeInsets.zero,
                                                 icon: Icon(Icons.picture_as_pdf,
-                                                    size: 18,
+                                                    size: iconSize,
                                                     color: Colors.black),
                                                 onPressed: () {
                                                   // Get.back();
@@ -213,7 +219,7 @@ class DriverCommissionAlt {
                                             Text("|"),
                                             IconButton(
                                                 padding: EdgeInsets.zero,
-                                                icon: Icon(Icons.mail, size: 18,
+                                                icon: Icon(Icons.mail, size: iconSize,
                                                     color: Colors.black),
                                                 onPressed: () {
                                                   // Get.back();
