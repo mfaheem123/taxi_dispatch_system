@@ -99,45 +99,6 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                       spacing: isHighScale ? 16 : 24,
                       crossAxisAlignment: WrapCrossAlignment.end,
                       children: [
-                        // SizedBox(
-                        //   width: fieldWidth,
-                        //   child: Column(
-                        //     crossAxisAlignment: CrossAxisAlignment.start,
-                        //     children: [
-                        //       Text(AppText.driver,
-                        //           style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                        //       const SizedBox(height: 5),
-                        //       Container(
-                        //         height: 30,
-                        //         padding: const EdgeInsets.symmetric(horizontal: 10),
-                        //         decoration: BoxDecoration(color: Colors.white,
-                        //             border: Border.all(color: DynamicColors.primaryClr),
-                        //             borderRadius: BorderRadius.circular(4)),
-                        //         child: DropdownButtonHideUnderline(
-                        //           child: DropdownButton<String>(
-                        //             hint: Text("SELECT DRIVER", style: TextStyle(fontSize: 12, color: DynamicColors.black)),
-                        //             value: controller.driverSelectionController.text.isEmpty ? null : controller.driverSelectionController.text,
-                        //             isExpanded: true,
-                        //             icon: const Icon(Icons.arrow_drop_down),
-                        //             items: controller.listDriverCommission?.drivers?.map((driver) {
-                        //                   final val = "${driver.username} ${driver.name}";
-                        //                   return DropdownMenuItem(
-                        //                     value: val,
-                        //                     child: Text(val.toUpperCase(), style: mozillaTextRegularText(fontSize: 12, fontWeight: FontWeight.w900)),
-                        //                   );
-                        //                 }).toList() ?? [],
-                        //             onChanged: (val) {
-                        //               if (val != null) {
-                        //                 controller.driverSelectionController.text = val;
-                        //                 controller.update();
-                        //               }
-                        //             },
-                        //           ),
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
                         CustomDropdownField<dynamic>(
                           width: fieldWidth,
                           height: 30,
@@ -217,141 +178,6 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
             SizedBox(
               height: 10,
             ),
-            // Padding(
-            // padding: EdgeInsetsGeometry.symmetric(horizontal: 15.0),
-            //   child: Wrap(
-            //   crossAxisAlignment: WrapCrossAlignment.center,
-            //   alignment: WrapAlignment.start,
-            //   runAlignment: WrapAlignment.start,
-            //   spacing: 12,
-            //   runSpacing: 12,
-            //   children: [
-            //     Row(
-            //       mainAxisSize: MainAxisSize.min,
-            //       children: [
-            //         Text(AppText.from, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-            //         const SizedBox(width: 8),
-            //         SizedBox(
-            //           width: isMobile ? 120 : fieldWidth / 1.5,
-            //           height: 30,
-            //           child: KeyboardDatePicker(
-            //             key: ValueKey("from_date_${controller.datePickerKey}"),
-            //             initialDate: DateTime.now(),
-            //             onChanged: (date) {
-            //               controller.filterFromDate = date.toIso8601String().split("T").first;
-            //               controller.update();
-            //             },
-            //             onSubmitted: (date) {
-            //               controller.filterFromDate = date.toIso8601String().split("T").first;
-            //               controller.update();
-            //             },
-            //           ),
-            //         ),
-            //       ],
-            //     ),
-            //     Row(
-            //         mainAxisSize: MainAxisSize.min,
-            //         children: [
-            //           Text(AppText.to, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-            //           const SizedBox(width: 8),
-            //           SizedBox(
-            //             width: isMobile ? 120 : fieldWidth / 1.5,
-            //             height: 30,
-            //             child: KeyboardDatePicker(
-            //               key: ValueKey("to_date_${controller.datePickerKey}"),
-            //               initialDate: DateTime.now(),
-            //               onChanged: (date) {
-            //                 controller.filterToDate = date.toIso8601String().split("T").first;
-            //                 controller.update();
-            //               },
-            //               onSubmitted: (date) {
-            //                 controller.filterToDate = date.toIso8601String().split("T").first;
-            //                 controller.update();
-            //               },
-            //             ),
-            //           ),
-            //         ],
-            //     ),
-            //     Row(
-            //         mainAxisSize: MainAxisSize.min,
-            //         children: [
-            //           Text(AppText.pt,
-            //           style: mozillaTextSemiBoldText(context: context, fontSize: 15, fontWeight: FontWeight.bold, color: DynamicColors.primaryClr)),
-            //         ],
-            //     ),
-            //     if (controller.isLoadingPayments)
-            //       const Padding(
-            //         padding: EdgeInsets.symmetric(horizontal: 10),
-            //         child: SizedBox(
-            //             width: 20,
-            //             height: 20,
-            //             child: CircularProgressIndicator(strokeWidth: 2)),
-            //       )
-            //     else
-            //       ...?controller.paymentTypesModel?.paymentTypes
-            //           ?.map((payment) {
-            //         return InkWell(
-            //           onTap: () {
-            //             if (controller.selectedPaymentTypeIds.contains(payment.id)) {
-            //               controller.selectedPaymentTypeIds.remove(payment.id);
-            //             } else {
-            //               controller.selectedPaymentTypeIds.add(payment.id!);
-            //             }
-            //             controller.update();
-            //           },
-            //           child: Row(
-            //               children: [
-            //                 Checkbox(
-            //                   visualDensity: VisualDensity.compact,
-            //                   value: controller.selectedPaymentTypeIds.contains(payment.id),
-            //                   onChanged: (v) {
-            //                     if (v == true) {
-            //                       controller.selectedPaymentTypeIds.add(payment.id!);
-            //                     } else {
-            //                       controller.selectedPaymentTypeIds.remove(payment.id);
-            //                     }
-            //                     controller.update();
-            //                   },
-            //                 ),
-            //                 Padding(
-            //                   padding: const EdgeInsets.only(left: 4.0, right: 8.0),
-            //                   child: Text(
-            //                     payment.name?.toUpperCase() ?? "",
-            //                     style: mozillaTextSemiBoldText(context: context,fontSize: 15,fontWeight: FontWeight.bold, color: DynamicColors.primaryClr,
-            //                     ),
-            //                   ),
-            //                 ),
-            //               ],
-            //             ),
-            //         );
-            //       }).toList(),
-            //     CustomButton(
-            //         height: 30,
-            //         borderRadius: 6,
-            //         width: 80,
-            //         verticalPadding: 0.0,
-            //         btnText: AppText.filter,
-            //         btnColor: DynamicColors.primaryClr,
-            //         style: mozillaTextSemiBoldText(fontSize: 13, color: DynamicColors.whiteClr),
-            //         onTap: () {
-            //           controller.getDriverCommissionByFilter();
-            //         },
-            //       ),
-            //
-            //     CustomButton(
-            //       height: 30,
-            //       borderRadius: 6,
-            //       width: 80,
-            //       verticalPadding: 0.0,
-            //       btnText: AppText.save,
-            //       btnColor: DynamicColors.primaryClr,
-            //       style: mozillaTextSemiBoldText(fontSize: 13, color: DynamicColors.whiteClr),
-            //       onTap: () {
-            //         controller.saveDriverCommission();
-            //       },
-            //     ),
-            //   ],
-            // )),
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -795,7 +621,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
             // title ?? AppText.cashTotal,
             title ?? "",
             style: mozillaTextSemiBoldText(
-                fontSize: 15,
+                fontSize: 16,
                 color: DynamicColors.textClr.withOpacity(0.8),
                 fontWeight: FontWeight.w800),
           ),
@@ -805,7 +631,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
           child: Text(
             value ?? "0",
             style: mozillaTextSemiBoldText(
-                fontSize: 14,
+                fontSize: 17,
                 color: DynamicColors.textClr.withOpacity(0.8),
                 fontWeight: FontWeight.w800),
           ),
