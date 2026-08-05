@@ -44,11 +44,11 @@ class _AccountViewState extends State<AccountView> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    double width = WidgetsBinding
-            .instance.platformDispatcher.views.first.physicalSize.width /
-        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    // final screenWidth = MediaQuery.of(context).size.width;
+    // final screenHeight = MediaQuery.of(context).size.height;
+    // double width = WidgetsBinding
+    //         .instance.platformDispatcher.views.first.physicalSize.width /
+    //     WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return GetBuilder<AccountController>(initState: (v) {
            permissions = Api().sp.read('all_permissions') ?? [];
@@ -58,6 +58,19 @@ class _AccountViewState extends State<AccountView> {
           ? SizedBox.shrink()
           : LayoutBuilder(builder: (context, constraints) {
               final double maxWidth = constraints.maxWidth;
+
+              final double leftWidth = maxWidth * 0.61;
+              final double rightWidth = maxWidth * 0.37;
+
+              final double leftFieldWidth = leftWidth / 6.7;
+              final double rightFieldWidth = rightWidth / 4.6;
+
+              const double fieldHeight = 30.0;
+              final double dropDownHeight = maxWidth < 1300 ? 34.0 : 28.0;
+
+              final double checkboxSpacing = maxWidth < 1300 ? 10.0 : 40.0;
+              final double chargesSpacing = maxWidth < 1300 ? 8.0 : 40.0;
+
               final bool isMobile = maxWidth < 600;
               final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
