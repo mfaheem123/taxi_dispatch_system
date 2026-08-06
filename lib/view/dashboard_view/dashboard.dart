@@ -13,6 +13,7 @@ import 'package:dashboard_new1/view/vehicles_view/create_vehicleScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../component/textStyle.dart';
 import '../../routes/app_pages.dart';
 import '../accounts/list_of_accountScreen.dart';
 import '../booking_view/complete_bookingview.dart';
@@ -264,9 +265,11 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             children: [
-                              const Text(
+                              Text(
                                 "NEXUS",
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
+                                style: headingText(
+
+                                    color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
                               ),
 
                               const SizedBox(width: 20),

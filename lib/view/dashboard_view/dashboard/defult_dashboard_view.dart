@@ -2727,9 +2727,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                   width: etaWidth,
                                                   child: Text(
                                                     "ETA : ${controller.totalTimeDuration}",
-                                                    style: TextStyle(
-                                                      fontFamily: 'Outfit',
-                                                      fontWeight: FontWeight.bold,
+                                                    style: mozillaTextSemiBoldText(
                                                       color: DynamicColors.textClr,
                                                       fontSize: 13,
                                                     ),
@@ -2749,7 +2747,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                   width: distanceWidth,
                                                   child: Text(
                                                     "DISTANCE : ${controller.totalDistance}",
-                                                    style: TextStyle(
+                                                    style: mozillaTextSemiBoldText(
                                                       color: DynamicColors.textClr,
                                                       fontSize: 13,
                                                     ),

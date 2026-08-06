@@ -120,22 +120,47 @@ flutter:
   fonts:
     - family: headingText
       fonts:
-        - asset: assets/font-family/MozillaText-Bold.ttf
+#        - asset: assets/font-family/MozillaText-Bold.ttf
+        - asset: assets/font-family/OutfitExtraBold.ttf
 
     - family: MozillaText-SemiBold
       fonts:
-        - asset: assets/font-family/MozillaText-SemiBold.ttf
+#        - asset: assets/font-family/MozillaText-SemiBold.ttf
+        - asset: assets/font-family/OutfitSemiBold.ttf
 
     - family: MozillaText-Regular
       fonts:
-        - asset: assets/font-family/MozillaText-Regular.ttf
+#        - asset: assets/font-family/MozillaText-Regular.ttf
+        - asset: assets/font-family/OutfitRegular.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
-    - family: Outfit
-      fonts:
-        - asset: assets/font-family/Outfit-VariableFont_wght.ttf
+#    - family: Outfit
+#      fonts:
+#        - asset: assets/font-family/Outfit-VariableFont_wght.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #
   # For details regarding fonts from package dependencies,
+#  fonts:
+#    - family: headingText
+#      fonts:
+#        #      - asset: assets/font-family/MozillaText-Bold.ttf
+#        - asset: assets/font-family/OutfitExtraBold.ttf
+#          weight: 900
+#
+#    - family: MozillaText-SemiBold
+#      fonts:
+#        #      - asset: assets/font-family/MozillaText-SemiBold.ttf
+#        - asset: assets/font-family/OutfitSemiBold.ttf
+#          weight: 900
+#
+#    - family: MozillaText-Regular
+#      fonts:
+#        #      - asset: assets/font-family/MozillaText-Regular.ttf
+#        - asset: assets/font-family/OutfitRegular.ttf
+#          weight: 900
+  #  - family: Outfit
+  #    fonts:
+
+
   # see https://flutter.dev/to/font-from-package
