@@ -224,6 +224,7 @@ class _DriverFormState extends State<DriverForm> {
                           cells: [
                             DataCell(
                               KeyboardDatePicker(
+                                key: ValueKey("expiry_date${controller.datePickerKey}"),
                                 initialDate: row.expiryDate ?? DateTime.now(),
                                 onChanged: (date) {
                                   controller.updateExpiryDate(index, date);
@@ -395,6 +396,7 @@ class _DriverFormState extends State<DriverForm> {
               //   },
               // ),
                   KeyboardDatePicker(
+                    key: ValueKey("start_date${controller.datePickerKey}"),
                     initialDate: DateTime.tryParse(controller.startDate ?? '') ?? DateTime.now(),
                     onChanged: (date) => controller.startDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
                     onSubmitted: (date) => controller.startDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
@@ -409,6 +411,7 @@ class _DriverFormState extends State<DriverForm> {
               //   },
               // )
                   KeyboardDatePicker(
+                    key: ValueKey("end_date${controller.datePickerKey}"),
                     initialDate: DateTime.tryParse(controller.endDate ?? '') ?? DateTime.now(),
                     onChanged: (date) => controller.endDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
                     onSubmitted: (date) => controller.endDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
