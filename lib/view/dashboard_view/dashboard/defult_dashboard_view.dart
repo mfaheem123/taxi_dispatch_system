@@ -304,7 +304,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                 Padding(
                                                   padding: const EdgeInsets
                                                       .symmetric(
-                                                      horizontal: 12.0),
+                                                      horizontal: 12.0, vertical: 2),
                                                   child:
                                                   Row(
                                                     children: [
@@ -479,6 +479,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                       const SizedBox(width: 55.0),
                                                       // (3) Pickup notes
+
                                                       Expanded(
                                                         flex: 3,
                                                         child: FocusTraversalOrder(
@@ -493,7 +494,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 UpperCaseTextFormatter(),
                                                               ],
                                                               hintText: "PICKUP NOTES",
-                                                              borderRadius: 6,
+                                                              borderRadius: 4,
                                                               onTap: () {
                                                                 controller.dropDownShow.value = false;
                                                               },
@@ -595,12 +596,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                 // ================= DROPOFF ROW =================
                                                 Padding(
                                                   padding: const EdgeInsets
-                                                      .only(left: 10.0, right: 10.0, top: 0, bottom: 5.0),
+                                                      .only(left: 10.0, right: 10.0, top: 1, bottom: 5.0),
                                                   child:
                                                   Row(
                                                     children: [
                                                       Padding(
-                                                        padding: const EdgeInsets.only(right: 8),
+                                                        padding: const EdgeInsets.only(right: 6,),
                                                         child: Text(
                                                           AppText.drop,
                                                           style: mozillaTextSemiBoldText(
@@ -777,7 +778,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               inputFormatters: [
                                                                 UpperCaseTextFormatter(),
                                                               ],
-                                                              borderRadius: 6,
+                                                              borderRadius: 4,
                                                               onTap: () {
                                                                 controller.dropDownShow.value = false;
                                                               },
@@ -1151,7 +1152,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 child: Container(
                                                                   decoration: BoxDecoration(
                                                                     borderRadius: BorderRadius.circular(6),
-                                                                    border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                                                                    border: Border.all(color: DynamicColors.primaryClr.withOpacity(0.3), width: 1.2),
                                                                   ),
                                                                   child: DropdownButtonFormField<JourneyTypeObject>(
                                                                     isExpanded: true,
@@ -1881,7 +1882,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     child: Container(
                                                                       decoration: BoxDecoration(
                                                                         borderRadius: BorderRadius.circular(6),
-                                                                        border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                                                                        border: Border.all(color: DynamicColors.primaryClr.withOpacity(0.3), width: 1.2),
                                                                       ),
                                                                       child: DropdownButtonFormField<DashboardVehicleTypeObject>(
                                                                         isExpanded: true,
@@ -1951,7 +1952,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   // height: 35,
                                                                   decoration: BoxDecoration(
                                                                     borderRadius: BorderRadius.circular(6),
-                                                                    border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                                                                    border: Border.all(color: DynamicColors.primaryClr.withOpacity(0.3), width: 1.2),
                                                                   ),
                                                                   child: DropdownButtonFormField<DashboardDriverObject>(
                                                                       hint: Text("SELECT R/DRIVER".toUpperCase()),
@@ -2057,7 +2058,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               child: Container(
                                                                 decoration: BoxDecoration(
                                                                   borderRadius: BorderRadius.circular(6),
-                                                                  border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                                                                  border: Border.all(color: DynamicColors.primaryClr.withOpacity(0.3), width: 1.2),
                                                                 ),
                                                                 child: DropdownButtonFormField<DashboardAccountObject>(
                                                                   isExpanded: true,
@@ -2132,7 +2133,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               child: Container(
                                                                 decoration: BoxDecoration(
                                                                   borderRadius: BorderRadius.circular(6),
-                                                                  border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                                                                  border: Border.all(color: DynamicColors.primaryClr.withOpacity(0.3), width: 1.2),
                                                                 ),
                                                                 child: DropdownButtonFormField<PaymentTypeObject>(
                                                                   hint: Text(
@@ -2202,7 +2203,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                   child: Container(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                                      border: Border.all(color: DynamicColors.primaryClr.withOpacity(0.3), width: 1.2),
                                     ),
                                     child: DropdownButtonFormField<DashboardVehicleTypeObject>(
                                       isExpanded: true,
@@ -2268,13 +2269,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           // height: 35,
                                                           decoration: BoxDecoration(
                                                             borderRadius: BorderRadius.circular(6),
-                                                            border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                                                            border: Border.all(color: DynamicColors.primaryClr.withOpacity(0.3), width: 1.2),
                                                           ),
                                                           child: DropdownButtonFormField<DepartmentObject>(
                                                             isExpanded: true,
-                                                            // Use true here so text reaches the icon and then clips
                                                             decoration: const InputDecoration(
-                                                              // Remove the internal border since you have a Container border
                                                               border: InputBorder.none,
                                                               isDense: true,
                                                               contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
@@ -2768,7 +2767,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                     fit: BoxFit.scaleDown,
                                                     child: Text(
                                                       "FARE: £ ${((double.tryParse(controller.fixedFare.value) ?? 0.0) + (controller.pickupTwoWayController.text.isNotEmpty ? (double.tryParse(controller.returnFareValue.toString()) ?? 0.0) : 0.0)).toStringAsFixed(1)}",
-                                                      style: const TextStyle(
+                                                      style:  mozillaTextRegularText(
                                                         fontWeight: FontWeight.bold,
                                                         color: Colors.black,
                                                         fontSize: 13,
@@ -3133,7 +3132,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                         const Duration(
                                             milliseconds:
                                             120),
-                                        style: TextStyle(
+                                        style: mozillaTextRegularText(
                                           fontSize: 13,
                                           fontWeight: isHighlighted
                                               ? FontWeight
@@ -3183,7 +3182,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
         alignment: Alignment.center,
         child: Text(
           label,
-          style: const TextStyle(
+          style:  mozillaTextRegularText(
             fontWeight: FontWeight.bold,
             fontSize: 12,
           ),

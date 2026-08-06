@@ -42,11 +42,11 @@ class CustomDropdownField<T> extends StatelessWidget {
             decoration: InputDecoration(
               hintText: label ,
               fillColor: Colors.transparent,
-              hintStyle: mozillaTextRegularText(fontSize: 13,fontWeight: FontWeight.bold),
+              hintStyle: mozillaTextRegularText(fontSize: 13,fontWeight: FontWeight.normal),
               border: const OutlineInputBorder(),
               contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
               enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color:  DynamicColors.primaryClr),
+                borderSide: BorderSide(color:  DynamicColors.primaryClr.withOpacity(0.3)),
               ),
 
 
@@ -61,7 +61,7 @@ class CustomDropdownField<T> extends StatelessWidget {
                   label ?? "",
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
-                  style: mozillaTextRegularText(fontSize: 13, fontWeight: FontWeight.bold),
+                  style: mozillaTextRegularText(fontSize: 13, fontWeight: FontWeight.normal),
                 ),
                 isExpanded: true,
                 alignment: Alignment.center,
@@ -76,7 +76,7 @@ class CustomDropdownField<T> extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                         softWrap: false,
-                        style: mozillaTextRegularText(fontSize: 13, fontWeight: FontWeight.bold),
+                        style: mozillaTextRegularText(fontSize: 13, fontWeight: FontWeight.w600),
                       ),
                     );
                   }).toList();
@@ -88,7 +88,7 @@ class CustomDropdownField<T> extends StatelessWidget {
                     child: Text(
                       itemLabel(val), // ✅ how we display dynamic object
                       softWrap: true,
-                      style: mozillaTextRegularText(fontSize: 13, fontWeight: FontWeight.bold),
+                      style: mozillaTextRegularText(fontSize: 13, fontWeight: FontWeight.normal),
                     ),
                   );
                 }).toList(),

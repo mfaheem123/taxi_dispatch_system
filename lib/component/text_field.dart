@@ -69,7 +69,7 @@ class CustomTextField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         columnText
-            ? Text(hintText!, style: mozillaTextSemiBoldText(context: context, fontSize: 13))
+            ? Text(hintText!, style: mozillaTextRegularText(context: context, fontSize: 13))
             : const SizedBox.shrink(),
 
         SizedBox(
@@ -133,25 +133,27 @@ class CustomTextField extends StatelessWidget {
                   shortCutKeyValue.value = "formKey";
                 },
             style: hintStyle ??
-                mozillaTextSemiBoldText(
+                mozillaTextRegularText(
                   context: context,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w800,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w900,
                 ),
             inputFormatters: inputFormatters,
             maxLines: obscureText ? 1 : maxLines, // Obscure text requires maxLines to be 1
             minLines: obscureText ? 1 : maxLines,
             readOnly: readOnly,
             decoration: InputDecoration(
+
               prefixIcon: prefixIcon,
               hintText: hintText,
               fillColor: fillColor,
               filled: fillColor != null ? true : false,
               hintStyle: hintStyle ??
-                  mozillaTextSemiBoldText(
+                  mozillaTextRegularText(
+
                       context: context,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w800),
+                      fontSize: 13,
+                      fontWeight: FontWeight.normal),
               labelText: labelText,
               suffixIcon: suffixIcon,
               contentPadding: contentPadding ?? const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
@@ -160,12 +162,13 @@ class CustomTextField extends StatelessWidget {
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(borderRadius ?? 20),
-                borderSide: BorderSide(color: borderColor ?? DynamicColors.primaryClr),
+                borderSide: BorderSide(color: borderColor ?? DynamicColors.primaryClr.withOpacity(0.3)),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(borderRadius ?? 20),
-                borderSide: BorderSide(color: borderColor ?? DynamicColors.primaryClr, width: borderWidth),
+                borderSide: BorderSide(color: borderColor ?? DynamicColors.primaryClr, width: borderWidth,),
               ),
+
             ),
           ),
         ),
