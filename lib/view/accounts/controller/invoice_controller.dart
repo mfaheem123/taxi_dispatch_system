@@ -363,10 +363,17 @@ class InvoiceController extends GetxController {
         }
       }
       orderNumber.text = data?.orderNumber ?? "";
-      invoiceDateController =
-          "${data?.invoiceDate?.year}-${data?.invoiceDate?.month}-${data?.invoiceDate?.day}";
-      invoiceDueDateController =
-          "${data?.invoiceDueDate?.year}-${data?.invoiceDueDate?.month}-${data?.invoiceDueDate?.day}";
+      // invoiceDateController =
+      //     "${data?.invoiceDate?.year}-${data?.invoiceDate?.month}-${data?.invoiceDate?.day}";
+      // invoiceDueDateController =
+      //     "${data?.invoiceDueDate?.year}-${data?.invoiceDueDate?.month}-${data?.invoiceDueDate?.day}";
+      invoiceDateController = data?.invoiceDate != null
+          ? "${data!.invoiceDate!.year}-${data.invoiceDate!.month.toString().padLeft(2, '0')}-${data.invoiceDate!.day.toString().padLeft(2, '0')}"
+          : "";
+
+      invoiceDueDateController = data?.invoiceDueDate != null
+          ? "${data!.invoiceDueDate!.year}-${data.invoiceDueDate!.month.toString().padLeft(2, '0')}-${data.invoiceDueDate!.day.toString().padLeft(2, '0')}"
+          : "";
       if (data != null) {
         subsidiaries = subsDiaryModel?.subsidiaries
             ?.firstWhere((s) => "${s.id}" == "${data.subsidiaryId}");

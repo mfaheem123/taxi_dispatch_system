@@ -60,8 +60,10 @@ class DriverController extends GetxController {
   String? dobDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
   String? vehicleStartDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
   String? vehicleEndeDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
-  DateTime? startDate = DateTime.now();
-  DateTime? endDate = DateTime.now();
+  String? startDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? endDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  // DateTime? startDate = DateTime.now();
+  // DateTime? endDate = DateTime.now();
 
   /// text editing controller
   final driverUserNameController = TextEditingController();
@@ -306,8 +308,10 @@ class DriverController extends GetxController {
         "balance": driverBalanceController.text.trim(),
         "address": driverAddressController.text.trim(),
         "use_company_vehicle": vehicleInformation.value,
-        "start_date": "${startDate!.year}-${startDate!.month}-${startDate!.day}",
-        "end_date": "${endDate!.year}-${endDate!.month}-${endDate!.day}",
+        // "start_date": "${startDate!.year}-${startDate!.month}-${startDate!.day}",
+        // "end_date": "${endDate!.year}-${endDate!.month}-${endDate!.day}",
+        "start_date": startDate,
+        "end_date": endDate,
         "ni": driverNLController.text.trim(),
         if (noteList.isNotEmpty) "notes": noteList,
         if (vehicleInformation.value == false)
@@ -439,7 +443,11 @@ class DriverController extends GetxController {
     driverCommissionController.clear();
     driverNLController.clear();
     driverRendLimitController.clear();
+    startDate = null;
+    endDate = null;
     dobDate = null;
+    vehicleStartDate = null;
+    vehicleEndeDate = null;
     hasPDA.value = false;
     rentPaid.value = false;
     isActive.value = false;

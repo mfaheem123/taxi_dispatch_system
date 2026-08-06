@@ -1101,6 +1101,16 @@ class FareController extends GetxController {
     }
   }
 
+  DateTime parseDate(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) return DateTime.now();
+    try {
+      List<String> p = dateStr.split('-');
+      return p.length == 3 ? DateTime(int.parse(p[2]), int.parse(p[1]), int.parse(p[0])) : (DateTime.tryParse(dateStr) ?? DateTime.now());
+    } catch (_) {
+      return DateTime.now();
+    }
+  }
+
   SurchargeObject? sureChargeObject;
 
   bindSurChargesData(
@@ -1120,6 +1130,9 @@ class FareController extends GetxController {
     postCodeWise = sureChargeData.surchargesType.toString();
     selectDateWise = sureChargeData.duration.toString();
     selectPickup = sureChargeData.condition.toString();
+    startDateSurCharges = parseDate(sureChargeData.fromDate?.toString());
+    endDateSurCharges = parseDate(sureChargeData.toDate?.toString());
+
     if (sureChargeData.day != null) {
       selectedDay =
           DaysClass(selectedDay: true.obs, dayName: sureChargeData.day);
@@ -1132,6 +1145,8 @@ class FareController extends GetxController {
       activeStatus = !(sureChargeObject!.active ?? false);
       postSurchargeData();
     }
+    print("API From Date: ${sureChargeData.fromDate}");
+    print("API To Date: ${sureChargeData.toDate}");
     update();
   }
 

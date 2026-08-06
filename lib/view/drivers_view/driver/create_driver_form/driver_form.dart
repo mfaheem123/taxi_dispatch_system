@@ -386,20 +386,33 @@ class _DriverFormState extends State<DriverForm> {
         rows: [
           DataRow(
             cells: [
-              DataCell( KeyboardDatePicker(
-                initialDate: controller.startDate ?? DateTime.now(),
-                onChanged: (date) {
-                  controller.startDate = date;
-                  controller.update();
-                },
-              ),),
-              DataCell(KeyboardDatePicker(
-                initialDate: controller.endDate ?? DateTime.now(),
-                onChanged: (date) {
-                  controller.endDate = date;
-                  controller.update();
-                },
-              )
+              DataCell(
+              //   KeyboardDatePicker(
+              //   initialDate: controller.startDate ?? DateTime.now(),
+              //   onChanged: (date) {
+              //     controller.startDate = date;
+              //     controller.update();
+              //   },
+              // ),
+                  KeyboardDatePicker(
+                    initialDate: DateTime.tryParse(controller.startDate ?? '') ?? DateTime.now(),
+                    onChanged: (date) => controller.startDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                    onSubmitted: (date) => controller.startDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                  )
+              ),
+              DataCell(
+              //     KeyboardDatePicker(
+              //   initialDate: controller.endDate ?? DateTime.now(),
+              //   onChanged: (date) {
+              //     controller.endDate = date;
+              //     controller.update();
+              //   },
+              // )
+                  KeyboardDatePicker(
+                    initialDate: DateTime.tryParse(controller.endDate ?? '') ?? DateTime.now(),
+                    onChanged: (date) => controller.endDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                    onSubmitted: (date) => controller.endDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                  )
               ),
 
             ],
