@@ -702,6 +702,12 @@ class DriverController extends GetxController {
       if (singleDriverData!.driver!.dob != null) {
         dobDate = formatDateForUi(singleDriverData!.driver!.dob);
       }
+      if (singleDriverData!.driver!.startDate != null) {
+        startDate = formatDateForUi(singleDriverData!.driver!.startDate);
+      }
+      if (singleDriverData!.driver!.endDate != null) {
+        endDate = formatDateForUi(singleDriverData!.driver!.endDate);
+      }
 
       if (singleDriverData!.driver!.vehicle?.startDate != null) {
         vehicleStartDate = formatDateForUi(singleDriverData!.driver!.vehicle!.startDate);
