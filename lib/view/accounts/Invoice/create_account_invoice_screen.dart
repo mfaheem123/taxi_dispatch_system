@@ -375,7 +375,7 @@ class _CreateAccountInvoiceScreenState
                         TableColumnConfig(title: "WC", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
                         TableColumnConfig(title: "EDC", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
                         TableColumnConfig(title: "M&G", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
-                        TableColumnConfig(title: "Cc", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
+                        TableColumnConfig(title: "CC", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
                         TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium),
                         TableColumnConfig(title: "ACTIONS", sizeType: ColumnSizeType.fixed, fixedWidth: 70, removeSearching: true),
                       ],

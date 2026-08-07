@@ -12,6 +12,7 @@ import '../../../../component/textStyle.dart';
 import '../../../../component/text_widget.dart';
 import '../../../alert/stripe_payment.dart';
 import '../../../alert/update_invoice_email_alt.dart';
+import '../../../component/responsive_datatable_widget.dart';
 import '../controller/invoice_controller.dart';
 import 'account_invoice_preview_screen.dart';
 
@@ -344,7 +345,8 @@ class _UpdateAccountInvoiceScreenState
               ),
             ),
 
-            labeledField(
+            Padding(padding: EdgeInsetsGeometry.only(left: 10),
+            child: labeledField(
               context: context,
               isMobile: isMobile,
               label: AppText.order,
@@ -365,6 +367,7 @@ class _UpdateAccountInvoiceScreenState
                 ),
               ),
             ),
+        ),
 
             SizedBox(
               height: 8,
@@ -372,233 +375,158 @@ class _UpdateAccountInvoiceScreenState
 
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: SizedBox(
-                width: Get.width,
-                child: DatatableWidget(
-                  columns: [
-                //     DataColumn(
-                // label: Checkbox(
-                // value: controller.isAllUpdateSelected,
-                //   onChanged: (val) {
-                //     controller.isAllUpdateSelected = val ?? false;
-                //     controller.selectedBookingIds.clear();
-                //
-                //     if (controller.isAllUpdateSelected) {
-                //       controller.selectedBookingIds.addAll(
-                //           controller.accountInvoiceBookingModel!.bookings!
-                //               .map((e) => e.id!)
-                //       );
-                //     }
-                //
-                //     controller.update();
-                //   },
-                // ),
-                //
-                //     ),
-                    buildHeaderWithSearch(title: "REF #"),
-                    buildHeaderWithSearch(title: "DATETIME"),
-                    buildHeaderWithSearch(title: "PICKUP"),
-                    buildHeaderWithSearch(title: "DROPOFF"),
-                    buildHeaderWithSearch(title: "CUST"),
-                    buildHeaderWithSearch(title: "VEH"),
-                    buildHeaderWithSearch(title: "J/T"),
-                    buildHeaderWithSearch(title: "P/T"),
-                    buildHeaderWithSearch(title: "FARE"),
-                    buildHeaderWithSearch(title: "PC"),
-                    buildHeaderWithSearch(title: "WC"),
-                    buildHeaderWithSearch(title: "EDC"),
-                    buildHeaderWithSearch(title: "M&G"),
-                    buildHeaderWithSearch(title: "Cc"),
-                    buildHeaderWithSearch(title: "TOTA"),
-                    buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
-                  ],
-                  rows: [
-                    ...(controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.accountInvoiceLineitems ?? []).map((lineItem) {
-                      final booking = lineItem.booking; // Short reference
-                        // Helper function to create editable cell
-                      DataCell editableCell(dynamic initialValue, Function(String) onChanged) {
-                        return DataCell(
-                          Center(
-                            child: SizedBox(
-                              width: 70,
-                              child: TextFormField(
-                                key: UniqueKey(),
-                                initialValue: initialValue?.toString() ?? "0",
-                                keyboardType: TextInputType.number,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(fontSize: 12),
-                                decoration: const InputDecoration(
-                                  isDense: true,
-                                  contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                                  border: OutlineInputBorder(),
-                                ),
-                                onChanged: onChanged,
-                              ),
+              child: ResponsiveDataTableWidget(
+                totalWidth: Get.width,
+                columnConfigs: [
+                  TableColumnConfig(title: "REF #", sizeType: ColumnSizeType.medium),
+                  TableColumnConfig(title: "DATETIME", sizeType: ColumnSizeType.medium),
+                  TableColumnConfig(title: "PICKUP", sizeType: ColumnSizeType.large),
+                  TableColumnConfig(title: "DROPOFF", sizeType: ColumnSizeType.large),
+                  TableColumnConfig(title: "CUST", sizeType: ColumnSizeType.medium),
+                  TableColumnConfig(title: "VEH", sizeType: ColumnSizeType.small),
+                  TableColumnConfig(title: "J/T", sizeType: ColumnSizeType.small),
+                  TableColumnConfig(title: "P/T", sizeType: ColumnSizeType.small),
+                  TableColumnConfig(title: "FARE", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
+                  TableColumnConfig(title: "PC", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
+                  TableColumnConfig(title: "WC", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
+                  TableColumnConfig(title: "EDC", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
+                  TableColumnConfig(title: "M&G", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
+                  TableColumnConfig(title: "CC", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
+                  TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium),
+                  TableColumnConfig(title: "ACTIONS", sizeType: ColumnSizeType.fixed, fixedWidth: 70, removeSearching: true),
+                ],
+                items: [
+                  ...(controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.accountInvoiceLineitems ?? []),
+                  if (controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice != null) ...[
+                    {'type': 'TOTAL'},
+                    {'type': 'ADMIN_FEES'},
+                    {'type': 'GRAND_TOTAL'},
+                  ]
+                ],
+                rowBuilder: (item, widths) {
+                  Widget editableCell(String titleKey, dynamic initialValue, Function(String) onChanged) {
+                    return SizedBox(
+                      width: widths[titleKey]!,
+                      child: Center(
+                        child: SizedBox(
+                          width: 65,
+                          child: TextFormField(
+                            key: UniqueKey(),
+                            initialValue: initialValue?.toString() ?? "0",
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 11),
+                            decoration: const InputDecoration(
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                              border: OutlineInputBorder(),
                             ),
-                          ),
-                        );
-                      }
-
-                      return DataRow(cells: [
-
-                        // DataCell(
-                        //   Checkbox(
-                        //     value: controller.selectedBookingIds.contains(booking?.id),
-                        //     onChanged: (val) {
-                        //
-                        //       if (val == true) {
-                        //         controller.selectedBookingIds.add(booking!.id!);
-                        //       } else {
-                        //         controller.selectedBookingIds.remove(booking?.id);
-                        //       }
-                        //
-                        //       controller.isAllUpdateSelected =
-                        //           controller.selectedBookingIds.length ==
-                        //               controller.accountInvoiceBookingModel!.bookings!.length;
-                        //
-                        //       controller.update();
-                        //     },
-                        //   ),
-                        // ),
-                        DataCell(Center(child: Text(booking?.referenceNumber ?? "-"))),
-                        DataCell(Center(child: Text("${booking?.pickupDate ?? ""} ${booking?.pickupTime ?? ""}"))),
-                        DataCell(Center(child: Text((booking?.pickup ?? "-").toUpperCase()))),
-                        DataCell(Center(child: Text((booking?.dropoff ?? "-").toUpperCase()))),
-                        DataCell(Center(child: Text((booking?.name ?? "-").toUpperCase()))), // Customer Name
-                        DataCell(Center(child: Text((booking?.vehicleType?.name ?? "-").toUpperCase()))),
-                        DataCell(Center(child: Text((booking?.journeyType?.journeyType ?? "-").toUpperCase()))),
-                        DataCell(Center(child: Text((booking?.paymentType?.name ?? "-").toUpperCase()))),
-
-                        editableCell(booking?.fares, (val) {
-                          booking?.fares = double.tryParse(val.toString()) ?? 0.0;
-                          controller.recalculateRowTotal(lineItem);
-                        }),
-                        editableCell(booking?.parkingCharges, (val) {
-                          booking?.parkingCharges = double.tryParse(val.toString()) ?? 0.0;
-                          controller.recalculateRowTotal(lineItem);
-                        }),
-                        editableCell(booking?.waitingCharges, (val) {
-                          booking?.waitingCharges = double.tryParse(val.toString()) ?? 0.0;
-                          controller.recalculateRowTotal(lineItem);
-                        }),
-                        editableCell(booking?.extraDropCharges, (val) {
-                          booking?.extraDropCharges = double.tryParse(val.toString()) ?? 0.0;
-                          controller.recalculateRowTotal(lineItem);
-                        }),
-                        editableCell(booking?.meetAndGreet, (val) {
-                          booking?.meetAndGreet = double.tryParse(val.toString()) ?? 0.0;
-                          controller.recalculateRowTotal(lineItem);
-                        }),
-                        editableCell(booking?.congestionCharges, (val) {
-                          booking?.congestionCharges = double.tryParse(val.toString()) ?? 0.0;
-                          controller.recalculateRowTotal(lineItem);
-                        }),
-                        DataCell(Center(
-                          child: Text(
-                            "£${booking?.totalCharges ?? 0}",
-                            style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold),
-                          ),
-                        )),
-
-                        DataCell(
-                          Center(
-                            child: CustomButton(
-                              verticalPadding: 0.0,
-                              width: 45,
-                              height: 30,
-                              borderRadius: 4,
-                              btnText: "SAVE",
-                              style: mozillaTextRegularText(
-                                  fontSize: 10, color: DynamicColors.whiteClr),
-                              onTap: () {
-
-                                if (booking != null) {
-                                  controller.updateBookingCharges(booking);
-                                  print("Updating Booking ID: ${booking.id}");
-                                }
-
-                              },
-                            ),
+                            onChanged: onChanged,
                           ),
                         ),
-                      ]);
-                    }).toList(),
-
-
-                    // 1. TOTAL Row
-                    // DataRow(
-                    //   cells: [
-                    //     for (var i = 0; i < 7; i++) DataCell.empty,
-                    //     DataCell(Center(
-                    //         child: Text("TOTAL",
-                    //           style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900)))),
-                    //     ...['fare', 'pc', 'wc', 'edc', 'mg', 'cc', 'total'].map((field) => DataCell(
-                    //       Center(
-                    //         child: Text(
-                    //           "£ ${controller.getInvoiceColumnTotal(field).toStringAsFixed(2)}",
-                    //             style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900),
-                    //         ),
-                    //       ),
-                    //     )),
-                    //     DataCell.empty,
-                    //   ],
-                    // ),
-
-
-                    if (controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice != null)
-                      DataRow(
-                        cells: [
-                          for (var i = 0; i < 8; i++)DataCell(
-                              i == 7
-                                  ? Text("TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900))
-                                  : const SizedBox.shrink()
-                          ),
-
-                          DataCell(Center(child: Text("£${controller.totalFare.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()))),
-                          DataCell(Center(child: Text("£${controller.totalPC.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()))),
-                          DataCell(Center(child: Text("£${controller.totalWC.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()))),
-                          DataCell(Center(child: Text("£${controller.totalEDC.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()))),
-                          DataCell(Center(child: Text("£${controller.totalMG.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()))),
-                          DataCell(Center(child: Text("£${controller.totalCC.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()))),
-                          DataCell(Center(
-                              child: Text("£${controller.subTotal.toStringAsFixed(2)}",
-                                  style: mozillaTextSemiBoldText(color: Colors.blue, fontWeight: FontWeight.bold)))),
-
-                          DataCell.empty,
-                        ],
                       ),
+                    );
+                  }
 
-                    //  Admin Row
+                  if (item is Map && item['type'] == 'TOTAL') {
+                    return [
+                      "", "", "", "", "", "", "",
+                      Text("TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900)),
+                      Text("£${controller.totalFare.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()),
+                      Text("£${controller.totalPC.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()),
+                      Text("£${controller.totalWC.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()),
+                      Text("£${controller.totalEDC.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()),
+                      Text("£${controller.totalMG.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()),
+                      Text("£${controller.totalCC.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()),
+                      Text("£${controller.subTotal.toStringAsFixed(2)}", style: mozillaTextSemiBoldText(color: Colors.blue, fontWeight: FontWeight.bold)),
+                      "",
+                    ];
+                  }
 
-                    if (controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice != null)
-                      DataRow(cells: [
-                        for (var i = 0; i < 7; i++) DataCell.empty,
-                        DataCell(Text("ADMIN FEES", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900))),
-                        for (var i = 0; i < 6; i++) DataCell.empty,
-                        DataCell(Center(
-                          child: Text(
-                              "£${controller.adminFees.toStringAsFixed(2)}",
-                              style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900)),
-                        )),
-                        DataCell.empty,
-                      ]),
+                  if (item is Map && item['type'] == 'ADMIN_FEES') {
+                    return [
+                      "", "", "", "", "", "", "",
+                      Text("ADMIN FEES", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900)),
+                      "", "", "", "", "", "",
+                      Text("£${controller.adminFees ?? ""}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900)),
+                      "",
+                    ];
+                  }
+
+                  if (item is Map && item['type'] == 'GRAND_TOTAL') {
+                    return [
+                      "", "", "", "", "", "", "",
+                      Text("GRAND TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900)),
+                      "", "", "", "", "", "",
+                      Text("£${controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.amount ?? "0"}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900)),
+                      "",
+                    ];
+                  }
 
 
-                    //  GRAND TOTAL Row
-                    if (controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice != null)
-                      DataRow(cells: [
-                        for (var i = 0; i < 7; i++) DataCell.empty,
-                        DataCell(Text("GRAND TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900))),
-                        for (var i = 0; i < 6; i++) DataCell.empty,
-                        DataCell(Center(
-                          child: Text(
-                              "£${controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.amount ?? "0"}",
-                              style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900)),
-                        )),
-                        DataCell.empty,
-                      ]),
-                  ],
-                ),
+                  final lineItem = item;
+                  final booking = lineItem.booking;
+
+                  return [
+                    booking?.referenceNumber ?? "-",
+                    "${booking?.pickupDate ?? ""} ${booking?.pickupTime ?? ""}",
+                    (booking?.pickup ?? "-").toUpperCase(),
+                    (booking?.dropoff ?? "-").toUpperCase(),
+                    (booking?.name ?? "-").toUpperCase(),
+                    (booking?.vehicleType?.name ?? "-").toUpperCase(),
+                    (booking?.journeyType?.journeyType ?? "-").toUpperCase(),
+                    (booking?.paymentType?.name ?? "-").toUpperCase(),
+
+                    editableCell("FARE", booking?.fares, (val) {
+                      booking?.fares = double.tryParse(val.toString()) ?? 0.0;
+                      controller.recalculateRowTotal(lineItem);
+                    }),
+                    editableCell("PC", booking?.parkingCharges, (val) {
+                      booking?.parkingCharges = double.tryParse(val.toString()) ?? 0.0;
+                      controller.recalculateRowTotal(lineItem);
+                    }),
+                    editableCell("WC", booking?.waitingCharges, (val) {
+                      booking?.waitingCharges = double.tryParse(val.toString()) ?? 0.0;
+                      controller.recalculateRowTotal(lineItem);
+                    }),
+                    editableCell("EDC", booking?.extraDropCharges, (val) {
+                      booking?.extraDropCharges = double.tryParse(val.toString()) ?? 0.0;
+                      controller.recalculateRowTotal(lineItem);
+                    }),
+                    editableCell("M&G", booking?.meetAndGreet, (val) {
+                      booking?.meetAndGreet = double.tryParse(val.toString()) ?? 0.0;
+                      controller.recalculateRowTotal(lineItem);
+                    }),
+                    editableCell("Cc", booking?.congestionCharges, (val) {
+                      booking?.congestionCharges = double.tryParse(val.toString()) ?? 0.0;
+                      controller.recalculateRowTotal(lineItem);
+                    }),
+
+                    Center(
+                      child: Text(
+                        "£${booking?.totalCharges ?? 0}",
+                        style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+
+                    Center(
+                      child: CustomButton(
+                        verticalPadding: 0.0,
+                        width: 45,
+                        height: 28,
+                        borderRadius: 4,
+                        btnText: "SAVE",
+                        style: mozillaTextRegularText(fontSize: 9, color: DynamicColors.whiteClr),
+                        onTap: () {
+                          if (booking != null) {
+                            controller.updateBookingCharges(booking);
+                            print("Updating Booking ID: ${booking.id}");
+                          }
+                        },
+                      ),
+                    ),
+                  ];
+                },
               ),
             ),
             SizedBox(height: 25,)
