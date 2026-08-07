@@ -468,6 +468,10 @@ class DashboardController extends GetxController {
   RxBool isHoveredVLA = false.obs;
   bool isDropdownOpen = false;
 
+  /// Current wall-clock time as the 24h `HH:mm` string TimePickerField expects.
+  /// Static so it can be used from field initializers.
+  static String get nowHHmm => DateFormat('HH:mm').format(DateTime.now());
+
   ///text editing controllers
   final pickupController = TextEditingController();
   final pickupTwoWayController = TextEditingController();
@@ -475,8 +479,8 @@ class DashboardController extends GetxController {
   final dropOffTwoWayController = TextEditingController();
   final selectAirportController = TextEditingController();
   final selectReturnAirportController = TextEditingController();
-  final arrivalTimeController = TextEditingController();
-  final arrivalReturnTimeController = TextEditingController();
+  final arrivalTimeController = TextEditingController(text: nowHHmm);
+  final arrivalReturnTimeController = TextEditingController(text: nowHHmm);
   final switchController = ValueNotifier<bool>(false);
   RxBool smsCheckbox = true.obs;
   RxBool addReturnFare = true.obs;
@@ -2299,10 +2303,34 @@ class DashboardController extends GetxController {
   DateTime? pickUpDateReturn = DateTime.now();
   /// Pickup time defaults to the current time, matching [pickUpDate] above.
   /// TimePickerField reads and writes this as a 24h `HH:mm` string.
-  final pickUpTimeController = TextEditingController(
-    text: DateFormat('HH:mm').format(DateTime.now()),
-  );
-  final pickUpTimeControllerReturn = TextEditingController();
+  final pickUpTimeController = TextEditingController(text: nowHHmm);
+  final pickUpTimeControllerReturn = TextEditingController(text: nowHHmm);
+
+  /// Set as soon as the user picks a value in the matching date/time field on
+  /// the dashboard form. Anything still false counts as "never chosen".
+  bool pickUpDatePicked = false;
+  bool pickUpTimePicked = false;
+  bool pickUpDateReturnPicked = false;
+  bool pickUpTimeReturnPicked = false;
+  bool arrivalTimePicked = false;
+  bool arrivalReturnTimePicked = false;
+
+  /// Re-seeds every date/time field the user never touched with "now", leaving
+  /// user-picked values exactly as chosen. Called just before the booking is
+  /// posted: this controller can stay alive for hours, so the date/time seeded
+  /// when it was created would otherwise be posted stale.
+  void refreshUntouchedDateTimeFields() {
+    final now = DateTime.now();
+    final nowTime = DateFormat('HH:mm').format(now);
+    if (!pickUpDatePicked) pickUpDate = now;
+    if (!pickUpTimePicked) pickUpTimeController.text = nowTime;
+    if (!pickUpDateReturnPicked) pickUpDateReturn = now;
+    if (!pickUpTimeReturnPicked) pickUpTimeControllerReturn.text = nowTime;
+    if (!arrivalTimePicked) arrivalTimeController.text = nowTime;
+    if (!arrivalReturnTimePicked) arrivalReturnTimeController.text = nowTime;
+    update();
+  }
+
   final passController = TextEditingController();
   final luggController = TextEditingController();
   final sluggController = TextEditingController();
@@ -2358,6 +2386,10 @@ class DashboardController extends GetxController {
   }
 
   postDashboardApi({int? id}) async {
+    /// Fields the user never opened go out as the current date/time; anything
+    /// they picked on the form is posted as selected.
+    refreshUntouchedDateTimeFields();
+
     ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> send restricted driver and child set configuration
     await restrictedDriversListConfig();
 
@@ -2671,7 +2703,8 @@ class DashboardController extends GetxController {
     emailController.clear();
     mobileController.clear();
     selectAirportController.clear();
-    arrivalTimeController.clear();
+    arrivalTimeController.text = nowHHmm;
+    arrivalReturnTimeController.text = nowHHmm;
     pickupTwoWayController.clear();
     dropOffTwoWayController.clear();
     telController.clear();
@@ -2697,8 +2730,18 @@ class DashboardController extends GetxController {
     // Back to "now" rather than empty — the field is pre-filled for a new
     // booking, and the controller can outlive the booking it was created for
     // (a loaded job overwrites this via dashBoardDataBinding).
-    pickUpTimeController.text = DateFormat('HH:mm').format(DateTime.now());
-    pickUpTimeControllerReturn.clear();
+    pickUpTimeController.text = nowHHmm;
+    pickUpTimeControllerReturn.text = nowHHmm;
+    pickUpDate = DateTime.now();
+    pickUpDateReturn = DateTime.now();
+    // Nothing is user-picked on a fresh form, so every date/time field tracks
+    // "now" again until the operator opens one.
+    pickUpDatePicked = false;
+    pickUpTimePicked = false;
+    pickUpDateReturnPicked = false;
+    pickUpTimeReturnPicked = false;
+    arrivalTimePicked = false;
+    arrivalReturnTimePicked = false;
     viaPostList.clear();
     viaReturnPostList.clear();
     restrictedDrivers.clear();
@@ -2845,6 +2888,9 @@ class DashboardController extends GetxController {
         telController.text = jobData.telephone!;
       }
       pickUpTimeController.text = jobData.pickupTime!;
+      // A time carried over from an existing job is a real choice — don't let
+      // refreshUntouchedDateTimeFields() overwrite it with "now" on post.
+      pickUpTimePicked = true;
       minController.text = jobData.leadTime ?? "";
 
       if (jobData.passengers != null) {

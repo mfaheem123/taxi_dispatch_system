@@ -278,7 +278,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                         _timeField('ARP',
                                             tab: 4.6,
                                             controller: controller
-                                                .arrivalTimeController),
+                                                .arrivalTimeController,
+                                            onPicked: () => controller
+                                                .arrivalTimePicked = true),
                                       ],
                                     )
                                         :
@@ -306,7 +308,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                           child: _timeField('ARP',
                                               tab: 4.6,
                                               controller: controller
-                                                  .arrivalTimeController),
+                                                  .arrivalTimeController,
+                                              onPicked: () => controller
+                                                  .arrivalTimePicked = true),
                                         ),
                                       ],
                                     ),
@@ -464,23 +468,36 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   _dateField('Date',
                                       tab: 12,
                                       value: controller.pickUpDate,
-                                      onChanged: (d) =>
-                                          setState(() => controller.pickUpDate = d)),
+                                      onChanged: (d) => setState(() {
+                                            controller.pickUpDate = d;
+                                            controller.pickUpDatePicked = true;
+                                          })),
                                   _timeField('Time',
                                       tab: 13,
                                       controller:
-                                      controller.pickUpTimeController),
+                                      controller.pickUpTimeController,
+                                      onPicked: () =>
+                                          controller.pickUpTimePicked = true),
                                   _dropdown<JourneyTypeObject>(
                                     'Journey Type'.toUpperCase(),
                                     controller.selectJourneyTypeValue,
                                     controller.dashboardAllData!.journeyTypes ??
                                         const [],
-                                        (v) => setState(() {
-                                      // controller.selectJourneyTypeValue = v;
-                                      controller.dropDownShow.value = false;
-                                      controller.jourValue = (v!.journeyType == "r/n") ? 'W/R' : null;
-                                      controller.selectJourneyTypeValue = v;
-                                    }),
+                                        (v) {
+                                          if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
+                                            setState(() {
+                                              // controller.selectJourneyTypeValue = v;
+                                              controller.dropDownShow.value = false;
+                                              controller.jourValue =
+                                              (v!.journeyType == "r/n")
+                                                  ? 'W/R'
+                                                  : null;
+                                              controller.selectJourneyTypeValue = v;
+                                            });
+                                          }else{
+                                            BotToast.showText(text: "Please select pickup and drop location first");
+                                          }
+                                    },
                                     14,
                                     itemLabel: (p) => p.journeyType!,
                                   ),
@@ -702,7 +719,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 _timeField('ARP',
                     tab: 22.6,
                     controller: controller
-                        .arrivalReturnTimeController),
+                        .arrivalReturnTimeController,
+                    onPicked: () =>
+                        controller.arrivalReturnTimePicked = true),
               ],
             )
                 :
@@ -730,7 +749,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   child: _timeField('ARP',
                       tab: 22.6,
                       controller: controller
-                          .arrivalTimeController),
+                          .arrivalTimeController,
+                      onPicked: () => controller.arrivalTimePicked = true),
                 ),
               ],
             ),
@@ -803,10 +823,14 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           _dateField('R/Date',
               tab: 28,
               value: controller.pickUpDateReturn,
-              onChanged: (d) =>
-                  setState(() => controller.pickUpDateReturn = d)),
+              onChanged: (d) => setState(() {
+                    controller.pickUpDateReturn = d;
+                    controller.pickUpDateReturnPicked = true;
+                  })),
           _timeField('R/Time',
-              tab: 29, controller: controller.pickUpTimeControllerReturn),
+              tab: 29,
+              controller: controller.pickUpTimeControllerReturn,
+              onPicked: () => controller.pickUpTimeReturnPicked = true),
           _field('R/Lead', tab: 30, controller: controller.minControllerReturn),
           _field('R/Fare',
               tab: 31,
@@ -908,7 +932,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   print('tap 08');
                   controller.update();
                 }
-                );},
+                );
+                },
               32,
               itemLabel: (p) => p.name!,
             ),
@@ -990,7 +1015,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  tab('Booking', active: true, onTap: () {}),
+                  tab('BOOKING', active: true, onTap: () {}),
                   tab('+ Multi Reservation (F8)', onTap: () {
                     if (controller.pickupController.text.isNotEmpty &&
                         controller.dropOffController.text.isNotEmpty) {
@@ -1596,8 +1621,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     ]);
   }
 
+  /// [onPicked] fires only when the user confirms a time in the dropdown, so
+  /// the controller can tell a chosen time apart from the pre-filled "now".
   Widget _timeField(String label,
-      {required num tab, required TextEditingController controller}) {
+      {required num tab,
+        required TextEditingController controller,
+        VoidCallback? onPicked}) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       // Text(label.toUpperCase(),
       //     style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
@@ -1607,6 +1636,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         child: _GlowFocus(
           child: TimePickerField(
             controller: controller,
+            onChanged: onPicked == null ? null : (_) => onPicked(),
             decoration: _inputDecoration().copyWith(
               label: Text(label.toUpperCase(),
                   style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),

@@ -570,14 +570,33 @@ class _BookingTableState extends State<BookingTable> {
                                         Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.backgroundColor}")),
                                         // Optional: borderRadius: BorderRadius.circular(2),
                                       ),
-                                      child: Text(
-                                        item.dropoff?.toUpperCase() ?? "-".toUpperCase(),
-                                        style: mozillaTextRegularText(
-                                          fontSize: widthss/140,
-                                          color: item.airport!.dropoff!.locationType!.foregroundColor == null?DynamicColors.black:
-                                          Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.foregroundColor}")),
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Flexible(
+                                            child: Text(
+                                              item.dropoff?.toUpperCase() ?? "-".toUpperCase(),
+                                              style: mozillaTextRegularText(
+                                                fontSize: widthss/140,
+                                                color: item.airport!.dropoff!.locationType!.foregroundColor == null?DynamicColors.black:
+                                                Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.foregroundColor}")),
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          SizedBox(width: widthss/400),
+                                          // Tooltip(
+                                          //   message: "Dropoff note: dummy text for now",
+                                          //   waitDuration: const Duration(milliseconds: 400),
+                                          //   child: Icon(
+                                          //     Icons.info_outline,
+                                          //     size: widthss/120,
+                                          //     color: item.airport!.dropoff!.locationType!.foregroundColor == null?DynamicColors.black:
+                                          //     Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.foregroundColor}")),
+                                          //   ),
+                                          // ),
+                                        ],
                                       ),
                                     ),
                                   ),
