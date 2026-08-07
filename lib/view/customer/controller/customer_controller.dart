@@ -116,7 +116,7 @@ class CustomerController extends GetxController {
   ///--------------------- Pagination
   var currentPage = 1.obs;
   var totalPages = 1.obs;
-  final int limit = 10;
+  final int limit = 20;
 
   /// >>>>>>>>>>>>>>>>>>>>> Search Work
   RxList<Customer> customerListAll = <Customer>[].obs;
@@ -132,6 +132,7 @@ class CustomerController extends GetxController {
   getCustomer() async {
     customerLoader(true);
     var response = await Api().get("customers/get?", queryParameters: {
+      'page': currentPage.value,
       'blacklist': blackList.value,
       'limit': limit,
       "name": searchName.value.toLowerCase(),

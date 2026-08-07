@@ -171,6 +171,10 @@ class _MyHomePageState extends State<MyHomePage> {
     AppBooking,
     MultiBooking,
     TrashBooking,
+    CustomersScreen,
+    LostProperty,
+    ComplaintsView,
+
   };
 
   /// Whether arrow up / down should scroll the page right now.
