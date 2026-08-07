@@ -112,6 +112,14 @@ class _MyHomePageState extends State<MyHomePage> {
       ? Get.find<AuthController>()
       : Get.put(AuthController());
 
+  /// Scrolls the shell body, which is the scroll view every page is hosted in
+  /// — a page's own SingleChildScrollView sits inside this one, gets unbounded
+  /// height, and so never scrolls on its own.
+  final ScrollController _bodyScrollController = ScrollController();
+
+  /// Pixels moved per arrow key press / repeat.
+  static const double _arrowScrollStep = 60;
+
   @override
   void initState() {
     super.initState();
@@ -124,7 +132,60 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void dispose() {
     RawKeyboard.instance.removeListener(_handleKey);
+    _bodyScrollController.dispose();
     super.dispose();
+  }
+
+  /// Moves the body by [delta] pixels, clamped to the scroll extent.
+  /// [animate] is off while a key repeats so held arrows scroll smoothly
+  /// instead of restarting a 120ms animation on every repeat.
+  void _scrollBody(double delta, {required bool animate}) {
+    if (!_bodyScrollController.hasClients) return;
+    final position = _bodyScrollController.position;
+    final target = (position.pixels + delta)
+        .clamp(position.minScrollExtent, position.maxScrollExtent);
+    if (target == position.pixels) return;
+    if (animate) {
+      _bodyScrollController.animateTo(
+        target,
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeOut,
+      );
+    } else {
+      _bodyScrollController.jumpTo(target);
+    }
+  }
+
+  /// Pages the arrow keys may scroll — the BOOKINGS list screens, which are all
+  /// a plain table in the shell's scroll view.
+  ///
+  /// Everything else is left alone on purpose: the dashboard table, the address
+  /// suggestion lists and the keyboard dropdowns drive their own selection with
+  /// the arrow keys, and this listener cannot see that they already handled the
+  /// event.
+  static const Set<Type> _arrowScrollPages = {
+    CompleteBookingsScreen,
+    PendingBooking,
+    PreBooking,
+    WebBooking,
+    AppBooking,
+    MultiBooking,
+    TrashBooking,
+  };
+
+  /// Whether arrow up / down should scroll the page right now.
+  bool get _arrowKeysScrollBody {
+    if (!_arrowScrollPages.contains(controller.currentPage.value.runtimeType)) {
+      return false;
+    }
+    // A focused text field owns its arrow keys (caret movement, and the
+    // suggestion lists that open under the column search boxes).
+    final focusContext = FocusManager.instance.primaryFocus?.context;
+    if (focusContext?.findAncestorStateOfType<EditableTextState>() != null) {
+      return false;
+    }
+    // Nothing should scroll behind an open alert.
+    return shortCutKeyValue.value != "alert";
   }
 
   void message(context, String text) {
@@ -145,6 +206,19 @@ class _MyHomePageState extends State<MyHomePage> {
   void _handleKey(RawKeyEvent event) {
     if (event is RawKeyDownEvent) {
       print(event);
+
+      if (event.logicalKey == LogicalKeyboardKey.arrowDown ||
+          event.logicalKey == LogicalKeyboardKey.arrowUp) {
+        if (_arrowKeysScrollBody) {
+          _scrollBody(
+            event.logicalKey == LogicalKeyboardKey.arrowDown
+                ? _arrowScrollStep
+                : -_arrowScrollStep,
+            animate: !event.repeat,
+          );
+        }
+        return;
+      }
 
       if (event.logicalKey.keyLabel == "F#") {
         shortCutKeyValue.value = "alert";
@@ -248,6 +322,7 @@ class _MyHomePageState extends State<MyHomePage> {
             alignment: Alignment.bottomCenter,
             children: [
               SingleChildScrollView(
+                controller: _bodyScrollController,
                 child: Column(
                   children: [
                     Container(
