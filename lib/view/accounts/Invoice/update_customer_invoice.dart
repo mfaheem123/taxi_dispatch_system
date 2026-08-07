@@ -236,8 +236,8 @@ class _UpdateCustomerInvoiceState extends State<UpdateCustomerInvoice> {
                                   width: fieldWidth / 1.8,
                                   child: SizedBox(height: 30,
                                       child: KeyboardDatePicker(
-                                        key: ValueKey(controller.customerInvoiceByIdModel?.customerInvoice?.invoiceDate),
-                                        initialDate: controller.customerInvoiceByIdModel?.customerInvoice?.invoiceDate ?? DateTime.now(),
+                                        key: ValueKey(controller.customerInvoiceByIdModel?.customerInvoice?.invoiceDueDate),
+                                        initialDate: controller.customerInvoiceByIdModel?.customerInvoice?.invoiceDueDate ?? DateTime.now(),
                                         onChanged: (date) {
                                           setState(() {
                                             controller.customerInvoiceDueDateController = "${date.year}-${date.month}-${date.day}";

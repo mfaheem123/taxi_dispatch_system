@@ -16,6 +16,7 @@ import '../../../../component/text_widget.dart';
 import 'package:dashboard_new1/view/accounts/model/account_invoice_model.dart';
 
 import '../../../component/networks/api.dart';
+import '../../../component/responsive_datatable_widget.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
 import '../controller/invoice_controller.dart';
 
@@ -67,6 +68,7 @@ class _CreateAccountInvoiceScreenState
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
+        final double totalAvailableWidth = constraints.maxWidth;
         // Instead of fixed width, we calculate flexible field widths
         final double fieldWidth = isMobile
             ? maxWidth // full width
@@ -97,7 +99,7 @@ class _CreateAccountInvoiceScreenState
                     column: true,
                     width: fieldWidth / 1.8,
                     child: SizedBox(
-                        height: 30,
+                        height: 35,
                         child: KeyboardDatePicker(
                           key: ValueKey("invoice_date_${controller.datePickerKey}"),
                           initialDate: DateTime.now(),
@@ -124,7 +126,7 @@ class _CreateAccountInvoiceScreenState
                     column: true,
                     width: fieldWidth / 1.8,
                     child: SizedBox(
-                        height: 30,
+                        height: 35,
                         child: KeyboardDatePicker(
                           key: ValueKey("invoice_due_date_${controller.datePickerKey}"),
                           initialDate:
@@ -254,15 +256,17 @@ class _CreateAccountInvoiceScreenState
                       ),
                     ],
                   ),
-                  CustomTextField(
+                  Padding(padding: EdgeInsetsGeometry.only(left: 10),
+                  child: CustomTextField(
                     borderRadius: 4,
                     controller: controller.orderNumber,
                     width: fieldWidth,
                     hintText: AppText.order,
                     columnText: true,
-                    height: 30,
+                    height: 35,
                     inputFormatters: [UpperCaseTextFormatter()
                     ],
+                  ),
                   ),
                   labeledField(
                     column: true,
@@ -271,7 +275,7 @@ class _CreateAccountInvoiceScreenState
                     label: AppText.from,
                     width: fieldWidth / 1.8,
                     child: SizedBox(
-                        height: 30,
+                        height: 35,
                         child: KeyboardDatePicker(
                             key: ValueKey("from_date_${controller.datePickerKey}"),
                             initialDate: controller.fromDate ?? DateTime.now(),
@@ -290,7 +294,7 @@ class _CreateAccountInvoiceScreenState
                     label: AppText.to,
                     width: fieldWidth / 1.8,
                     child: SizedBox(
-                        height: 30,
+                        height: 35,
                         child: KeyboardDatePicker(
                           key: ValueKey("to_date_${controller.datePickerKey}"),
                           initialDate: controller.toDate ?? DateTime.now(),
@@ -301,316 +305,212 @@ class _CreateAccountInvoiceScreenState
                         )),
                   ),
                   SizedBox(width: 50),
-                  CustomButton(
-                    verticalPadding: 0.0,
-                    width: 40,
-                    height: 30,
-                    borderRadius: 4,
-                    btnText: AppText.filter,
-                    style: mozillaTextRegularText(
-                        fontSize: 10, color: DynamicColors.whiteClr),
-                    onTap: () {
-                      controller.getInvoiceNumber();
-                      controller.getAccountInvoiceByFilter();
-                    },
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: CustomButton(
+                      verticalPadding: 0.0,
+                      width: 80,
+                      height: 30,
+                      borderRadius: 4,
+                      btnText: AppText.filter,
+                      style: mozillaTextRegularText(
+                          fontSize: 10, color: DynamicColors.whiteClr),
+                      onTap: () {
+                        controller.getInvoiceNumber();
+                        controller.getAccountInvoiceByFilter();
+                        },
+                    ),
                   ),
                   SizedBox(
                     width: 15,
                   ),
-                  CustomButton(
-                    verticalPadding: 0.0,
-                    width: 40,
-                    height: 30,
-                    borderRadius: 4,
-                    btnText: AppText.save,
-                    style: mozillaTextRegularText(
-                        fontSize: 10, color: DynamicColors.whiteClr),
-                    onTap: () {
-                      Controller.addAccountInvoice();
-                    },
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: CustomButton(
+                      verticalPadding: 0.0,
+                      width: 80,
+                      height: 30,
+                      borderRadius: 4,
+                      btnText: AppText.save,
+                      style: mozillaTextRegularText(
+                          fontSize: 10, color: DynamicColors.whiteClr),
+                      onTap: () {
+                        Controller.addAccountInvoice();
+                        },
+                    ),
                   ),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: SizedBox(
-                      width: Get.width,
-                      child: DatatableWidget(
-                        columns: [
-                          DataColumn(
-                            label: Checkbox(
-                              value: controller.isAllSelected,
-                              onChanged: (val) {
-                                controller.isAllSelected = val ?? false;
+                    child: ResponsiveDataTableWidget(
+                      totalWidth: totalAvailableWidth,
+                      columnConfigs: [
+                        TableColumnConfig(
+                          title: "SELECT",
+                          sizeType: ColumnSizeType.fixed,
+                          fixedWidth: 50,
+                          removeSearching: true,
+                          customHeader: Checkbox(
+                            value: controller.isAllSelected,
+                            onChanged: (val) {
+                              controller.isAllSelected = val ?? false;
+                              controller.selectedCreateBookingIds.clear();
+                              if (controller.isAllSelected) {
+                                controller.selectedCreateBookingIds.addAll(
+                                    controller.accountInvoiceBookingModel!.bookings!.map((e) => e.id!));
+                              }
+                              controller.update();
+                            },
+                          ),
+                        ),
+                        TableColumnConfig(title: "REF #", sizeType: ColumnSizeType.medium),
+                        TableColumnConfig(title: "DATETIME", sizeType: ColumnSizeType.medium),
+                        TableColumnConfig(title: "PICKUP", sizeType: ColumnSizeType.large),
+                        TableColumnConfig(title: "DROPOFF", sizeType: ColumnSizeType.large),
+                        TableColumnConfig(title: "CUST", sizeType: ColumnSizeType.medium),
+                        TableColumnConfig(title: "VEH", sizeType: ColumnSizeType.small),
+                        TableColumnConfig(title: "J/T", sizeType: ColumnSizeType.small),
+                        TableColumnConfig(title: "P/T", sizeType: ColumnSizeType.small),
+                        TableColumnConfig(title: "FARE", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
+                        TableColumnConfig(title: "PC", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
+                        TableColumnConfig(title: "WC", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
+                        TableColumnConfig(title: "EDC", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
+                        TableColumnConfig(title: "M&G", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
+                        TableColumnConfig(title: "Cc", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
+                        TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium),
+                        TableColumnConfig(title: "ACTIONS", sizeType: ColumnSizeType.fixed, fixedWidth: 70, removeSearching: true),
+                      ],
+                      items: [
+                        ...(controller.accountInvoiceBookingModel?.bookings ?? []),
+                        ...(controller.accountInvoiceBookingModel?.total ?? []).map((t) => {'type': 'TOTAL', 'data': t}),
+                        ...(controller.accountInvoiceBookingModel?.total ?? []).map((t) => {'type': 'GRAND_TOTAL', 'data': t}),
+                      ],
+                      rowBuilder: (item, widths) {
+                        // Reusable Editable Text Field for charges
+                        Widget editableCell(String titleKey, dynamic initialValue, Function(String) onChanged) {
+                          return SizedBox(
+                            width: widths[titleKey]!,
+                            child: Center(
+                              child: SizedBox(
+                                width: 65,
+                                child: TextFormField(
+                                  initialValue: initialValue?.toString() ?? "0",
+                                  keyboardType: TextInputType.number,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(fontSize: 11),
+                                  decoration: const InputDecoration(
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  onChanged: onChanged,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                        if (item is Map && item['type'] == 'TOTAL') {
+                          final totalData = item['data'];
+                          return [
+                            "", "", "", "", "", "", "", "",
+                            Text("TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold)),
+                            Text("£${totalData.fareTotal ?? "0.00"}", style: mozillaTextSemiBoldText()),
+                            Text("£${totalData.parkingChargesTotal ?? "0.00"}", style: mozillaTextSemiBoldText()),
+                            Text("£${totalData.waitingChargesTotal ?? "0.00"}", style: mozillaTextSemiBoldText()),
+                            Text("£${totalData.extraDropChargesTotal ?? "0.00"}", style: mozillaTextSemiBoldText()),
+                            Text("£${totalData.meetAndGreetTotal ?? "0.00"}", style: mozillaTextSemiBoldText()),
+                            Text("£${totalData.congestionChargesTotal ?? "0.00"}", style: mozillaTextSemiBoldText()),
+                            Text("£${totalData.total ?? "0.00"}", style: mozillaTextSemiBoldText(color: Colors.blue)),
+                            "",
+                          ];
+                        }
 
-                                controller.selectedCreateBookingIds.clear();
+                        if (item is Map && item['type'] == 'GRAND_TOTAL') {
+                          final totalData = item['data'];
+                          return [
+                            "", "", "", "", "", "", "", "",
+                            Text("GRAND TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold)),
+                            "", "", "", "", "", "",
+                            Text("£${totalData.grandTotal ?? "0.00"}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold)),
+                            "",
+                          ];
+                        }
+                        final booking = item;
+                        return [
+                          Center(
+                            child:
+                          Checkbox(
+                            value: controller.selectedCreateBookingIds.contains(booking.id),
+                            onChanged: (val) {
+                              if (val == true) {
+                                controller.selectedCreateBookingIds.add(booking.id!);
+                              } else {
+                                controller.selectedCreateBookingIds.remove(booking.id);
+                              }
+                              controller.isAllSelected = controller.selectedCreateBookingIds.length ==
+                                  controller.accountInvoiceBookingModel!.bookings!.length;
+                              controller.update();
+                            },
+                          ),
+                          ),
+                          booking.referenceNumber ?? "",
+                          "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}",
+                          (booking.pickup ?? "").toUpperCase(),
+                          (booking.dropoff ?? "").toUpperCase(),
+                          (booking.customer?.address1 ?? "").toUpperCase(),
+                          (booking.vehicleType?.name ?? "").toUpperCase(),
+                          (booking.journeyType?.journeyType ?? "").toUpperCase(),
+                          (booking.paymentType?.name ?? "").toUpperCase(),
 
-                                if (controller.isAllSelected) {
-                                  controller.selectedCreateBookingIds.addAll(
-                                      controller
-                                          .accountInvoiceBookingModel!.bookings!
-                                          .map((e) => e.id!));
+                          editableCell("FARE", booking.fares, (val) {
+                            booking.fares = (double.tryParse(val) ?? 0.0).toString();
+                            controller.recalculateCreateInvoiceTotal(booking);
+                          }),
+                          editableCell("PC", booking.parkingCharges, (val) {
+                            booking.parkingCharges = (double.tryParse(val) ?? 0.0).toString();
+                            controller.recalculateCreateInvoiceTotal(booking);
+                          }),
+                          editableCell("WC", booking.waitingCharges, (val) {
+                            booking.waitingCharges = (double.tryParse(val) ?? 0.0).toString();
+                            controller.recalculateCreateInvoiceTotal(booking);
+                          }),
+                          editableCell("EDC", booking.extraDropCharges, (val) {
+                            booking.extraDropCharges = (double.tryParse(val) ?? 0.0).toString();
+                            controller.recalculateCreateInvoiceTotal(booking);
+                          }),
+                          editableCell("M&G", booking.meetAndGreet, (val) {
+                            booking.meetAndGreet = (double.tryParse(val) ?? 0.0).toString();
+                            controller.recalculateCreateInvoiceTotal(booking);
+                          }),
+                          editableCell("Cc", booking.congestionCharges, (val) {
+                            booking.congestionCharges = (double.tryParse(val) ?? 0.0).toString();
+                            controller.recalculateCreateInvoiceTotal(booking);
+                          }),
+
+                          Center(
+                            child: Text(
+                              "£${booking.totalCharges ?? '0.0'}",
+                              style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+
+                          Center(
+                            child: CustomButton(
+                              verticalPadding: 0.0,
+                              width: 45,
+                              height: 28,
+                              borderRadius: 4,
+                              btnText: "SAVE",
+                              style: mozillaTextRegularText(fontSize: 9, color: DynamicColors.whiteClr),
+                              onTap: () {
+                                if (booking != null) {
+                                  controller.updateBookingCharges(booking);
+                                  print("Updating Booking ID: ${booking.id}");
                                 }
-
-                                controller.update();
                               },
                             ),
                           ),
-                          buildHeaderWithSearch(title: "REF #"),
-                          buildHeaderWithSearch(title: "DATETIME"),
-                          buildHeaderWithSearch(title: "PICKUP"),
-                          buildHeaderWithSearch(title: "DROPOFF"),
-                          buildHeaderWithSearch(title: "CUST"),
-                          buildHeaderWithSearch(title: "VEH"),
-                          buildHeaderWithSearch(title: "J/T"),
-                          buildHeaderWithSearch(title: "P/T"),
-                          buildHeaderWithSearch(title: "FARE"),
-                          buildHeaderWithSearch(title: "PC"),
-                          buildHeaderWithSearch(title: "WC"),
-                          buildHeaderWithSearch(title: "EDC"),
-                          buildHeaderWithSearch(title: "M&G"),
-                          buildHeaderWithSearch(title: "Cc"),
-                          buildHeaderWithSearch(title: "TOTA"),
-                          buildHeaderWithSearch(
-                              title: "ACTIONS", removeSearching: true),
-                        ],
-                        rows: controller.accountInvoiceBookingModel == null
-                            ? []
-                            : [
-                                ...controller
-                                    .accountInvoiceBookingModel!.bookings!
-                                    .map((booking) {
-                                  // Reusable Editable Cell
-                                  DataCell editableCell(dynamic initialValue,
-                                      Function(String) onChanged) {
-                                    return DataCell(
-                                      Center(
-                                        child: SizedBox(
-                                          width: 70,
-                                          child: TextFormField(
-                                            initialValue:
-                                                initialValue?.toString() ?? "0",
-                                            keyboardType: TextInputType.number,
-                                            textAlign: TextAlign.center,
-                                            style:
-                                                const TextStyle(fontSize: 12),
-                                            decoration: const InputDecoration(
-                                              isDense: true,
-                                              contentPadding:
-                                                  EdgeInsets.symmetric(
-                                                      vertical: 8,
-                                                      horizontal: 4),
-                                              border: OutlineInputBorder(),
-                                            ),
-                                            onChanged: onChanged,
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }
-
-                                  return DataRow(cells: [
-                                    DataCell(
-                                      Checkbox(
-                                        value: controller
-                                            .selectedCreateBookingIds
-                                            .contains(booking.id),
-                                        onChanged: (val) {
-                                          if (val == true) {
-                                            controller.selectedCreateBookingIds
-                                                .add(booking.id!);
-                                          } else {
-                                            controller.selectedCreateBookingIds
-                                                .remove(booking.id);
-                                          }
-
-                                          // Check if all selected
-                                          controller.isAllSelected = controller
-                                                  .selectedCreateBookingIds
-                                                  .length ==
-                                              controller
-                                                  .accountInvoiceBookingModel!
-                                                  .bookings!
-                                                  .length;
-
-                                          controller.update();
-                                        },
-                                      ),
-                                    ),
-                                    DataCell(
-                                        Text(booking.referenceNumber ?? "")),
-                                    DataCell(Text(
-                                        "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}")),
-                                    DataCell(Text((booking.pickup ?? "").toUpperCase())),
-                                    DataCell(Text((booking.dropoff ?? "").toUpperCase())),
-                                    DataCell(
-                                        Text((booking.customer?.address1 ?? "").toUpperCase())),
-                                    DataCell(
-                                        Text((booking.vehicleType?.name ?? "").toUpperCase())),
-                                    DataCell(Text((
-                                        booking.journeyType?.journeyType ??
-                                            "").toUpperCase())),
-                                    DataCell(
-                                        Text((booking.paymentType?.name ?? "").toUpperCase())),
-                                    editableCell(booking.fares, (val) {
-                                      booking.fares =
-                                          (double.tryParse(val) ?? 0.0)
-                                              .toString();
-                                      controller.recalculateCreateInvoiceTotal(
-                                          booking);
-                                    }),
-                                    editableCell(booking.parkingCharges, (val) {
-                                      booking.parkingCharges =
-                                          (double.tryParse(val) ?? 0.0)
-                                              .toString();
-                                      controller.recalculateCreateInvoiceTotal(
-                                          booking);
-                                    }),
-                                    editableCell(booking.waitingCharges, (val) {
-                                      booking.waitingCharges =
-                                          (double.tryParse(val) ?? 0.0)
-                                              .toString();
-                                      controller.recalculateCreateInvoiceTotal(
-                                          booking);
-                                    }),
-                                    editableCell(booking.extraDropCharges,
-                                        (val) {
-                                      booking.extraDropCharges =
-                                          (double.tryParse(val) ?? 0.0)
-                                              .toString();
-                                      controller.recalculateCreateInvoiceTotal(
-                                          booking);
-                                    }),
-                                    editableCell(booking.meetAndGreet, (val) {
-                                      booking.meetAndGreet =
-                                          (double.tryParse(val) ?? 0.0)
-                                              .toString();
-                                      controller.recalculateCreateInvoiceTotal(
-                                          booking);
-                                    }),
-                                    editableCell(booking.congestionCharges,
-                                        (val) {
-                                      booking.congestionCharges =
-                                          (double.tryParse(val) ?? 0.0)
-                                              .toString();
-                                      controller.recalculateCreateInvoiceTotal(
-                                          booking);
-                                    }),
-                                    DataCell(Center(
-                                      child: Text(
-                                        "£${booking.totalCharges ?? '0.0'}",
-                                        style: mozillaTextSemiBoldText(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    )),
-                                    DataCell(
-                                      Center(
-                                        child: CustomButton(
-                                          verticalPadding: 0.0,
-                                          width: 45,
-                                          height: 30,
-                                          borderRadius: 4,
-                                          btnText: "SAVE",
-                                          style: mozillaTextRegularText(
-                                              fontSize: 10,
-                                              color: DynamicColors.whiteClr),
-                                          onTap: () {
-                                            if (booking != null) {
-                                              controller.updateBookingCharges(
-                                                  booking);
-                                              print(
-                                                  "Updating Booking ID: ${booking.id}");
-                                            }
-                                            // controller
-                                            //     .getAccountInvoiceByFilter();
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ]);
-                                }).toList(),
-
-                                // 2. Footer TOTAL Row
-                                if (controller
-                                        .accountInvoiceBookingModel?.total !=
-                                    null)
-                                  ...controller
-                                      .accountInvoiceBookingModel!.total!
-                                      .map((totalData) {
-                                    return DataRow(
-                                        color: MaterialStateProperty.all(
-                                            Colors.grey.withOpacity(0.1)),
-                                        cells: [
-                                          for (var i = 0; i < 8; i++)
-                                            DataCell.empty,
-                                          DataCell(Text("TOTAL",
-                                              style: mozillaTextSemiBoldText(
-                                                  fontWeight:
-                                                      FontWeight.bold))),
-                                          DataCell(Text(
-                                              "£${totalData.fareTotal ?? "0.00"}",
-                                              style:
-                                                  mozillaTextSemiBoldText())),
-                                          DataCell(Text(
-                                              "£${totalData.parkingChargesTotal ?? "0.00"}",
-                                              style:
-                                                  mozillaTextSemiBoldText())),
-                                          DataCell(Text(
-                                              "£${totalData.waitingChargesTotal ?? "0.00"}",
-                                              style:
-                                                  mozillaTextSemiBoldText())),
-                                          DataCell(Text(
-                                              "£${totalData.extraDropChargesTotal ?? "0.00"}",
-                                              style:
-                                                  mozillaTextSemiBoldText())),
-                                          DataCell(Text(
-                                              "£${totalData.meetAndGreetTotal ?? "0.00"}",
-                                              style:
-                                                  mozillaTextSemiBoldText())),
-                                          DataCell(Text(
-                                              "£${totalData.congestionChargesTotal ?? "0.00"}",
-                                              style:
-                                                  mozillaTextSemiBoldText())),
-                                          DataCell(Text(
-                                              "£${totalData.total ?? "0.00"}",
-                                              style: mozillaTextSemiBoldText(
-                                                  color: Colors.blue))),
-                                          DataCell.empty,
-                                        ]);
-                                  }).toList(),
-
-                                if (controller
-                                        .accountInvoiceBookingModel?.total !=
-                                    null)
-                                  ...controller
-                                      .accountInvoiceBookingModel!.total!
-                                      .map((booking) {
-                                    return DataRow(cells: [
-                                      DataCell.empty,
-                                      DataCell.empty,
-                                      DataCell.empty,
-                                      DataCell.empty,
-                                      DataCell.empty,
-                                      DataCell.empty,
-                                      DataCell.empty,
-                                      DataCell.empty,
-                                      DataCell(Text("GRAND TOTAL",
-                                          style: mozillaTextSemiBoldText(
-                                              fontWeight: FontWeight.bold))),
-                                      DataCell.empty,
-                                      DataCell.empty,
-                                      DataCell.empty,
-                                      DataCell.empty,
-                                      DataCell.empty,
-                                      DataCell.empty,
-                                      DataCell(Text(
-                                        "£${booking.grandTotal ?? "0.00"}",
-                                        style: mozillaTextSemiBoldText(
-                                            fontWeight: FontWeight.bold),
-                                      )),
-                                      DataCell.empty,
-                                    ]);
-                                  }).toList(),
-                              ],
-                      ),
+                        ];
+                      },
                     ),
                   ),
                 ],
