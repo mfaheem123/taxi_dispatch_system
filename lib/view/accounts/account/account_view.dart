@@ -301,7 +301,6 @@ class _AccountViewState extends State<AccountView> {
                                                             leftFieldWidth,
                                                             fieldHeight,
                                                             []),
-                                                        // _buildTextField(startDateController, "START DATE", leftFieldWidth, fieldHeight, []),
                                                       ],
                                                     ),
                                                     Column(
@@ -334,7 +333,6 @@ class _AccountViewState extends State<AccountView> {
                                                             )
                                                           ],
                                                         ),
-                                                        // _buildTextField(endDateController, "END DATE", leftFieldWidth, fieldHeight, []),
                                                       ],
                                                     ),
                                                     Column(
@@ -489,7 +487,7 @@ class _AccountViewState extends State<AccountView> {
                                         children: [
                                           Container(
                                             width: double.infinity,
-                                            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                                             color: DynamicColors.gryClr.withOpacity(0.5),
                                             child: Text(AppText.feeSection, style: titleDesign()),
                                           ),
@@ -615,7 +613,7 @@ class _AccountViewState extends State<AccountView> {
                                         children: [
                                           Container(
                                             width: double.infinity,
-                                            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                                             color: DynamicColors.gryClr.withOpacity(0.5),
                                             child: Text(AppText.smsControl, style: titleDesign()),
                                           ),
