@@ -556,46 +556,85 @@ class _BookingTableState extends State<BookingTable> {
                                   rightClickTextCell(
                                     item: item,
                                     tabIndex: controller.selectionIndex,
-                                    onRightClick: () {
-                                      print("RIGHT CLICK DROPOFF: ${item.dropoff}");
-                                    },
                                     child: Container(
-                                      width: widthss/20.5,
-                                      // width: double.infinity,
+                                      width: widthss / 20.5,
                                       height: double.infinity,
                                       alignment: Alignment.center,
-                                      // APPLY YOUR COLOR HERE
                                       decoration: BoxDecoration(
-                                        color: item.airport!.dropoff!.locationType!.backgroundColor == null?Colors.transparent:
-                                        Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.backgroundColor}")),
-                                        // Optional: borderRadius: BorderRadius.circular(2),
+                                        color: isSelected
+                                            ? Colors.transparent
+                                            : (item.airport!.dropoff!.locationType!.backgroundColor == null
+                                            ? Colors.transparent
+                                            : Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.backgroundColor}"))),
                                       ),
                                       child: Row(
-                                        mainAxisSize: MainAxisSize.min,
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          Flexible(
+                                          // 1. Dropoff Text
+                                          Expanded(
                                             child: Text(
-                                              item.dropoff?.toUpperCase() ?? "-".toUpperCase(),
+                                              (item.dropoff ?? "-").toUpperCase(),
                                               style: mozillaTextRegularText(
-                                                fontSize: widthss/140,
-                                                color: item.airport!.dropoff!.locationType!.foregroundColor == null?DynamicColors.black:
-                                                Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.foregroundColor}")),
+                                                fontSize: widthss / 140,
+                                                color: item.airport!.dropoff!.locationType!.foregroundColor == null
+                                                    ? DynamicColors.black
+                                                    : Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.foregroundColor}")),
                                               ),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
-                                          SizedBox(width: widthss/400),
-                                          // Tooltip(
-                                          //   message: "Dropoff note: dummy text for now",
-                                          //   waitDuration: const Duration(milliseconds: 400),
-                                          //   child: Icon(
-                                          //     Icons.info_outline,
-                                          //     size: widthss/120,
-                                          //     color: item.airport!.dropoff!.locationType!.foregroundColor == null?DynamicColors.black:
-                                          //     Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.foregroundColor}")),
-                                          //   ),
-                                          // ),
+
+                                          // 2. VIA Tag with Multi-Address Hover Tooltip
+                                          if (item.viapoints != null && item.viapoints!.isNotEmpty) ...[
+                                            const SizedBox(width: 4),
+                                            Tooltip(
+                                              richMessage: WidgetSpan(
+                                                child: Container(
+                                                  padding: const EdgeInsets.all(6),
+                                                  constraints: const BoxConstraints(maxWidth: 250),
+                                                  child: Column(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: item.viapoints!.asMap().entries.map((entry) {
+                                                      int index = entry.key;
+                                                      var via = entry.value;
+                                                      return Padding(
+                                                        padding: const EdgeInsets.symmetric(vertical: 2.0),
+                                                        child: Text(
+                                                          "${index + 1}. ${via.viapoint ?? 'No address'}",
+                                                          style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 11,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }).toList(),
+                                                  ),
+                                                ),
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: Colors.black87,
+                                                borderRadius: BorderRadius.circular(6),
+                                              ),
+                                              waitDuration: const Duration(milliseconds: 200),
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.blue.shade100,
+                                                  borderRadius: BorderRadius.circular(4),
+                                                  border: Border.all(color: Colors.blue.shade300, width: 0.8),
+                                                ),
+                                                child: Text(
+                                                  "VIA",
+                                                  style: TextStyle(
+                                                    fontSize: widthss / 160,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.blue.shade900,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ],
                                       ),
                                     ),
