@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/routes/app_pages.dart';
 import 'package:dashboard_new1/view/accounts/Invoice/create_customer_invoice.dart';
@@ -738,6 +739,7 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "CREATE BOOKINGS",
           onTap: () {
+           if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             // setState(() {
@@ -746,6 +748,9 @@ class _MyHomePageState extends State<MyHomePage> {
             //     html.window.open(newTabUrl, '_blank');
             //   }
             // });
+           }else{
+             BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+           }
 
             Get.to(CreateNewBookingForm());
             // Get.toNamed(Routes.createBooking);
@@ -754,68 +759,92 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "COMPLETE BOOKINGS",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             setState(() {
               controller.currentPage.value = CompleteBookingsScreen();
               controller.menuBarRefresh(
                   title: "COMPLETE BOOKINGS",
                   pageName: CompleteBookingsScreen());
             });
+           }else{
+             BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+           }
           },
         ),
         NestedMenuItem(
           title: "PENDING BOOKINGS",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             setState(() {
               controller.currentPage.value = PendingBooking();
               controller.menuBarRefresh(
                   title: "PENDING BOOKINGS", pageName: PendingBooking());
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "PRE BOOKINGS",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             setState(() {
               controller.currentPage.value = PreBooking();
               controller.menuBarRefresh(
                   title: "PRE BOOKINGS", pageName: PreBooking());
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "WEB BOOKINGS",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             setState(() {
               controller.currentPage.value = WebBooking();
               controller.menuBarRefresh(
                   title: "WEB BOOKINGS", pageName: WebBooking());
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "APP BOOKINGS",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             setState(() {
               controller.currentPage.value = AppBooking();
               controller.menuBarRefresh(
                   title: "APP BOOKINGS", pageName: AppBooking());
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "MULTI BOOKINGS",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             setState(() {
               controller.currentPage.value = MultiBooking();
               controller.menuBarRefresh(
                   title: "MULTI BOOKINGS", pageName: MultiBooking());
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "TRASH BOOKINGS",
           onTap: () {
-
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -825,6 +854,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "TRASH BOOKINGS", pageName: TrashBooking());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
       ]),
@@ -849,6 +881,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "ADD CUSTOMER",
           onTap: () {
 
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -858,11 +891,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "ADD CUSTOMER", pageName: CustomerFormScreen());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "CUSTOMERS",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -872,12 +909,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "CUSTOMERS", pageName: CustomersScreen());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "CREATE LOST PROPERTY",
           onTap: () {
 
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -888,12 +929,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     pageName: LostPropertyScreen());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "LOST PROPERTY",
           onTap: () {
 
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -903,12 +948,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "LOST PROPERTY", pageName: LostProperty());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "CREATE COMPLAINT",
           onTap: () {
 
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -918,11 +967,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "CREATE COMPLAINT", pageName: CreateComplaint());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "COMPLAINTS",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -932,6 +985,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "COMPLAINTS", pageName: ComplaintsView());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
       ]),
@@ -939,81 +995,113 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
             title: "CREATE FARE SETTINGS",
             onTap: () {
+              if(controller.selectedMenuItems.length <20){
               setState(() {
                 controller.currentPage.value = FareConfigurationDay();
                 controller.menuBarRefresh(
                     title: "CREATE FARE SETTINGS",
                     pageName: FareConfigurationDay());
               });
+              }else{
+                BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+              }
             }),
         NestedMenuItem(
             title: "CREATE FIXED FARE SETTINGS",
             onTap: () {
+              if(controller.selectedMenuItems.length <20){
               setState(() {
                 controller.currentPage.value = CreateFixedFareSetting();
                 controller.menuBarRefresh(
                     title: "CREATE FIXED FARE SETTINGS",
                     pageName: CreateFixedFareSetting());
               });
+              }else{
+                BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+              }
             }),
         NestedMenuItem(
           title: "CREATE PLOT FARE",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             setState(() {
               controller.currentPage.value = PlotFare();
               controller.menuBarRefresh(
                   title: "CREATE PLOT FARE", pageName: PlotFare());
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
             title: "CREATE FARE BY VEHICLE SETTINGS",
             onTap: () {
+              if(controller.selectedMenuItems.length <20){
               setState(() {
                 controller.currentPage.value = FareByVehicle();
                 controller.menuBarRefresh(
                     title: "CREATE FARE BY VEHICLE SETTINGS",
                     pageName: FareByVehicle());
               });
+              }else{
+                BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+              }
             }),
         NestedMenuItem(
           title: "AIRPORT CHARGES",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             setState(() {
               controller.currentPage.value = AirportCharges();
               controller.menuBarRefresh(
                   title: "AIRPORT CHARGES", pageName: AirportCharges());
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "FARE INCREMENT",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             setState(() {
               controller.currentPage.value = FareIncrement();
               controller.menuBarRefresh(
                   title: "FARE INCREMENT", pageName: FareIncrement());
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "SUR CHARGES",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             setState(() {
               controller.currentPage.value = FareCharges();
               controller.menuBarRefresh(
                   title: "SUR CHARGES", pageName: FareCharges());
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "FARE METER",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             setState(() {
               controller.currentPage.value = FareMeter();
               controller.menuBarRefresh(
                   title: "FARE METER", pageName: FareMeter());
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
       ]),
@@ -1021,6 +1109,7 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "CREATE LOCATIONS",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -1030,11 +1119,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "CREATE LOCATIONS", pageName: LocationForm());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "LIST OF LOCATIONS",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -1044,12 +1137,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "LIST OF LOCATIONS", pageName: LocationListScreen());
               }
             });
-
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "CREATE ZONE",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -1059,11 +1155,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "CREATE ZONE", pageName: ZoneScreen());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "LIST OF ZONES",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -1073,16 +1173,23 @@ class _MyHomePageState extends State<MyHomePage> {
                   title: "LIST OF ZONES", pageName: ZoneListScreen());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "LOCALIZATION",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             setState(() {
               controller.currentPage.value = LocalizationScreen();
               controller.menuBarRefresh(
                   title: "LOCALIZATION", pageName: LocalizationScreen());
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         /*      NestedMenuItem(
@@ -1108,6 +1215,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "ADD DRIVER",
               onTap: () {
 
+                if(controller.selectedMenuItems.length <20){
                 List permissions = [];
                 permissions = Api().sp.read('all_permissions') ?? [];
                 setState(() {
@@ -1117,12 +1225,15 @@ class _MyHomePageState extends State<MyHomePage> {
                         title: "ADD DRIVER", pageName: DriverForm());
                   }
                 });
+                }else{
+                  BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+                }
               },
             ),
             NestedMenuItem(
               title: "DRIVERS",
               onTap: () {
-
+                if(controller.selectedMenuItems.length <20){
                 List permissions = [];
                 permissions = Api().sp.read('all_permissions') ?? [];
                 setState(() {
@@ -1132,17 +1243,24 @@ class _MyHomePageState extends State<MyHomePage> {
                         title: "DRIVERS", pageName: DriverListScreen());
                   }
                 });
+                }else{
+                  BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+                }
               },
             ),
             NestedMenuItem(
               title: "LIST OF LOGGED IN/OUT DRIVERS",
               onTap: () {
+               if(controller.selectedMenuItems.length <20){
                 setState(() {
                   controller.currentPage.value = LoginDriversScreen();
                   controller.menuBarRefresh(
                       title: "LIST OF LOGGED IN/OUT DRIVERS",
                       pageName: LoginDriversScreen());
                 });
+               }else{
+                 BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+               }
               },
             ),
           ],
@@ -1153,6 +1271,7 @@ class _MyHomePageState extends State<MyHomePage> {
             NestedMenuItem(
               title: "CREATE DRIVER COMMISSION",
               onTap: () {
+                if(controller.selectedMenuItems.length <20){
                 List permissions = [];
                 permissions = Api().sp.read('all_permissions') ?? [];
                 setState(() {
@@ -1163,12 +1282,16 @@ class _MyHomePageState extends State<MyHomePage> {
                         pageName: ListDriverCommission());
                   }
                 });
+                }else{
+                  BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+                }
               },
             ),
             NestedMenuItem(
               title: "DRIVER COMMISSIONS",
               onTap: () {
 
+               if(controller.selectedMenuItems.length <20){
                 List permissions = [];
                 permissions = Api().sp.read('all_permissions') ?? [];
                 setState(() {
@@ -1179,28 +1302,39 @@ class _MyHomePageState extends State<MyHomePage> {
                         pageName: DriverCommission());
                   }
                 });
+               }else{
+                 BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+               }
               },
             ),
             NestedMenuItem(
               title: "BULK DRIVER COMMISSION",
               onTap: () {
+               if(controller.selectedMenuItems.length <20){
                 setState(() {
                   controller.currentPage.value = BulkDriverCommission();
                   controller.menuBarRefresh(
                       title: "BULK DRIVER COMMISSION",
                       pageName: BulkDriverCommission());
                 });
+               }else{
+                 BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+               }
               },
             ),
             NestedMenuItem(
               title: "DRIVER COMMISSION PAY",
               onTap: () {
+               if(controller.selectedMenuItems.length <20){
                 setState(() {
                   controller.currentPage.value = DriverCommissionPay();
                   controller.menuBarRefresh(
                       title: "DRIVER COMMISSION PAY",
                       pageName: DriverCommissionPay());
                 });
+               }else{
+                 BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+               }
               },
             ),
           ],
@@ -1211,42 +1345,58 @@ class _MyHomePageState extends State<MyHomePage> {
             NestedMenuItem(
               title: "CREATE DRIVER RENT",
               onTap: () {
+               if(controller.selectedMenuItems.length <20){
                 setState(() {
                   controller.currentPage.value = CreateDriverRent();
                   controller.menuBarRefresh(
                       title: "CREATE DRIVER RENT",
                       pageName: CreateDriverRent());
                 });
+               }else{
+                 BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+               }
               },
             ),
             NestedMenuItem(
               title: "DRIVER RENT",
               onTap: () {
+                if(controller.selectedMenuItems.length <20){
                 setState(() {
                   controller.currentPage.value = DriverRent();
                   controller.menuBarRefresh(
                       title: "DRIVER RENT", pageName: DriverRent());
                 });
+                }else{
+                  BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+                }
               },
             ),
             NestedMenuItem(
               title: "BULK DRIVER RENT",
               onTap: () {
+               if(controller.selectedMenuItems.length <20){
                 setState(() {
                   controller.currentPage.value = BulkDriverRent();
                   controller.menuBarRefresh(
                       title: "BULK DRIVER RENT", pageName: BulkDriverRent());
                 });
+               }else{
+                 BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+               }
               },
             ),
             NestedMenuItem(
               title: "DRIVER RENT PAY",
               onTap: () {
+                if(controller.selectedMenuItems.length <20){
                 setState(() {
                   controller.currentPage.value = DriverRentPay();
                   controller.menuBarRefresh(
                       title: "DRIVER RENT PAY", pageName: DriverRentPay());
                 });
+                }else{
+                  BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+                }
               },
             ),
           ],
@@ -1254,6 +1404,7 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
             title: "DRIVER APP FEATURES",
             onTap: () {
+              if(controller.selectedMenuItems.length <20){
               List permissions = [];
               permissions = Api().sp.read('all_permissions') ?? [];
               setState(() {
@@ -1264,22 +1415,30 @@ class _MyHomePageState extends State<MyHomePage> {
                       pageName: DriverAppFeatureScreen());
                 }
               });
+              }else{
+                BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+              }
             }),
         NestedMenuItem(
             title: "DRIVER SIN BIN SETTINGS",
             onTap: () {
+              if(controller.selectedMenuItems.length <20){
               setState(() {
                 controller.currentPage.value = DriverSinBinSetting();
                 controller.menuBarRefresh(
                     title: "DRIVER SIN BIN SETTINGS",
                     pageName: DriverSinBinSetting());
               });
+              }else{
+                BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+              }
             }),
       ]),
       NestedMenuItem(title: "ACCOUNTS", children: [
         NestedMenuItem(
           title: "CREATE ACCOUNT",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -1289,11 +1448,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "CREATE ACCOUNT", pageName: AccountView());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "LIST OF ACCOUNTS",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -1303,11 +1466,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "LIST OF ACCOUNTS", pageName: ListOfAccountScreen());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "CREATE ESCORT",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -1317,6 +1484,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "CREATE ESCORT", pageName: CreateEscortScreen());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
 
 
             ///------------------------------------------------------------------------------------------------------------------
@@ -1326,6 +1496,7 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "ESCORT LIST ",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -1335,11 +1506,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   title: "ESCORT LIST", pageName: ESCORTScreen());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "CREATE CUSTOMER INVOICE",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -1350,21 +1525,29 @@ class _MyHomePageState extends State<MyHomePage> {
                     pageName: CreateCustomerInvoice());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "LIST OF CUSTOMER INVOICES",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             setState(() {
               controller.currentPage.value = InvoiceList();
               controller.menuBarRefresh(
                   title: "LIST OF CUSTOMER INVOICES", pageName: InvoiceList());
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "CREATE ACCOUNT INVOICE",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -1375,12 +1558,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     pageName: CreateAccountInvoiceScreen());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         // ListOfAccountInvoiceScreen
         NestedMenuItem(
           title: "LIST OF ACCOUNT INVOICES",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -1391,6 +1578,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     pageName: ListOfAccountInvoiceScreen());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
       ]),
@@ -1398,6 +1588,7 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "CREATE VEHICLE TYPE",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -1407,12 +1598,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "CREATE VEHICLE TYPE", pageName: CreateVehicleTypes());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "VEHICLE TYPE",
           onTap: () {
-
+           if(controller.selectedMenuItems.length <20){
 
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
@@ -1423,11 +1617,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "VEHICLE TYPE", pageName: ListVehicleType());
               }
             });
+           }else{
+             BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+           }
           },
         ),
         NestedMenuItem(
           title: "CREATE COMPANY VEHICLE",
           onTap: () {
+           if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -1438,6 +1636,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     pageName: CreateCompanyVehicle());
               }
             });
+           }else{
+             BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+           }
           },
         ),
         /* NestedMenuItem(
@@ -1452,7 +1653,7 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "COMPANY VEHICLES LIST",
           onTap: () {
-
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -1463,6 +1664,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     pageName: CompanyVehiclesScreen());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
       ]),
@@ -1471,7 +1675,7 @@ class _MyHomePageState extends State<MyHomePage> {
           NestedMenuItem(
             title: "CREATE USER",
             onTap: () {
-
+              if(controller.selectedMenuItems.length <20){
               List permissions = [];
               permissions = Api().sp.read('all_permissions') ?? [];
               print(permissions);
@@ -1482,12 +1686,15 @@ class _MyHomePageState extends State<MyHomePage> {
                       title: "CREATE USER", pageName: CreateUserScreen());
                 }
               });
+              }else{
+                BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+              }
             },
           ),
           NestedMenuItem(
             title: "USERS",
             onTap: () {
-
+              if(controller.selectedMenuItems.length <20){
               List permissions = [];
               permissions = Api().sp.read('all_permissions') ?? [];
               print(permissions);
@@ -1499,13 +1706,16 @@ class _MyHomePageState extends State<MyHomePage> {
                       title: "USERS", pageName: UserListscreen());
                 }
               });
-
+              }else{
+                BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+              }
             },
           ),
           // CreateSubsiDiary
           NestedMenuItem(
             title: "CREATE SUBSIDIARY",
             onTap: () {
+             if(controller.selectedMenuItems.length <20){
               List permissions = [];
               permissions = Api().sp.read('all_permissions') ?? [];
               setState(() {
@@ -1515,12 +1725,16 @@ class _MyHomePageState extends State<MyHomePage> {
                       title: "CREATE SUBSIDIARY", pageName: CreateSubsiDiary());
                 }
               });
+             }else{
+               BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+             }
             },
           ),
           // SubsiDiariesScreen
           NestedMenuItem(
             title: "SUBSIDIARIES",
             onTap: () {
+              if(controller.selectedMenuItems.length <20){
               List permissions = [];
               permissions = Api().sp.read('all_permissions') ?? [];
               setState(() {
@@ -1530,17 +1744,24 @@ class _MyHomePageState extends State<MyHomePage> {
                       title: "SUBSIDIARIES", pageName: SubsiDiariesScreen());
                 }
               });
+              }else{
+                BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+              }
             },
           ),
           NestedMenuItem(
             title: "AUTHORIZATION",
             onTap: () {
+              if(controller.selectedMenuItems.length <20){
               if(Api().sp.read('userRole') == "super admin"){
                 setState(() {
                   controller.currentPage.value = AuthorizationScreen();
                   controller.menuBarRefresh(
                       title: "AUTHORIZATION", pageName: AuthorizationScreen());
                 });
+              }else{
+                BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+              }
               }
             },
           ),
@@ -1558,70 +1779,98 @@ class _MyHomePageState extends State<MyHomePage> {
               NestedMenuItem(
                   title: "LOGIN",
                   onTap: () {
+                    if(controller.selectedMenuItems.length <20){
                     setState(() {
                       controller.currentPage.value = DriverLoginScreen();
                       controller.menuBarRefresh(
                           title: "LOGIN", pageName: DriverLoginScreen());
                     });
+                    }else{
+                      BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+                    }
                   }),
               NestedMenuItem(
                   title: "LOG",
                   onTap: () {
+                    if(controller.selectedMenuItems.length <20){
                     setState(() {
                       controller.currentPage.value = DriverLogsScreen();
                       controller.menuBarRefresh(
                           title: "LOG", pageName: DriverLogsScreen());
                     });
+                    }else{
+                      BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+                    }
                   }),
               NestedMenuItem(
                   title: "EARNINGS & INFO",
                   onTap: () {
+                    if(controller.selectedMenuItems.length <20){
                     setState(() {
                       controller.currentPage.value = EarningAndInfoScreen();
                       controller.menuBarRefresh(
                           title: "EARNINGS & INFO",
                           pageName: EarningAndInfoScreen());
                     });
+                    }else{
+                      BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+                    }
                   }),
               NestedMenuItem(
                   title: "FEEDBACK",
                   onTap: () {
+                    if(controller.selectedMenuItems.length <20){
                     setState(() {
                       controller.currentPage.value = ReportFeedback();
                       controller.menuBarRefresh(
                           title: "FEEDBACK", pageName: ReportFeedback());
                     });
+                    }else{
+                      BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+                    }
                   }),
               NestedMenuItem(
                   title: "STATISTICS",
                   onTap: () {
+                    if(controller.selectedMenuItems.length <20){
                     setState(() {
                       controller.currentPage.value = StatisticsScreen();
                       controller.menuBarRefresh(
                           title: "STATISTICS", pageName: StatisticsScreen());
                     });
+                    }else{
+                      BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+                    }
                   }),
             ]),
         NestedMenuItem(title: "BOOKINGS", children: [
           NestedMenuItem(
             title: "ALL BOOKINGS",
             onTap: () {
+              if(controller.selectedMenuItems.length <20){
               setState(() {
                 controller.currentPage.value = AllBookingView();
                 controller.menuBarRefresh(
                     title: "ALL BOOKINGS", pageName: AllBookingView());
               });
+              }else{
+                BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+              }
             },
           ),
           NestedMenuItem(
             title: "TRANSFERED BOOKINGS",
             onTap: () {
+              if(controller.selectedMenuItems.length <20){
               setState(() {
                 controller.currentPage.value = ReportTransferedBooking();
                 controller.menuBarRefresh(
                     title: "TRANSFERED BOOKINGS",
                     pageName: ReportTransferedBooking());
               });
+              }else{
+                BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+              }
             },
           ),
         ]),
@@ -1629,11 +1878,15 @@ class _MyHomePageState extends State<MyHomePage> {
           NestedMenuItem(
             title: "ACTIVITY",
             onTap: () {
+              if(controller.selectedMenuItems.length <20){
               setState(() {
                 controller.currentPage.value = ActivityScreen();
                 controller.menuBarRefresh(
                     title: "ACTIVITY", pageName: ActivityScreen());
               });
+              }else{
+                BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+              }
             },
           ),
         ]),
@@ -1641,42 +1894,58 @@ class _MyHomePageState extends State<MyHomePage> {
           NestedMenuItem(
             title: "INCOME",
             onTap: () {
+              if(controller.selectedMenuItems.length <20){
               setState(() {
                 controller.currentPage.value = IncomeScreen();
                 controller.menuBarRefresh(
                     title: "INCOME", pageName: IncomeScreen());
               });
+              }else{
+                BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+              }
             },
           ),
           NestedMenuItem(
             title: "COMPANY INCOME",
             onTap: () {
+              if(controller.selectedMenuItems.length <20){
               setState(() {
                 controller.currentPage.value = CompanyIncomeScreen();
                 controller.menuBarRefresh(
                     title: "COMPANY INCOME", pageName: CompanyIncomeScreen());
               });
+              }else{
+                BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+              }
             },
           ),
           NestedMenuItem(
             title: "CREDIT CARD PAYMENTS",
             onTap: () {
+              if(controller.selectedMenuItems.length <20){
               setState(() {
                 controller.currentPage.value = CreiditCardPayments();
                 controller.menuBarRefresh(
                     title: "CREDIT CARD PAYMENTS",
                     pageName: CreiditCardPayments());
               });
+              }else{
+                BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+              }
             },
           ),
         ]),
         NestedMenuItem(
           title: "PCO",
           onTap: () {
+           if(controller.selectedMenuItems.length <20){
             setState(() {
               controller.currentPage.value = PcoScreen();
               controller.menuBarRefresh(title: "PCO", pageName: PcoScreen());
             });
+           }else{
+             BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+           }
           },
         ),
       ]),
@@ -1684,7 +1953,7 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "COMPANY INFORMATION",
           onTap: () {
-
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             print(permissions);
@@ -1695,13 +1964,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "COMPANY INFORMATION",
                     pageName: ComapanyInformationScreen());  }
             });
-
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "COMPANY CONFIGURATION",
           onTap: () {
-
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             print(permissions);
@@ -1714,12 +1985,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     pageName: CompanyConfigurationView());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         // DocumentNumberScreen
         NestedMenuItem(
           title: "DOCUMENT NUMBER",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
@@ -1729,12 +2004,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "DOCUMENT NUMBER", pageName: DocumentNumberScreen());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "TEMPLATE SETTINGS",
           onTap: () {
-
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             print(permissions);
@@ -1745,34 +2023,45 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "TEMPLATE SETTINGS", pageName: TemplateSettings());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
           title: "BOOKING CLEARING UTILITY",
           onTap: () {
+           if(controller.selectedMenuItems.length <20){
             setState(() {
               controller.currentPage.value = BookingClearingUtilityScreen();
               controller.menuBarRefresh(
                   title: "BOOKING CLEARING UTILITY",
                   pageName: BookingClearingUtilityScreen());
             });
+           }else{
+             BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+           }
           },
         ),
         NestedMenuItem(
           title: "LOCATION TYPE SHORTCUTS",
           onTap: () {
+           if(controller.selectedMenuItems.length <20){
             setState(() {
               controller.currentPage.value = LocationTypeShortcuts();
               controller.menuBarRefresh(
                   title: "LOCATION TYPE SHORTCUTS",
                   pageName: LocationTypeShortcuts());
             });
+           }else{
+             BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+           }
           },
         ),
         NestedMenuItem(
           title: "VOIP SETTINGS",
           onTap: () {
-
+            if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             print(permissions);
@@ -1783,6 +2072,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     title: "VOIP SETTINGS", pageName: VoipSettingsScreen());
               }
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         NestedMenuItem(
@@ -1803,12 +2095,16 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "CHAT WITH DRIVER AND PASSENGER",
           onTap: () {
+            if(controller.selectedMenuItems.length <20){
             setState(() {
               controller.currentPage.value = ChatWithDriverAndPassenger();
               controller.menuBarRefresh(
                   title: "CHAT WITH DRIVER AND PASSENGER",
                   pageName: ChatWithDriverAndPassenger());
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
           },
         ),
         // NestedMenuItem(
