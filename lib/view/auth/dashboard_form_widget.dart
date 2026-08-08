@@ -680,6 +680,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             }
             controller.pickupTwoWayController.clear();
             controller.clearReturnViaIfNoPickupAndDrop();
+            controller.selectAirportControllerReturn.clear();
+            controller.arrivalReturnTimeController.clear();
+            controller.isAirportResponseReturn.value = false;
             // controller.dropOffTwoWayController.clear();
             controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "PICKUP TWO WAY LOCATION");
             if (controller.markers is List<CustomMarker>) {
@@ -703,7 +706,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             },
         ),
         Visibility(
-          visible: controller.isReturnAirportResponse.value,
+          visible: controller.isAirportResponseReturn.value,
           child: Padding(
             padding: const EdgeInsets.only(top: 4),
             child: isMobile
@@ -714,7 +717,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 _field('FL',
                     tab: 22.3,
                     controller: controller
-                        .selectReturnAirportController),
+                        .selectAirportControllerReturn),
                 const SizedBox(height: 4),
                 _timeField('ARP',
                     tab: 22.6,
@@ -741,7 +744,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   child: _field('FL',
                       tab: 22.3,
                       controller: controller
-                          .selectAirportController),
+                          .selectAirportControllerReturn),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -749,7 +752,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   child: _timeField('ARP',
                       tab: 22.6,
                       controller: controller
-                          .arrivalTimeController,
+                          .arrivalReturnTimeController,
                       onPicked: () => controller.arrivalTimePicked = true),
                 ),
               ],

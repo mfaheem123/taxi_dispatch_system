@@ -44,6 +44,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 class DashboardController extends GetxController {
   WebSocketChannel? _channel;
   bool isConnected = false;
+  Timer? _bookingCountTimer;
 
 // Global company ID access karne ke liye Api singleton ka use karenge
   final String _companyId = Api.singleton.globalCompanyId;
@@ -475,10 +476,11 @@ class DashboardController extends GetxController {
   ///text editing controllers
   final pickupController = TextEditingController();
   final pickupTwoWayController = TextEditingController();
+  final selectAirportControllerReturn = TextEditingController();
   final dropOffController = TextEditingController();
   final dropOffTwoWayController = TextEditingController();
   final selectAirportController = TextEditingController();
-  final selectReturnAirportController = TextEditingController();
+  // final selectReturnAirportController = TextEditingController();
   final arrivalTimeController = TextEditingController(text: nowHHmm);
   final arrivalReturnTimeController = TextEditingController(text: nowHHmm);
   final switchController = ValueNotifier<bool>(false);
@@ -779,7 +781,7 @@ class DashboardController extends GetxController {
     }
   }
   var isAirportResponse = false.obs;
-  var isReturnAirportResponse = false.obs;
+  var isAirportResponseReturn = false.obs;
   List<AllAddressesModel> allAddressesData = <AllAddressesModel>[].obs;
 
   getAddresses({fieldsName, searchingText}) async {
@@ -797,10 +799,10 @@ class DashboardController extends GetxController {
       }
       if (response.data['source'] == "airport" &&
           selectedTextFieldsValue.value == "PICKUP TWO WAY LOCATION") {
-        isReturnAirportResponse.value = true;
+        isAirportResponseReturn.value = true;
       } else if (response.data['source'] != "airport" &&
           selectedTextFieldsValue.value == "PICKUP TWO WAY LOCATION") {
-        isReturnAirportResponse.value = false;
+        isAirportResponseReturn.value = false;
       }
 
       if (response.data.isNotEmpty) {
@@ -1688,6 +1690,38 @@ class DashboardController extends GetxController {
 
   RxBool dashboardDataLoader = false.obs;
 
+
+
+  Future<void> getBookingCounts() async {
+    try {
+      var response = await Api().get("enumerations/booking-count", sendCompanyId: true);
+      if (response.statusCode == 200) {
+        List<dynamic> apiTabs = response.data['booking_tabs'] ?? [];
+        if (bookingTabsList != null && bookingTabsList!.isNotEmpty) {
+          for (var apiTab in apiTabs) {
+            int index = bookingTabsList!.indexWhere((element) => element.id == apiTab['id']);
+            if (index != -1) {
+              bookingTabsList![index].bookingCount = apiTab['booking_count'] ?? 0;
+              if (apiTab['booking_tabs'] != null) {
+                bookingTabsList![index].bookingTabs = apiTab['booking_tabs'];
+              }
+            }
+          }
+          update();
+        }
+      }
+    } catch (e) {
+      print("Error fetching booking counts: $e");
+    }
+  }
+
+  void startBookingCountTimer() {
+    _bookingCountTimer?.cancel();
+    _bookingCountTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+      await getBookingCounts();
+    });
+  }
+
   dashboardData() async {
     dashboardDataLoader(true);
     var response = await Api().get("enumerations/get", sendCompanyId: true);
@@ -1723,7 +1757,7 @@ class DashboardController extends GetxController {
 
       selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
       selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
-
+      await getBookingCounts();
       if (dashboardAllData!.vehicleTypes != null &&
           dashboardAllData!.vehicleTypes!.isNotEmpty) {
         try {
@@ -2556,6 +2590,10 @@ class DashboardController extends GetxController {
         "flight_number": selectAirportController.text,
       if (arrivalTimeController.text.isNotEmpty)
         "arriving_from": arrivalTimeController.text,
+      if (selectAirportControllerReturn.text.isNotEmpty)
+        "return_flight_number": selectAirportControllerReturn.text,
+      if (arrivalReturnTimeController.text.isNotEmpty)
+        "return_arriving_from": arrivalReturnTimeController.text,
       "total_charges": double.parse(fixedFare.value).toStringAsFixed(1)
 
 
@@ -3153,6 +3191,7 @@ class DashboardController extends GetxController {
   void onClose() {
     // suggestionFocusNode.dispose();
     // keyboardFocusNode.dispose();
+    _bookingCountTimer?.cancel();
     timer?.cancel();
     pickupFocusNode.dispose();
     dropoffFocusNode.dispose();
