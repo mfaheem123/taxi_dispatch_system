@@ -75,7 +75,7 @@ class CreateUserScreen extends StatelessWidget {
         }
       },
       child: Container(
-        height: isMobile ? 200 : 400,
+        height: isMobile ? 200 : 385,
         margin: EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -154,7 +154,8 @@ class CreateUserScreen extends StatelessWidget {
       );
     }
 
-    return Container(
+    return Padding(padding: EdgeInsetsGeometry.only(top: 10),
+      child: Container(
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(color: Colors.grey.shade300),
@@ -222,7 +223,7 @@ class CreateUserScreen extends StatelessWidget {
           ),
           Wrap(
             runSpacing: 16,
-            spacing: 10,
+            spacing: screenWidth < 1366 ? 6 : 10,
             children: [
               Padding(
                 padding: const EdgeInsets.only(left: 18),
@@ -233,7 +234,7 @@ class CreateUserScreen extends StatelessWidget {
                   },
                   value: controller.activeValue.value,
                   focusNode: controller.activeNode,
-                  width: 120,
+                  width: screenWidth < 1366 ? 100 : 120,
                   label: "ACTIVE",
                 ),
               ),
@@ -244,7 +245,7 @@ class CreateUserScreen extends StatelessWidget {
                 },
                 value: controller.alldriversValue.value,
                 focusNode: controller.alldriversNode,
-                width: 120,
+                width: screenWidth < 1366 ? 110 : 120,
                 label: "ALL DRIVERS",
               ),
               KeyboardCheckbox(
@@ -254,7 +255,7 @@ class CreateUserScreen extends StatelessWidget {
                 },
                 value: controller.allbookingValue.value,
                 focusNode: controller.allbookingNode,
-                width: 140,
+                width: screenWidth < 1366 ? 120 : 140,
                 label: "ALL BOOKINGS",
               ),
               KeyboardCheckbox(
@@ -264,7 +265,7 @@ class CreateUserScreen extends StatelessWidget {
                 },
                 value: controller.accuntValue.value,
                 focusNode: controller.accuntNode,
-                width: 160,
+                width:  screenWidth < 1366 ? 130 : 160,
                 label: "ALL ACCOUNTS",
               ),
               KeyboardCheckbox(
@@ -274,7 +275,7 @@ class CreateUserScreen extends StatelessWidget {
                 },
                 value: controller.receviverValue.value,
                 focusNode: controller.receviverNode,
-                width: 160,
+                width: screenWidth < 1366 ? 130 : 160,
                 label: "CALL RECEIVER",
               ),
               KeyboardCheckbox(
@@ -284,7 +285,7 @@ class CreateUserScreen extends StatelessWidget {
                 },
                 value: controller.transferValue.value,
                 focusNode: controller.transferNode,
-                width: 240,
+                width: screenWidth < 1366 ? 220 : 240,
                 label: "ALLOW TRANSFER BOOKINGS",
               ),
             ],
@@ -300,9 +301,9 @@ class CreateUserScreen extends StatelessWidget {
                     String email = controller.userEmailController.text.trim();
 
                     if (email.isEmpty) {
-                      BotToast.showText(text: "Email is required");
+                      BotToast.showText(text: "EMAIL IS REQUIRED");
                     } else if (!email.contains('@')) {
-                      BotToast.showText(text: "Invalid Email Format");
+                      BotToast.showText(text: "INVALID EMAIL FORMAT");
                     } else {
                       controller.createUser();
                     }
@@ -317,7 +318,7 @@ class CreateUserScreen extends StatelessWidget {
           ),
         ],
       ),
-    );
+      ));
   }
 
   static Widget _buildTextField(String label, controller, {bool isPhone = false, bool isEmail = false}) {

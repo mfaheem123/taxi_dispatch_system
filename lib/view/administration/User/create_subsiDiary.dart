@@ -57,7 +57,8 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                 ? maxWidth / 2
                 : maxWidth / 4;
 
-        return Column(
+        return SingleChildScrollView(
+              child: Column(
           children: [
             SizedBox(
               height: 10,
@@ -136,9 +137,18 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                           ),
                   ),
                 ),
-                SizedBox(
+
+                Padding(
+                  padding: EdgeInsets.only(top: 10),
+                  child: SizedBox(
                   width: fieldWidth * 2.7,
-                  child: Column(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: Column(
+                      // crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                         // height: screenHeight / 20,
@@ -178,7 +188,7 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                         ),
                       ),
                       SizedBox(
-                        height: 10,
+                        height: 20,
                       ),
                       Wrap(
                         runSpacing: 16,
@@ -338,10 +348,15 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                         ],
                       ),
                       SizedBox(
-                        height: 20,
+                        height: 30,
                       ),
-                      CustomButton(
-                        onTap: () {
+                      Container(
+                          width: double.infinity,
+                          color: DynamicColors.gryClr,
+                          padding: EdgeInsets.symmetric(horizontal: 120, vertical: 14),
+                          child: Center(
+                              child: CustomButton(
+                                onTap: () {
                           String email = controller.emailController.text.trim();
 
                           if (email.isEmpty) {
@@ -360,14 +375,15 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                         fontSize: 11,
                         verticalPadding: 0.0,
                         borderRadius: 4,
-                      ),
+                      ))),
                     ],
                   ),
                 ),
-              ],
+                )
+                )],
             ),
           ],
-        );
+              ));
       });
     });
   }
