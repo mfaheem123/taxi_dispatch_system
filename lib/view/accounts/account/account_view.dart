@@ -39,6 +39,11 @@ class _AccountViewState extends State<AccountView> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "accountView";
+    if (controller.accountObjectData == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.clearAccountForm();
+      });
+    }
   }
 
   List permissions = [];

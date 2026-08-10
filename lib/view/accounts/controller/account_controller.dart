@@ -213,59 +213,60 @@ class AccountController extends GetxController {
       print("$message");
       print("$response");
 
-      accountObjectData = null;
-      escoptCheckBox.value = false;
-      arrivalSmsCheckBox.value = false;
-      clearJobSmsCheckBox.value = false;
-      bankInfoCheckBox.value = false;
-
-      orderCheckBox.value = false;
-      bookedByCheckBox.value = false;
-      fareControllerCheckBox.value = false;
-      adminFeeCheckBox.value = false;
-      accountFeeCheckBox.value = false;
-      vatCheckBox.value = false;
-      dispatchSmsCheckBox.value = false;
-      confirmSmsCheckBox.value = false;
-
-      dpartmentCtrl.clear();
-      contactAlertNameCtrl.clear();
-      contactAlertEmailCtrl.clear();
-      contactAlertPasswordCtrl.clear();
-      contactAlertMobileCtrl.clear();
-      accountDepartmentList.clear();
-      contactsList.clear();
-      orderAccountList.clear();
-      companyAddressesList.clear();
-      contactAlertTelephoneCtrl.clear();
-      orderCtrl.clear();
-      accountType = null;
-      paymentType = null;
-      subsidiaryStoreValue = null;
-      adminFeesDropDown = null;
-      accountTypeDropDown = null;
-      commissionDropDown = null;
-      addressCtrl.clear();
-      accountNameController.clear();
-      accountCodeController.clear();
-      accountEmailController.clear();
-      accountPasswordController.clear();
-      accountMobileController.clear();
-      accountTelController.clear();
-      accountFaxController.clear();
-      accountWebSiteController.clear();
-      accountNumberController.clear();
-      accountCreditCardController.clear();
-      accountAddressController.clear();
-      accountInformationController.clear();
-      accountContactNameController.clear();
-      accountAdminFeeController.clear();
-      accountAccountFeeController.clear();
-      webLoginaccountCtrl.clear();
-      webLoginusernameCtrl.clear();
-      webLoginpasswordCtrl.clear();
-      webLoginmobileCtrl.clear();
-      webLogintelephoneCtrl.clear();
+      clearAccountForm();
+      // accountObjectData = null;
+      // escoptCheckBox.value = false;
+      // arrivalSmsCheckBox.value = false;
+      // clearJobSmsCheckBox.value = false;
+      // bankInfoCheckBox.value = false;
+      //
+      // orderCheckBox.value = false;
+      // bookedByCheckBox.value = false;
+      // fareControllerCheckBox.value = false;
+      // adminFeeCheckBox.value = false;
+      // accountFeeCheckBox.value = false;
+      // vatCheckBox.value = false;
+      // dispatchSmsCheckBox.value = false;
+      // confirmSmsCheckBox.value = false;
+      //
+      // dpartmentCtrl.clear();
+      // contactAlertNameCtrl.clear();
+      // contactAlertEmailCtrl.clear();
+      // contactAlertPasswordCtrl.clear();
+      // contactAlertMobileCtrl.clear();
+      // accountDepartmentList.clear();
+      // contactsList.clear();
+      // orderAccountList.clear();
+      // companyAddressesList.clear();
+      // contactAlertTelephoneCtrl.clear();
+      // orderCtrl.clear();
+      // accountType = null;
+      // paymentType = null;
+      // subsidiaryStoreValue = null;
+      // adminFeesDropDown = null;
+      // accountTypeDropDown = null;
+      // commissionDropDown = null;
+      // addressCtrl.clear();
+      // accountNameController.clear();
+      // accountCodeController.clear();
+      // accountEmailController.clear();
+      // accountPasswordController.clear();
+      // accountMobileController.clear();
+      // accountTelController.clear();
+      // accountFaxController.clear();
+      // accountWebSiteController.clear();
+      // accountNumberController.clear();
+      // accountCreditCardController.clear();
+      // accountAddressController.clear();
+      // accountInformationController.clear();
+      // accountContactNameController.clear();
+      // accountAdminFeeController.clear();
+      // accountAccountFeeController.clear();
+      // webLoginaccountCtrl.clear();
+      // webLoginusernameCtrl.clear();
+      // webLoginpasswordCtrl.clear();
+      // webLoginmobileCtrl.clear();
+      // webLogintelephoneCtrl.clear();
       // orderCheckBox = false.obs;
 
       update();
@@ -273,6 +274,72 @@ class AccountController extends GetxController {
       print("❌ Error Creating Account");
       print(response);
     }
+  }
+  void clearAccountForm() {
+    accountNameController.clear();
+    accountCodeController.clear();
+    accountEmailController.clear();
+    accountPasswordController.clear();
+    accountMobileController.clear();
+    accountTelController.clear();
+    accountFaxController.clear();
+    accountWebSiteController.clear();
+    accountNumberController.clear();
+    accountCreditCardController.clear();
+    accountAddressController.clear();
+    accountInformationController.clear();
+    accountContactNameController.clear();
+    accountAdminFeeController.clear();
+    accountAccountFeeController.clear();
+    accountAgentCommissionController.clear();
+    pickerColor = Colors.blue;
+    foregroundClr = Colors.blue;
+
+    subsidiaryStoreValue = null;
+    accountType = null;
+    paymentType = null;
+    adminFeesDropDown = null;
+    accountTypeDropDown = null;
+    commissionDropDown = null;
+
+    orderCheckBox.value = false;
+    bookedByCheckBox.value = false;
+    escoptCheckBox.value = false;
+    fareControllerCheckBox.value = false;
+    bankInfoCheckBox.value = false;
+    adminFeeCheckBox.value = false;
+    accountFeeCheckBox.value = false;
+    vatCheckBox.value = false;
+    dispatchSmsCheckBox.value = false;
+    confirmSmsCheckBox.value = false;
+    arrivalSmsCheckBox.value = false;
+    clearJobSmsCheckBox.value = false;
+
+    webLoginDataList.clear();
+    webLoginaccountCtrl.clear();
+    webLoginusernameCtrl.clear();
+    webLoginpasswordCtrl.clear();
+    webLoginmobileCtrl.clear();
+    webLogintelephoneCtrl.clear();
+
+    dpartmentCtrl.clear();
+    accountDepartmentList.clear();
+
+    contactsList.clear();
+    contactAlertNameCtrl.clear();
+    contactAlertEmailCtrl.clear();
+    contactAlertPasswordCtrl.clear();
+    contactAlertMobileCtrl.clear();
+    contactAlertTelephoneCtrl.clear();
+
+    orderCtrl.clear();
+    orderAccountList.clear();
+
+    addressCtrl.clear();
+    companyAddressesList.clear();
+
+    accountObjectData = null;
+    update();
   }
 
   SubsidairyBankModel? subsidairyBankModel;
@@ -502,6 +569,14 @@ class AccountController extends GetxController {
     paymentType = data.paymentTypes.toString().capitalize;
     accountInformationController.text = data.information.toString().toUpperCase();
     accountContactNameController.text = data.contactName.toString().toUpperCase();
+    if (data.backgroundColor != null && data.backgroundColor!.isNotEmpty) {
+      String bgHex = data.backgroundColor!.replaceAll('#', '');
+      pickerColor = Color(int.parse("0xFF$bgHex"));
+    }
+    if (data.foregroundColor != null && data.foregroundColor!.isNotEmpty) {
+      String fgHex = data.foregroundColor!.replaceAll('#', '');
+      foregroundClr = Color(int.parse("0xFF$fgHex"));
+    }
     commissionDropDown = data.agentCommissionType!.toUpperCase().toString();
     accountAgentCommissionController.text = data.agentCommission.toString();
     adminFeesDropDown = data.adminFeesType!.toUpperCase().toString();
@@ -522,7 +597,9 @@ class AccountController extends GetxController {
     bankInfoCheckBox.value = data.bankInformation!;
     accountDepartmentList.clear();
     for (var action in data.departments!) {
-      accountDepartmentList.add(action.name!);
+      if (action.name != null && action.name!.trim().isNotEmpty) {
+        accountDepartmentList.add(action.name!);
+      }
     }
     for (var action in data.contacts!) {
       contactsList.add({
