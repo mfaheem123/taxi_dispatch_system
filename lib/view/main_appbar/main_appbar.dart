@@ -927,6 +927,9 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('create_lost_property')){
+                if (Get.isRegistered<CustomerController>()) {
+                  Get.find<CustomerController>().refreshFields();
+                }
                 controller.currentPage.value = LostPropertyScreen();
                 controller.menuBarRefresh(
                     title: "CREATE LOST PROPERTY",
