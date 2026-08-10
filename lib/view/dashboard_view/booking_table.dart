@@ -667,7 +667,6 @@ class _BookingTableState extends State<BookingTable> {
                                         )),
                                   ),
                                 ),
-
                                 /// DRIVER ✅
                                 DataCell(
                                   SizedBox(
