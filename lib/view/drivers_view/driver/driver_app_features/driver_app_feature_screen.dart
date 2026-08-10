@@ -36,6 +36,7 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
       child: GetBuilder<DriverController>(
         initState: (state) {
           permissions = Api().sp.read('all_permissions') ?? [];
+          controller.clearDriverFeaturesFields();
           controller.getAllDrivers();
         },
         builder: (controller) {
