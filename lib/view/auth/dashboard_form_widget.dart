@@ -34,6 +34,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   static const _purple = Color(0xFF312E81);
   static const _purpleDark = Color(0xFF312E81);
   static const _purpleSoft = Color(0xFFEEF2FF);
+  // Background of the focused field. _purpleSoft (#EEF2FF) is too close to
+  // white to register as "selected" on this dense form; indigo-100 reads
+  // clearly while keeping black 12px text well above contrast minimums.
+  static const _focusFill = Color(0xFFE0E7FF);
   static const _border = Colors.black;
   static const _surface = Color(0xFFF5F6FA);
   static const _red = Color(0xFFEF4444);
@@ -163,6 +167,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       child: Focus(
         autofocus: true,
         focusNode: _shortcutFocusNode,
+        // Focusable (so F7/F8/F9 keep a node in the focused chain) but NOT a
+        // Tab stop — otherwise Shift+Tab off the first field lands on this
+        // invisible full-screen node and the focus ring appears to vanish.
+        skipTraversal: true,
         child: GetBuilder<DashboardController>(
           initState: (_) {
             controller.seeZoneOnMapp();
@@ -959,15 +967,23 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
 
   Widget _addReturnFareCheckbox() =>
       Row(mainAxisSize: MainAxisSize.min, children: [
-        SizedBox(
-          width: 20,
-          height: 20,
-          child: Checkbox(
-            value: controller.addReturnFare.value,
-            onChanged: (v) =>
-                setState(() => controller.addReturnFare.value = v ?? false),
-            activeColor: _purple,
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        // Between R/Fare (31) and Select R/VEH (32). Orderless before this, so
+        // Tab reached it only after the whole form had been traversed.
+        FocusTraversalOrder(
+          order: const NumericFocusOrder(31.5),
+          child: _GlowFocus(
+            radius: 4,
+            child: SizedBox(
+            width: 20,
+            height: 20,
+            child: Checkbox(
+              value: controller.addReturnFare.value,
+              onChanged: (v) =>
+                  setState(() => controller.addReturnFare.value = v ?? false),
+              activeColor: _purple,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            ),
           ),
         ),
         const SizedBox(width: 6),
@@ -977,12 +993,20 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
 
   // ────────── top tabs (Subsidiary dd → tab 1)
   Widget _topTabs(bool isMobile) {
-    Widget tab(String label, {bool active = false, VoidCallback? onTap}) =>
+    // [order] < 1 so the tab strip is traversed before the Subsidiary dropdown
+    // (order 1). Without an explicit order OrderedTraversalPolicy pushes these
+    // InkWells behind every numbered field, i.e. to the end of the form.
+    Widget tab(String label,
+        {required double order, bool active = false, VoidCallback? onTap}) =>
         Padding(
           padding: const EdgeInsets.only(right: 6),
           child: Material(
             color: Colors.transparent,
-            child: InkWell(
+            child: FocusTraversalOrder(
+              order: NumericFocusOrder(order),
+              child: _GlowFocus(
+              radius: 8,
+              child: InkWell(
               onTap: onTap,
               borderRadius: BorderRadius.circular(8),
               mouseCursor: SystemMouseCursors.click,
@@ -1003,6 +1027,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   ),
                 ),
               ),
+              ),
+              ),
             ),
           ),
         );
@@ -1018,20 +1044,20 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  tab('BOOKING', active: true, onTap: () {}),
-                  tab('+ Multi Reservation (F8)', onTap: () {
+                  tab('BOOKING', order: 0.1, active: true, onTap: () {}),
+                  tab('+ Multi Reservation (F8)', order: 0.2, onTap: () {
                     if (controller.pickupController.text.isNotEmpty &&
                         controller.dropOffController.text.isNotEmpty) {
                       DashboardF8Alert.show();
                     }
                   }),
-                  tab('+ Vehicles (F9)', onTap: () {
+                  tab('+ Vehicles (F9)', order: 0.3, onTap: () {
                     if (controller.pickupController.text.isNotEmpty &&
                         controller.dropOffController.text.isNotEmpty) {
                       DashboardF9Alert.show();
                     }
                   }),
-                  tab('Via (${controller.viaPoints.length})', onTap: () {
+                  tab('Via (${controller.viaPoints.length})', order: 0.4, onTap: () {
                     if (controller.pickupController.text.isNotEmpty
                     // &&    controller.dropOffController.text.isNotEmpty
                     ) {
@@ -1121,26 +1147,42 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             mainAxisAlignment: MainAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
             children: [
+              // These live inside the field's suffixIcon, so they would inherit
+              // the address field's own order (tabBase + 1) and be tie-broken by
+              // geometry. Explicit fractional orders pin them deterministically
+              // between the address field and the zone dropdown (tabBase + 2).
               controller.text.isNotEmpty
-                  ? IconButton(
-                tooltip: 'Clear',
-                onPressed: onPressed,
-                icon:
-                const Icon(Icons.close, size: 16, color: Colors.grey),
-                padding: EdgeInsets.zero,
-                constraints:
-                const BoxConstraints(minWidth: 28, minHeight: 28),
-                splashRadius: 16,
+                  ? FocusTraversalOrder(
+                order: NumericFocusOrder(tabBase + 1.3),
+                child: _GlowFocus(
+                  radius: 14,
+                  child: IconButton(
+                    tooltip: 'Clear',
+                    onPressed: onPressed,
+                    icon:
+                    const Icon(Icons.close, size: 16, color: Colors.grey),
+                    padding: EdgeInsets.zero,
+                    constraints:
+                    const BoxConstraints(minWidth: 28, minHeight: 28),
+                    splashRadius: 16,
+                  ),
+                ),
               )
                   : const SizedBox.shrink(),
-              IconButton(
-                tooltip: 'Use current location',
-                onPressed: onCurrentLocation,
-                icon:
-                Icon(LucideIcons.arrowDownUp, size: 16, color: Colors.grey),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                splashRadius: 16,
+              FocusTraversalOrder(
+                order: NumericFocusOrder(tabBase + 1.6),
+                child: _GlowFocus(
+                  radius: 14,
+                  child: IconButton(
+                    tooltip: 'Use current location',
+                    onPressed: onCurrentLocation,
+                    icon:
+                    Icon(LucideIcons.arrowDownUp, size: 16, color: Colors.grey),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                    splashRadius: 16,
+                  ),
+                ),
               ),
               const SizedBox(width: 4),
             ],
@@ -1207,7 +1249,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   }
   // ────────── comms + luggage (PASS=22, LUGG=23, SLUGG=24)
   Widget _commsAndLuggageRow(bool isMobile) {
-    Widget checkbox(String label, bool value, ValueChanged<bool?> onChanged, {required int tab}) =>
+    Widget checkbox(String label, bool value, ValueChanged<bool?> onChanged, {required num tab}) =>
         FocusTraversalOrder(
           order: NumericFocusOrder(tab.toDouble()),
           child: _GlowFocus(
@@ -1274,6 +1316,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           order: NumericFocusOrder(tab.toDouble()),
           child: _GlowFocus(
             child: Focus(
+              // Key-handling only: the inner IconButton is the single Tab stop.
+              // A focusable wrapper here would double every Tab press, and key
+              // events still bubble up to this node from the button.
+              canRequestFocus: false,
               onKeyEvent: (node, event) {
                 if (event is KeyDownEvent &&
                     (event.logicalKey == LogicalKeyboardKey.enter ||
@@ -1310,10 +1356,14 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       runSpacing: 8,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
+        // 21.2 / 21.4 (36.2 / 36.4 in return mode): these previously reused 20
+        // and 21, which are the Vehicle Type and Department dropdowns in the
+        // row above — a duplicate order leaves the relative position of the
+        // colliding pair up to a geometry tie-break instead of to us.
         checkbox('SMS', controller.smsCheckbox.value,
-                (v) => setState(() => controller.smsCheckbox.value = v ?? false), tab: _isReturnJourney ? 35 : 20),
+                (v) => setState(() => controller.smsCheckbox.value = v ?? false), tab: _isReturnJourney ? 36.2 : 21.2),
         checkbox('EMAIL', controller.emailCheckbox.value,
-                (v) => setState(() => controller.emailCheckbox.value = v ?? false), tab: _isReturnJourney ? 36 : 21),
+                (v) => setState(() => controller.emailCheckbox.value = v ?? false), tab: _isReturnJourney ? 36.4 : 21.4),
         // luggageField('Passenger'.toUpperCase(), Icons.work, controller.passController, _isReturnJourney?37:22,),
         luggageField('luggage'.toUpperCase(), Icons.luggage, controller.luggController,  _isReturnJourney?37:22,),
         luggageField('small luggage'.toUpperCase(), Icons.luggage, controller.sluggController,  _isReturnJourney?38:23,),
@@ -1466,7 +1516,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           onKeyEvent: (node, event) {
             if (event is KeyDownEvent &&
                 event.logicalKey == LogicalKeyboardKey.tab &&
-                !HardwareKeyboard.instance.isShiftPressed) {
+                !HardwareKeyboard.instance.isShiftPressed &&
+                // Only claim Tab when the Driver panel is actually mounted —
+                // otherwise requestFocus() is a no-op and returning `handled`
+                // would swallow the keypress, stranding focus on this button.
+                controller.driverPanelFocusNode.context != null) {
               // Hand off focus to the Driver panel.
               controller.driverPanelFocusNode.requestFocus();
               return KeyEventResult.handled;
@@ -1610,15 +1664,17 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       const SizedBox(height: 4),
       FocusTraversalOrder(
         order: NumericFocusOrder(tab.toDouble()),
-        child: _CalendarDropdownField(
-          value: value,
-          label: label,
-          onChanged: onChanged,
-          decoration: _inputDecoration(),
-          textStyle: const TextStyle(fontSize: _fsField, color: Colors.black87),
-          accent: _purple,
-          accentSoft: _purpleSoft,
-          idleColor: Colors.grey,
+        child: _GlowFocus(
+          child: _CalendarDropdownField(
+            value: value,
+            label: label,
+            onChanged: onChanged,
+            decoration: _inputDecoration(),
+            textStyle: const TextStyle(fontSize: _fsField, color: Colors.black87),
+            accent: _purple,
+            accentSoft: _purpleSoft,
+            idleColor: Colors.grey,
+          ),
         ),
       ),
     ]);
@@ -1763,18 +1819,29 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       // const SizedBox(height: 16),
       Row(children: [
-        CallbackShortcuts(
-          bindings: {
-            const SingleActivator(LogicalKeyboardKey.enter): () {
-              controller.dropDownShow.value = !controller.dropDownShow.value;
+        // Last cell of the PAY BY / VEHICLE / DEPARTMENT row, so it sits just
+        // after Department (21, or 36 in return mode). Previously orderless,
+        // which parked it behind every numbered field.
+        FocusTraversalOrder(
+          order: NumericFocusOrder(_isReturnJourney ? 36.1 : 21.1),
+          child: CallbackShortcuts(
+            bindings: {
+              const SingleActivator(LogicalKeyboardKey.enter): () {
+                controller.dropDownShow.value = !controller.dropDownShow.value;
+              },
             },
-          },
-          child: Focus(
-            child: Obx(() => Switch(
-              value: controller.dropDownShow.value,
-              onChanged: (v) => controller.dropDownShow.value = v,
-              activeColor: _purple,
-            )),
+            child: Focus(
+              // The Switch itself is the Tab stop and handles Enter/Space.
+              canRequestFocus: false,
+              child: _GlowFocus(
+                radius: 20,
+                child: Obx(() => Switch(
+                  value: controller.dropDownShow.value,
+                  onChanged: (v) => controller.dropDownShow.value = v,
+                  activeColor: _purple,
+                )),
+              ),
+            ),
           ),
         ),
         const SizedBox(width: 4),
@@ -1788,6 +1855,14 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     isDense: true,
     contentPadding:
     const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
+    // Focused fields tint their background. InputDecorator resolves fillColor
+    // against its own state set (which carries WidgetState.focused), so this
+    // covers every field, dropdown, the date field and the time field in one
+    // place. The unfocused value is white — the same as the card behind it —
+    // so nothing looks different until focus actually arrives.
+    filled: true,
+    fillColor: WidgetStateColor.resolveWith((states) =>
+    states.contains(WidgetState.focused) ? _focusFill : Colors.white),
     border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
         borderSide: const BorderSide(color: _border)),
@@ -1796,7 +1871,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         borderSide: const BorderSide(color: _border)),
     focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
-        borderSide: const BorderSide(color: _purple, width: 1.8)),
+        borderSide: const BorderSide(color: _purple, width: 2)),
   );
 }
 // ════════════════════════════════════════════════════════════════════
@@ -2089,6 +2164,11 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
       link: _layerLink,
       child: _GlowFocus(
         child: Focus(
+          // Key-handling only (arrows / Enter / Esc drive the suggestion
+          // panel). The inner TextField owns the single Tab stop; a focusable
+          // wrapper would add a phantom stop that swallows a Tab press and
+          // where typing does nothing. Key events still bubble up to here.
+          canRequestFocus: false,
           onKeyEvent: _handleKey,
           child: TextField(
             textCapitalization: TextCapitalization.characters,
@@ -2319,6 +2399,11 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
       link: _layerLink,
       child: _GlowFocus(
         child: Focus(
+          // Key-handling only (arrows / Enter / Esc drive the suggestion
+          // panel). The inner TextField owns the single Tab stop; a focusable
+          // wrapper would add a phantom stop that swallows a Tab press and
+          // where typing does nothing. Key events still bubble up to here.
+          canRequestFocus: false,
           onKeyEvent: _handleKey,
           child: TextField(
             key: _fieldKey,
@@ -2626,6 +2711,11 @@ class _CustomerModelAutocompleteState
       link: _layerLink,
       child: _GlowFocus(
         child: Focus(
+          // Key-handling only (arrows / Enter / Esc drive the suggestion
+          // panel). The inner TextField owns the single Tab stop; a focusable
+          // wrapper would add a phantom stop that swallows a Tab press and
+          // where typing does nothing. Key events still bubble up to here.
+          canRequestFocus: false,
           onKeyEvent: _handleKey,
           child: TextField(
             key: _fieldKey,
@@ -2646,14 +2736,62 @@ class _CustomerModelAutocompleteState
 // field currently holds keyboard focus (reached via Tab / Shift+Tab).
 // ════════════════════════════════════════════════════════════════════
 // ════════════════════════════════════════════════════════════════════
-// Focus wrapper — no glow/blur. Active fields change only their border
-// color (handled by InputDecoration.focusedBorder).
+// Focus ring — paints a crisp accent outline plus a soft halo around
+// whichever control currently holds keyboard focus, so Tab / Shift+Tab has an
+// unmistakable indicator on EVERY control type, not just the text inputs that
+// get a coloured `focusedBorder`. Every field on this form sits on a black 1px
+// border, which made a border-colour-only cue very hard to spot.
+//
+// Both cues are box shadows, so they paint OUTSIDE the child's rect and cost
+// no layout: nothing shifts or resizes when focus arrives.
+//
+// The wrapper node is deliberately non-focusable and non-traversable — it only
+// observes. `FocusNode.hasFocus` is true when the node OR ANY DESCENDANT holds
+// primary focus, so this reports the focus state of whatever it wraps.
 // ════════════════════════════════════════════════════════════════════
-class _GlowFocus extends StatelessWidget {
-  const _GlowFocus({required this.child});
+class _GlowFocus extends StatefulWidget {
+  const _GlowFocus({required this.child, this.radius = 6});
   final Widget child;
+
+  /// Corner radius of the ring. Match the wrapped control so the outline
+  /// hugs it (6 = text fields / dropdowns / buttons, 8 = top tabs,
+  /// 14+ = round icon buttons, switches and checkboxes).
+  final double radius;
+
   @override
-  Widget build(BuildContext context) => child;
+  State<_GlowFocus> createState() => _GlowFocusState();
+}
+
+class _GlowFocusState extends State<_GlowFocus> {
+  static const _accent = Color(0xFF312E81);
+  bool _focused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Focus(
+      canRequestFocus: false,
+      skipTraversal: true,
+      onFocusChange: (hasFocus) {
+        if (hasFocus != _focused) setState(() => _focused = hasFocus);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 120),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(widget.radius),
+          // Painted in list order, so the soft halo goes down first and the
+          // crisp ring lands on top of it.
+          boxShadow: _focused
+              ? const [
+            BoxShadow(
+                color: Color(0x40312E81), blurRadius: 8, spreadRadius: 4),
+            BoxShadow(color: _accent, blurRadius: 0, spreadRadius: 2),
+          ]
+              : const [],
+        ),
+        child: widget.child,
+      ),
+    );
+  }
 }
 
 // ════════════════════════════════════════════════════════════════════
