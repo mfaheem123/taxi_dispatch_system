@@ -24,6 +24,7 @@ class CustomButton extends StatefulWidget {
     this.fontSize,
     this.focusBorderColor,
     this.focusBorderWidth = 3,
+    this.focusNode,
   });
 
   /// Thickness of the focus ring. Only used when [focusBorderColor] is set.
@@ -50,18 +51,26 @@ class CustomButton extends StatefulWidget {
   Key? key;
   Widget? widget;
 
+  /// Optional external FocusNode. When provided, the button uses this node
+  /// instead of creating its own — lets callers programmatically focus it.
+  final FocusNode? focusNode;
+
   @override
   State<CustomButton> createState() => _CustomButtonState();
 }
 
 class _CustomButtonState extends State<CustomButton> {
 
-  final FocusNode _focusNode = FocusNode();
+  late final FocusNode _focusNode;
   bool _isFocused = false;
+  /// Whether we own the FocusNode and must dispose it.
+  late final bool _ownsFocusNode;
 
   @override
   void initState() {
     super.initState();
+    _ownsFocusNode = widget.focusNode == null;
+    _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(() {
       setState(() {
         _isFocused = _focusNode.hasFocus;
@@ -71,7 +80,7 @@ class _CustomButtonState extends State<CustomButton> {
 
   @override
   void dispose() {
-    _focusNode.dispose();
+    if (_ownsFocusNode) _focusNode.dispose();
     super.dispose();
   }
 

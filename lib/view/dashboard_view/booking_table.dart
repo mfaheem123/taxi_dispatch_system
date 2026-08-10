@@ -53,10 +53,10 @@ class _BookingTableState extends State<BookingTable> {
   // here onto the first tab-strip button instead of onto an invisible node.
   final FocusNode _tableFocusNode = FocusNode(skipTraversal: true);
 
-  /// FocusNode for the first header search field (REF #).
+  /// FocusNode for the first tab button in the tab strip.
   /// When the user Tabs into the table, this receives focus so the user can
-  /// search/filter before navigating rows with arrow keys.
-  final FocusNode _firstSearchFocusNode = FocusNode();
+  /// select a tab before tabbing into the search fields and rows.
+  final FocusNode _firstTabFocusNode = FocusNode();
 
   /// One FocusNode per table row — keeps keyboard focus in sync with selectedRowIndex.
   List<FocusNode> _rowFocusNodes = [];
@@ -88,13 +88,13 @@ class _BookingTableState extends State<BookingTable> {
     super.initState();
   }
 
-  /// Moves keyboard focus to the first header search field (REF #).
+  /// Moves keyboard focus to the first tab button.
   /// Registered on the controller so the driver panel can hand focus off
   /// when the user Tabs past the last map button. The user can then
-  /// Tab through the remaining search fields and finally into the rows.
+  /// Tab through the tabs, search fields, and finally into the rows.
   /// Returns false if there is nothing to focus.
   bool _focusFirstRow() {
-    _firstSearchFocusNode.requestFocus();
+    _firstTabFocusNode.requestFocus();
     return true;
   }
 
@@ -105,7 +105,7 @@ class _BookingTableState extends State<BookingTable> {
       controller.focusFirstTableRow = null;
     }
     _tableFocusNode.dispose();
-    _firstSearchFocusNode.dispose();
+    _firstTabFocusNode.dispose();
     for (final fn in _rowFocusNodes) fn.dispose();
     super.dispose();
   }
@@ -204,6 +204,7 @@ class _BookingTableState extends State<BookingTable> {
                           // the indicator does not depend on CustomButton's internals.
                           child: _FocusRing(
                                   child: controller.bookingTabsList![index].dropDownList!.isEmpty? CustomButton(
+                            focusNode: index == 0 ? _firstTabFocusNode : null,
                             width: widthss/11.5,
                             verticalPadding: 0,
                             borderRadius: 4,
@@ -238,9 +239,11 @@ class _BookingTableState extends State<BookingTable> {
                             // above; this only supplies the tab's background.
                             child: Container(
                               color: DynamicColors.secondaryClr,
-                                    child: DropdownButton<String>(
-                                      value: controller.bookingTabsList![index].selectedDropDownValue,
-                                      icon: const Icon(Icons.arrow_drop_down),
+                                    child: Focus(
+                                      focusNode: index == 0 ? _firstTabFocusNode : null,
+                                      child: DropdownButton<String>(
+                                        value: controller.bookingTabsList![index].selectedDropDownValue,
+                                        icon: const Icon(Icons.arrow_drop_down),
                                       isExpanded: true,
                                       hint: Text("JOB DUE BY",
                                         style: mozillaTextRegularText(
@@ -268,6 +271,7 @@ class _BookingTableState extends State<BookingTable> {
                                         controller.getTableDataStatus(index: index, value: value);
                                         // });
                                       },
+                                    ),
                                     ),
                                   ),
                                 ),
@@ -324,7 +328,6 @@ class _BookingTableState extends State<BookingTable> {
                           buildHeaderWithSearch(title: "TYPE"),
                           buildHeaderWithSearch(
                               widhtss: widthss/20.5,
-                              focusNode: _firstSearchFocusNode,
                               title: "REF #", onChanged: (v){
                             controller.referenceNumber.text = v;
                             controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
