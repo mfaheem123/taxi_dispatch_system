@@ -55,12 +55,11 @@ class DriverController extends GetxController {
 
   String? driverType;
   // String driverType = 'COMMISSION';
-  String? dobDate =
-      "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
-  String? vehicleStartDate;
-  String? vehicleEndeDate;
-  DateTime? startDate = DateTime.now();
-  DateTime? endDate = DateTime.now();
+  String? dobDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? vehicleStartDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? vehicleEndeDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? startDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? endDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
 
   /// text editing controller
   final driverUserNameController = TextEditingController();
@@ -296,8 +295,8 @@ class DriverController extends GetxController {
         "balance": driverBalanceController.text.trim(),
         "address": driverAddressController.text.trim(),
         "use_company_vehicle": vehicleInformation.value,
-        "start_date": "${startDate!.year}-${startDate!.month}-${startDate!.day}",
-        "end_date": "${endDate!.year}-${endDate!.month}-${endDate!.day}",
+        "start_date": startDate,
+        "end_date": endDate,
         "ni": driverNLController.text.trim(),
         if (noteList.isNotEmpty) "notes": noteList,
         if (vehicleInformation.value == false)
@@ -416,6 +415,7 @@ class DriverController extends GetxController {
     driverBalanceController.clear();
     driverAddressController.clear();
     vehicleNameController.clear();
+    vehicleLogBookController.clear();
     vehicleMakeController.clear();
     vehicleModelController.clear();
     vehicleColorController.clear();
@@ -428,6 +428,11 @@ class DriverController extends GetxController {
     driverTelController.clear();
     driverCommissionController.clear();
     driverNLController.clear();
+    startDate = null;
+    endDate = null;
+    dobDate = null;
+    vehicleStartDate = null;
+    vehicleEndeDate = null;
     hasPDA.value = false;
     rentPaid.value = false;
     isActive.value = false;
@@ -444,7 +449,12 @@ class DriverController extends GetxController {
     imageList.clear();
     for (var action in rows) {
       action.fileName = null;
+      action.batchNo.clear();
+      action.expiryDate = DateFormat("yyyy-MM-dd")
+          .parse(DateFormat("yyyy-MM-dd").format(DateTime.now()));
+      action.expiryTime.text = "00:00";
     }
+    datePickerKey++;
     update();
   }
 
@@ -946,6 +956,13 @@ class DriverController extends GetxController {
             action.batchNo.text = singleDriverData!
                     .driver!.vehicle!.phcVehicle!.phcVehicleNumber ??
                 "";
+            if (singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleDocument != null) {
+              action.fileName = ImageModel(
+                name: singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleDocument!,
+                bytes: Uint8List(0),
+                path: null,
+              );
+            }
             // action.fileName!.name = singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleDocument!;
           } else if (action.documentTitle == "PHC DRIVER") {
             action.expiryDate = DateTime.parse(
@@ -956,6 +973,13 @@ class DriverController extends GetxController {
             action.batchNo.text =
                 singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverNumber ??
                     "";
+            if (singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverDocument != null) {
+              action.fileName = ImageModel(
+                name: singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverDocument!,
+                bytes: Uint8List(0),
+                path: null,
+              );
+            }
             // action.fileName!.name = singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverDocument!;
           } else if (action.documentTitle == "MOT") {
             action.expiryDate = DateTime.parse(
@@ -964,6 +988,13 @@ class DriverController extends GetxController {
                 singleDriverData!.driver!.vehicle!.mot!.motExpiryTime ?? "";
             action.batchNo.text =
                 singleDriverData!.driver!.vehicle!.mot!.motNumber ?? "";
+            if (singleDriverData!.driver!.vehicle!.mot!.motDocument != null) {
+              action.fileName = ImageModel(
+                name: singleDriverData!.driver!.vehicle!.mot!.motDocument!,
+                bytes: Uint8List(0),
+                path: null,
+              );
+            }
             // action.fileName!.name = singleDriverData!.driver!.vehicle!.mot!.motDocument!;
           } else if (action.documentTitle == "MOT 2") {
             action.expiryDate = DateTime.parse(
@@ -972,6 +1003,13 @@ class DriverController extends GetxController {
                 singleDriverData!.driver!.vehicle!.mot2!.mot2ExpiryTime ?? "";
             action.batchNo.text =
                 singleDriverData!.driver!.vehicle!.mot2!.mot2Number ?? "";
+            if (singleDriverData!.driver!.vehicle!.mot2!.mot2Document != null) {
+              action.fileName = ImageModel(
+                name: singleDriverData!.driver!.vehicle!.mot2!.mot2Document!,
+                bytes: Uint8List(0),
+                path: null,
+              );
+            }
             // action.fileName!.name = singleDriverData!.driver!.vehicle!.mot2!.mot2Document!;
           } else if (action.documentTitle == "INSURANCE") {
             action.expiryDate = DateTime.parse(
@@ -982,6 +1020,13 @@ class DriverController extends GetxController {
             action.batchNo.text =
                 singleDriverData!.driver!.vehicle!.insurance!.insuranceNumber ??
                     "";
+            if (singleDriverData!.driver!.vehicle!.insurance!.insuranceDocument != null) {
+              action.fileName = ImageModel(
+                name: singleDriverData!.driver!.vehicle!.insurance!.insuranceDocument!,
+                bytes: Uint8List(0),
+                path: null,
+              );
+            }
             // action.fileName!.name = singleDriverData!.driver!.vehicle!.insurance!.insuranceDocument!;
           } else if (action.documentTitle == "LICENSE") {
             action.expiryDate = DateTime.parse(
@@ -991,6 +1036,13 @@ class DriverController extends GetxController {
                     "";
             action.batchNo.text =
                 singleDriverData!.driver!.vehicle!.licence!.licenceNumber ?? "";
+            if (singleDriverData!.driver!.vehicle!.licence!.licenceDocument != null) {
+              action.fileName = ImageModel(
+                name: singleDriverData!.driver!.vehicle!.licence!.licenceDocument!,
+                bytes: Uint8List(0),
+                path: null,
+              );
+            }
             // action.fileName!.name = singleDriverData!.driver!.vehicle!.licence!.licenceDocument!;
           } else if (action.documentTitle == "ROAD TAX") {
             action.expiryDate = DateTime.parse(
@@ -1000,6 +1052,13 @@ class DriverController extends GetxController {
                     "";
             action.batchNo.text =
                 singleDriverData!.driver!.vehicle!.roadTax!.roadTaxNumber ?? "";
+            if (singleDriverData!.driver!.vehicle!.roadTax!.roadTaxDocument != null) {
+              action.fileName = ImageModel(
+                name: singleDriverData!.driver!.vehicle!.roadTax!.roadTaxDocument!,
+                bytes: Uint8List(0),
+                path: null,
+              );
+            }
             // action.fileName!.name = singleDriverData!.driver!.vehicle!.roadTax!.roadTaxDocument!;
           } else if (action.documentTitle == "V5 REGISTRATION") {
             if (singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationExpiry != null) {
@@ -1013,6 +1072,13 @@ class DriverController extends GetxController {
             }
             action.expiryTime.text = singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationExpiryTime ?? "";
             action.batchNo.text = singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationNumber ?? "";
+            if (singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationDocument != null) {
+              action.fileName = ImageModel(
+                name: singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationDocument!,
+                bytes: Uint8List(0),
+                path: null,
+              );
+            }
           // } else if (action.documentTitle == "V5 REGISTRATION") {
           //   action.expiryDate = DateTime.parse(singleDriverData!
           //       .driver!.vehicle!.v5Registration!.v5RegistrationExpiry!);
@@ -1032,6 +1098,13 @@ class DriverController extends GetxController {
             action.batchNo.text = singleDriverData!
                     .driver!.vehicle!.rentalAgreement!.rentalAgreementNumber ??
                 "";
+            if (singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementDocument != null) {
+              action.fileName = ImageModel(
+                name: singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementDocument!,
+                bytes: Uint8List(0),
+                path: null,
+              );
+            }
             // action.fileName!.name = singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementDocument!;
           }
         }
@@ -1055,6 +1128,22 @@ class DriverController extends GetxController {
       if (singleDriverData!.driver!.name != null) {
         driverFullNameController.text =
             singleDriverData!.driver!.name.toString().toUpperCase();
+      }
+      if (singleDriverData!.driver!.dob != null) {
+        dobDate = formatDateForUi(singleDriverData!.driver!.dob);
+      }
+      if (singleDriverData!.driver!.startDate != null) {
+        startDate = formatDateForUi(singleDriverData!.driver!.startDate);
+      }
+      if (singleDriverData!.driver!.endDate != null) {
+        endDate = formatDateForUi(singleDriverData!.driver!.endDate);
+      }
+
+      if (singleDriverData!.driver!.vehicle?.startDate != null) {
+        vehicleStartDate = formatDateForUi(singleDriverData!.driver!.vehicle!.startDate);
+      }
+      if (singleDriverData!.driver!.vehicle?.endDate != null) {
+        vehicleEndeDate = formatDateForUi(singleDriverData!.driver!.vehicle!.endDate);
       }
       if (singleDriverData!.driver!.email != null) {
         driverEmailController.text = singleDriverData!.driver!.email.toString().toUpperCase();
@@ -1129,7 +1218,19 @@ class DriverController extends GetxController {
       update();
     }
   }
+  String formatDateForUi(dynamic dateInput) {
+    if (dateInput == null || dateInput.toString().isEmpty) {
+      return "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
+    }
 
+    String apiDate = dateInput.toString();
+    List<String> parts = apiDate.split('-');
+    if (parts.length == 3 && parts[0].length <= 2) {
+      return "${parts[2]}-${parts[1]}-${parts[0]}";
+    }
+
+    return apiDate;
+  }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create driver form functionality
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver list screen
