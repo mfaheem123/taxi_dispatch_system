@@ -559,24 +559,21 @@ class _DriverFormState extends State<DriverForm> {
                                     Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 20.0),
-                                        child: KeyboardDatePicker(
-                                          initialDate: controller.startDate ??
-                                              DateTime.now(),
-                                          onChanged: (date) {
-                                            controller.startDate = date;
-                                            controller.update();
-                                          },
-                                        )),
+                                        child:  KeyboardDatePicker(
+                                          key: ValueKey("start_date${controller.datePickerKey}"),
+                                          initialDate: DateTime.tryParse(controller.startDate ?? '') ?? DateTime.now(),
+                                          onChanged: (date) => controller.startDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                                          onSubmitted: (date) => controller.startDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                                        )
+                                    ),
                                     Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 20.0),
-                                        child: KeyboardDatePicker(
-                                          initialDate: controller.endDate ??
-                                              DateTime.now(),
-                                          onChanged: (date) {
-                                            controller.endDate = date;
-                                            controller.update();
-                                          },
+                                        child:  KeyboardDatePicker(
+                                          key: ValueKey("end_date${controller.datePickerKey}"),
+                                          initialDate: DateTime.tryParse(controller.endDate ?? '') ?? DateTime.now(),
+                                          onChanged: (date) => controller.endDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                                          onSubmitted: (date) => controller.endDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
                                         )),
                                   ];
                                 },
