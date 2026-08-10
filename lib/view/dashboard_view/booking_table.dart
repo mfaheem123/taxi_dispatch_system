@@ -53,6 +53,11 @@ class _BookingTableState extends State<BookingTable> {
   // here onto the first tab-strip button instead of onto an invisible node.
   final FocusNode _tableFocusNode = FocusNode(skipTraversal: true);
 
+  /// FocusNode for the first header search field (REF #).
+  /// When the user Tabs into the table, this receives focus so the user can
+  /// search/filter before navigating rows with arrow keys.
+  final FocusNode _firstSearchFocusNode = FocusNode();
+
   /// One FocusNode per table row — keeps keyboard focus in sync with selectedRowIndex.
   List<FocusNode> _rowFocusNodes = [];
 
@@ -83,13 +88,13 @@ class _BookingTableState extends State<BookingTable> {
     super.initState();
   }
 
-  /// Moves keyboard focus to the first row's checkbox. Registered on the
-  /// controller so the driver panel can hand focus off when the user Tabs past
-  /// the last map button. Returns false if there are no rows to focus.
+  /// Moves keyboard focus to the first header search field (REF #).
+  /// Registered on the controller so the driver panel can hand focus off
+  /// when the user Tabs past the last map button. The user can then
+  /// Tab through the remaining search fields and finally into the rows.
+  /// Returns false if there is nothing to focus.
   bool _focusFirstRow() {
-    if (_rowFocusNodes.isEmpty) return false;
-    setState(() => selectedRowIndex = 0);
-    _rowFocusNodes[0].requestFocus();
+    _firstSearchFocusNode.requestFocus();
     return true;
   }
 
@@ -100,6 +105,7 @@ class _BookingTableState extends State<BookingTable> {
       controller.focusFirstTableRow = null;
     }
     _tableFocusNode.dispose();
+    _firstSearchFocusNode.dispose();
     for (final fn in _rowFocusNodes) fn.dispose();
     super.dispose();
   }
@@ -318,6 +324,7 @@ class _BookingTableState extends State<BookingTable> {
                           buildHeaderWithSearch(title: "TYPE"),
                           buildHeaderWithSearch(
                               widhtss: widthss/20.5,
+                              focusNode: _firstSearchFocusNode,
                               title: "REF #", onChanged: (v){
                             controller.referenceNumber.text = v;
                             controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
@@ -1292,6 +1299,7 @@ class _BookingTableState extends State<BookingTable> {
 
 DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget? widget, textFieldHeight, double? fontSize, Widget? customWidget, Function(String)? onChanged,
   TextEditingController? controller,
+  FocusNode? focusNode,
   double? widhtss
 }) {
   return DataColumn(
@@ -1310,6 +1318,7 @@ DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget?
                 width: widhtss??100,
                 height: textFieldHeight??28,
                 child: TextField(
+                  focusNode: focusNode,
                   controller: controller,
                   onChanged: onChanged,
                   inputFormatters: [UpperCaseTextFormatter()],
