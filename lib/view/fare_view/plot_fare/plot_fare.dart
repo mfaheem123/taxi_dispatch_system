@@ -38,6 +38,7 @@ class _PlotFareState extends State<PlotFare> {
     shortCutKeyValue.value = "plotFare";
     controller.getPlotVehicleType();
     controller.getAllPlotFare();
+    controller.clearFormData();
   }
 
   @override

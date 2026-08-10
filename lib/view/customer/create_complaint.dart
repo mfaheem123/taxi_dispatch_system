@@ -51,6 +51,11 @@ class _CreateComplaintState extends State<CreateComplaint> {
 
     super.initState();
     shortCutKeyValue.value = "createComplaint";
+    if (!controller.complaintValue.value) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.clearComplaintForm();
+      });
+    }
     controller.getDriversDropdown(); //  add this
   }
 

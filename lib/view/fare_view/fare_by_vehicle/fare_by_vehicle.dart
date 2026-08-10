@@ -36,6 +36,9 @@ class _FareByVehicleState extends State<FareByVehicle> {
     permissions = Api().sp.read('all_permissions') ?? [];
     super.initState();
     shortCutKeyValue.value = "fareByVehicle";
+    controller.fareValueVehicleController.clear();
+    controller.createByVehicleTypes = null;
+    controller.fareByVehicleOperater = 'AMOUNT';
   }
 
   @override

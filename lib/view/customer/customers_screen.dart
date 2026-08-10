@@ -305,7 +305,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                                         customerUpdate: item);
                                     int index = _controller.selectedMenuItems
                                         .indexWhere((element) =>
-                                    element.title == "CUSTOMERS");
+                                    element.title == "UPDATE CUSTOMER");
                                     if (index != -1) {
                                       _controller.selectedMenuItems[index]
                                           .selectedItem = true;
@@ -315,7 +315,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                                       _controller.currentPage.value =
                                           CustomerFormScreen();
                                       _controller.menuBarRefresh(
-                                          title: "CUSTOMERS",
+                                          title: "UPDATE CUSTOMER",
                                           pageName: CustomerFormScreen());
                                     }
                                     controller.update();

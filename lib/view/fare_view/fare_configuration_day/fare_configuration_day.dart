@@ -45,6 +45,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
     super.initState();
     permissions = Api().sp.read('all_permissions') ?? [];
     shortCutKeyValue.value = "fareConfigurationDay";
+    controller.refreshCreateFareFields();
   }
 
   @override

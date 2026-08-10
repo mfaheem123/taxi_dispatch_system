@@ -28,6 +28,11 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "customerFormScreen";
+    if (!controller.updateCustomerValue.value) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.clearForm();
+      });
+    }
   }
 
 // Example API se data aaya
@@ -40,7 +45,10 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<CustomerController>(builder: (controller) {
+    return GetBuilder<CustomerController>(initState: (state) {
+
+    },
+        builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;

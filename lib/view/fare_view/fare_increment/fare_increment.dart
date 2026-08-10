@@ -37,6 +37,12 @@ class _FareIncrementState extends State<FareIncrement> {
   void initState() {
     super.initState();
     shortCutKeyValue.value = "fareIncrement";
+    controller. incrementValueVehicleController.clear();
+    controller.operatorType = null;
+    controller.isFareIncrementEditMode = false;
+    controller.editingId = null;
+    controller.FareIncrementStart = "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
+    controller. FareIncrementEnd = "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
   }
 
   @override
@@ -94,10 +100,10 @@ class _FareIncrementState extends State<FareIncrement> {
                               child: SizedBox(
                                 height: 30,
                                 child: KeyboardDatePicker(
-                                  initialDate: DateTime.tryParse(
-                                          controller.FareIncrementStart ??
-                                              "") ??
-                                      DateTime.now(),
+                                  key: ValueKey("${controller.isFareIncrementEditMode}_${controller.FareIncrementStart}"),
+                                  initialDate: controller.isFareIncrementEditMode && controller.FareIncrementStart != null
+                                      ? DateTime.tryParse(controller.FareIncrementStart!) ?? DateTime.now()
+                                      : DateTime.now(),
                                   onChanged: (date) {
                                     controller.FareIncrementStart =
                                         "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
@@ -120,7 +126,10 @@ class _FareIncrementState extends State<FareIncrement> {
                               child: SizedBox(
                                 height: 30,
                                 child: KeyboardDatePicker(
-                                  initialDate: DateTime.now(),
+                                  key: ValueKey("${controller.isFareIncrementEditMode}_${controller.FareIncrementEnd}"),
+                                  initialDate: controller.isFareIncrementEditMode && controller.FareIncrementEnd != null
+                                      ? DateTime.tryParse(controller.FareIncrementEnd!) ?? DateTime.now()
+                                      : DateTime.now(),
                                   onChanged: (date) {
                                     controller.FareIncrementEnd =
                                         "${date.year}-${date.month}-${date.day}";

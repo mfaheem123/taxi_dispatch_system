@@ -32,6 +32,21 @@ class CustomerController extends GetxController {
   RestricDriverModel? restricDriverModel;
   RxBool restricDriverLoader = false.obs;
 
+  void clearForm() {
+    enableSms.value = false;
+    nameController.clear();
+    emailController.clear();
+    mobileController.clear();
+    telController.clear();
+    doorController.clear();
+    noteController.clear();
+    address1Controller.clear();
+    address2Controller.clear();
+    updateCustomerValue(false);
+    customerUpdateId.value = 0;
+    update();
+  }
+
   List<Map<String, dynamic>> get apiDriversList {
     if (restricDriverModel == null || restricDriverModel!.drivers!.isEmpty) {
       return [];
@@ -743,9 +758,9 @@ sendCompanyId: true,
       updateBookingId = null;
 
       // Clear Controllers
-      complainDateController.text =
-          DateTime.now().toIso8601String().split("T").first;
-
+      // complainDateController.text =
+      //     DateTime.now().toIso8601String().split("T").first;
+      complainDateController.clear();
       incidentedController.clear();
       customerNameController.clear();
       customerMobileController.clear();
@@ -757,6 +772,7 @@ sendCompanyId: true,
       complaintController.clear();
       howDealWithController.clear();
       resultController.clear();
+
 
       pickupAddress = "";
       dropoffAddress = "";
@@ -779,6 +795,33 @@ sendCompanyId: true,
 
     postComplaintLoad(false);
   }
+
+  void clearComplaintForm() {
+    complaintValue.value = false;
+    complaintUpdateId.value = 0;
+    updateCustomerId = null;
+    updateBookingId = null;
+
+    // Clear Controllers
+    // complainDateController.text =
+    //     DateTime.now().toIso8601String().split("T").first;
+    complainDateController.clear();
+    incidentedController.clear();
+    customerNameController.clear();
+    customerMobileController.clear();
+    customerRefNoController.clear();
+    customerNoteController.clear();
+    regController.clear();
+    complaintController.clear();
+    howDealWithController.clear();
+    resultController.clear();
+    pickupAddress = "";
+    dropoffAddress = "";
+    selectedBookingForComplaint = null;
+    selectedDriver = null;
+    update();
+  }
+
 
   GetCustomerComplainsModel? getCustomerComplainsModel;
   RxBool complaintsLoader = false.obs;
