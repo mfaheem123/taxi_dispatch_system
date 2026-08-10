@@ -200,6 +200,14 @@ class _MyHomePageState extends State<MyHomePage> {
     DriverRentPay,
     DriverAppFeatureScreen,
     DriverSinBinSetting,
+    AccountView,
+    ListOfAccountScreen,
+    CreateEscortScreen,
+    ESCORTScreen,
+    CreateCustomerInvoice,
+    InvoiceList,
+    CreateAccountInvoiceScreen,
+    ListOfAccountInvoiceScreen,
 
   };
 
