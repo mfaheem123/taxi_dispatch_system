@@ -44,6 +44,7 @@ import '../booking_view/pre_booking.dart';
 import '../booking_view/web_booking.dart';
 import '../customer/add_customerScreen.dart';
 import '../customer/complaints.dart';
+import '../customer/controller/customer_controller.dart';
 import '../customer/create_complaint.dart';
 import '../customer/create_lost_propertyScreen.dart';
 import '../customer/customers_screen.dart';
@@ -886,6 +887,9 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('create_customer')){
+                if (Get.isRegistered<CustomerController>()) {
+                  Get.find<CustomerController>().clearForm();
+                }
                 controller.currentPage.value = CustomerFormScreen();
                 controller.menuBarRefresh(
                     title: "ADD CUSTOMER", pageName: CustomerFormScreen());
@@ -923,6 +927,9 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('create_lost_property')){
+                if (Get.isRegistered<CustomerController>()) {
+                  Get.find<CustomerController>().refreshFields();
+                }
                 controller.currentPage.value = LostPropertyScreen();
                 controller.menuBarRefresh(
                     title: "CREATE LOST PROPERTY",

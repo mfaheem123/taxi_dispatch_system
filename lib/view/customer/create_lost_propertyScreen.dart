@@ -31,9 +31,11 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "lostPropertyScreen";
-    // if (!controller.lostPropertyValue.value) {
-    //   controller.refreshFields();
-    // }
+    if (!controller.lostPropertyValue.value) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.refreshFields();
+      });
+    }
     // controller.lostPropertyValue(false);
   }
 
@@ -114,6 +116,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                   child: SizedBox(
                                     height: 32,
                                     child: KeyboardDatePicker(
+                                      key: ValueKey(controller.reportDateController),
                                       initialDate: controller
                                                   .reportDateController !=""
                                           ? DateTime.parse(
@@ -146,11 +149,20 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                   child: SizedBox(
                                     height: 32,
                                     child: KeyboardDatePicker(
-                                      initialDate:
-                                          controller.lostDateController != ""
-                                              ? DateTime.parse(
-                                                  controller.lostDateController)
-                                              : DateTime.now(),
+                                      key: ValueKey(controller.lostDateController + (controller.selectedBookingForLostProperty?.pickupDate ?? "")),
+                                      initialDate: () {
+                                        final bookingDate = controller.selectedBookingForLostProperty?.pickupDate;
+                                        if (bookingDate != null && bookingDate.isNotEmpty) {
+                                          try {
+                                            return DateTime.parse(bookingDate);
+                                          } catch (e) {
+                                            // Fallback
+                                          }
+                                        }
+                                        return controller.lostDateController != ""
+                                            ? DateTime.parse(controller.lostDateController)
+                                            : DateTime.now();
+                                      }(),
                                       onChanged: (date) {
                                         controller.lostDateController = date
                                             .toIso8601String()
@@ -258,6 +270,9 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                                 controller
                                                         .selectedBookingForLostProperty =
                                                     result;
+                                                if (result.pickupDate != null && result.pickupDate.isNotEmpty) {
+                                                  controller.lostDateController = result.pickupDate;
+                                                }
                                                 controller.propertyMobileController
                                                     .text = result.mobile ?? "";
                                                 controller.update();
@@ -370,6 +385,9 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                                 controller
                                                         .selectedBookingForLostProperty =
                                                     result;
+                                                if (result.pickupDate != null && result.pickupDate.isNotEmpty) {
+                                                  controller.lostDateController = result.pickupDate;
+                                                }
                                                 controller.update();
                                               }
                                             } else {

@@ -224,7 +224,7 @@ class _LostPropertyState extends State<LostProperty> {
                                             lostPropertyUpdate: item);
                                         int index = _controller.selectedMenuItems
                                             .indexWhere((element) =>
-                                        element.title == "LOST PROPERTY");
+                                        element.title == "UPDATE LOST PROPERTY");
                                         if (index != -1) {
                                           _controller.selectedMenuItems[index]
                                               .selectedItem = true;
@@ -234,7 +234,7 @@ class _LostPropertyState extends State<LostProperty> {
                                           _controller.currentPage.value =
                                               LostPropertyScreen();
                                           _controller.menuBarRefresh(
-                                              title: "LOST PROPERTY",
+                                              title: "UPDATE LOST PROPERTY",
                                               pageName: LostPropertyScreen());
                                         }
                                         controller.update();

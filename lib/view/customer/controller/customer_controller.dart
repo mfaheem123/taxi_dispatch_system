@@ -32,6 +32,21 @@ class CustomerController extends GetxController {
   RestricDriverModel? restricDriverModel;
   RxBool restricDriverLoader = false.obs;
 
+  void clearForm() {
+    enableSms.value = false;
+    nameController.clear();
+    emailController.clear();
+    mobileController.clear();
+    telController.clear();
+    doorController.clear();
+    noteController.clear();
+    address1Controller.clear();
+    address2Controller.clear();
+    updateCustomerValue(false);
+    customerUpdateId.value = 0;
+    update();
+  }
+
   List<Map<String, dynamic>> get apiDriversList {
     if (restricDriverModel == null || restricDriverModel!.drivers!.isEmpty) {
       return [];
