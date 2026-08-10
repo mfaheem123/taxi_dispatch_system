@@ -969,6 +969,9 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('create_complaint')){
+                if (Get.isRegistered<CustomerController>()) {
+                  Get.find<CustomerController>().clearComplaintForm();
+                }
                 controller.currentPage.value = CreateComplaint();
                 controller.menuBarRefresh(
                     title: "CREATE COMPLAINT", pageName: CreateComplaint());

@@ -758,9 +758,9 @@ sendCompanyId: true,
       updateBookingId = null;
 
       // Clear Controllers
-      complainDateController.text =
-          DateTime.now().toIso8601String().split("T").first;
-
+      // complainDateController.text =
+      //     DateTime.now().toIso8601String().split("T").first;
+      complainDateController.clear();
       incidentedController.clear();
       customerNameController.clear();
       customerMobileController.clear();
@@ -772,6 +772,7 @@ sendCompanyId: true,
       complaintController.clear();
       howDealWithController.clear();
       resultController.clear();
+
 
       pickupAddress = "";
       dropoffAddress = "";
@@ -794,6 +795,33 @@ sendCompanyId: true,
 
     postComplaintLoad(false);
   }
+
+  void clearComplaintForm() {
+    complaintValue.value = false;
+    complaintUpdateId.value = 0;
+    updateCustomerId = null;
+    updateBookingId = null;
+
+    // Clear Controllers
+    // complainDateController.text =
+    //     DateTime.now().toIso8601String().split("T").first;
+    complainDateController.clear();
+    incidentedController.clear();
+    customerNameController.clear();
+    customerMobileController.clear();
+    customerRefNoController.clear();
+    customerNoteController.clear();
+    regController.clear();
+    complaintController.clear();
+    howDealWithController.clear();
+    resultController.clear();
+    pickupAddress = "";
+    dropoffAddress = "";
+    selectedBookingForComplaint = null;
+    selectedDriver = null;
+    update();
+  }
+
 
   GetCustomerComplainsModel? getCustomerComplainsModel;
   RxBool complaintsLoader = false.obs;
