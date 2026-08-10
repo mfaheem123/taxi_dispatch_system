@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
@@ -17,6 +18,7 @@ import '../../../Model/via_point.dart';
 import '../../../alert/child_seats_alert.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/marker_class.dart';
+import '../../../component/networks/Url.dart';
 import '../../../component/suggestion_widget/suggestion_controller.dart';
 import '../../../component/time_duration_method.dart';
 import '../../../tabbarview.dart';
@@ -48,6 +50,7 @@ class DashboardController extends GetxController {
 
 // Global company ID access karne ke liye Api singleton ka use karenge
   final String _companyId = Api.singleton.globalCompanyId;
+  final Set<String> _playedBookingIds = {};
   final FocusNode driverPanelFocusNode = FocusNode(debugLabel: 'DriverPanel');
   int selectedMapButtonIndex = -1;
   bool Function()? focusFirstTableRow;
@@ -1889,10 +1892,11 @@ class DashboardController extends GetxController {
       selectedTabId = tableId;
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
       dashboardTableTotalPages.value = dashboardTableModelData!.total!;
-      // _timer?.cancel();
-      // _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      //   getDashboardTableData(tableId: selectedTabId);
-      // });
+      _checkBookingsTimeAndPlaySound(dashboardTableModelData?.data ?? []);
+      _timer?.cancel();
+      _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+        getDashboardTableData(tableId: selectedTabId);
+      });
       update();
     }
   }
@@ -1900,6 +1904,23 @@ class DashboardController extends GetxController {
   void dashboardTablePageChange(int page) {
     dashboardTableCurrentPage.value = page;
     getDashboardTableData(tableId: selectedTabId);
+  }
+
+  final AudioPlayer _audioPlayer = AudioPlayer();
+
+
+
+  /// Sound Notification
+  Future<void> playNotificationSound() async {
+    try {
+      String baseApi = Environment().config.baseUrl;
+      String rootUrl = baseApi.replaceAll('api/', '');
+      String soundUrl = "${rootUrl}uploads/notification.mp3";
+      await _audioPlayer.stop();
+      await _audioPlayer.play(UrlSource(soundUrl));
+    } catch (e) {
+      print("Error playing sound: $e");
+    }
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get table data status base
@@ -1974,26 +1995,39 @@ class DashboardController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get phone numbers
 
-//   Timer? _phoneNumberBebounce;
-//
-// // 👇 ye function har baar text change hone par call hoga
-//   Future<void>  onPhoneNoChangeHandler(
-//       {required String fieldName, required String searchingText}) async {
-//     const duration = Duration(milliseconds: 800); // 800ms ka delay]
-// // selectedTextFieldsValue.value = "";
-// // 👇 Agar pehle se koi timer chal raha ho to usse cancel karo
-//     if (_phoneNumberBebounce?.isActive ?? false) _phoneNumberBebounce!.cancel();
-// // 👇 Naya timer start karo
-//     _phoneNumberBebounce = Timer(duration, () {
-//       _stopPhoneNoTyping(fieldName: fieldName, searchingText: searchingText);
-//     });
-//   }
-//
-//   void _stopPhoneNoTyping(
-//       {required String fieldName, required String searchingText}) {
-// // 👇 Yahan API call ya search function call karna hai
-//     getPhoneNumberOfUSers(fieldsName: fieldName, searchingText: searchingText);
-//   }
+  /// Current Time
+  void _checkBookingsTimeAndPlaySound(List<BookingObjectData> bookings) {
+    if (bookings.isEmpty) return;
+    DateTime now = DateTime.now();
+    String currentDateStr = DateFormat('yyyy-MM-dd').format(now);
+    String currentTimeStr = DateFormat('HH:mm').format(now);
+    bool shouldPlaySound = false;
+    for (var booking in bookings) {
+      if (booking.pickupDate == null || booking.pickupTime == null) continue;
+      try {
+        String bookingDateStr = DateFormat('yyyy-MM-dd').format(booking.pickupDate!);
+        String bookingTimeStr = booking.pickupTime!.trim();
+        if (bookingTimeStr.contains("AM") || bookingTimeStr.contains("PM")) {
+          DateTime parsedTime = DateFormat("hh:mm a").parse(bookingTimeStr);
+          bookingTimeStr = DateFormat("HH:mm").format(parsedTime);
+        }
+        bool isSameDate = (bookingDateStr == currentDateStr);
+        bool isSameTime = (bookingTimeStr == currentTimeStr);
+        if (isSameDate && isSameTime) {
+          String uniqueBookingKey = "${booking.id}_${bookingTimeStr}";
+          if (!_playedBookingIds.contains(uniqueBookingKey)) {
+            _playedBookingIds.add(uniqueBookingKey);
+            shouldPlaySound = true;
+          }
+        }
+      } catch (e) {
+        print("Date/Time Parsing Error: $e");
+      }
+    }
+    if (shouldPlaySound) {
+      playNotificationSound();
+    }
+  }
 
   Timer? _phoneNumberBebounce;
 // 👇 ye function har baar text change hone par call hoga

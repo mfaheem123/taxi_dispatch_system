@@ -23,19 +23,7 @@ import '../../locations_view/Model/location_types_zoneModel.dart';
 import '../../locations_view/controller/locations_controller.dart';
 import '../Controller/dashboard_controller.dart';
 import '../booking_table.dart';
-import '../models/account_darshboard_model.dart';
-import '../models/dashboard_model.dart';
-import '../widgets/fare_configuration.dart';
-import '../widgets/pickup_widget.dart';
-import '../widgets/quotation_widget.dart';
-import '../widgets/time_picker_widget.dart';
-import '../widgets/user_info_widget.dart' hide KbdActivatable;
-import 'F8_widget_alert.dart';
-import 'F9_widget_alert.dart';
-import 'booking_form_widget.dart';
-import 'custom_booking_widget/custom_deshboard_ipad_widget.dart';
 import 'drivers.dart';
-import 'form_short_cut_key.dart';
 import 'map_view_widget.dart';
 import 'package:flutter/material.dart' as material;
 
@@ -67,8 +55,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
   final FocusNode checkboxFocus = FocusNode();
   final FocusNode checkboxFocusReturn = FocusNode();
   final FocusNode emailFocus = FocusNode();
-  final List<FocusNode> _focusNodes =
-  List.generate(4, (index) => FocusNode()); // 4 icons
 
   Timer? _debounce;
 
@@ -119,11 +105,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    double width = WidgetsBinding
-        .instance.platformDispatcher.views.first.physicalSize.width /
-        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
     final w = MediaQuery.of(context).size.width;
     final isDesktop = w >= 1024;
     final isTablet  = w >= 640 && w < 1024;
