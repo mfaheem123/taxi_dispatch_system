@@ -46,7 +46,12 @@ class _BookingTableState extends State<BookingTable> {
   /// the first row's checkbox has received keyboard focus.
   bool _pendingFocusFirstRow = false;
 
-  final FocusNode _tableFocusNode = FocusNode();
+  // skipTraversal: this node only exists to catch arrow keys for row navigation
+  // and it covers the whole table, so landing on it via Tab highlights nothing
+  // and reads as "Tab did nothing". It stays focusable, so autofocus and the
+  // arrow-key handler are unaffected, and the first Tab press now steps from
+  // here onto the first tab-strip button instead of onto an invisible node.
+  final FocusNode _tableFocusNode = FocusNode(skipTraversal: true);
 
   /// One FocusNode per table row — keeps keyboard focus in sync with selectedRowIndex.
   List<FocusNode> _rowFocusNodes = [];
@@ -163,78 +168,109 @@ class _BookingTableState extends State<BookingTable> {
                 children: [
                   SizedBox(
                     width: Get.width,
+                    // Bounded height is required: a horizontal viewport constrains its
+                    // children in the cross axis, so inside this Column (which offers
+                    // unbounded height) an unwrapped horizontal scroller throws
+                    // "Horizontal viewport was given unbounded height."
                     child: SizedBox(
                       height: 40,
-                      child: ListView.builder(
-                        itemCount: controller.bookingTabsList!.length,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal, // <-- enable horizontal
-                        physics: const BouncingScrollPhysics(), // smooth scrolling
-                        itemBuilder: (BuildContext context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: controller.bookingTabsList![index].dropDownList!.isEmpty? CustomButton(
-                              width: widthss/11.5,
-                              verticalPadding: 0,
-                              borderRadius: 4,
-                              style: mozillaTextRegularText(
-                                fontSize: widthss/135,
-                                color: controller.bookingTabsList![index].deletedClr!.value == true?DynamicColors.whiteClr: DynamicColors.textClr,
-                              ),
-                              btnText: controller.bookingTabsList![index].deletedClr!.value == true ?controller.bookingTabsList![index].bookingTabs:
-                              "${controller.bookingTabsList![index].bookingTabs}(${controller.bookingTabsList![index].bookingCount.toString()})",
-                              btnColor: controller.bookingTabsList![index].deletedClr!.value == true ? DynamicColors.redClr:
-                              controller.bookingTabsList![index].selectedClr!.value == true ? DynamicColors.primaryClr.withOpacity(0.4) : DynamicColors.secondaryClr,
-                              onTap: () {
-                                controller.dropDownShow.value = false;
-                                if(controller.bookingTabsList![index].deletedClr!.value == true){
-                                  controller.deleteJobs();
-                                }else{
-                                  controller.selectionIndex = index;
-                                  controller.temSelectedTab = index;
-                                  controller.getTableDataStatus(index: index);
-                                }
-                              },
-                            ):
+                      // A Row in a horizontal SingleChildScrollView, not ListView.builder:
+                      // the builder only creates the items currently in view, and focus
+                      // traversal can only move to nodes that EXIST — so Tab used to run
+                      // out at the last built tab. Building every tab up front makes Tab
+                      // walk the whole strip, and traversal scrolls each one into view.
+                      child: FocusTraversalGroup(
+                        // Pins the step order to the list index rather than leaving it to
+                        // a geometry tie-break, so Tab / Shift+Tab go strictly
+                        // left-to-right through the tabs, one per press.
+                        policy: OrderedTraversalPolicy(),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          physics: const BouncingScrollPhysics(), // smooth scrolling
+                          child: Row(
+                            children: List.generate(
+                                controller.bookingTabsList!.length, (index) {
+                              return FocusTraversalOrder(
+                                order: NumericFocusOrder(index.toDouble()),
+                                child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          // ONE focus ring for BOTH kinds of tab in this strip, so
+                          // the indicator does not depend on CustomButton's internals.
+                          child: _FocusRing(
+                                  child: controller.bookingTabsList![index].dropDownList!.isEmpty? CustomButton(
+                            width: widthss/11.5,
+                            verticalPadding: 0,
+                            borderRadius: 4,
+                            // Transparent, not null: a non-null focusBorderColor is
+                            // what suppresses CustomButton's default zoom cue (which
+                            // this 40px strip crops). Transparent suppresses the zoom
+                            // without drawing a second ring inside the one above.
+                            focusBorderColor: Colors.transparent,
+                            style: mozillaTextRegularText(
+                              fontSize: widthss/135,
+                              color: controller.bookingTabsList![index].deletedClr!.value == true?DynamicColors.whiteClr: DynamicColors.textClr,
+                            ),
+                            btnText: controller.bookingTabsList![index].deletedClr!.value == true ?controller.bookingTabsList![index].bookingTabs:
+                            "${controller.bookingTabsList![index].bookingTabs}(${controller.bookingTabsList![index].bookingCount.toString()})",
+                            btnColor: controller.bookingTabsList![index].deletedClr!.value == true ? DynamicColors.redClr:
+                            controller.bookingTabsList![index].selectedClr!.value == true ? DynamicColors.primaryClr.withOpacity(0.4) : DynamicColors.secondaryClr,
+                            onTap: () {
+                              controller.dropDownShow.value = false;
+                              if(controller.bookingTabsList![index].deletedClr!.value == true){
+                                controller.deleteJobs();
+                              }else{
+                                controller.selectionIndex = index;
+                                controller.temSelectedTab = index;
+                                controller.getTableDataStatus(index: index);
+                              }
+                            },
+                          ):
 
-                            SizedBox(
-                              width: widthss/11.5,
-                              child: Container(color: DynamicColors.secondaryClr,
-                                child: DropdownButton<String>(
-                                  value: controller.bookingTabsList![index].selectedDropDownValue,
-                                  icon: const Icon(Icons.arrow_drop_down),
-                                  isExpanded: true,
-                                  hint: Text("JOB DUE BY",
-                                    style: mozillaTextRegularText(
-                                        fontSize: widthss/135,
-                                        color: DynamicColors.textClr
-                                    ),
-                                  ),
-                                  underline: const SizedBox(),
-                                  items: controller.bookingTabsList![index].dropDownList!.map((item) {
-                                    return DropdownMenuItem<String>(
-                                      value: item,
-                                      child: Text(item,
+                          SizedBox(
+                            width: widthss/11.5,
+                            // The ring for this branch comes from the shared observer
+                            // above; this only supplies the tab's background.
+                            child: Container(
+                              color: DynamicColors.secondaryClr,
+                                    child: DropdownButton<String>(
+                                      value: controller.bookingTabsList![index].selectedDropDownValue,
+                                      icon: const Icon(Icons.arrow_drop_down),
+                                      isExpanded: true,
+                                      hint: Text("JOB DUE BY",
                                         style: mozillaTextRegularText(
-                                            fontSize: 13,
+                                            fontSize: widthss/135,
                                             color: DynamicColors.textClr
                                         ),
                                       ),
-                                    );
-                                  }).toList(),
-                                  onChanged: (value) {
-                                    controller.dropDownShow.value = false;
-                                    print(controller.bookingTabsList![index].id);
-                                    print(index);
-                                    controller.selectionIndex = index;
-                                    controller.getTableDataStatus(index: index, value: value);
-                                    // });
-                                  },
+                                      underline: const SizedBox(),
+                                      items: controller.bookingTabsList![index].dropDownList!.map((item) {
+                                        return DropdownMenuItem<String>(
+                                          value: item,
+                                          child: Text(item,
+                                            style: mozillaTextRegularText(
+                                                fontSize: 13,
+                                                color: DynamicColors.textClr
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
+                                      onChanged: (value) {
+                                        controller.dropDownShow.value = false;
+                                        print(controller.bookingTabsList![index].id);
+                                        print(index);
+                                        controller.selectionIndex = index;
+                                        controller.getTableDataStatus(index: index, value: value);
+                                        // });
+                                      },
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          );
-                        },
+                          ),
+                        ),
+                              );
+                            }),
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -2361,4 +2397,61 @@ DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget?
       ),
     ),
   );
+
+}
+/// Draws a bold ring around whatever it wraps while that subtree holds keyboard
+/// focus. Used by the booking-tab strip so the indicator works for both the
+/// CustomButton tabs and the "JOB DUE BY" DropdownButton, without depending on
+/// either widget's internals.
+///
+/// Two details are load-bearing, both verified against the framework:
+///
+/// 1. Focus is read via [Focus.onFocusChange] and kept in local state, NOT via
+///    `Focus.of(context).hasFocus` in a Builder. _FocusState._handleFocusChanged
+///    only calls setState when hasPrimaryFocus / canRequestFocus /
+///    descendantsAre*able change — never for a plain hasFocus change. Because
+///    this wrapper sets canRequestFocus: false it can never hold primary focus,
+///    so the inherited scope would never rebuild and the ring would go stale.
+///    onFocusChange, by contrast, is invoked unconditionally with hasFocus.
+///
+/// 2. foregroundDecoration is ALWAYS non-null and only its colour changes.
+///    Toggling it between null and a decoration adds/removes a DecoratedBox,
+///    which remounts the child subtree — that destroys the wrapped button's
+///    FocusNode mid-traversal and drops focus back to an ancestor, so Tab
+///    appears to stick instead of advancing.
+class _FocusRing extends StatefulWidget {
+  const _FocusRing({required this.child, this.width = 3, this.radius = 4});
+
+  final Widget child;
+  final double width;
+  final double radius;
+
+  @override
+  State<_FocusRing> createState() => _FocusRingState();
+}
+
+class _FocusRingState extends State<_FocusRing> {
+  bool _focused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Focus(
+      // Observer only: the button or dropdown inside stays the single Tab stop.
+      canRequestFocus: false,
+      skipTraversal: true,
+      onFocusChange: (hasFocus) {
+        if (hasFocus != _focused) setState(() => _focused = hasFocus);
+      },
+      child: Container(
+        foregroundDecoration: BoxDecoration(
+          border: Border.all(
+            color: _focused ? DynamicColors.primaryClr : Colors.transparent,
+            width: widget.width,
+          ),
+          borderRadius: BorderRadius.circular(widget.radius),
+        ),
+        child: widget.child,
+      ),
+    );
+  }
 }

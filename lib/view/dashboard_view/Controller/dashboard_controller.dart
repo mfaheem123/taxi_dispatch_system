@@ -497,7 +497,13 @@ class DashboardController extends GetxController {
   final GlobalKey payKey = GlobalKey();
   String? vehKey;
   final GlobalKey dRVKey = GlobalKey();
-  FocusNode focusNode = FocusNode();
+  // Backs the dashboard-wide RawKeyboardListener (F1-F9 shortcuts) in
+  // dashboard.dart, so it wraps the entire screen and shows nothing when
+  // focused. skipTraversal keeps Tab from landing on it — otherwise a Tab press
+  // can leave no visible focus anywhere on the dashboard. The shortcuts still
+  // fire: RawKeyboardListener checks hasFocus, which is true whenever focus is
+  // on this node OR any descendant.
+  FocusNode focusNode = FocusNode(skipTraversal: true);
 
   /// RxInt
   int selectedIndex = 0;
