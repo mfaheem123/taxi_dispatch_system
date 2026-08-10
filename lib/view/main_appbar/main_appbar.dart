@@ -73,6 +73,7 @@ import '../fare_view/fare_increment/fare_increment.dart';
 import '../fare_view/fare_meter/fare_meter.dart';
 import '../fare_view/plot_fare/create_fixed_fare_setting.dart';
 import '../fare_view/plot_fare/plot_fare.dart';
+import '../locations_view/controller/locations_controller.dart';
 import '../locations_view/location/localization_screen.dart';
 import '../locations_view/location/location_formScreen.dart';
 import '../locations_view/location/location_listScreen.dart';
@@ -1156,6 +1157,9 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('create_location')){
+                if (Get.isRegistered<LocationController>()) {
+                  Get.find<LocationController>().clearLocationForm();
+                }
                 controller.currentPage.value = LocationForm();
                 controller.menuBarRefresh(
                     title: "CREATE LOCATIONS", pageName: LocationForm());
