@@ -108,14 +108,11 @@ class VehicleInformation extends StatelessWidget {
                               width: fieldWidth * 1.9,
                               child: SizedBox(
                                   height: 30,
-                                  child: KeyboardDatePicker(
-                                    initialDate: DateTime.now(),
-                                    onChanged: (date) {
-                                      controller.vehicleStartDate = "${date.year}-${date.month}-${date.day}";
-                                    },
-                                    onSubmitted: (date) {
-                                      controller.vehicleStartDate = "${date.year}-${date.month}-${date.day}";
-                                    },
+                                  child:   KeyboardDatePicker(
+                                    key: ValueKey("vehicle_start_date${controller.datePickerKey}"),
+                                    initialDate: DateTime.tryParse(controller.vehicleStartDate ?? '') ?? DateTime.now(),
+                                    onChanged: (date) => controller.vehicleStartDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                                    onSubmitted: (date) => controller.vehicleStartDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
                                   )),
                               column: true),
                         ),
@@ -129,14 +126,11 @@ class VehicleInformation extends StatelessWidget {
                               width: fieldWidth * 1.9,
                               child: SizedBox(
                                   height: 30,
-                                  child: KeyboardDatePicker(
-                                    initialDate: DateTime.now(),
-                                    onChanged: (date) {
-                                      controller.vehicleEndeDate = "${date.year}-${date.month}-${date.day}";
-                                    },
-                                    onSubmitted: (date) {
-                                      controller.vehicleEndeDate = "${date.year}-${date.month}-${date.day}";
-                                    },
+                                  child:   KeyboardDatePicker(
+                                    key: ValueKey("vehicle_end_date${controller.datePickerKey}"),
+                                    initialDate: DateTime.tryParse(controller.vehicleEndeDate ?? '') ?? DateTime.now(),
+                                    onChanged: (date) => controller.vehicleEndeDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                                    onSubmitted: (date) => controller.vehicleEndeDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
                                   )),
                               column: true),
                         ),

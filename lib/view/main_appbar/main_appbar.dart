@@ -73,6 +73,7 @@ import '../fare_view/fare_increment/fare_increment.dart';
 import '../fare_view/fare_meter/fare_meter.dart';
 import '../fare_view/plot_fare/create_fixed_fare_setting.dart';
 import '../fare_view/plot_fare/plot_fare.dart';
+import '../locations_view/controller/locations_controller.dart';
 import '../locations_view/location/localization_screen.dart';
 import '../locations_view/location/location_formScreen.dart';
 import '../locations_view/location/location_listScreen.dart';
@@ -176,6 +177,38 @@ class _MyHomePageState extends State<MyHomePage> {
     CustomersScreen,
     LostProperty,
     ComplaintsView,
+    LostPropertyScreen,
+    CustomerFormScreen,
+    CreateComplaint,
+    FareConfigurationDay,
+    CreateFixedFareSetting,
+    PlotFare,
+    FareByVehicle,
+    AirportCharges,
+    FareIncrement,
+    FareMeter,
+    FareCharges,
+    DriverForm,
+    DriverListScreen,
+    LoginDriversScreen,
+    ListDriverCommission,
+    DriverCommission,
+    BulkDriverCommission,
+    DriverCommissionPay,
+    CreateDriverRent,
+    DriverRent,
+    BulkDriverRent,
+    DriverRentPay,
+    DriverAppFeatureScreen,
+    DriverSinBinSetting,
+    AccountView,
+    ListOfAccountScreen,
+    CreateEscortScreen,
+    ESCORTScreen,
+    CreateCustomerInvoice,
+    InvoiceList,
+    CreateAccountInvoiceScreen,
+    ListOfAccountInvoiceScreen,
 
   };
 
@@ -969,6 +1002,9 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('create_complaint')){
+                if (Get.isRegistered<CustomerController>()) {
+                  Get.find<CustomerController>().clearComplaintForm();
+                }
                 controller.currentPage.value = CreateComplaint();
                 controller.menuBarRefresh(
                     title: "CREATE COMPLAINT", pageName: CreateComplaint());
@@ -1121,6 +1157,9 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('create_location')){
+                if (Get.isRegistered<LocationController>()) {
+                  Get.find<LocationController>().clearLocationForm();
+                }
                 controller.currentPage.value = LocationForm();
                 controller.menuBarRefresh(
                     title: "CREATE LOCATIONS", pageName: LocationForm());
