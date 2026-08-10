@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../component/color.dart';
 import '../component/datatable_widget.dart';
 import '../component/textStyle.dart';
@@ -87,15 +88,38 @@ class _LostPropertyBookingAlertState extends State<LostPropertyBookingAlert> {
                       buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
                     ],
                     rows: controller.getCustomerBookingModel!.bookings!.map((booking) {
+
+                      String formattedDate = "-";
+                      if (booking.pickupDate != null && booking.pickupDate.toString().isNotEmpty) {
+                        try {
+                          DateTime parsedDate =
+                          DateFormat("yyyy-M-d").parse(booking.pickupDate.toString());
+                          formattedDate = DateFormat("yyyy-MM-dd").format(parsedDate);
+                        } catch (_) {
+                          formattedDate = booking.pickupDate.toString();
+                        }
+                      }
+
+                      String formattedTime = "-";
+                      if (booking.pickupTime != null && booking.pickupTime.toString().isNotEmpty) {
+                        formattedTime = booking.pickupTime.toString().split('.')[0].substring(0, 5);
+                      }
+
                       return DataRow(cells: [
                         DataCell(Center(child: Text((booking.referenceNumber ?? "-").toUpperCase()))),
-                        DataCell(Center(child: Text("${booking.pickupDate ?? ''} ${booking.pickupTime ?? ''}".toUpperCase()))),
+                        // DataCell(Center(child: Text("${booking.pickupDate ?? ''} ${booking.pickupTime ?? ''}".toUpperCase()))),
+                        DataCell(Center(child: Text("$formattedDate $formattedTime".toUpperCase()))),
                         DataCell(Center(child: Text((booking.vehicleType?.name ?? "-").toUpperCase()))),
                         DataCell(Center(child: Text((booking.pickup ?? "-").toUpperCase()))),
                         DataCell(Center(child: Text((booking.dropoff ?? "-").toUpperCase()))),
                         DataCell(Center(
                           child: InkWell(
-                            onTap: () => Get.back(result: booking),
+                            onTap: () {
+                              if (formattedDate != "-") {
+                                booking.pickupDate = formattedDate;
+                              }
+                              Get.back(result: booking);
+                            },
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                               child: const Text(
