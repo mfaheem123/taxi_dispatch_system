@@ -41,6 +41,7 @@ class _FareChargesState extends State<FareCharges> {
   void initState() {
     super.initState();
     shortCutKeyValue.value = "fareCharges";
+    controller.clearSurchargesData();
   }
 
   @override
@@ -69,8 +70,12 @@ class _FareChargesState extends State<FareCharges> {
               children: [
                 Wrap(
                   children: [
-                    SizedBox(
-                      width: fieldWidth*2,
+                    // SizedBox(
+                    //   width: fieldWidth*2,
+                    Container(
+                      width: Get.width / 1.2,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: DynamicColors.gryClr)),
                       child: Column(
                         children: [
                           Container(
@@ -84,7 +89,8 @@ class _FareChargesState extends State<FareCharges> {
                             child: Wrap(
                               verticalDirection: VerticalDirection.down,
                               runSpacing: 10,
-                              spacing: fieldWidth/10,
+                              spacing: fieldWidth/8,
+                              crossAxisAlignment: WrapCrossAlignment.end,
                               children: [
                                 SizedBox(
                                   width: fieldWidth/1.8,
@@ -251,23 +257,6 @@ class _FareChargesState extends State<FareCharges> {
                                     ],
                                   ),
                                 ),
-                                Visibility(
-                                  visible: controller.selectDateWise !="DATE WISE"?false:true,
-                                  child: labeledField(
-                                    context: context,
-                                    isMobile: isMobile,
-                                    label: "FROM",
-                                    column: true,
-                                    width: fieldWidth/1.8,
-                                    child: SizedBox(height: 30, child: KeyboardDatePicker(
-                                      initialDate: controller.startDateSurCharges ?? DateTime.now(),
-                                      onChanged: (date) {
-                                        controller.startDateSurCharges = date;
-                                        controller.update();
-                                      },
-                                    )),
-                                  ),
-                                ),
                                 labeledField(
                                   context: context,
                                   isMobile: isMobile,
@@ -276,33 +265,16 @@ class _FareChargesState extends State<FareCharges> {
                                   width: fieldWidth/1.8,
                                   child: SizedBox(height: 30,
                                       child: CustomTimePicker(
-                                    controller: controller.startTimeSurCharge, // optional
-                                    onTimeSelected: (time) {
-                                      setState(() {
-                                        print(controller.startTimeSurCharge.text);
-                                        print(time);
-                                      });
-                                    },
-                                  )),
+                                        controller: controller.startTimeSurCharge, // optional
+                                        onTimeSelected: (time) {
+                                          setState(() {
+                                            print(controller.startTimeSurCharge.text);
+                                            print(time);
+                                          });
+                                        },
+                                      )),
                                 ),
-                                Visibility(
-                                  visible: controller.selectDateWise !="DATE WISE"?false:true,
-                                  child: labeledField(
-                                    context: context,
-                                    isMobile: isMobile,
-                                    label: "TO",
-                                    column: true,
-                                    width: fieldWidth/1.8,
-                                    child: SizedBox(height: 30, child: KeyboardDatePicker(
-                                      initialDate: controller.endDateSurCharges ?? DateTime.now(),
-                                      onChanged: (date) {
-                                        controller.endDateSurCharges = date;
-                                        controller.update();
-                                      },
-                                    )),
-                                  ),
-                                ),
-                                 labeledField(
+                                labeledField(
                                   context: context,
                                   isMobile: isMobile,
                                   column: true,
@@ -317,10 +289,42 @@ class _FareChargesState extends State<FareCharges> {
                                       });
                                     },
                                   )),
-                                 ),
-                                Visibility(
-                                  visible: controller.selectDateWise == "DAY WISE"?true:false,
-                                  child: Wrap(
+                                ),
+                              if (controller.selectDateWise == "DATE WISE") ...[
+                                   labeledField(
+                                    context: context,
+                                    isMobile: isMobile,
+                                    label: "FROM",
+                                    column: true,
+                                    width: fieldWidth/1.8,
+                                    child: SizedBox(height: 30, child: KeyboardDatePicker(
+                                      key: ValueKey(controller.startDateSurCharges.toString()),
+                                      initialDate: controller.startDateSurCharges ?? DateTime.now(),
+                                      onChanged: (date) {
+                                        controller.startDateSurCharges = date;
+                                        controller.update();
+                                      },
+                                    )),
+                                  ),
+                                    labeledField(
+                                    context: context,
+                                    isMobile: isMobile,
+                                    label: "TO",
+                                    column: true,
+                                    width: fieldWidth/1.8,
+                                    child: SizedBox(height: 30, child: KeyboardDatePicker(
+                                      key: ValueKey(controller.endDateSurCharges.toString()),
+                                      initialDate: controller.endDateSurCharges ?? DateTime.now(),
+                                      onChanged: (date) {
+                                        controller.endDateSurCharges = date;
+                                        controller.update();
+                                      },
+                                    )),
+                                  ),
+                                ],
+
+                                   if (controller.selectDateWise == "DAY WISE")
+                                   Wrap(
                                     spacing: 8,
                                     runSpacing: 8,
                                     children: List.generate(
@@ -361,10 +365,9 @@ class _FareChargesState extends State<FareCharges> {
                                       },
                                     ),
                                   ),
-                                ),
-                                SizedBox(
-                                  width: 40,
-                                ),
+                                // SizedBox(
+                                //   width: 40,
+                                // ),
 
                                 CustomButton(
                                   onTap: (){
@@ -378,9 +381,9 @@ class _FareChargesState extends State<FareCharges> {
                                   verticalPadding: 0.0,
                                   fontSize: 14,
                                 ),
-                                SizedBox(
-                                  width: 40,
-                                ),
+                                // SizedBox(
+                                //   width: 40,
+                                // ),
                               ],
                             ),
                           ),
