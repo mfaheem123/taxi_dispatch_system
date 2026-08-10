@@ -31,6 +31,9 @@ class _AirportChargesState extends State<AirportCharges> {
   void initState() {
     super.initState();
     shortCutKeyValue.value = "airportCharges";
+    controller.airportChargesController.clear();
+    controller.pickUpChargesController.clear();
+    controller.dropOffChargesController.clear();
   }
 
   @override

@@ -37,6 +37,12 @@ class _FareIncrementState extends State<FareIncrement> {
   void initState() {
     super.initState();
     shortCutKeyValue.value = "fareIncrement";
+    controller. incrementValueVehicleController.clear();
+    controller.operatorType = null;
+    controller.isFareIncrementEditMode = false;
+    controller.editingId = null;
+    controller.FareIncrementStart = "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
+    controller. FareIncrementEnd = "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
   }
 
   @override
