@@ -4,6 +4,7 @@ import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../../alert/lost_property_booking_alert.dart';
 import '../../component/datatable_widget.dart';
 import '../../component/textStyle.dart';
@@ -51,6 +52,26 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return GetBuilder<CustomerController>(builder: (controller) {
+      final selectedBooking = controller.selectedBookingForLostProperty;
+
+      String formattedDate = "-";
+      if (selectedBooking?.pickupDate != null && selectedBooking.pickupDate.toString().isNotEmpty) {
+        try {
+          DateTime parsedDate = DateFormat("yyyy-M-d").parse(selectedBooking.pickupDate.toString());
+          formattedDate = DateFormat("yyyy-MM-dd").format(parsedDate);
+        } catch (_) {
+          formattedDate = selectedBooking.pickupDate.toString();
+        }
+      }
+
+      String formattedTime = "-";
+      if (selectedBooking?.pickupTime != null && selectedBooking.pickupTime.toString().isNotEmpty) {
+        try {
+          formattedTime = selectedBooking.pickupTime.toString().split('.')[0].substring(0, 5);
+        } catch (_) {
+          formattedTime = selectedBooking.pickupTime.toString();
+        }
+      }
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -270,6 +291,8 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                                 controller
                                                         .selectedBookingForLostProperty =
                                                     result;
+                                                controller.updateBookingId = int.tryParse(result.id.toString());
+                                                controller.updateCustomerId = int.tryParse(result.customerId.toString());
                                                 if (result.pickupDate != null && result.pickupDate.isNotEmpty) {
                                                   controller.lostDateController = result.pickupDate;
                                                 }
@@ -385,6 +408,10 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                                 controller
                                                         .selectedBookingForLostProperty =
                                                     result;
+                                                // controller.updateBookingId = result.id;
+                                                // controller.updateCustomerId = result.customerId;
+                                                controller.updateBookingId = int.tryParse(result.id.toString());
+                                                controller.updateCustomerId = int.tryParse(result.customerId.toString());
                                                 if (result.pickupDate != null && result.pickupDate.isNotEmpty) {
                                                   controller.lostDateController = result.pickupDate;
                                                 }
@@ -466,7 +493,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                             "-").toUpperCase()))),
                                     DataCell(Center(
                                         child: Text(
-                                            "${controller.selectedBookingForLostProperty.pickupDate ?? ''} ${controller.selectedBookingForLostProperty.pickupTime ?? ''}".toUpperCase()))),
+                                            "$formattedDate $formattedTime".toUpperCase()))),
                                     DataCell(Center(
                                         child: Text((controller
                                                 .selectedBookingForLostProperty
