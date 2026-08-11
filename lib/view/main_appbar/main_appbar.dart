@@ -209,6 +209,15 @@ class _MyHomePageState extends State<MyHomePage> {
     InvoiceList,
     CreateAccountInvoiceScreen,
     ListOfAccountInvoiceScreen,
+    LocationForm,
+    LocationListScreen,
+    ZoneScreen,
+    ZoneListScreen,
+    LocalizationScreen,
+    CreateVehicleTypes,
+    ListVehicleType,
+    CreateCompanyVehicle,
+    CompanyVehiclesScreen,
 
   };
 
@@ -769,6 +778,22 @@ class _MyHomePageState extends State<MyHomePage> {
       NestedMenuItem(
         title: "NEXUS",
       ),
+      /* NestedMenuItem(title: "App Development",onTap: () => message(context, "App Development"),
+          children: [
+            NestedMenuItem(title: "Mobile App Development",
+              onTap: () => message(context, "Mobile App Development"),
+              children: [
+                NestedMenuItem(title: "Native App Development",onTap: () => message(context, "Native App Development"),
+                    children: [
+                      NestedMenuItem(title: "Android App Development",onTap: () => message(context, "Android App Development"),),
+                      NestedMenuItem(title: "iOS App Development",onTap: () => message(context, "iOS App Development"),),]),
+                NestedMenuItem(title: "Cross Platform Development",onTap: () => message(context, "Cross Platform Development"),
+                  children: [
+                    NestedMenuItem(title: "Flutter App Development",onTap: () => message(context, "Flutter App Development"),),
+                    NestedMenuItem(title: "React Native App Development",onTap: () => message(context, "React Native App Development"),),],),],),
+            NestedMenuItem(title: "Web App Development",onTap: () => message(context, "Web App Development"),),
+          ]
+      ),*/
       NestedMenuItem(title: "BOOKINGS", children: [
         NestedMenuItem(
           title: "CREATE BOOKINGS",
@@ -894,22 +919,6 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
       ]),
-      /* NestedMenuItem(title: "App Development",onTap: () => message(context, "App Development"),
-          children: [
-            NestedMenuItem(title: "Mobile App Development",
-              onTap: () => message(context, "Mobile App Development"),
-              children: [
-                NestedMenuItem(title: "Native App Development",onTap: () => message(context, "Native App Development"),
-                    children: [
-                      NestedMenuItem(title: "Android App Development",onTap: () => message(context, "Android App Development"),),
-                      NestedMenuItem(title: "iOS App Development",onTap: () => message(context, "iOS App Development"),),]),
-                NestedMenuItem(title: "Cross Platform Development",onTap: () => message(context, "Cross Platform Development"),
-                  children: [
-                    NestedMenuItem(title: "Flutter App Development",onTap: () => message(context, "Flutter App Development"),),
-                    NestedMenuItem(title: "React Native App Development",onTap: () => message(context, "React Native App Development"),),],),],),
-            NestedMenuItem(title: "Web App Development",onTap: () => message(context, "Web App Development"),),
-          ]
-      ),*/
       NestedMenuItem(title: "CUSTOMERS", children: [
         NestedMenuItem(
           title: "ADD CUSTOMER",
