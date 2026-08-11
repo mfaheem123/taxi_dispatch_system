@@ -5,9 +5,12 @@ import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:timepickerfield/timepickerfield.dart';
 import '../../../alert/restrict_drivers_alert.dart';
+import '../../alert/back_slash_alert.dart';
 import '../../alert/child_seats_alert.dart';
 import '../../alert/extra_fares_alert.dart';
 import '../../alert/extra_info_alert.dart';
+import '../../alert/f3_alert.dart';
+import '../../alert/f4_alert.dart';
 import '../../alert/search_booking.dart';
 import '../../component/marker_class.dart';
 import '../../component/text_field.dart';
@@ -63,6 +66,16 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   // focus on the field itself, which is inside CallbackShortcuts anyway and
   // preserves the Tab position.
   final FocusNode _shortcutFocusNode = FocusNode();
+
+  /// True when keyboard focus sits inside a text field, so printable-key
+  /// shortcuts (the "/" help menu) can let the character be typed instead.
+  /// The F-key shortcuts need no such guard — a text field ignores those.
+  bool get _isTypingInTextField {
+    final ctx = FocusManager.instance.primaryFocus?.context;
+    return ctx != null &&
+        (ctx.widget is EditableText ||
+            ctx.findAncestorWidgetOfExactType<EditableText>() != null);
+  }
   // ────────── return-journey state
   ZoneObject? returnDropZone;
   // DashboardVehicleTypeObject? returnVehicleValue;
@@ -156,10 +169,51 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           if (controller.pickupController.text.isNotEmpty &&
               controller.dropOffController.text.isNotEmpty) {
             DashboardF8Alert.show();
+            return;
           }
         },
         // const SingleActivator(LogicalKeyboardKey.f8): _onMultiReservation,
         const SingleActivator(LogicalKeyboardKey.f9): () {
+          if (controller.pickupController.text.isNotEmpty &&
+              controller.dropOffController.text.isNotEmpty) {
+            DashboardF9Alert.show();
+          }
+          return;
+        },
+        const SingleActivator(LogicalKeyboardKey.f4): () {
+          if (controller.pickupController.text.isNotEmpty &&
+              controller.dropOffController.text.isNotEmpty) {
+            showDriverEarningsAlert();
+            return;
+          }
+        },
+        const SingleActivator(LogicalKeyboardKey.f3): () {
+          if (controller.pickupController.text.isNotEmpty &&
+              controller.dropOffController.text.isNotEmpty) {
+            showDriverInfoAlert();
+            return;
+          }
+        },
+        const SingleActivator(LogicalKeyboardKey.f6): () {
+          if (controller.pickupController.text.isNotEmpty &&
+              controller.dropOffController.text.isNotEmpty) {
+            DashboardF9Alert.show();
+          }
+        },
+        // HELP MENU is listed as "/" in the app's own shortcut sheet
+        // (back_slash_alert.dart). This used to read
+        // `LogicalKeyboardKey.lab == "/"`, which is a bool rather than a key:
+        // it did not compile, and a broken build() meant NONE of the shortcuts
+        // on this screen worked, not just this one.
+        const SingleActivator(LogicalKeyboardKey.slash): () {
+          // Unlike the F-keys, a printable key still reaches CallbackShortcuts
+          // while a text field holds focus, so stand aside there — otherwise
+          // typing "/" into an address or notes field pops the help dialog
+          // instead of inserting the character.
+          if (_isTypingInTextField) return;
+          showSystemShortcutsAlert();
+        },
+        const SingleActivator(LogicalKeyboardKey.f1): () {
           if (controller.pickupController.text.isNotEmpty &&
               controller.dropOffController.text.isNotEmpty) {
             DashboardF9Alert.show();
