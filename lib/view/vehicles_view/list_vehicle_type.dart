@@ -219,7 +219,7 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                                                   .selectedMenuItems
                                                   .indexWhere((element) =>
                                               element.title ==
-                                                  "CREATE VEHICLE TYPE");
+                                                  "UPDATE VEHICLE TYPE");
                                               if (index != -1) {
                                                 _controller
                                                     .selectedMenuItems[index]
@@ -230,7 +230,7 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                                                 _controller.currentPage.value =
                                                     CreateVehicleTypes();
                                                 _controller.menuBarRefresh(
-                                                    title: "CREATE VEHICLE TYPE",
+                                                    title: "UPDATE VEHICLE TYPE",
                                                     pageName:
                                                     CreateVehicleTypes());
                                               }
