@@ -2607,7 +2607,13 @@ class _CustomerModelAutocompleteState
         link: _layerLink,
         showWhenUnlinked: false,
         offset: Offset(0, height + 4),
-        child: TapRegion(
+        // TextFieldTapRegion (not a plain TapRegion): it joins the field's tap
+        // group, so clicking a suggestion is NOT an "outside tap" for the
+        // TextField. A plain TapRegion let EditableText's default
+        // onTapOutside unfocus on pointer-down, which hid the panel before the
+        // InkWell's onTap could fire — mouse picking silently did nothing
+        // while the arrow keys (which never leave the field) worked.
+        child: TextFieldTapRegion(
           onTapOutside: (_) => _focusNode.unfocus(),
           child: Material(
             elevation: 6,
