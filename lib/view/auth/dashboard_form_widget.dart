@@ -55,10 +55,13 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   // bool quotation = true;
   AllAddressesModel? _selectedPickup;
   AllAddressesModel? _selectedDrop;
-  // Kept focused (instead of a plain unfocus()) whenever the PICKUP/DROP
-  // autocomplete resigns focus, so F7/F8/F9 keep working — unfocus() moves
-  // primary focus to the ambient FocusScope *outside* CallbackShortcuts,
-  // and key events only bubble up from whichever node currently has focus.
+  // Kept focused (instead of a plain unfocus()) when the PICKUP/DROP
+  // autocomplete is dismissed by a tap outside it, so F7/F8/F9 keep working —
+  // unfocus() moves primary focus to the ambient FocusScope *outside*
+  // CallbackShortcuts, and key events only bubble up from whichever node
+  // currently has focus. NOT used when a suggestion is picked: that path keeps
+  // focus on the field itself, which is inside CallbackShortcuts anyway and
+  // preserves the Tab position.
   final FocusNode _shortcutFocusNode = FocusNode();
   // ────────── return-journey state
   ZoneObject? returnDropZone;
@@ -1909,6 +1912,12 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
   List<AllAddressesModel> _filtered = const [];
   int _highlighted = -1;
   bool _userTyped = false;
+
+  /// Set while [_pick] lets the callbacks write the chosen address into the
+  /// controller (onPickIndex → tapSelect does the actual write), so the text
+  /// listener does not mistake that write for fresh typing and re-open the
+  /// panel over a field the user just finished with.
+  bool _picking = false;
   late final ScrollController _scrollController;
   static String _display(AllAddressesModel a) {
     final n = a.name ?? '';
@@ -1949,7 +1958,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     if (!_focusNode.hasFocus) _hide();
   }
   void _onText() {
-    if (!_focusNode.hasFocus) return;
+    if (_picking || !_focusNode.hasFocus) return;
     final text = widget.controller.text.trim();
     if (text.isEmpty) {
       _userTyped = false;
@@ -2002,16 +2011,25 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
   void _pick(AllAddressesModel a) {
     final text = _display(a);
     _userTyped = false;
+    // onPickIndex (→ tapSelect) and onSelected both rewrite this controller,
+    // so every write stays inside the guard.
+    _picking = true;
     widget.controller.text = text;
-    widget.controller.selection = TextSelection.collapsed(offset: text.length);
     final idx = widget.items.indexOf(a);
     if (idx >= 0) widget.onPickIndex?.call(idx);
     widget.onSelected?.call(a);
-    if (widget.fallbackFocusNode != null) {
-      widget.fallbackFocusNode!.requestFocus();
-    } else {
-      _focusNode.unfocus();
-    }
+    _picking = false;
+    // Caret at the end of whatever text the callbacks settled on (tapSelect
+    // writes its own "NAME POSTCODE" form, not _display's).
+    widget.controller.selection =
+        TextSelection.collapsed(offset: widget.controller.text.length);
+    // Close the panel but KEEP keyboard focus on this field. Handing focus to
+    // fallbackFocusNode (the form-root shortcut node, which is skipTraversal)
+    // made the next Tab restart the traversal order from the first field.
+    // F7/F8/F9 still work: this field is a descendant of CallbackShortcuts, so
+    // key events bubble up from here just as they did from the root node.
+    _hide();
+    if (!_focusNode.hasFocus) _focusNode.requestFocus();
   }
   void _moveHighlight(int delta) {
     if (_filtered.isEmpty) return;
