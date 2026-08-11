@@ -1516,6 +1516,14 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           // Intercept Tab so focus jumps from the Home button directly to the
           // Driver panel's first focusable item, skipping any remaining items
           // inside this FocusTraversalGroup.
+          //
+          // Key-handling only: the inner ElevatedButton must own the single Tab
+          // stop. A focusable wrapper took the stop for itself, so the button's
+          // own focus node never became primary and Enter / Space had no
+          // ButtonActivateIntent target — the press did nothing. Key events
+          // still bubble up here from the focused button, so the Tab handoff
+          // below keeps working.
+          canRequestFocus: false,
           onKeyEvent: (node, event) {
             if (event is KeyDownEvent &&
                 event.logicalKey == LogicalKeyboardKey.tab &&
