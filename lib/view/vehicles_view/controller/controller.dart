@@ -53,10 +53,10 @@ class VehicleController extends GetxController {
   Uint8List? insuranceDocPic;
   Uint8List? mot2DocPic;
   RxBool companyVehicleLoader = false.obs;
-  String? phcVehicleExpireDate = "2000-01-01";
-  String? motExpiryExpireDate = "2000-01-01";
-  String? mot2ExpiryExpireDate = "2000-01-01";
-  String? insuranceExpiryDate = "2000-01-01";
+  String? phcVehicleExpireDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? motExpiryExpireDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? mot2ExpiryExpireDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? insuranceExpiryDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
   final phcVehicleExpireTimeController = TextEditingController();
   final motExpiryExpireTimeController = TextEditingController();
   final mot2ExpiryExpireTimeController = TextEditingController();
@@ -84,10 +84,11 @@ class VehicleController extends GetxController {
     motExpiryExpireTimeController.clear();
     mot2ExpiryExpireTimeController.clear();
     insuranceExpiryTimeController.clear();
-    phcVehicleExpireDate = "2000-01-01";
-    motExpiryExpireDate = "2000-01-01";
-    mot2ExpiryExpireDate = "2000-01-01";
-    insuranceExpiryDate = "2000-01-01";
+    phcVehicleExpireDate = "";
+    motExpiryExpireDate = "";
+    mot2ExpiryExpireDate = "";
+    insuranceExpiryDate = "";
+    datePickerKey++;
     update();
   }
 
@@ -166,6 +167,8 @@ class VehicleController extends GetxController {
         String message = singleVehicleData != null
             ? "COMPANY VEHICLE UPDATED SUCCESSFULLY"
             : "COMPANY VEHICLE ADDED SUCCESSFULLY";
+
+        clearCompanyVehicleForm();
         _clearAllFields();
         singleVehicleData = null;
         BotToast.showText(text: message);
@@ -223,16 +226,31 @@ class VehicleController extends GetxController {
     motExpiryExpireTimeController.text = data.motExpiryTime?.toString() ?? '';
     mot2ExpiryExpireTimeController.text = data.mot2ExpiryTime?.toString() ?? '';
     insuranceExpiryTimeController.text = data.insuranceExpiryTime?.toString() ?? '';
-    phcVehicleExpireDate = data.phcVehicleExpiry;
-    motExpiryExpireDate = data.motExpiry;
-    mot2ExpiryExpireDate = data.mot2Expiry;
-    insuranceExpiryDate = data.insuranceExpiry;
+    phcVehicleExpireDate = formatDate(data.phcVehicleExpiry);
+    motExpiryExpireDate = formatDate(data.motExpiry);
+    mot2ExpiryExpireDate = formatDate(data.mot2Expiry);
+    insuranceExpiryDate = formatDate(data.insuranceExpiry);
     phcVehicleDocPic = null;
     motDocPic = null;
     mot2DocPic = null;
     insuranceDocPic = null;
     singleVehicleData = data;
     update();
+  }
+
+
+  String formatDate(dynamic dateInput) {
+    if (dateInput == null || dateInput.toString().isEmpty) {
+      return "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
+    }
+
+    String apiDate = dateInput.toString();
+    List<String> parts = apiDate.split('-');
+    if (parts.length == 3 && parts[0].length <= 2) {
+      return "${parts[2]}-${parts[1]}-${parts[0]}";
+    }
+
+    return apiDate;
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>VEHICLE TYPES Model
@@ -380,6 +398,7 @@ class VehicleController extends GetxController {
   final accountWaitingChargesController = TextEditingController();
   final waitingTimeController = TextEditingController();
 
+  var datePickerKey = 0;
   void clearForm() {
     vehicleTypeController.clear();
     passengersController.clear();
