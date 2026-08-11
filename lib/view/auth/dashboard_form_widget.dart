@@ -2447,6 +2447,11 @@ class _CustomerModelAutocompleteState
   List<CustomerObject> _filtered = const [];
   int _highlighted = -1;
   bool _userTyped = false;
+
+  /// Set while [_pick] writes the chosen customer into the controllers, so the
+  /// text listener does not mistake that write for fresh typing and re-open
+  /// the panel over a field the user just finished with.
+  bool _picking = false;
   late final ScrollController _scrollController;
   @override
   void initState() {
@@ -2480,7 +2485,7 @@ class _CustomerModelAutocompleteState
     if (!_focusNode.hasFocus) _hide();
   }
   void _onText() {
-    if (!_focusNode.hasFocus) return;
+    if (_picking || !_focusNode.hasFocus) return;
     final text = widget.controller.text.trim();
     if (text.isEmpty) {
       _userTyped = false;
@@ -2534,10 +2539,21 @@ class _CustomerModelAutocompleteState
   void _pick(CustomerObject c) {
     final text = c.mobile ?? '';
     _userTyped = false;
+    // onSelected re-writes this same controller (plus name / email / tel), so
+    // both writes stay inside the guard.
+    _picking = true;
     widget.controller.text = text;
-    widget.controller.selection = TextSelection.collapsed(offset: text.length);
     widget.onSelected?.call(c);
-    _focusNode.unfocus();
+    _picking = false;
+    // Keep the caret at the end of the picked value.
+    widget.controller.selection =
+        TextSelection.collapsed(offset: widget.controller.text.length);
+    // Close the panel but KEEP keyboard focus on this field. Unfocusing here
+    // handed primary focus back to the enclosing scope, which made the next
+    // Tab restart the form's traversal order from the first field instead of
+    // continuing to the one after Mobile.
+    _hide();
+    if (!_focusNode.hasFocus) _focusNode.requestFocus();
   }
   void _moveHighlight(int delta) {
     if (_filtered.isEmpty) return;
