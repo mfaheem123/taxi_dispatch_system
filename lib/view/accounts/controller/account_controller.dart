@@ -766,7 +766,25 @@ class AccountController extends GetxController {
       update();
     }
   }
-
+void clearEscortFields() {
+  escortName.clear();
+  escortEmail.clear();
+  escortMobile.clear();
+  escortAddress.clear();
+  safeguardingBatch.clear();
+  PATBatch.clear();
+  firstAidBatch.clear();
+  DBSBatch.clear();
+  profileImg = null;
+  safeguardingDocPic = null;
+  patDocPic = null;
+  firstAidDocPic = null;
+  dbsDocPic = null;
+  selectedEscort = null;
+  listEscort();
+  isEscortUpdating.value = false;
+  selectedEscort = null;
+}
   escortDelete(int? id) async {
     var response = await Api().delete("escorts/delete/$id");
     if (response.statusCode == 200) {

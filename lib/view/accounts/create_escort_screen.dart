@@ -34,6 +34,11 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "vehicleTypes";
+    if (controller.selectedEscort == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.clearEscortFields();
+      });
+    }
   }
 
 
