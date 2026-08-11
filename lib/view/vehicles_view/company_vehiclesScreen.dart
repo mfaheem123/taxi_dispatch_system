@@ -227,7 +227,7 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                                         _controller.currentPage.value =
                                             CreateCompanyVehicle();
                                         _controller.menuBarRefresh(
-                                            title: "CREATE COMPANY VEHICLE",
+                                            title: "UPDATE COMPANY VEHICLE",
                                             pageName:
                                             CreateCompanyVehicle());
                                       }

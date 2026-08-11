@@ -96,6 +96,7 @@ import '../reports/pco_view/pco_screen.dart';
 import '../setting/company_configuration_view/company_configuration_view.dart';
 import '../setting/location_type_shortcuts.dart';
 import '../setting/template_settings.dart';
+import '../vehicles_view/controller/controller.dart';
 import '../vehicles_view/create_company_vehicle.dart';
 import '../vehicles_view/list_vehicle_type.dart';
 import '../vehicles_view/company_vehiclesScreen.dart';
@@ -1646,6 +1647,9 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('create_vehicle_type')){
+                if (Get.isRegistered<VehicleController>()) {
+                  Get.find<VehicleController>().clearForm();
+                }
                 controller.currentPage.value = CreateVehicleTypes();
                 controller.menuBarRefresh(
                     title: "CREATE VEHICLE TYPE", pageName: CreateVehicleTypes());
@@ -1683,6 +1687,9 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('create_company_vehicle')){
+                if (Get.isRegistered<VehicleController>()) {
+                  Get.find<VehicleController>().clearCompanyVehicleForm();
+                }
                 controller.currentPage.value = CreateCompanyVehicle();
                 controller.menuBarRefresh(
                     title: "CREATE COMPANY VEHICLE",

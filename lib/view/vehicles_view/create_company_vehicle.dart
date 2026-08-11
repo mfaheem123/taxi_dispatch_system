@@ -34,10 +34,13 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
   @override
   void initState() {
     // TODO: implement initState
-
     super.initState();
-
     shortCutKeyValue.value = "createCompanyVehicle";
+    if(_controller.singleVehicleData == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _controller.clearCompanyVehicleForm();
+      });
+    }
   }
 
   @override
