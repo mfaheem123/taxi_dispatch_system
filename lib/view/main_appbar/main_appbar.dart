@@ -30,9 +30,11 @@ import '../../tabbarview.dart';
 import '../accounts/Invoice/list_customer_invoices.dart';
 import '../accounts/account/account_view.dart';
 import '../accounts/account/create_escopt.dart';
+import '../accounts/controller/account_controller.dart';
 import '../accounts/list_of_accountScreen.dart';
 import '../administration/User/create_userScreen.dart';
 import '../administration/User/user_listScreen.dart';
+import '../administration/controller/administration_controller.dart';
 import '../administration/model/user_model.dart';
 import '../auth/Controller/auth_controller.dart';
 import '../booking_view/app_booking.dart';
@@ -95,6 +97,7 @@ import '../reports/pco_view/pco_screen.dart';
 import '../setting/company_configuration_view/company_configuration_view.dart';
 import '../setting/location_type_shortcuts.dart';
 import '../setting/template_settings.dart';
+import '../vehicles_view/controller/controller.dart';
 import '../vehicles_view/create_company_vehicle.dart';
 import '../vehicles_view/list_vehicle_type.dart';
 import '../vehicles_view/company_vehiclesScreen.dart';
@@ -1498,6 +1501,9 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('create_account')){
+                if (Get.isRegistered<AccountController>()) {
+                  Get.find<AccountController>().clearAccountForm();
+                }
                 controller.currentPage.value = AccountView();
                 controller.menuBarRefresh(
                     title: "CREATE ACCOUNT", pageName: AccountView());
@@ -1534,6 +1540,9 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('create_escort')){
+                if (Get.isRegistered<AccountController>()) {
+                  Get.find<AccountController>().clearEscortFields();
+                }
                 controller.currentPage.value = CreateEscortScreen();
                 controller.menuBarRefresh(
                     title: "CREATE ESCORT", pageName: CreateEscortScreen());
@@ -1648,6 +1657,9 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('create_vehicle_type')){
+                if (Get.isRegistered<VehicleController>()) {
+                  Get.find<VehicleController>().clearForm();
+                }
                 controller.currentPage.value = CreateVehicleTypes();
                 controller.menuBarRefresh(
                     title: "CREATE VEHICLE TYPE", pageName: CreateVehicleTypes());
@@ -1685,6 +1697,9 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('create_company_vehicle')){
+                if (Get.isRegistered<VehicleController>()) {
+                  Get.find<VehicleController>().clearCompanyVehicleForm();
+                }
                 controller.currentPage.value = CreateCompanyVehicle();
                 controller.menuBarRefresh(
                     title: "CREATE COMPANY VEHICLE",
@@ -1736,6 +1751,9 @@ class _MyHomePageState extends State<MyHomePage> {
               print(permissions);
               setState(() {
                 if(permissions.contains('create_user')){
+                  if (Get.isRegistered<AdministrationController>()) {
+                    Get.find<AdministrationController>().clearUserForm();
+                  }
                   controller.currentPage.value = CreateUserScreen();
                   controller.menuBarRefresh(
                       title: "CREATE USER", pageName: CreateUserScreen());
@@ -1775,6 +1793,9 @@ class _MyHomePageState extends State<MyHomePage> {
               permissions = Api().sp.read('all_permissions') ?? [];
               setState(() {
                 if(permissions.contains('create_subsidiary')){
+                  if (Get.isRegistered<AdministrationController>()) {
+                    Get.find<AdministrationController>().clearSubsidiaryForm();
+                  }
                   controller.currentPage.value = CreateSubsiDiary();
                   controller.menuBarRefresh(
                       title: "CREATE SUBSIDIARY", pageName: CreateSubsiDiary());

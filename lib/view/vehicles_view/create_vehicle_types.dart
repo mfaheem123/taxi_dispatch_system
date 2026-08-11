@@ -32,6 +32,11 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "vehicleTypes";
+    if(controller.singleVehicle == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.clearForm();
+      });
+    }
   }
 
   @override

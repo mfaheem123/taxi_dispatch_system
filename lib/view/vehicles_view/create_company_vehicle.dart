@@ -34,10 +34,13 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
   @override
   void initState() {
     // TODO: implement initState
-
     super.initState();
-
     shortCutKeyValue.value = "createCompanyVehicle";
+    if(_controller.singleVehicleData == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _controller.clearCompanyVehicleForm();
+      });
+    }
   }
 
   @override
@@ -125,10 +128,10 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                                           isDense: true,
                                           contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4)),
                                         // YAHAN BADLAO KIYA HAI: Direct reference check karne ki jagah ID se match karwaya hai
-                                          value: controller.selectVehicleValue != null
-                                              ? controller.allVehicleTypes.firstWhereOrNull(
-                                                  (element) => element.id == controller.selectVehicleValue!.id)
-                                              : null,
+                                        value: controller.selectVehicleValue == null
+                                            ? null
+                                            : controller.allVehicleTypes.firstWhereOrNull(
+                                                (element) => element.id == controller.selectVehicleValue!.id),
                                           hint: Text(
                                             "Select Vehicle Type",
                                             style: mozillaTextRegularText(fontSize: 12, color: DynamicColors.textClr.withOpacity(0.6)),
@@ -196,22 +199,27 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                               width: fieldWidth / 1.5,
                               child: SizedBox(height: 30,
                                 child: KeyboardDatePicker(
-                                  initialDate: DateTime.now(),
-                                  onChanged: (date) {
-                                    // jab bhi user change kare
-                                    setState(() {
-                                      controller.phcVehicleExpireDate = "${date.year}-${date.month}-${date.day}";
-                                      print(date);
-                                    });
-                                    },
-                                  onSubmitted: (date) {
-                                    // jab user enter press kare
-                                    setState(() {
-                                      controller.phcVehicleExpireDate = "${date.year}-${date.month}-${date.day}";
-                                    });
-                                    print("User pressed enter: $date");
-                                    },
-                                ),
+                                //   initialDate: DateTime.now(),
+                                //   onChanged: (date) {
+                                //     // jab bhi user change kare
+                                //     setState(() {
+                                //       controller.phcVehicleExpireDate = "${date.year}-${date.month}-${date.day}";
+                                //       print(date);
+                                //     });
+                                //     },
+                                //   onSubmitted: (date) {
+                                //     // jab user enter press kare
+                                //     setState(() {
+                                //       controller.phcVehicleExpireDate = "${date.year}-${date.month}-${date.day}";
+                                //     });
+                                //     print("User pressed enter: $date");
+                                //     },
+                                // ),
+                                  key: ValueKey("phc_vehicle_date_${controller.datePickerKey}"),
+                                  initialDate: DateTime.tryParse(controller.phcVehicleExpireDate ?? '') ?? DateTime.now(),
+                                  onChanged: (date) => controller.phcVehicleExpireDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                                  onSubmitted: (date) => controller.phcVehicleExpireDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                                )
                               ),
                             ),
                             labeledField(
@@ -248,19 +256,10 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                               child: SizedBox(
                                   height: 30,
                                   child: KeyboardDatePicker(
-                                    initialDate: DateTime.now(),
-                                    onChanged: (date) {
-                                      setState(() {
-                                        controller.motExpiryExpireDate = "${date.year}-${date.month}-${date.day}";
-                                        print(date);
-                                      });
-                                      },
-                                    onSubmitted: (date) {
-                                      setState(() {
-                                        controller.motExpiryExpireDate = "${date.year}-${date.month}-${date.day}";
-                                      });
-                                      print("User pressed enter: $date");
-                                      },
+                                    key: ValueKey("mot_date_${controller.datePickerKey}"),
+                                    initialDate: DateTime.tryParse(controller.motExpiryExpireDate ?? '') ?? DateTime.now(),
+                                    onChanged: (date) => controller.motExpiryExpireDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                                    onSubmitted: (date) => controller.motExpiryExpireDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
                                   )),
                             ),
                             labeledField(
@@ -295,19 +294,10 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                               column: true,
                               width: fieldWidth / 1.5,
                               child: SizedBox(height: 30, child: KeyboardDatePicker(
-                                initialDate: DateTime.now(),
-                                onChanged: (date) {
-                                  setState(() {
-                                    controller.mot2ExpiryExpireDate = "${date.year}-${date.month}-${date.day}";
-                                    print(date);
-                                  });
-                                  },
-                                onSubmitted: (date) {
-                                  setState(() {
-                                    controller.mot2ExpiryExpireDate = "${date.year}-${date.month}-${date.day}";
-                                  });
-                                  print("User pressed enter: $date");
-                                  },
+                                key: ValueKey("mot2_date_${controller.datePickerKey}"),
+                                initialDate: DateTime.tryParse(controller.mot2ExpiryExpireDate ?? '') ?? DateTime.now(),
+                                onChanged: (date) => controller.mot2ExpiryExpireDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                                onSubmitted: (date) => controller.mot2ExpiryExpireDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
                               )),
                             ),
 
@@ -342,17 +332,10 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                               column: true,
                               width: fieldWidth / 1.5,
                               child: SizedBox(height: 30, child: KeyboardDatePicker(
-                                initialDate: DateTime.now(),
-                                onChanged: (date) {
-                                  setState(() {
-                                    controller.insuranceExpiryDate = "${date.year}-${date.month}-${date.day}";
-                                  });
-                                  },
-                                onSubmitted: (date) {
-                                  setState(() {
-                                    controller.insuranceExpiryDate = "${date.year}-${date.month}-${date.day}";
-                                  });
-                                  },
+                                key: ValueKey("insurance_date_${controller.datePickerKey}"),
+                                initialDate: DateTime.tryParse(controller.insuranceExpiryDate ?? '') ?? DateTime.now(),
+                                onChanged: (date) => controller.insuranceExpiryDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                                onSubmitted: (date) => controller.insuranceExpiryDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
                               )),
                             ),
 

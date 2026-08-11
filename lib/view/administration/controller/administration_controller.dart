@@ -308,27 +308,32 @@ class AdministrationController extends GetxController {
               ? "SUBSIDIARY UPDATED SUCCESSFULLY"
               : "SUBSIDIARY ADDED SUCCESSFULLY"
       );
-      subsidiaryImg = null;
-      if (subsidiaryToUpdate != null) {
-        subsidiaryToUpdate!.logo = null;
-      }
-      subsidiaryToUpdate = null;
-      nameController.clear();
-      emailController.clear();
-      faxController.clear();
-      websiteController.clear();
-      telephoneController.clear();
-      emergencyContactController.clear();
-      subsiDiarypickerColor = Colors.blue;
-      subsiDiaryforegroundColor = Colors.blue;
-      companyController.clear();
-      currencyController.clear();
-      addressController.clear();
-      balanceController.clear();
-      isSubsiDiaryUpdating.value = false;
+      clearSubsidiaryForm();
       update();
       print(response.data);
     }
+  }
+
+  void clearSubsidiaryForm() {
+    subsidiaryImg = null;
+    if (subsidiaryToUpdate != null) {
+      subsidiaryToUpdate!.logo = null;
+    }
+    subsidiaryToUpdate = null;
+    nameController.clear();
+    emailController.clear();
+    faxController.clear();
+    websiteController.clear();
+    telephoneController.clear();
+    emergencyContactController.clear();
+    subsiDiarypickerColor = Colors.blue;
+    subsiDiaryforegroundColor = Colors.blue;
+    companyController.clear();
+    currencyController.clear();
+    addressController.clear();
+    balanceController.clear();
+    isSubsiDiaryUpdating.value = false;
+    update();
   }
 
 //// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Create User
@@ -453,23 +458,7 @@ class AdministrationController extends GetxController {
           ? "USER UPDATED SUCCESSFULLY"
           : "USER ADDED SUCCESSFULLY";
 
-      userNameController.clear();
-      passwordController.clear();
-      confirmController.clear();
-      userEmailController.clear();
-      phoneController.clear();
-      faxUserController.clear();
-      selectedRole = null;
-      selectedSubsidiary = null;
-      activeValue.value = false;
-      alldriversValue.value = false;
-      allbookingValue.value = false;
-      accuntValue.value = false;
-      receviverValue.value = false;
-      transferValue.value = false;
-
-      userProfileImg = null;
-      employee = null;
+      clearUserForm();
 
       BotToast.showText(text: message);
 
@@ -477,6 +466,27 @@ class AdministrationController extends GetxController {
     }
 
     isLoadUser(false);
+  }
+
+  void clearUserForm() {
+    userNameController.clear();
+    passwordController.clear();
+    confirmController.clear();
+    userEmailController.clear();
+    phoneController.clear();
+    faxUserController.clear();
+    selectedRole = null;
+    selectedSubsidiary = null;
+    activeValue.value = false;
+    alldriversValue.value = false;
+    allbookingValue.value = false;
+    accuntValue.value = false;
+    receviverValue.value = false;
+    transferValue.value = false;
+
+    userProfileImg = null;
+    employee = null;
+    update();
   }
 
   // createUser() async {

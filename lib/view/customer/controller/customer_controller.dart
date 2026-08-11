@@ -514,12 +514,11 @@ sendCompanyId: true,
       return;
     }
 
-    // 1. Sabse pehle state ko TRUE karein aur UI ko update karein taake button UPDATE ho jaye
     lostPropertyUpdateId.value = lostPropertyUpdate.id ?? 0;
     lostPropertyValue(true);
-    update(); // Yeh call button ka text badal degi instantly
+    update();
 
-    // 2. Form fields ki basic binding
+    //  Form fields  binding
     propertyNameController.text = lostPropertyUpdate.customer?.name ?? "";
     detailOfPropertyController.text = lostPropertyUpdate.itemDescription ?? "";
 
@@ -541,8 +540,8 @@ sendCompanyId: true,
         var detail = apiModel.lostProperty;
 
         if (detail != null) {
-          updateBookingId = detail.bookingId;
-          updateCustomerId = detail.customerId;
+          updateBookingId = detail.bookingId ?? lostPropertyUpdate.bookingId;
+          updateCustomerId = detail.customerId ?? lostPropertyUpdate.customerId;
           propertyMobileController.text = detail.mobile ?? "";
 
           propertyAddressController.text = detail.address1?.toString() ??

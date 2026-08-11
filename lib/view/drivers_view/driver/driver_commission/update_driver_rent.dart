@@ -151,7 +151,8 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                         width: fieldWidth,
                                         height: 30,
                                         child: KeyboardDatePicker(
-                                          initialDate: DateTime.tryParse(controller.rentTransactionDateController) ?? DateTime.now(),
+                                          key: ValueKey(controller.updateDriverRentByIdModel?.driverRent?.transactionDate),
+                                          initialDate: controller.updateDriverRentByIdModel?.driverRent?.transactionDate ?? DateTime.now(),
                                           onChanged: (date) {
                                             controller.rentTransactionDateController = date
                                                 .toIso8601String()

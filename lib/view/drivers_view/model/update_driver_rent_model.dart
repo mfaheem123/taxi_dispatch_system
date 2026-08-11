@@ -31,7 +31,7 @@ class DriverRentByIdModel {
 class DriverRent {
   int? id;
   String? transactionNumber;
-  String? transactionDate;
+  DateTime? transactionDate;
   int? driverId;
   String? jobsTotal;
   String? rentTotal;
@@ -70,7 +70,7 @@ class DriverRent {
   factory DriverRent.fromJson(Map<String, dynamic> json) => DriverRent(
     id: json["id"],
     transactionNumber: json["transaction_number"],
-    transactionDate: json["transaction_date"],
+    transactionDate: json["transaction_date"] == null ? null : DateTime.parse(json["transaction_date"]),
     driverId: json["driver_id"],
     jobsTotal: json["jobs_total"],
     rentTotal: json["rent_total"],
@@ -90,7 +90,7 @@ class DriverRent {
   Map<String, dynamic> toJson() => {
     "id": id,
     "transaction_number": transactionNumber,
-    "transaction_date": transactionDate,
+    "transaction_date": "${transactionDate!.year.toString().padLeft(4, '0')}-${transactionDate!.month.toString().padLeft(2, '0')}-${transactionDate!.day.toString().padLeft(2, '0')}",
     "driver_id": driverId,
     "jobs_total": jobsTotal,
     "rent_total": rentTotal,

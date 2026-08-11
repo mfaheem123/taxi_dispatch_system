@@ -5,9 +5,12 @@ import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:timepickerfield/timepickerfield.dart';
 import '../../../alert/restrict_drivers_alert.dart';
+import '../../alert/back_slash_alert.dart';
 import '../../alert/child_seats_alert.dart';
 import '../../alert/extra_fares_alert.dart';
 import '../../alert/extra_info_alert.dart';
+import '../../alert/f3_alert.dart';
+import '../../alert/f4_alert.dart';
 import '../../alert/search_booking.dart';
 import '../../component/marker_class.dart';
 import '../../component/text_field.dart';
@@ -55,11 +58,24 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   // bool quotation = true;
   AllAddressesModel? _selectedPickup;
   AllAddressesModel? _selectedDrop;
-  // Kept focused (instead of a plain unfocus()) whenever the PICKUP/DROP
-  // autocomplete resigns focus, so F7/F8/F9 keep working — unfocus() moves
-  // primary focus to the ambient FocusScope *outside* CallbackShortcuts,
-  // and key events only bubble up from whichever node currently has focus.
+  // Kept focused (instead of a plain unfocus()) when the PICKUP/DROP
+  // autocomplete is dismissed by a tap outside it, so F7/F8/F9 keep working —
+  // unfocus() moves primary focus to the ambient FocusScope *outside*
+  // CallbackShortcuts, and key events only bubble up from whichever node
+  // currently has focus. NOT used when a suggestion is picked: that path keeps
+  // focus on the field itself, which is inside CallbackShortcuts anyway and
+  // preserves the Tab position.
   final FocusNode _shortcutFocusNode = FocusNode();
+
+  /// True when keyboard focus sits inside a text field, so printable-key
+  /// shortcuts (the "/" help menu) can let the character be typed instead.
+  /// The F-key shortcuts need no such guard — a text field ignores those.
+  bool get _isTypingInTextField {
+    final ctx = FocusManager.instance.primaryFocus?.context;
+    return ctx != null &&
+        (ctx.widget is EditableText ||
+            ctx.findAncestorWidgetOfExactType<EditableText>() != null);
+  }
   // ────────── return-journey state
   ZoneObject? returnDropZone;
   // DashboardVehicleTypeObject? returnVehicleValue;
@@ -153,10 +169,51 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           if (controller.pickupController.text.isNotEmpty &&
               controller.dropOffController.text.isNotEmpty) {
             DashboardF8Alert.show();
+            return;
           }
         },
         // const SingleActivator(LogicalKeyboardKey.f8): _onMultiReservation,
         const SingleActivator(LogicalKeyboardKey.f9): () {
+          if (controller.pickupController.text.isNotEmpty &&
+              controller.dropOffController.text.isNotEmpty) {
+            DashboardF9Alert.show();
+          }
+          return;
+        },
+        const SingleActivator(LogicalKeyboardKey.f4): () {
+          if (controller.pickupController.text.isNotEmpty &&
+              controller.dropOffController.text.isNotEmpty) {
+            showDriverEarningsAlert();
+            return;
+          }
+        },
+        const SingleActivator(LogicalKeyboardKey.f3): () {
+          if (controller.pickupController.text.isNotEmpty &&
+              controller.dropOffController.text.isNotEmpty) {
+            showDriverInfoAlert();
+            return;
+          }
+        },
+        const SingleActivator(LogicalKeyboardKey.f6): () {
+          if (controller.pickupController.text.isNotEmpty &&
+              controller.dropOffController.text.isNotEmpty) {
+            DashboardF9Alert.show();
+          }
+        },
+        // HELP MENU is listed as "/" in the app's own shortcut sheet
+        // (back_slash_alert.dart). This used to read
+        // `LogicalKeyboardKey.lab == "/"`, which is a bool rather than a key:
+        // it did not compile, and a broken build() meant NONE of the shortcuts
+        // on this screen worked, not just this one.
+        const SingleActivator(LogicalKeyboardKey.slash): () {
+          // Unlike the F-keys, a printable key still reaches CallbackShortcuts
+          // while a text field holds focus, so stand aside there — otherwise
+          // typing "/" into an address or notes field pops the help dialog
+          // instead of inserting the character.
+          if (_isTypingInTextField) return;
+          showSystemShortcutsAlert();
+        },
+        const SingleActivator(LogicalKeyboardKey.f1): () {
           if (controller.pickupController.text.isNotEmpty &&
               controller.dropOffController.text.isNotEmpty) {
             DashboardF9Alert.show();
@@ -1513,6 +1570,14 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           // Intercept Tab so focus jumps from the Home button directly to the
           // Driver panel's first focusable item, skipping any remaining items
           // inside this FocusTraversalGroup.
+          //
+          // Key-handling only: the inner ElevatedButton must own the single Tab
+          // stop. A focusable wrapper took the stop for itself, so the button's
+          // own focus node never became primary and Enter / Space had no
+          // ButtonActivateIntent target — the press did nothing. Key events
+          // still bubble up here from the focused button, so the Tab handoff
+          // below keeps working.
+          canRequestFocus: false,
           onKeyEvent: (node, event) {
             if (event is KeyDownEvent &&
                 event.logicalKey == LogicalKeyboardKey.tab &&
@@ -1909,6 +1974,12 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
   List<AllAddressesModel> _filtered = const [];
   int _highlighted = -1;
   bool _userTyped = false;
+
+  /// Set while [_pick] lets the callbacks write the chosen address into the
+  /// controller (onPickIndex → tapSelect does the actual write), so the text
+  /// listener does not mistake that write for fresh typing and re-open the
+  /// panel over a field the user just finished with.
+  bool _picking = false;
   late final ScrollController _scrollController;
   static String _display(AllAddressesModel a) {
     final n = a.name ?? '';
@@ -1949,7 +2020,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     if (!_focusNode.hasFocus) _hide();
   }
   void _onText() {
-    if (!_focusNode.hasFocus) return;
+    if (_picking || !_focusNode.hasFocus) return;
     final text = widget.controller.text.trim();
     if (text.isEmpty) {
       _userTyped = false;
@@ -2002,16 +2073,25 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
   void _pick(AllAddressesModel a) {
     final text = _display(a);
     _userTyped = false;
+    // onPickIndex (→ tapSelect) and onSelected both rewrite this controller,
+    // so every write stays inside the guard.
+    _picking = true;
     widget.controller.text = text;
-    widget.controller.selection = TextSelection.collapsed(offset: text.length);
     final idx = widget.items.indexOf(a);
     if (idx >= 0) widget.onPickIndex?.call(idx);
     widget.onSelected?.call(a);
-    if (widget.fallbackFocusNode != null) {
-      widget.fallbackFocusNode!.requestFocus();
-    } else {
-      _focusNode.unfocus();
-    }
+    _picking = false;
+    // Caret at the end of whatever text the callbacks settled on (tapSelect
+    // writes its own "NAME POSTCODE" form, not _display's).
+    widget.controller.selection =
+        TextSelection.collapsed(offset: widget.controller.text.length);
+    // Close the panel but KEEP keyboard focus on this field. Handing focus to
+    // fallbackFocusNode (the form-root shortcut node, which is skipTraversal)
+    // made the next Tab restart the traversal order from the first field.
+    // F7/F8/F9 still work: this field is a descendant of CallbackShortcuts, so
+    // key events bubble up from here just as they did from the root node.
+    _hide();
+    if (!_focusNode.hasFocus) _focusNode.requestFocus();
   }
   void _moveHighlight(int delta) {
     if (_filtered.isEmpty) return;
@@ -2447,6 +2527,11 @@ class _CustomerModelAutocompleteState
   List<CustomerObject> _filtered = const [];
   int _highlighted = -1;
   bool _userTyped = false;
+
+  /// Set while [_pick] writes the chosen customer into the controllers, so the
+  /// text listener does not mistake that write for fresh typing and re-open
+  /// the panel over a field the user just finished with.
+  bool _picking = false;
   late final ScrollController _scrollController;
   @override
   void initState() {
@@ -2480,7 +2565,7 @@ class _CustomerModelAutocompleteState
     if (!_focusNode.hasFocus) _hide();
   }
   void _onText() {
-    if (!_focusNode.hasFocus) return;
+    if (_picking || !_focusNode.hasFocus) return;
     final text = widget.controller.text.trim();
     if (text.isEmpty) {
       _userTyped = false;
@@ -2534,10 +2619,21 @@ class _CustomerModelAutocompleteState
   void _pick(CustomerObject c) {
     final text = c.mobile ?? '';
     _userTyped = false;
+    // onSelected re-writes this same controller (plus name / email / tel), so
+    // both writes stay inside the guard.
+    _picking = true;
     widget.controller.text = text;
-    widget.controller.selection = TextSelection.collapsed(offset: text.length);
     widget.onSelected?.call(c);
-    _focusNode.unfocus();
+    _picking = false;
+    // Keep the caret at the end of the picked value.
+    widget.controller.selection =
+        TextSelection.collapsed(offset: widget.controller.text.length);
+    // Close the panel but KEEP keyboard focus on this field. Unfocusing here
+    // handed primary focus back to the enclosing scope, which made the next
+    // Tab restart the form's traversal order from the first field instead of
+    // continuing to the one after Mobile.
+    _hide();
+    if (!_focusNode.hasFocus) _focusNode.requestFocus();
   }
   void _moveHighlight(int delta) {
     if (_filtered.isEmpty) return;
@@ -2607,7 +2703,13 @@ class _CustomerModelAutocompleteState
         link: _layerLink,
         showWhenUnlinked: false,
         offset: Offset(0, height + 4),
-        child: TapRegion(
+        // TextFieldTapRegion (not a plain TapRegion): it joins the field's tap
+        // group, so clicking a suggestion is NOT an "outside tap" for the
+        // TextField. A plain TapRegion let EditableText's default
+        // onTapOutside unfocus on pointer-down, which hid the panel before the
+        // InkWell's onTap could fire — mouse picking silently did nothing
+        // while the arrow keys (which never leave the field) worked.
+        child: TextFieldTapRegion(
           onTapOutside: (_) => _focusNode.unfocus(),
           child: Material(
             elevation: 6,
