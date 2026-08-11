@@ -25,6 +25,10 @@ class CustomerInvoiceController extends GetxController {
   final customerEmailController = TextEditingController();
   final customerMobileController = TextEditingController();
   final customerTelephoneController = TextEditingController();
+  final updateNameController = TextEditingController();
+  final updateEmailController = TextEditingController();
+  final updateMobileController = TextEditingController();
+  final updateTelephoneController = TextEditingController();
 
   DriverCommissionPaymentModel? paymentTypeModel;
   List<int> selectedPaymentTypeIds = [];
@@ -363,10 +367,10 @@ class CustomerInvoiceController extends GetxController {
       } else {
         customerInvoiceDueDateController = "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
       }
-      customerNameController.text = data?.customer?.name ?? "";
-      customerEmailController.text = data?.customer?.email ?? "";
-      customerMobileController.text = data?.customer?.mobile ?? "";
-      customerTelephoneController.text = data?.customer?.telephone ?? "";
+      updateNameController.text = data?.customer?.name ?? "";
+      updateEmailController.text = data?.customer?.email ?? "";
+      updateMobileController.text = data?.customer?.mobile ?? "";
+      updateTelephoneController.text = data?.customer?.telephone ?? "";
     }
     isLoadingUpdate = false;
     update();
@@ -425,10 +429,10 @@ class CustomerInvoiceController extends GetxController {
     customerInvoiceDateController = "";
     customerInvoiceDueDateController =
     "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
-    customerNameController.clear();
-    customerEmailController.clear();
-    customerMobileController.clear();
-    customerTelephoneController.clear();
+    updateNameController.clear();
+    updateEmailController.clear();
+    updateMobileController.clear();
+    updateTelephoneController.clear();
     update();
   }
 

@@ -290,7 +290,7 @@ class _UpdateCustomerInvoiceState extends State<UpdateCustomerInvoice> {
                                     color: Colors.grey.shade100,
                                   ),
                                   child: Text((
-                                      controller.customerNameController.text).toUpperCase(),
+                                      controller.updateNameController.text).toUpperCase(),
                                     style: TextStyle(color: Colors.black87),
                                   ),
                                 ),
@@ -312,7 +312,7 @@ class _UpdateCustomerInvoiceState extends State<UpdateCustomerInvoice> {
                                     color: Colors.grey.shade100,
                                   ),
                                   child: Text((
-                                      controller.customerEmailController.text).toUpperCase(),
+                                      controller.updateEmailController.text).toUpperCase(),
                                     style: TextStyle(color: Colors.black87),
                                   ),
                                 ),
@@ -334,7 +334,7 @@ class _UpdateCustomerInvoiceState extends State<UpdateCustomerInvoice> {
                                     color: Colors.grey.shade100,
                                   ),
                                   child: Text((
-                                      controller.customerMobileController.text).toUpperCase(),
+                                      controller.updateMobileController.text).toUpperCase(),
                                     style: TextStyle(color: Colors.black87),
                                   ),
                                 ),
@@ -356,7 +356,7 @@ class _UpdateCustomerInvoiceState extends State<UpdateCustomerInvoice> {
                                     color: Colors.grey.shade100,
                                   ),
                                   child: Text((
-                                      controller.customerTelephoneController.text).toUpperCase(),
+                                      controller.updateTelephoneController.text).toUpperCase(),
                                     style: TextStyle(color: Colors.black87),
                                   ),
                                 ),

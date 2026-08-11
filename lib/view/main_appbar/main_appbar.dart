@@ -30,6 +30,7 @@ import '../../tabbarview.dart';
 import '../accounts/Invoice/list_customer_invoices.dart';
 import '../accounts/account/account_view.dart';
 import '../accounts/account/create_escopt.dart';
+import '../accounts/controller/account_controller.dart';
 import '../accounts/list_of_accountScreen.dart';
 import '../administration/User/create_userScreen.dart';
 import '../administration/User/user_listScreen.dart';
@@ -1489,6 +1490,9 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('create_account')){
+                if (Get.isRegistered<AccountController>()) {
+                  Get.find<AccountController>().clearAccountForm();
+                }
                 controller.currentPage.value = AccountView();
                 controller.menuBarRefresh(
                     title: "CREATE ACCOUNT", pageName: AccountView());
@@ -1525,6 +1529,9 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
               if(permissions.contains('create_escort')){
+                if (Get.isRegistered<AccountController>()) {
+                  Get.find<AccountController>().clearEscortFields();
+                }
                 controller.currentPage.value = CreateEscortScreen();
                 controller.menuBarRefresh(
                     title: "CREATE ESCORT", pageName: CreateEscortScreen());
