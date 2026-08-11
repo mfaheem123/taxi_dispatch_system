@@ -229,9 +229,104 @@ class VehicleInformation extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
 
+                    if (controller.imageList.isEmpty &&
+                        (controller.singleDriverData?.driver?.vehicle?.logBook?.logBookDocument == null ||
+                            controller.singleDriverData!.driver!.vehicle!.logBook!.logBookDocument!.isEmpty))
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(28),
+                            child: labeledTextField(context, isMobile, AppText.logBook, controller.vehicleLogBookController,
+                                width: fieldWidth * 1.9,
+                                textInputAction: TextInputAction.next,
+                                readOnly: controller.vehicleInformation.value,
+                                borderColor: controller.vehicleInformation.value ? Colors.grey : DynamicColors.primaryClr,
+                                borderWidth: controller.vehicleInformation.value ? 0 : 2,
+                                column: true),
+                          ),
+                          const Spacer(),
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(29),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text(
+                                  "LOG BOOK DOCUMENT",
+                                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 4),
+                                Container(
+                                  height: 35,
+                                  width: fieldWidth * 1.9,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          if (controller.vehicleInformation.value == false) {
+                                            controller.pickImage();
+                                          }
+                                        },
+                                        child: Container(
+                                          height: double.infinity,
+                                          color: Colors.grey[300],
+                                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                                          alignment: Alignment.center,
+                                          child: const Text(
+                                            "CHOOSE FILE",
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          controller.imageList.isNotEmpty
+                                              ? "FILE SELECTED (1)"
+                                              : "NO FILE CHOSEN",
+                                          style: const TextStyle(fontSize: 11, color: Colors.black54),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          controller.imageList.clear();
+                                          controller.update();
+                                        },
+                                        child: Container(
+                                          height: double.infinity,
+                                          color: Colors.red,
+                                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                                          child: const Icon(
+                                            Icons.delete,
+                                            color: Colors.white,
+                                            size: 16,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
+                    else
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                         /// Tab order 28 - Log Book field (sequential after Owner)
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(28),
@@ -243,7 +338,8 @@ class VehicleInformation extends StatelessWidget {
                               borderWidth: controller.vehicleInformation.value ? 0 : 2,
                               column: true),
                         ),
-                        const Spacer(),
+                        const SizedBox(height: 16),
+
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(29),
                           child: Column(
@@ -318,6 +414,58 @@ class VehicleInformation extends StatelessWidget {
                         ),
                       ],
                     ),
+                    const Spacer(),
+                          SizedBox(
+                            width: fieldWidth * 1.9,
+                            height: 140,
+                            child: Stack(
+                              children: [
+                                Container(
+                                  width: fieldWidth * 1.9,
+                                  height: 140,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey.shade300),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(6),
+                                    child: controller.imageList.isNotEmpty
+                                        ? Image.memory(
+                                      controller.imageList[0].bytes,
+                                      fit: BoxFit.cover,
+                                    )
+                                        : Image.network(
+                                      controller.singleDriverData!.driver!.vehicle!.logBook!.logBookDocument!,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                if (controller.imageList.isNotEmpty)
+                                  Positioned(
+                                    top: 6,
+                                    right: 6,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        controller.imageList.removeAt(0);
+                                        controller.update();
+                                      },
+                                      child: CircleAvatar(
+                                        radius: 12,
+                                        backgroundColor: DynamicColors.whiteClr,
+                                        child: Icon(
+                                          Icons.close,
+                                          color: DynamicColors.primaryClr,
+                                          size: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+
                   ],
                 ),
               ),
