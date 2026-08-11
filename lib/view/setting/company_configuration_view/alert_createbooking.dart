@@ -9,6 +9,7 @@ import 'package:dashboard_new1/view/dashboard_view/Controller/dashboard_controll
 import 'package:dashboard_new1/view/dashboard_view/booking_table.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:timepickerfield/timepickerfield.dart';
 
 import '../../../component/color.dart';
 import '../../../component/customButton.dart';
@@ -30,6 +31,42 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
   @override
 
   final int totalRows = 3;
+
+  /// Same widget, panel and flow as the dashboard form's TIME field
+  /// (dashboard_form_widget.dart `_timeField`): a read-only field that opens a
+  /// HOURS / MINUTES dropdown panel on tap or Enter, Tab moves between the two
+  /// dropdowns, OK confirms and writes a zero-padded 24-hour `HH:mm` back into
+  /// [controller], CANCEL / Escape closes without changing anything.
+  ///
+  /// Replaces the old CustomTimePicker here, which was click-only and wrote
+  /// `"HH:mm "` with a trailing space — unlike every other writer of these two
+  /// controllers (see DashboardController.resetMultiReservationFields).
+  Widget _timeField(TextEditingController controller) {
+    return SizedBox(
+      height: 30,
+      child: TimePickerField(
+        controller: controller,
+        accent: DynamicColors.primaryClr,
+        textStyle: const TextStyle(fontSize: 12, color: Colors.black87),
+        // The field writes the value itself; this just refreshes the alert.
+        onChanged: (_) => setState(() {}),
+        decoration: InputDecoration(
+          isDense: true,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+          // Blue outline at radius 4, matching the FROM / TO KeyboardDatePickers
+          // sitting next to it in this row.
+          border: _timeFieldBorder(),
+          enabledBorder: _timeFieldBorder(),
+          focusedBorder: _timeFieldBorder(width: 2),
+        ),
+      ),
+    );
+  }
+
+  OutlineInputBorder _timeFieldBorder({double width = 1}) => OutlineInputBorder(
+        borderRadius: BorderRadius.circular(4),
+        borderSide: BorderSide(color: Colors.blue, width: width),
+      );
 
   Widget build(BuildContext context) {
     return GetBuilder<DashboardController>(builder: (controller) {
@@ -168,16 +205,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           // width: fieldWidth / 2.0,
                           // width: 90,
                           width: isHighRes ? 110 : 90,
-                          child: SizedBox(height: 30, child: CustomTimePicker(
-                            controller: controller.multiReservationToTimeController, // optional
-                            onTimeSelected: (time) {
-                              controller.multiReservationToTimeController.text = time;
-                              setState(() {
-                                print(controller.multiReservationToTimeController.text);
-                              });
-                            },
-
-                          )),
+                          child: _timeField(
+                              controller.multiReservationToTimeController),
                         ),
                         Visibility(
                           visible: controller.jourValue == 'W/R' ? true : false,
@@ -189,16 +218,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                             // width: fieldWidth / 2.0,
                             // width: 90,
                             width: isHighRes ? 110 : 90,
-                            child: SizedBox(height: 30, child: CustomTimePicker(
-                              controller: controller.returnMultiReservationToTimeController, // optional
-                              onTimeSelected: (time) {
-                                controller.returnMultiReservationToTimeController.text = time;
-                                setState(() {
-                                  print(controller.returnMultiReservationToTimeController.text);
-                                });
-                              },
-
-                            )),
+                            child: _timeField(controller
+                                .returnMultiReservationToTimeController),
                           ),
                         ),
                         CustomButton(
