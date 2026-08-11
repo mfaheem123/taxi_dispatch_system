@@ -128,10 +128,10 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                                           isDense: true,
                                           contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4)),
                                         // YAHAN BADLAO KIYA HAI: Direct reference check karne ki jagah ID se match karwaya hai
-                                          value: controller.selectVehicleValue != null
-                                              ? controller.allVehicleTypes.firstWhereOrNull(
-                                                  (element) => element.id == controller.selectVehicleValue!.id)
-                                              : null,
+                                        value: controller.selectVehicleValue == null
+                                            ? null
+                                            : controller.allVehicleTypes.firstWhereOrNull(
+                                                (element) => element.id == controller.selectVehicleValue!.id),
                                           hint: Text(
                                             "Select Vehicle Type",
                                             style: mozillaTextRegularText(fontSize: 12, color: DynamicColors.textClr.withOpacity(0.6)),

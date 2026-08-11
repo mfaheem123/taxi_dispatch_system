@@ -200,10 +200,13 @@ class VehicleController extends GetxController {
   companyDataBinding({Vehicles? data}) async {
     if (data == null) return;
 
-    // filteredVehicleTypes me se id match karwa kar selectVehicleValue set karenge
+    if (allVehicleTypes.isEmpty) {
+      await getVehicleTypes();
+    }
+
     if (data.vehicleTypeId != null) {
       selectVehicleValue = allVehicleTypes.firstWhereOrNull(
-              (element) => element.id == data.vehicleTypeId
+            (element) => element.id == data.vehicleTypeId,
       );
     }
 
