@@ -13,7 +13,6 @@ import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/multipart/multipart_file.dart' as dio
     hide MultipartFile;
 import 'package:dio/dio.dart' as dio_package;
-import 'package:intl/intl.dart';
 import 'dart:html' as html;
 import '../../../Model/image_model.dart';
 import '../../administration/model/list_subsDiary.dart';
@@ -785,16 +784,6 @@ void clearEscortFields() {
   listEscort();
   isEscortUpdating.value = false;
   selectedEscort = null;
-  final now = DateTime.now();
-  final currentDate = "${now.year}-${now.month}-${now.day}";
-
-  dobDate = currentDate;
-  safeguardingExpiryExpireDate = currentDate;
-  patExpiryDate = currentDate;
-  firstAidDate = currentDate;
-
-  // Time field -> set to current time
-  dbsExpireTime.text = DateFormat.jm().format(now);
 }
   escortDelete(int? id) async {
     var response = await Api().delete("escorts/delete/$id");
