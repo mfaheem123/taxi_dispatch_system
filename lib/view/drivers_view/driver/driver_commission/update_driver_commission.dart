@@ -157,7 +157,8 @@ class _UpdateDriverCommissionScreenState
                                     width: fieldWidth,
                                     height: 30,
                                     child: KeyboardDatePicker(
-                                      initialDate: DateTime.now(),
+                                      key: ValueKey(controller.updateDriverCommissionByIdModel?.driverCommission?.transactionDate),
+                                      initialDate: controller.updateDriverCommissionByIdModel?.driverCommission?.transactionDate ?? DateTime.now(),
                                       onChanged: (date) {
                                         controller
                                                 .updateTransactionDateController =
