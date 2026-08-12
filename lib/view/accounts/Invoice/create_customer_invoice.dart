@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:html' as html;
 import 'package:dashboard_new1/component/responsive_datatable_widget.dart';
 import 'package:excel/excel.dart' show Excel, Sheet, CellValue, TextCellValue;
+import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:pdf/widgets.dart' as pw;
 
@@ -13,6 +14,7 @@ import 'package:get/get.dart';
 
 import '../../../component/color.dart';
 import '../../../component/datatable_widget.dart';
+import '../../../component/editable_cell_widget.dart';
 import '../../../component/networks/api.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
@@ -508,6 +510,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                             initialDate: controller.filterFromDate.isNotEmpty
                                 ? DateTime.parse(controller.filterFromDate)
                                 : DateTime(DateTime.now().year, DateTime.now().month, 1),
+                            allowFutureDates: false,
                             onChanged: (date) {
                               controller.filterFromDate = date.toIso8601String().split("T").first;
                               controller.update();
@@ -764,27 +767,28 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                       final isRowSelected =
                       controller.selectedIds.contains(booking.id.toString());
 
-                      Widget editableCell(
-                          dynamic initialValue, Function(String) onChanged) {
-                        return Center(
-                          child: SizedBox(
-                            width: 50,
-                            child: TextFormField(
-                              initialValue: initialValue?.toString() ?? "0",
-                              keyboardType: TextInputType.number,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 11),
-                              decoration: const InputDecoration(
-                                isDense: true,
-                                contentPadding: EdgeInsets.symmetric(
-                                    vertical: 6, horizontal: 4),
-                                border: OutlineInputBorder(),
-                              ),
-                              onChanged: onChanged,
-                            ),
-                          ),
-                        );
-                      }
+                      // Widget editableCell(
+                      //     dynamic initialValue, Function(String) onChanged) {
+                      //   return Center(
+                      //     child: SizedBox(
+                      //       width: 50,
+                      //       child: TextFormField(
+                      //         initialValue: initialValue?.toString() ?? "0",
+                      //         keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      //         textAlign: TextAlign.center,
+                      //         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))],
+                      //         style: const TextStyle(fontSize: 11),
+                      //         decoration: const InputDecoration(
+                      //           isDense: true,
+                      //           contentPadding: EdgeInsets.symmetric(
+                      //               vertical: 6, horizontal: 4),
+                      //           border: OutlineInputBorder(),
+                      //         ),
+                      //         onChanged: onChanged,
+                      //       ),
+                      //     ),
+                      //   );
+                      // }
 
                       return [
                         Center(
@@ -808,30 +812,72 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                         (booking.vehicleType?.name ?? "").toUpperCase(),
                         (booking.journeyType?.journeyType ?? "").toUpperCase(),
                         (booking.paymentType?.name ?? "").toUpperCase(),
-                        editableCell(booking.fares, (val) {
-                          booking.fares = val;
-                          controller.recalculateTotalRow(booking);
-                        }),
-                        editableCell(booking.parkingCharges, (val) {
-                          booking.parkingCharges = val;
-                          controller.recalculateTotalRow(booking);
-                        }),
-                        editableCell(booking.waitingCharges, (val) {
-                          booking.waitingCharges = val;
-                          controller.recalculateTotalRow(booking);
-                        }),
-                        editableCell(booking.extraDropCharges, (val) {
-                          booking.extraDropCharges = val;
-                          controller.recalculateTotalRow(booking);
-                        }),
-                        editableCell(booking.meetAndGreet, (val) {
-                          booking.meetAndGreet = val;
-                          controller.recalculateTotalRow(booking);
-                        }),
-                        editableCell(booking.congestionCharges, (val) {
-                          booking.congestionCharges = val;
-                          controller.recalculateTotalRow(booking);
-                        }),
+                        EditableCellWidget(
+                          initialValue: booking.fares,
+                          onChanged: (val) {
+                            booking.fares = val;
+                            controller.recalculateTotalRow(booking);
+                          },
+                        ),
+                        EditableCellWidget(
+                          initialValue: booking.parkingCharges,
+                          onChanged: (val) {
+                            booking.parkingCharges = val;
+                            controller.recalculateTotalRow(booking);
+                          },
+                        ),
+                        EditableCellWidget(
+                          initialValue: booking.waitingCharges,
+                          onChanged: (val) {
+                            booking.waitingCharges = val;
+                            controller.recalculateTotalRow(booking);
+                          },
+                        ),
+                        EditableCellWidget(
+                          initialValue: booking.extraDropCharges,
+                          onChanged: (val) {
+                            booking.extraDropCharges = val;
+                            controller.recalculateTotalRow(booking);
+                          },
+                        ),
+                        EditableCellWidget(
+                          initialValue: booking.meetAndGreet,
+                          onChanged: (val) {
+                            booking.meetAndGreet = val;
+                            controller.recalculateTotalRow(booking);
+                          },
+                        ),
+                        EditableCellWidget(
+                          initialValue: booking.congestionCharges,
+                          onChanged: (val) {
+                            booking.congestionCharges = val;
+                            controller.recalculateTotalRow(booking);
+                          },
+                        ),
+                        // editableCell(booking.fares, (val) {
+                        //   booking.fares = val;
+                        //   controller.recalculateTotalRow(booking);
+                        // }),
+                        // editableCell(booking.parkingCharges, (val) {
+                        //   booking.parkingCharges = val;
+                        //   controller.recalculateTotalRow(booking);
+                        // }),
+                        // editableCell(booking.waitingCharges, (val) {
+                        //   booking.waitingCharges = val;
+                        //   controller.recalculateTotalRow(booking);
+                        // }),
+                        // editableCell(booking.extraDropCharges, (val) {
+                        //   booking.extraDropCharges = val;
+                        //   controller.recalculateTotalRow(booking);
+                        // }),
+                        // editableCell(booking.meetAndGreet, (val) {
+                        //   booking.meetAndGreet = val;
+                        //   controller.recalculateTotalRow(booking);
+                        // }),
+                        // editableCell(booking.congestionCharges, (val) {
+                        //   booking.congestionCharges = val;
+                        //   controller.recalculateTotalRow(booking);
+                        // }),
                         Center(child: Text("£ ${booking.totalCharges ?? "0"}")),
                         Center(
                           child: CustomButton(
