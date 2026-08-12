@@ -3,6 +3,7 @@
 
 
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/escape_dismissible.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_field.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
@@ -35,7 +36,10 @@ class _ChildSeatsAlertState extends State<ChildSeatsAlert> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
+    // Escape closes the alert: see EscapeDismissible for why the framework's
+    // own Escape-to-dismiss never reached these dialogs.
+    return EscapeDismissible(
+      child: Dialog(
       insetPadding: EdgeInsets.all(20),
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -232,6 +236,7 @@ class _ChildSeatsAlertState extends State<ChildSeatsAlert> {
             ),
           );
         }
+      ),
       ),
     );
   }

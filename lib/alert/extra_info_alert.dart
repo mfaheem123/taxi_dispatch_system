@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../component/color.dart';
+import '../component/escape_dismissible.dart';
 import '../component/customButton.dart';
 import '../component/textStyle.dart';
 import '../component/text_field.dart';
@@ -32,7 +33,10 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
+    // Escape closes the alert: see EscapeDismissible for why the framework's
+    // own Escape-to-dismiss never reached these dialogs.
+    return EscapeDismissible(
+      child: Dialog(
       insetPadding: EdgeInsets.all(20),
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -377,6 +381,7 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
             ),
           );
         }
+      ),
       ),
     );
   }

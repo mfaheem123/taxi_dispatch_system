@@ -2,6 +2,7 @@
 
 
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/escape_dismissible.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -33,7 +34,11 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
+    // Escape closes the alert. This one is opened with
+    // `barrierDismissible: false`, which also switches OFF Flutter's built-in
+    // Escape handling — see EscapeDismissible.
+    return EscapeDismissible(
+      child: Dialog(
       insetPadding: EdgeInsets.all(20),
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -279,6 +284,7 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
             ),
           );
         }
+      ),
       ),
     );
   }
