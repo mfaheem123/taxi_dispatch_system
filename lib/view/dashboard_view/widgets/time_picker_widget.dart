@@ -466,13 +466,22 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
 class KeyboardDatePicker extends StatefulWidget {
   final DateTime initialDate;
   final void Function(DateTime)? onChanged;
-  final void Function(DateTime)? onSubmitted;
+  final void Function(DateTime)? onSubmitted; // optional enter press
   Color? borderClr;
+
   final double fontSize;
   final double iconSize;
 
-  // Static flag - track کریں کہ date picker focused ہے یا نہیں
-  static bool isAnyDatePickerFocused = false;
+  /// When true (default) past dates are selectable — the calendar shows dates
+  /// before today as well as after. Pass false to hide/disable everything
+  /// before today so only today and future dates can be picked.
+  final bool allowPastDates;
+
+  /// When true (default) future dates are selectable. Pass false to
+  /// hide/disable everything after today so only today and past dates can be
+  /// picked.
+  final bool allowFutureDates;
+
 
   KeyboardDatePicker({
     Key? key,
@@ -480,14 +489,17 @@ class KeyboardDatePicker extends StatefulWidget {
     this.onChanged,
     this.onSubmitted,
     this.borderClr,
-    this.fontSize = 12,
-    this.iconSize = 14,
+    this.fontSize = 12, // default font size
+    this.iconSize = 14, // default icon size
+    this.allowPastDates = true,
+    this.allowFutureDates = true,
   })  : initialDate = initialDate ?? DateTime(2000, 1, 1),
         super(key: key);
 
   @override
   State<KeyboardDatePicker> createState() => _KeyboardDatePickerState();
 }
+
 
 class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
   late int day;
@@ -504,21 +516,47 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
     day = widget.initialDate.day;
     month = widget.initialDate.month;
     year = widget.initialDate.year;
+    // normalize in case initial invalid
     _clampDay();
-
-    // Focus listener add کریں
-    _focusNode.addListener(_onFocusChange);
+    _clampToBounds();
   }
 
-  void _onFocusChange() {
-    setState(() {
-      KeyboardDatePicker.isAnyDatePickerFocused = _focusNode.hasFocus;
-    });
+  DateTime get _today {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day);
+  }
+
+  /// Earliest selectable date. Null when past dates are allowed.
+  DateTime? get _minDate => widget.allowPastDates ? null : _today;
+
+  /// Latest selectable date. Null when future dates are allowed.
+  DateTime? get _maxDate => widget.allowFutureDates ? null : _today;
+
+  DateTime get _currentDate => DateTime(year, month, day);
+
+  void _setDate(DateTime date) {
+    year = date.year;
+    month = date.month;
+    day = date.day;
+    _buffers[0] = '';
+    _buffers[1] = '';
+    _buffers[2] = '';
+  }
+
+  /// Pull the current value back inside [_minDate] / [_maxDate] when past or
+  /// future dates are disabled.
+  void _clampToBounds() {
+    final min = _minDate;
+    final max = _maxDate;
+    if (min != null && _currentDate.isBefore(min)) {
+      _setDate(min);
+    } else if (max != null && _currentDate.isAfter(max)) {
+      _setDate(max);
+    }
   }
 
   @override
   void dispose() {
-    _focusNode.removeListener(_onFocusChange);
     _focusNode.dispose();
     super.dispose();
   }
@@ -569,6 +607,7 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
         _clampDay();
       }
       _buffers[activePart] = ''; // clear buffer when using arrows
+      _clampToBounds();
       _notifyChanged();
     });
   }
@@ -664,7 +703,10 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
   }
 
   void _onEnter() {
-    widget.onSubmitted?.call(DateTime(year, month, day));
+    // typed values are only validated against the bounds on submit,
+    // so partially typed dates aren't fought while the user is typing.
+    setState(_clampToBounds);
+    widget.onSubmitted?.call(_currentDate);
   }
 
   Widget _partBox(String text, bool active, {VoidCallback? onTap}) {
@@ -736,11 +778,17 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
 
 
   Future<void> _selectDate(BuildContext context) async {
+    final firstDate = _minDate ?? DateTime(2000);
+    final lastDate = _maxDate ?? DateTime(2101);
+    var initial = _currentDate;
+    if (initial.isBefore(firstDate)) initial = firstDate;
+    if (initial.isAfter(lastDate)) initial = lastDate;
+
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      initialDate: initial,
+      firstDate: firstDate,
+      lastDate: lastDate,
     );
     if (picked != null) {
       setState(() {

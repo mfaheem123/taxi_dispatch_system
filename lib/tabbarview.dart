@@ -1,4 +1,5 @@
 import 'package:dashboard_new1/component/color.dart';
+export 'package:dashboard_new1/Model/selected_dropdown.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'component/textStyle.dart';
@@ -398,9 +399,6 @@ class MenuItemData {
 // }
 
 
-class SelectedDropdown {
-  String? title;
-  var category;
-  bool selectedItem = false;
-  SelectedDropdown({this.title,this.selectedItem = false, this.category});
-}
+// SelectedDropdown now lives in Model/selected_dropdown.dart, next to the
+// openMenuPage() logic that maintains the strip. Re-exported here so the files
+// that import this one for it keep compiling.

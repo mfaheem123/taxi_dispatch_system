@@ -167,7 +167,7 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
                                     style: mozillaTextSemiBoldText(
                                         fontSize: 14, color: Colors.white),
                                     onTap: () {
-                                      controller.fobBooking(_controller.dashboardTableModelData?.data!.first.id, driver.id);
+                                      controller.fobBooking(widget.bookingItem.id, driver.id);
                                     },
                                   ),
                                 ),

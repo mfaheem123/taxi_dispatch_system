@@ -433,35 +433,10 @@ class DashboardController extends GetxController {
   /// already there is selected and shown instead.
   menuBarRefresh({title, pageName}) {
     // if(selectedMenuItems.length < 3){
-    int index =
-        selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-    if (index != -1) {
-      selectedMenuItems[index].selectedItem = false;
+    final show = openMenuPage(selectedMenuItems, title: title, page: pageName);
+    if (show != null) {
+      currentPage.value = show;
     }
-
-    // Matched on the chip title: that is the identity the user sees, and the
-    // key the call sites that already dedupe by hand use (see
-    // list_of_accountScreen.dart's "UPDATE ACCOUNT"). The widgets cannot be
-    // compared — every caller builds a fresh instance, so `==` never matches.
-    // Every caller passes a title today; an untitled chip is not something to
-    // match on, so it just gets added.
-    final existing = title == null
-        ? -1
-        : selectedMenuItems.indexWhere((item) => item.title == title);
-    if (existing != -1) {
-      selectedMenuItems[existing].selectedItem = true;
-      if (pageName != null) {
-        // Point the chip at the instance being shown now, so tapping away and
-        // back does not swap in the one built on the first visit.
-        selectedMenuItems[existing].category = pageName;
-        currentPage.value = pageName;
-      }
-      update();
-      return;
-    }
-
-    selectedMenuItems.add(
-        SelectedDropdown(title: title, selectedItem: true, category: pageName));
     // }else{
     //   Get.snackbar("", "You can select maximum 4 menu items",);
     // }
