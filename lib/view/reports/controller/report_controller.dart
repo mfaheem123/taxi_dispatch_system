@@ -233,6 +233,14 @@ class ReportController extends GetxController {
       update();
     }
   }
+
+  void clearEarningData() {
+    selectDriverObject = null;
+    earningInfoListModel = null;
+    reportViewType = "daily";
+    earningFromDate.value = DateTime(DateTime.now().year, DateTime.now().month, 1);
+    earningToDate.value = DateTime.now();
+  }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver earning and info functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report booking functionality
 
@@ -725,6 +733,10 @@ class ReportController extends GetxController {
       if (response.statusCode == 200) {
         employeeReportModel = EmployeeReportModel.fromJson(response.data);
 
+        if (employeeActivityList.isEmpty) {
+          BotToast.showText(text: "No Data Found!");
+        }
+
         print("Status Code: ${response.statusCode}");
         print("Response Data: ${response.data}");
         employeeActivityList = employeeReportModel?.employeeShiftHistory ?? [];
@@ -769,6 +781,15 @@ class ReportController extends GetxController {
     }
   }
 
+  void clearActivityData() {
+    employeeReportModel = null;
+    apiSelectedEmployee = null;
+    employeeActivityList.clear();
+    activityFromDate.value = DateTime(DateTime.now().year, DateTime.now().month, 1);
+    activityToDate.value = DateTime.now();
+    activityStartTimeController.text = "00:00";
+    activityEndTimeController.text = "23:59";
+  }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report employee functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report income functionality
 
@@ -846,6 +867,12 @@ class ReportController extends GetxController {
       isLoadingIncome = false;
       update();
     }
+  }
+  void clearIncomeData() {
+    incomeModel = null;
+    selectDriverObject = null;
+    incomeFromDate.value = DateTime(DateTime.now().year, DateTime.now().month, 1);
+    incomeToDate.value = DateTime.now();
   }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report income functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report company income functionality
@@ -930,6 +957,13 @@ class ReportController extends GetxController {
       companyLoader(false);
       update();
     }
+  }
+  void clearCompanyIncomeData() {
+    companyIncomeModel = null;
+    companyListAll.clear();
+    filteredCompany.clear();
+    companyFromDate.value = DateTime(DateTime.now().year, DateTime.now().month, 1);
+    companyToDate.value = DateTime.now();
   }
 
   void onLocalSearchCompany() {
