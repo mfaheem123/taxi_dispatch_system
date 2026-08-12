@@ -21,6 +21,7 @@ import '../dashboard_view/models/account_darshboard_model.dart';
 import '../dashboard_view/models/all_addresses_model.dart';
 import '../dashboard_view/models/dashboard_model.dart';
 import '../dashboard_view/models/users_phone_numbers_model.dart';
+import '../dashboard_view/utils/address_query_match.dart';
 import '../dashboard_view/widgets/fare_configuration.dart';
 import '../dashboard_view/widgets/via_location.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
@@ -1980,6 +1981,10 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
   /// listener does not mistake that write for fresh typing and re-open the
   /// panel over a field the user just finished with.
   bool _picking = false;
+
+  /// Keeps one post-frame re-filter in flight at a time, since didUpdateWidget
+  /// runs on every GetBuilder rebuild of the form, not just on new results.
+  bool _refilterScheduled = false;
   late final ScrollController _scrollController;
   static String _display(AllAddressesModel a) {
     final n = a.name ?? '';
@@ -1998,14 +2003,23 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
   @override
   void didUpdateWidget(covariant _AddressModelAutocomplete oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.items != widget.items && _userTyped) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted || !_focusNode.hasFocus) return;
-        // Late backend results arriving while the user navigates with the
-        // arrow keys must NOT snap the highlight back to the top.
-        _filter(widget.controller.text, preserveHighlight: true);
-      });
-    }
+    // `items` is the controller's RxList, and getAddresses() refills it IN
+    // PLACE (clear + addAll) — the reference never changes, so the old
+    // `oldWidget.items != widget.items` guard was never true and backend
+    // results that landed after the user stopped typing were never filtered
+    // in. That is the whole failure for a search the debounce only fires once
+    // for: the panel stayed on whatever the previous query had produced.
+    // Re-filter on every parent rebuild while the panel is live instead; the
+    // list is a page of search hits and the pass is O(n).
+    if (!_userTyped || _refilterScheduled) return;
+    _refilterScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refilterScheduled = false;
+      if (!mounted || !_focusNode.hasFocus) return;
+      // Late backend results arriving while the user navigates with the
+      // arrow keys must NOT snap the highlight back to the top.
+      _filter(widget.controller.text, preserveHighlight: true);
+    });
   }
   @override
   void dispose() {
@@ -2043,11 +2057,16 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     if (query.isEmpty) {
       _filtered = const [];
     } else {
-      _filtered = widget.items.where((a) {
-        final n = (a.name ?? '').toLowerCase();
-        final p = (a.postcode ?? '').toLowerCase();
-        return n.contains(query) || p.contains(query);
-      }).toList();
+      // Token-wise, NOT a single substring: the backend answers "A H" with
+      // rows like "ASDA, HIGH STREET", and `contains('a h')` dropped all of
+      // them, so the panel said "No data" over a perfectly good response.
+      _filtered = widget.items
+          .where((a) => addressMatchesQuery(
+        name: a.name,
+        postcode: a.postcode,
+        query: query,
+      ))
+          .toList();
     }
 
     if (_filtered.isEmpty) {
