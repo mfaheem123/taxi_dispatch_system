@@ -226,31 +226,17 @@ class VehicleController extends GetxController {
     motExpiryExpireTimeController.text = data.motExpiryTime?.toString() ?? '';
     mot2ExpiryExpireTimeController.text = data.mot2ExpiryTime?.toString() ?? '';
     insuranceExpiryTimeController.text = data.insuranceExpiryTime?.toString() ?? '';
-    phcVehicleExpireDate = formatDate(data.phcVehicleExpiry);
-    motExpiryExpireDate = formatDate(data.motExpiry);
-    mot2ExpiryExpireDate = formatDate(data.mot2Expiry);
-    insuranceExpiryDate = formatDate(data.insuranceExpiry);
+    phcVehicleExpireDate = data.phcVehicleExpiry?.toString();
+    motExpiryExpireDate = data.motExpiry?.toString();
+    mot2ExpiryExpireDate = data.mot2Expiry?.toString();
+    insuranceExpiryDate = data.insuranceExpiry?.toString();
     phcVehicleDocPic = null;
     motDocPic = null;
     mot2DocPic = null;
     insuranceDocPic = null;
     singleVehicleData = data;
+    datePickerKey++;
     update();
-  }
-
-
-  String formatDate(dynamic dateInput) {
-    if (dateInput == null || dateInput.toString().isEmpty) {
-      return "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
-    }
-
-    String apiDate = dateInput.toString();
-    List<String> parts = apiDate.split('-');
-    if (parts.length == 3 && parts[0].length <= 2) {
-      return "${parts[2]}-${parts[1]}-${parts[0]}";
-    }
-
-    return apiDate;
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>VEHICLE TYPES Model

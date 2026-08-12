@@ -7,6 +7,7 @@ import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/accounts/controller/account_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../../component/networks/api.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
@@ -184,9 +185,9 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
                               // ),
 
                               DataCell(Center(child: Text((item.name).toUpperCase()))),
-                              DataCell(Center(child: Text(item.safeguardingExpiry))),
-                              DataCell(Center(child: Text(item.patExpiry))),
-                              DataCell(Center(child: Text(item.firstaidExpiry))),
+                              DataCell(Center(child: Text(item.safeguardingExpiry != null ? DateFormat('yyyy-MM-dd').format(item.safeguardingExpiry!) : ""))),
+                              DataCell(Center(child: Text(item.patExpiry != null ? DateFormat('yyyy-MM-dd').format(item.patExpiry!) : ""))),
+                              DataCell(Center(child: Text(item.firstaidExpiry != null ? DateFormat('yyyy-MM-dd').format(item.firstaidExpiry!) : ""))),
                               DataCell(Center(child: Text(item.dbsExpiry))),
                               DataCell(
                                 Row(

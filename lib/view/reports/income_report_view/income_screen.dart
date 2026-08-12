@@ -35,6 +35,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ReportController>(initState: (state) {
+      controller.clearIncomeData();
       controller.clearDropdowns();
       controller.selectDriverObject = null;
       controller.getAllDrivers();

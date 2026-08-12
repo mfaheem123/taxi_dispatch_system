@@ -44,6 +44,7 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
   void initState() {
     super.initState();
     shortCutKeyValue.value = "driverLogsScreen";
+    controller.clearLogsData();
   }
 
   void _handleKey(RawKeyEvent event) {

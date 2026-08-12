@@ -879,10 +879,11 @@ void clearEscortFields() {
     escortAddress.text = escort.address ?? '';
 
     // Dates
-    dobDate = formatDate(escort.dob);
-    safeguardingExpiryExpireDate = formatDate(escort.safeguardingExpiry);
-    patExpiryDate = formatDate(escort.patExpiry);
-    firstAidDate = formatDate(escort.firstaidExpiry);
+    dobDate = escort.dob?.toString();
+    safeguardingExpiryExpireDate = escort.safeguardingExpiry?.toString();
+    patExpiryDate = escort.patExpiry?.toString();
+    firstAidDate = escort.firstaidExpiry?.toString();
+
     dbsExpireTime.text = escort.dbsExpiry ?? '';
 
     // Batch Numbers
@@ -891,32 +892,14 @@ void clearEscortFields() {
     firstAidBatch.text = escort.firstaidNumber ?? '';
     DBSBatch.text = escort.dbsNumber ?? '';
 
-
-
     profileImg = null;
     safeguardingDocPic = null;
     patDocPic = null;
     firstAidDocPic = null;
     dbsDocPic = null;
-
+    datePickerKey++;
     update();
   }
-
-  String formatDate(dynamic dateInput) {
-    if (dateInput == null || dateInput.toString().isEmpty) {
-      return "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
-    }
-
-    String apiDate = dateInput.toString();
-    List<String> parts = apiDate.split('-');
-    if (parts.length == 3 && parts[0].length <= 2) {
-      return "${parts[2]}-${parts[1]}-${parts[0]}";
-    }
-
-    return apiDate;
-  }
-
-
 
 
   // String? account;

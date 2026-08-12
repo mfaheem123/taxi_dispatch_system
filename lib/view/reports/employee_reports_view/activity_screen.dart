@@ -32,6 +32,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ReportController>(initState: (state) {
+      controller.clearActivityData();
       controller.clearDropdowns();
       controller.getEmployeeData();
     }, builder: (controller) {

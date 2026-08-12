@@ -80,6 +80,12 @@ class ReportController extends GetxController {
       if (response.statusCode == 200) {
         driverLoginReportListModel = DriverLoginReportListModel.fromJson(response.data);
         print("Shift History Data: ${response.data}");
+        if (driverLoginReportListModel?.driverShiftHistories == null ||
+            driverLoginReportListModel!.driverShiftHistories!.isEmpty) {
+          BotToast.showText(
+            text: "No Data Found!",
+          );
+        }
       }
     } catch (e) {
       print("Error fetching shift history: $e");
@@ -89,6 +95,15 @@ class ReportController extends GetxController {
     }
   }
 
+  void clearLoginData() {
+    selectDriverObject = null;
+    driverLoginReportListModel = null;
+    isLoadingShift = false;
+    loginFromDate.value = DateTime.now();
+    loginToDate.value = DateTime.now();
+    loginStartTimeController.clear();
+    loginEndTimeController.clear();
+  }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver login functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver logs functionality
   var fromDate = Rxn<DateTime>(DateTime(DateTime.now().year, DateTime.now().month, 1));
@@ -149,6 +164,15 @@ class ReportController extends GetxController {
       update();
     }
   }
+  void clearLogsData() {
+    selectDriverObject = null;
+    driverLogsData = null;
+    isLoadingLogs = false;
+    fromDate.value = DateTime(DateTime.now().year, DateTime.now().month, 1);
+    toDate.value = DateTime.now();
+    logStartTimeController.text = "00:00";
+    logEndTimeController.text = "23:59";
+  }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver logs functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver earning and info functionality
   var earningFromDate = Rxn<DateTime>(
@@ -208,6 +232,14 @@ class ReportController extends GetxController {
       isLoadingEarning = false;
       update();
     }
+  }
+
+  void clearEarningData() {
+    selectDriverObject = null;
+    earningInfoListModel = null;
+    reportViewType = "daily";
+    earningFromDate.value = DateTime(DateTime.now().year, DateTime.now().month, 1);
+    earningToDate.value = DateTime.now();
   }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver earning and info functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report booking functionality
@@ -640,6 +672,30 @@ class ReportController extends GetxController {
     }
   }
 
+void clearBookingReportData() {
+  customerController.clear();
+  mobileController.clear();
+  phoneController.clear();
+  pickUpController.clear();
+  dropOffController.clear();
+  orderNumberController.clear();
+  bookedByController.clear();
+  bookingStartTimeController.clear();
+  bookingEndTimeController.clear();
+  bookingFromDate.value = DateTime(DateTime.now().year, DateTime.now().month, 1);
+  bookingToDate.value = DateTime.now();
+  bookingStatisticsModel = null;
+  bookingGraphModel = null;
+  apiSelectedEmployee = null;
+  apiSelectedAccount = null;
+  apiSelectedDepartment = null;
+  apiSelectedPaymentTypeIds.clear();
+  totalBookings.value = 0;
+  totalEarnings.value = 0.0;
+  totalAccountEarnings.value = 0.0;
+  update();
+}
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report booking functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report employee functionality
 
@@ -701,6 +757,10 @@ class ReportController extends GetxController {
       if (response.statusCode == 200) {
         employeeReportModel = EmployeeReportModel.fromJson(response.data);
 
+        if (employeeActivityList.isEmpty) {
+          BotToast.showText(text: "No Data Found!");
+        }
+
         print("Status Code: ${response.statusCode}");
         print("Response Data: ${response.data}");
         employeeActivityList = employeeReportModel?.employeeShiftHistory ?? [];
@@ -745,6 +805,15 @@ class ReportController extends GetxController {
     }
   }
 
+  void clearActivityData() {
+    employeeReportModel = null;
+    apiSelectedEmployee = null;
+    employeeActivityList.clear();
+    activityFromDate.value = DateTime(DateTime.now().year, DateTime.now().month, 1);
+    activityToDate.value = DateTime.now();
+    activityStartTimeController.text = "00:00";
+    activityEndTimeController.text = "23:59";
+  }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report employee functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report income functionality
 
@@ -822,6 +891,12 @@ class ReportController extends GetxController {
       isLoadingIncome = false;
       update();
     }
+  }
+  void clearIncomeData() {
+    incomeModel = null;
+    selectDriverObject = null;
+    incomeFromDate.value = DateTime(DateTime.now().year, DateTime.now().month, 1);
+    incomeToDate.value = DateTime.now();
   }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report income functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report company income functionality
@@ -906,6 +981,13 @@ class ReportController extends GetxController {
       companyLoader(false);
       update();
     }
+  }
+  void clearCompanyIncomeData() {
+    companyIncomeModel = null;
+    companyListAll.clear();
+    filteredCompany.clear();
+    companyFromDate.value = DateTime(DateTime.now().year, DateTime.now().month, 1);
+    companyToDate.value = DateTime.now();
   }
 
   void onLocalSearchCompany() {

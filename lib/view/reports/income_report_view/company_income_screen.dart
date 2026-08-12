@@ -37,6 +37,7 @@ class _CompanyIncomeScreenState extends State<CompanyIncomeScreen> {
     //     ? controller.filteredCompany
     //     : controller.companyListAll;
     return GetBuilder<ReportController>(initState: (state) {
+      controller.clearCompanyIncomeData();
       // controller.getCompanyIncome();
     }, builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {

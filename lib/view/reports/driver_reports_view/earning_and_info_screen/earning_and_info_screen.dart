@@ -56,6 +56,7 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
   Widget build(BuildContext context) {
     return GetBuilder<ReportController>(
       initState: (state) {
+        controller.clearEarningData();
         controller.selectDriverObject = null;
         controller.getAllDrivers();
       },

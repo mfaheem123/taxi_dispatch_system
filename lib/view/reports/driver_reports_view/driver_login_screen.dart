@@ -37,6 +37,7 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
   void initState() {
     super.initState();
     shortCutKeyValue.value = "driverLogin";
+    controller.clearLoginData();
   }
 
   void _handleKey(RawKeyEvent event) {
@@ -239,7 +240,11 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                     // Table Section
                     SizedBox(
                       width: MediaQuery.of(context).size.width,
-                      child: SingleChildScrollView(
+                        child: controller.isLoadingShift
+                            ? const Center(
+                            child: CircularProgressIndicator(),
+                        )
+                      : SingleChildScrollView(
                         child: DatatableWidget(
                           columns: [
                             buildHeaderWithSearch(title: "DRIVER"),
