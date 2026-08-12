@@ -466,12 +466,13 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
 class KeyboardDatePicker extends StatefulWidget {
   final DateTime initialDate;
   final void Function(DateTime)? onChanged;
-  final void Function(DateTime)? onSubmitted; // optional enter press
+  final void Function(DateTime)? onSubmitted;
   Color? borderClr;
-
-    final double fontSize;
+  final double fontSize;
   final double iconSize;
 
+  // Static flag - track کریں کہ date picker focused ہے یا نہیں
+  static bool isAnyDatePickerFocused = false;
 
   KeyboardDatePicker({
     Key? key,
@@ -479,8 +480,8 @@ class KeyboardDatePicker extends StatefulWidget {
     this.onChanged,
     this.onSubmitted,
     this.borderClr,
-        this.fontSize = 12, // default font size
-    this.iconSize = 14, // default icon size
+    this.fontSize = 12,
+    this.iconSize = 14,
   })  : initialDate = initialDate ?? DateTime(2000, 1, 1),
         super(key: key);
 
@@ -493,12 +494,8 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
   late int month;
   late int year;
 
-  /// 0 = day, 1 = month, 2 = year
   int activePart = 0;
-
-  /// typed digits buffer per part (to allow multi-digit typing).
   final List<String> _buffers = ['', '', ''];
-
   final FocusNode _focusNode = FocusNode();
 
   @override
@@ -507,12 +504,21 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
     day = widget.initialDate.day;
     month = widget.initialDate.month;
     year = widget.initialDate.year;
-    // normalize in case initial invalid
     _clampDay();
+
+    // Focus listener add کریں
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      KeyboardDatePicker.isAnyDatePickerFocused = _focusNode.hasFocus;
+    });
   }
 
   @override
   void dispose() {
+    _focusNode.removeListener(_onFocusChange);
     _focusNode.dispose();
     super.dispose();
   }

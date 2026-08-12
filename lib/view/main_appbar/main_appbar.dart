@@ -54,6 +54,7 @@ import '../customer/lost_property.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import 'package:nested_menu_bar/nested_menu_bar.dart';
 import '../dashboard_view/dashboard/defult_dashboard_view.dart';
+import '../dashboard_view/widgets/time_picker_widget.dart';
 import '../drivers_view/driver/bulk_driver_commission/bulk_driver_commission.dart';
 import '../drivers_view/driver/bulk_driver_commission/bulk_driver_rent.dart';
 import '../drivers_view/driver/create_driver_form/driver_form.dart';
@@ -226,6 +227,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   /// Whether arrow up / down should scroll the page right now.
   bool get _arrowKeysScrollBody {
+
+    if (KeyboardDatePicker.isAnyDatePickerFocused) {
+      return false;
+    }
+
     if (!_arrowScrollPages.contains(controller.currentPage.value.runtimeType)) {
       return false;
     }
