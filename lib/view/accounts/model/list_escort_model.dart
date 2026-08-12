@@ -45,7 +45,7 @@ class EscortModel {
 class Escorts {
   int? id;
   String? name;
-  String? dob;
+  DateTime? dob;
   String? email;
   String? mobile;
   String? address;
@@ -59,9 +59,9 @@ class Escorts {
   String? patNumber;
   String? firstaidNumber;
   String? dbsNumber;
-  String? safeguardingExpiry;
-  String? patExpiry;
-  String? firstaidExpiry;
+  DateTime? safeguardingExpiry;
+  DateTime? patExpiry;
+  DateTime? firstaidExpiry;
   String? dbsExpiry;
   String? createdAt;
   String? updatedAt;
@@ -93,7 +93,7 @@ class Escorts {
   Escorts.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
-    dob = json['dob'];
+    dob = json['dob'] == null ? null : DateTime.parse(json["dob"]);
     email = json['email'];
     mobile = json['mobile'];
     address = json['address'];
@@ -107,9 +107,9 @@ class Escorts {
     patNumber = json['pat_number'];
     firstaidNumber = json['firstaid_number'];
     dbsNumber = json['dbs_number'];
-    safeguardingExpiry = json['safeguarding_expiry'];
-    patExpiry = json['pat_expiry'];
-    firstaidExpiry = json['firstaid_expiry'];
+    safeguardingExpiry = json['safeguarding_expiry'] == null ? null : DateTime.parse(json["safeguarding_expiry"]);
+    patExpiry = json['pat_expiry'] == null ? null : DateTime.parse(json["pat_expiry"]);
+    firstaidExpiry = json['firstaid_expiry'] == null ? null : DateTime.parse(json["firstaid_expiry"]);
     dbsExpiry = json['dbs_expiry'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
@@ -119,7 +119,9 @@ class Escorts {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['name'] = this.name;
-    data['dob'] = this.dob;
+    data['dob'] = this.dob != null
+        ? "${this.dob!.year.toString().padLeft(4, '0')}-${this.dob!.month.toString().padLeft(2, '0')}-${this.dob!.day.toString().padLeft(2, '0')}"
+        : null;
     data['email'] = this.email;
     data['mobile'] = this.mobile;
     data['address'] = this.address;
@@ -133,9 +135,15 @@ class Escorts {
     data['pat_number'] = this.patNumber;
     data['firstaid_number'] = this.firstaidNumber;
     data['dbs_number'] = this.dbsNumber;
-    data['safeguarding_expiry'] = this.safeguardingExpiry;
-    data['pat_expiry'] = this.patExpiry;
-    data['firstaid_expiry'] = this.firstaidExpiry;
+    data['safeguarding_expiry'] = this.safeguardingExpiry != null
+        ? "${this.safeguardingExpiry!.year.toString().padLeft(4, '0')}-${this.safeguardingExpiry!.month.toString().padLeft(2, '0')}-${this.safeguardingExpiry!.day.toString().padLeft(2, '0')}"
+        : null;
+    data['pat_expiry'] = this.patExpiry != null
+        ? "${this.patExpiry!.year.toString().padLeft(4, '0')}-${this.patExpiry!.month.toString().padLeft(2, '0')}-${this.patExpiry!.day.toString().padLeft(2, '0')}"
+        : null;
+    data['firstaid_expiry'] = this.firstaidExpiry != null
+        ? "${this.firstaidExpiry!.year.toString().padLeft(4, '0')}-${this.firstaidExpiry!.month.toString().padLeft(2, '0')}-${this.firstaidExpiry!.day.toString().padLeft(2, '0')}"
+        : null;
     data['dbs_expiry'] = this.dbsExpiry;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;

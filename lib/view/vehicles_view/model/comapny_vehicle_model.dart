@@ -57,10 +57,10 @@ class Vehicles {
   String? motNumber;
   String? mot2Number;
   String? insuranceNumber;
-  String? phcVehicleExpiry;
-  String? motExpiry;
-  String? mot2Expiry;
-  String? insuranceExpiry;
+  DateTime? phcVehicleExpiry;
+  DateTime? motExpiry;
+  DateTime? mot2Expiry;
+  DateTime? insuranceExpiry;
   String? logBookDocument;
   String? phcVehicleDocument;
   String? motDocument;
@@ -127,10 +127,10 @@ class Vehicles {
     motNumber = json['mot_number'];
     mot2Number = json['mot2_number'];
     insuranceNumber = json['insurance_number'];
-    phcVehicleExpiry = json['phc_vehicle_expiry'];
-    motExpiry = json['mot_expiry'];
-    mot2Expiry = json['mot2_expiry'];
-    insuranceExpiry = json['insurance_expiry'];
+    phcVehicleExpiry = json['phc_vehicle_expiry'] == null ? null : DateTime.parse(json["phc_vehicle_expiry"]);
+    motExpiry = json['mot_expiry'] == null ? null : DateTime.parse(json["mot_expiry"]);
+    mot2Expiry = json['mot2_expiry'] == null ? null : DateTime.parse(json["mot2_expiry"]);
+    insuranceExpiry = json['insurance_expiry'] == null ? null : DateTime.parse(json["insurance_expiry"]);
     logBookDocument = json['log_book_document'];
     phcVehicleDocument = json['phc_vehicle_document'];
     motDocument = json['mot_document'];
@@ -166,10 +166,21 @@ class Vehicles {
     data['mot_number'] = this.motNumber;
     data['mot2_number'] = this.mot2Number;
     data['insurance_number'] = this.insuranceNumber;
-    data['phc_vehicle_expiry'] = this.phcVehicleExpiry;
-    data['mot_expiry'] = this.motExpiry;
-    data['mot2_expiry'] = this.mot2Expiry;
-    data['insurance_expiry'] = this.insuranceExpiry;
+    data['phc_vehicle_expiry'] = this.phcVehicleExpiry != null
+        ? "${this.phcVehicleExpiry!.year.toString().padLeft(4, '0')}-${this.phcVehicleExpiry!.month.toString().padLeft(2, '0')}-${this.phcVehicleExpiry!.day.toString().padLeft(2, '0')}"
+        : null;
+
+    data['mot_expiry'] = this.motExpiry != null
+        ? "${this.motExpiry!.year.toString().padLeft(4, '0')}-${this.motExpiry!.month.toString().padLeft(2, '0')}-${this.motExpiry!.day.toString().padLeft(2, '0')}"
+        : null;
+
+    data['mot2_expiry'] = this.mot2Expiry != null
+        ? "${this.mot2Expiry!.year.toString().padLeft(4, '0')}-${this.mot2Expiry!.month.toString().padLeft(2, '0')}-${this.mot2Expiry!.day.toString().padLeft(2, '0')}"
+        : null;
+
+    data['insurance_expiry'] = this.insuranceExpiry != null
+        ? "${this.insuranceExpiry!.year.toString().padLeft(4, '0')}-${this.insuranceExpiry!.month.toString().padLeft(2, '0')}-${this.insuranceExpiry!.day.toString().padLeft(2, '0')}"
+        : null;
     data['log_book_document'] = this.logBookDocument;
     data['phc_vehicle_document'] = this.phcVehicleDocument;
     data['mot_document'] = this.motDocument;
