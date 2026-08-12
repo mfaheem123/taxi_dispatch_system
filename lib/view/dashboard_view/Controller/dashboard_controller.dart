@@ -830,6 +830,7 @@ class DashboardController extends GetxController {
               .toList();
           highlightedIndex.value = 0;
         }
+        print("searching result list ${allAddressesData.length}");
         update();
       } else {
         openStreetMapApi(searchingText: searchingText.toString().toUpperCase());
