@@ -218,23 +218,10 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 child: SizedBox(
                                     height: 35,
                                     child: KeyboardDatePicker(
-                                      initialDate: DateTime.now(),
-                                      onChanged: (date) {
-                                        // jab bhi user change kare
-                                        setState(() {
-                                          controller.dobDate =
-                                              "${date.year}-${date.month}-${date.day}";
-                                          print(date);
-                                        });
-                                      },
-                                      onSubmitted: (date) {
-                                        // jab user enter press kare
-                                        setState(() {
-                                          controller.dobDate =
-                                              "${date.year}-${date.month}-${date.day}";
-                                        });
-                                        print("User pressed enter: $date");
-                                      },
+                                      key: ValueKey("dob_date_${controller.datePickerKey}"),
+                                      initialDate: DateTime.tryParse(controller.dobDate ?? '') ?? DateTime.now(),
+                                      onChanged: (date) => controller.dobDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                                      onSubmitted: (date) => controller.dobDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
                                     )),
                               ),
                               CustomTextField(
@@ -257,25 +244,10 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 child: SizedBox(
                                     height: 35,
                                     child: KeyboardDatePicker(
-                                      initialDate: DateTime.now(),
-                                      onChanged: (date) {
-                                        // jab bhi user change kare
-                                        setState(() {
-                                          controller
-                                                  .safeguardingExpiryExpireDate =
-                                              "${date.year}-${date.month}-${date.day}";
-                                          print(date);
-                                        });
-                                      },
-                                      onSubmitted: (date) {
-                                        // jab user enter press kare
-                                        setState(() {
-                                          controller
-                                                  .safeguardingExpiryExpireDate =
-                                              "${date.year}-${date.month}-${date.day}";
-                                        });
-                                        print("User pressed enter: $date");
-                                      },
+                                      key: ValueKey("safeguarding_date_${controller.datePickerKey}"),
+                                      initialDate: DateTime.tryParse(controller.safeguardingExpiryExpireDate ?? '') ?? DateTime.now(),
+                                      onChanged: (date) => controller.safeguardingExpiryExpireDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                                      onSubmitted: (date) => controller.safeguardingExpiryExpireDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
                                     )),
                               ),
                               labeledField(
@@ -287,23 +259,10 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 child: SizedBox(
                                     height: 35,
                                     child: KeyboardDatePicker(
-                                      initialDate: DateTime.now(),
-                                      onChanged: (date) {
-                                        // jab bhi user change kare
-                                        setState(() {
-                                          controller.patExpiryDate =
-                                              "${date.year}-${date.month}-${date.day}";
-                                          print(date);
-                                        });
-                                      },
-                                      onSubmitted: (date) {
-                                        // jab user enter press kare
-                                        setState(() {
-                                          controller.patExpiryDate =
-                                              "${date.year}-${date.month}-${date.day}";
-                                        });
-                                        print("User pressed enter: $date");
-                                      },
+                                      key: ValueKey("pat_expiry_date_${controller.datePickerKey}"),
+                                      initialDate: DateTime.tryParse(controller.patExpiryDate ?? '') ?? DateTime.now(),
+                                      onChanged: (date) => controller.patExpiryDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                                      onSubmitted: (date) => controller.patExpiryDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
                                     )),
                               ),
                               labeledField(
@@ -315,23 +274,10 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 child: SizedBox(
                                     height: 35,
                                     child: KeyboardDatePicker(
-                                      initialDate: DateTime.now(),
-                                      onChanged: (date) {
-                                        // jab bhi user change kare
-                                        setState(() {
-                                          controller.firstAidDate =
-                                              "${date.year}-${date.month}-${date.day}";
-                                          print(date);
-                                        });
-                                      },
-                                      onSubmitted: (date) {
-                                        // jab user enter press kare
-                                        setState(() {
-                                          controller.firstAidDate =
-                                              "${date.year}-${date.month}-${date.day}";
-                                        });
-                                        print("User pressed enter: $date");
-                                      },
+                                      key: ValueKey("firstaid_expiry_date_${controller.datePickerKey}"),
+                                      initialDate: DateTime.tryParse(controller.firstAidDate ?? '') ?? DateTime.now(),
+                                      onChanged: (date) => controller.firstAidDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                                      onSubmitted: (date) => controller.firstAidDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
                                     )),
                               ),
                               labeledField(
