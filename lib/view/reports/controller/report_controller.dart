@@ -80,6 +80,12 @@ class ReportController extends GetxController {
       if (response.statusCode == 200) {
         driverLoginReportListModel = DriverLoginReportListModel.fromJson(response.data);
         print("Shift History Data: ${response.data}");
+        if (driverLoginReportListModel?.driverShiftHistories == null ||
+            driverLoginReportListModel!.driverShiftHistories!.isEmpty) {
+          BotToast.showText(
+            text: "No Data Found!",
+          );
+        }
       }
     } catch (e) {
       print("Error fetching shift history: $e");
@@ -89,6 +95,15 @@ class ReportController extends GetxController {
     }
   }
 
+  void clearLoginData() {
+    selectDriverObject = null;
+    driverLoginReportListModel = null;
+    isLoadingShift = false;
+    loginFromDate.value = DateTime.now();
+    loginToDate.value = DateTime.now();
+    loginStartTimeController.clear();
+    loginEndTimeController.clear();
+  }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver login functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver logs functionality
   var fromDate = Rxn<DateTime>(DateTime(DateTime.now().year, DateTime.now().month, 1));
@@ -148,6 +163,15 @@ class ReportController extends GetxController {
       isLoadingLogs = false;
       update();
     }
+  }
+  void clearLogsData() {
+    selectDriverObject = null;
+    driverLogsData = null;
+    isLoadingLogs = false;
+    fromDate.value = DateTime(DateTime.now().year, DateTime.now().month, 1);
+    toDate.value = DateTime.now();
+    logStartTimeController.text = "00:00";
+    logEndTimeController.text = "23:59";
   }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver logs functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver earning and info functionality
