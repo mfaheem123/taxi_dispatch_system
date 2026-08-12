@@ -477,6 +477,11 @@ class KeyboardDatePicker extends StatefulWidget {
   /// before today so only today and future dates can be picked.
   final bool allowPastDates;
 
+  /// When true (default) future dates are selectable. Pass false to
+  /// hide/disable everything after today so only today and past dates can be
+  /// picked.
+  final bool allowFutureDates;
+
 
   KeyboardDatePicker({
     Key? key,
@@ -487,6 +492,7 @@ class KeyboardDatePicker extends StatefulWidget {
         this.fontSize = 12, // default font size
     this.iconSize = 14, // default icon size
     this.allowPastDates = true,
+    this.allowFutureDates = true,
   })  : initialDate = initialDate ?? DateTime(2000, 1, 1),
         super(key: key);
 
@@ -515,29 +521,40 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
     year = widget.initialDate.year;
     // normalize in case initial invalid
     _clampDay();
-    _clampToMinDate();
+    _clampToBounds();
   }
 
-  /// Earliest selectable date. Null when past dates are allowed.
-  DateTime? get _minDate {
-    if (widget.allowPastDates) return null;
+  DateTime get _today {
     final now = DateTime.now();
     return DateTime(now.year, now.month, now.day);
   }
 
+  /// Earliest selectable date. Null when past dates are allowed.
+  DateTime? get _minDate => widget.allowPastDates ? null : _today;
+
+  /// Latest selectable date. Null when future dates are allowed.
+  DateTime? get _maxDate => widget.allowFutureDates ? null : _today;
+
   DateTime get _currentDate => DateTime(year, month, day);
 
-  /// Pull the current value up to [_minDate] when past dates are disabled.
-  void _clampToMinDate() {
+  void _setDate(DateTime date) {
+    year = date.year;
+    month = date.month;
+    day = date.day;
+    _buffers[0] = '';
+    _buffers[1] = '';
+    _buffers[2] = '';
+  }
+
+  /// Pull the current value back inside [_minDate] / [_maxDate] when past or
+  /// future dates are disabled.
+  void _clampToBounds() {
     final min = _minDate;
-    if (min == null) return;
-    if (_currentDate.isBefore(min)) {
-      year = min.year;
-      month = min.month;
-      day = min.day;
-      _buffers[0] = '';
-      _buffers[1] = '';
-      _buffers[2] = '';
+    final max = _maxDate;
+    if (min != null && _currentDate.isBefore(min)) {
+      _setDate(min);
+    } else if (max != null && _currentDate.isAfter(max)) {
+      _setDate(max);
     }
   }
 
@@ -593,7 +610,7 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
         _clampDay();
       }
       _buffers[activePart] = ''; // clear buffer when using arrows
-      _clampToMinDate();
+      _clampToBounds();
       _notifyChanged();
     });
   }
@@ -689,9 +706,9 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
   }
 
   void _onEnter() {
-    // typed values are only validated against the min date on submit,
+    // typed values are only validated against the bounds on submit,
     // so partially typed dates aren't fought while the user is typing.
-    setState(_clampToMinDate);
+    setState(_clampToBounds);
     widget.onSubmitted?.call(_currentDate);
   }
 
@@ -765,7 +782,7 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
 
   Future<void> _selectDate(BuildContext context) async {
     final firstDate = _minDate ?? DateTime(2000);
-    final lastDate = DateTime(2101);
+    final lastDate = _maxDate ?? DateTime(2101);
     var initial = _currentDate;
     if (initial.isBefore(firstDate)) initial = firstDate;
     if (initial.isAfter(lastDate)) initial = lastDate;
