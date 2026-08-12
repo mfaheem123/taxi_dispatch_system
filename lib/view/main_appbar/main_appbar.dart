@@ -222,6 +222,24 @@ class _MyHomePageState extends State<MyHomePage> {
     ListVehicleType,
     CreateCompanyVehicle,
     CompanyVehiclesScreen,
+    CreateUserScreen,
+    UserListscreen,
+    CreateSubsiDiary,
+    SubsiDiariesScreen,
+    AuthorizationScreen,
+    DriverLoginScreen,
+    DriverLogsScreen,
+    EarningAndInfoScreen,
+    ReportFeedback,
+    StatisticsScreen,
+    AllBookingView,
+    ReportTransferedBooking,
+    ActivityScreen,
+    IncomeScreen,
+    CompanyIncomeScreen,
+    CreiditCardPayments,
+    PcoScreen,
+
 
   };
 

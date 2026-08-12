@@ -222,7 +222,8 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                       initialDate: DateTime.tryParse(controller.dobDate ?? '') ?? DateTime.now(),
                                       onChanged: (date) => controller.dobDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
                                       onSubmitted: (date) => controller.dobDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
-                                    )),
+                                    )
+                                ),
                               ),
                               CustomTextField(
                                 borderRadius: 4,
