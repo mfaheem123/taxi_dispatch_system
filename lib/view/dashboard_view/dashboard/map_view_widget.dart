@@ -347,15 +347,16 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                         enableMultiFingerGestureRace: true,
                       ),
                       onMapReady: () {
-                        if (polylinePoints.length >= 2) {
-                          final bounds =
-                          LatLngBounds.fromPoints(polylinePoints);
-                          controller.mapController.fitCamera(
-                            CameraFit.bounds(
-                              bounds: bounds,
-                              padding: const EdgeInsets.all(60),
-                            ),
-                          );
+                        // Replay whatever the form already framed. Addresses
+                        // picked before this map was attached (PLOT tab open,
+                        // or a pick landing on the very first frame) asked the
+                        // MapController to fit while it had no map, so the fit
+                        // has to be re-issued here rather than only on first
+                        // load.
+                        if (controller.mapFocusPoints.isNotEmpty) {
+                          controller.focusMapOnJourney();
+                        } else if (polylinePoints.length >= 2) {
+                          controller.focusMapOnJourney(points: polylinePoints);
                         }
                       },
                     ),
@@ -564,10 +565,16 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                         child: FloatingActionButton.small(
                           backgroundColor: Colors.black26,
                           onPressed: () {
-                            controller.mapController.move(
-                              polylinePoints.first,
-                              13.0,
-                            );
+                            // Re-frame the whole journey. This used to move to
+                            // polylinePoints.first — the first point ever
+                            // tapped, which is not the current pickup once the
+                            // address is changed.
+                            if (controller.mapFocusPoints.isNotEmpty) {
+                              controller.focusMapOnJourney();
+                            } else {
+                              controller.mapController
+                                  .move(polylinePoints.first, 13.0);
+                            }
                           },
                           child: const Icon(Icons.center_focus_strong, color: Colors.black87, size: 20,),
                         ),

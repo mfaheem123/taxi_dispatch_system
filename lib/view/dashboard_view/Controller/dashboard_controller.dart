@@ -953,6 +953,42 @@ class DashboardController extends GetxController {
     return LatLngBounds.fromPoints([sw, ne]);
   }
 
+  /// Everything the map should keep in frame for the booking being typed:
+  /// pickup, drop, both return-leg ends and every via. Rebuilt by
+  /// [fetchRouteFromOSRM].
+  ///
+  /// Kept on the controller so the map can replay the fit from `onMapReady` —
+  /// a fit asked for while no FlutterMap is attached (PLOT tab open, or the
+  /// first address picked before the map's first frame) has nowhere to land.
+  List<LatLng> mapFocusPoints = [];
+
+  /// Frames [points] — the current journey by default — in the map viewport.
+  ///
+  /// A single point cannot produce bounds, so it is centred instead; two or
+  /// more zoom OUT until the whole journey is on screen at once.
+  void focusMapOnJourney({List<LatLng>? points, double singlePointZoom = 14}) {
+    final pts = points ?? mapFocusPoints;
+    if (pts.isEmpty) return;
+    try {
+      if (pts.length == 1) {
+        mapController.move(pts.first, singlePointZoom);
+        return;
+      }
+      mapController.fitCamera(
+        CameraFit.coordinates(
+          coordinates: pts,
+          padding: const EdgeInsets.all(60),
+          // Two addresses on the same street would otherwise fit at street
+          // level, which reads as a broken map rather than as a short journey.
+          maxZoom: 15,
+        ),
+      );
+    } catch (_) {
+      // MapController throws until a FlutterMap is attached to it. onMapReady
+      // replays this from [mapFocusPoints] as soon as one is.
+    }
+  }
+
   String? tempStoreMils;
   String? tempStoreReturnMils;
   String? tempStoreViaMils;
@@ -1221,10 +1257,18 @@ class DashboardController extends GetxController {
       returnSequence.add(returnDropOff);
     }
 
+    // Frame the journey the moment its points are known, NOT at the end of
+    // this method: everything below is behind an OSRM round-trip and a fare
+    // call, so a single entered address returned right here without even
+    // centring the map, and any throw further down (an unset return vehicle in
+    // getFares, an OSRM timeout) skipped the fit for a full journey too.
+    mapFocusPoints = List<LatLng>.of(totalMapLayoutFocusPoints);
+    focusMapOnJourney();
+    update();
+
     if (totalMapLayoutFocusPoints.length == 1) {
       return;
     }
-    update();
 
     double totalComputedMiles = 0.0;
     double computedOutboundMiles = 0.0;
@@ -1362,8 +1406,12 @@ class DashboardController extends GetxController {
       dropoffPlotId: dashboardZoneValue != null ? dashboardZoneValue!.id : null,
       pickupDate: "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
       pickupTime: pickUpTimeController.text,
-      vehicleTypeId: selectVehicleValue!.id,
-      returnVehicleTypeId : selectVehicleValueReturn!.id,
+      // Null-safe, as in getFaresCalculation(): refreshPostAllFields() (F7)
+      // sets selectVehicleValueReturn back to null, and a `!` here threw right
+      // through the rest of this method — no fare, no update(), and (before
+      // the fit moved above) no map focus either.
+      vehicleTypeId: selectVehicleValue?.id,
+      returnVehicleTypeId: selectVehicleValueReturn?.id,
       withReturnPickUp: pickupTwoWayController.text.isEmpty ? null : pickupTwoWayController.text,
       withReturnDropOff: dropOffTwoWayController.text.isEmpty ? null : dropOffTwoWayController.text,
       returnMiles: dropOffTwoWayController.text.isNotEmpty || pickupTwoWayController.text.isNotEmpty ?tempStoreReturnMils: null,
@@ -1375,12 +1423,13 @@ class DashboardController extends GetxController {
     returnFareValue = fareValue['return_fare']?.toString() ?? "0";
     slugControllerReturn.text = fareValue['return_fare']?.toString() ?? "0";
 
+    // Refit now that the real road geometry is in: a route can bulge well
+    // outside the straight-line box of its endpoints. Markers stay in the list
+    // so nothing that was framed a moment ago drops off the edge.
     if (polylinePointsCoordinate.isNotEmpty) {
-      final List<LatLng> focusPoints = totalMapLayoutFocusPoints.isNotEmpty ? totalMapLayoutFocusPoints : polylinePointsCoordinate;
-      LatLngBounds bounds = focusPoints.length == 1 ? LatLngBounds.fromPoints([focusPoints.first, focusPoints.first]) : calculateBounds(focusPoints);
-      final cameraFit = CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
-      mapController.fitCamera(cameraFit);
-
+      focusMapOnJourney(
+        points: [...polylinePointsCoordinate, ...totalMapLayoutFocusPoints],
+      );
     }
     update();
   }
