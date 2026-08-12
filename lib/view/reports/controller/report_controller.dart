@@ -672,6 +672,30 @@ class ReportController extends GetxController {
     }
   }
 
+void clearBookingReportData() {
+  customerController.clear();
+  mobileController.clear();
+  phoneController.clear();
+  pickUpController.clear();
+  dropOffController.clear();
+  orderNumberController.clear();
+  bookedByController.clear();
+  bookingStartTimeController.clear();
+  bookingEndTimeController.clear();
+  bookingFromDate.value = DateTime(DateTime.now().year, DateTime.now().month, 1);
+  bookingToDate.value = DateTime.now();
+  bookingStatisticsModel = null;
+  bookingGraphModel = null;
+  apiSelectedEmployee = null;
+  apiSelectedAccount = null;
+  apiSelectedDepartment = null;
+  apiSelectedPaymentTypeIds.clear();
+  totalBookings.value = 0;
+  totalEarnings.value = 0.0;
+  totalAccountEarnings.value = 0.0;
+  update();
+}
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report booking functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report employee functionality
 

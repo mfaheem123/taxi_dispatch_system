@@ -42,6 +42,7 @@ class _AllBookingViewState extends State<AllBookingView> {
   Widget build(BuildContext context) {
     double widthss = MediaQuery.of(context).size.width;
     return GetBuilder<ReportController>(initState: (state) {
+      controller.clearBookingReportData();
       controller.clearDropdowns();
       controller.selectDriverObject = null;
       controller.getAllDrivers();
