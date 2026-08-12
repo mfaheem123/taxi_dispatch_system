@@ -639,10 +639,10 @@ class AccountController extends GetxController {
   final escortEmail = TextEditingController();
   final escortMobile = TextEditingController();
   final escortAddress = TextEditingController();
-  String? dobDate = "2000-01-01";
-  String? safeguardingExpiryExpireDate = "2000-01-01";
-  String? patExpiryDate = "2000-01-01";
-  String? firstAidDate = "2000-01-01";
+  String? dobDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? safeguardingExpiryExpireDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? patExpiryDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? firstAidDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
   final dbsExpireTime = TextEditingController();
   final safeguardingBatch = TextEditingController();
   final PATBatch = TextEditingController();
@@ -745,6 +745,9 @@ class AccountController extends GetxController {
       String message = selectedEscort != null
           ? "ESCORT UPDATED SUCCESSFULLY"
           : "ESCORT CREATED SUCCESSFULLY";
+
+
+      clearEscortFields();
       escortName.clear();
       escortEmail.clear();
       escortMobile.clear();
@@ -766,6 +769,8 @@ class AccountController extends GetxController {
       update();
     }
   }
+
+  var datePickerKey = 0;
 void clearEscortFields() {
   escortName.clear();
   escortEmail.clear();
@@ -775,6 +780,11 @@ void clearEscortFields() {
   PATBatch.clear();
   firstAidBatch.clear();
   DBSBatch.clear();
+  dobDate = "";
+  safeguardingExpiryExpireDate = "";
+  patExpiryDate = "";
+  firstAidDate = "";
+  dbsExpireTime.text = "";
   profileImg = null;
   safeguardingDocPic = null;
   patDocPic = null;
@@ -784,6 +794,8 @@ void clearEscortFields() {
   listEscort();
   isEscortUpdating.value = false;
   selectedEscort = null;
+  datePickerKey++;
+  update();
 }
   escortDelete(int? id) async {
     var response = await Api().delete("escorts/delete/$id");
@@ -867,10 +879,10 @@ void clearEscortFields() {
     escortAddress.text = escort.address ?? '';
 
     // Dates
-    dobDate = escort.dob;
-    safeguardingExpiryExpireDate = escort.safeguardingExpiry;
-    patExpiryDate = escort.patExpiry;
-    firstAidDate = escort.firstaidExpiry;
+    dobDate = formatDate(escort.dob);
+    safeguardingExpiryExpireDate = formatDate(escort.safeguardingExpiry);
+    patExpiryDate = formatDate(escort.patExpiry);
+    firstAidDate = formatDate(escort.firstaidExpiry);
     dbsExpireTime.text = escort.dbsExpiry ?? '';
 
     // Batch Numbers
@@ -890,7 +902,19 @@ void clearEscortFields() {
     update();
   }
 
+  String formatDate(dynamic dateInput) {
+    if (dateInput == null || dateInput.toString().isEmpty) {
+      return "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
+    }
 
+    String apiDate = dateInput.toString();
+    List<String> parts = apiDate.split('-');
+    if (parts.length == 3 && parts[0].length <= 2) {
+      return "${parts[2]}-${parts[1]}-${parts[0]}";
+    }
+
+    return apiDate;
+  }
 
 
 
