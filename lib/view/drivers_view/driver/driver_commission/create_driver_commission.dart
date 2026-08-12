@@ -202,7 +202,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                         child: KeyboardDatePicker(
                           key: ValueKey("from_date_${controller.datePickerKey}"),
                           initialDate: DateTime.now(),
-                          allowPastDates: false,
+                          allowFutureDates: false,
                           onChanged: (date) {
                             controller.filterFromDate =
                                 date.toIso8601String().split("T").first;
