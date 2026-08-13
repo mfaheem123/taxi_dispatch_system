@@ -463,13 +463,419 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
 
 
 /// Keyboard-driven DatePicker widget (no packages)
+/// Keyboard-driven DatePicker widget (no packages)
+/// Keyboard-driven DatePicker widget (no packages)
+// class KeyboardDatePicker extends StatefulWidget {
+//   final DateTime initialDate;
+//   final void Function(DateTime)? onChanged;
+//   final void Function(DateTime)? onSubmitted;
+//   Color? borderClr;
+//   final double fontSize;
+//   final double iconSize;
+//   final bool allowPastDates;
+//   final bool allowFutureDates;
+//
+//   static bool isAnyDatePickerFocused = false;
+//
+//   KeyboardDatePicker({
+//     Key? key,
+//     DateTime? initialDate,
+//     this.onChanged,
+//     this.onSubmitted,
+//     this.borderClr,
+//     this.fontSize = 12,
+//     this.iconSize = 14,
+//     this.allowPastDates = true,
+//     this.allowFutureDates = true,
+//   })  : initialDate = initialDate ?? DateTime(2000, 1, 1),
+//         super(key: key);
+//
+//   @override
+//   State<KeyboardDatePicker> createState() => _KeyboardDatePickerState();
+// }
+//
+// class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
+//   late int day;
+//   late int month;
+//   late int year;
+//
+//   int activePart = 0; // 0: Day, 1: Month, 2: Year
+//   final List<String> _buffers = ['', '', ''];
+//   final FocusNode _focusNode = FocusNode();
+//   final FocusNode _iconFocusNode = FocusNode();
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     day = widget.initialDate.day;
+//     month = widget.initialDate.month;
+//     year = widget.initialDate.year;
+//
+//     final dim = _daysInMonth(month, year);
+//     if (day > dim) day = dim;
+//     if (day < 1) day = 1;
+//
+//     _focusNode.addListener(_onFocusChange);
+//     _iconFocusNode.addListener(_onFocusChange);
+//   }
+//
+//   void _onFocusChange() {
+//     KeyboardDatePicker.isAnyDatePickerFocused = _focusNode.hasFocus || _iconFocusNode.hasFocus;
+//   }
+//
+//   @override
+//   void dispose() {
+//     _focusNode.removeListener(_onFocusChange);
+//     _iconFocusNode.removeListener(_onFocusChange);
+//     _focusNode.dispose();
+//     _iconFocusNode.dispose();
+//     super.dispose();
+//   }
+//
+//   DateTime get _today {
+//     final now = DateTime.now();
+//     return DateTime(now.year, now.month, now.day);
+//   }
+//
+//   DateTime? get _minDate => widget.allowPastDates ? null : _today;
+//   DateTime? get _maxDate => widget.allowFutureDates ? null : _today;
+//   DateTime get _currentDate => DateTime(year, month, day);
+//
+//   void _setDate(DateTime date) {
+//     year = date.year;
+//     month = date.month;
+//     day = date.day;
+//     _buffers[0] = '';
+//     _buffers[1] = '';
+//     _buffers[2] = '';
+//   }
+//
+//   void _clampToBounds() {
+//     final min = _minDate;
+//     final max = _maxDate;
+//     if (min != null && _currentDate.isBefore(min)) {
+//       _setDate(min);
+//     } else if (max != null && _currentDate.isAfter(max)) {
+//       _setDate(max);
+//     }
+//   }
+//
+//   bool _isLeap(int y) {
+//     return (y % 4 == 0 && y % 100 != 0) || (y % 400 == 0);
+//   }
+//
+//   int _daysInMonth(int m, int y) {
+//     if (m == 2) return _isLeap(y) ? 29 : 28;
+//     if (m == 1 || m == 3 || m == 5 || m == 7 || m == 8 || m == 10 || m == 12) return 31;
+//     return 30;
+//   }
+//
+//   void _notifyChanged() {
+//     final dt = DateTime(year, month, day);
+//     widget.onChanged?.call(dt);
+//   }
+//
+//   void _onIncrementActive(int delta) {
+//     setState(() {
+//       if (activePart == 0) {
+//         day += delta;
+//         final dim = _daysInMonth(month, year);
+//         if (day > dim) day = 1;
+//         if (day < 1) day = dim;
+//         _buffers[0] = '';
+//       } else if (activePart == 1) {
+//         month += delta;
+//         if (month > 12) month = 1;
+//         if (month < 1) month = 12;
+//         final dim = _daysInMonth(month, year);
+//         if (day > dim) day = dim;
+//         _buffers[1] = '';
+//       } else if (activePart == 2) {
+//         year += delta;
+//         if (year < 1) year = 1;
+//         final dim = _daysInMonth(month, year);
+//         if (day > dim) day = dim;
+//         _buffers[2] = '';
+//       }
+//       _clampToBounds();
+//       _notifyChanged();
+//     });
+//   }
+//
+//   void _onDigit(int d) {
+//     setState(() {
+//       final currentBuf = _buffers[activePart] + d.toString();
+//
+//       if (activePart == 0) {
+//         int val = int.tryParse(currentBuf) ?? 0;
+//         final dim = _daysInMonth(month, year);
+//         if (currentBuf.length >= 2) {
+//           if (val > dim) val = dim;
+//           if (val < 1) val = 1;
+//           day = val;
+//           _buffers[0] = '';
+//           activePart = 1; // 2 digits poore hone per agle part (Month) per jaye
+//         } else {
+//           _buffers[0] = currentBuf;
+//           if (val > 0) day = val.clamp(1, dim);
+//         }
+//       } else if (activePart == 1) {
+//         int val = int.tryParse(currentBuf) ?? 0;
+//         if (currentBuf.length >= 2) {
+//           if (val > 12) val = 12;
+//           if (val < 1) val = 1;
+//           month = val;
+//           final dim = _daysInMonth(month, year);
+//           if (day > dim) day = dim;
+//           _buffers[1] = '';
+//           activePart = 2; // 2 digits poore hone per Year per jaye
+//         } else {
+//           _buffers[1] = currentBuf;
+//           if (val > 0) {
+//             month = val.clamp(1, 12);
+//             final dim = _daysInMonth(month, year);
+//             if (day > dim) day = dim;
+//           }
+//         }
+//       } else if (activePart == 2) {
+//         _buffers[2] = currentBuf;
+//         int val = int.tryParse(currentBuf) ?? 0;
+//         if (val > 0) year = val;
+//         if (_buffers[2].length >= 4) {
+//           _buffers[2] = '';
+//         }
+//         final dim = _daysInMonth(month, year);
+//         if (day > dim) day = dim;
+//       }
+//       _clampToBounds();
+//       _notifyChanged();
+//     });
+//   }
+//
+//   void _onBackspace() {
+//     setState(() {
+//       final b = _buffers[activePart];
+//       if (b.isNotEmpty) {
+//         _buffers[activePart] = b.substring(0, b.length - 1);
+//       } else {
+//         // Backspace per pichle part per switch kare
+//         if (activePart > 0) {
+//           activePart--;
+//           _buffers[activePart] = '';
+//         }
+//       }
+//       _clampToBounds();
+//       _notifyChanged();
+//     });
+//   }
+//
+//   void _onLeft() {
+//     setState(() {
+//       activePart = (activePart - 1 + 3) % 3;
+//       _buffers[activePart] = '';
+//     });
+//   }
+//
+//   void _onRight() {
+//     setState(() {
+//       activePart = (activePart + 1) % 3;
+//       _buffers[activePart] = '';
+//     });
+//   }
+//
+//   void _onEnter() {
+//     setState(_clampToBounds);
+//     widget.onSubmitted?.call(_currentDate);
+//   }
+//
+//   Widget _partBox(String text, bool active, {VoidCallback? onTap}) {
+//     return GestureDetector(
+//       onTap: onTap,
+//       child: Container(
+//         padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(4),
+//           color: active ? Colors.blue.withOpacity(0.12) : Colors.transparent,
+//         ),
+//         child: Text(
+//           text,
+//           style: TextStyle(
+//             fontSize: widget.fontSize,
+//             fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+//             color: active ? Colors.blue.shade800 : Colors.black87,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+//
+//   void _onRawKey(RawKeyEvent event) {
+//     if (event is! RawKeyDownEvent) return;
+//     final key = event.logicalKey;
+//
+//     if (key == LogicalKeyboardKey.arrowUp) {
+//       _onIncrementActive(1);
+//       return;
+//     } else if (key == LogicalKeyboardKey.arrowDown) {
+//       _onIncrementActive(-1);
+//       return;
+//     } else if (key == LogicalKeyboardKey.arrowLeft) {
+//       _onLeft();
+//       return;
+//     } else if (key == LogicalKeyboardKey.arrowRight) {
+//       _onRight();
+//       return;
+//     } else if (key == LogicalKeyboardKey.enter ||
+//         key == LogicalKeyboardKey.numpadEnter) {
+//       _onEnter();
+//       return;
+//     } else if (key == LogicalKeyboardKey.backspace) {
+//       _onBackspace();
+//       return;
+//     }
+//
+//     final label = key.keyLabel;
+//     if (label.length == 1 && RegExp(r'^[0-9]$').hasMatch(label)) {
+//       final d = int.parse(label);
+//       _onDigit(d);
+//       return;
+//     }
+//   }
+//
+//   Future<void> _selectDate(BuildContext context) async {
+//     final firstDate = _minDate ?? DateTime(2000);
+//     final lastDate = _maxDate ?? DateTime(2101);
+//     var initial = _currentDate;
+//     if (initial.isBefore(firstDate)) initial = firstDate;
+//     if (initial.isAfter(lastDate)) initial = lastDate;
+//
+//     final DateTime? picked = await showDatePicker(
+//       context: context,
+//       initialDate: initial,
+//       firstDate: firstDate,
+//       lastDate: lastDate,
+//     );
+//
+//     if (picked != null) {
+//       setState(() {
+//         day = picked.day;
+//         month = picked.month;
+//         year = picked.year;
+//       });
+//       _notifyChanged();
+//       Future.delayed(const Duration(milliseconds: 100), () {
+//         FocusScope.of(context).nextFocus();
+//       });
+//     } else {
+//       _focusNode.requestFocus();
+//     }
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final dayText = day.toString().padLeft(2, '0');
+//     final monthText = month.toString().padLeft(2, '0');
+//     final yearText = year.toString();
+//
+//     return RawKeyboardListener(
+//       focusNode: _focusNode,
+//       autofocus: true,
+//       onKey: _onRawKey,
+//       child: Container(
+//         padding: const EdgeInsets.symmetric(horizontal: 8),
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(4),
+//           border: Border.all(color: widget.borderClr ?? Colors.blue),
+//         ),
+//         child: Row(
+//           mainAxisSize: MainAxisSize.min,
+//           children: [
+//             Row(
+//               children: [
+//                 _partBox(dayText, activePart == 0, onTap: () {
+//                   setState(() {
+//                     activePart = 0;
+//                     _buffers[0] = '';
+//                     _focusNode.requestFocus();
+//                   });
+//                 }),
+//                 const Padding(
+//                   padding: EdgeInsets.symmetric(horizontal: 2.0),
+//                   child: Text('/', style: TextStyle(fontWeight: FontWeight.bold)),
+//                 ),
+//                 _partBox(monthText, activePart == 1, onTap: () {
+//                   setState(() {
+//                     activePart = 1;
+//                     _buffers[1] = '';
+//                     _focusNode.requestFocus();
+//                   });
+//                 }),
+//                 const Padding(
+//                   padding: EdgeInsets.symmetric(horizontal: 2.0),
+//                   child: Text('/', style: TextStyle(fontWeight: FontWeight.bold)),
+//                 ),
+//                 _partBox(yearText, activePart == 2, onTap: () {
+//                   setState(() {
+//                     activePart = 2;
+//                     _buffers[2] = '';
+//                     _focusNode.requestFocus();
+//                   });
+//                 }),
+//               ],
+//             ),
+//             const SizedBox(width: 4),
+//             Focus(
+//               focusNode: _iconFocusNode,
+//               onKey: (node, event) {
+//                 if (event is RawKeyDownEvent) {
+//                   if (event.logicalKey == LogicalKeyboardKey.enter ||
+//                       event.logicalKey == LogicalKeyboardKey.space ||
+//                       event.logicalKey == LogicalKeyboardKey.numpadEnter) {
+//                     _selectDate(context);
+//                     return KeyEventResult.handled;
+//                   }
+//                 }
+//                 return KeyEventResult.ignored;
+//               },
+//               child: Builder(
+//                 builder: (context) {
+//                   final isIconFocused = Focus.of(context).hasFocus;
+//                   return InkWell(
+//                     borderRadius: BorderRadius.circular(4),
+//                     onTap: () => _selectDate(context),
+//                     child: Container(
+//                       padding: const EdgeInsets.symmetric(horizontal: 3.0, vertical: 2.0),
+//                       decoration: BoxDecoration(
+//                         border: isIconFocused ? Border.all(color: Colors.blue, width: 1.5) : null,
+//                         borderRadius: BorderRadius.circular(4),
+//                       ),
+//                       child: Icon(
+//                         Icons.calendar_month,
+//                         size: widget.iconSize,
+//                         color: isIconFocused ? Colors.blue.shade800 : null,
+//                       ),
+//                     ),
+//                   );
+//                 },
+//               ),
+//             )
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+/// Keyboard-driven DatePicker widget (no packages)
+/// Keyboard-driven DatePicker widget (no packages)
 class KeyboardDatePicker extends StatefulWidget {
   final DateTime initialDate;
   final void Function(DateTime)? onChanged;
   final void Function(DateTime)? onSubmitted; // optional enter press
   Color? borderClr;
 
-    final double fontSize;
+  final double fontSize;
   final double iconSize;
 
   /// When true (default) past dates are selectable — the calendar shows dates
@@ -489,7 +895,7 @@ class KeyboardDatePicker extends StatefulWidget {
     this.onChanged,
     this.onSubmitted,
     this.borderClr,
-        this.fontSize = 12, // default font size
+    this.fontSize = 12, // default font size
     this.iconSize = 14, // default icon size
     this.allowPastDates = true,
     this.allowFutureDates = true,
@@ -873,7 +1279,7 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 3.0),
                   child: Icon(Icons.calendar_month,
-                  size: widget.iconSize,
+                    size: widget.iconSize,
                   ),
                 ),
               ),

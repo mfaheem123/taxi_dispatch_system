@@ -54,6 +54,7 @@ import '../customer/lost_property.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import 'package:nested_menu_bar/nested_menu_bar.dart';
 import '../dashboard_view/dashboard/defult_dashboard_view.dart';
+import '../dashboard_view/widgets/time_picker_widget.dart';
 import '../drivers_view/driver/bulk_driver_commission/bulk_driver_commission.dart';
 import '../drivers_view/driver/bulk_driver_commission/bulk_driver_rent.dart';
 import '../drivers_view/driver/create_driver_form/driver_form.dart';
@@ -221,21 +222,42 @@ class _MyHomePageState extends State<MyHomePage> {
     ListVehicleType,
     CreateCompanyVehicle,
     CompanyVehiclesScreen,
+    CreateUserScreen,
+    UserListscreen,
+    CreateSubsiDiary,
+    SubsiDiariesScreen,
+    AuthorizationScreen,
+    DriverLoginScreen,
+    DriverLogsScreen,
+    EarningAndInfoScreen,
+    ReportFeedback,
+    StatisticsScreen,
+    AllBookingView,
+    ReportTransferedBooking,
+    ActivityScreen,
+    IncomeScreen,
+    CompanyIncomeScreen,
+    CreiditCardPayments,
+    PcoScreen,
+
 
   };
 
   /// Whether arrow up / down should scroll the page right now.
   bool get _arrowKeysScrollBody {
+    // if (KeyboardDatePicker.isAnyDatePickerFocused) {
+    //   return false;
+    // }
+
     if (!_arrowScrollPages.contains(controller.currentPage.value.runtimeType)) {
       return false;
     }
-    // A focused text field owns its arrow keys (caret movement, and the
-    // suggestion lists that open under the column search boxes).
+
     final focusContext = FocusManager.instance.primaryFocus?.context;
     if (focusContext?.findAncestorStateOfType<EditableTextState>() != null) {
       return false;
     }
-    // Nothing should scroll behind an open alert.
+
     return shortCutKeyValue.value != "alert";
   }
 
