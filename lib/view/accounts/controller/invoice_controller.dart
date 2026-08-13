@@ -174,8 +174,10 @@ class InvoiceController extends GetxController {
     isAllSelected = false;
     fromDate = DateTime.now();
     toDate = DateTime.now();
-    invoiceDateController = null;
-    invoiceDueDateController = null;
+    final now = DateTime.now();
+    final dueDate = now.add(const Duration(days: 7));
+    invoiceDateController = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+    invoiceDueDateController = "${dueDate.year}-${dueDate.month.toString().padLeft(2, '0')}-${dueDate.day.toString().padLeft(2, '0')}";
     datePickerKey++;
     getInvoiceNumber();
   }
