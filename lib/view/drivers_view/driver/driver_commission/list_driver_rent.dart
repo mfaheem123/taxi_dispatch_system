@@ -128,7 +128,7 @@ class _DriverRentState extends State<DriverRent> {
                         selected: selectedRowIndex == index,
                         cells: [
                           DataCell(
-                            Center(child: Text(driverRent.driverId?.toString() ?? "0")),
+                            Center(child: Text(driver?.username ?? "0")),
                             onTap: () => _onRowTap(driverRent.driverId),
                           ),
                           DataCell(

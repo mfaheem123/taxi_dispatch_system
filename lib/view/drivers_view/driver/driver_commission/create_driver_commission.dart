@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import '../../../../alert/restrict_drivers_alert.dart';
 import '../../../../component/datatable_widget.dart';
 import '../../../../component/dropdown_button.dart';
+import '../../../../component/editable_cell_widget.dart';
 import '../../../../component/textStyle.dart';
 import '../../../../component/text_field.dart';
 import '../../../dashboard_view/booking_table.dart';
@@ -426,27 +427,6 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                           final booking = item;
                           final isRowSelected = controller.selectedIds.contains(
                               booking.id.toString());
-                          Widget editableCell(dynamic initialValue,
-                              Function(String) onChanged) {
-                            return Center(
-                              child: SizedBox(
-                                width: 50,
-                                child: TextFormField(
-                                  initialValue: initialValue?.toString() ?? "0",
-                                  keyboardType: TextInputType.number,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(fontSize: 12),
-                                  decoration: const InputDecoration(
-                                    isDense: true,
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 6, horizontal: 4),
-                                    border: OutlineInputBorder(),
-                                  ),
-                                  onChanged: onChanged,
-                                ),
-                              ),
-                            );
-                          }
 
                           return [
                             Center(
@@ -487,31 +467,41 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                             (booking.journeyType?.journeyType ?? "")
                                 .toUpperCase(),
                             (booking.paymentType?.name ?? "").toUpperCase(),
-                            editableCell(booking.fares, (val) {
-                              booking.fares = val;
-                              controller.recalculateDriverCommissionRow(
-                                  booking);
-                            }),
-                            editableCell(booking.parkingCharges, (val) {
-                              booking.parkingCharges = val;
-                              controller.recalculateDriverCommissionRow(
-                                  booking);
-                            }),
-                            editableCell(booking.waitingCharges, (val) {
-                              booking.waitingCharges = val;
-                              controller.recalculateDriverCommissionRow(
-                                  booking);
-                            }),
-                            editableCell(booking.extraDropCharges, (val) {
-                              booking.extraDropCharges = val;
-                              controller.recalculateDriverCommissionRow(
-                                  booking);
-                            }),
-                            editableCell(booking.congestionCharges, (val) {
-                              booking.congestionCharges = val;
-                              controller.recalculateDriverCommissionRow(
-                                  booking);
-                            }),
+                            EditableCellWidget(
+                              initialValue: booking.fares,
+                              onChanged: (val) {
+                                booking.fares = (double.tryParse(val) ?? 0.0).toString();
+                                controller.recalculateDriverCommissionRow(booking);
+                              },
+                            ),
+                            EditableCellWidget(
+                              initialValue: booking.parkingCharges,
+                              onChanged: (val) {
+                                booking.parkingCharges = (double.tryParse(val) ?? 0.0).toString();
+                                controller.recalculateDriverCommissionRow(booking);
+                              },
+                            ),
+                            EditableCellWidget(
+                              initialValue: booking.waitingCharges,
+                              onChanged: (val) {
+                                booking.waitingCharges = (double.tryParse(val) ?? 0.0).toString();
+                                controller.recalculateDriverCommissionRow(booking);
+                              },
+                            ),
+                            EditableCellWidget(
+                              initialValue: booking.extraDropCharges,
+                              onChanged: (val) {
+                                booking.extraDropCharges = (double.tryParse(val) ?? 0.0).toString();
+                                controller.recalculateDriverCommissionRow(booking);
+                              },
+                            ),
+                            EditableCellWidget(
+                              initialValue: booking.congestionCharges,
+                              onChanged: (val) {
+                                booking.congestionCharges = (double.tryParse(val) ?? 0.0).toString();
+                                controller.recalculateDriverCommissionRow(booking);
+                              },
+                            ),
                             Center(child: Text(
                                 "£ ${controller.calculateWithoutCommission(
                                     booking)}")),
