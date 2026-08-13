@@ -231,7 +231,7 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                             d.id == controller.selectDriverObject?.id)
                             : null,
                         itemLabel: (driver) =>
-                            (driver.name ?? "").toUpperCase(),
+                            "${driver.username} ${driver.name}" .toUpperCase(),
                         onChanged: (val) {
                           controller.selectDriverObject = val;
                           controller.update();
