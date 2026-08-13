@@ -1413,11 +1413,14 @@ class DashboardController extends GetxController {
       // through the rest of this method — no fare, no update(), and (before
       // the fit moved above) no map focus either.
       vehicleTypeId: selectVehicleValue?.id,
-      returnVehicleTypeId: selectVehicleValueReturn?.id,
+      returnVehicleTypeId : dropOffTwoWayController.text.isNotEmpty || pickupTwoWayController.text.isNotEmpty && selectVehicleValueReturn !=  null?selectVehicleValueReturn!.id:selectVehicleValue!.id,
+
       withReturnPickUp: pickupTwoWayController.text.isEmpty ? null : pickupTwoWayController.text,
       withReturnDropOff: dropOffTwoWayController.text.isEmpty ? null : dropOffTwoWayController.text,
       returnMiles: dropOffTwoWayController.text.isNotEmpty || pickupTwoWayController.text.isNotEmpty ?tempStoreReturnMils: null,
       isOneWay: isOneWayJourney,
+      isWaitAndReturn: jourValue == 'W/R',
+
     );
     var fareValue = jsonDecode(storedTemFare);
     fixedFare.value = fareValue['fare']?.toString() ?? "0";
@@ -2243,6 +2246,7 @@ class DashboardController extends GetxController {
               .toString()
           : null,
       isOneWay: isOneWayJourney,
+      isWaitAndReturn: jourValue == 'W/R',
       // returnMiles: () {
       //   if (dropOffTwoWayController.text.isNotEmpty || pickupTwoWayController.text.isNotEmpty) {
       //     // Agar outbound pickup ya dropoff me se koi ek bhi khali ho gaya hai

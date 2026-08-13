@@ -631,22 +631,46 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   _dropdown<JourneyTypeObject>(
                                     'Journey Type'.toUpperCase(),
                                     controller.selectJourneyTypeValue,
-                                    controller.dashboardAllData!.journeyTypes ??
-                                        const [],
+                                    controller.dashboardAllData!.journeyTypes ?? const [],
                                         (v) {
-                                          if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
-                                            setState(() {
-                                              // controller.selectJourneyTypeValue = v;
-                                              controller.dropDownShow.value = false;
-                                              controller.jourValue =
-                                              (v!.journeyType == "r/n")
-                                                  ? 'W/R'
-                                                  : null;
-                                              controller.selectJourneyTypeValue = v;
-                                            });
-                                          }else{
-                                            BotToast.showText(text: "Please select pickup and drop location first");
+                                      // 1. Validation check for pickup and dropoff locations
+                                      if (controller.pickupController.text.isNotEmpty &&
+                                          controller.dropOffController.text.isNotEmpty) {
+                                        setState(() {
+                                          // Dropdown menu close
+                                          controller.dropDownShow.value = false;
+
+                                          // Selected value assign
+                                          controller.selectJourneyTypeValue = v;
+
+                                          // Debug prints
+                                          print("RAW journeyType from API => '${v?.journeyType}'");
+
+                                          // String normalization (trim + lowercase)
+                                          final type = (v?.journeyType ?? "").trim().toLowerCase();
+                                          print("NORMALIZED type => '$type'");
+
+                                          // Map journeyType value
+                                          if (type == "o/w") {
+                                            controller.jourValue = "O/W";
+                                          } else if (type == "r/n") {
+                                            controller.jourValue = "R/N";
+                                          } else if (type == "w/r") {
+                                            controller.jourValue = "W/R";
+                                          } else {
+                                            controller.jourValue = null;
+                                            print("⚠️ NO MATCH FOUND for type: '$type' — jourValue set to null");
                                           }
+
+                                          print("FINAL controller.jourValue => ${controller.jourValue}");
+                                        });
+
+                                        // 2. Fares calculation trigger
+                                        controller.getFaresCalculation();
+                                      } else {
+                                        // 3. Validation fail warning
+                                        BotToast.showText(text: "Please select pickup and drop location first");
+                                      }
                                     },
                                     14,
                                     itemLabel: (p) => p.journeyType!,

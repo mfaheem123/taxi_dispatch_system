@@ -72,6 +72,13 @@ Future<String> getFares({
   String? returnCompanyPrice,
   String? returnMiles,
   bool isOneWay = false,
+  // 👇 NAYA PARAMETER: sirf W/R (Wait & Return) select hone par true
+  // bhejein. Isi flag ki base par miles double honge. Pehle
+  // 'journeyTypeId == 2' hardcoded check tha, jo galat tha kyunke
+  // journeyTypeId backend ki dynamic list se aata hai aur W/R ka ID
+  // hamesha 2 nahi hota — isi wajah se W/R par fare double nahi ho raha
+  // tha.
+  bool isWaitAndReturn = false,
 }) async {
   print("one way mils $miles");
   print("two way mils $returnMiles");
@@ -95,7 +102,7 @@ Future<String> getFares({
         try {
           // Parse and format date safely
           DateTime parsedDate =
-              DateFormat('yyyy-M-d').parse(element.startDate!);
+          DateFormat('yyyy-M-d').parse(element.startDate!);
           String tempDateStore = DateFormat('yyyy-MM-dd').format(parsedDate);
 
           multiReservationTemp.add({
@@ -110,8 +117,13 @@ Future<String> getFares({
       }
     }
   }
-  String tempMiles =
-      journeyTypeId == 2 ? double.parse(miles.toString()) * 2 : miles;
+
+  // 👇 FIX: doubling ab 'isWaitAndReturn' (W/R) flag se decide hoti hai,
+  // 'journeyTypeId == 2' wala hardcoded/unreliable check hata diya gaya.
+  String tempMiles = isWaitAndReturn
+      ? (double.parse(miles.toString()) * 2).toString()
+      : miles.toString();
+
   // 3. Constructing Request Body
   // Using a Map<String, dynamic> and filtering nulls
   var formData = {
@@ -146,45 +158,8 @@ Future<String> getFares({
     if (companyPrice != null) "company_price": companyPrice,
 
     /// waiting return fares
-    // if (withReturnPickUp != null) "return_pickup": withReturnPickUp,
-    // if (withReturnDropOff != null) "return_dropoff": withReturnDropOff,
-    // if (withReturnPickUp != null && withReturnDropOff != null)
-    //   "return_pickup_date": returnPickupDate,
-    // if (withReturnPickUp != null && withReturnDropOff != null)
-    //   "return_pickup_time": returnPickupTime,
-    // if (withReturnPickUp != null && withReturnDropOff != null)
-    //   "return_pickup_time": returnPickupTime,
-    // // if (withReturnPickUp != null && withReturnDropOff != null)
-    //   "return_miles": returnMiles,
-    // if (withReturnPickUp != null &&
-    //     withReturnDropOff != null &&
-    //     returnParkingCharges != null)
-    //   "return_parking_charges": returnParkingCharges,
-    // if (withReturnPickUp != null &&
-    //     withReturnDropOff != null &&
-    //     returnWaitingCharges != null)
-    //   "return_waiting_charges": returnWaitingCharges,
-    // if (withReturnPickUp != null &&
-    //     withReturnDropOff != null &&
-    //     returnMeetAndGreet != null)
-    //   "return_meet_and_greet": returnMeetAndGreet,
-    // if (withReturnPickUp != null &&
-    //     withReturnDropOff != null &&
-    //     returnCongestionCharges != null)
-    //   "return_congestion_charges": returnCongestionCharges,
-    // if (withReturnPickUp != null &&
-    //     withReturnDropOff != null &&
-    //     returnExtraDropCharges != null)
-    //   "return_extra_drop_charges": returnExtraDropCharges,
-    // if (withReturnPickUp != null &&
-    //     withReturnDropOff != null &&
-    //     returnCreditCardCharges != null)
-    //   "return_credit_card_charges": returnCreditCardCharges,
-    // if (withReturnPickUp != null &&
-    //     withReturnDropOff != null &&
-    //     returnCompanyPrice != null)
-    //   "return_company_price": returnCompanyPrice,
-    /// waiting return fares
+    // (R/N ke liye — separate return route/locations wale fields, sirf
+    // jab isOneWay false ho aur return pickup/dropoff diye gaye hon)
     if (!isOneWay && withReturnPickUp != null) "return_pickup": withReturnPickUp,
     if (!isOneWay && withReturnDropOff != null) "return_dropoff": withReturnDropOff,
     if (!isOneWay && withReturnPickUp != null && withReturnDropOff != null)
@@ -236,6 +211,7 @@ Future<String> getFares({
   print(" form data ------${formData}");
   print("tempMiles-- ${tempMiles}");
   print("returnMiles-- ${returnMiles}");
+  print("isWaitAndReturn-- ${isWaitAndReturn}");
 
   try {
 
