@@ -94,7 +94,7 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
                              items: controller.allDriverData?.drivers ?? [],
                              value: controller.selectDriverObject,
                              itemLabel: (driver) =>
-                             driver.name ?? "".toUpperCase(),
+                             "${driver.username} ${driver.name}".toUpperCase(),
                              onChanged: (val) {
                                controller.selectDriverObject = val;
                                controller.update();
