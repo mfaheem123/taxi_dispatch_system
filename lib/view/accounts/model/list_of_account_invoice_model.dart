@@ -102,18 +102,22 @@ class AccountInvoice {
         subsidiaryId: json["subsidiary_id"],
         accountId: json["account_id"],
         invoiceNumber: json["invoice_number"],
-        invoiceDate: json["invoice_date"] != null
-            ? DateFormat("yyyy-M-d").parse(json["invoice_date"])
+        invoiceDate: (json["invoice_date"] != null &&
+                json["invoice_date"].toString().isNotEmpty)
+            ? DateFormat("yyyy-MM-dd").parse(json["invoice_date"])
             : null,
-        invoiceDueDate: json["invoice_due_date"] != null
-            ? DateFormat("yyyy-M-d").parse(json["invoice_due_date"])
+        invoiceDueDate: (json["invoice_due_date"] != null &&
+                json["invoice_due_date"].toString().isNotEmpty)
+            ? DateFormat("yyyy-MM-dd").parse(json["invoice_due_date"])
             : null,
-        fromDate: json["from_date"] != null
-            ? DateFormat("yyyy-M-d").parse(json["from_date"])
+        fromDate: (json["from_date"] != null &&
+                json["from_date"].toString().isNotEmpty)
+            ? DateFormat("yyyy-MM-dd").parse(json["from_date"])
             : null,
-        toDate: json["to_date"] != null
-            ? DateFormat("yyyy-M-d").parse(json["to_date"])
-            : null,
+        toDate:
+            (json["to_date"] != null && json["to_date"].toString().isNotEmpty)
+                ? DateFormat("yyyy-MM-dd").parse(json["to_date"])
+                : null,
         invoiceType: json["invoice_type"],
         departmentId: json["department_id"],
         orderNumber: json["order_number"],

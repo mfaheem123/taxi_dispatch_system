@@ -361,6 +361,7 @@ class _CreateAccountInvoiceScreenState
                                 controller.selectedCreateBookingIds.addAll(
                                     controller.accountInvoiceBookingModel!.bookings!.map((e) => e.id!));
                               }
+                              controller.recalculateCreateInvoiceTotal(null);
                               controller.update();
                             },
                           ),
@@ -429,6 +430,7 @@ class _CreateAccountInvoiceScreenState
                               }
                               controller.isAllSelected = controller.selectedCreateBookingIds.length ==
                                   controller.accountInvoiceBookingModel!.bookings!.length;
+                              controller.recalculateCreateInvoiceTotal(null);
                               controller.update();
                             },
                           ),
