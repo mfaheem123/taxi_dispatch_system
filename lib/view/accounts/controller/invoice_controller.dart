@@ -94,6 +94,7 @@ class InvoiceController extends GetxController {
     if (response.statusCode == 200) {
       accountInvoiceBookingModel =
           AccountInvoiceBookingModel.fromJson(response.data);
+      recalculateCreateInvoiceTotal(null);
       BotToast.showText(text: 'FILTER DONE');
       print(' Filter Data');
     }
@@ -106,9 +107,14 @@ class InvoiceController extends GetxController {
   RxBool addAccountInvoiceLoad = false.obs;
 
   addAccountInvoice() async {
+    if (selectedCreateBookingIds.isEmpty) {
+      // BotToast.showText(text: 'Please select at least one booking to create an invoice');
+      return;
+    }
     addAccountInvoiceLoad(true);
-      List<Map<String, dynamic>> lineItems =
-      accountInvoiceBookingModel!.bookings!.map((booking) {
+    List<Map<String, dynamic>> lineItems = accountInvoiceBookingModel!.bookings!
+        .where((booking) => selectedCreateBookingIds.contains(booking.id))
+        .map((booking) {
         return {
           "booking_id": booking.id,
           "total_charges": booking.totalCharges ?? "0",
@@ -168,44 +174,51 @@ class InvoiceController extends GetxController {
     isAllSelected = false;
     fromDate = DateTime.now();
     toDate = DateTime.now();
-    invoiceDateController = null;
-    invoiceDueDateController = null;
+    final now = DateTime.now();
+    final dueDate = now.add(const Duration(days: 7));
+    invoiceDateController = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+    invoiceDueDateController = "${dueDate.year}-${dueDate.month.toString().padLeft(2, '0')}-${dueDate.day.toString().padLeft(2, '0')}";
     datePickerKey++;
     getInvoiceNumber();
   }
   void recalculateCreateInvoiceTotal(dynamic booking) {
-    if (booking == null) return;
-    double pV(dynamic v) => double.tryParse(v?.toString().trim() ?? '') ?? 0.0;
+    if (booking != null) {
+      double pV(dynamic v) =>
+          double.tryParse(v?.toString().trim() ?? '') ?? 0.0;
 
-    // 1. Row Total Calculation (Current Booking)
-    booking.totalCharges = (pV(booking.fares) +
-            pV(booking.parkingCharges) +
-            pV(booking.waitingCharges) +
-            pV(booking.extraDropCharges) +
-            pV(booking.meetAndGreet) +
-            pV(booking.congestionCharges))
-        .toStringAsFixed(2);
+      // 1. Row Total Calculation (Current Booking)
+      booking.totalCharges = (pV(booking.fares) +
+          pV(booking.parkingCharges) +
+          pV(booking.waitingCharges) +
+          pV(booking.extraDropCharges) +
+          pV(booking.meetAndGreet) +
+          pV(booking.congestionCharges))
+          .toStringAsFixed(2);
+    }
 
     final model = accountInvoiceBookingModel;
     if (model?.bookings != null && model!.bookings!.isNotEmpty) {
       // Initialize totals
       double fT = 0, pT = 0, wT = 0, eT = 0, mT = 0, cT = 0, grandT = 0;
+      double pV(dynamic v) => double.tryParse(v?.toString().trim() ?? '') ?? 0.0;
 
       for (var b in model.bookings!) {
-        double f = pV(b.fares),
-            p = pV(b.parkingCharges),
-            w = pV(b.waitingCharges);
-        double e = pV(b.extraDropCharges),
-            m = pV(b.meetAndGreet),
-            c = pV(b.congestionCharges);
+        if (selectedCreateBookingIds.contains(b.id)) {
+          double f = pV(b.fares),
+              p = pV(b.parkingCharges),
+              w = pV(b.waitingCharges),
+              e = pV(b.extraDropCharges),
+              m = pV(b.meetAndGreet),
+              c = pV(b.congestionCharges);
 
-        fT += f;
-        pT += p;
-        wT += w;
-        eT += e;
-        mT += m;
-        cT += c;
-        grandT += (f + p + w + e + m + c);
+          fT += f;
+          pT += p;
+          wT += w;
+          eT += e;
+          mT += m;
+          cT += c;
+          grandT += (f + p + w + e + m + c);
+        }
       }
 
       if (model.total != null && model.total!.isNotEmpty) {

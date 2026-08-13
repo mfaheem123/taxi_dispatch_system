@@ -12,6 +12,7 @@ import '../../../../component/textStyle.dart';
 import '../../../../component/text_widget.dart';
 import '../../../alert/stripe_payment.dart';
 import '../../../alert/update_invoice_email_alt.dart';
+import '../../../component/editable_cell_widget.dart';
 import '../../../component/responsive_datatable_widget.dart';
 import '../controller/invoice_controller.dart';
 import 'account_invoice_preview_screen.dart';
@@ -404,29 +405,6 @@ class _UpdateAccountInvoiceScreenState
                   ]
                 ],
                 rowBuilder: (item, widths) {
-                  Widget editableCell(String titleKey, dynamic initialValue, Function(String) onChanged) {
-                    return SizedBox(
-                      width: widths[titleKey]!,
-                      child: Center(
-                        child: SizedBox(
-                          width: 65,
-                          child: TextFormField(
-                            key: UniqueKey(),
-                            initialValue: initialValue?.toString() ?? "0",
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 11),
-                            decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-                              border: OutlineInputBorder(),
-                            ),
-                            onChanged: onChanged,
-                          ),
-                        ),
-                      ),
-                    );
-                  }
 
                   if (item is Map && item['type'] == 'TOTAL') {
                     return [
@@ -477,30 +455,48 @@ class _UpdateAccountInvoiceScreenState
                     (booking?.journeyType?.journeyType ?? "-").toUpperCase(),
                     (booking?.paymentType?.name ?? "-").toUpperCase(),
 
-                    editableCell("FARE", booking?.fares, (val) {
-                      booking?.fares = double.tryParse(val.toString()) ?? 0.0;
-                      controller.recalculateRowTotal(lineItem);
-                    }),
-                    editableCell("PC", booking?.parkingCharges, (val) {
-                      booking?.parkingCharges = double.tryParse(val.toString()) ?? 0.0;
-                      controller.recalculateRowTotal(lineItem);
-                    }),
-                    editableCell("WC", booking?.waitingCharges, (val) {
-                      booking?.waitingCharges = double.tryParse(val.toString()) ?? 0.0;
-                      controller.recalculateRowTotal(lineItem);
-                    }),
-                    editableCell("EDC", booking?.extraDropCharges, (val) {
-                      booking?.extraDropCharges = double.tryParse(val.toString()) ?? 0.0;
-                      controller.recalculateRowTotal(lineItem);
-                    }),
-                    editableCell("M&G", booking?.meetAndGreet, (val) {
-                      booking?.meetAndGreet = double.tryParse(val.toString()) ?? 0.0;
-                      controller.recalculateRowTotal(lineItem);
-                    }),
-                    editableCell("Cc", booking?.congestionCharges, (val) {
-                      booking?.congestionCharges = double.tryParse(val.toString()) ?? 0.0;
-                      controller.recalculateRowTotal(lineItem);
-                    }),
+                    EditableCellWidget(
+                      initialValue: booking.fares,
+                      onChanged: (val) {
+                        booking.fares = (double.tryParse(val) ?? 0.0).toString();
+                        controller.recalculateRowTotal(booking);
+                      },
+                    ),
+                    EditableCellWidget(
+                      initialValue: booking.parkingCharges,
+                      onChanged: (val) {
+                        booking.parkingCharges = (double.tryParse(val) ?? 0.0).toString();
+                        controller.recalculateRowTotal(booking);
+                      },
+                    ),
+                    EditableCellWidget(
+                      initialValue: booking.waitingCharges,
+                      onChanged: (val) {
+                        booking.waitingCharges = (double.tryParse(val) ?? 0.0).toString();
+                        controller.recalculateRowTotal(booking);
+                      },
+                    ),
+                    EditableCellWidget(
+                      initialValue: booking.extraDropCharges,
+                      onChanged: (val) {
+                        booking.extraDropCharges = (double.tryParse(val) ?? 0.0).toString();
+                        controller.recalculateRowTotal(booking);
+                      },
+                    ),
+                    EditableCellWidget(
+                      initialValue: booking.meetAndGreet,
+                      onChanged: (val) {
+                        booking.meetAndGreet = (double.tryParse(val) ?? 0.0).toString();
+                        controller.recalculateRowTotal(booking);
+                      },
+                    ),
+                    EditableCellWidget(
+                      initialValue: booking.congestionCharges,
+                      onChanged: (val) {
+                        booking.congestionCharges = (double.tryParse(val) ?? 0.0).toString();
+                        controller.recalculateRowTotal(booking);
+                      },
+                    ),
 
                     Center(
                       child: Text(

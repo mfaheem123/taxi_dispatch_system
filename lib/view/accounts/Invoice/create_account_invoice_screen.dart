@@ -15,6 +15,7 @@ import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
 import 'package:dashboard_new1/view/accounts/model/account_invoice_model.dart';
 
+import '../../../component/editable_cell_widget.dart';
 import '../../../component/networks/api.dart';
 import '../../../component/responsive_datatable_widget.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
@@ -54,6 +55,7 @@ class _CreateAccountInvoiceScreenState
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return GetBuilder<InvoiceController>(initState: (state) {
+      Controller.clearInvoiceData();
       Controller.getSubsidiary();
       Controller.getInvoiceNumber();
       Controller.subsidiaries = null;
@@ -279,6 +281,7 @@ class _CreateAccountInvoiceScreenState
                         child: KeyboardDatePicker(
                             key: ValueKey("from_date_${controller.datePickerKey}"),
                             initialDate: controller.fromDate ?? DateTime.now(),
+                            allowFutureDates: false,
                             onChanged: (fromDate) {
                               controller.fromDate = fromDate;
                               controller.update();
@@ -358,6 +361,7 @@ class _CreateAccountInvoiceScreenState
                                 controller.selectedCreateBookingIds.addAll(
                                     controller.accountInvoiceBookingModel!.bookings!.map((e) => e.id!));
                               }
+                              controller.recalculateCreateInvoiceTotal(null);
                               controller.update();
                             },
                           ),
@@ -385,29 +389,7 @@ class _CreateAccountInvoiceScreenState
                         ...(controller.accountInvoiceBookingModel?.total ?? []).map((t) => {'type': 'GRAND_TOTAL', 'data': t}),
                       ],
                       rowBuilder: (item, widths) {
-                        // Reusable Editable Text Field for charges
-                        Widget editableCell(String titleKey, dynamic initialValue, Function(String) onChanged) {
-                          return SizedBox(
-                            width: widths[titleKey]!,
-                            child: Center(
-                              child: SizedBox(
-                                width: 65,
-                                child: TextFormField(
-                                  initialValue: initialValue?.toString() ?? "0",
-                                  keyboardType: TextInputType.number,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(fontSize: 11),
-                                  decoration: const InputDecoration(
-                                    isDense: true,
-                                    contentPadding: EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-                                    border: OutlineInputBorder(),
-                                  ),
-                                  onChanged: onChanged,
-                                ),
-                              ),
-                            ),
-                          );
-                        }
+
                         if (item is Map && item['type'] == 'TOTAL') {
                           final totalData = item['data'];
                           return [
@@ -448,6 +430,7 @@ class _CreateAccountInvoiceScreenState
                               }
                               controller.isAllSelected = controller.selectedCreateBookingIds.length ==
                                   controller.accountInvoiceBookingModel!.bookings!.length;
+                              controller.recalculateCreateInvoiceTotal(null);
                               controller.update();
                             },
                           ),
@@ -461,30 +444,48 @@ class _CreateAccountInvoiceScreenState
                           (booking.journeyType?.journeyType ?? "").toUpperCase(),
                           (booking.paymentType?.name ?? "").toUpperCase(),
 
-                          editableCell("FARE", booking.fares, (val) {
-                            booking.fares = (double.tryParse(val) ?? 0.0).toString();
-                            controller.recalculateCreateInvoiceTotal(booking);
-                          }),
-                          editableCell("PC", booking.parkingCharges, (val) {
-                            booking.parkingCharges = (double.tryParse(val) ?? 0.0).toString();
-                            controller.recalculateCreateInvoiceTotal(booking);
-                          }),
-                          editableCell("WC", booking.waitingCharges, (val) {
-                            booking.waitingCharges = (double.tryParse(val) ?? 0.0).toString();
-                            controller.recalculateCreateInvoiceTotal(booking);
-                          }),
-                          editableCell("EDC", booking.extraDropCharges, (val) {
-                            booking.extraDropCharges = (double.tryParse(val) ?? 0.0).toString();
-                            controller.recalculateCreateInvoiceTotal(booking);
-                          }),
-                          editableCell("M&G", booking.meetAndGreet, (val) {
-                            booking.meetAndGreet = (double.tryParse(val) ?? 0.0).toString();
-                            controller.recalculateCreateInvoiceTotal(booking);
-                          }),
-                          editableCell("Cc", booking.congestionCharges, (val) {
-                            booking.congestionCharges = (double.tryParse(val) ?? 0.0).toString();
-                            controller.recalculateCreateInvoiceTotal(booking);
-                          }),
+                          EditableCellWidget(
+                            initialValue: booking.fares,
+                            onChanged: (val) {
+                              booking.fares = (double.tryParse(val) ?? 0.0).toString();
+                              controller.recalculateCreateInvoiceTotal(booking);
+                            },
+                          ),
+                          EditableCellWidget(
+                            initialValue: booking.parkingCharges,
+                            onChanged: (val) {
+                              booking.parkingCharges = (double.tryParse(val) ?? 0.0).toString();
+                              controller.recalculateCreateInvoiceTotal(booking);
+                            },
+                          ),
+                          EditableCellWidget(
+                            initialValue: booking.waitingCharges,
+                            onChanged: (val) {
+                              booking.waitingCharges = (double.tryParse(val) ?? 0.0).toString();
+                              controller.recalculateCreateInvoiceTotal(booking);
+                            },
+                          ),
+                          EditableCellWidget(
+                            initialValue: booking.extraDropCharges,
+                            onChanged: (val) {
+                              booking.extraDropCharges = (double.tryParse(val) ?? 0.0).toString();
+                              controller.recalculateCreateInvoiceTotal(booking);
+                            },
+                          ),
+                          EditableCellWidget(
+                            initialValue: booking.meetAndGreet,
+                            onChanged: (val) {
+                              booking.meetAndGreet = (double.tryParse(val) ?? 0.0).toString();
+                              controller.recalculateCreateInvoiceTotal(booking);
+                            },
+                          ),
+                          EditableCellWidget(
+                            initialValue: booking.congestionCharges,
+                            onChanged: (val) {
+                              booking.congestionCharges = (double.tryParse(val) ?? 0.0).toString();
+                              controller.recalculateCreateInvoiceTotal(booking);
+                            },
+                          ),
 
                           Center(
                             child: Text(
