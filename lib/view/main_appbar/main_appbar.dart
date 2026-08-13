@@ -245,9 +245,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   /// Whether arrow up / down should scroll the page right now.
   bool get _arrowKeysScrollBody {
-    // if (KeyboardDatePicker.isAnyDatePickerFocused) {
-    //   return false;
-    // }
+    // Agar date picker focused hai to scroll nahi karna
+    if (KeyboardDatePicker.isAnyDatePickerFocused) {
+      return false;
+    }
 
     if (!_arrowScrollPages.contains(controller.currentPage.value.runtimeType)) {
       return false;

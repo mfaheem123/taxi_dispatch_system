@@ -868,26 +868,18 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
 
 
 /// Keyboard-driven DatePicker widget (no packages)
-/// Keyboard-driven DatePicker widget (no packages)
 class KeyboardDatePicker extends StatefulWidget {
   final DateTime initialDate;
   final void Function(DateTime)? onChanged;
-  final void Function(DateTime)? onSubmitted; // optional enter press
+  final void Function(DateTime)? onSubmitted;
   Color? borderClr;
-
   final double fontSize;
   final double iconSize;
-
-  /// When true (default) past dates are selectable — the calendar shows dates
-  /// before today as well as after. Pass false to hide/disable everything
-  /// before today so only today and future dates can be picked.
   final bool allowPastDates;
-
-  /// When true (default) future dates are selectable. Pass false to
-  /// hide/disable everything after today so only today and past dates can be
-  /// picked.
   final bool allowFutureDates;
 
+  // Static flag - track karega k date picker focused hai ya nahi
+  static bool isAnyDatePickerFocused = false;
 
   KeyboardDatePicker({
     Key? key,
@@ -895,8 +887,8 @@ class KeyboardDatePicker extends StatefulWidget {
     this.onChanged,
     this.onSubmitted,
     this.borderClr,
-    this.fontSize = 12, // default font size
-    this.iconSize = 14, // default icon size
+    this.fontSize = 12,
+    this.iconSize = 14,
     this.allowPastDates = true,
     this.allowFutureDates = true,
   })  : initialDate = initialDate ?? DateTime(2000, 1, 1),
@@ -911,12 +903,8 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
   late int month;
   late int year;
 
-  /// 0 = day, 1 = month, 2 = year
   int activePart = 0;
-
-  /// typed digits buffer per part (to allow multi-digit typing).
   final List<String> _buffers = ['', '', ''];
-
   final FocusNode _focusNode = FocusNode();
 
   @override
@@ -925,9 +913,16 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
     day = widget.initialDate.day;
     month = widget.initialDate.month;
     year = widget.initialDate.year;
-    // normalize in case initial invalid
     _clampDay();
     _clampToBounds();
+
+    // Focus listener add karo
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    // Sirf static flag update karo - setState NAHI karna
+    KeyboardDatePicker.isAnyDatePickerFocused = _focusNode.hasFocus;
   }
 
   DateTime get _today {
@@ -935,10 +930,7 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
     return DateTime(now.year, now.month, now.day);
   }
 
-  /// Earliest selectable date. Null when past dates are allowed.
   DateTime? get _minDate => widget.allowPastDates ? null : _today;
-
-  /// Latest selectable date. Null when future dates are allowed.
   DateTime? get _maxDate => widget.allowFutureDates ? null : _today;
 
   DateTime get _currentDate => DateTime(year, month, day);
@@ -952,8 +944,6 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
     _buffers[2] = '';
   }
 
-  /// Pull the current value back inside [_minDate] / [_maxDate] when past or
-  /// future dates are disabled.
   void _clampToBounds() {
     final min = _minDate;
     final max = _maxDate;
@@ -966,11 +956,11 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
 
   @override
   void dispose() {
+    _focusNode.removeListener(_onFocusChange);
     _focusNode.dispose();
     super.dispose();
   }
 
-  // Leap year check
   bool _isLeap(int y) {
     return (y % 4 == 0 && y % 100 != 0) || (y % 400 == 0);
   }
@@ -1000,22 +990,31 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
 
   void _onIncrementActive(int delta) {
     setState(() {
+      final previousActivePart = activePart;
+
       if (activePart == 0) {
+        // DAY
         day += delta;
         final dim = _daysInMonth(month, year);
         if (day > dim) day = 1;
         if (day < 1) day = dim;
       } else if (activePart == 1) {
+        // MONTH
         month += delta;
         if (month > 12) month = 1;
         if (month < 1) month = 12;
-        _clampDay();
+        final dim = _daysInMonth(month, year);
+        if (day > dim) day = dim;
       } else {
+        // YEAR
         year += delta;
         if (year < 1) year = 1;
-        _clampDay();
+        final dim = _daysInMonth(month, year);
+        if (day > dim) day = dim;
       }
-      _buffers[activePart] = ''; // clear buffer when using arrows
+
+      activePart = previousActivePart;
+      _buffers[activePart] = '';
       _clampToBounds();
       _notifyChanged();
     });
@@ -1024,14 +1023,11 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
   void _onDigit(int d) {
     setState(() {
       final b = _buffers[activePart] + d.toString();
-      // max sensible length: day(2), month(2), year(4+)
       if (activePart == 0) {
-        // day
         final val = int.tryParse(b) ?? 0;
-        if (val == 0) return; // ignore leading zeros -> user can type 0 then 5 etc.
+        if (val == 0) return;
         final dim = _daysInMonth(month, year);
         if (val > dim) {
-          // if typed > allowed, replace buffer with single digit
           _buffers[activePart] = d.toString();
           final v2 = int.parse(_buffers[activePart]);
           day = v2.clamp(1, dim);
@@ -1040,7 +1036,6 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
           day = val.clamp(1, dim);
         }
       } else if (activePart == 1) {
-        // month
         final val = int.tryParse(b) ?? 0;
         if (val == 0) return;
         if (val > 12) {
@@ -1052,10 +1047,8 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
         }
         _clampDay();
       } else {
-        // year - allow many digits, but limit to positive int
         final val = int.tryParse(b) ?? 0;
         if (val == 0 && b.length > 0) {
-          // started with 0 -> ignore leading zero
           _buffers[activePart] = b.replaceFirst(RegExp(r'^0+'), '');
         } else {
           _buffers[activePart] = b;
@@ -1073,9 +1066,7 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
       if (b.isNotEmpty) {
         _buffers[activePart] = b.substring(0, b.length - 1);
         final newB = _buffers[activePart];
-        if (newB.isEmpty) {
-          // revert to current value but don't change numeric value
-        } else {
+        if (newB.isNotEmpty) {
           final parsed = int.tryParse(newB);
           if (parsed != null) {
             if (activePart == 0) {
@@ -1089,8 +1080,6 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
             }
           }
         }
-      } else {
-        // if buffer empty then clear value back to defaults? We'll keep current value.
       }
       _notifyChanged();
     });
@@ -1099,7 +1088,6 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
   void _onLeft() {
     setState(() {
       activePart = (activePart - 1 + 3) % 3;
-      // clear buffer when moving
       _buffers[activePart] = '';
     });
   }
@@ -1112,8 +1100,6 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
   }
 
   void _onEnter() {
-    // typed values are only validated against the bounds on submit,
-    // so partially typed dates aren't fought while the user is typing.
     setState(_clampToBounds);
     widget.onSubmitted?.call(_currentDate);
   }
@@ -1124,7 +1110,6 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
         decoration: BoxDecoration(
-          // border: Border.all(color: active ? Colors.blue : Colors.grey.shade400),
           borderRadius: BorderRadius.circular(6),
           color: active ? Colors.blue.withOpacity(0.06) : Colors.transparent,
         ),
@@ -1140,11 +1125,9 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
     );
   }
 
-  // handle physical keyboard
   void _onRawKey(RawKeyEvent event) {
     if (event is! RawKeyDownEvent) return;
     final key = event.logicalKey;
-    // arrows
     if (key == LogicalKeyboardKey.arrowUp) {
       _onIncrementActive(1);
       return;
@@ -1166,7 +1149,6 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
       return;
     }
 
-    // digits (both numpad and top row)
     final label = key.keyLabel;
     if (label.length == 1 && RegExp(r'^[0-9]$').hasMatch(label)) {
       final d = int.parse(label);
@@ -1174,7 +1156,6 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
       return;
     }
 
-    // optionally allow +/- keys to change year quickly
     if (key == LogicalKeyboardKey.minus || key == LogicalKeyboardKey.numpadSubtract) {
       if (activePart == 2) _onIncrementActive(-1);
       return;
@@ -1184,7 +1165,6 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
       return;
     }
   }
-
 
   Future<void> _selectDate(BuildContext context) async {
     final firstDate = _minDate ?? DateTime(2000);
@@ -1215,8 +1195,6 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
     final monthText = month.toString().padLeft(2, '0');
     final yearText = year.toString();
 
-
-
     return RawKeyboardListener(
       focusNode: _focusNode,
       autofocus: true,
@@ -1225,15 +1203,13 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
         padding: EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: widget.borderClr?? DynamicColors.primaryClr),
+          border: Border.all(color: widget.borderClr ?? DynamicColors.primaryClr),
         ),
         child: Row(
-          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               children: [
-
                 _partBox(dayText, activePart == 0, onTap: () {
                   setState(() {
                     activePart = 0;
@@ -1262,7 +1238,6 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
                       fontWeight: FontWeight.w800
                   ),),
                 ),
-
                 _partBox(yearText, activePart == 2, onTap: () {
                   setState(() {
                     activePart = 2;
@@ -1273,7 +1248,7 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
             ),
             Expanded(
               child: GestureDetector(
-                onTap: (){
+                onTap: () {
                   _selectDate(context);
                 },
                 child: Padding(
