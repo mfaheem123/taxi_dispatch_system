@@ -110,6 +110,37 @@ class _BookingTableState extends State<BookingTable> {
     super.dispose();
   }
 
+  /// Scrolls the row at [index] into view after an arrow-key move.
+  ///
+  /// Row focus is moved with a direct `requestFocus()`, and that — unlike Tab
+  /// traversal, where FocusTraversalPolicy calls ensureVisible for you — never
+  /// scrolls anything. So on a 50-row page the highlight kept walking past the
+  /// bottom of the viewport with nothing on screen following it.
+  ///
+  /// [Scrollable.ensureVisible] walks up EVERY enclosing scroll view, so it
+  /// moves both this table's own scroller and the shell page scroller in
+  /// main_appbar.dart that ultimately holds it (inside the shell this table's
+  /// scroller gets unbounded height and cannot scroll on its own).
+  ///
+  /// keepVisibleAtStart / keepVisibleAtEnd, chosen by direction, scroll by the
+  /// minimum needed and refuse to move backwards — so a row already on screen
+  /// stays put instead of the list jumping to re-centre it on every press.
+  void _ensureRowVisible(int index, {required bool movingDown}) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || index < 0 || index >= _rowFocusNodes.length) return;
+      final rowContext = _rowFocusNodes[index].context;
+      if (rowContext == null || !rowContext.mounted) return;
+      Scrollable.ensureVisible(
+        rowContext,
+        duration: const Duration(milliseconds: 150),
+        curve: Curves.easeOut,
+        alignmentPolicy: movingDown
+            ? ScrollPositionAlignmentPolicy.keepVisibleAtEnd
+            : ScrollPositionAlignmentPolicy.keepVisibleAtStart,
+      );
+    });
+  }
+
   KeyEventResult _handleArrowKeys(FocusNode node, KeyEvent event) {
     // Only react on key-down / repeat, not key-up.
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
@@ -125,6 +156,7 @@ class _BookingTableState extends State<BookingTable> {
       setState(() => selectedRowIndex = next);
       // Move actual keyboard focus to the new row's checkbox
       if (next < _rowFocusNodes.length) _rowFocusNodes[next].requestFocus();
+      _ensureRowVisible(next, movingDown: true);
       return KeyEventResult.handled;
     }
 
@@ -133,6 +165,7 @@ class _BookingTableState extends State<BookingTable> {
       setState(() => selectedRowIndex = prev);
       // Move actual keyboard focus to the new row's checkbox
       if (prev < _rowFocusNodes.length) _rowFocusNodes[prev].requestFocus();
+      _ensureRowVisible(prev, movingDown: false);
       return KeyEventResult.handled;
     }
 
@@ -165,6 +198,10 @@ class _BookingTableState extends State<BookingTable> {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (_rowFocusNodes.isNotEmpty && mounted) {
                   _rowFocusNodes[0].requestFocus();
+                  // A new page starts at its first row, so bring the top of the
+                  // table back into view instead of leaving the reader wherever
+                  // the previous page had been scrolled to.
+                  _ensureRowVisible(0, movingDown: false);
                 }
               });
             }
