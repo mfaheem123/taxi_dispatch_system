@@ -383,7 +383,9 @@ class _CreateAccountInvoiceScreenState
                         TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium),
                         TableColumnConfig(title: "ACTIONS", sizeType: ColumnSizeType.fixed, fixedWidth: 70, removeSearching: true),
                       ],
-                      items: [
+                      items: (controller.accountInvoiceBookingModel?.bookings?.isEmpty ?? true)
+                          ? []
+                          : [
                         ...(controller.accountInvoiceBookingModel?.bookings ?? []),
                         ...(controller.accountInvoiceBookingModel?.total ?? []).map((t) => {'type': 'TOTAL', 'data': t}),
                         ...(controller.accountInvoiceBookingModel?.total ?? []).map((t) => {'type': 'GRAND_TOTAL', 'data': t}),
@@ -436,7 +438,8 @@ class _CreateAccountInvoiceScreenState
                           ),
                           ),
                           booking.referenceNumber ?? "",
-                          "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}",
+                          // "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}",
+                          "${(booking.pickupDate ?? "").split('-').length == 3 ? "${(booking.pickupDate ?? "").split('-')[0]}-${(booking.pickupDate ?? "").split('-')[1].padLeft(2, '0')}-${(booking.pickupDate ?? "").split('-')[2].padLeft(2, '0')}" : booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}",
                           (booking.pickup ?? "").toUpperCase(),
                           (booking.dropoff ?? "").toUpperCase(),
                           (booking.customer?.address1 ?? "").toUpperCase(),
