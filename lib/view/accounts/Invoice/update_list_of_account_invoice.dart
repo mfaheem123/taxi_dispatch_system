@@ -235,7 +235,7 @@ class _UpdateAccountInvoiceScreenState
                   borderRadius: BorderRadius.circular(4),
                   color: Colors.grey.shade100,
                 ),
-                child: Text(controller.invoiceDateController ?? ""),
+                child: Text((controller.invoiceDateController ?? "").split('-').map((e) => e.padLeft(2, '0')).join('-')),
               ),
             ),
             labeledField(
@@ -447,7 +447,8 @@ class _UpdateAccountInvoiceScreenState
 
                   return [
                     booking?.referenceNumber ?? "-",
-                    "${booking?.pickupDate ?? ""} ${booking?.pickupTime ?? ""}",
+                    // "${booking?.pickupDate ?? ""} ${booking?.pickupTime ?? ""}",
+                    "${(booking?.pickupDate ?? '').split('-').map((e) => e.padLeft(2, '0')).join('-')} ${booking?.pickupTime ?? ""}",
                     (booking?.pickup ?? "-").toUpperCase(),
                     (booking?.dropoff ?? "-").toUpperCase(),
                     (booking?.name ?? "-").toUpperCase(),

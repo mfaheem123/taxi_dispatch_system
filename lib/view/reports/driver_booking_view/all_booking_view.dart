@@ -350,8 +350,7 @@ class _AllBookingViewState extends State<AllBookingView> {
                                 d.id ==
                                     controller.selectDriverObject?.id)
                                 : null,
-                            itemLabel: (driver) =>
-                            driver.name ?? "".toUpperCase(),
+                            itemLabel: (driver) => "${driver.username} ${driver.name}" .toUpperCase(),
                             onChanged: (val) {
                               controller.selectDriverObject = val;
                               controller.update();

@@ -54,7 +54,6 @@ import '../customer/lost_property.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import 'package:nested_menu_bar/nested_menu_bar.dart';
 import '../dashboard_view/dashboard/defult_dashboard_view.dart';
-import '../dashboard_view/widgets/time_picker_widget.dart';
 import '../drivers_view/driver/bulk_driver_commission/bulk_driver_commission.dart';
 import '../drivers_view/driver/bulk_driver_commission/bulk_driver_rent.dart';
 import '../drivers_view/driver/create_driver_form/driver_form.dart';
@@ -127,11 +126,33 @@ class _MyHomePageState extends State<MyHomePage> {
   /// Pixels moved per arrow key press / repeat.
   static const double _arrowScrollStep = 60;
 
+  /// How long after a tap / a traversal key a focus change still counts as the
+  /// user's doing.
+  static const Duration _userIntentWindow = Duration(milliseconds: 400);
+
+  /// Where and when the user last pressed a pointer down anywhere in the shell.
+  Offset? _lastPointerDownPosition;
+  DateTime _lastPointerDownAt = DateTime.fromMillisecondsSinceEpoch(0);
+
+  /// When the user last pressed a key that moves the focus (Tab / Enter).
+  DateTime _lastTraversalKeyAt = DateTime.fromMillisecondsSinceEpoch(0);
+
+  /// Whether the widget holding the primary focus got it because the user asked
+  /// for it — tapped it, or moved into it from the keyboard — and not because it
+  /// autofocused itself while the page was building.
+  bool _focusIsUserDriven = false;
+
+  /// The page [_focusIsUserDriven] was decided on. Switching pages voids the
+  /// verdict: the new page autofocuses its own widgets, which is never the user
+  /// reaching for a field.
+  Object? _focusPage;
+
   @override
   void initState() {
     super.initState();
     authController.checkUserStatus();
     RawKeyboard.instance.addListener(_handleKey);
+    FocusManager.instance.addListener(_handleFocusChanged);
     hoverMenu = _makeMenus(context);
     controller.inItStateOFController();
   }
@@ -139,8 +160,44 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void dispose() {
     RawKeyboard.instance.removeListener(_handleKey);
+    FocusManager.instance.removeListener(_handleFocusChanged);
     _bodyScrollController.dispose();
     super.dispose();
+  }
+
+  /// Records, every time the focus moves, whether the user is the one who moved
+  /// it. Reading this back later is what keeps an `autofocus: true` widget from
+  /// silently claiming the arrow keys.
+  void _handleFocusChanged() {
+    final now = DateTime.now();
+    _focusPage = controller.currentPage.value;
+    _focusIsUserDriven = _tapLandedOnFocusedWidget(now) ||
+        now.difference(_lastTraversalKeyAt) < _userIntentWindow;
+  }
+
+  /// Whether the user's last tap landed on the widget that just took the focus.
+  /// A tap anywhere else — a menu, a page chip, a button that moved the focus on
+  /// its own — is not the user reaching for that widget.
+  bool _tapLandedOnFocusedWidget(DateTime now) {
+    final at = _lastPointerDownPosition;
+    if (at == null || now.difference(_lastPointerDownAt) >= _userIntentWindow) {
+      return false;
+    }
+    final renderObject =
+        FocusManager.instance.primaryFocus?.context?.findRenderObject();
+    if (renderObject is! RenderBox ||
+        !renderObject.hasSize ||
+        !renderObject.attached) {
+      return false;
+    }
+    return renderObject.size.contains(renderObject.globalToLocal(at));
+  }
+
+  /// Typing counts as being in the focused field, even when the field
+  /// autofocused itself and the user never tapped it.
+  void _markFocusUserDriven() {
+    _focusIsUserDriven = true;
+    _focusPage = controller.currentPage.value;
   }
 
   /// Moves the body by [delta] pixels, clamped to the scroll extent.
@@ -245,22 +302,64 @@ class _MyHomePageState extends State<MyHomePage> {
 
   /// Whether arrow up / down should scroll the page right now.
   bool get _arrowKeysScrollBody {
-    // Agar date picker focused hai to scroll nahi karna
-    if (KeyboardDatePicker.isAnyDatePickerFocused) {
-      return false;
-    }
-
     if (!_arrowScrollPages.contains(controller.currentPage.value.runtimeType)) {
       return false;
     }
 
-    final focusContext = FocusManager.instance.primaryFocus?.context;
-    if (focusContext?.findAncestorStateOfType<EditableTextState>() != null) {
+    if (shortCutKeyValue.value == "alert") {
       return false;
     }
 
-    return shortCutKeyValue.value != "alert";
+    // Koi bhi field focused ho to scroll nahi karna — woh field khud arrow
+    // keys use kar raha hota hai.
+    return !_isFieldFocused;
   }
+
+  /// Whether the user is currently inside a field — a text field, a keyboard
+  /// dropdown, a checkbox, a date picker, a suggestion list, anything that took
+  /// focus from its own onTap. Those widgets drive themselves with the arrow
+  /// keys, so the shell must keep its hands off the scroll view until the field
+  /// is unfocused again.
+  bool get _isFieldFocused {
+    // `KeyboardDatePicker.isAnyDatePickerFocused` ki zaroorat nahi rahi: woh
+    // picker khud `autofocus: true` hai aur 40+ screens par baitha hai, to us
+    // flag se un tamam pages ka scroll band ho jata tha. Picker ka apna focus
+    // node primary focus hota hai, so neeche wali general jaanch use bhi cover
+    // kar leti hai.
+    final focus = FocusManager.instance.primaryFocus;
+    // A scope node means the focus never landed on a widget — nothing to guard.
+    if (focus == null || focus is FocusScopeNode) return false;
+
+    final focusContext = focus.context;
+    if (focusContext == null) return false;
+
+    // A text field is a field whatever it measures. Everything else has to be
+    // field-sized first: plenty of pages wrap their whole body in
+    // `RawKeyboardListener(autofocus: true, focusNode: FocusNode())` only to
+    // catch shortcuts (DriverListScreen, LocationListScreen, ListOfAccountScreen,
+    // …) and that node holds the primary focus for as long as the page is open.
+    // Such a catcher wraps the page, so it is at least as tall as the visible
+    // area, which no real field ever is.
+    if (focusContext.findAncestorStateOfType<EditableTextState>() == null) {
+      final renderObject = focusContext.findRenderObject();
+      if (renderObject is! RenderBox || !renderObject.hasSize) return false;
+      if (renderObject.size.height >= _viewportHeight) return false;
+    }
+
+    // A field only owns the arrow keys once the user is actually in it — tapped
+    // it, tabbed into it, or is typing in it. Half of these widgets autofocus
+    // themselves as the page builds (calender.dart, radio_button_widget.dart,
+    // KeyboardDatePicker, the search boxes, the suggestion overlays), and a
+    // widget grabbing the focus by itself must not cost the user page scrolling.
+    return _focusIsUserDriven &&
+        identical(_focusPage, controller.currentPage.value);
+  }
+
+  /// Height of the shell's visible area — the yardstick a focused node is
+  /// measured against in [_isFieldFocused].
+  double get _viewportHeight => _bodyScrollController.hasClients
+      ? _bodyScrollController.position.viewportDimension
+      : MediaQuery.of(context).size.height;
 
   void message(context, String text) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -281,6 +380,22 @@ class _MyHomePageState extends State<MyHomePage> {
     if (event is RawKeyDownEvent) {
       print(event);
 
+      // Tab aur Enter se user khud focus aage barhata hai — jo field un se
+      // focus hoti hai woh arrow keys ki haqdaar hai.
+      if (event.logicalKey == LogicalKeyboardKey.tab ||
+          event.logicalKey == LogicalKeyboardKey.enter ||
+          event.logicalKey == LogicalKeyboardKey.numpadEnter) {
+        _lastTraversalKeyAt = DateTime.now();
+      }
+
+      // Field mein type karna bhi user ka usi field mein hona hai.
+      final character = event.character;
+      if ((character != null && character.isNotEmpty) ||
+          event.logicalKey == LogicalKeyboardKey.backspace ||
+          event.logicalKey == LogicalKeyboardKey.delete) {
+        _markFocusUserDriven();
+      }
+
       if (event.logicalKey == LogicalKeyboardKey.arrowDown ||
           event.logicalKey == LogicalKeyboardKey.arrowUp) {
         if (_arrowKeysScrollBody) {
@@ -300,9 +415,14 @@ class _MyHomePageState extends State<MyHomePage> {
       if (event.logicalKey.keyLabel == "/") {
         // DashboardSlashAlert.show();
       }
-      if (event.logicalKey.keyLabel == "Escape" &&
-          shortCutKeyValue.value == "alert") {
-        shortCutKeyValue.value = "shortCutKey";
+      if (event.logicalKey.keyLabel == "Escape") {
+        if (shortCutKeyValue.value == "alert") {
+          shortCutKeyValue.value = "shortCutKey";
+        } else if (_isFieldFocused) {
+          // Escape se field chhoot jati hai, taake arrow keys wapas page ko
+          // scroll karne lagen.
+          FocusManager.instance.primaryFocus?.unfocus();
+        }
       } else if (event.logicalKey.keyLabel == "F2") {
         final newTabUrl = Uri.base.origin + /*'/#' +*/ Routes.createBooking;
         html.window.open(newTabUrl, '_blank');
@@ -319,7 +439,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return PopScope(
       canPop: false,
-      child: Scaffold(
+      // Har tap yahan note hota hai, taake baad mein pata chale k focus user ne
+      // di hai ya widget ne khud le li. See [_handleFocusChanged].
+      child: Listener(
+        behavior: HitTestBehavior.translucent,
+        onPointerDown: (event) {
+          _lastPointerDownPosition = event.position;
+          _lastPointerDownAt = DateTime.now();
+        },
+        child: Scaffold(
         backgroundColor: DynamicColors.whiteClr,
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(kToolbarHeight * 2.3),
@@ -643,6 +771,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             );
           },
+        ),
         ),
       ),
     );

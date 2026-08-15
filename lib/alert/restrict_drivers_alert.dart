@@ -101,7 +101,7 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                       items: controller.allDriverData!.drivers!,
                       value: controller.selectDriverObject,
                       itemLabel: (driver) =>
-                      driver.name!,
+                      "${driver.username} ${driver.name}".toUpperCase(),
                       onChanged: (val) {
                         controller.selectDriverObject = val;
                         controller.update();

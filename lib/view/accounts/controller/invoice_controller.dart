@@ -79,6 +79,10 @@ class InvoiceController extends GetxController {
   bool isLoadingInvoice = false;
 
   getAccountInvoiceByFilter() async {
+    if (subsidiaries == null || selectAccountValue == null || selectDepartmentData == null || fromDate == null || toDate == null) {
+      BotToast.showText(text: 'PLEASE FILL ALL REQUIRED FIELDS!');
+      return;
+    }
     isLoadingInvoice = true;
     var response = await Api().get(
       "account_invoice/bookings",
@@ -95,7 +99,11 @@ class InvoiceController extends GetxController {
       accountInvoiceBookingModel =
           AccountInvoiceBookingModel.fromJson(response.data);
       recalculateCreateInvoiceTotal(null);
-      BotToast.showText(text: 'FILTER DONE');
+      if (accountInvoiceBookingModel?.bookings != null && accountInvoiceBookingModel!.bookings!.isNotEmpty) {
+        BotToast.showText(text: 'FILTER DONE');
+      } else {
+        BotToast.showText(text: 'NO DATA FOUND');
+      }
       print(' Filter Data');
     }
     isLoadingInvoice = false;
@@ -168,6 +176,7 @@ class InvoiceController extends GetxController {
     subsidiaries = null;
     selectAccountValue = null;
     selectDepartmentData = null;
+    dashboardAccountData = null;
     orderNumber.clear();
     accountInvoiceBookingModel = null;
     selectedCreateBookingIds.clear();

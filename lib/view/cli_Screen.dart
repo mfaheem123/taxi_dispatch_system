@@ -1212,7 +1212,7 @@ class _CenterAreaState extends State<_CenterArea> {
                         items: homeController.dashboardAllData?.drivers
                             ?.map((d) => DropdownMenuItem(
                           value: d,
-                          child: Text(d.name ?? ""),
+                          child: Text("${d.username ?? ""} ${d.name ?? ""}" .toUpperCase()),
                         ))
                             .toList(),
                         onChanged: (v) {

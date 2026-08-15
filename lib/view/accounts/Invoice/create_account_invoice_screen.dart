@@ -174,6 +174,10 @@ class _CreateAccountInvoiceScreenState
                     itemLabel: (item) => item.name ?? "",
                     onChanged: (val) {
                       controller.subsidiaries = val;
+
+                      controller.selectAccountValue = null;
+                      controller.selectDepartmentData = null;
+                      controller.dashboardAccountData = null;
                       controller.getAccountData(subsidiariesId: val!.id);
                     },
                   ),
@@ -193,7 +197,9 @@ class _CreateAccountInvoiceScreenState
                             border: OutlineInputBorder(),
                             isDense: true,
                           ),
-                          value: controller.selectAccountValue,
+                          value: (controller.dashboardAccountData?.accounts?.contains(controller.selectAccountValue) ?? false)
+                              ? controller.selectAccountValue
+                              : null,
                           items: controller.dashboardAccountData == null
                               ? []
                               : controller.dashboardAccountData!.accounts!
@@ -234,7 +240,9 @@ class _CreateAccountInvoiceScreenState
                             border: OutlineInputBorder(),
                             isDense: true,
                           ),
-                          value: controller.selectDepartmentData,
+                          value: (controller.selectAccountValue?.departments?.contains(controller.selectDepartmentData) ?? false)
+                              ? controller.selectDepartmentData
+                              : null,
                           items: controller.selectAccountValue == null
                               ? []
                               : controller.selectAccountValue!.departments!
@@ -383,7 +391,9 @@ class _CreateAccountInvoiceScreenState
                         TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium),
                         TableColumnConfig(title: "ACTIONS", sizeType: ColumnSizeType.fixed, fixedWidth: 70, removeSearching: true),
                       ],
-                      items: [
+                      items: (controller.accountInvoiceBookingModel?.bookings?.isEmpty ?? true)
+                          ? []
+                          : [
                         ...(controller.accountInvoiceBookingModel?.bookings ?? []),
                         ...(controller.accountInvoiceBookingModel?.total ?? []).map((t) => {'type': 'TOTAL', 'data': t}),
                         ...(controller.accountInvoiceBookingModel?.total ?? []).map((t) => {'type': 'GRAND_TOTAL', 'data': t}),
@@ -436,7 +446,8 @@ class _CreateAccountInvoiceScreenState
                           ),
                           ),
                           booking.referenceNumber ?? "",
-                          "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}",
+                          // "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}",
+                          "${(booking.pickupDate ?? "").split('-').length == 3 ? "${(booking.pickupDate ?? "").split('-')[0]}-${(booking.pickupDate ?? "").split('-')[1].padLeft(2, '0')}-${(booking.pickupDate ?? "").split('-')[2].padLeft(2, '0')}" : booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}",
                           (booking.pickup ?? "").toUpperCase(),
                           (booking.dropoff ?? "").toUpperCase(),
                           (booking.customer?.address1 ?? "").toUpperCase(),
