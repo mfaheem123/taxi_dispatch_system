@@ -176,6 +176,7 @@ class InvoiceController extends GetxController {
     subsidiaries = null;
     selectAccountValue = null;
     selectDepartmentData = null;
+    dashboardAccountData = null;
     orderNumber.clear();
     accountInvoiceBookingModel = null;
     selectedCreateBookingIds.clear();

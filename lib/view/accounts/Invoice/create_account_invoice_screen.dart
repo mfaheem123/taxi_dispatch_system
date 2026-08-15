@@ -174,6 +174,10 @@ class _CreateAccountInvoiceScreenState
                     itemLabel: (item) => item.name ?? "",
                     onChanged: (val) {
                       controller.subsidiaries = val;
+
+                      controller.selectAccountValue = null;
+                      controller.selectDepartmentData = null;
+                      controller.dashboardAccountData = null;
                       controller.getAccountData(subsidiariesId: val!.id);
                     },
                   ),
@@ -193,7 +197,9 @@ class _CreateAccountInvoiceScreenState
                             border: OutlineInputBorder(),
                             isDense: true,
                           ),
-                          value: controller.selectAccountValue,
+                          value: (controller.dashboardAccountData?.accounts?.contains(controller.selectAccountValue) ?? false)
+                              ? controller.selectAccountValue
+                              : null,
                           items: controller.dashboardAccountData == null
                               ? []
                               : controller.dashboardAccountData!.accounts!
@@ -234,7 +240,9 @@ class _CreateAccountInvoiceScreenState
                             border: OutlineInputBorder(),
                             isDense: true,
                           ),
-                          value: controller.selectDepartmentData,
+                          value: (controller.selectAccountValue?.departments?.contains(controller.selectDepartmentData) ?? false)
+                              ? controller.selectDepartmentData
+                              : null,
                           items: controller.selectAccountValue == null
                               ? []
                               : controller.selectAccountValue!.departments!
