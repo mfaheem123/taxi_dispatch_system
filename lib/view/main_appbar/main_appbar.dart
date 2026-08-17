@@ -23,6 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../alert/back_slash_alert.dart';
 import '../../alert/cli_extention_alert.dart';
 import '../../component/color.dart';
 import '../../component/networks/api.dart';
@@ -94,9 +95,14 @@ import '../reports/income_report_view/company_income_screen.dart';
 import '../reports/income_report_view/creidit_card_payments.dart';
 import '../reports/income_report_view/income_screen.dart';
 import '../reports/pco_view/pco_screen.dart';
+import '../setting/call_recordings.dart';
 import '../setting/company_configuration_view/company_configuration_view.dart';
+import '../setting/email_tracking.dart';
 import '../setting/location_type_shortcuts.dart';
+import '../setting/payment_types_color.dart';
+import '../setting/sms_tracking.dart';
 import '../setting/template_settings.dart';
+import '../setting/wallboard_screen.dart';
 import '../vehicles_view/controller/controller.dart';
 import '../vehicles_view/create_company_vehicle.dart';
 import '../vehicles_view/list_vehicle_type.dart';
@@ -2067,6 +2073,29 @@ class _MyHomePageState extends State<MyHomePage> {
             }
           },
         ),
+
+        NestedMenuItem(
+          title: "PAYMENT TYPES COLOR CODE",
+          onTap: () {
+            if (controller.selectedMenuItems.length < 20) {
+              controller.menuBarRefresh(
+                title: "PAYMENT TYPES COLOR CODE",
+                pageName: controller.currentPage.value,
+              );
+              showDialog(
+                context: context,
+                barrierDismissible: true,
+                builder: (BuildContext context) {
+                  return const PaymentTypeDialog();
+                },
+              );
+            }
+            else {
+              BotToast.showText(
+                  text: "Maintain at least 20 pages open simultaneously.");
+            }
+          }
+        ),
         // DocumentNumberScreen
         NestedMenuItem(
           title: "DOCUMENT NUMBER",
@@ -2106,13 +2135,13 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
         NestedMenuItem(
-          title: "BOOKING CLEARING UTILITY",
+          title: "CLEAR BOOKINGS",
           onTap: () {
            if(controller.selectedMenuItems.length <20){
             setState(() {
               controller.currentPage.value = BookingClearingUtilityScreen();
               controller.menuBarRefresh(
-                  title: "BOOKING CLEARING UTILITY",
+                  title: "CLEAR BOOKINGS",
                   pageName: BookingClearingUtilityScreen());
             });
            }else{
@@ -2154,10 +2183,10 @@ class _MyHomePageState extends State<MyHomePage> {
             }
           },
         ),
-        NestedMenuItem(
-          title: "GENERAL SMS CONFIG",
-          onTap: () => message(context, "DevOps"),
-        ),
+        // NestedMenuItem(
+        //   title: "GENERAL SMS CONFIG",
+        //   onTap: () => message(context, "DevOps"),
+        // ),
         // NestedMenuItem(
         //   title: "SMS SETTINGS",
         //   onTap: () {
@@ -2170,6 +2199,85 @@ class _MyHomePageState extends State<MyHomePage> {
         // ),
 
         NestedMenuItem(
+          title: "SMS TRACKING",
+          onTap: () {
+            if(controller.selectedMenuItems.length <20){
+            setState(() {
+              controller.currentPage.value = SmsSettingsScreen();
+              controller.menuBarRefresh(
+                  title: "SMS TRACKING", pageName: SmsSettingsScreen());
+            });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
+          },
+        ),
+
+        NestedMenuItem(
+          title: "EMAIL TRACKING",
+          onTap: () {
+            if(controller.selectedMenuItems.length <20){
+            setState(() {
+              controller.currentPage.value = EmailTrackingScreen();
+              controller.menuBarRefresh(
+                  title: "EMAIL TRACKING", pageName: EmailTrackingScreen());
+            });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
+          },
+        ),
+        NestedMenuItem(
+          title: "CALL RECORDINGS",
+          onTap: () {
+            if(controller.selectedMenuItems.length <20){
+            setState(() {
+              controller.currentPage.value = CallRecordingScreen();
+              controller.menuBarRefresh(
+                  title: "CALL RECORDINGS", pageName: CallRecordingScreen());
+            });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
+          },
+        ),
+        // NestedMenuItem(
+        //   title: "RELEASE NOTES",
+        //   onTap: () {
+        //     controller.menuBarRefresh(
+        //       title: "RELEASE NOTES",
+        //       pageName: controller.currentPage.value,
+        //     );
+        //     showDialog(
+        //       context: context,
+        //       barrierDismissible: true,
+        //       builder: (BuildContext context) {
+        //         return const ReleaseNotesDialog();
+        //       },
+        //     );
+        //   },
+        // ),
+        NestedMenuItem(
+          title: "HELP",
+          onTap: () {
+            if(controller.selectedMenuItems.length <20){
+            controller.menuBarRefresh(
+              title: "HELP",
+              pageName: controller.currentPage.value,
+            );
+            showDialog(
+              context: context,
+              barrierDismissible: true,
+              builder: (BuildContext context) {
+                return const BackSlashAlert();
+              });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
+          },
+        ),
+
+        NestedMenuItem(
           title: "CHAT WITH DRIVER AND PASSENGER",
           onTap: () {
             if(controller.selectedMenuItems.length <20){
@@ -2179,6 +2287,21 @@ class _MyHomePageState extends State<MyHomePage> {
                   title: "CHAT WITH DRIVER AND PASSENGER",
                   pageName: ChatWithDriverAndPassenger());
             });
+            }else{
+              BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+            }
+          },
+        ),
+        NestedMenuItem(
+          title: "WALLBOARD",
+          onTap: () {
+            if(controller.selectedMenuItems.length <20){
+              setState(() {
+                controller.currentPage.value = WallboardScreen();
+                controller.menuBarRefresh(
+                    title: "WALLBOARD",
+                    pageName: WallboardScreen());
+              });
             }else{
               BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
             }

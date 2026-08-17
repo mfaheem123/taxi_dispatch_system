@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
+import 'controller/extension_controller.dart';
 import 'controller/setting_controller.dart';
 
 class BookingClearingUtilityScreen extends StatefulWidget {
@@ -74,7 +75,7 @@ class _BookingClearingUtilityScreenState
               child: Row(
                 children: [
                   Text(
-                    "${AppText.clearBooking} (${controller.clearBookingModel!.count.toString()})",
+                    "${AppText.clearBooking} (${controller?.clearBookingModel!.count.toString()})",
                     style: mozillaTextSemiBoldText(
                         fontWeight: FontWeight.w800, fontSize: 17),
                   ),

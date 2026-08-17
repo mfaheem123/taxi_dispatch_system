@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../component/textStyle.dart';
+import 'controller/extension_controller.dart';
 import 'controller/setting_controller.dart';
 
 class WallboardScreen extends StatefulWidget {

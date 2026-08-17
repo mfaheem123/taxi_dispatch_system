@@ -5,7 +5,7 @@ import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_field.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/dashboard_view/Controller/dashboard_controller.dart';
-import 'package:dashboard_new1/view/setting/setting_controller.dart';
+import 'package:dashboard_new1/view/setting/controller/setting_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

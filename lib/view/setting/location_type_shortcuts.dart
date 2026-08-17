@@ -2,7 +2,7 @@
 
 
 import 'package:dashboard_new1/component/customButton.dart';
-import 'package:dashboard_new1/view/setting/setting_controller.dart';
+import 'package:dashboard_new1/view/setting/controller/setting_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

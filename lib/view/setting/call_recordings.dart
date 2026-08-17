@@ -10,6 +10,7 @@ import '../dashboard_view/booking_table.dart';
 import '../dashboard_view/widgets/time_picker_widget.dart';
 import '../dashboard_view/widgets/user_info_widget.dart';
 import 'audio_player_alert.dart';
+import 'controller/extension_controller.dart';
 import 'controller/setting_controller.dart';
 
 class CallRecordingScreen extends StatefulWidget {

@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import '../component/networks/api.dart';
 import '../view/administration/model/user_model.dart';
 import '../view/auth/Controller/auth_controller.dart';
-import '../view/setting/controller/setting_controller.dart';
+import '../view/setting/controller/extension_controller.dart';
 
 class ExtensionAlert {
   static void show() {

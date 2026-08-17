@@ -11,7 +11,7 @@ import 'package:get/get.dart';
 import '../../../component/dropdown_button.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_widget.dart';
-import '../setting_controller.dart';
+import '../controller/setting_controller.dart';
 import 'date_time_configuration_view.dart';
 import 'email_configuration_view.dart';
 import 'map_configuration_view.dart';
