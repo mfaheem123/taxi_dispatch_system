@@ -128,79 +128,57 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                               spacing: 15,
                               alignment: WrapAlignment.start,
                               children: [
-                                labeledField(
-                                  context: context,
-                                  isMobile: isMobile,
-                                  label: AppText.reportDate,
-                                  width: fieldWidth,
-                                  column: true,
-                                  child: SizedBox(
-                                    height: 32,
-                                    child: KeyboardDatePicker(
-                                      key: ValueKey(controller.reportDateController),
-                                      initialDate: controller
-                                                  .reportDateController !=""
-                                          ? DateTime.parse(
-                                              controller.reportDateController)
-                                          : DateTime.now(),
-                                      onChanged: (date) {
-                                        controller.reportDateController = date
-                                            .toIso8601String()
-                                            .split("T")
-                                            .first;
-                                        controller.update();
-                                      },
-                                      onSubmitted: (date) {
-                                        controller.reportDateController = date
-                                            .toIso8601String()
-                                            .split("T")
-                                            .first;
-                                        controller.update();
-                                      },
-                                    ),
-                                  ),
+                              // ✅ Naya Code (Report Date):
+                              labeledField(
+                              context: context,
+                              isMobile: isMobile,
+                              label: AppText.reportDate,
+                              width: fieldWidth,
+                              column: true,
+                              child: SizedBox(
+                                height: 32,
+                                child: KeyboardDatePicker(
+                                  initialDate: controller.reportDateController != ""
+                                      ? DateTime.tryParse(controller.reportDateController) ?? DateTime.now()
+                                      : DateTime.now(),
+                                  onChanged: (date) {
+                                    controller.reportDateController = date.toIso8601String().split("T").first;
+                                    // controller.update(); // <-- Isko comment kar dein agar poora UI rebuild nahi karwana
+                                  },
+                                  onSubmitted: (date) {
+                                    controller.reportDateController = date.toIso8601String().split("T").first;
+                                  },
                                 ),
+                              ),
+                            ),
                                 // SizedBox(width: fieldWidth/2),
-                                labeledField(
-                                  context: context,
-                                  isMobile: isMobile,
-                                  label: AppText.foundDate,
-                                  width: fieldWidth,
-                                  column: true,
-                                  child: SizedBox(
-                                    height: 32,
-                                    child: KeyboardDatePicker(
-                                      key: ValueKey(controller.lostDateController + (controller.selectedBookingForLostProperty?.pickupDate ?? "")),
-                                      initialDate: () {
-                                        final bookingDate = controller.selectedBookingForLostProperty?.pickupDate;
-                                        if (bookingDate != null && bookingDate.isNotEmpty) {
-                                          try {
-                                            return DateTime.parse(bookingDate);
-                                          } catch (e) {
-                                            // Fallback
-                                          }
-                                        }
-                                        return controller.lostDateController != ""
-                                            ? DateTime.parse(controller.lostDateController)
-                                            : DateTime.now();
-                                      }(),
-                                      onChanged: (date) {
-                                        controller.lostDateController = date
-                                            .toIso8601String()
-                                            .split("T")
-                                            .first;
-                                        controller.update();
-                                      },
-                                      onSubmitted: (date) {
-                                        controller.lostDateController = date
-                                            .toIso8601String()
-                                            .split("T")
-                                            .first;
-                                        controller.update();
-                                      },
-                                    ),
+                              labeledField(
+                                context: context,
+                                isMobile: isMobile,
+                                label: AppText.foundDate,
+                                width: fieldWidth,
+                                column: true,
+                                child: SizedBox(
+                                  height: 32,
+                                  child: KeyboardDatePicker(
+                                    initialDate: () {
+                                      final bookingDate = controller.selectedBookingForLostProperty?.pickupDate;
+                                      if (bookingDate != null && bookingDate.isNotEmpty) {
+                                        try { return DateTime.parse(bookingDate); } catch (e) {}
+                                      }
+                                      return controller.lostDateController != ""
+                                          ? DateTime.tryParse(controller.lostDateController) ?? DateTime.now()
+                                          : DateTime.now();
+                                    }(),
+                                    onChanged: (date) {
+                                      controller.lostDateController = date.toIso8601String().split("T").first;
+                                    },
+                                    onSubmitted: (date) {
+                                      controller.lostDateController = date.toIso8601String().split("T").first;
+                                    },
                                   ),
                                 ),
+                              ),
                                 CustomTextField(
                                   borderRadius: 4,
                                   controller:

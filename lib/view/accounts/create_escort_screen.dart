@@ -290,6 +290,7 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 child: SizedBox(
                                     height: 35,
                                     child: CustomTimePicker(
+
                                       controller:
                                           controller.dbsExpireTime, // optional
                                       onTimeSelected: (time) {
