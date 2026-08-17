@@ -1822,6 +1822,7 @@ class DashboardController extends GetxController {
       selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
       selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
       await getBookingCounts();
+      startBookingCountTimer();
       if (dashboardAllData!.vehicleTypes != null &&
           dashboardAllData!.vehicleTypes!.isNotEmpty) {
         try {
