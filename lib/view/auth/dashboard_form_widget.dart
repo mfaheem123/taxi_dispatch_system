@@ -653,9 +653,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                           // Map journeyType value
                                           if (type == "o/w") {
                                             controller.jourValue = "O/W";
+                                            controller.changeJourneyFtn();
                                           } else if (type == "r/n") {
                                             controller.jourValue = "R/N";
                                           } else if (type == "w/r") {
+                                            controller.changeJourneyFtn();
                                             controller.jourValue = "W/R";
                                           } else {
                                             controller.jourValue = null;

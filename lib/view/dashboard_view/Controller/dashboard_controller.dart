@@ -1423,7 +1423,7 @@ class DashboardController extends GetxController {
 
     );
     var fareValue = jsonDecode(storedTemFare);
-    fixedFare.value = fareValue['fare']?.toString() ?? "0";
+    fixedFare.value = fareValue['total_fare']?.toString() ?? "0";
     slugController.text = fareValue['fare']?.toString() ?? "0";
     returnFareValue = fareValue['return_fare']?.toString() ?? "0";
     slugControllerReturn.text = fareValue['return_fare']?.toString() ?? "0";
@@ -1732,6 +1732,54 @@ class DashboardController extends GetxController {
 
     allAddressesData.clear();
     highlightedIndex.value = 0;
+    update();
+  }
+
+
+  changeJourneyFtn() async{
+    pickupTwoWayController.clear();
+    dropOffTwoWayController.clear();
+    tempStoreReturnMils = null;
+    FocusScope.of(Get.context!).requestFocus(pickupTwoTextFieldFocusNode);
+    final pickupPolylineIndex = polyLineMarkerInfo
+        .indexWhere((e) => e.markerType == "PICKUP TWO WAY LOCATION");
+
+    if (pickupPolylineIndex >= 0) {
+      polyLineMarkerInfo.removeAt(pickupPolylineIndex);
+    }
+    final pickupMarkerIndex =
+    markers.indexWhere((e) => e.type == "pickup two way");
+    if (pickupMarkerIndex >= 0) {
+      markers.removeAt(pickupMarkerIndex);
+    }
+    pickupTwoWayController.clear();
+    clearReturnViaIfNoPickupAndDrop();
+    selectAirportControllerReturn.clear();
+    arrivalReturnTimeController.clear();
+    isAirportResponseReturn.value = false;
+    polyLineMarkerInfo.removeWhere((item) => item.markerType == "PICKUP TWO WAY LOCATION");
+    if (markers is List<CustomMarker>) {
+      markers.removeWhere((marker) => marker.type == "PICKUP TWO WAY LOCATION");
+    }
+    dropDownShow.value = false;
+    FocusScope.of(Get.context!).requestFocus(dropOffTwoWayTextFieldFocusNode);
+
+    final dropPolylineIndex = polyLineMarkerInfo
+        .indexWhere((e) => e.markerType == "DROP TWO WAY LOCATION");
+
+    if (dropPolylineIndex >= 0) {
+      polyLineMarkerInfo.removeAt(dropPolylineIndex);
+    }
+    final dropOffMarkerIndex =
+    markers.indexWhere((e) => e.type == "dropOff two way");
+
+    if (dropOffMarkerIndex >= 0) {
+      markers.removeAt(dropOffMarkerIndex);
+    }
+    markers.removeWhere((marker) => marker.type == "via with return");
+
+    //  Route API
+    fetchRouteFromOSRM();
     update();
   }
 
