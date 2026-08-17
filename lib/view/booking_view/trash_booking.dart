@@ -2,6 +2,7 @@ import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../alert/delete_permission_alert.dart';
 import '../../component/color.dart';
 import '../../component/datatable_widget.dart';
 import '../../component/networks/api.dart';
@@ -256,13 +257,31 @@ class _TrashBookingState extends State<TrashBooking> {
                                     color: Colors.grey,
                                     fontSize: 12)),
                             const SizedBox(width: 2),
-                            if(permissions.contains('delete_trash_booking'))
-                              IconButton(
+                            // if(permissions.contains('delete_trash_booking'))
+                            //   IconButton(
+                            //   padding: EdgeInsets.zero,
+                            //   constraints: const BoxConstraints(),
+                            //   icon: Icon(Icons.delete_forever,
+                            //       size: 22, color: DynamicColors.primaryClr),
+                            //   onPressed: () {},
+                            // ),
+                            if(permissions.contains('delete_trash_booking'))  IconButton(
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
                               icon: Icon(Icons.delete_forever,
-                                  size: 22, color: DynamicColors.primaryClr),
-                              onPressed: () {},
+                                  size: 22, color: Colors.red),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (_) =>
+                                      DeletePermissionAlert(
+                                        deleteFunctionName: () async {
+                                          await controller.deleteTrashBooking(item.id);
+                                         controller.getTrashBookingData();
+                                        },
+                                      ),
+                                );
+                              },
                             ),
                           ],
                         ),
