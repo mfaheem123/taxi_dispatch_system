@@ -14,6 +14,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart' as dio;
 import '../../administration/model/list_subsDiary.dart';
 import '../../drivers_view/model/driver_commission_payment_model.dart';
+import '../model/getManageExtrntionModel.dart';
 import '../model/get_clear_booking_model.dart';
 import '../model/get_document_number_model.dart';
 import '../model/select_templete_type.dart';
@@ -24,8 +25,23 @@ import 'dart:typed_data';
 import 'dart:html' as html;
 import 'package:pdf/widgets.dart' as pw;
 
-class SettingController extends GetxController {
+class ExtensionController extends GetxController {
   // Add your methods and properties here
+
+  GetManageExtentionModel? getManageExtentionModel;
+
+  RxBool getManageExtentionLoader = false.obs;
+  getManageExtention()
+  async{
+    getManageExtentionLoader(true);
+    var response = await Api().get("employeeextension/get", sendCompanyId: true);
+    if (response.statusCode == 200) {
+      getManageExtentionModel = GetManageExtentionModel.fromJson(response.data);
+      // await getAllFareConfiguration();
+      getManageExtentionLoader(false);
+      update();
+    }
+  }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Template Settings functionality
 

@@ -4,8 +4,9 @@ import '../../component/color.dart';
 import '../../component/customButton.dart';
 import '../../component/datatable_widget.dart';
 import '../../component/textStyle.dart';
-import '../../view/setting/controller/setting_controller.dart';
+import '../../view/setting/controller/extension_controller.dart';
 import '../dashboard_view/booking_table.dart';
+import 'controller/setting_controller.dart';
 
 class SmsSettingsScreen extends StatefulWidget {
   const SmsSettingsScreen({super.key});

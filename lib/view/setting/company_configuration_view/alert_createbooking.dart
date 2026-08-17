@@ -18,7 +18,7 @@ import '../../../component/text_widget.dart';
 import '../../../component/time_duration_method.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../dashboard_view/widgets/user_info_widget.dart';
-import '../setting_controller.dart';
+import '../controller/setting_controller.dart';
 
 class MultiReservationAlert extends StatefulWidget {
   const MultiReservationAlert({super.key});
