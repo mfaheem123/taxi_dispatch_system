@@ -463,8 +463,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
 
 
 /// Keyboard-driven DatePicker widget (no packages)
-/// Keyboard-driven DatePicker widget (no packages)
-/// Keyboard-driven DatePicker widget (no packages)
+
 // class KeyboardDatePicker extends StatefulWidget {
 //   final DateTime initialDate;
 //   final void Function(DateTime)? onChanged;
@@ -865,9 +864,6 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
 //     );
 //   }
 // }
-
-
-/// Keyboard-driven DatePicker widget (no packages)
 class KeyboardDatePicker extends StatefulWidget {
   final DateTime initialDate;
   final void Function(DateTime)? onChanged;
@@ -878,7 +874,6 @@ class KeyboardDatePicker extends StatefulWidget {
   final bool allowPastDates;
   final bool allowFutureDates;
 
-  // Static flag - track karega k date picker focused hai ya nahi
   static bool isAnyDatePickerFocused = false;
 
   KeyboardDatePicker({
@@ -903,8 +898,7 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
   late int month;
   late int year;
 
-  int activePart = 0;
-  final List<String> _buffers = ['', '', ''];
+  int activePart = 0; // 0: Day, 1: Month, 2: Year
   final FocusNode _focusNode = FocusNode();
 
   @override
@@ -916,42 +910,7 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
     _clampDay();
     _clampToBounds();
 
-    // Focus listener add karo
     _focusNode.addListener(_onFocusChange);
-  }
-
-  void _onFocusChange() {
-    // Sirf static flag update karo - setState NAHI karna
-    KeyboardDatePicker.isAnyDatePickerFocused = _focusNode.hasFocus;
-  }
-
-  DateTime get _today {
-    final now = DateTime.now();
-    return DateTime(now.year, now.month, now.day);
-  }
-
-  DateTime? get _minDate => widget.allowPastDates ? null : _today;
-  DateTime? get _maxDate => widget.allowFutureDates ? null : _today;
-
-  DateTime get _currentDate => DateTime(year, month, day);
-
-  void _setDate(DateTime date) {
-    year = date.year;
-    month = date.month;
-    day = date.day;
-    _buffers[0] = '';
-    _buffers[1] = '';
-    _buffers[2] = '';
-  }
-
-  void _clampToBounds() {
-    final min = _minDate;
-    final max = _maxDate;
-    if (min != null && _currentDate.isBefore(min)) {
-      _setDate(min);
-    } else if (max != null && _currentDate.isAfter(max)) {
-      _setDate(max);
-    }
   }
 
   @override
@@ -961,304 +920,191 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
     super.dispose();
   }
 
-  bool _isLeap(int y) {
-    return (y % 4 == 0 && y % 100 != 0) || (y % 400 == 0);
-  }
-
-  int _daysInMonth(int m, int y) {
-    if (m == 2) return _isLeap(y) ? 29 : 28;
-    if (m == 1 ||
-        m == 3 ||
-        m == 5 ||
-        m == 7 ||
-        m == 8 ||
-        m == 10 ||
-        m == 12) return 31;
-    return 30;
+  void _onFocusChange() {
+    KeyboardDatePicker.isAnyDatePickerFocused = _focusNode.hasFocus;
+    setState(() {});
   }
 
   void _clampDay() {
-    final dim = _daysInMonth(month, year);
-    if (day > dim) day = dim;
-    if (day < 1) day = 1;
+    int maxDays = DateTime(year, month + 1, 0).day;
+    if (day > maxDays) {
+      day = maxDays;
+    }
   }
 
-  void _notifyChanged() {
-    final dt = DateTime(year, month, day);
-    widget.onChanged?.call(dt);
+  void _clampToBounds() {
+    DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime current = DateTime(year, month, day);
+
+    if (!widget.allowPastDates && current.isBefore(today)) {
+      day = today.day;
+      month = today.month;
+      year = today.year;
+    } else if (!widget.allowFutureDates && current.isAfter(today)) {
+      day = today.day;
+      month = today.month;
+      year = today.year;
+    }
   }
 
   void _onIncrementActive(int delta) {
     setState(() {
-      final previousActivePart = activePart;
-
       if (activePart == 0) {
-        // DAY
-        day += delta;
-        final dim = _daysInMonth(month, year);
-        if (day > dim) day = 1;
-        if (day < 1) day = dim;
+        DateTime dt = DateTime(year, month, day).add(Duration(days: delta));
+        day = dt.day;
+        month = dt.month;
+        year = dt.year;
       } else if (activePart == 1) {
-        // MONTH
-        month += delta;
-        if (month > 12) month = 1;
-        if (month < 1) month = 12;
-        final dim = _daysInMonth(month, year);
-        if (day > dim) day = dim;
-      } else {
-        // YEAR
+        int newMonth = month + delta;
+        if (newMonth > 12) {
+          month = 1;
+          year++;
+        } else if (newMonth < 1) {
+          month = 12;
+          year--;
+        } else {
+          month = newMonth;
+        }
+        _clampDay();
+      } else if (activePart == 2) {
         year += delta;
-        if (year < 1) year = 1;
-        final dim = _daysInMonth(month, year);
-        if (day > dim) day = dim;
+        _clampDay();
       }
 
-      activePart = previousActivePart;
-      _buffers[activePart] = '';
       _clampToBounds();
-      _notifyChanged();
+      widget.onChanged?.call(DateTime(year, month, day));
     });
   }
 
-  void _onDigit(int d) {
-    setState(() {
-      final b = _buffers[activePart] + d.toString();
-      if (activePart == 0) {
-        final val = int.tryParse(b) ?? 0;
-        if (val == 0) return;
-        final dim = _daysInMonth(month, year);
-        if (val > dim) {
-          _buffers[activePart] = d.toString();
-          final v2 = int.parse(_buffers[activePart]);
-          day = v2.clamp(1, dim);
-        } else {
-          _buffers[activePart] = b;
-          day = val.clamp(1, dim);
-        }
-      } else if (activePart == 1) {
-        final val = int.tryParse(b) ?? 0;
-        if (val == 0) return;
-        if (val > 12) {
-          _buffers[activePart] = d.toString();
-          month = int.parse(_buffers[activePart]).clamp(1, 12);
-        } else {
-          _buffers[activePart] = b;
-          month = val.clamp(1, 12);
-        }
-        _clampDay();
-      } else {
-        final val = int.tryParse(b) ?? 0;
-        if (val == 0 && b.length > 0) {
-          _buffers[activePart] = b.replaceFirst(RegExp(r'^0+'), '');
-        } else {
-          _buffers[activePart] = b;
-          if (val > 0) year = val;
-        }
-        _clampDay();
-      }
-      _notifyChanged();
-    });
-  }
-
-  void _onBackspace() {
-    setState(() {
-      final b = _buffers[activePart];
-      if (b.isNotEmpty) {
-        _buffers[activePart] = b.substring(0, b.length - 1);
-        final newB = _buffers[activePart];
-        if (newB.isNotEmpty) {
-          final parsed = int.tryParse(newB);
-          if (parsed != null) {
-            if (activePart == 0) {
-              day = parsed.clamp(1, _daysInMonth(month, year));
-            } else if (activePart == 1) {
-              month = parsed.clamp(1, 12);
-              _clampDay();
-            } else {
-              year = parsed.clamp(1, 9999999);
-              _clampDay();
-            }
-          }
-        }
-      }
-      _notifyChanged();
-    });
-  }
-
-  void _onLeft() {
-    setState(() {
-      activePart = (activePart - 1 + 3) % 3;
-      _buffers[activePart] = '';
-    });
-  }
-
-  void _onRight() {
-    setState(() {
-      activePart = (activePart + 1) % 3;
-      _buffers[activePart] = '';
-    });
-  }
-
-  void _onEnter() {
-    setState(_clampToBounds);
-    widget.onSubmitted?.call(_currentDate);
-  }
-
-  Widget _partBox(String text, bool active, {VoidCallback? onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6),
-          color: active ? Colors.blue.withOpacity(0.06) : Colors.transparent,
-        ),
-        child: Text(
-          text,
-          style: mozillaTextSemiBoldText(
-            fontSize: widget.fontSize,
-            fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-            color: active ? Colors.blue.shade800 : Colors.black87,
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _onRawKey(RawKeyEvent event) {
-    if (event is! RawKeyDownEvent) return;
-    final key = event.logicalKey;
-    if (key == LogicalKeyboardKey.arrowUp) {
-      _onIncrementActive(1);
-      return;
-    } else if (key == LogicalKeyboardKey.arrowDown) {
-      _onIncrementActive(-1);
-      return;
-    } else if (key == LogicalKeyboardKey.arrowLeft) {
-      _onLeft();
-      return;
-    } else if (key == LogicalKeyboardKey.arrowRight) {
-      _onRight();
-      return;
-    } else if (key == LogicalKeyboardKey.enter ||
-        key == LogicalKeyboardKey.numpadEnter) {
-      _onEnter();
-      return;
-    } else if (key == LogicalKeyboardKey.backspace) {
-      _onBackspace();
-      return;
-    }
-
-    final label = key.keyLabel;
-    if (label.length == 1 && RegExp(r'^[0-9]$').hasMatch(label)) {
-      final d = int.parse(label);
-      _onDigit(d);
-      return;
-    }
-
-    if (key == LogicalKeyboardKey.minus || key == LogicalKeyboardKey.numpadSubtract) {
-      if (activePart == 2) _onIncrementActive(-1);
-      return;
-    }
-    if (key == LogicalKeyboardKey.equal || key == LogicalKeyboardKey.numpadAdd) {
-      if (activePart == 2) _onIncrementActive(1);
-      return;
-    }
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final firstDate = _minDate ?? DateTime(2000);
-    final lastDate = _maxDate ?? DateTime(2101);
-    var initial = _currentDate;
-    if (initial.isBefore(firstDate)) initial = firstDate;
-    if (initial.isAfter(lastDate)) initial = lastDate;
+  // 📅 Native Calendar Dialog Opener
+  Future<void> _openNativeCalendar() async {
+    DateTime initial = DateTime(year, month, day);
+    DateTime now = DateTime.now();
 
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: initial,
-      firstDate: firstDate,
-      lastDate: lastDate,
+      firstDate: widget.allowPastDates ? DateTime(1900) : DateTime(now.year, now.month, now.day),
+      lastDate: widget.allowFutureDates ? DateTime(2100) : DateTime(now.year, now.month, now.day),
     );
+
     if (picked != null) {
       setState(() {
         day = picked.day;
         month = picked.month;
         year = picked.year;
       });
-      _notifyChanged();
+      widget.onChanged?.call(picked);
+      widget.onSubmitted?.call(picked);
     }
+  }
+
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is KeyDownEvent || event is KeyRepeatEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+        _onIncrementActive(1);
+        return KeyEventResult.handled;
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+        _onIncrementActive(-1);
+        return KeyEventResult.handled;
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+        setState(() {
+          activePart = (activePart - 1).clamp(0, 2);
+        });
+        return KeyEventResult.handled;
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+        setState(() {
+          activePart = (activePart + 1).clamp(0, 2);
+        });
+        return KeyEventResult.handled;
+      } else if (event.logicalKey == LogicalKeyboardKey.space ||
+          event.logicalKey == LogicalKeyboardKey.enter) {
+        // Space ya F4 se Calendar Dialog open hoga
+        _openNativeCalendar();
+        return KeyEventResult.handled;
+      } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+          event.logicalKey == LogicalKeyboardKey.numpadEnter) {
+        widget.onSubmitted?.call(DateTime(year, month, day));
+        _focusNode.unfocus();
+        return KeyEventResult.handled;
+      } else if (event.logicalKey == LogicalKeyboardKey.escape) {
+        _focusNode.unfocus();
+        return KeyEventResult.handled;
+      }
+    }
+    return KeyEventResult.ignored;
+  }
+
+  // 🟦 Blue Highlight Text Segment Helper Widget
+  Widget _buildDateSegment(String text, int partIndex) {
+    bool isSelected = _focusNode.hasFocus && activePart == partIndex;
+
+    return GestureDetector(
+      onTap: () {
+        _focusNode.requestFocus();
+        setState(() {
+          activePart = partIndex;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.blue : Colors.transparent,
+          borderRadius: BorderRadius.circular(2),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: widget.fontSize,
+            color: isSelected ? Colors.white : Colors.black,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final dayText = day.toString().padLeft(2, '0');
-    final monthText = month.toString().padLeft(2, '0');
-    final yearText = year.toString();
+    String dayStr = day.toString().padLeft(2, '0');
+    String monthStr = month.toString().padLeft(2, '0');
+    String yearStr = year.toString();
 
-    return RawKeyboardListener(
+    return Focus(
       focusNode: _focusNode,
-      autofocus: true,
-      onKey: _onRawKey,
+      onKeyEvent: _handleKeyEvent,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
+          border: Border.all(
+            color: _focusNode.hasFocus
+                ? Colors.blue
+                : (widget.borderClr ?? Colors.grey),
+            width: _focusNode.hasFocus ? 1.5 : 1.0,
+          ),
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: widget.borderClr ?? DynamicColors.primaryClr),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
-                _partBox(dayText, activePart == 0, onTap: () {
-                  setState(() {
-                    activePart = 0;
-                    _focusNode.requestFocus();
-                  });
-                }),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                  child: Text('/', style: mozillaTextSemiBoldText(
-                      context: context,
-                      fontSize: widget.fontSize,
-                      fontWeight: FontWeight.w800
-                  ),),
-                ),
-                _partBox(monthText, activePart == 1, onTap: () {
-                  setState(() {
-                    activePart = 1;
-                    _focusNode.requestFocus();
-                  });
-                }),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                  child: Text('/', style: mozillaTextSemiBoldText(
-                      context: context,
-                      fontSize: widget.fontSize,
-                      fontWeight: FontWeight.w800
-                  ),),
-                ),
-                _partBox(yearText, activePart == 2, onTap: () {
-                  setState(() {
-                    activePart = 2;
-                    _focusNode.requestFocus();
-                  });
-                }),
+                _buildDateSegment(dayStr, 0),
+                const Text("/"),
+                _buildDateSegment(monthStr, 1),
+                const Text("/"),
+                _buildDateSegment(yearStr, 2),
               ],
             ),
-            Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  _selectDate(context);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 3.0),
-                  child: Icon(Icons.calendar_month,
-                    size: widget.iconSize,
-                  ),
-                ),
+            InkWell(
+              onTap: _openNativeCalendar,
+              child: Icon(
+                Icons.calendar_today,
+                size: widget.iconSize,
+                color: Colors.black87,
               ),
-            )
+            ),
           ],
         ),
       ),
