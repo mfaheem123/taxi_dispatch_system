@@ -1,8 +1,10 @@
+import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/booking_view/reusable_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../alert/delete_permission_alert.dart';
 import '../../alert/restrict_drivers_alert.dart';
 import '../../component/color.dart';
 import '../../component/customButton.dart';
@@ -34,10 +36,13 @@ class _PreBookingState extends State<PreBooking> {
   final int totalRows =
       50; // total rows (dynamic list ke hisaab se change hoga)
 
+  List permissions = [];
+
   @override
   void initState() {
     super.initState();
     shortCutKeyValue.value = "PreBooking";
+    permissions = Api().sp.read('all_permissions') ?? [];
     controller.getDashboardTableData();
   }
 
@@ -287,13 +292,24 @@ class _PreBookingState extends State<PreBooking> {
                                       style: TextStyle(
                                           color: Colors.grey,
                                           fontSize: 12)),
-                                  const SizedBox(width: 2),
-                                  IconButton(
+                                  const SizedBox(width: 1),
+                                  if(permissions.contains('delete_booking'))  IconButton(
                                     padding: EdgeInsets.zero,
                                     constraints: const BoxConstraints(),
                                     icon: Icon(Icons.delete_forever,
-                                        size: 22, color: DynamicColors.primaryClr),
-                                    onPressed: () {},
+                                        size: 22, color: Colors.red),
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (_) =>
+                                            DeletePermissionAlert(
+                                              deleteFunctionName: () async {
+                                                await controller.deleteBooking(item.id);
+                                                controller.getDashboardTableData();
+                                              },
+                                            ),
+                                      );
+                                    },
                                   ),
                                 ],
                               ),

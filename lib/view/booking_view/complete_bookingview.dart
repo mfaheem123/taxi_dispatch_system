@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../alert/delete_permission_alert.dart';
 import '../../alert/restrict_drivers_alert.dart';
 import '../../component/color.dart';
 import '../../component/datatable_widget.dart';
@@ -37,13 +38,13 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
   final int totalRows =
       50; // total rows (dynamic list ke hisaab se change hoga)
 
+  List permissions = [];
+
   @override
   void initState() {
     super.initState();
     shortCutKeyValue.value = "completeBookingsScreen";
-    // var permissions = Api().sp.read('authorizations');
-    // var dataa = jsonDecode(permissions);
-    // print("------------------------------- permo ${dataa}");
+    permissions = Api().sp.read('all_permissions') ?? [];
     controller.getcompletedBookingData();
   }
 
@@ -427,18 +428,28 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                                     size: 22, color: DynamicColors.primaryClr),
                                 onPressed: () {},
                               ),
-                              const SizedBox(width: 2),
+                             const SizedBox(width: 2),
                               const Text("|",
                                   style: TextStyle(
                                       color: Colors.grey,
                                       fontSize: 12)),
-                              const SizedBox(width: 2),
-                              IconButton(
+                              const SizedBox(width: 1),
+                              if(permissions.contains('delete_booking'))  IconButton(
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),
-                                icon: Icon(Icons.delete_forever,
-                                    size: 22, color: DynamicColors.primaryClr),
-                                onPressed: () {},
+                                icon:  Icon(Icons.delete_forever, size: 22, color: Colors.red),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (_) =>
+                                        DeletePermissionAlert(
+                                          deleteFunctionName: () async {
+                                            await controller.deleteBooking(item.id);
+                                            controller.getcompletedBookingData();
+                                          },
+                                        ),
+                                  );
+                                },
                               ),
                             ],
                           ),
