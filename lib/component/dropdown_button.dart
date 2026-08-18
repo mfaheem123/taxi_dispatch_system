@@ -146,13 +146,13 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
 
     // 1. Jab Dropdown CLOSED ho
     if (!_isOpen) {
-      if (key == LogicalKeyboardKey.space || key == LogicalKeyboardKey.enter) {
+      if (key == LogicalKeyboardKey.keyI || key == LogicalKeyboardKey.keyB) {
         _openDropdown();
         return KeyEventResult.handled;
       }
 
       // Arrow keys ko yahan HANDLED return karein taake Page scroll NA ho aur log na aaye
-      if (key == LogicalKeyboardKey.arrowDown || key == LogicalKeyboardKey.arrowUp) {
+      if (key == LogicalKeyboardKey.keyI || key == LogicalKeyboardKey.keyI) {
         return KeyEventResult.handled;
       }
 
@@ -161,21 +161,21 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
 
     // 2. Jab Dropdown OPEN ho
     if (key == LogicalKeyboardKey.arrowDown) {
+      // setState(() {
+      //   _highlightedIndex = (_highlightedIndex + 1) % widget.items.length;
+      //   _overlayEntry?.markNeedsBuild();
+      // });
+      return KeyEventResult.handled;
+    }
+    else if (key == LogicalKeyboardKey.arrowUp) {
       setState(() {
-        _highlightedIndex = (_highlightedIndex + 1) % widget.items.length;
+        _highlightedIndex = _highlightedIndex <= 0
+            ? widget.items.length - 1
+            : _highlightedIndex - 1;
         _overlayEntry?.markNeedsBuild();
       });
       return KeyEventResult.handled;
     }
-    // else if (key == LogicalKeyboardKey.arrowUp) {
-    //   setState(() {
-    //     _highlightedIndex = _highlightedIndex <= 0
-    //         ? widget.items.length - 1
-    //         : _highlightedIndex - 1;
-    //     _overlayEntry?.markNeedsBuild();
-    //   });
-    //   return KeyEventResult.handled;
-    // }
     else if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.space) {
       if (_highlightedIndex >= 0 && _highlightedIndex < widget.items.length) {
         _selectItem(widget.items[_highlightedIndex]);
