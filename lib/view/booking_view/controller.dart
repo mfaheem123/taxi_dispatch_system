@@ -323,7 +323,6 @@ class BookingController extends GetxController{
   RxInt appBookingCurrentPage = 1.obs;
   RxInt appBookingTotalPages = 1.obs;
   final int appBookingLimit = 20;
-
   final appreferenceNumber = TextEditingController();
   final apppickupDate = TextEditingController();
   final apppickupTime = TextEditingController();

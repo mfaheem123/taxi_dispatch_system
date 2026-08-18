@@ -76,6 +76,8 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
             objectData.longitude = lng.toString();
             objectData.bookingStatus = data['data']['booking_status'];
 
+            print("booking status ${data['data']['booking_status']}");
+
             trackingMarkers[indexxx] = CustomMarker(
               id: oldMarker.id,
               withReturnType: oldMarker.withReturnType,
@@ -94,7 +96,7 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
                   ),
 
                   Container(
-                    color: _statusColor(objectData.bookingStatus),
+                    // color: _statusColor(objectData.bookingStatus),
                     padding: const EdgeInsets.only(
                         bottom: 10.0, left: 4, right: 4),
                     child: Text(
@@ -124,7 +126,7 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
   Color _statusColor(String? status) {
     switch (status) {
       case "Accepted":
-        return Colors.orange  ;
+        return Colors.orange;
       case "Arrived":
         return Colors.yellow;
       case "On Route":
@@ -138,6 +140,7 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
 
 
   String _statusImage(String status) {
+    print("statusstatusstatus $status");
     switch (status) {
       case "Accepted":
         return "assets/c.png";   // Orange Car

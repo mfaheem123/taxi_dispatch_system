@@ -262,6 +262,7 @@ import 'dart:html' as html;
 import '../../../component/marker_class.dart';
 import '../../../routes/app_pages.dart';
 import '../Controller/dashboard_controller.dart';
+import '../widgets/view_drivers_map.dart';
 import 'defult_dashboard_view.dart';
 
 
@@ -479,6 +480,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                     padding: EdgeInsets.zero,
                     icon: const Icon(Icons.crop_square_outlined),
                     onPressed: () {
+                      // Get.to(ViewDriversMap());
                       final newTabUrl = Uri.base.origin + '/#' + Routes.viewDriversMap;
                       html.window.open(newTabUrl, '_blank');
                     },
