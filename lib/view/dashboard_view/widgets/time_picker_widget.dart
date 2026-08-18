@@ -1,25 +1,16 @@
 
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../../component/color.dart';
-import '../../../component/textStyle.dart';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class CustomTimePicker extends StatefulWidget {
   final TextEditingController? controller;
   final ValueChanged<String>? onTimeSelected;
-  final bool readOnly;
+  bool readOnly = true;
 
-  const CustomTimePicker({
+  CustomTimePicker({
     Key? key,
     this.controller,
     this.onTimeSelected,
@@ -33,32 +24,26 @@ class CustomTimePicker extends StatefulWidget {
 class _CustomTimePickerState extends State<CustomTimePicker> {
   late final TextEditingController _timeController;
   final LayerLink _layerLink = LayerLink();
-  final FocusNode _focusNode = FocusNode();
-
   OverlayEntry? _overlayEntry;
-  void Function(void Function())? _overlaySetState;
 
   late int selectedHour;
   late int selectedMinute;
-
-  // 0 -> Hour Column, 1 -> Minute Column
-  int _activeColumnIndex = 0;
-
-  late ScrollController _hourScrollController;
-  late ScrollController _minuteScrollController;
 
   @override
   void initState() {
     super.initState();
     _timeController = widget.controller ?? TextEditingController();
 
+
     final now = DateTime.now();
 
-    if (_timeController.text.trim().isEmpty) {
+
+    if (_timeController.text.isEmpty) {
       selectedHour = now.hour;
       selectedMinute = now.minute;
       _updateTimeText();
     } else {
+
       try {
         List<String> parts = _timeController.text.trim().split(':');
         selectedHour = int.parse(parts[0]);
@@ -68,255 +53,107 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
         selectedMinute = now.minute;
       }
     }
-
-    _hourScrollController = ScrollController();
-    _minuteScrollController = ScrollController();
-
-    _focusNode.addListener(() {
-      if (!_focusNode.hasFocus && _overlayEntry != null) {
-        _closeDropdown();
-      }
-    });
   }
+
 
   void _updateTimeText() {
     final hourStr = selectedHour.toString().padLeft(2, '0');
     final minuteStr = selectedMinute.toString().padLeft(2, '0');
-    _timeController.text = "$hourStr:$minuteStr";
-    widget.onTimeSelected?.call(_timeController.text);
+    _timeController.text = "$hourStr:$minuteStr ";
   }
 
-  void _toggleTimeDropdown() {
+  void  _toggleTimeDropdown() {
     if (_overlayEntry == null) {
-      _openDropdown();
+      _overlayEntry = _buildOverlayEntry();
+      Overlay.of(context).insert(_overlayEntry!);
     } else {
       _closeDropdown();
     }
   }
 
-  void _openDropdown() {
-    if (_overlayEntry != null) return;
-    _overlayEntry = _buildOverlayEntry();
-    Overlay.of(context).insert(_overlayEntry!);
-    _scrollToSelected();
-  }
-
   void _closeDropdown() {
     _overlayEntry?.remove();
     _overlayEntry = null;
-    _overlaySetState = null;
   }
 
-  void _scrollToSelected() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_hourScrollController.hasClients) {
-        _hourScrollController.animateTo(
-          (selectedHour * 38.0).clamp(0, _hourScrollController.position.maxScrollExtent),
-          duration: const Duration(milliseconds: 150),
-          curve: Curves.easeOut,
-        );
-      }
-      if (_minuteScrollController.hasClients) {
-        _minuteScrollController.animateTo(
-          (selectedMinute * 38.0).clamp(0, _minuteScrollController.position.maxScrollExtent),
-          duration: const Duration(milliseconds: 150),
-          curve: Curves.easeOut,
-        );
-      }
+  void _selectAndClose({int? hour, int? minute, String? period}) {
+    setState(() {
+      if (hour != null) selectedHour = hour;
+      if (minute != null) selectedMinute = minute;
+      // if (period != null) selectedPeriod = period;
+      _updateTimeText();
     });
-  }
 
-  void _handleKeyNavigation(LogicalKeyboardKey key) {
-    if (_overlayEntry == null) {
-      if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.arrowDown) {
-        _openDropdown();
-      }
-      return;
-    }
-
-    void updateLogic() {
-      if (key == LogicalKeyboardKey.arrowLeft) {
-        _activeColumnIndex = 0;
-      } else if (key == LogicalKeyboardKey.arrowRight) {
-        _activeColumnIndex = 1;
-      } else if (key == LogicalKeyboardKey.arrowUp) {
-        if (_activeColumnIndex == 0) {
-          selectedHour = (selectedHour - 1 < 0) ? 23 : selectedHour - 1;
-        } else {
-          selectedMinute = (selectedMinute - 1 < 0) ? 59 : selectedMinute - 1;
-        }
-        _updateTimeText();
-        _scrollToSelected();
-      } else if (key == LogicalKeyboardKey.arrowDown) {
-        if (_activeColumnIndex == 0) {
-          selectedHour = (selectedHour + 1 > 23) ? 0 : selectedHour + 1;
-        } else {
-          selectedMinute = (selectedMinute + 1 > 59) ? 0 : selectedMinute + 1;
-        }
-        _updateTimeText();
-        _scrollToSelected();
-      } else if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.escape) {
-        _closeDropdown();
-      }
-    }
-
-    setState(updateLogic);
-    if (_overlaySetState != null) {
-      _overlaySetState!(updateLogic);
-    }
+    widget.onTimeSelected?.call(_timeController.text);
+    _closeDropdown();
   }
 
   OverlayEntry _buildOverlayEntry() {
     RenderBox renderBox = context.findRenderObject() as RenderBox;
-    final size = renderBox.size;
+    final offset = renderBox.localToGlobal(Offset.zero);
 
     return OverlayEntry(
       builder: (context) => Stack(
-        children: [
-          Positioned.fill(
-            child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: _closeDropdown,
+          children: [
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: _closeDropdown,
+              ),
             ),
-          ),
-          Positioned(
-            width: 180,
-            height: 220,
-            child: CompositedTransformFollower(
-              link: _layerLink,
-              showWhenUnlinked: false,
-              offset: Offset(0, size.height + 6),
-              child: Material(
-                elevation: 8,
-                shadowColor: Colors.black26,
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: StatefulBuilder(
-                    builder: (context, setOverlayState) {
-                      _overlaySetState = setOverlayState;
-                      return Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(vertical: 6),
-                            color: Colors.grey.shade100,
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    "Hour",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
-                                      color: _activeColumnIndex == 0 ? Colors.blue.shade700 : Colors.grey.shade600,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    "Minute",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
-                                      color: _activeColumnIndex == 1 ? Colors.blue.shade700 : Colors.grey.shade600,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Divider(height: 1, thickness: 1),
-                          Expanded(
-                            child: Row(
-                              children: [
-                                _buildScrollColumn(
-                                  0,
-                                  23,
-                                  selectedHour,
-                                  _hourScrollController,
-                                  _activeColumnIndex == 0,
-                                      (val) {
-                                    void selectHour() {
-                                      selectedHour = val;
-                                      _activeColumnIndex = 0;
-                                      _updateTimeText();
-                                      _scrollToSelected();
-                                    }
-                                    setState(selectHour);
-                                    setOverlayState(selectHour);
-                                  },
-                                ),
-                                const VerticalDivider(width: 1, thickness: 1),
-                                _buildScrollColumn(
-                                  0,
-                                  59,
-                                  selectedMinute,
-                                  _minuteScrollController,
-                                  _activeColumnIndex == 1,
-                                      (val) {
-                                    void selectMinute() {
-                                      selectedMinute = val;
-                                      _activeColumnIndex = 1;
-                                      _updateTimeText();
-                                      _scrollToSelected();
-                                    }
-                                    setState(selectMinute);
-                                    setOverlayState(selectMinute);
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      );
-                    },
+
+            Positioned(
+              left: offset.dx,
+              top: offset.dy + 80,
+              width: 180,
+              height: 200,
+              child: CompositedTransformFollower(
+                link: _layerLink,
+                showWhenUnlinked: false,
+                child: Material(
+                  elevation: 4,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Row(
+                    children: [
+                      _buildScrollColumn(0, 23, selectedHour, (value) {
+                        _selectAndClose(hour: value);
+                      }),
+                      _buildScrollColumn(0, 59, selectedMinute, (value) {
+                        _selectAndClose(minute: value);
+                      }),
+                      // _buildAmPmColumn(),
+                    ],
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ]
       ),
     );
   }
 
   Widget _buildScrollColumn(
-      int start,
-      int end,
-      int selected,
-      ScrollController controller,
-      bool isActiveColumn,
-      Function(int) onSelect,
-      ) {
+      int start, int end, int selected, Function(int) onSelect) {
     return Expanded(
       child: ListView.builder(
-        controller: controller,
-        padding: EdgeInsets.zero,
         itemCount: end - start + 1,
-        itemExtent: 38.0,
         itemBuilder: (context, index) {
           int value = start + index;
           final valueStr = value.toString().padLeft(2, '0');
           final isSelected = value == selected;
-
           return InkWell(
             onTap: () => onSelect(value),
             child: Container(
-              alignment: Alignment.center,
-              color: isSelected
-                  ? (isActiveColumn ? Colors.blue.shade600 : Colors.blue.shade100)
-                  : Colors.transparent,
-              child: Text(
-                valueStr,
-                style: TextStyle(
-                  color: isSelected
-                      ? (isActiveColumn ? Colors.white : Colors.blue.shade900)
-                      : Colors.black87,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  fontSize: 13,
+              padding: const EdgeInsets.all(12),
+              color: isSelected ? Colors.blue : null,
+              child: Center(
+                child: Text(
+                  valueStr,
+                  style: TextStyle(
+                    color: isSelected ? Colors.white : Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ),
@@ -328,60 +165,44 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
 
   @override
   void dispose() {
-    _focusNode.dispose();
-    _hourScrollController.dispose();
-    _minuteScrollController.dispose();
     if (widget.controller == null) {
-      _timeController.dispose();
+      _timeController.dispose(); // Only dispose if local
+
     }
+
     _overlayEntry?.remove();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return KeyboardListener(
-      focusNode: _focusNode,
-      onKeyEvent: (KeyEvent event) {
-        if (event is KeyDownEvent) {
-          _handleKeyNavigation(event.logicalKey);
-        }
-      },
-      child: CompositedTransformTarget(
-        link: _layerLink,
-        child: SizedBox(
-          height: 42,
-          width: 150,
-          child: TextFormField(
-            controller: _timeController,
-            readOnly: widget.readOnly,
-            onTap: _toggleTimeDropdown,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-              hintText: "Select Time",
-              suffixIcon: InkWell(
-                borderRadius: BorderRadius.circular(20),
-                onTap: _toggleTimeDropdown,
-                child: Icon(
-                  Icons.access_time_rounded,
-                  size: 20,
-                  color: Colors.grey.shade700,
-                ),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey.shade400),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Colors.blue, width: 1.5),
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: SizedBox(
+        height: 40,
+        width: 150,
+        child: TextFormField(
+          controller: _timeController,
+          readOnly: widget.readOnly,
+          onTap: _toggleTimeDropdown,
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+            hintText: "Select Time",
+            suffixIcon:
+
+
+            InkWell(
+              onTap: _toggleTimeDropdown,
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Icon(Icons.access_time, size: 18),
               ),
             ),
+
+
+
+
+            border: const OutlineInputBorder(),
           ),
         ),
       ),
