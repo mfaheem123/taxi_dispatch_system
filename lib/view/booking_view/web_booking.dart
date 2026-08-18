@@ -1,9 +1,11 @@
+import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/booking_view/reusable_widget.dart';
 import 'package:dashboard_new1/view/booking_view/update_booking.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../alert/delete_permission_alert.dart';
 import '../../alert/restrict_drivers_alert.dart';
 import '../../component/color.dart';
 import '../../component/customButton.dart';
@@ -38,10 +40,13 @@ class _WebBookingState extends State<WebBooking> {
   int selectedRowIndex = 0; // currently selected row
   final int totalRows = 50;  // total rows (dynamic list ke hisaab se change hoga)
 
+  List permissions = [];
+
   @override
   void initState() {
     super.initState();
     shortCutKeyValue.value = "WebBooking";
+    permissions = Api().sp.read('all_permissions') ?? [];
     controller.getWebBookingData();
   }
 
@@ -458,12 +463,23 @@ class _WebBookingState extends State<WebBooking> {
                                             color: Colors.grey,
                                             fontSize: 12)),
                                     const SizedBox(width: 2),
-                                    IconButton(
+                                    if(permissions.contains('delete_booking'))  IconButton(
                                       padding: EdgeInsets.zero,
                                       constraints: const BoxConstraints(),
                                       icon: Icon(Icons.delete_forever,
-                                          size: 22, color: DynamicColors.primaryClr),
-                                      onPressed: () {},
+                                          size: 22, color: Colors.red),
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (_) =>
+                                              DeletePermissionAlert(
+                                                deleteFunctionName: () async {
+                                                  await controller.deleteBooking(item.id);
+                                                  controller.getWebBookingData();
+                                                },
+                                              ),
+                                        );
+                                      },
                                     ),
                                   ],
                                 ),

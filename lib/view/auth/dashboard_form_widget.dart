@@ -5,12 +5,9 @@ import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:timepickerfield/timepickerfield.dart';
 import '../../../alert/restrict_drivers_alert.dart';
-import '../../alert/back_slash_alert.dart';
 import '../../alert/child_seats_alert.dart';
 import '../../alert/extra_fares_alert.dart';
 import '../../alert/extra_info_alert.dart';
-import '../../alert/f3_alert.dart';
-import '../../alert/f4_alert.dart';
 import '../../alert/search_booking.dart';
 import '../../component/marker_class.dart';
 import '../../component/text_field.dart';
@@ -22,6 +19,7 @@ import '../dashboard_view/models/all_addresses_model.dart';
 import '../dashboard_view/models/dashboard_model.dart';
 import '../dashboard_view/models/users_phone_numbers_model.dart';
 import '../dashboard_view/utils/address_query_match.dart';
+import '../dashboard_view/utils/page_arrow_scroll.dart';
 import '../dashboard_view/widgets/fare_configuration.dart';
 import '../dashboard_view/widgets/via_location.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
@@ -60,103 +58,19 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   AllAddressesModel? _selectedPickup;
   AllAddressesModel? _selectedDrop;
   // Kept focused (instead of a plain unfocus()) when the PICKUP/DROP
-  // autocomplete is dismissed by a tap outside it, so F7/F8/F9 keep working —
-  // unfocus() moves primary focus to the ambient FocusScope *outside*
-  // CallbackShortcuts, and key events only bubble up from whichever node
-  // currently has focus. NOT used when a suggestion is picked: that path keeps
-  // focus on the field itself, which is inside CallbackShortcuts anyway and
-  // preserves the Tab position.
+  // autocomplete is dismissed by a tap outside it, so the arrow-key page
+  // scrolling below keeps working — unfocus() moves primary focus to the
+  // ambient FocusScope *outside* this form, and key events only bubble up from
+  // whichever node currently has focus. NOT used when a suggestion is picked:
+  // that path keeps focus on the field itself and preserves the Tab position.
   final FocusNode _shortcutFocusNode = FocusNode();
 
-  /// Pixels the page moves per arrow key press / repeat.
-  static const double _arrowScrollStep = 60;
+  /// Focus node of the PICKUP address field, so the screen-level F2
+  /// (BOOKING FORM / CREATE BOOKING) shortcut in DashboardShortcuts can drop
+  /// the caret into the first field of a fresh booking.
+  final FocusNode _pickupFieldFocusNode = FocusNode();
 
-  /// The scroll view the arrow keys should move — normally the app shell's
-  /// body scroller in main_appbar.dart, which is what actually moves this page
-  /// on screen.
-  ///
-  /// The form's own SingleChildScrollView is a DESCENDANT of this state's
-  /// context, so it is never a candidate. The search then keeps walking
-  /// outward past any scroll view that has nothing to scroll: in the shell an
-  /// inner scroll view gets unbounded height, so ByDefaultDashboard's own one
-  /// (used by the stacked iPad / mobile layout) sits at maxScrollExtent 0 and
-  /// stopping there would leave the arrows doing nothing.
-  ScrollPosition? get _scrollablePosition {
-    if (!mounted) return null;
-    BuildContext ctx = context;
-    // findAncestorStateOfType (not Scrollable.maybeOf) so the walk stays a
-    // plain lookup and registers no inherited-widget dependencies on the
-    // scroll views it passes through.
-    for (var depth = 0; depth < 8; depth++) {
-      final scrollable = ctx.findAncestorStateOfType<ScrollableState>();
-      if (scrollable == null) return null;
-      final position = scrollable.position;
-      if (position.hasContentDimensions &&
-          position.maxScrollExtent > position.minScrollExtent) {
-        return position;
-      }
-      ctx = scrollable.context;
-    }
-    return null;
-  }
 
-  /// Moves [position] by [delta] pixels, clamped to its scroll extent.
-  /// [animate] is off while a key repeats so a held arrow scrolls smoothly
-  /// instead of restarting a short animation on every repeat.
-  void _scrollPage(ScrollPosition position, double delta,
-      {required bool animate}) {
-    final target = (position.pixels + delta)
-        .clamp(position.minScrollExtent, position.maxScrollExtent);
-    if (target == position.pixels) return;
-    if (animate) {
-      position.animateTo(
-        target,
-        duration: const Duration(milliseconds: 120),
-        curve: Curves.easeOut,
-      );
-    } else {
-      position.jumpTo(target);
-    }
-  }
-
-  /// Arrow up / down scrolls the page while focus sits anywhere in this form —
-  /// including inside a text field, where the keys would otherwise only jump
-  /// the caret to the start / end of a single line.
-  ///
-  /// This node is an ancestor of every field, so it sees the event only after
-  /// the focused control has passed on it: the address / mobile suggestion
-  /// panels and the open calendar still own the arrows for their own
-  /// navigation and return `handled` before it ever gets here.
-  KeyEventResult _handleArrowScroll(FocusNode node, KeyEvent event) {
-    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
-      return KeyEventResult.ignored;
-    }
-    final key = event.logicalKey;
-    final isDown = key == LogicalKeyboardKey.arrowDown;
-    if (!isDown && key != LogicalKeyboardKey.arrowUp) {
-      return KeyEventResult.ignored;
-    }
-    // Nothing to scroll (the form fits on screen): stand aside so the key
-    // keeps its default meaning instead of being silently swallowed.
-    final position = _scrollablePosition;
-    if (position == null) return KeyEventResult.ignored;
-    _scrollPage(
-      position,
-      isDown ? _arrowScrollStep : -_arrowScrollStep,
-      animate: event is KeyDownEvent,
-    );
-    return KeyEventResult.handled;
-  }
-
-  /// True when keyboard focus sits inside a text field, so printable-key
-  /// shortcuts (the "/" help menu) can let the character be typed instead.
-  /// The F-key shortcuts need no such guard — a text field ignores those.
-  bool get _isTypingInTextField {
-    final ctx = FocusManager.instance.primaryFocus?.context;
-    return ctx != null &&
-        (ctx.widget is EditableText ||
-            ctx.findAncestorWidgetOfExactType<EditableText>() != null);
-  }
   // ────────── return-journey state
   ZoneObject? returnDropZone;
   // DashboardVehicleTypeObject? returnVehicleValue;
@@ -224,14 +138,29 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   @override
   void initState() {
     super.initState();
+    // F2 is bound on the dashboard shell (DashboardShortcuts), which knows
+    // nothing about this form's fields — hand it a way in while we are mounted.
+    controller.focusBookingFormFirstField = _focusFirstField;
     if (controller.dashboardAllData == null) {
       controller.dashboardData();
     }
   }
   @override
   void dispose() {
+    // Only clear it if it is still ours: a newer form instance may already have
+    // replaced the hook (the dashboard rebuilds this widget on layout changes).
+    if (controller.focusBookingFormFirstField == _focusFirstField) {
+      controller.focusBookingFormFirstField = null;
+    }
     _shortcutFocusNode.dispose();
+    _pickupFieldFocusNode.dispose();
     super.dispose();
+  }
+
+  /// Puts the caret in the PICKUP field — the first stop of the booking form.
+  void _focusFirstField() {
+    if (!mounted) return;
+    FocusScope.of(context).requestFocus(_pickupFieldFocusNode);
   }
   @override
   Widget build(BuildContext context) {
@@ -241,78 +170,25 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     final isDesktop = w >= 1024;
     final cols = isMobile ? 1 : (isTablet ? 2 : 4);
     final formWidth = isDesktop ? w * 0.5 : double.infinity;
-    return CallbackShortcuts(
-      bindings: <ShortcutActivator, VoidCallback>{
-        const SingleActivator(LogicalKeyboardKey.f7): () {
-          controller.refreshPostAllFields();
-        },
-        const SingleActivator(LogicalKeyboardKey.f8): () {
-          if (controller.pickupController.text.isNotEmpty &&
-              controller.dropOffController.text.isNotEmpty) {
-            DashboardF8Alert.show();
-            return;
-          }
-        },
-        // const SingleActivator(LogicalKeyboardKey.f8): _onMultiReservation,
-        const SingleActivator(LogicalKeyboardKey.f9): () {
-          if (controller.pickupController.text.isNotEmpty &&
-              controller.dropOffController.text.isNotEmpty) {
-            DashboardF9Alert.show();
-          }
-          return;
-        },
-        const SingleActivator(LogicalKeyboardKey.f4): () {
-          if (controller.pickupController.text.isNotEmpty &&
-              controller.dropOffController.text.isNotEmpty) {
-            showDriverEarningsAlert();
-            return;
-          }
-        },
-        const SingleActivator(LogicalKeyboardKey.f3): () {
-          if (controller.pickupController.text.isNotEmpty &&
-              controller.dropOffController.text.isNotEmpty) {
-            showDriverInfoAlert();
-            return;
-          }
-        },
-        const SingleActivator(LogicalKeyboardKey.f6): () {
-          if (controller.pickupController.text.isNotEmpty &&
-              controller.dropOffController.text.isNotEmpty) {
-            DashboardF9Alert.show();
-          }
-        },
-        // HELP MENU is listed as "/" in the app's own shortcut sheet
-        // (back_slash_alert.dart). This used to read
-        // `LogicalKeyboardKey.lab == "/"`, which is a bool rather than a key:
-        // it did not compile, and a broken build() meant NONE of the shortcuts
-        // on this screen worked, not just this one.
-        const SingleActivator(LogicalKeyboardKey.slash): () {
-          // Unlike the F-keys, a printable key still reaches CallbackShortcuts
-          // while a text field holds focus, so stand aside there — otherwise
-          // typing "/" into an address or notes field pops the help dialog
-          // instead of inserting the character.
-          if (_isTypingInTextField) return;
-          showSystemShortcutsAlert();
-        },
-        const SingleActivator(LogicalKeyboardKey.f1): () {
-          if (controller.pickupController.text.isNotEmpty &&
-              controller.dropOffController.text.isNotEmpty) {
-            DashboardF9Alert.show();
-          }
-        },
-        // const SingleActivator(LogicalKeyboardKey.f9): _onAddVehicles,
-      },
-      child: Focus(
-        autofocus: true,
+    // The F1-F12 / "/" shortcuts used to be declared here, so they only fired
+    // while focus sat inside this form. They now live in DashboardShortcuts,
+    // wrapped around the whole dashboard screen, so the same keys also work
+    // from the booking table, the drivers panel, the map and every other
+    // widget on the screen.
+    return Focus(
+        // No autofocus: DashboardShortcuts owns the initial focus for the
+        // screen, and two autofocus nodes in one scope is ambiguous.
         focusNode: _shortcutFocusNode,
-        // Focusable (so F7/F8/F9 keep a node in the focused chain) but NOT a
-        // Tab stop — otherwise Shift+Tab off the first field lands on this
-        // invisible full-screen node and the focus ring appears to vanish.
+        // Focusable (so a dismissed autocomplete can park focus here instead
+        // of dropping it) but NOT a Tab stop — otherwise Shift+Tab off the
+        // first field lands on this invisible full-screen node and the focus
+        // ring appears to vanish.
         skipTraversal: true,
-        // Arrow up / down scrolls the hosting page. Handled here rather than in
-        // the CallbackShortcuts above so the raw event is available: a key
-        // REPEAT scrolls without re-animating.
-        onKeyEvent: _handleArrowScroll,
+        // Arrow up / down scrolls the hosting page. Handled with a raw key
+        // handler rather than a shortcut binding so a key REPEAT scrolls
+        // without re-animating. DashboardShortcuts does the same at screen
+        // level; whichever node is nearer the focused one wins.
+        onKeyEvent: (node, event) => handlePageArrowScroll(context, event),
         child: GetBuilder<DashboardController>(
           initState: (_) {
             controller.seeZoneOnMapp();
@@ -407,6 +283,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.update();
                                   },
                                   notesController: controller.pickUpNoteController,
+                                  addressFocusNode: _pickupFieldFocusNode,
                                   onCurrentLocation: () {
                                     controller.swapeToChangeLocation();
                                   },
@@ -653,9 +530,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                           // Map journeyType value
                                           if (type == "o/w") {
                                             controller.jourValue = "O/W";
+                                            controller.changeJourneyFtn();
                                           } else if (type == "r/n") {
                                             controller.jourValue = "R/N";
                                           } else if (type == "w/r") {
+                                            controller.changeJourneyFtn();
                                             controller.jourValue = "W/R";
                                           } else {
                                             controller.jourValue = null;
@@ -770,7 +649,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             );
           },
         ),
-      ),
     );
   }
   // ────────── RETURN JOURNEY SECTION
@@ -1287,6 +1165,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         ValueChanged<int>? onPickIndex,
         TextEditingController? notesController, // ← notes field controller
         VoidCallback? onPressed,
+        FocusNode? addressFocusNode, // ← lets F2 focus the PICKUP field
       }) {
     final tag = Row(mainAxisSize: MainAxisSize.min, children: [
       Icon(Icons.circle, size: 9, color: dot),
@@ -1303,6 +1182,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         onChanged: onChanged,
         onSelected: onAddressSelected,
         onPickIndex: onPickIndex,
+        focusNode: addressFocusNode,
         fallbackFocusNode: _shortcutFocusNode,
         decoration: _inputDecoration().copyWith(
           contentPadding:
@@ -2059,6 +1939,7 @@ class _AddressModelAutocomplete extends StatefulWidget {
     this.onChanged,
     this.onSelected,
     this.onPickIndex,
+    this.focusNode,
     this.fallbackFocusNode,
   });
   final TextEditingController controller;
@@ -2067,6 +1948,9 @@ class _AddressModelAutocomplete extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final ValueChanged<AllAddressesModel>? onSelected;
   final ValueChanged<int>? onPickIndex;
+  /// Supplied by the parent when it needs to focus this field from the outside
+  /// (F2 → PICKUP). Null means the field owns — and disposes — its own node.
+  final FocusNode? focusNode;
   // Focus is redirected here instead of being dropped, so the CallbackShortcuts
   // (F7/F8/F9) ancestor stays in the focused chain after a pick / tap-outside.
   final FocusNode? fallbackFocusNode;
@@ -2077,7 +1961,7 @@ class _AddressModelAutocomplete extends StatefulWidget {
 }
 class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
   final _layerLink = LayerLink();
-  final _focusNode = FocusNode();
+  late final FocusNode _focusNode = widget.focusNode ?? FocusNode();
   final _fieldKey = GlobalKey();
   OverlayEntry? _entry;
   List<AllAddressesModel> _filtered = const [];
@@ -2134,7 +2018,8 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     _hide();
     _focusNode.removeListener(_onFocus);
     widget.controller.removeListener(_onText);
-    _focusNode.dispose();
+    // Only dispose a node we created — the parent owns the one it passed in.
+    if (widget.focusNode == null) _focusNode.dispose();
     _scrollController.dispose();
     super.dispose();
   }

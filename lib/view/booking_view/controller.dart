@@ -1,6 +1,9 @@
 
 
 
+import 'dart:convert';
+
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -528,8 +531,20 @@ class BookingController extends GetxController{
   }
 
 
+  deleteBooking(dynamic id) async {
+    var response = await Api().delete("bookings/delete/$id");
+    if (response.statusCode == 200) {
+      BotToast.showText(text: "BOOKING DELETED SUCCESSFULLY!");
+      print(json.encode(response.data));
+    }
+  }
 
-
-
+  deleteTrashBooking(dynamic id) async {
+    var response = await Api().delete("bookings/permenant-delete/$id");
+    if (response.statusCode == 200) {
+      BotToast.showText(text: "BOOKING DELETED SUCCESSFULLY!");
+      print(json.encode(response.data));
+    }
+  }
 
 }
