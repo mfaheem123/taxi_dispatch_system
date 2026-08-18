@@ -494,6 +494,11 @@ class DashboardController extends GetxController {
   RxBool emailCheckbox = false.obs;
   RxBool hideDashBoard = true.obs;
 
+  /// Set by the booking form (BookingFormScreen) while it is mounted, cleared
+  /// on dispose. The F2 shortcut lives on the dashboard shell — outside the
+  /// form — so this is how it puts the caret in the form's first field.
+  VoidCallback? focusBookingFormFirstField;
+
   /// unique keys
   final GlobalKey bookingKey = GlobalKey();
   final GlobalKey bookingDropKey = GlobalKey();

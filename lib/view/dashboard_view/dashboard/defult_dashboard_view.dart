@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/view/dashboard_view/dashboard/dashboard_shortcuts.dart';
 import 'package:dashboard_new1/view/dashboard_view/dashboard/shortcut_key_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -111,7 +112,13 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
     final isTablet  = w >= 640 && w < 1024;
     _measureBookingForm();
 
-    return GetBuilder<DashboardController>(initState: (v) {
+    // Wraps the whole screen (booking form, drivers panel, map, booking table
+    // and everything else) so the F1-F12 / "/" shortcuts fire wherever focus
+    // happens to be — key events only travel up from the focused node, so the
+    // bindings have to sit above every widget on this screen. Kept OUTSIDE the
+    // GetBuilder so its focus node survives the loading -> loaded rebuild.
+    return DashboardShortcuts(
+      child: GetBuilder<DashboardController>(initState: (v) {
 
       controller.seeZoneOnMapp();
       // controller.getMobileNumberWithName();
@@ -254,7 +261,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
           ),
         ],
       );
-    });
+    }),
+    );
   }
 
   Widget buildChip(String label, {bool isFirst = false, bool isLast = false}) {
