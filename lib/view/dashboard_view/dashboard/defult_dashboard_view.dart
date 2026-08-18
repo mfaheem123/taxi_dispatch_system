@@ -6,9 +6,12 @@ import 'package:dashboard_new1/view/dashboard_view/dashboard/shortcut_key_widget
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../../alert/back_slash_alert.dart';
 import '../../../alert/child_seats_alert.dart';
 import '../../../alert/extra_fares_alert.dart';
 import '../../../alert/extra_info_alert.dart';
+import '../../../alert/f3_alert.dart';
+import '../../../alert/f4_alert.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
 import '../../../component/dropdown_button.dart' show CustomDropdownField;
@@ -24,6 +27,8 @@ import '../../locations_view/Model/location_types_zoneModel.dart';
 import '../../locations_view/controller/locations_controller.dart';
 import '../Controller/dashboard_controller.dart';
 import '../booking_table.dart';
+import 'F8_widget_alert.dart';
+import 'F9_widget_alert.dart';
 import 'drivers.dart';
 import 'map_view_widget.dart';
 import 'package:flutter/material.dart' as material;
@@ -201,7 +206,43 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
         ],
       );
       // The stacked layout is taller than the screen, so make it scrollable.
-      return Column(
+
+      return RawKeyboardListener(
+        focusNode: _focusNode,
+        autofocus: true,
+        onKey: (RawKeyEvent event) {
+          if (event is RawKeyDownEvent) {
+            final key = event.logicalKey;
+            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+              return;
+            } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+              return;
+            } else if (event.logicalKey.keyLabel == "F8") {
+              if (controller.pickupController.text.isNotEmpty &&
+                  controller.dropOffController.text.isNotEmpty) {
+                DashboardF8Alert.show();
+              }
+              return;
+            } else if (event.logicalKey.keyLabel == "F3") {
+              showDriverInfoAlert();
+              return;
+            } else if (event.logicalKey.keyLabel == "F4") {
+              showDriverEarningsAlert();
+              return;
+            } else if (event.logicalKey.keyLabel == "/") {
+              showSystemShortcutsAlert();
+              return;
+            }
+            else if (event.logicalKey.keyLabel == "F9") {
+              if (controller.pickupController.text.isNotEmpty &&
+                  controller.dropOffController.text.isNotEmpty) {
+                DashboardF9Alert.show();
+              }
+              return;
+            }
+          }
+        },
+        child: Column(
         children: [
           Container(
             decoration: BoxDecoration(
@@ -260,6 +301,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                 : bookingTable,
           ),
         ],
+        ),
       );
     }),
     );
