@@ -75,7 +75,7 @@ class _NewLoginScreenState extends State<NewLoginScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(30),
+                              padding: const EdgeInsets.fromLTRB(30, 30, 30, 12),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(14),
@@ -166,12 +166,12 @@ class _NewLoginScreenState extends State<NewLoginScreen> {
                                       ),
                                     ),
                                   )),
+                                  const SizedBox(height: 30),
+                                  Text('© NEXUS 2026. ALL RIGHTS RESERVED.',
+                                    style: headingText(fontWeight: FontWeight.w600, fontSize: 10, color: Colors.grey.shade700,
+                                    ),
+                                  ),
                                 ],
-                              ),
-                            ),
-                            const SizedBox(height: 18),
-                            Text('© NEXUS 2026. ALL RIGHTS RESERVED.',
-                              style: headingText(fontWeight: FontWeight.w600, fontSize: 11, color: DynamicColors.black,
                               ),
                             ),
                           ],
