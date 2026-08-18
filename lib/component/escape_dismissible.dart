@@ -1,32 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// Wraps a dialog's content so pressing Escape always closes it.
+/// Closes the dialog it wraps when the user presses Esc.
 ///
-/// Flutter's own Escape-to-dismiss is narrower than it looks, and the booking
-/// form's alerts fall outside it on two counts:
+/// Flutter already maps Esc to a dismiss action for modal routes, but only when
+/// the route is `barrierDismissible` — `_DismissModalAction.isEnabled` returns
+/// `route.barrierDismissible`. The dashboard alerts are deliberately opened with
+/// `barrierDismissible: false` (a stray click outside must not throw the form
+/// away), which switches the built-in Esc off with it. Wrapping the dialog's
+/// content in this widget brings Esc back without making the barrier tappable.
 ///
-///  * `_DismissModalAction.isEnabled` (widgets/routes.dart) returns
-///    `route.barrierDismissible`, so a dialog opened with
-///    `barrierDismissible: false` — ExtraFaresAlert is — can never be closed
-///    from the keyboard, however the key is routed.
-///  * DismissIntent is dispatched from wherever primary focus happens to be.
-///    These alerts are plain `Dialog`s, and the screens underneath keep their
-///    own autofocus nodes alive (dashboard.dart's RawKeyboardListener, the
-///    booking form's `_shortcutFocusNode`), so the key is not guaranteed to be
-///    delivered inside the dialog's route at all.
-///
-/// Listening on [HardwareKeyboard] sidesteps both: the handler sees the key
-/// wherever focus sits, and pops without consulting `barrierDismissible`. Only
-/// the route that is currently on top reacts, so stacked dialogs close one at
-/// a time and a dialog underneath never pops out from below the visible one.
+/// Usage:
+/// ```dart
+/// Get.dialog(
+///   EscapeDismissible(child: Dialog(...)),
+///   barrierDismissible: false,
+/// );
+/// ```
 class EscapeDismissible extends StatefulWidget {
   const EscapeDismissible({super.key, required this.child, this.onDismiss});
 
   final Widget child;
 
-  /// Runs instead of popping the route — for a dialog that has to save or
-  /// confirm before it closes.
+  /// What Esc should do. Defaults to popping the route this widget is in, i.e.
+  /// closing the dialog. Pass a callback to save / confirm first.
   final VoidCallback? onDismiss;
 
   @override
@@ -34,37 +31,48 @@ class EscapeDismissible extends StatefulWidget {
 }
 
 class _EscapeDismissibleState extends State<EscapeDismissible> {
-  @override
-  void initState() {
-    super.initState();
-    HardwareKeyboard.instance.addHandler(_onKey);
-  }
+  /// Key events only travel up from the node that currently has focus. A dialog
+  /// whose content has nothing focusable leaves focus on the route's own
+  /// FocusScope — an ANCESTOR of this widget — and the binding below would
+  /// never be reached. This node parks focus inside the wrapper instead, so Esc
+  /// works before the user has touched anything in the dialog.
+  ///
+  /// skipTraversal keeps it out of the Tab order, and because it is an ancestor
+  /// of the dialog's own controls it only ever sees Esc after they have passed
+  /// on it — an inner autocomplete or menu that closes itself on Esc still
+  /// wins, and the dialog stays open.
+  final FocusNode _focusNode = FocusNode(
+    debugLabel: 'EscapeDismissible',
+    skipTraversal: true,
+  );
 
   @override
   void dispose() {
-    HardwareKeyboard.instance.removeHandler(_onKey);
+    _focusNode.dispose();
     super.dispose();
   }
 
-  bool _onKey(KeyEvent event) {
-    if (event is! KeyDownEvent ||
-        event.logicalKey != LogicalKeyboardKey.escape) {
-      return false;
+  void _dismiss() {
+    final onDismiss = widget.onDismiss;
+    if (onDismiss != null) {
+      onDismiss();
+      return;
     }
-    if (!mounted) return false;
-    final route = ModalRoute.of(context);
-    if (route == null || !route.isCurrent) return false;
-
-    if (widget.onDismiss != null) {
-      widget.onDismiss!();
-    } else {
-      Navigator.of(context).maybePop();
-    }
-    // Consume it, so the key does not also reach a shortcut on the screen
-    // behind this dialog.
-    return true;
+    // maybePop (not Get.back) so a PopScope inside the dialog can still veto.
+    Navigator.of(context).maybePop();
   }
 
   @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) {
+    return CallbackShortcuts(
+      bindings: <ShortcutActivator, VoidCallback>{
+        const SingleActivator(LogicalKeyboardKey.escape): _dismiss,
+      },
+      child: Focus(
+        focusNode: _focusNode,
+        autofocus: true,
+        child: widget.child,
+      ),
+    );
+  }
 }

@@ -3,6 +3,7 @@ import 'package:dashboard_new1/multiVehiclePage.dart';
 import 'package:dashboard_new1/view/setting/company_configuration_view/alert_createbooking.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../component/escape_dismissible.dart';
 import '../../../component/color.dart';
 import '../../../component/textStyle.dart';
 
@@ -11,7 +12,11 @@ class DashboardF9Alert {
     // int? editingIndex;
 
     Get.dialog(
-      Dialog(
+      // Esc closes this alert. The barrier stays non-dismissible below, and
+      // Flutter's built-in Esc handling is tied to barrierDismissible, so the
+      // key has to be bound inside the dialog itself.
+      EscapeDismissible(
+        child: Dialog(
         insetPadding: const EdgeInsets.only(top: 40, left: 60, right: 60),
         backgroundColor: Colors.transparent,
         child: Align(
@@ -49,6 +54,7 @@ class DashboardF9Alert {
               );
             },
           ),
+        ),
         ),
       ),
       barrierDismissible: false,
