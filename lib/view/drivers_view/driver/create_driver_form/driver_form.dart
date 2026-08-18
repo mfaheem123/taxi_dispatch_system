@@ -428,7 +428,8 @@ class _DriverFormState extends State<DriverForm> {
                                       Center(
                                           child: SizedBox(
                                               height: 38,
-                                              child: CustomTimePicker(
+                                              child:
+                                              CustomTimePicker(
                                                   readOnly: true,
                                                   controller: row.expiryTime,
                                                   onTimeSelected: (time) {
@@ -436,7 +437,8 @@ class _DriverFormState extends State<DriverForm> {
                                                         controller.rows
                                                             .indexOf(row),
                                                         time);
-                                                  }))),
+                                                  })
+                                          )),
                                       Center(
                                           child: SizedBox(
                                             height: 38,
