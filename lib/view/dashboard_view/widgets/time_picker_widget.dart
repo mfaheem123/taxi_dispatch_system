@@ -1227,7 +1227,7 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
         });
         return KeyEventResult.handled;
       } else if (event.logicalKey == LogicalKeyboardKey.space ||
-          event.logicalKey == LogicalKeyboardKey.f4) {
+          event.logicalKey == LogicalKeyboardKey.enter) {
         // Space ya F4 se Calendar Dialog open hoga
         _openNativeCalendar();
         return KeyEventResult.handled;

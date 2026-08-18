@@ -118,8 +118,8 @@ class _CreateComplaintState extends State<CreateComplaint> {
                                 child: SizedBox(
                                   height: 30,
                                   child: KeyboardDatePicker(
-                                    key: ValueKey(
-                                        controller.complainDateController.text),
+                                    // key: ValueKey(
+                                    //     controller.complainDateController.text),
                                     initialDate: controller.complainDateController
                                         .text.isNotEmpty
                                         ? safeParseDate(controller
@@ -154,8 +154,8 @@ class _CreateComplaintState extends State<CreateComplaint> {
                                 child: SizedBox(
                                     height: 30,
                                     child: KeyboardDatePicker(
-                                      key: ValueKey(
-                                          controller.incidentedController.text),
+                                      // key: ValueKey(
+                                      //     controller.incidentedController.text),
                                       initialDate: controller.incidentedController
                                           .text.isNotEmpty
                                           ? safeParseDate(controller

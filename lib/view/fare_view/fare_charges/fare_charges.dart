@@ -278,7 +278,7 @@ class _FareChargesState extends State<FareCharges> {
                                   context: context,
                                   isMobile: isMobile,
                                   column: true,
-                                  label: "TO",
+                                  label: "FROM",
                                   width: fieldWidth/1.8,
                                   child: SizedBox(height: 30, child: CustomTimePicker(
                                     controller: controller.endTimeSurCharge, // optional
@@ -298,7 +298,7 @@ class _FareChargesState extends State<FareCharges> {
                                     column: true,
                                     width: fieldWidth/1.8,
                                     child: SizedBox(height: 30, child: KeyboardDatePicker(
-                                      key: ValueKey(controller.startDateSurCharges.toString()),
+                                      // key: ValueKey(controller.startDateSurCharges.toString()),
                                       initialDate: controller.startDateSurCharges ?? DateTime.now(),
                                       onChanged: (date) {
                                         controller.startDateSurCharges = date;
