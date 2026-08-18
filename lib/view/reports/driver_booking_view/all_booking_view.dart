@@ -33,6 +33,8 @@ class AllBookingView extends StatefulWidget {
 class _AllBookingViewState extends State<AllBookingView> {
   int selectedRowIndex = 0;
   final int totalRows = 5;
+  final ScrollController _scrollController = ScrollController();
+  final FocusNode _mobileFocusNode = FocusNode();
 
   ReportController controller = Get.isRegistered<ReportController>()
       ? Get.find<ReportController>()
@@ -215,13 +217,8 @@ class _AllBookingViewState extends State<AllBookingView> {
                             controller: controller.customerController,
                             width: fieldWidth / 2.2,
                             hintText: AppText.customer,
+                            inputFormatters: [UpperCaseTextFormatter()],
                           ),
-                          // CustomTextField(
-                          //   borderRadius: 4,
-                          //   controller: controller.mobileController,
-                          //   width: fieldWidth / 2.2,
-                          //   hintText: "MOBILE",
-                          // ),
 
                           labeledField(
                             context: context,
@@ -231,20 +228,17 @@ class _AllBookingViewState extends State<AllBookingView> {
                             width: fieldWidth / 2.2,
                             child: RawAutocomplete<SearchCustomer>(
                               textEditingController: controller.mobileController,
-                              focusNode: FocusNode(),
+                              focusNode: _mobileFocusNode,
                               displayStringForOption: (SearchCustomer option) => option.mobile ?? '',
                               optionsBuilder: (TextEditingValue textEditingValue) async {
                                 if (textEditingValue.text.trim().isEmpty) {
                                   return const Iterable<SearchCustomer>.empty();
                                 }
 
-                                // API Search Call
                                 await controller.getCustomer(textEditingValue.text);
-
                                 return controller.searchCustomerByMobile?.customer ?? [];
                               },
                               onSelected: (SearchCustomer selection) {
-                                // Auto-fill selected data
                                 controller.mobileController.text = selection.mobile ?? '';
                                 controller.customerController.text = selection.name ?? '';
                                 controller.phoneController.text = selection.telephone ?? '';
@@ -257,6 +251,20 @@ class _AllBookingViewState extends State<AllBookingView> {
                                   focusNode: focusNode,
                                   width: fieldWidth / 2.2,
                                   hintText: "MOBILE",
+                                  onSubmitted: (value) {
+                                    onFieldSubmitted();
+                                  },
+                                  suffixIcon: GestureDetector(
+                                    onTap: () {},
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade300,
+                                        border: Border.all(color: DynamicColors.gryClr),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: const Icon(Icons.search, size: 25, color: Colors.black),
+                                    ),
+                                  ),
                                 );
                               },
                               optionsViewBuilder: (context, onSelected, options) {
@@ -274,16 +282,27 @@ class _AllBookingViewState extends State<AllBookingView> {
                                         border: Border.all(color: Colors.grey.shade300),
                                       ),
                                       child: ListView.builder(
+                                        controller: _scrollController,
                                         padding: EdgeInsets.zero,
                                         shrinkWrap: true,
                                         itemCount: options.length,
-                                        itemBuilder: (BuildContext context, int index) {
+                                        itemBuilder: (BuildContext itemBuilderContext, int index) {
                                           final SearchCustomer option = options.elementAt(index);
-                                          final bool isHighlighted = AutocompleteHighlightedOption.of(context) == index;
+                                          final bool isHighlighted = AutocompleteHighlightedOption.of(itemBuilderContext) == index;
 
                                           if (isHighlighted) {
                                             SchedulerBinding.instance.addPostFrameCallback((_) {
-                                              Scrollable.ensureVisible(context, alignment: 0.5);
+                                              if (_scrollController.hasClients) {
+                                                final double targetOffset = index * 42.0;
+                                                final double maxScroll = _scrollController.position.maxScrollExtent;
+                                                final double clampedOffset = targetOffset.clamp(0.0, maxScroll);
+
+                                                _scrollController.animateTo(
+                                                  clampedOffset,
+                                                  duration: const Duration(milliseconds: 100),
+                                                  curve: Curves.easeInOut,
+                                                );
+                                              }
                                             });
                                           }
 
@@ -297,7 +316,6 @@ class _AllBookingViewState extends State<AllBookingView> {
                                               child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
-                                                  // Customer Name
                                                   Flexible(
                                                     child: Text(
                                                       option.name ?? '',
@@ -310,7 +328,6 @@ class _AllBookingViewState extends State<AllBookingView> {
                                                     ),
                                                   ),
                                                   const SizedBox(width: 8),
-                                                  // Customer Mobile
                                                   Text(
                                                     option.mobile ?? '',
                                                     style: TextStyle(
@@ -470,12 +487,20 @@ class _AllBookingViewState extends State<AllBookingView> {
                                     decoration: InputDecoration(
                                       hintText: "PICKUP",
                                       hintStyle: const TextStyle(fontSize: 12),
-                                      contentPadding:
-                                      const EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 12),
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                          BorderRadius.circular(4)),
+                                      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                                      border: OutlineInputBorder(borderRadius:
+                                      BorderRadius.circular(4)),
+                                      suffixIcon: GestureDetector(
+                                        onTap: () {},
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.shade300,
+                                            border: Border.all(color: DynamicColors.gryClr),
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                          child: const Icon(Icons.search, size: 25, color: Colors.black),
+                                        ),
+                                      ),
                                     ),
                                     onChanged: (val) {
                                       controller.pickUpController.text = val;
@@ -605,6 +630,17 @@ class _AllBookingViewState extends State<AllBookingView> {
                                       border: OutlineInputBorder(
                                           borderRadius:
                                           BorderRadius.circular(4)),
+                                      suffixIcon: GestureDetector(
+                                        onTap: () {},
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.shade300,
+                                            border: Border.all(color: DynamicColors.gryClr),
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                          child: const Icon(Icons.search, size: 25, color: Colors.black),
+                                        ),
+                                      ),
                                     ),
                                     onChanged: (val) {
                                       controller.dropOffController.text = val;
@@ -944,12 +980,14 @@ class _AllBookingViewState extends State<AllBookingView> {
                                   DataCell(buildCenteredCellText((item.dropoff ?? "-").toUpperCase(), largeCellWidth)),
 
                                   // FARE EDITABLE CELL
+                                  // FARE EDITABLE CELL
                                   DataCell(Obx(() {
                                     bool isEditing = reportingCtrl.editingRowIndex.value == index;
                                     return isEditing
                                         ? SizedBox(
                                       width: smallCellWidth > 55 ? smallCellWidth : 55,
-                                      height: 28,
+                                      // height ko 30 ya 35 kar dein ya SizedBox hi hata dein taake ye khud adjust ho jaye
+                                      height: 32,
                                       child: TextField(
                                         controller: reportingCtrl.fareController,
                                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -959,7 +997,7 @@ class _AllBookingViewState extends State<AllBookingView> {
                                         decoration: const InputDecoration(
                                           prefixText: "£",
                                           isDense: true,
-                                          contentPadding: EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+                                          contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                                           border: OutlineInputBorder(),
                                         ),
                                       ),
@@ -1041,147 +1079,6 @@ class _AllBookingViewState extends State<AllBookingView> {
                     onPageChange: controller.onBookingPageChange,
                   ),
                 ),
-
-                // SingleChildScrollView(
-                //   scrollDirection: Axis.horizontal,
-                //   child: SizedBox(
-                //     width: MediaQuery.of(context).size.width,
-                //     child: DatatableWidget(
-                //       columns: [
-                //         buildHeaderWithSearch(title: "REF #"),
-                //         buildHeaderWithSearch(title: "INVOICE #"),
-                //         buildHeaderWithSearch(title: "DATETIME"),
-                //         buildHeaderWithSearch(title: "CUSTOMER"),
-                //         buildHeaderWithSearch(title: "PICKUP"),
-                //         buildHeaderWithSearch(title: "DROPOFF"),
-                //         buildHeaderWithSearch(title: "FARE"),
-                //         buildHeaderWithSearch(title: "ACC FARE"),
-                //         buildHeaderWithSearch(title: "ACC"),
-                //         buildHeaderWithSearch(title: "ORDER #"),
-                //         buildHeaderWithSearch(title: "P/T"),
-                //         buildHeaderWithSearch(title: "J/T"),
-                //         buildHeaderWithSearch(title: "DRV"),
-                //         buildHeaderWithSearch(title: "VEH"),
-                //         buildHeaderWithSearch(title: "SUBS"),
-                //         buildHeaderWithSearch(title: "STATUS"),
-                //         buildHeaderWithSearch(
-                //             title: "ACTION", removeSearching: true),
-                //       ],
-                //       totalRow:
-                //           controller.bookingStatisticsModel?.data?.length ?? 0,
-                //       rows: (controller.bookingStatisticsModel?.data ?? [])
-                //           .map((item) {
-                //         String formattedDateTime = "-";
-                //         if (item.pickupDate != null) {
-                //           String date =
-                //               DateFormat('dd-MM-yyyy').format(item.pickupDate!);
-                //           String time = item.pickupTime ?? "";
-                //           formattedDateTime = "$date $time".trim();
-                //         }
-                //         return DataRow(
-                //           cells: [
-                //             DataCell(Center(
-                //                 child: Text(item.referenceNumber ?? "-",
-                //                     maxLines: 1))),
-                //             DataCell(Center(
-                //                 child: Text(
-                //                     item.invoiceNumber?.toString() ?? "-",
-                //                     maxLines: 1))),
-                //             DataCell(Center(
-                //                 child: Text(formattedDateTime, maxLines: 1))),
-                //             DataCell(Center(
-                //                 child: Text((item.name ?? "-").toUpperCase(),
-                //                     maxLines: 1,
-                //                     overflow: TextOverflow.ellipsis))),
-                //             DataCell(
-                //               SizedBox(
-                //                 width: 150,
-                //                 child: Text(
-                //                   item.pickup ?? "-",
-                //                   maxLines: 1,
-                //                   overflow: TextOverflow.ellipsis,
-                //                 ),
-                //               ),
-                //             ),
-                //             DataCell(
-                //               SizedBox(
-                //                 width: 150,
-                //                 child: Text(
-                //                   item.dropoff ?? "-",
-                //                   maxLines: 1,
-                //                   overflow: TextOverflow.ellipsis,
-                //                 ),
-                //               ),
-                //             ),
-                //             DataCell(Center(
-                //                 child: Text("£ ${item.fares ?? '0.00'}",
-                //                     maxLines: 1))),
-                //             DataCell(Center(
-                //                 child: Text("£ ${item.companyPrice ?? '0.00'}",
-                //                     maxLines: 1))),
-                //             DataCell(Center(
-                //                 child: Text(
-                //                     (item.account?.name ?? "-").toUpperCase(),
-                //                     maxLines: 1,
-                //                     overflow: TextOverflow.ellipsis))),
-                //             DataCell(Center(
-                //                 child: Text(item.orderNumber?.toString() ?? "-",
-                //                     maxLines: 1))),
-                //             DataCell(Center(
-                //                 child: Text(
-                //                     (item.paymentType?.name ?? "-")
-                //                         .toUpperCase(),
-                //                     maxLines: 1))),
-                //             DataCell(Center(
-                //                 child: Text(
-                //                     (item.journeyType?.journeyType ?? "-")
-                //                         .toUpperCase(),
-                //                     maxLines: 1))),
-                //             DataCell(Center(
-                //                 child: Text(
-                //                     (item.driver?.name ?? "-").toUpperCase(),
-                //                     maxLines: 1,
-                //                     overflow: TextOverflow.ellipsis))),
-                //             DataCell(Center(
-                //                 child: Text(
-                //                     (item.vehicleType?.name ?? "-")
-                //                         .toUpperCase(),
-                //                     maxLines: 1,
-                //                     overflow: TextOverflow.ellipsis))),
-                //             DataCell(Center(
-                //                 child: Text(
-                //                     (item.subsidiary?.name ?? "-")
-                //                         .toUpperCase(),
-                //                     maxLines: 1,
-                //                     overflow: TextOverflow.ellipsis))),
-                //             DataCell(Center(
-                //                 child: Text(
-                //                     (item.bookingStatus?.bookingStatus ?? "-")
-                //                         .toUpperCase(),
-                //                     maxLines: 1))),
-                //             DataCell(
-                //               Center(
-                //                 child: ElevatedButton(
-                //                   style: ElevatedButton.styleFrom(
-                //                     backgroundColor: DynamicColors.gryClr,
-                //                     foregroundColor: Colors.white,
-                //                     padding: const EdgeInsets.symmetric(
-                //                         horizontal: 16, vertical: 8),
-                //                     shape: RoundedRectangleBorder(
-                //                       borderRadius: BorderRadius.circular(8),
-                //                     ),
-                //                   ),
-                //                   onPressed: () {},
-                //                   child: const Text("EDIT"),
-                //                 ),
-                //               ),
-                //             ),
-                //           ],
-                //         );
-                //       }).toList(),
-                //     ),
-                //   ),
-                // ),
               ],
             ));
       });
@@ -1204,16 +1101,4 @@ class _AllBookingViewState extends State<AllBookingView> {
       ],
     );
   }
-// Widget buildCellText(String text, double width) {
-//   return SizedBox(
-//     width: width,
-//     child: Text(
-//       text,
-//       maxLines: 1,
-//       overflow: TextOverflow.ellipsis,
-//       style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
-//     ),
-//   );
-// }
-
 }

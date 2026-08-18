@@ -107,32 +107,38 @@ class AllBookingReportContent extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Left Column
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _infoText("MOBILE", topMobile),
-                      const SizedBox(height: 5),
-                      const Divider(thickness: 1, color: Colors.black26),
+                      const SizedBox(height: 10),
                       _infoText("TOTAL BOOKINGS", totalBookingsCount),
                     ],
                   ),
                 ),
-                const SizedBox(width: 100),
+                const SizedBox(width: 250),
+                // Right Column
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _infoText("EMAIL", topEmail),
                       _infoText("TELEPHONE", topTelephone),
-                      const SizedBox(height: 5),
-                      const Divider(thickness: 1, color: Colors.black26),
+                      const SizedBox(height: 10),
+                      _infoText("EMAIL", topEmail),
+                      const SizedBox(height: 10),
                       _infoText("TOTAL FARES", "£ $totalFaresSum"),
                     ],
                   ),
                 ),
               ],
             ),
+
+            const SizedBox(height: 15),
+            // Ek single poora Divider jo dono columns ke neeche aayega
+            const Divider(thickness: 1, color: Colors.black26),
+            const SizedBox(height: 30),
 
             const SizedBox(height: 30),
 
