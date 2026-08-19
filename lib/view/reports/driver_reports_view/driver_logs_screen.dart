@@ -32,11 +32,6 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
       ? Get.find<ReportController>()
       : Get.put(ReportController());
 
-  // Date controllers
-  // DateTime? fromDate;
-  // DateTime? toDate;
-  // DateTime fromDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
-  // DateTime toDate = DateTime.now();
   TimeOfDay? fromTime;
   TimeOfDay? toTime;
 
@@ -63,40 +58,6 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
     }
   }
 
-  // Future<void> _pickDate(BuildContext context, bool isFrom) async {
-  //   DateTime? picked = await showDatePicker(
-  //     context: context,
-  //     initialDate: DateTime.now(),
-  //     firstDate: DateTime(2020),
-  //     lastDate: DateTime(2030),
-  //   );
-  //   if (picked != null) {
-  //     setState(() {
-  //       if (isFrom) {
-  //         fromDate = picked;
-  //       } else {
-  //         toDate = picked;
-  //       }
-  //     });
-  //   }
-  // }
-
-  Future<void> _pickTime(BuildContext context, bool isFrom) async {
-    TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isFrom) {
-          fromTime = picked;
-        } else {
-          toTime = picked;
-        }
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return RawKeyboardListener(
@@ -113,6 +74,11 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
           controller.update();
         });
       }, builder: (controller) {
+
+        final listToShow = controller.logsBookingFiltered.isNotEmpty
+            ? controller.logsBookingFiltered
+            : controller.logsBookingAll;
+
         final int totalBookings =
             controller.driverLogsData?.bookings?.length ?? 0;
 
@@ -302,7 +268,7 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                               ),
                               Text(
                                 (controller.driverLogsData == null ||
-                                    controller.isLoadingLogs)
+                                    controller.isLoadingLogs.value)
                                     ? ""
                                     : "$totalBookings",
                                 style: mozillaTextRegularText(fontSize: 14),
@@ -321,7 +287,7 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                               ),
                               Text(
                                 (controller.driverLogsData == null ||
-                                    controller.isLoadingLogs)
+                                    controller.isLoadingLogs.value)
                                     ? ""
                                     : "£${totalEarnings.toStringAsFixed(2)}",
                                 style: mozillaTextRegularText(fontSize: 14),
@@ -336,55 +302,70 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      child: controller.isLoadingLogs
-                          ? const Center(child: CircularProgressIndicator())
-                          : DatatableWidget(
+                  // SingleChildScrollView(
+                  //   scrollDirection: Axis.horizontal,
+                  //   child: SizedBox(
+                  //     width: MediaQuery.of(context).size.width,
+                  //     child: controller.isLoadingLogs.value
+                  //         ? const Center(child: CircularProgressIndicator())
+                  //         :
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: controller.isLoadingLogs.value
+                        ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                        : SingleChildScrollView(
+                      child: DatatableWidget(
                         columns: [
                           buildHeaderWithSearch(
                               title: "REF #",
-                              controller: controller.refSearch),
-                          buildHeaderWithSearch(title: "DATETIME"),
+                              onChanged: (v) {
+                                controller.searchLogsRef.value = v;
+                                controller.onSearchDriverLogs();
+                              }),
+                          buildHeaderWithSearch(title: "DATETIME",
+                              onChanged: (v) {
+                                controller.searchLogsDateTime.value = v;
+                                controller.onSearchDriverLogs();
+                              }),
                           buildHeaderWithSearch(
                               title: "VEHICLE",
-                              controller: controller.vehicleSearch),
+                              onChanged: (v) {
+                                controller.searchLogsVehicle.value = v;
+                                controller.onSearchDriverLogs();
+                              }),
                           buildHeaderWithSearch(
                               title: "PICKUP",
-                              controller: controller.pickupSearch),
+                              onChanged: (v) {
+                                controller.searchLogsPickup.value = v;
+                                controller.onSearchDriverLogs();
+                              }),
                           buildHeaderWithSearch(
                               title: "DROPOFF",
-                              controller: controller.dropoffSearch),
+                              onChanged: (v) {
+                                controller.searchLogsDropoff.value = v;
+                                controller.onSearchDriverLogs();
+                              }),
                           buildHeaderWithSearch(
                               title: "FARES",
-                              controller: controller.faresSearch),
+                              onChanged: (v) {
+                                controller.searchLogsFares.value = v;
+                                controller.onSearchDriverLogs();
+                              }),
                         ],
-                        totalRow:
-                        controller.driverLogsData?.bookings?.length ??
-                            0,
-                        rows: (controller.driverLogsData?.bookings ?? [])
-                            .map((booking) {
+                        // totalRow: controller.driverLogsData?.bookings?.length ?? 0,
+                        // rows: (controller.driverLogsData?.bookings ?? []).map((booking) {
+                        totalRow: listToShow.length,
+                        rows: listToShow.map((item) {
                           return DataRow(
                             cells: [
-                              DataCell(Center(
-                                  child: Text(
-                                      booking.referenceNumber ?? ""))),
-                              DataCell(Center(
-                                  child: Text(
-                                      "${booking.pickupDate}\n${booking.pickupTime}"))),
-                              DataCell(Center(
-                                  child: Text(booking.vehicleType?.name
-                                      ?.toUpperCase() ??
-                                      ""))),
-                              DataCell(Text(
-                                  (booking.pickup ?? "").toUpperCase())),
-                              DataCell(Text(
-                                  (booking.dropoff ?? "").toUpperCase())),
-                              DataCell(Center(
-                                  child: Text(
-                                      "£${booking.fares ?? "0.00"}"))),
+                              DataCell(Center(child: Text(item.referenceNumber ?? ""))),
+                              DataCell(Center(child: Text("${item.pickupDate }\n${item.pickupTime}"))),
+                              DataCell(Center(child: Text(item.vehicleType?.name?.toUpperCase() ?? ""))),
+                              DataCell(Text((item.pickup ?? "").toUpperCase())),
+                              DataCell(Text((item.dropoff ?? "").toUpperCase())),
+                              DataCell(Center(child: Text("£${item.fares ?? "0.00"}"))),
                             ],
                           );
                         }).toList(),
