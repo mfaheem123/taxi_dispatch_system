@@ -93,7 +93,7 @@ class EmployeeActivityReportContent extends StatelessWidget {
     String date =
         "${parsed.day.toString().padLeft(2, '0')}-${parsed.month.toString().padLeft(2, "0")}-${parsed.year.toString().substring(2)}";
     String time =
-        "${parsed.hour.toString().padLeft(2, '0')}-${parsed.minute.toString().padLeft(2, '0')}-${parsed.second.toString().padLeft(2, '0')}";
+        "${parsed.hour.toString().padLeft(2, '0')}:${parsed.minute.toString().padLeft(2, '0')}";
     return "$date $time";
   }
 
@@ -117,7 +117,7 @@ class EmployeeActivityReportContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<ReportController>();
-    final reportData = controller.employeeActivityList;
+    final reportData = controller.employeeShiftHistoryAll;
     final bool showTotalRow = reportData.isNotEmpty;
     return Scaffold(
       backgroundColor: Colors.white,

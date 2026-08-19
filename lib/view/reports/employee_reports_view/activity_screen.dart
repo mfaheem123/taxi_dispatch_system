@@ -36,6 +36,10 @@ class _ActivityScreenState extends State<ActivityScreen> {
       controller.clearDropdowns();
       controller.getEmployeeData();
     }, builder: (controller) {
+      final listToShow = controller.employeeHistoryFiltered.isNotEmpty
+          ? controller.employeeHistoryFiltered
+          : controller.employeeShiftHistoryAll;
+
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -153,7 +157,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                         onTap: () async {
                           await controller.getEmployeeActivity();
                           setState(() {
-                            showTotalRow = controller.employeeActivityList.isNotEmpty;
+                            showTotalRow = controller.employeeShiftHistoryAll.isNotEmpty;
                           });
                         }
                     ),
@@ -187,24 +191,50 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 SizedBox(
                   height: 50,
                 ),
-                controller.isLoadingActivity
-                    ? const Center(child: CircularProgressIndicator())
-                    : SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width,
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: controller.isLoadingActivity.value
+                      ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                      : SingleChildScrollView(
                     child: DatatableWidget(
                         columns: [
-                          buildHeaderWithSearch(title: "LOGIN DATETIME"),
-                          buildHeaderWithSearch(title: "LOGOUT DATETIME"),
-                          buildHeaderWithSearch(title: "BOOKINGS CREATED"),
-                          buildHeaderWithSearch(title: "BOOKINGS DISPATCHED"),
-                          buildHeaderWithSearch(title: "BOOKINGS CANCELLED"),
-                          buildHeaderWithSearch(title: "CALLS ANSWERED"),
+                          buildHeaderWithSearch(title: "LOGIN DATETIME",
+                              onChanged: (v) {
+                                controller.searchLoginDateTime.value = v;
+                                controller.onSearchActivity();
+                              }),
+                          buildHeaderWithSearch(title: "LOGOUT DATETIME",
+                              onChanged: (v) {
+                                controller.searchLogoutDateTime.value = v;
+                                controller.onSearchActivity();
+                              }),
+                          buildHeaderWithSearch(title: "BOOKINGS CREATED",
+                              onChanged: (v) {
+                                controller.searchBookingsCreated.value = v;
+                                controller.onSearchActivity();
+                              }),
+                          buildHeaderWithSearch(title: "BOOKINGS DISPATCHED",
+                              onChanged: (v) {
+                                controller.searchBookingsDispatched.value = v;
+                                controller.onSearchActivity();
+                              }),
+                          buildHeaderWithSearch(title: "BOOKINGS CANCELLED",
+                              onChanged: (v) {
+                                controller.searchBookingsCancelled.value = v;
+                                controller.onSearchActivity();
+                              }),
+                          buildHeaderWithSearch(title: "CALLS ANSWERED",
+                              onChanged: (v) {
+                                controller.searchCallsAnswered.value = v;
+                                controller.onSearchActivity();
+                              }),
                           buildHeaderWithSearch(title: "WORKING HOURS", removeSearching: true),
                         ],
                         rows: [
-                          ...controller.employeeActivityList.map((item) {
+                          // ...controller.employeeActivityList.map((item) {
+                          ...listToShow.map((item) {
 
                             String formatDateTime(String? dateTimeStr) {
                               if (dateTimeStr == null || dateTimeStr.isEmpty) return "-";
@@ -216,7 +246,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                   "${parsed.day.toString().padLeft(2, '0')}-${parsed.month.toString().padLeft(2, '0')}-${parsed.year.toString().substring(2)}";
 
                               String time =
-                                  "${parsed.hour.toString().padLeft(2, '0')}:${parsed.minute.toString().padLeft(2, '0')}:${parsed.second.toString().padLeft(2, '0')}";
+                                  "${parsed.hour.toString().padLeft(2, '0')}:${parsed.minute.toString().padLeft(2, '0')}";
 
                               return "$date $time";
                             }
