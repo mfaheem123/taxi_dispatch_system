@@ -462,7 +462,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       width: double.infinity,
                                       child: ElevatedButton.icon(
                                         onPressed: () {
-                                          _showPickBookingAlert();
+                                          // _showPickBookingAlert();
                                         },
                                         icon: const Icon(Icons.search,
                                             size: 16, color: Colors.white),
