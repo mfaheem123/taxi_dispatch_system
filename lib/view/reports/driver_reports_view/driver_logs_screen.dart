@@ -361,7 +361,8 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                           return DataRow(
                             cells: [
                               DataCell(Center(child: Text(item.referenceNumber ?? ""))),
-                              DataCell(Center(child: Text("${item.pickupDate }\n${item.pickupTime}"))),
+                              DataCell(Center(child: Text("${item.pickupDate != null ? DateFormat("yyyy-MM-dd").format(DateFormat("yyyy-M-d").parse(item.pickupDate.toString())) : "-"} "
+                                  "${item.pickupTime != null ? item.pickupTime.toString().split('.')[0].substring(0, 5) : ""}"))),
                               DataCell(Center(child: Text(item.vehicleType?.name?.toUpperCase() ?? ""))),
                               DataCell(Text((item.pickup ?? "").toUpperCase())),
                               DataCell(Text((item.dropoff ?? "").toUpperCase())),
