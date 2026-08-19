@@ -310,98 +310,98 @@ class _CompanyIncomeScreenState extends State<CompanyIncomeScreen> {
                     TableColumnConfig(title: "REF #",
                         sizeType: ColumnSizeType.medium,
                         onChanged: (v) {
-                          controller.searchReferenceNo.value = v;
+                          controller.searchComRefNo.value = v;
                           controller.onSearchCompany();
                         }
                     ),
                     TableColumnConfig(title: "DATETIME",
                         sizeType: ColumnSizeType.medium,
                         onChanged: (v) {
-                          controller.searchDateTime.value = v;
+                          controller.searchComDateTime.value = v;
                           controller.onSearchCompany();
                         }
                     ),
                     TableColumnConfig(title: "PICKUP",
                         sizeType: ColumnSizeType.large,
                         onChanged: (v) {
-                          controller.searchPickup.value = v;
+                          controller.searchComPickup.value = v;
                           controller.onSearchCompany();
                         }
                     ),
                     TableColumnConfig(title: "DROPOFF",
                         sizeType: ColumnSizeType.large,
                         onChanged: (v) {
-                          controller.searchDropOff.value = v;
+                          controller.searchComDropOff.value = v;
                           controller.onSearchCompany();
                         }
                     ),
                     TableColumnConfig(title: "VEHICLE",
                         sizeType: ColumnSizeType.medium,
                         onChanged: (v) {
-                          controller.searchVehicle.value = v;
+                          controller.searchComVehicle.value = v;
                           controller.onSearchCompany();
                         }
                     ),
                     TableColumnConfig(title: "DRIVER",
                         sizeType: ColumnSizeType.medium,
                         onChanged: (v) {
-                          controller.searchDriver.value = v;
+                          controller.searchComDriver.value = v;
                           controller.onSearchCompany();
                         }
                     ),
                     TableColumnConfig(title: "ACCOUNT",
                         sizeType: ColumnSizeType.medium,
                         onChanged: (v) {
-                          controller.searchAcc.value = v;
+                          controller.searchComAcc.value = v;
                           controller.onSearchCompany();
                         }
                     ),
                     TableColumnConfig(title: "FARES",
                         sizeType: ColumnSizeType.small,
                         onChanged: (v) {
-                          controller.searchFare.value = v;
+                          controller.searchComFare.value = v;
                           controller.onSearchCompany();
                         }
                     ),
                     TableColumnConfig(title: "PC",
                         sizeType: ColumnSizeType.small,
                         onChanged: (v) {
-                          controller.searchPc.value = v;
+                          controller.searchComPc.value = v;
                           controller.onSearchCompany();
                         }
                     ),
                     TableColumnConfig(title: "WC",
                         sizeType: ColumnSizeType.small,
                         onChanged: (v) {
-                          controller.searchWc.value = v;
+                          controller.searchComWc.value = v;
                           controller.onSearchCompany();
                         }
                     ),
                     TableColumnConfig(title: "EDC",
                         sizeType: ColumnSizeType.small,
                         onChanged: (v) {
-                          controller.searchEdc.value = v;
+                          controller.searchComEdc.value = v;
                           controller.onSearchCompany();
                         }
                     ),
                     TableColumnConfig(title: "M&G",
                         sizeType: ColumnSizeType.small,
                         onChanged: (v) {
-                          controller.searchMg.value = v;
+                          controller.searchComMg.value = v;
                           controller.onSearchCompany();
                         }
                     ),
                     TableColumnConfig(title: "CC",
                         sizeType: ColumnSizeType.small,
                         onChanged: (v) {
-                          controller.searchCc.value = v;
+                          controller.searchComCc.value = v;
                           controller.onSearchCompany();
                         }
                     ),
                     TableColumnConfig(title: "TOTAL",
                         sizeType: ColumnSizeType.medium,
                         onChanged: (v) {
-                          controller.searchTotal.value = v;
+                          controller.searchComTotal.value = v;
                           controller.onSearchCompany();
                         }
                     ),

@@ -18,7 +18,7 @@ class BookingStatisticsModel {
   int? totalPages;
   int? count;
   Totals? totals;
-  List<Datum>? data;
+  List<BookingDatum>? data;
 
   BookingStatisticsModel({
     this.success,
@@ -39,7 +39,7 @@ class BookingStatisticsModel {
     totalPages: json["total_pages"],
     count: json["count"],
     totals: json["totals"] == null ? null : Totals.fromJson(json["totals"]),
-    data: json["data"] == null ? [] : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+    data: json["data"] == null ? [] : List<BookingDatum>.from(json["data"]!.map((x) => BookingDatum.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -54,7 +54,7 @@ class BookingStatisticsModel {
   };
 }
 
-class Datum {
+class BookingDatum {
   String? id;
   String? referenceNumber;
   dynamic subsidiaryId;
@@ -163,7 +163,7 @@ class Datum {
   EmployeeReport? employee;
   Airport? airport;
 
-  Datum({
+  BookingDatum({
     this.id,
     this.referenceNumber,
     this.subsidiaryId,
@@ -273,7 +273,7 @@ class Datum {
     this.airport,
   });
 
-  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+  factory BookingDatum.fromJson(Map<String, dynamic> json) => BookingDatum(
     id: json["id"],
     referenceNumber: json["reference_number"],
     subsidiaryId: json["subsidiary_id"],
