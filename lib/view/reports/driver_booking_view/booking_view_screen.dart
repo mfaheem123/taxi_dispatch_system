@@ -136,7 +136,6 @@ class AllBookingReportContent extends StatelessWidget {
             ),
 
             const SizedBox(height: 15),
-            // Ek single poora Divider jo dono columns ke neeche aayega
             const Divider(thickness: 1, color: Colors.black26),
             const SizedBox(height: 30),
 

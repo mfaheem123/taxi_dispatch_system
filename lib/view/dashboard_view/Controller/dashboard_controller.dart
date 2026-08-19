@@ -182,30 +182,59 @@ class DashboardController extends GetxController {
           print("DATA => ${data['data']}");
 
           if (data['event'] == "DRIVER_BOOKING_STATUS_WEB_UPDATE") {
-            final driverId = data['data']['id'];
+            // The payload may carry the driver id under any of these keys, and
+            // as a String or an int. Compare as String like every other handler
+            // here does - a raw `==` silently misses when the types differ, so
+            // the status change (Arrived / On Route / STC) never lands and the
+            // row keeps the colour it got when the job was Accepted.
+            final driverId = (data['data']['id'] ??
+                data['data']['driver_id'] ??
+                data['data']['driverId'])
+                ?.toString();
 
-            final onlineIndex = onlineDriversList.indexWhere(
-                  (e) => e.id == driverId,
+            final newBookingStatus = data['data']['booking_status'];
+            final newDriverStatus = data['data']['driver_status'];
+
+            final onlineIndex = driverId == null
+                ? -1
+                : onlineDriversList.indexWhere(
+                  (e) => e.id.toString() == driverId,
             );
 
             if (onlineIndex != -1) {
-              onlineDriversList[onlineIndex].bookingStatus =
-              data['data']['booking_status'];
-
-              onlineDriversList[onlineIndex].driverStatus =
-              data['data']['driver_status'];
+              onlineDriversList[onlineIndex].bookingStatus = newBookingStatus;
+              onlineDriversList[onlineIndex].driverStatus = newDriverStatus;
             }
 
-            final busyIndex = busyDriversList.indexWhere(
-                  (e) => e.id == driverId,
+            final busyIndex = driverId == null
+                ? -1
+                : busyDriversList.indexWhere(
+                  (e) => e.id.toString() == driverId,
             );
 
             if (busyIndex != -1) {
-              busyDriversList[busyIndex].bookingStatus =
-              data['data']['booking_status'];
+              busyDriversList[busyIndex].bookingStatus = newBookingStatus;
+              busyDriversList[busyIndex].driverStatus = newDriverStatus;
+            }
 
-              busyDriversList[busyIndex].driverStatus =
-              data['data']['driver_status'];
+            // Keep the master list in sync too, so a rebuild sourced from it
+            // doesn't hand back a stale booking status.
+            final allIndex = driverId == null
+                ? -1
+                : (dashboardAllData?.drivers ?? []).indexWhere(
+                  (e) => e.id.toString() == driverId,
+            );
+
+            if (allIndex != -1) {
+              dashboardAllData!.drivers![allIndex].bookingStatus =
+                  newBookingStatus;
+              dashboardAllData!.drivers![allIndex].driverStatus =
+                  newDriverStatus;
+            }
+
+            if (onlineIndex == -1 && busyIndex == -1) {
+              print(
+                  "BOOKING_STATUS_UPDATE: no driver matched id=$driverId (status=$newBookingStatus)");
             }
 
             update();
@@ -1835,7 +1864,7 @@ class DashboardController extends GetxController {
   void startBookingCountTimer() {
     _bookingCountTimer?.cancel();
     _bookingCountTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
-      await getBookingCounts();
+      // await getBookingCounts();
     });
   }
 
@@ -1874,8 +1903,8 @@ class DashboardController extends GetxController {
 
       selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
       selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
-      await getBookingCounts();
-      startBookingCountTimer();
+      // await getBookingCounts();
+      // startBookingCountTimer();
       if (dashboardAllData!.vehicleTypes != null &&
           dashboardAllData!.vehicleTypes!.isNotEmpty) {
         try {
@@ -2004,7 +2033,7 @@ class DashboardController extends GetxController {
       _checkBookingsTimeAndPlaySound(dashboardTableModelData?.data ?? []);
       _timer?.cancel();
       _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-        getDashboardTableData(tableId: selectedTabId);
+        // getDashboardTableData(tableId: selectedTabId);
       });
       update();
     }
@@ -3079,6 +3108,12 @@ class DashboardController extends GetxController {
       // A time carried over from an existing job is a real choice — don't let
       // refreshUntouchedDateTimeFields() overwrite it with "now" on post.
       pickUpTimePicked = true;
+      // Same for the date: the job's own pickup date, so the Date field shows
+      // the booking date instead of today's.
+      if (jobData.pickupDate != null) {
+        pickUpDate = jobData.pickupDate;
+        pickUpDatePicked = true;
+      }
       minController.text = jobData.leadTime ?? "";
 
       if (jobData.passengers != null) {
@@ -3217,7 +3252,7 @@ class DashboardController extends GetxController {
       if (hitAddBooking == true) {
         dashBoardApiValidation();
       } else {
-        update();
+          update();
       }
     }
   }

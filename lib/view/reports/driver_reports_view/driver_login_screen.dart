@@ -71,6 +71,10 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                 DateFormat('HH:mm').format(DateTime.now());
           },
           builder: (controller) {
+            final listToShow = controller.driverHistoryFiltered.isNotEmpty
+                ? controller.driverHistoryFiltered
+                : controller.driverShiftHistoryAll;
+
             return LayoutBuilder(builder: (context, constraints) {
               final double maxWidth = constraints.maxWidth;
               final bool isMobile = maxWidth < 600;
@@ -239,22 +243,48 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                     // Table Section
                     SizedBox(
                       width: MediaQuery.of(context).size.width,
-                        child: controller.isLoadingShift
+                        child: controller.isLoadingShift.value
                             ? const Center(
                             child: CircularProgressIndicator(),
                         )
                       : SingleChildScrollView(
                         child: DatatableWidget(
                           columns: [
-                            buildHeaderWithSearch(title: "DRIVER"),
-                            buildHeaderWithSearch(title: "BOOKINGS"),
-                            buildHeaderWithSearch(title: "LOGIN DATE"),
-                            buildHeaderWithSearch(title: "LOGIN TIME"),
-                            buildHeaderWithSearch(title: "LOGOUT DATE"),
-                            buildHeaderWithSearch(title: "LOGOUT TIME"),
+                            buildHeaderWithSearch(title: "DRIVER",
+                                onChanged: (v) {
+                                  controller.searchDrivers.value = v;
+                                  controller.onSearchDriverShift();
+                                }),
+                            buildHeaderWithSearch(title: "BOOKINGS",
+                                onChanged: (v) {
+                                  controller.searchBookings.value = v;
+                                  controller.onSearchDriverShift();
+                                }),
+                            buildHeaderWithSearch(title: "LOGIN DATE",
+                                onChanged: (v) {
+                                  controller.searchLoginDate.value = v;
+                                  controller.onSearchDriverShift();
+                                }),
+                            buildHeaderWithSearch(title: "LOGIN TIME",
+                                onChanged: (v) {
+                                  controller.searchLoginTime.value = v;
+                                  controller.onSearchDriverShift();
+                                }),
+                            buildHeaderWithSearch(title: "LOGOUT DATE",
+                                onChanged: (v) {
+                                  controller.searchLogoutDate.value = v;
+                                  controller.onSearchDriverShift();
+                                }),
+                            buildHeaderWithSearch(title: "LOGOUT TIME",
+                                onChanged: (v) {
+                                  controller.searchLogoutTime.value = v;
+                                  controller.onSearchDriverShift();
+                                }),
                           ],
-                          totalRow: controller.driverLoginReportListModel?.driverShiftHistories?.length ?? 0,
-                          rows: (controller.driverLoginReportListModel?.driverShiftHistories ?? []).map((item) {
+                          // totalRow: controller.driverLoginReportListModel?.driverShiftHistories?.length ?? 0,
+                          // rows: (controller.driverLoginReportListModel?.driverShiftHistories ?? []).map((item) {
+                          totalRow: listToShow.length,
+                          rows: listToShow.map((item) {
                             return DataRow(
                               cells: [
                                 DataCell(Center(
