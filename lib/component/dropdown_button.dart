@@ -5,12 +5,6 @@ import 'package:get/get.dart';
 
 import 'color.dart';
 
-import 'package:dashboard_new1/component/textStyle.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:get/get.dart';
-
-import 'color.dart';
 
 class CustomDropdownField<T> extends StatefulWidget {
   final String? label;
@@ -42,7 +36,6 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
   late FocusNode _focusNode;
   late ScrollController _scrollController;
 
-  // LayerLink overlay ko widget ke saath lock rakhne ke liye hai
   final LayerLink _layerLink = LayerLink();
 
   int _highlightedIndex = -1;
@@ -58,9 +51,8 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
     _scrollController = ScrollController();
 
     _focusNode.addListener(() {
-      // Focus khone par overlay close kar dein
       if (!_focusNode.hasFocus && _isOpen) {
-        _closeDropdown();
+        _closeDropdown(retainFocus: false);
       }
       if (mounted) setState(() {});
     });
@@ -74,7 +66,7 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
   void dispose() {
     _focusNode.dispose();
     _scrollController.dispose();
-    _closeDropdown();
+    _closeDropdown(retainFocus: false);
     super.dispose();
   }
 
@@ -128,7 +120,7 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
         child: CompositedTransformFollower(
           link: _layerLink,
           showWhenUnlinked: false,
-          offset: Offset(0, (widget.height ?? 30) + 5), // Dropdown ke bilkul neeche attach hoga
+          offset: Offset(0, (widget.height ?? 30) + 5),
           child: Material(
             elevation: 4,
             borderRadius: BorderRadius.circular(4),
@@ -183,18 +175,23 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
     });
   }
 
-  void _closeDropdown() {
+  // Parameter retainFocus add kiya hai focus maintain rakhne ke liye
+  void _closeDropdown({bool retainFocus = true}) {
     if (!_isOpen) return;
 
     setState(() => _isOpen = false);
     _overlayEntry?.remove();
     _overlayEntry = null;
+
+    if (retainFocus) {
+      _focusNode.requestFocus();
+    }
   }
 
   void _selectItem(T item) {
     widget.onChanged(item);
     _highlightedIndex = widget.items.indexOf(item);
-    _closeDropdown();
+    _closeDropdown(retainFocus: true);
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
@@ -204,17 +201,14 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
 
     final key = event.logicalKey;
 
-    // 1. Jab Dropdown CLOSED ho
     if (!_isOpen) {
       if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.space) {
         _openDropdown();
         return KeyEventResult.handled;
       }
-      // Agar closed hai toh event bubble out hone dein taake page scroll ho sake
       return KeyEventResult.ignored;
     }
 
-    // 2. Jab Dropdown OPEN ho (Aapke appbar ke scroll event ko rokne ke liye 'handled' return kar rahe hain)
     if (key == LogicalKeyboardKey.arrowDown) {
       if (event is KeyDownEvent || event is KeyRepeatEvent) {
         setState(() {
@@ -223,7 +217,7 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
           _scrollToIndex(_highlightedIndex);
         });
       }
-      return KeyEventResult.handled; // Page scroll hone se rok diya
+      return KeyEventResult.handled;
     }
     else if (key == LogicalKeyboardKey.arrowUp) {
       if (event is KeyDownEvent || event is KeyRepeatEvent) {
@@ -235,7 +229,7 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
           _scrollToIndex(_highlightedIndex);
         });
       }
-      return KeyEventResult.handled; // Page scroll hone se rok diya
+      return KeyEventResult.handled;
     }
     else if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.space) {
       if (_highlightedIndex >= 0 && _highlightedIndex < widget.items.length) {
@@ -244,7 +238,8 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
       return KeyEventResult.handled;
     }
     else if (key == LogicalKeyboardKey.escape) {
-      _closeDropdown();
+      // Escape press hone par dropdown close hoga aur focus issi field par retain rahega
+      _closeDropdown(retainFocus: true);
       return KeyEventResult.handled;
     }
 
@@ -267,12 +262,11 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
           focusNode: _focusNode,
           onKeyEvent: _handleKeyEvent,
           child: CompositedTransformTarget(
-            link: _layerLink, // Overlay target link
+            link: _layerLink,
             child: GestureDetector(
               onTap: () {
-                _focusNode.requestFocus();
                 if (_isOpen) {
-                  _closeDropdown();
+                  _closeDropdown(retainFocus: true);
                 } else {
                   _openDropdown();
                 }
@@ -331,8 +325,6 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
     );
   }
 }
-
-
 
 class DropdownModel {
   int? id;
