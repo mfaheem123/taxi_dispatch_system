@@ -52,18 +52,26 @@ class ReportController extends GetxController {
   final loginStartTimeController = TextEditingController();
   final loginEndTimeController = TextEditingController();
 
+  /// >>>>>>>>>>>>>>>>>>>>> Search Work
+  RxList<DriverShiftHistory> driverShiftHistoryAll = <DriverShiftHistory>[].obs;
+  RxList<DriverShiftHistory> driverHistoryFiltered = <DriverShiftHistory>[].obs;
+  RxString searchDrivers = ''.obs;
+  RxString searchBookings = ''.obs;
+  RxString searchLoginDate = ''.obs;
+  RxString searchLoginTime = ''.obs;
+  RxString searchLogoutDate = ''.obs;
+  RxString searchLogoutTime = ''.obs;
+
   DriverLoginReportListModel? driverLoginReportListModel;
-  bool isLoadingShift = false;
+  RxBool isLoadingShift = false.obs;
 
   getDriverShiftHistory() async {
     if(selectDriverObject == null) {
       BotToast.showText(text: "PLEASE SELECT A DRIVER");
       return;
     }
-    isLoadingShift = true;
-    update();
-
-    try{
+    isLoadingShift(true);
+      try{
       String formattedFromDate = loginFromDate.value != null
           ? DateFormat('yyyy-MM-dd').format(loginFromDate.value!)
           : "";
@@ -75,10 +83,18 @@ class ReportController extends GetxController {
             "driver_id": selectDriverObject?.id.toString(),
             "from_date": formattedFromDate,
             "to_date" : toDateFormate,
+            "driver_name": searchDrivers.value.toLowerCase(),
+            "booking": searchBookings.value.toLowerCase(),
+            "login_date": searchLoginDate.value.toLowerCase(),
+            "login_time": searchLoginTime.value.toLowerCase(),
+            "logout_date": searchLogoutDate.value.toLowerCase(),
+            "logout_time": searchLogoutTime.value.toLowerCase(),
           }
       );
       if (response.statusCode == 200) {
         driverLoginReportListModel = DriverLoginReportListModel.fromJson(response.data);
+        driverShiftHistoryAll.value = driverLoginReportListModel?.driverShiftHistories ?? [];
+        driverHistoryFiltered.value = driverShiftHistoryAll;
         print("Shift History Data: ${response.data}");
         if (driverLoginReportListModel?.driverShiftHistories == null ||
             driverLoginReportListModel!.driverShiftHistories!.isEmpty) {
@@ -90,19 +106,26 @@ class ReportController extends GetxController {
     } catch (e) {
       print("Error fetching shift history: $e");
     } finally {
-      isLoadingShift = false;
+      isLoadingShift(false);
       update();
     }
+  }
+  // -----------Search function
+  void onSearchDriverShift() {
+    getDriverShiftHistory();
   }
 
   void clearLoginData() {
     selectDriverObject = null;
     driverLoginReportListModel = null;
-    isLoadingShift = false;
-    loginFromDate.value = DateTime.now();
+    isLoadingShift(false);
+    loginFromDate.value = DateTime(DateTime.now().year, DateTime.now().month, 1);
     loginToDate.value = DateTime.now();
     loginStartTimeController.clear();
     loginEndTimeController.clear();
+    driverShiftHistoryAll.clear();
+    driverHistoryFiltered.clear();
+    update();
   }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver login functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver logs functionality
