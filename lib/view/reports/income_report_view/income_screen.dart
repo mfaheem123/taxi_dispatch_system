@@ -43,6 +43,11 @@ class _IncomeScreenState extends State<IncomeScreen> {
       controller.getData();
 
     }, builder: (controller) {
+
+      final listToShow = controller.incomeBookingFiltered.isNotEmpty
+          ? controller.incomeBookingFiltered
+          : controller.incomeBookingAll;
+
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -318,7 +323,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
                 // SingleChildScrollView(
                 //   scrollDirection: Axis.horizontal,
                 //   child:
-                controller.isLoadingIncome
+                controller.isLoadingIncome.value
                     ? const Padding(
                   padding: EdgeInsets.symmetric(vertical: 40),
                   child: Center(
@@ -328,20 +333,69 @@ class _IncomeScreenState extends State<IncomeScreen> {
                     : ResponsiveDataTableWidget(
                   totalWidth: totalAvailableWidth,
                   columnConfigs: [
-                    TableColumnConfig(title: "REF #", sizeType: ColumnSizeType.medium),
-                    TableColumnConfig(title: "DATETIME", sizeType: ColumnSizeType.medium),
-                    TableColumnConfig(title: "PICKUP", sizeType: ColumnSizeType.large),
-                    TableColumnConfig(title: "DROPOFF", sizeType: ColumnSizeType.large),
-                    TableColumnConfig(title: "VEHICLE", sizeType: ColumnSizeType.medium),
-                    TableColumnConfig(title: "DRIVER", sizeType: ColumnSizeType.medium),
-                    TableColumnConfig(title: "ACCOUNT", sizeType: ColumnSizeType.medium),
-                    TableColumnConfig(title: "FARES", sizeType: ColumnSizeType.small),
-                    TableColumnConfig(title: "PARKING", sizeType: ColumnSizeType.small),
-                    TableColumnConfig(title: "WAITING", sizeType: ColumnSizeType.small),
-                    TableColumnConfig(title: "EXTRA DROP", sizeType: ColumnSizeType.small),
-                    TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium),
+                    TableColumnConfig(title: "REF #", sizeType: ColumnSizeType.medium,
+                        onChanged: (v) {
+                          controller.searchIncomeRef.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "DATETIME", sizeType: ColumnSizeType.medium,
+                        onChanged: (v) {
+                          controller.searchIncomeDateTime.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "PICKUP", sizeType: ColumnSizeType.large,
+                        onChanged: (v) {
+                          controller.searchIncomePickup.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "DROPOFF", sizeType: ColumnSizeType.large,
+                        onChanged: (v) {
+                          controller.searchIncomeDropoff.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "VEHICLE", sizeType: ColumnSizeType.medium,
+                        onChanged: (v) {
+                          controller.searchIncomeVehicle.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "DRIVER", sizeType: ColumnSizeType.medium,
+                        onChanged: (v) {
+                          controller.searchIncomeDriver.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "ACCOUNT", sizeType: ColumnSizeType.medium,
+                        onChanged: (v) {
+                          controller.searchIncomeAccount.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "FARES", sizeType: ColumnSizeType.small,
+                        onChanged: (v) {
+                          controller.searchIncomeFares.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "PARKING", sizeType: ColumnSizeType.small,
+                        onChanged: (v) {
+                          controller.searchIncomeParking.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "WAITING", sizeType: ColumnSizeType.small,
+                        onChanged: (v) {
+                          controller.searchIncomeWaiting.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "EXTRA DROP", sizeType: ColumnSizeType.small,
+                        onChanged: (v) {
+                          controller.searchIncomeExtraDrop.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium,
+                        onChanged: (v) {
+                          controller.searchIncomeTotal.value = v;
+                          controller.onSearchIncome();
+                        }),
                   ],
-                  items: controller.incomeModel?.bookings ?? [],
+                  // items: controller.incomeModel?.bookings ?? [],
+                  items: listToShow,
                   rowBuilder: (item, widths) {
                     String formattedDateTime = "-";
                     if (item.pickupDate != null) {
