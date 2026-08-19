@@ -453,7 +453,13 @@ class ReportController extends GetxController {
   String? selectAscending = "ASCENDING";
 
   BookingStatisticsModel? bookingStatisticsModel;
-  bool isLoadingStatistics = false;
+  RxBool isLoadingStatistics = false.obs;
+
+
+  /// >>>>>>>>>>>>>>>>>>>>> Search Work
+  RxList<BookingDatum> bookingAll = <BookingDatum>[].obs;
+  RxList<BookingDatum> bookingFiltered = <BookingDatum>[].obs;
+
 
   RxString searchReferenceNo = ''.obs;
   RxString searchInvoiceNo = ''.obs;
@@ -478,8 +484,7 @@ class ReportController extends GetxController {
 
   getBookingStatistics() async {
     try {
-      isLoadingStatistics = true;
-      update();
+      isLoadingStatistics(true);
 
       String formattedFromDate = "";
       String formattedToDate = "";
@@ -506,34 +511,49 @@ class ReportController extends GetxController {
           "from_time": startTime,
           "to_time": endTime,
 
-          "reference_number": searchReferenceNo.value,
-          "invoice_number": searchInvoiceNo.value,
-          "pickup": searchPickup.value,
-          "dropoff": searchDropOff.value,
-          "customer": searchCustomer.value,
-          "mobile": mobileController.text,
-          "telephone": phoneController.text,
-          "order_number": searchOrderNO.value,
-          "fares": searchFare.value,
-          "company_price": searchAccFare.value,
-          "booked_by": bookedByController.text,
-          "account_id": apiSelectedAccount?.id?.toString() ?? "",
-          "employee_id": apiSelectedEmployee?.id?.toString() ?? "",
-          "subsidiary_id": apiSelectedSubsidiary?.id?.toString() ?? "",
-          "driver": searchDriver.value,
-          "driver_id": selectDriverObject?.id?.toString() ?? "",
-          "payment_type_id": paymentTypeIdsString,
-          "booking_status_id": selectedBookingStatusIds,
-          "sort_order": apiSortOrder,
-          "sort_by": apiSortBy
+          "reference_number": searchReferenceNo.value.toLowerCase(),
+          "invoice_number": searchInvoiceNo.value.toLowerCase(),
+          "datetime": searchDateTime.value.toLowerCase(),
+          "customer": searchCustomer.value.toLowerCase(),
+          "pickup": searchPickup.value.toLowerCase(),
+          "dropoff": searchDropOff.value.toLowerCase(),
+          "fare": searchFare.value.toLowerCase(),
+          "account_name": searchAcc.value.toLowerCase(),
+          "order_number": searchOrderNO.value.toLowerCase(),
+          "payment_type_name": searchPaymentType.value.toLowerCase(),
+          "journey_type": searchJourneyType.value.toLowerCase(),
+          "driver_name": searchDriver.value.toLowerCase(),
+          "vehicle_type": searchVehicle.value.toLowerCase(),
+          "subsidiary_name": searchSubsidiary.value.toLowerCase(),
+          "status_name": searchStatus.value.toLowerCase(),
+
+
+
+
+          // "mobile": mobileController.text.toLowerCase(),
+          // "telephone": phoneController.text.toLowerCase(),
+
+          // "company_price": searchAccFare.value,
+          // "booked_by": bookedByController.text,
+          // "account_id": apiSelectedAccount?.id?.toString() ?? "",
+          // "employee_id": apiSelectedEmployee?.id?.toString() ?? "",
+          // "subsidiary_id": apiSelectedSubsidiary?.id?.toString() ?? "",
+          //
+          // "driver_id": selectDriverObject?.id?.toString() ?? "",
+          // "payment_type_id": paymentTypeIdsString,
+          // "booking_status_id": selectedBookingStatusIds,
+          // "sort_order": apiSortOrder,
+          // "sort_by": apiSortBy
         },
       );
 
       if (response.statusCode == 200) {
         bookingStatisticsModel = BookingStatisticsModel.fromJson(response.data);
         print("Total Statistics Bookings Found: ${bookingStatisticsModel?.totals?.totalBookings}");
-
         totalPages.value = bookingStatisticsModel?.totalPages ?? 1;
+        bookingAll.value = bookingStatisticsModel?.data ?? [];
+        bookingFiltered.value = bookingAll;
+
 
         totalBookings.value = bookingStatisticsModel?.totals?.totalBookings ?? 0;
         totalEarnings.value = bookingStatisticsModel?.totals?.totalEarnings ?? 0.0;
@@ -546,12 +566,12 @@ class ReportController extends GetxController {
       print("=====================================================");
     }
     finally {
-      isLoadingStatistics = false;
+      isLoadingStatistics(false);
       update();
     }
   }
-
-  void onBookingSearchChanged() {
+  // -----------Search function
+  void onBookingSearch() {
     currentPage.value = 1;
     getBookingStatistics();
   }
@@ -811,20 +831,20 @@ void clearBookingReportData() {
 
       if (response.statusCode == 200) {
         employeeReportModel = EmployeeReportModel.fromJson(response.data);
-        final fetchedList = employeeReportModel?.employeeShiftHistory ?? [];
-        employeeShiftHistoryAll.value = fetchedList;
-        employeeHistoryFiltered.value = fetchedList;
-
-        if (fetchedList.isEmpty) {
-          BotToast.showText(text: "No Data Found!");
-        }
-        // employeeShiftHistoryAll.value = employeeReportModel?.employeeShiftHistory ?? [];
-        // employeeHistoryFiltered.value = employeeShiftHistoryAll;
+        // final fetchedList = employeeReportModel?.employeeShiftHistory ?? [];
+        // employeeShiftHistoryAll.value = fetchedList;
+        // employeeHistoryFiltered.value = fetchedList;
         //
-        // if (employeeReportModel?.employeeShiftHistory == null ||
-        //     employeeReportModel!.employeeShiftHistory!.isEmpty) {
+        // if (fetchedList.isEmpty) {
         //   BotToast.showText(text: "No Data Found!");
         // }
+        employeeShiftHistoryAll.value = employeeReportModel?.employeeShiftHistory ?? [];
+        employeeHistoryFiltered.value = employeeShiftHistoryAll;
+
+        if (employeeReportModel?.employeeShiftHistory == null ||
+            employeeReportModel!.employeeShiftHistory!.isEmpty) {
+          BotToast.showText(text: "No Data Found!");
+        }
 
         print("Status Code: ${response.statusCode}");
         print("Response Data: ${response.data}");
@@ -916,16 +936,32 @@ void clearBookingReportData() {
     }
   }
 
+  /// >>>>>>>>>>>>>>>>>>>>> Search Work
+  RxList<IncomeBooking> incomeBookingAll = <IncomeBooking>[].obs;
+  RxList<IncomeBooking> incomeBookingFiltered = <IncomeBooking>[].obs;
+  RxString searchIncomeRef = ''.obs;
+  RxString searchIncomeDateTime = ''.obs;
+  RxString searchIncomePickup = ''.obs;
+  RxString searchIncomeDropoff = ''.obs;
+  RxString searchIncomeVehicle = ''.obs;
+  RxString searchIncomeDriver = ''.obs;
+  RxString searchIncomeAccount = ''.obs;
+  RxString searchIncomeFares = ''.obs;
+  RxString searchIncomeParking = ''.obs;
+  RxString searchIncomeWaiting = ''.obs;
+  RxString searchIncomeExtraDrop = ''.obs;
+  RxString searchIncomeTotal = ''.obs;
+
+
   // filter
   var incomeFromDate = Rxn<DateTime>(DateTime(DateTime.now().year, DateTime.now().month, 1));
   var incomeToDate = Rxn<DateTime>(DateTime.now());
   IncomeModel? incomeModel;
-  bool isLoadingIncome = false;
+  RxBool isLoadingIncome = false.obs;
   String selectedIncomePaymentType = "ALL";
 
   getIncome() async{
-    isLoadingIncome = true;
-    update();
+    isLoadingIncome(true);
 
     try {
       String formattedFromDate = incomeFromDate.value != null
@@ -950,24 +986,49 @@ void clearBookingReportData() {
         queryParameters: {
           "from_date": formattedFromDate,
           "to_date": formattedToDate,
+
+          "search_ref": searchIncomeRef.value.toLowerCase(),
+          "search_datetime": searchIncomeDateTime.value.toLowerCase(),
+          "search_pickup": searchIncomePickup.value.toLowerCase(),
+          "search_dropoff": searchIncomeDropoff.value.toLowerCase(),
+          "search_vehicle": searchIncomeVehicle.value.toLowerCase(),
+          "search_driver": searchIncomeDriver.value.toLowerCase(),
+          "search_account": searchIncomeAccount.value.toLowerCase(),
+          "search_fares": searchIncomeFares.value.toLowerCase(),
+          "search_parking": searchIncomeParking.value.toLowerCase(),
+          "search_waiting": searchIncomeWaiting.value.toLowerCase(),
+          "search_extra_drop": searchIncomeExtraDrop.value.toLowerCase(),
+          "search_total": searchIncomeTotal.value.toLowerCase(),
+
           if (selectDriverObject != null) "driver_id": selectDriverObject?.id.toString(),
         },
       );
       if (response.statusCode == 200) {
         incomeModel = IncomeModel.fromJson(response.data);
+        incomeBookingAll.value = incomeModel?.bookings ?? [];
+        incomeBookingFiltered.value = incomeBookingAll;
       }
     } catch (e) {
       debugPrint("Error fetching income report: $e");
     } finally {
-      isLoadingIncome = false;
+      isLoadingIncome(false);
       update();
     }
   }
+
+  // -----------Search function
+  void onSearchIncome() {
+    getIncome();
+  }
+
   void clearIncomeData() {
     incomeModel = null;
     selectDriverObject = null;
     incomeFromDate.value = DateTime(DateTime.now().year, DateTime.now().month, 1);
     incomeToDate.value = DateTime.now();
+    incomeBookingAll.clear();
+    incomeBookingFiltered.clear();
+    update();
   }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report income functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report company income functionality
@@ -977,29 +1038,36 @@ void clearBookingReportData() {
 
   CompanyIncomeModel? companyIncomeModel;
   RxBool companyLoader = false.obs;
+
+  /// >>>>>>>>>>>>>>>>>>>>> Search Work
   RxList<CompanyDatum> companyListAll = <CompanyDatum>[].obs;
   RxList<CompanyDatum> filteredCompany = <CompanyDatum>[].obs;
 
-  RxString searchPickupDate = ''.obs;
-  RxString searchPickupTime = ''.obs;
-  RxString searchPc = ''.obs;
-  RxString searchWc = ''.obs;
-  RxString searchEdc = ''.obs;
-  RxString searchMg = ''.obs;
-  RxString searchCc = ''.obs;
-  RxString searchTotal = ''.obs;
-
-  var comTotalBookings = 0.obs;
-  var comTotalEarnings = 0.0.obs;
+  RxString searchComRefNo = ''.obs;
+  RxString searchComDateTime = ''.obs;
+  RxString searchComPickup = ''.obs;
+  RxString searchComDropOff = ''.obs;
+  RxString searchComVehicle = ''.obs;
+  RxString searchComDriver = ''.obs;
+  RxString searchComAcc = ''.obs;
+  RxString searchComFare = ''.obs;
+  RxString searchComPc = ''.obs;
+  RxString searchComWc = ''.obs;
+  RxString searchComEdc = ''.obs;
+  RxString searchComMg = ''.obs;
+  RxString searchComCc = ''.obs;
+  RxString searchComTotal = ''.obs;
 
   var comCurrentPage = 1.obs;
   var comTotalPages = 1.obs;
   final int comLimit = 20;
 
+  var comTotalBookings = 0.obs;
+  var comTotalEarnings = 0.0.obs;
+
   getCompanyIncome() async {
     try {
       companyLoader(true);
-      update();
 
       String formattedFromDate = "";
       String formattedToDate = "";
@@ -1014,21 +1082,29 @@ void clearBookingReportData() {
           "limit": comLimit,
           "from_date": formattedFromDate,
           "to_date": formattedToDate,
-          "reference_number": searchReferenceNo.value,
-          "pickup_date": searchPickupDate.value,
-          "pickup_time": searchPickupTime.value,
-          "pickup": searchPickup.value,
-          "dropoff": searchDropOff.value,
-          // "vehicle_type": searchVehicle.value,
-          // "driver": searchDriver.value,
-          // "account": searchAcc.value.toLowerCase(),
-          // "fares": searchFare.value,
-          // "parking_charges": searchPc.value,
-          // "waiting_charges": searchWc.value,
-          // "extra_drop_charges": searchEdc.value,
-          // "meet_and_greet": searchMg.value,
-          // "congestion_charges": searchCc.value,
-          // "total_charges": searchTotal.value,
+
+
+          "reference_number": searchComRefNo.value.toLowerCase(),
+          "datetime": searchComDateTime.value.toLowerCase(),
+          "pickup": searchComPickup.value.toLowerCase(),
+          "dropoff": searchComDropOff.value.toLowerCase(),
+          "vehicle_type": searchComVehicle.value.toLowerCase(),
+          "driver_name": searchComDriver.value.toLowerCase(),
+          "account_name": searchComAcc.value.toLowerCase(),
+          "fare": searchComFare.value.toLowerCase(),
+          "pc": searchComPc.value.toLowerCase(),
+          "wc": searchComWc.value.toLowerCase(),
+          "edc": searchComEdc.value.toLowerCase(),
+          "mg": searchComMg.value.toLowerCase(),
+          "cc": searchComCc.value.toLowerCase(),
+          "total_val": searchComTotal.value.toLowerCase(),
+
+
+          // "pickup_date": searchPickupDate.value,
+          // "pickup_time": searchPickupTime.value,
+          // "pickup": searchPickup.value,
+          // "dropoff": searchDropOff.value,
+
         },
       );
 
@@ -1061,38 +1137,38 @@ void clearBookingReportData() {
     companyToDate.value = DateTime.now();
   }
 
-  void onLocalSearchCompany() {
-    if (searchVehicle.value.isEmpty &&
-        searchDriver.value.isEmpty &&
-        searchAcc.value.isEmpty &&
-        searchFare.value.isEmpty &&
-        searchPc.value.isEmpty &&
-        searchWc.value.isEmpty &&
-        searchEdc.value.isEmpty &&
-        searchMg.value.isEmpty &&
-        searchCc.value.isEmpty &&
-        searchTotal.value.isEmpty) {
-
-      filteredCompany.value = companyListAll;
-    } else {
-      filteredCompany.value = companyListAll.where((item) {
-        final matchVehicle = item.vehicleType?.name?.toLowerCase().contains(searchVehicle.value.toLowerCase()) ?? true;
-        final matchDriver = item.driver?.name?.toLowerCase().contains(searchDriver.value.toLowerCase()) ?? true;
-        final matchAccount = item.account?.name?.toLowerCase().contains(searchAcc.value.toLowerCase()) ?? true;
-        final matchFare = item.fares?.toLowerCase().contains(searchFare.value.toLowerCase()) ?? true;
-        final matchPc = item.parkingCharges?.toLowerCase().contains(searchPc.value.toLowerCase()) ?? true;
-        final matchWc = item.waitingCharges?.toLowerCase().contains(searchWc.value.toLowerCase()) ?? true;
-        final matchEdc = item.extraDropCharges?.toLowerCase().contains(searchEdc.value.toLowerCase()) ?? true;
-        final matchMg = item.meetAndGreet?.toLowerCase().contains(searchMg.value.toLowerCase()) ?? true;
-        final matchCc = item.congestionCharges?.toLowerCase().contains(searchCc.value.toLowerCase()) ?? true;
-        final matchTotal = item.totalCharges?.toLowerCase().contains(searchTotal.value.toLowerCase()) ?? true;
-
-        return matchVehicle && matchDriver && matchAccount && matchFare &&
-            matchPc && matchWc && matchEdc && matchMg && matchCc && matchTotal;
-      }).toList();
-    }
-    update();
-  }
+  // void onLocalSearchCompany() {
+  //   if (searchVehicle.value.isEmpty &&
+  //       searchDriver.value.isEmpty &&
+  //       searchAcc.value.isEmpty &&
+  //       searchFare.value.isEmpty &&
+  //       searchPc.value.isEmpty &&
+  //       searchWc.value.isEmpty &&
+  //       searchEdc.value.isEmpty &&
+  //       searchMg.value.isEmpty &&
+  //       searchCc.value.isEmpty &&
+  //       searchTotal.value.isEmpty) {
+  //
+  //     filteredCompany.value = companyListAll;
+  //   } else {
+  //     filteredCompany.value = companyListAll.where((item) {
+  //       final matchVehicle = item.vehicleType?.name?.toLowerCase().contains(searchVehicle.value.toLowerCase()) ?? true;
+  //       final matchDriver = item.driver?.name?.toLowerCase().contains(searchDriver.value.toLowerCase()) ?? true;
+  //       final matchAccount = item.account?.name?.toLowerCase().contains(searchAcc.value.toLowerCase()) ?? true;
+  //       final matchFare = item.fares?.toLowerCase().contains(searchFare.value.toLowerCase()) ?? true;
+  //       final matchPc = item.parkingCharges?.toLowerCase().contains(searchPc.value.toLowerCase()) ?? true;
+  //       final matchWc = item.waitingCharges?.toLowerCase().contains(searchWc.value.toLowerCase()) ?? true;
+  //       final matchEdc = item.extraDropCharges?.toLowerCase().contains(searchEdc.value.toLowerCase()) ?? true;
+  //       final matchMg = item.meetAndGreet?.toLowerCase().contains(searchMg.value.toLowerCase()) ?? true;
+  //       final matchCc = item.congestionCharges?.toLowerCase().contains(searchCc.value.toLowerCase()) ?? true;
+  //       final matchTotal = item.totalCharges?.toLowerCase().contains(searchTotal.value.toLowerCase()) ?? true;
+  //
+  //       return matchVehicle && matchDriver && matchAccount && matchFare &&
+  //           matchPc && matchWc && matchEdc && matchMg && matchCc && matchTotal;
+  //     }).toList();
+  //   }
+  //   update();
+  // }
   void onSearchCompany() {
     comCurrentPage.value = 1;
     getCompanyIncome();

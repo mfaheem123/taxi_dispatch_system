@@ -12,7 +12,7 @@ class IncomeModel {
   bool? success;
   int? totalBookings;
   double? totalEarnings;
-  List<Booking>? bookings;
+  List<IncomeBooking>? bookings;
 
   IncomeModel({
     this.success,
@@ -25,7 +25,7 @@ class IncomeModel {
     success: json["success"],
     totalBookings: json["total_bookings"],
     totalEarnings: json["total_earnings"]?.toDouble(),
-    bookings: json["bookings"] == null ? [] : List<Booking>.from(json["bookings"]!.map((x) => Booking.fromJson(x))),
+    bookings: json["bookings"] == null ? [] : List<IncomeBooking>.from(json["bookings"]!.map((x) => IncomeBooking.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -36,7 +36,7 @@ class IncomeModel {
   };
 }
 
-class Booking {
+class IncomeBooking {
   String? id;
   String? referenceNumber;
   DateTime? pickupDate;
@@ -53,7 +53,7 @@ class Booking {
   String? extraDrop;
   String? total;
 
-  Booking({
+  IncomeBooking({
     this.id,
     this.referenceNumber,
     this.pickupDate,
@@ -71,7 +71,7 @@ class Booking {
     this.total,
   });
 
-  factory Booking.fromJson(Map<String, dynamic> json) => Booking(
+  factory IncomeBooking.fromJson(Map<String, dynamic> json) => IncomeBooking(
     id: json["id"],
     referenceNumber: json["reference_number"],
     pickupDate: json["pickup_date"] == null
