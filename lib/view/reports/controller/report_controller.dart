@@ -131,26 +131,29 @@ class ReportController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver logs functionality
   var fromDate = Rxn<DateTime>(DateTime(DateTime.now().year, DateTime.now().month, 1));
   var toDate = Rxn<DateTime>(DateTime.now());
-// Purane controllers ki jagah ye likhein:
   final logStartTimeController = TextEditingController(text: "00:00");
   final logEndTimeController = TextEditingController(text: "23:59");
 
   DriverLogsReportListModel? driverLogsData;
-  bool isLoadingLogs = false;
+  RxBool isLoadingLogs = false.obs;
 
-  final refSearch = TextEditingController();
-  final vehicleSearch = TextEditingController();
-  final pickupSearch = TextEditingController();
-  final dropoffSearch = TextEditingController();
-  final faresSearch = TextEditingController();
+
+  /// >>>>>>>>>>>>>>>>>>>>> Search Work
+  RxList<DriverLogsBooking> logsBookingAll = <DriverLogsBooking>[].obs;
+  RxList<DriverLogsBooking> logsBookingFiltered = <DriverLogsBooking>[].obs;
+  RxString searchLogsRef = ''.obs;
+  RxString searchLogsDateTime = ''.obs;
+  RxString searchLogsVehicle = ''.obs;
+  RxString searchLogsPickup = ''.obs;
+  RxString searchLogsDropoff = ''.obs;
+  RxString searchLogsFares = ''.obs;
 
   getDriverLogs() async {
     if(selectDriverObject == null) {
       BotToast.showText(text: "PLEASE SELECT A DRIVER");
       return;
     }
-    isLoadingLogs = true;
-    update();
+    isLoadingLogs(true);
 
     try{
       String formattedFromDate = fromDate.value != null
@@ -168,33 +171,45 @@ class ReportController extends GetxController {
             "from_time": logStartTimeController.text,
             "to_time": logEndTimeController.text,
 
-            "ref": refSearch.text,
-            "vehicle": vehicleSearch.text,
-            "pickup": pickupSearch.text,
-            "dropoff": dropoffSearch.text,
-            "fares": faresSearch.text,
+            "ref": searchLogsRef.value.toLowerCase(),
+            "datetime": searchLogsDateTime.value.toLowerCase(),
+            "vehicle": searchLogsVehicle.value.toLowerCase(),
+            "pickup": searchLogsPickup.value.toLowerCase(),
+            "dropoff": searchLogsDropoff.value.toLowerCase(),
+            "fares": searchLogsFares.value.toLowerCase(),
           }
       );
       if (response.statusCode == 200) {
         driverLogsData = DriverLogsReportListModel.fromJson(response.data);
+        logsBookingAll.value = driverLogsData?.bookings ?? [];
+        logsBookingFiltered.value = logsBookingAll;
         // print("Driver Logs Data Fetched: ${driverLogsData?.count}");
         print("Driver Logs Data: ${response.data}");
       }
     } catch (e) {
       debugPrint("Error fetching driver logs: $e");
     } finally {
-      isLoadingLogs = false;
+      isLoadingLogs(false);
       update();
     }
   }
+
+  // -----------Search function
+  void onSearchDriverLogs() {
+    getDriverLogs();
+  }
+
   void clearLogsData() {
     selectDriverObject = null;
     driverLogsData = null;
-    isLoadingLogs = false;
+    isLoadingLogs(false);
     fromDate.value = DateTime(DateTime.now().year, DateTime.now().month, 1);
     toDate.value = DateTime.now();
     logStartTimeController.text = "00:00";
     logEndTimeController.text = "23:59";
+    logsBookingAll.clear();
+    logsBookingFiltered.clear();
+    update();
   }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver logs functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver earning and info functionality
@@ -722,9 +737,9 @@ void clearBookingReportData() {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report booking functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report employee functionality
 
-  bool isLoadingActivity = false;
+  RxBool isLoadingActivity = false.obs;
   EmployeeReportModel? employeeReportModel;
-  List<EmployeeShiftHistory> employeeActivityList = [];
+  // List<EmployeeShiftHistory> employeeActivityList = [];
 
   int totalCreated = 0;
   int totalDispatched = 0;
@@ -739,13 +754,23 @@ void clearBookingReportData() {
   var activityToDate = Rxn<DateTime>(DateTime.now());
   // var activityToDate = Rxn<DateTime>(DateTime.now().add(const Duration(days: 1)));
 
+  /// >>>>>>>>>>>>>>>>>>>>> Search Work
+  RxList<EmployeeShiftHistory> employeeShiftHistoryAll = <EmployeeShiftHistory>[].obs;
+  RxList<EmployeeShiftHistory> employeeHistoryFiltered = <EmployeeShiftHistory>[].obs;
+  RxString searchLoginDateTime = ''.obs;
+  RxString searchLogoutDateTime = ''.obs;
+  RxString searchBookingsCreated = ''.obs;
+  RxString searchBookingsDispatched = ''.obs;
+  RxString searchBookingsCancelled = ''.obs;
+  RxString searchCallsAnswered = ''.obs;
+
+
   getEmployeeActivity() async {
     if (apiSelectedEmployee == null) {
       BotToast.showText(text: "PLEASE SELECT AN EMPLOYEE");
       return;
     }
-    isLoadingActivity = true;
-    update();
+    isLoadingActivity(true);
 
     try {
       String formattedFromDate = activityFromDate.value != null
@@ -774,19 +799,36 @@ void clearBookingReportData() {
           "to_date": formattedToDate,
           "from_time": fromTime,
           "to_time": toTime,
+
+          "search_login": searchLoginDateTime.value.toLowerCase(),
+          "search_logout": searchLogoutDateTime.value.toLowerCase(),
+          "search_bookings_created": searchBookingsCreated.value.toLowerCase(),
+          "search_bookings_dispatched": searchBookingsDispatched.value.toLowerCase(),
+          "search_bookings_cancelled": searchBookingsCancelled.value.toLowerCase(),
+          "search_calls_answered": searchCallsAnswered.value.toLowerCase(),
         },
       );
 
       if (response.statusCode == 200) {
         employeeReportModel = EmployeeReportModel.fromJson(response.data);
+        final fetchedList = employeeReportModel?.employeeShiftHistory ?? [];
+        employeeShiftHistoryAll.value = fetchedList;
+        employeeHistoryFiltered.value = fetchedList;
 
-        if (employeeActivityList.isEmpty) {
+        if (fetchedList.isEmpty) {
           BotToast.showText(text: "No Data Found!");
         }
+        // employeeShiftHistoryAll.value = employeeReportModel?.employeeShiftHistory ?? [];
+        // employeeHistoryFiltered.value = employeeShiftHistoryAll;
+        //
+        // if (employeeReportModel?.employeeShiftHistory == null ||
+        //     employeeReportModel!.employeeShiftHistory!.isEmpty) {
+        //   BotToast.showText(text: "No Data Found!");
+        // }
 
         print("Status Code: ${response.statusCode}");
         print("Response Data: ${response.data}");
-        employeeActivityList = employeeReportModel?.employeeShiftHistory ?? [];
+        // employeeReportModel = employeeReportModel?.employeeShiftHistory ?? [];
         totalCreated = 0;
         totalDispatched = 0;
         totalCancelled = 0;
@@ -794,7 +836,7 @@ void clearBookingReportData() {
 
         double calculatedTotalSeconds = 0;
 
-        for (var item in employeeActivityList) {
+        for (var item in employeeShiftHistoryAll) {
           totalCreated += item.bookingsCreated ?? 0;
           totalDispatched += item.bookingsDispatched ?? 0;
           totalCancelled += item.bookingsCancelled ?? 0;
@@ -823,15 +865,21 @@ void clearBookingReportData() {
     } catch (e) {
       print("Error fetching employee activity: $e");
     } finally {
-      isLoadingActivity = false;
+      isLoadingActivity(false);
       update();
     }
+  }
+
+  // -----------Search function
+  void onSearchActivity() {
+    getEmployeeActivity();
   }
 
   void clearActivityData() {
     employeeReportModel = null;
     apiSelectedEmployee = null;
-    employeeActivityList.clear();
+    employeeShiftHistoryAll.clear();
+    employeeHistoryFiltered.clear();
     activityFromDate.value = DateTime(DateTime.now().year, DateTime.now().month, 1);
     activityToDate.value = DateTime.now();
     activityStartTimeController.text = "00:00";

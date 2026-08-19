@@ -11,7 +11,7 @@ String driverLogsReportListModelToJson(DriverLogsReportListModel data) => json.e
 class DriverLogsReportListModel {
   bool? success;
   int? count;
-  List<Booking>? bookings;
+  List<DriverLogsBooking>? bookings;
 
   DriverLogsReportListModel({
     this.success,
@@ -22,7 +22,7 @@ class DriverLogsReportListModel {
   factory DriverLogsReportListModel.fromJson(Map<String, dynamic> json) => DriverLogsReportListModel(
     success: json["success"],
     count: json["count"],
-    bookings: json["bookings"] == null ? [] : List<Booking>.from(json["bookings"]!.map((x) => Booking.fromJson(x))),
+    bookings: json["bookings"] == null ? [] : List<DriverLogsBooking>.from(json["bookings"]!.map((x) => DriverLogsBooking.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -32,7 +32,7 @@ class DriverLogsReportListModel {
   };
 }
 
-class Booking {
+class DriverLogsBooking {
   String? id;
   String? referenceNumber;
   int? subsidiaryId;
@@ -141,7 +141,7 @@ class Booking {
   LogsEmployee? employee;
   Airport? airport;
 
-  Booking({
+  DriverLogsBooking({
     this.id,
     this.referenceNumber,
     this.subsidiaryId,
@@ -251,7 +251,7 @@ class Booking {
     this.airport,
   });
 
-  factory Booking.fromJson(Map<String, dynamic> json) => Booking(
+  factory DriverLogsBooking.fromJson(Map<String, dynamic> json) => DriverLogsBooking(
     id: json["id"],
     referenceNumber: json["reference_number"],
     subsidiaryId: json["subsidiary_id"],
