@@ -25,20 +25,6 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class CustomTimePicker extends StatefulWidget {
   final TextEditingController? controller;
@@ -142,97 +128,66 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
   void _scrollToSelected() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_hourScrollController.hasClients) {
-        final targetHourOffset = ((selectedHour - 2) * 38.0).clamp(0.0, _hourScrollController.position.maxScrollExtent);
-        _hourScrollController.jumpTo(targetHourOffset);
+        _hourScrollController.animateTo(
+          (selectedHour * 38.0).clamp(0, _hourScrollController.position.maxScrollExtent),
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOut,
+        );
       }
       if (_minuteScrollController.hasClients) {
-        final targetMinuteOffset = ((selectedMinute - 2) * 38.0).clamp(0.0, _minuteScrollController.position.maxScrollExtent);
-        _minuteScrollController.jumpTo(targetMinuteOffset);
+        _minuteScrollController.animateTo(
+          (selectedMinute * 38.0).clamp(0, _minuteScrollController.position.maxScrollExtent),
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOut,
+        );
       }
     });
   }
 
-  void _ensureVisible(ScrollController controller, int index) {
-    if (!controller.hasClients) return;
-    final itemTop = index * 38.0;
-    final itemBottom = itemTop + 38.0;
-    final currentScroll = controller.offset;
-    final viewportHeight = controller.position.viewportDimension;
-
-    // Scroller tabhi move karega jab highlight visible viewport se bahar jaye
-    if (itemTop < currentScroll) {
-      controller.animateTo(
-        itemTop.clamp(0.0, controller.position.maxScrollExtent),
-        duration: const Duration(milliseconds: 100),
-        curve: Curves.easeOut,
-      );
-    } else if (itemBottom > currentScroll + viewportHeight) {
-      controller.animateTo(
-        (itemBottom - viewportHeight).clamp(0.0, controller.position.maxScrollExtent),
-        duration: const Duration(milliseconds: 100),
-        curve: Curves.easeOut,
-      );
-    }
-  }
-
-  bool _handleKeyNavigation(LogicalKeyboardKey key) {
+  // Double jump issue fix karne k liye logic clean kar di gayi hai
+  void _handleKeyNavigation(LogicalKeyboardKey key) {
     if (_overlayEntry == null) {
-      if (key == LogicalKeyboardKey.enter ||
-          key == LogicalKeyboardKey.arrowDown ||
-          key == LogicalKeyboardKey.space) {
+      if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.arrowDown || key == LogicalKeyboardKey.space) {
         _openDropdown();
-        return true;
       }
-      return false;
+      return;
     }
 
     bool shouldUpdateText = false;
-    bool handled = false;
 
     if (key == LogicalKeyboardKey.arrowLeft) {
       _activeColumnIndex = 0;
-      handled = true;
     } else if (key == LogicalKeyboardKey.arrowRight) {
       _activeColumnIndex = 1;
-      handled = true;
     } else if (key == LogicalKeyboardKey.arrowUp) {
       if (_activeColumnIndex == 0) {
         selectedHour = (selectedHour - 1 < 0) ? 23 : selectedHour - 1;
-        _ensureVisible(_hourScrollController, selectedHour);
       } else {
         selectedMinute = (selectedMinute - 1 < 0) ? 59 : selectedMinute - 1;
-        _ensureVisible(_minuteScrollController, selectedMinute);
       }
       shouldUpdateText = true;
-      handled = true;
     } else if (key == LogicalKeyboardKey.arrowDown) {
       if (_activeColumnIndex == 0) {
         selectedHour = (selectedHour + 1 > 23) ? 0 : selectedHour + 1;
-        _ensureVisible(_hourScrollController, selectedHour);
       } else {
         selectedMinute = (selectedMinute + 1 > 59) ? 0 : selectedMinute + 1;
-        _ensureVisible(_minuteScrollController, selectedMinute);
       }
       shouldUpdateText = true;
-      handled = true;
     } else if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.escape) {
       _closeDropdown();
-      return true;
+      return;
     }
 
     if (shouldUpdateText) {
       _updateTimeText();
+      _scrollToSelected();
     }
 
-    if (handled) {
-      setState(() {});
-      if (_overlaySetState != null) {
-        _overlaySetState!(() {});
-      }
-      return true;
+    // Single trigger for parent & overlay rebuild
+    setState(() {});
+    if (_overlaySetState != null) {
+      _overlaySetState!(() {});
     }
-
-    return false;
   }
 
   OverlayEntry _buildOverlayEntry() {
@@ -311,6 +266,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                                     selectedHour = val;
                                     _activeColumnIndex = 0;
                                     _updateTimeText();
+                                    _scrollToSelected();
                                     setState(() {});
                                     setOverlayState(() {});
                                   },
@@ -326,6 +282,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                                     selectedMinute = val;
                                     _activeColumnIndex = 1;
                                     _updateTimeText();
+                                    _scrollToSelected();
                                     setState(() {});
                                     setOverlayState(() {});
                                   },
@@ -406,19 +363,9 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
     return Focus(
       focusNode: _focusNode,
       onKeyEvent: (FocusNode node, KeyEvent event) {
-        if (event is KeyDownEvent || event is KeyRepeatEvent) {
-          if (event.logicalKey == LogicalKeyboardKey.tab) {
-            if (_overlayEntry != null) {
-              _closeDropdown();
-            }
-            // Tab key Flutter focus traversal ko de taake next field per focus ho sake
-            return KeyEventResult.ignored;
-          }
-
-          final handled = _handleKeyNavigation(event.logicalKey);
-          if (handled) {
-            return KeyEventResult.handled;
-          }
+        if (event is KeyDownEvent) {
+          _handleKeyNavigation(event.logicalKey);
+          return KeyEventResult.handled;
         }
         return KeyEventResult.ignored;
       },
@@ -444,6 +391,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                   color: Colors.grey.shade700,
                 ),
               ),
+              // Focused & Enabled Border Colors Tab Highlight ke liye sync kar diye gaye hain
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide(
@@ -469,399 +417,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
     );
   }
 }
-///====================================
-// class CustomTimePicker extends StatefulWidget {
-//   final TextEditingController? controller;
-//   final ValueChanged<String>? onTimeSelected;
-//   final bool readOnly;
-//
-//   const CustomTimePicker({
-//     Key? key,
-//     this.controller,
-//     this.onTimeSelected,
-//     this.readOnly = true,
-//   }) : super(key: key);
-//
-//   @override
-//   State<CustomTimePicker> createState() => _CustomTimePickerState();
-// }
-//
-// class _CustomTimePickerState extends State<CustomTimePicker> {
-//   late final TextEditingController _timeController;
-//   final LayerLink _layerLink = LayerLink();
-//   final FocusNode _focusNode = FocusNode();
-//
-//   OverlayEntry? _overlayEntry;
-//   void Function(void Function())? _overlaySetState;
-//
-//   late int selectedHour;
-//   late int selectedMinute;
-//
-//   // 0 -> Hour Column, 1 -> Minute Column
-//   int _activeColumnIndex = 0;
-//
-//   late ScrollController _hourScrollController;
-//   late ScrollController _minuteScrollController;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _timeController = widget.controller ?? TextEditingController();
-//
-//     final now = DateTime.now();
-//
-//     if (_timeController.text.trim().isEmpty) {
-//       selectedHour = now.hour;
-//       selectedMinute = now.minute;
-//       WidgetsBinding.instance.addPostFrameCallback((_) {
-//         if (mounted) {
-//           _updateTimeText();
-//         }
-//       });
-//     } else {
-//       try {
-//         List<String> parts = _timeController.text.trim().split(':');
-//         selectedHour = int.parse(parts[0]);
-//         selectedMinute = int.parse(parts[1]);
-//       } catch (e) {
-//         selectedHour = now.hour;
-//         selectedMinute = now.minute;
-//       }
-//     }
-//
-//     _hourScrollController = ScrollController();
-//     _minuteScrollController = ScrollController();
-//
-//     // Focus change listener UI rebuild aur overlay handle karne k liye
-//     _focusNode.addListener(() {
-//       setState(() {}); // Tab highlight update karne k liye
-//       if (!_focusNode.hasFocus && _overlayEntry != null) {
-//         _closeDropdown();
-//       }
-//     });
-//   }
-//
-//   void _updateTimeText() {
-//     final hourStr = selectedHour.toString().padLeft(2, '0');
-//     final minuteStr = selectedMinute.toString().padLeft(2, '0');
-//     _timeController.text = "$hourStr:$minuteStr";
-//     widget.onTimeSelected?.call(_timeController.text);
-//   }
-//
-//   void _toggleTimeDropdown() {
-//     if (_overlayEntry == null) {
-//       _openDropdown();
-//     } else {
-//       _closeDropdown();
-//     }
-//   }
-//
-//   void _openDropdown() {
-//     if (_overlayEntry != null) return;
-//     _overlayEntry = _buildOverlayEntry();
-//     Overlay.of(context).insert(_overlayEntry!);
-//     _scrollToSelected();
-//   }
-//
-//   void _closeDropdown() {
-//     _overlayEntry?.remove();
-//     _overlayEntry = null;
-//     _overlaySetState = null;
-//   }
-//
-//   void _scrollToSelected() {
-//     WidgetsBinding.instance.addPostFrameCallback((_) {
-//       if (_hourScrollController.hasClients) {
-//         _hourScrollController.animateTo(
-//           (selectedHour * 38.0).clamp(0, _hourScrollController.position.maxScrollExtent),
-//           duration: const Duration(milliseconds: 150),
-//           curve: Curves.easeOut,
-//         );
-//       }
-//       if (_minuteScrollController.hasClients) {
-//         _minuteScrollController.animateTo(
-//           (selectedMinute * 38.0).clamp(0, _minuteScrollController.position.maxScrollExtent),
-//           duration: const Duration(milliseconds: 150),
-//           curve: Curves.easeOut,
-//         );
-//       }
-//     });
-//   }
-//
-//   // Double jump issue fix karne k liye logic clean kar di gayi hai
-//   void _handleKeyNavigation(LogicalKeyboardKey key) {
-//     if (_overlayEntry == null) {
-//       if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.arrowDown || key == LogicalKeyboardKey.space) {
-//         _openDropdown();
-//       }
-//       return;
-//     }
-//
-//     bool shouldUpdateText = false;
-//
-//     if (key == LogicalKeyboardKey.arrowLeft) {
-//       _activeColumnIndex = 0;
-//     } else if (key == LogicalKeyboardKey.arrowRight) {
-//       _activeColumnIndex = 1;
-//     } else if (key == LogicalKeyboardKey.arrowUp) {
-//       if (_activeColumnIndex == 0) {
-//         selectedHour = (selectedHour - 1 < 0) ? 23 : selectedHour - 1;
-//       } else {
-//         selectedMinute = (selectedMinute - 1 < 0) ? 59 : selectedMinute - 1;
-//       }
-//       shouldUpdateText = true;
-//     } else if (key == LogicalKeyboardKey.arrowDown) {
-//       if (_activeColumnIndex == 0) {
-//         selectedHour = (selectedHour + 1 > 23) ? 0 : selectedHour + 1;
-//       } else {
-//         selectedMinute = (selectedMinute + 1 > 59) ? 0 : selectedMinute + 1;
-//       }
-//       shouldUpdateText = true;
-//     } else if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.escape) {
-//       _closeDropdown();
-//       return;
-//     }
-//
-//     if (shouldUpdateText) {
-//       _updateTimeText();
-//       _scrollToSelected();
-//     }
-//
-//     // Single trigger for parent & overlay rebuild
-//     setState(() {});
-//     if (_overlaySetState != null) {
-//       _overlaySetState!(() {});
-//     }
-//   }
-//
-//   OverlayEntry _buildOverlayEntry() {
-//     RenderBox renderBox = context.findRenderObject() as RenderBox;
-//     final size = renderBox.size;
-//
-//     return OverlayEntry(
-//       builder: (context) => Stack(
-//         children: [
-//           Positioned.fill(
-//             child: GestureDetector(
-//               behavior: HitTestBehavior.translucent,
-//               onTap: _closeDropdown,
-//             ),
-//           ),
-//           Positioned(
-//             width: 180,
-//             height: 220,
-//             child: CompositedTransformFollower(
-//               link: _layerLink,
-//               showWhenUnlinked: false,
-//               offset: Offset(0, size.height + 6),
-//               child: Material(
-//                 elevation: 8,
-//                 shadowColor: Colors.black26,
-//                 borderRadius: BorderRadius.circular(10),
-//                 color: Colors.white,
-//                 child: ClipRRect(
-//                   borderRadius: BorderRadius.circular(10),
-//                   child: StatefulBuilder(
-//                     builder: (context, setOverlayState) {
-//                       _overlaySetState = setOverlayState;
-//                       return Column(
-//                         children: [
-//                           Container(
-//                             padding: const EdgeInsets.symmetric(vertical: 6),
-//                             color: Colors.grey.shade100,
-//                             child: Row(
-//                               children: [
-//                                 Expanded(
-//                                   child: Text(
-//                                     "Hour",
-//                                     textAlign: TextAlign.center,
-//                                     style: TextStyle(
-//                                       fontSize: 11,
-//                                       fontWeight: FontWeight.bold,
-//                                       color: _activeColumnIndex == 0 ? Colors.blue.shade700 : Colors.grey.shade600,
-//                                     ),
-//                                   ),
-//                                 ),
-//                                 Expanded(
-//                                   child: Text(
-//                                     "Minute",
-//                                     textAlign: TextAlign.center,
-//                                     style: TextStyle(
-//                                       fontSize: 11,
-//                                       fontWeight: FontWeight.bold,
-//                                       color: _activeColumnIndex == 1 ? Colors.blue.shade700 : Colors.grey.shade600,
-//                                     ),
-//                                   ),
-//                                 ),
-//                               ],
-//                             ),
-//                           ),
-//                           const Divider(height: 1, thickness: 1),
-//                           Expanded(
-//                             child: Row(
-//                               children: [
-//                                 _buildScrollColumn(
-//                                   0,
-//                                   23,
-//                                   selectedHour,
-//                                   _hourScrollController,
-//                                   _activeColumnIndex == 0,
-//                                       (val) {
-//                                     selectedHour = val;
-//                                     _activeColumnIndex = 0;
-//                                     _updateTimeText();
-//                                     _scrollToSelected();
-//                                     setState(() {});
-//                                     setOverlayState(() {});
-//                                   },
-//                                 ),
-//                                 const VerticalDivider(width: 1, thickness: 1),
-//                                 _buildScrollColumn(
-//                                   0,
-//                                   59,
-//                                   selectedMinute,
-//                                   _minuteScrollController,
-//                                   _activeColumnIndex == 1,
-//                                       (val) {
-//                                     selectedMinute = val;
-//                                     _activeColumnIndex = 1;
-//                                     _updateTimeText();
-//                                     _scrollToSelected();
-//                                     setState(() {});
-//                                     setOverlayState(() {});
-//                                   },
-//                                 ),
-//                               ],
-//                             ),
-//                           ),
-//                         ],
-//                       );
-//                     },
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-//
-//   Widget _buildScrollColumn(
-//       int start,
-//       int end,
-//       int selected,
-//       ScrollController controller,
-//       bool isActiveColumn,
-//       Function(int) onSelect,
-//       ) {
-//     return Expanded(
-//       child: ListView.builder(
-//         controller: controller,
-//         padding: EdgeInsets.zero,
-//         itemCount: end - start + 1,
-//         itemExtent: 38.0,
-//         itemBuilder: (context, index) {
-//           int value = start + index;
-//           final valueStr = value.toString().padLeft(2, '0');
-//           final isSelected = value == selected;
-//
-//           return InkWell(
-//             onTap: () => onSelect(value),
-//             child: Container(
-//               alignment: Alignment.center,
-//               color: isSelected
-//                   ? (isActiveColumn ? Colors.blue.shade600 : Colors.blue.shade100)
-//                   : Colors.transparent,
-//               child: Text(
-//                 valueStr,
-//                 style: TextStyle(
-//                   color: isSelected
-//                       ? (isActiveColumn ? Colors.white : Colors.blue.shade900)
-//                       : Colors.black87,
-//                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-//                   fontSize: 13,
-//                 ),
-//               ),
-//             ),
-//           );
-//         },
-//       ),
-//     );
-//   }
-//
-//   @override
-//   void dispose() {
-//     _focusNode.dispose();
-//     _hourScrollController.dispose();
-//     _minuteScrollController.dispose();
-//     if (widget.controller == null) {
-//       _timeController.dispose();
-//     }
-//     _overlayEntry?.remove();
-//     super.dispose();
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Focus(
-//       focusNode: _focusNode,
-//       onKeyEvent: (FocusNode node, KeyEvent event) {
-//         if (event is KeyDownEvent) {
-//           _handleKeyNavigation(event.logicalKey);
-//           return KeyEventResult.handled;
-//         }
-//         return KeyEventResult.ignored;
-//       },
-//       child: CompositedTransformTarget(
-//         link: _layerLink,
-//         child: SizedBox(
-//           height: 42,
-//           width: 150,
-//           child: TextFormField(
-//             controller: _timeController,
-//             readOnly: widget.readOnly,
-//             onTap: _toggleTimeDropdown,
-//             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-//             decoration: InputDecoration(
-//               contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-//               hintText: "Select Time",
-//               suffixIcon: InkWell(
-//                 borderRadius: BorderRadius.circular(20),
-//                 onTap: _toggleTimeDropdown,
-//                 child: Icon(
-//                   Icons.access_time_rounded,
-//                   size: 20,
-//                   color: Colors.grey.shade700,
-//                 ),
-//               ),
-//               // Focused & Enabled Border Colors Tab Highlight ke liye sync kar diye gaye hain
-//               border: OutlineInputBorder(
-//                 borderRadius: BorderRadius.circular(8),
-//                 borderSide: BorderSide(
-//                   color: _focusNode.hasFocus ? Colors.blue : Colors.grey.shade400,
-//                   width: _focusNode.hasFocus ? 2.0 : 1.0,
-//                 ),
-//               ),
-//               enabledBorder: OutlineInputBorder(
-//                 borderRadius: BorderRadius.circular(8),
-//                 borderSide: BorderSide(
-//                   color: _focusNode.hasFocus ? Colors.blue : Colors.grey.shade300,
-//                   width: _focusNode.hasFocus ? 2.0 : 1.0,
-//                 ),
-//               ),
-//               focusedBorder: OutlineInputBorder(
-//                 borderRadius: BorderRadius.circular(8),
-//                 borderSide: const BorderSide(color: Colors.blue, width: 2.0),
-//               ),
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-///===================================
+
 // class CustomTimePicker extends StatefulWidget {
 //   final TextEditingController? controller;
 //   final ValueChanged<String>? onTimeSelected;
