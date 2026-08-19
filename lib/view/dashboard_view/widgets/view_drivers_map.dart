@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -29,6 +30,9 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
   /// Reactive marker list
   final RxList<CustomMarker> trackingMarkers = <CustomMarker>[].obs;
   WebSocketChannel? _channel;
+  StreamSubscription? _channelSub;
+  Timer? _reconnectTimer;
+  bool _disposed = false;
 
   @override
   void initState() {
@@ -40,17 +44,27 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
 
   @override
   void dispose() {
+    _disposed = true;
+    _reconnectTimer?.cancel();
+    _reconnectTimer = null;
+    _channelSub?.cancel();
+    _channelSub = null;
     _channel?.sink.close();
+    _channel = null;
     super.dispose();
   }
 
   void trackingDriverSocket() {
+    // Never open (or re-open) a socket for a State that is gone from the tree.
+    if (_disposed || !mounted) return;
+
     final url = Uri.parse("$socketUrl/driver-tracking-dashboard");
     try {
       _channel = WebSocketChannel.connect(url);
 
-      _channel!.stream.listen(
+      _channelSub = _channel!.stream.listen(
             (message) {
+          if (_disposed || !mounted) return;
           final data = jsonDecode(message);
           if (data['event'] == 'DRIVER_LOCATION_UPDATE' ||
               data['event'] == "DRIVER_BOOKING_STATUS_UPDATE") {
@@ -109,18 +123,30 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
               ),
             );
 
+            if (!mounted) return;
             setState(() {});
           }
         },
         onError: (error) => print("Connection Error: $error"),
         onDone: () {
-          trackingDriverSocket();
           print("🔌 Socket Disconnected");
+          _scheduleReconnect();
         },
       );
     } catch (e) {
       print("Error: $e");
     }
+  }
+
+  /// Reconnects only while this widget is still mounted, and after a short
+  /// delay so a failing endpoint can't spin a tight reconnect loop.
+  void _scheduleReconnect() {
+    if (_disposed || !mounted) return;
+    _reconnectTimer?.cancel();
+    _reconnectTimer = Timer(const Duration(seconds: 2), () {
+      if (_disposed || !mounted) return;
+      trackingDriverSocket();
+    });
   }
 
   Color _statusColor(String? status) {
