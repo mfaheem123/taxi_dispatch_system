@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../component/color.dart';
 import '../../component/textStyle.dart';
@@ -27,10 +28,39 @@ class _NewLoginScreenState extends State<NewLoginScreen> {
     });
   }
 
+  // LOGIN button aur keyboard "Enter" dono yahi call karte hain
+  Future<void> _handleLogin() async {
+    // Double submit se bachne ke liye
+    if (loader.value) return;
+
+    if (controller.usernameController.text.isEmpty ||
+        controller.passwordController.text.isEmpty) {
+      BotToast.showText(text: "PLEASE ENTER USERNAME OR PASSWORD");
+      return;
+    }
+    loader(true);
+    await controller.postLoginDetails();
+    loader(false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
+      // Screen par kahin bhi Enter dabao to login chalega. Ye focus chain me
+      // sabse upar hai, isliye jo key event text field handle na kare wo yahan
+      // bubble hoke aa jata hai.
+      body: Focus(
+        autofocus: true,
+        onKeyEvent: (node, event) {
+          if (event is KeyDownEvent &&
+              (event.logicalKey == LogicalKeyboardKey.enter ||
+                  event.logicalKey == LogicalKeyboardKey.numpadEnter)) {
+            _handleLogin();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: Stack(
         fit: StackFit.expand,
         children: [
           Image.asset('assets/login_backImg.png', fit: BoxFit.cover),
@@ -102,6 +132,8 @@ class _NewLoginScreenState extends State<NewLoginScreen> {
                                     borderColor: Colors.grey.shade400,
                                     prefixIcon: const Icon(Icons.person_outline, size: 17, color: Color(0xFF9E9E9E)),
                                     inputFormatters: [UpperCaseTextFormatter()],
+                                    textInputAction: TextInputAction.done,
+                                    onSubmitted: (_) => _handleLogin(),
                                     contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
                                   ),
 
@@ -128,6 +160,8 @@ class _NewLoginScreenState extends State<NewLoginScreen> {
                                     borderWidth: 1,
                                     borderColor: Colors.grey.shade400,
                                     prefixIcon: const Icon(Icons.lock_outline, size: 17, color: Color(0xFF9E9E9E)),
+                                    textInputAction: TextInputAction.done,
+                                    onSubmitted: (_) => _handleLogin(),
                                     suffixIcon: IconButton(
                                       onPressed: () => _obscurePassword.value = !_obscurePassword.value,
                                       icon: Icon(_obscurePassword.value ? Icons.visibility_off_outlined : Icons.visibility_outlined,
@@ -143,15 +177,7 @@ class _NewLoginScreenState extends State<NewLoginScreen> {
                                     width: double.infinity,
                                     height: 45,
                                     child: ElevatedButton(
-                                      onPressed: loader.value ? null : () async {
-                                        if (controller.usernameController.text.isEmpty || controller.passwordController.text.isEmpty) {
-                                          BotToast.showText(text: "PLEASE ENTER USERNAME OR PASSWORD");
-                                          return;
-                                        }
-                                        loader(true);
-                                          await controller.postLoginDetails();
-                                          loader(false);
-                                      },
+                                      onPressed: loader.value ? null : _handleLogin,
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: DynamicColors.primaryClr,
                                         disabledBackgroundColor: DynamicColors.primaryClr,
@@ -184,6 +210,7 @@ class _NewLoginScreenState extends State<NewLoginScreen> {
             },
           ),
         ],
+        ),
       ),
     );
   }
