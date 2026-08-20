@@ -2,6 +2,7 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -69,158 +70,160 @@ class _CustomerInvoiceListState extends State<CustomerInvoiceList> {
       autofocus: true,
       focusNode: FocusNode(),
       onKey: _handleKey,
-      child: GetBuilder<AccountController>(
-          builder: (controller) {
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
+      child: PageScrollWrapper(
+        child: GetBuilder<AccountController>(
+            builder: (controller) {
+              return SingleChildScrollView(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
 
-                      Text("USER (7)",
-                        style: mozillaTextSemiBoldText(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 17
-                        ),
-                      ),
-
-                      SizedBox(
-                        width: 20,
-                      ),
-
-                      Checkbox(
-                          value: controller.activeDrivers.value,
-                          onChanged: (v){
-                            controller.activeDrivers.value = v!;
-                            controller.update();
-                          }),
-
-                      Text(AppText.active,
-                        style: mozillaTextSemiBoldText(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            color: DynamicColors.redClr
-                        ),
-                      ),
-
-                      SizedBox(
-                        width: 60,
-                      ),
-
-                      Container(
-                        decoration: BoxDecoration(
-                            color: DynamicColors.primaryClr,
-                            borderRadius: BorderRadius.circular(8)
+                        Text("USER (7)",
+                          style: mozillaTextSemiBoldText(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 17
+                          ),
                         ),
 
-                        child: IconButton(
-                            padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
-                            onPressed: (){
-
-                            }, icon: Icon(Icons.refresh,
-                          color: DynamicColors.whiteClr,
-                          size: 25,
-                        )),
-                      )
-                    ],
-                  ),
-
-                  SizedBox(
-                    height: 12,
-                  ),
-
-                  SingleChildScrollView(
-
-                    scrollDirection: Axis.horizontal,
-
-                    child: DataTable(
-
-                        headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-
-                        dataRowMinHeight: 48,
-
-                        dataRowMaxHeight: 56,
-
-                        headingTextStyle: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13,
+                        SizedBox(
+                          width: 20,
                         ),
 
-                        dataTextStyle:
-                        TextStyle
-                          (
+                        Checkbox(
+                            value: controller.activeDrivers.value,
+                            onChanged: (v){
+                              controller.activeDrivers.value = v!;
+                              controller.update();
+                            }),
 
-                          fontSize: 10,
-
+                        Text(AppText.active,
+                          style: mozillaTextSemiBoldText(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                              color: DynamicColors.redClr
+                          ),
                         ),
 
-                        decoration: BoxDecoration
-
-                          (
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
+                        SizedBox(
+                          width: 60,
                         ),
 
-                        columns: [
+                        Container(
+                          decoration: BoxDecoration(
+                              color: DynamicColors.primaryClr,
+                              borderRadius: BorderRadius.circular(8)
+                          ),
 
-                          buildHeaderWithSearch(title: "USERNAME"),
-                          buildHeaderWithSearch(title: "EMAIL"),
-                          buildHeaderWithSearch(title: "PHONE #"),
-                          buildHeaderWithSearch(title: "FAX"),
-                          buildHeaderWithSearch(title: "ROLE"),
-                          buildHeaderWithSearch(title: "SUBSIDIARY"),
-                          buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
+                          child: IconButton(
+                              padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
+                              onPressed: (){
 
-                        ],
-
-                        rows: List.generate(totalRows, (index) {
-                          bool isSelected = index == selectedRowIndex;
-                          return DataRow(
-                            cells: [
-
-                              const DataCell(Text("Saloon")),
-                              const DataCell(Text("4")),
-                              const DataCell(Text("2")),
-                              const DataCell(Text("2")),
-                              const DataCell(Text("£ 7.00")),
-                              const DataCell(Text("2.00 mi")),
-                              DataCell(
-                                Row(
-                                  children: [
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(Icons.search,
-                                        size: 28,
-                                      ),
-                                    ),
-                                    Text("|"),
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(Icons.delete_forever,
-                                        size: 28,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                            ],
-                          );
-
-                        })
+                              }, icon: Icon(Icons.refresh,
+                            color: DynamicColors.whiteClr,
+                            size: 25,
+                          )),
+                        )
+                      ],
                     ),
-                  )
-                ],
-              ),
-            );
-          }
+
+                    SizedBox(
+                      height: 12,
+                    ),
+
+                    SingleChildScrollView(
+
+                      scrollDirection: Axis.horizontal,
+
+                      child: DataTable(
+
+                          headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+
+                          dataRowMinHeight: 48,
+
+                          dataRowMaxHeight: 56,
+
+                          headingTextStyle: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 13,
+                          ),
+
+                          dataTextStyle:
+                          TextStyle
+                            (
+
+                            fontSize: 10,
+
+                          ),
+
+                          decoration: BoxDecoration
+
+                            (
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
+                          ),
+
+                          columns: [
+
+                            buildHeaderWithSearch(title: "USERNAME"),
+                            buildHeaderWithSearch(title: "EMAIL"),
+                            buildHeaderWithSearch(title: "PHONE #"),
+                            buildHeaderWithSearch(title: "FAX"),
+                            buildHeaderWithSearch(title: "ROLE"),
+                            buildHeaderWithSearch(title: "SUBSIDIARY"),
+                            buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
+
+                          ],
+
+                          rows: List.generate(totalRows, (index) {
+                            bool isSelected = index == selectedRowIndex;
+                            return DataRow(
+                              cells: [
+
+                                const DataCell(Text("Saloon")),
+                                const DataCell(Text("4")),
+                                const DataCell(Text("2")),
+                                const DataCell(Text("2")),
+                                const DataCell(Text("£ 7.00")),
+                                const DataCell(Text("2.00 mi")),
+                                DataCell(
+                                  Row(
+                                    children: [
+                                      OutlinedButton(
+                                        style: OutlinedButton.styleFrom(
+                                          side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                        ),
+                                        onPressed: () {},
+                                        child: Icon(Icons.search,
+                                          size: 28,
+                                        ),
+                                      ),
+                                      Text("|"),
+                                      OutlinedButton(
+                                        style: OutlinedButton.styleFrom(
+                                          side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                        ),
+                                        onPressed: () {},
+                                        child: Icon(Icons.delete_forever,
+                                          size: 28,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                              ],
+                            );
+
+                          })
+                      ),
+                    )
+                  ],
+                ),
+              );
+            }
+        ),
       ),
     );
   }

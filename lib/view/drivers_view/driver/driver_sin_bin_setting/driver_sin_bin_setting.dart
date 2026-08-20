@@ -2,6 +2,7 @@
 
 
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -42,157 +43,159 @@ class _DriverSinBinSettingState extends State<DriverSinBinSetting> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<DriverController>(builder: (controller) {
-      return LayoutBuilder(
-          builder: (context, constraints) {
-            final double maxWidth = constraints.maxWidth;
-            final bool isMobile = maxWidth < 600;
-            final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+    return PageScrollWrapper(
+      child: GetBuilder<DriverController>(builder: (controller) {
+        return LayoutBuilder(
+            builder: (context, constraints) {
+              final double maxWidth = constraints.maxWidth;
+              final bool isMobile = maxWidth < 600;
+              final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-            // Instead of fixed width, we calculate flexible field widths
-            final double fieldWidth = isMobile
-                ? maxWidth // full width
-                : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
+              // Instead of fixed width, we calculate flexible field widths
+              final double fieldWidth = isMobile
+                  ? maxWidth // full width
+                  : isTablet
+                  ? maxWidth / 2
+                  : maxWidth / 4;
 
-            return Container(
-              width: fieldWidth*2.8,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
-              ),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                      color: DynamicColors.gryClr.withOpacity(0.5),
-                      child: Text(AppText.driverSinBinSetting, style: titleDesign()),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
-                      child: maxWidth >1034? Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                        CustomTextField(
-                        borderRadius: 4,
-                        controller: controller.recoverJobController,
-                        width: fieldWidth/2,
-                        hintText: AppText.recoverJob,
-                        columnText: true,
+              return Container(
+                width: fieldWidth*2.8,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                        color: DynamicColors.gryClr.withOpacity(0.5),
+                        child: Text(AppText.driverSinBinSetting, style: titleDesign()),
                       ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+                        child: maxWidth >1034? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
                           CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.rejectJobController,
-                            width: fieldWidth/2,
-                            hintText: AppText.rejectJob,
-                            columnText: true,
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.ignoreJobController,
-                            width: fieldWidth/2,
-                            hintText: AppText.ignoreJob,
-                            columnText: true,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 15.0),
-                            child: CustomButton(
+                          borderRadius: 4,
+                          controller: controller.recoverJobController,
+                          width: fieldWidth/2,
+                          hintText: AppText.recoverJob,
+                          columnText: true,
+                        ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.rejectJobController,
                               width: fieldWidth/2,
-                              height: 35,
-                              verticalPadding: 0.0,
-                              btnText: AppText.save,
-                              borderRadius: 4,
-                              style: mozillaTextRegularText(fontSize: 14,
-                              color: DynamicColors.whiteClr
-                              ),
-                                onTap: () {
-                                  SuccessAlert.show("Data saved successfully!");
-                                }
+                              hintText: AppText.rejectJob,
+                              columnText: true,
                             ),
-                          )
-                        ],
-                      ):
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.recoverJobController,
-                            width: fieldWidth*2,
-                            hintText: AppText.recoverJob,
-                            columnText: true,
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.rejectJobController,
-                            width: fieldWidth*2,
-                            hintText: AppText.rejectJob,
-                            columnText: true,
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.ignoreJobController,
-                            width: fieldWidth*2,
-                            hintText: AppText.ignoreJob,
-                            columnText: true,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 15.0),
-                            child: CustomButton(
-                              width: maxWidth >1034? fieldWidth/2: fieldWidth*2,
-                              height: 35,
-                              verticalPadding: 0.0,
-                              btnText: AppText.save,
+                            CustomTextField(
                               borderRadius: 4,
-                              style: mozillaTextRegularText(fontSize: 14,
-                                  color: DynamicColors.whiteClr
-                              ),
+                              controller: controller.ignoreJobController,
+                              width: fieldWidth/2,
+                              hintText: AppText.ignoreJob,
+                              columnText: true,
                             ),
-                          )
-                        ],
-                      ),
-                    ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: SizedBox(
-                        width: Get.width,
-                        child: DatatableWidget(
-                          columns: [
-                            buildHeaderWithSearch(title: "USERNAME"),
-                            buildHeaderWithSearch(title: "NAME"),
-                            buildHeaderWithSearch(title: "VEHICLE"),
-                            buildHeaderWithSearch(title: "ACTIONS"),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 15.0),
+                              child: CustomButton(
+                                width: fieldWidth/2,
+                                height: 35,
+                                verticalPadding: 0.0,
+                                btnText: AppText.save,
+                                borderRadius: 4,
+                                style: mozillaTextRegularText(fontSize: 14,
+                                color: DynamicColors.whiteClr
+                                ),
+                                  onTap: () {
+                                    SuccessAlert.show("Data saved successfully!");
+                                  }
+                              ),
+                            )
                           ],
-                          totalRow: totalRows,
-                          cells: [
-                             DataCell(Center(child: Text("#PHC VEHICLE"))),
-                             DataCell(Center(child: Text("PHC VEHICLE"))),
-                             DataCell(Center(child: Text("#PHC VEHICLE"))),
-                             DataCell(Center(child: Text("PHC VEHICLE"))),
+                        ):
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.recoverJobController,
+                              width: fieldWidth*2,
+                              hintText: AppText.recoverJob,
+                              columnText: true,
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.rejectJobController,
+                              width: fieldWidth*2,
+                              hintText: AppText.rejectJob,
+                              columnText: true,
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.ignoreJobController,
+                              width: fieldWidth*2,
+                              hintText: AppText.ignoreJob,
+                              columnText: true,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 15.0),
+                              child: CustomButton(
+                                width: maxWidth >1034? fieldWidth/2: fieldWidth*2,
+                                height: 35,
+                                verticalPadding: 0.0,
+                                btnText: AppText.save,
+                                borderRadius: 4,
+                                style: mozillaTextRegularText(fontSize: 14,
+                                    color: DynamicColors.whiteClr
+                                ),
+                              ),
+                            )
                           ],
                         ),
                       ),
-                    ),
-                  ],
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SizedBox(
+                          width: Get.width,
+                          child: DatatableWidget(
+                            columns: [
+                              buildHeaderWithSearch(title: "USERNAME"),
+                              buildHeaderWithSearch(title: "NAME"),
+                              buildHeaderWithSearch(title: "VEHICLE"),
+                              buildHeaderWithSearch(title: "ACTIONS"),
+                            ],
+                            totalRow: totalRows,
+                            cells: [
+                               DataCell(Center(child: Text("#PHC VEHICLE"))),
+                               DataCell(Center(child: Text("PHC VEHICLE"))),
+                               DataCell(Center(child: Text("#PHC VEHICLE"))),
+                               DataCell(Center(child: Text("PHC VEHICLE"))),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          }
-        );
-      }
+              );
+            }
+          );
+        }
+      ),
     );
   }
 }

@@ -2,6 +2,7 @@
 
 
 import 'package:dashboard_new1/component/color.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -40,44 +41,46 @@ class _CreateEscoptState extends State<CreateEscopt> {
     double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<AccountController>(
-        builder: (controller) {
-          return LayoutBuilder(builder: (context, constraints) {
-            final double maxWidth = constraints.maxWidth;
-            final bool isMobile = maxWidth < 600;
-            final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+    return PageScrollWrapper(
+      child: GetBuilder<AccountController>(
+          builder: (controller) {
+            return LayoutBuilder(builder: (context, constraints) {
+              final double maxWidth = constraints.maxWidth;
+              final bool isMobile = maxWidth < 600;
+              final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-            // Instead of fixed width, we calculate flexible field widths
-            final double fieldWidth = isMobile
-                ? maxWidth // full width
-                : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
+              // Instead of fixed width, we calculate flexible field widths
+              final double fieldWidth = isMobile
+                  ? maxWidth // full width
+                  : isTablet
+                  ? maxWidth / 2
+                  : maxWidth / 4;
 
-            return Wrap(
-              children: [
-                Container(
-                  width: Get.width,
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                  color: DynamicColors.gryClr.withOpacity(0.5),
-                  child: Center(
-                    child: Text(AppText.escopt, style: titleDesign()),
+              return Wrap(
+                children: [
+                  Container(
+                    width: Get.width,
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                    color: DynamicColors.gryClr.withOpacity(0.5),
+                    child: Center(
+                      child: Text(AppText.escopt, style: titleDesign()),
+                    ),
                   ),
-                ),
-                Container(
-                width: fieldWidth,
-                  height: 150,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: DynamicColors.gryClr)
+                  Container(
+                  width: fieldWidth,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: DynamicColors.gryClr)
+                    ),
+                      child: Text(AppText.uploadImage),
                   ),
-                    child: Text(AppText.uploadImage),
-                ),
-              ],
-            );
-          }
-        );
-      }
+                ],
+              );
+            }
+          );
+        }
+      ),
     );
   }
 }

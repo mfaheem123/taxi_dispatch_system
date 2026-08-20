@@ -2,6 +2,7 @@
 
 
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -80,261 +81,263 @@ class _LoginDriversScreenState extends State<LoginDriversScreen> {
             : isTablet
             ? maxWidth / 2
             : maxWidth / 4;
-          return GetBuilder<DriverController>(
+          return PageScrollWrapper(
+            child: GetBuilder<DriverController>(
 
-            initState: (state) {
-              controller.getDriverLoginLogout();
-            },
-              builder: (controller) {
-                return
+              initState: (state) {
+                controller.getDriverLoginLogout();
+              },
+                builder: (controller) {
+                  return
 
-                  controller.driverLoginLogoutModel == null? CircularProgressIndicator():
-                  SingleChildScrollView(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Text(AppText.loggedInDrivers+" (${controller.driverLoginLogoutModel!.count.toString() ?? 0})",
-                            style: mozillaTextSemiBoldText(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 17
-                            ),
-                          ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Obx(() => Checkbox(
-                            value: controller.activeLogout.value,
-                            onChanged: (v) {
-                              controller.activeLogout.value = v!;
-                              controller.driverloginSearch(); // Refresh data on toggle
-                            },
-                          )),
-                          Text(AppText.loggedOut,
-                            style: mozillaTextSemiBoldText(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14,
-                                color: DynamicColors.redClr
-                            ),
-                          ),
-
-                          SizedBox(
-                            width: 60,
-                          ),
-                          CustomButton(
-                            height: 40,
-                            width: 80,
-                            verticalPadding: 0.0,
-                            borderRadius: 4,
-                            widget: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
-                              child: Icon(Icons.refresh,
-                                color: DynamicColors.whiteClr,
-                                size: 25,
+                    controller.driverLoginLogoutModel == null? CircularProgressIndicator():
+                    SingleChildScrollView(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Text(AppText.loggedInDrivers+" (${controller.driverLoginLogoutModel!.count.toString() ?? 0})",
+                              style: mozillaTextSemiBoldText(
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 17
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 12,
-                      ),
+                            SizedBox(
+                              width: 20,
+                            ),
+                            Obx(() => Checkbox(
+                              value: controller.activeLogout.value,
+                              onChanged: (v) {
+                                controller.activeLogout.value = v!;
+                                controller.driverloginSearch(); // Refresh data on toggle
+                              },
+                            )),
+                            Text(AppText.loggedOut,
+                              style: mozillaTextSemiBoldText(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                  color: DynamicColors.redClr
+                              ),
+                            ),
 
-                              // buildHeaderWithSearch(title: "USERNAME"),
-                              // buildHeaderWithSearch(title: "NAME"),
-                              // buildHeaderWithSearch(title: "VEHICLE"),
-                              // buildHeaderWithSearch(title: "VEHICLE EXPIRY"),
-                              // buildHeaderWithSearch(title: "DRIVER EXPIRY"),
-                              // buildHeaderWithSearch(title: "MOT EXPIRY"),
-                              // buildHeaderWithSearch(title: "MOT2 EXPIRY"),
-                              // buildHeaderWithSearch(title: "INSURANCE EXPIRY"),
-                              // buildHeaderWithSearch(title: "LICENSE EXPIRY"),
-                              // buildHeaderWithSearch(title: "MOBILE #"),
-                              // buildHeaderWithSearch(title: "SUBSIDIARY"),
-                              // buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: SizedBox(
-                          width: isMobile || isTablet
-                              ? Get.width + 700
-                              : Get.width,
-                          child: DatatableWidget(
-                            columns: [
-                              buildHeaderWithSearch(
-                                title: "USERNAME",
-                                onChanged: (v) {
-                                  controller.searchUsername.value = v;
-                                  controller.driverloginSearch();
-                                },
+                            SizedBox(
+                              width: 60,
+                            ),
+                            CustomButton(
+                              height: 40,
+                              width: 80,
+                              verticalPadding: 0.0,
+                              borderRadius: 4,
+                              widget: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
+                                child: Icon(Icons.refresh,
+                                  color: DynamicColors.whiteClr,
+                                  size: 25,
+                                ),
                               ),
-                              buildHeaderWithSearch(
-                                title: "NAME",
-                                onChanged: (v) {
-                                  controller.searchName.value = v;
-                                  controller.driverloginSearch();
-                                },
-                              ),
-                              buildHeaderWithSearch(
-                                title: "VEHICLE",
-                                onChanged: (v) {
-                                  controller.searchLoginVehicleName.value = v;
-                                  controller.driverloginSearch();
-                                },
-                              ),
-                              buildHeaderWithSearch(
-                                title: "VEHICLE EXPIRY",
-                                onChanged: (v) {
-                                  controller.searchVehicleloginExpiry.value = v;
-                                  controller.driverloginSearch();
-                                },
-                              ),
-                              buildHeaderWithSearch(
-                                title: "DRIVER EXPIRY",
-                                onChanged: (v) {
-                                  controller.searchDriverloginExpiry.value = v;
-                                  controller.driverloginSearch();
-                                },
-                              ),
-                              buildHeaderWithSearch(
-                                title: "MOT EXPIRY",
-                                onChanged: (v) {
-                                  controller.searchMOTLoginExpiry.value = v;
-                                  controller.driverloginSearch();
-                                },
-                              ),
-                              buildHeaderWithSearch(
-                                title: "MOT2 EXPIRY",
-                                onChanged: (v) {
-                                  controller.searchMOT2LoginExpiry.value = v;
-                                  controller.driverloginSearch();
-                                },
-                              ),
-                              buildHeaderWithSearch(
-                                title: "INSURANCE EXPIRY",
-                                onChanged: (v) {
-                                  controller.searchInsuranceLoginExpiry.value =
-                                      v;
-                                  controller.driverloginSearch();
-                                },
-                              ),
-                              buildHeaderWithSearch(
-                                title: "LICENSE EXPIRY",
-                                onChanged: (v) {
-                                  controller.searchLicenseLoginExpiry.value = v;
-                                  controller.driverloginSearch();
-                                },
-                              ),
-                              buildHeaderWithSearch(
-                                title: "MOBILE #",
-                                onChanged: (v) {
-                                  controller.searchMobileLogin.value = v;
-                                  controller.driverloginSearch();
-                                },
-                              ),
-                              buildHeaderWithSearch(
-                                title: "DRIVER ACCESS",
-                                onChanged: (v) {
-                                  controller.searchSubsiDiaryLogin.value = v;
-                                  controller.driverloginSearch();
-                                },
-                              ),
-                              // buildHeaderWithSearch(
-                              //     title: "ACTIONS", removeSearching: true),
-                            ],
-                            totalRow: listToShow.length ?? 0,
-                            rows: listToShow.map((item) {
-                              return DataRow(
-                                cells: [
-                                  DataCell(Center(
-                                      child: Text(
-                                          (item.username ?? "-").toUpperCase()))),
-                                  DataCell(Center(
-                                      child: Text((item.name ?? "-").toUpperCase()))),
-                                  DataCell(Center(
-                                      child: Text(
-                                          (item.vehicle?.vehicleType?.name ??
-                                              "-").toUpperCase()))),
-                                  DataCell(Center(
-                                      child: Text(item.vehicle?.endDate ??
-                                          "-"))),
-                                  DataCell(Center(
-                                      child:
-                                      Text(item.endDate ?? "-"))),
-                                  DataCell(Center(
-                                      child: Text(
-                                          item.motExpiry ?? "-"))),
-                                  DataCell(Center(
-                                      child: Text(
-                                          item.mot2Expiry ?? "-"))),
-                                  DataCell(Center(
-                                      child: Text(item.insuranceExpiry ??
-                                          "-"))),
-                                  DataCell(Center(
-                                      child: Text(item.licenceExpiry ??
-                                          "-"))),
-                                  DataCell(Center(
-                                      child:
-                                      Text(item.mobile ?? "-"))),
-                                  DataCell(Center(
-                                      child: Text(item.driverAccessToken ??
-                                          "-"))),
-                                  // DataCell(
-                                  //   Center(
-                                  //     child: Row(
-                                  //       mainAxisAlignment:
-                                  //       MainAxisAlignment.center,
-                                  //       children: [
-                                  //         OutlinedButton(
-                                  //           style: OutlinedButton.styleFrom(
-                                  //             side: BorderSide(
-                                  //               color: Colors.transparent,
-                                  //             ), // border color & thickness
-                                  //           ),
-                                  //           onPressed: () {
-                                  //             controller.getCombineVehicle(
-                                  //                 id: item.id);
-                                  //           },
-                                  //           child: Icon(
-                                  //             Icons.edit_calendar,
-                                  //             size: 28,
-                                  //           ),
-                                  //         ),
-                                  //         Text("|"),
-                                  //         OutlinedButton(
-                                  //           style: OutlinedButton.styleFrom(
-                                  //             side: BorderSide(
-                                  //               color: Colors.transparent,
-                                  //             ), // border color & thickness
-                                  //           ),
-                                  //           onPressed: () {
-                                  //             controller.driverLoginLogoutDelete(item.id);
-                                  //           },
-                                  //           child: Icon(
-                                  //             Icons.delete_forever,
-                                  //             size: 28,
-                                  //             color: DynamicColors.redClr,
-                                  //           ),
-                                  //         ),
-                                  //       ],
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                ],
-                              );
-                            }).toList(),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 12,
+                        ),
+
+                                // buildHeaderWithSearch(title: "USERNAME"),
+                                // buildHeaderWithSearch(title: "NAME"),
+                                // buildHeaderWithSearch(title: "VEHICLE"),
+                                // buildHeaderWithSearch(title: "VEHICLE EXPIRY"),
+                                // buildHeaderWithSearch(title: "DRIVER EXPIRY"),
+                                // buildHeaderWithSearch(title: "MOT EXPIRY"),
+                                // buildHeaderWithSearch(title: "MOT2 EXPIRY"),
+                                // buildHeaderWithSearch(title: "INSURANCE EXPIRY"),
+                                // buildHeaderWithSearch(title: "LICENSE EXPIRY"),
+                                // buildHeaderWithSearch(title: "MOBILE #"),
+                                // buildHeaderWithSearch(title: "SUBSIDIARY"),
+                                // buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: SizedBox(
+                            width: isMobile || isTablet
+                                ? Get.width + 700
+                                : Get.width,
+                            child: DatatableWidget(
+                              columns: [
+                                buildHeaderWithSearch(
+                                  title: "USERNAME",
+                                  onChanged: (v) {
+                                    controller.searchUsername.value = v;
+                                    controller.driverloginSearch();
+                                  },
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "NAME",
+                                  onChanged: (v) {
+                                    controller.searchName.value = v;
+                                    controller.driverloginSearch();
+                                  },
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "VEHICLE",
+                                  onChanged: (v) {
+                                    controller.searchLoginVehicleName.value = v;
+                                    controller.driverloginSearch();
+                                  },
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "VEHICLE EXPIRY",
+                                  onChanged: (v) {
+                                    controller.searchVehicleloginExpiry.value = v;
+                                    controller.driverloginSearch();
+                                  },
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "DRIVER EXPIRY",
+                                  onChanged: (v) {
+                                    controller.searchDriverloginExpiry.value = v;
+                                    controller.driverloginSearch();
+                                  },
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "MOT EXPIRY",
+                                  onChanged: (v) {
+                                    controller.searchMOTLoginExpiry.value = v;
+                                    controller.driverloginSearch();
+                                  },
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "MOT2 EXPIRY",
+                                  onChanged: (v) {
+                                    controller.searchMOT2LoginExpiry.value = v;
+                                    controller.driverloginSearch();
+                                  },
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "INSURANCE EXPIRY",
+                                  onChanged: (v) {
+                                    controller.searchInsuranceLoginExpiry.value =
+                                        v;
+                                    controller.driverloginSearch();
+                                  },
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "LICENSE EXPIRY",
+                                  onChanged: (v) {
+                                    controller.searchLicenseLoginExpiry.value = v;
+                                    controller.driverloginSearch();
+                                  },
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "MOBILE #",
+                                  onChanged: (v) {
+                                    controller.searchMobileLogin.value = v;
+                                    controller.driverloginSearch();
+                                  },
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "DRIVER ACCESS",
+                                  onChanged: (v) {
+                                    controller.searchSubsiDiaryLogin.value = v;
+                                    controller.driverloginSearch();
+                                  },
+                                ),
+                                // buildHeaderWithSearch(
+                                //     title: "ACTIONS", removeSearching: true),
+                              ],
+                              totalRow: listToShow.length ?? 0,
+                              rows: listToShow.map((item) {
+                                return DataRow(
+                                  cells: [
+                                    DataCell(Center(
+                                        child: Text(
+                                            (item.username ?? "-").toUpperCase()))),
+                                    DataCell(Center(
+                                        child: Text((item.name ?? "-").toUpperCase()))),
+                                    DataCell(Center(
+                                        child: Text(
+                                            (item.vehicle?.vehicleType?.name ??
+                                                "-").toUpperCase()))),
+                                    DataCell(Center(
+                                        child: Text(item.vehicle?.endDate ??
+                                            "-"))),
+                                    DataCell(Center(
+                                        child:
+                                        Text(item.endDate ?? "-"))),
+                                    DataCell(Center(
+                                        child: Text(
+                                            item.motExpiry ?? "-"))),
+                                    DataCell(Center(
+                                        child: Text(
+                                            item.mot2Expiry ?? "-"))),
+                                    DataCell(Center(
+                                        child: Text(item.insuranceExpiry ??
+                                            "-"))),
+                                    DataCell(Center(
+                                        child: Text(item.licenceExpiry ??
+                                            "-"))),
+                                    DataCell(Center(
+                                        child:
+                                        Text(item.mobile ?? "-"))),
+                                    DataCell(Center(
+                                        child: Text(item.driverAccessToken ??
+                                            "-"))),
+                                    // DataCell(
+                                    //   Center(
+                                    //     child: Row(
+                                    //       mainAxisAlignment:
+                                    //       MainAxisAlignment.center,
+                                    //       children: [
+                                    //         OutlinedButton(
+                                    //           style: OutlinedButton.styleFrom(
+                                    //             side: BorderSide(
+                                    //               color: Colors.transparent,
+                                    //             ), // border color & thickness
+                                    //           ),
+                                    //           onPressed: () {
+                                    //             controller.getCombineVehicle(
+                                    //                 id: item.id);
+                                    //           },
+                                    //           child: Icon(
+                                    //             Icons.edit_calendar,
+                                    //             size: 28,
+                                    //           ),
+                                    //         ),
+                                    //         Text("|"),
+                                    //         OutlinedButton(
+                                    //           style: OutlinedButton.styleFrom(
+                                    //             side: BorderSide(
+                                    //               color: Colors.transparent,
+                                    //             ), // border color & thickness
+                                    //           ),
+                                    //           onPressed: () {
+                                    //             controller.driverLoginLogoutDelete(item.id);
+                                    //           },
+                                    //           child: Icon(
+                                    //             Icons.delete_forever,
+                                    //             size: 28,
+                                    //             color: DynamicColors.redClr,
+                                    //           ),
+                                    //         ),
+                                    //       ],
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                  ],
+                                );
+                              }).toList(),
+                            ),
                           ),
                         ),
-                      ),
-                      PaginationWidget(
-                        currentPage: controller.driverCurrentPage.value,
-                        totalPages: controller.driverTotalPage.value,
-                        onPageChange: controller.driverPage,
-                      ),
-                    ],
-                  ),
-                );
-              }
+                        PaginationWidget(
+                          currentPage: controller.driverCurrentPage.value,
+                          totalPages: controller.driverTotalPage.value,
+                          onPageChange: controller.driverPage,
+                        ),
+                      ],
+                    ),
+                  );
+                }
+            ),
           );
         }
       ),
