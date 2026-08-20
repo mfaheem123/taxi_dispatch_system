@@ -10,20 +10,40 @@ String employeeReportModelToJson(EmployeeReportModel data) => json.encode(data.t
 
 class EmployeeReportModel {
   bool? status;
+  int? page;
+  int? limit;
+  int? total;
+  int? totalPages;
+  int? count;
   List<EmployeeShiftHistory>? employeeShiftHistory;
 
   EmployeeReportModel({
     this.status,
+    this.page,
+    this.limit,
+    this.total,
+    this.totalPages,
+    this.count,
     this.employeeShiftHistory,
   });
 
   factory EmployeeReportModel.fromJson(Map<String, dynamic> json) => EmployeeReportModel(
     status: json["status"],
+    page: json["page"],
+    limit: json["limit"],
+    total: json["total"],
+    totalPages: json["total_pages"],
+    count: json["count"],
     employeeShiftHistory: json["employee_shift_history"] == null ? [] : List<EmployeeShiftHistory>.from(json["employee_shift_history"]!.map((x) => EmployeeShiftHistory.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
     "status": status,
+    "page": page,
+    "limit": limit,
+    "total": total,
+    "total_pages": totalPages,
+    "count": count,
     "employee_shift_history": employeeShiftHistory == null ? [] : List<dynamic>.from(employeeShiftHistory!.map((x) => x.toJson())),
   };
 }

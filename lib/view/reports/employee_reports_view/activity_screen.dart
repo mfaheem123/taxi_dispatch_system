@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import '../../../component/customButton.dart';
 import '../../../component/datatable_widget.dart';
 import '../../../component/dropdown_button.dart';
+import '../../../component/pagination.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
 import '../../dashboard_view/booking_table.dart';
@@ -294,6 +295,11 @@ class _ActivityScreenState extends State<ActivityScreen> {
                             ),
                         ]),
                   ),
+                ),
+                PaginationWidget(
+                  currentPage: controller.currentEmployeePage.value,
+                  totalPages: controller.totalEmployeePages.value,
+                  onPageChange: controller.onPageActivity,
                 ),
               ],
             ));

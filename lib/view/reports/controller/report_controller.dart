@@ -90,7 +90,7 @@ class ReportController extends GetxController {
             "driver_id": selectDriverObject?.id.toString(),
             "from_date": formattedFromDate,
             "to_date" : toDateFormate,
-            "driver_name": searchDrivers.value.toLowerCase(),
+            "username": searchDrivers.value.toLowerCase(),
             "booking": searchBookings.value.toLowerCase(),
             "login_date": searchLoginDate.value.toLowerCase(),
             "login_time": searchLoginTime.value.toLowerCase(),
@@ -163,13 +163,18 @@ class ReportController extends GetxController {
   RxString searchLogsDropoff = ''.obs;
   RxString searchLogsFares = ''.obs;
 
+  /// >>>>>>>>>>>>>>>>>>>>> Pagination Work
+  var currentLogsPage = 1.obs;
+  var totalLogsPages = 1.obs;
+  final int logsLimit = 20;
+
+
   getDriverLogs() async {
     if(selectDriverObject == null) {
       BotToast.showText(text: "PLEASE SELECT A DRIVER");
       return;
     }
     isLoadingLogs(true);
-
     try{
       String formattedFromDate = fromDate.value != null
           ? DateFormat('yyyy-MM-dd').format(fromDate.value!)
@@ -180,6 +185,9 @@ class ReportController extends GetxController {
           : "";
       var response = await Api().get("bookings/driver-logs",
           queryParameters: {
+            "page": currentLogsPage.value,
+            "limit": logsLimit,
+
             "driver_id": selectDriverObject?.id.toString(),
             "from_date": formattedFromDate,
             "to_date": formattedToDate,
@@ -196,6 +204,7 @@ class ReportController extends GetxController {
       );
       if (response.statusCode == 200) {
         driverLogsData = DriverLogsReportListModel.fromJson(response.data);
+        totalLogsPages.value = driverLogsData?.totalPages ?? 1;
         logsBookingAll.value = driverLogsData?.bookings ?? [];
         logsBookingFiltered.value = logsBookingAll;
         // print("Driver Logs Data Fetched: ${driverLogsData?.count}");
@@ -211,6 +220,13 @@ class ReportController extends GetxController {
 
   // -----------Search function
   void onSearchDriverLogs() {
+    currentLogsPage.value = 1;
+    getDriverLogs();
+  }
+
+  // -----------Pagination function
+  void onPageLogs(int page) {
+    currentLogsPage.value = page;
     getDriverLogs();
   }
 
@@ -792,6 +808,10 @@ void clearBookingReportData() {
   RxString searchBookingsCancelled = ''.obs;
   RxString searchCallsAnswered = ''.obs;
 
+  /// >>>>>>>>>>>>>>>>>>>>> Pagination Work
+  var currentEmployeePage = 1.obs;
+  var totalEmployeePages = 1.obs;
+  final int employeeLimit = 20;
 
   getEmployeeActivity() async {
     if (apiSelectedEmployee == null) {
@@ -822,6 +842,8 @@ void clearBookingReportData() {
       var response = await Api().get(
         "employee_shift_history/activity",
         queryParameters: {
+          "page": currentEmployeePage.value,
+          "limit": employeeLimit,
           "employee_id": apiSelectedEmployee?.id.toString(),
           "from_date": formattedFromDate,
           "to_date": formattedToDate,
@@ -839,13 +861,7 @@ void clearBookingReportData() {
 
       if (response.statusCode == 200) {
         employeeReportModel = EmployeeReportModel.fromJson(response.data);
-        // final fetchedList = employeeReportModel?.employeeShiftHistory ?? [];
-        // employeeShiftHistoryAll.value = fetchedList;
-        // employeeHistoryFiltered.value = fetchedList;
-        //
-        // if (fetchedList.isEmpty) {
-        //   BotToast.showText(text: "No Data Found!");
-        // }
+        totalEmployeePages.value = employeeReportModel?.totalPages ?? 1;
         employeeShiftHistoryAll.value = employeeReportModel?.employeeShiftHistory ?? [];
         employeeHistoryFiltered.value = employeeShiftHistoryAll;
 
@@ -900,8 +916,17 @@ void clearBookingReportData() {
 
   // -----------Search function
   void onSearchActivity() {
+    currentEmployeePage.value = 1;
     getEmployeeActivity();
   }
+
+  // -----------Pagination function
+  void onPageActivity(int page) {
+    currentEmployeePage.value = page;
+    getEmployeeActivity();
+  }
+
+
 
   void clearActivityData() {
     employeeReportModel = null;

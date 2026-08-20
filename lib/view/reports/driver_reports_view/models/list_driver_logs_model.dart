@@ -10,23 +10,39 @@ String driverLogsReportListModelToJson(DriverLogsReportListModel data) => json.e
 
 class DriverLogsReportListModel {
   bool? success;
+  int? page;
+  int? limit;
+  int? total;
+  int? totalPages;
   int? count;
   List<DriverLogsBooking>? bookings;
 
   DriverLogsReportListModel({
     this.success,
+    this.page,
+    this.limit,
+    this.total,
+    this.totalPages,
     this.count,
     this.bookings,
   });
 
   factory DriverLogsReportListModel.fromJson(Map<String, dynamic> json) => DriverLogsReportListModel(
     success: json["success"],
+    page: json["page"],
+    limit: json["limit"],
+    total: json["total"],
+    totalPages: json["total_pages"],
     count: json["count"],
     bookings: json["bookings"] == null ? [] : List<DriverLogsBooking>.from(json["bookings"]!.map((x) => DriverLogsBooking.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
     "success": success,
+    "page": page,
+    "limit": limit,
+    "total": total,
+    "total_pages": totalPages,
     "count": count,
     "bookings": bookings == null ? [] : List<dynamic>.from(bookings!.map((x) => x.toJson())),
   };
@@ -35,7 +51,7 @@ class DriverLogsReportListModel {
 class DriverLogsBooking {
   String? id;
   String? referenceNumber;
-  int? subsidiaryId;
+  dynamic subsidiaryId;
   int? bookingTypeId;
   int? bookingStatusId;
   int? journeyTypeId;
@@ -58,24 +74,24 @@ class DriverLogsBooking {
   String? pickupLongitude;
   String? dropoffLatitude;
   String? dropoffLongitude;
-  List<dynamic>? viapoints;
+  List<Viapoint>? viapoints;
   List<dynamic>? restrictedDrivers;
-  dynamic flightNumber;
-  dynamic arrivingFrom;
+  String? flightNumber;
+  String? arrivingFrom;
   int? vehicleTypeId;
   dynamic vehicleId;
   int? driverId;
-  dynamic passengers;
-  dynamic luggages;
-  dynamic handLuggages;
-  List<dynamic>? childSeat;
+  int? passengers;
+  int? luggages;
+  int? handLuggages;
+  List<ChildSeat>? childSeat;
   String? name;
   String? email;
   String? mobile;
   String? telephone;
-  dynamic leadTime;
-  List<dynamic>? notes;
-  dynamic specialInstructions;
+  String? leadTime;
+  List<Note>? notes;
+  String? specialInstructions;
   int? paymentTypeId;
   String? companyPrice;
   String? fares;
@@ -129,12 +145,13 @@ class DriverLogsBooking {
   String? updatedAt;
   String? eta;
   bool? fob;
+  bool? future;
   LogsBookingStatus? bookingStatus;
-  LogBookingType? bookingType;
+  BookingType? bookingType;
   JourneyType? journeyType;
   Subsidiary? subsidiary;
   VehicleType? vehicleType;
-  PaymentType? paymentType;
+  Type? paymentType;
   Account? account;
   Driver? driver;
   Customer? customer;
@@ -238,6 +255,7 @@ class DriverLogsBooking {
     this.updatedAt,
     this.eta,
     this.fob,
+    this.future,
     this.bookingStatus,
     this.bookingType,
     this.journeyType,
@@ -277,7 +295,7 @@ class DriverLogsBooking {
     pickupLongitude: json["pickup_longitude"],
     dropoffLatitude: json["dropoff_latitude"],
     dropoffLongitude: json["dropoff_longitude"],
-    viapoints: json["viapoints"] == null ? [] : List<dynamic>.from(json["viapoints"]!.map((x) => x)),
+    viapoints: json["viapoints"] == null ? [] : List<Viapoint>.from(json["viapoints"]!.map((x) => Viapoint.fromJson(x))),
     restrictedDrivers: json["restricted_drivers"] == null ? [] : List<dynamic>.from(json["restricted_drivers"]!.map((x) => x)),
     flightNumber: json["flight_number"],
     arrivingFrom: json["arriving_from"],
@@ -287,13 +305,13 @@ class DriverLogsBooking {
     passengers: json["passengers"],
     luggages: json["luggages"],
     handLuggages: json["hand_luggages"],
-    childSeat: json["child_seat"] == null ? [] : List<dynamic>.from(json["child_seat"]!.map((x) => x)),
+    childSeat: json["child_seat"] == null ? [] : List<ChildSeat>.from(json["child_seat"]!.map((x) => ChildSeat.fromJson(x))),
     name: json["name"],
     email: json["email"],
     mobile: json["mobile"],
     telephone: json["telephone"],
     leadTime: json["lead_time"],
-    notes: json["notes"] == null ? [] : List<dynamic>.from(json["notes"]!.map((x) => x)),
+    notes: json["notes"] == null ? [] : List<Note>.from(json["notes"]!.map((x) => Note.fromJson(x))),
     specialInstructions: json["special_instructions"],
     paymentTypeId: json["payment_type_id"],
     companyPrice: json["company_price"],
@@ -348,12 +366,13 @@ class DriverLogsBooking {
     updatedAt: json["updated_at"],
     eta: json["eta"],
     fob: json["fob"],
+    future: json["future"],
     bookingStatus: json["booking_status"] == null ? null : LogsBookingStatus.fromJson(json["booking_status"]),
-    bookingType: json["booking_type"] == null ? null : LogBookingType.fromJson(json["booking_type"]),
+    bookingType: json["booking_type"] == null ? null : BookingType.fromJson(json["booking_type"]),
     journeyType: json["journey_type"] == null ? null : JourneyType.fromJson(json["journey_type"]),
     subsidiary: json["subsidiary"] == null ? null : Subsidiary.fromJson(json["subsidiary"]),
     vehicleType: json["vehicle_type"] == null ? null : VehicleType.fromJson(json["vehicle_type"]),
-    paymentType: json["payment_type"] == null ? null : PaymentType.fromJson(json["payment_type"]),
+    paymentType: json["payment_type"] == null ? null : Type.fromJson(json["payment_type"]),
     account: json["account"] == null ? null : Account.fromJson(json["account"]),
     driver: json["driver"] == null ? null : Driver.fromJson(json["driver"]),
     customer: json["customer"] == null ? null : Customer.fromJson(json["customer"]),
@@ -387,7 +406,7 @@ class DriverLogsBooking {
     "pickup_longitude": pickupLongitude,
     "dropoff_latitude": dropoffLatitude,
     "dropoff_longitude": dropoffLongitude,
-    "viapoints": viapoints == null ? [] : List<dynamic>.from(viapoints!.map((x) => x)),
+    "viapoints": viapoints == null ? [] : List<dynamic>.from(viapoints!.map((x) => x.toJson())),
     "restricted_drivers": restrictedDrivers == null ? [] : List<dynamic>.from(restrictedDrivers!.map((x) => x)),
     "flight_number": flightNumber,
     "arriving_from": arrivingFrom,
@@ -397,13 +416,13 @@ class DriverLogsBooking {
     "passengers": passengers,
     "luggages": luggages,
     "hand_luggages": handLuggages,
-    "child_seat": childSeat == null ? [] : List<dynamic>.from(childSeat!.map((x) => x)),
+    "child_seat": childSeat == null ? [] : List<dynamic>.from(childSeat!.map((x) => x.toJson())),
     "name": name,
     "email": email,
     "mobile": mobile,
     "telephone": telephone,
     "lead_time": leadTime,
-    "notes": notes == null ? [] : List<dynamic>.from(notes!.map((x) => x)),
+    "notes": notes == null ? [] : List<dynamic>.from(notes!.map((x) => x.toJson())),
     "special_instructions": specialInstructions,
     "payment_type_id": paymentTypeId,
     "company_price": companyPrice,
@@ -458,6 +477,7 @@ class DriverLogsBooking {
     "updated_at": updatedAt,
     "eta": eta,
     "fob": fob,
+    "future": future,
     "booking_status": bookingStatus?.toJson(),
     "booking_type": bookingType?.toJson(),
     "journey_type": journeyType?.toJson(),
@@ -545,9 +565,9 @@ class Airport {
 }
 
 class Dropoff {
-  dynamic id;
-  dynamic name;
-  LocationType? locationType;
+  int? id;
+  String? name;
+  Type? locationType;
 
   Dropoff({
     this.id,
@@ -558,7 +578,7 @@ class Dropoff {
   factory Dropoff.fromJson(Map<String, dynamic> json) => Dropoff(
     id: json["id"],
     name: json["name"],
-    locationType: json["location_type"] == null ? null : LocationType.fromJson(json["location_type"]),
+    locationType: json["location_type"] == null ? null : Type.fromJson(json["location_type"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -568,20 +588,20 @@ class Dropoff {
   };
 }
 
-class LocationType {
-  dynamic id;
-  dynamic name;
-  dynamic backgroundColor;
-  dynamic foregroundColor;
+class Type {
+  int? id;
+  String? name;
+  String? backgroundColor;
+  String? foregroundColor;
 
-  LocationType({
+  Type({
     this.id,
     this.name,
     this.backgroundColor,
     this.foregroundColor,
   });
 
-  factory LocationType.fromJson(Map<String, dynamic> json) => LocationType(
+  factory Type.fromJson(Map<String, dynamic> json) => Type(
     id: json["id"],
     name: json["name"],
     backgroundColor: json["background_color"],
@@ -612,19 +632,39 @@ class LogsBookingStatus {
   };
 }
 
-class LogBookingType {
+class BookingType {
   String? bookingType;
 
-  LogBookingType({
+  BookingType({
     this.bookingType,
   });
 
-  factory LogBookingType.fromJson(Map<String, dynamic> json) => LogBookingType(
+  factory BookingType.fromJson(Map<String, dynamic> json) => BookingType(
     bookingType: json["booking_type"],
   );
 
   Map<String, dynamic> toJson() => {
     "booking_type": bookingType,
+  };
+}
+
+class ChildSeat {
+  String? child;
+  String? age;
+
+  ChildSeat({
+    this.child,
+    this.age,
+  });
+
+  factory ChildSeat.fromJson(Map<String, dynamic> json) => ChildSeat(
+    child: json["child"],
+    age: json["age"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "child": child,
+    "age": age,
   };
 }
 
@@ -772,38 +812,34 @@ class JourneyType {
   };
 }
 
-class PaymentType {
-  int? id;
-  String? name;
-  String? backgroundColor;
-  String? foregroundColor;
+class Note {
+  String? note;
+  String? createdAt;
+  String? createdBy;
 
-  PaymentType({
-    this.id,
-    this.name,
-    this.backgroundColor,
-    this.foregroundColor,
+  Note({
+    this.note,
+    this.createdAt,
+    this.createdBy,
   });
 
-  factory PaymentType.fromJson(Map<String, dynamic> json) => PaymentType(
-    id: json["id"],
-    name: json["name"],
-    backgroundColor: json["background_color"],
-    foregroundColor: json["foreground_color"],
+  factory Note.fromJson(Map<String, dynamic> json) => Note(
+    note: json["note"],
+    createdAt: json["created_at"],
+    createdBy: json["created_by"],
   );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "name": name,
-    "background_color": backgroundColor,
-    "foreground_color": foregroundColor,
+    "note": note,
+    "created_at": createdAt,
+    "created_by": createdBy,
   };
 }
 
 class Subsidiary {
-  int? id;
-  String? name;
-  String? telephoneNumber;
+  dynamic id;
+  dynamic name;
+  dynamic telephoneNumber;
 
   Subsidiary({
     this.id,
@@ -845,5 +881,49 @@ class VehicleType {
     "name": name,
     "background_color": backgroundColor,
     "foreground_color": foregroundColor,
+  };
+}
+
+class Viapoint {
+  String? viapoint;
+  String? name;
+  String? mobile;
+  dynamic arrived;
+  dynamic passengerOnBoard;
+  bool? active;
+  String? latitude;
+  String? longitude;
+
+  Viapoint({
+    this.viapoint,
+    this.name,
+    this.mobile,
+    this.arrived,
+    this.passengerOnBoard,
+    this.active,
+    this.latitude,
+    this.longitude,
+  });
+
+  factory Viapoint.fromJson(Map<String, dynamic> json) => Viapoint(
+    viapoint: json["viapoint"],
+    name: json["name"],
+    mobile: json["mobile"],
+    arrived: json["arrived"],
+    passengerOnBoard: json["passenger_on_board"],
+    active: json["active"],
+    latitude: json["latitude"],
+    longitude: json["longitude"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "viapoint": viapoint,
+    "name": name,
+    "mobile": mobile,
+    "arrived": arrived,
+    "passenger_on_board": passengerOnBoard,
+    "active": active,
+    "latitude": latitude,
+    "longitude": longitude,
   };
 }
