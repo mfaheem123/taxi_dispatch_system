@@ -452,8 +452,13 @@ class ReportController extends GetxController {
   String? selectRefNumber = "REFERENCE NUMBER";
   String? selectAscending = "ASCENDING";
 
+
+  /// >>>>>>>>>>>>>>>>>>>>> Search Work
+  RxList<BookingDatum> bookingAll = <BookingDatum>[].obs;
+  RxList<BookingDatum> bookingFiltered = <BookingDatum>[].obs;
+
   BookingStatisticsModel? bookingStatisticsModel;
-  bool isLoadingStatistics = false;
+  RxBool isLoadingStatistics = false.obs;
 
   RxString searchReferenceNo = ''.obs;
   RxString searchInvoiceNo = ''.obs;
@@ -478,8 +483,7 @@ class ReportController extends GetxController {
 
   getBookingStatistics() async {
     try {
-      isLoadingStatistics = true;
-      update();
+      isLoadingStatistics(true);
 
       String formattedFromDate = "";
       String formattedToDate = "";
@@ -506,17 +510,22 @@ class ReportController extends GetxController {
           "from_time": startTime,
           "to_time": endTime,
 
-          "reference_number": searchReferenceNo.value,
-          "invoice_number": searchInvoiceNo.value,
-          "pickup": searchPickup.value,
-          "dropoff": searchDropOff.value,
-          "customer": searchCustomer.value,
-          "mobile": mobileController.text,
-          "telephone": phoneController.text,
-          "order_number": searchOrderNO.value,
-          "fares": searchFare.value,
-          "company_price": searchAccFare.value,
-          "booked_by": bookedByController.text,
+          "reference_number": searchReferenceNo.value.toLowerCase(),
+          "invoice_number": searchInvoiceNo.value.toLowerCase(),
+          "datetime": searchDateTime.value.toLowerCase(),
+          "customer": searchCustomer.value.toLowerCase(),
+          "pickup": searchPickup.value.toLowerCase(),
+          "dropoff": searchDropOff.value.toLowerCase(),
+          "fare": searchFare.value.toLowerCase(),
+          "account_name": searchAcc.value.toLowerCase(),
+          "order_number": searchOrderNO.value.toLowerCase(),
+          "payment_type_name": searchPaymentType.value.toLowerCase(),
+          "journey_type": searchJourneyType.value.toLowerCase(),
+          "driver_name": searchDriver.value.toLowerCase(),
+          "vehicle_type": searchVehicle.value.toLowerCase(),
+          "subsidiary_name": searchSubsidiary.value.toLowerCase(),
+          "status_name": searchStatus.value.toLowerCase(),
+
           "account_id": apiSelectedAccount?.id?.toString() ?? "",
           "employee_id": apiSelectedEmployee?.id?.toString() ?? "",
           "subsidiary_id": apiSelectedSubsidiary?.id?.toString() ?? "",
@@ -532,8 +541,9 @@ class ReportController extends GetxController {
       if (response.statusCode == 200) {
         bookingStatisticsModel = BookingStatisticsModel.fromJson(response.data);
         print("Total Statistics Bookings Found: ${bookingStatisticsModel?.totals?.totalBookings}");
-
         totalPages.value = bookingStatisticsModel?.totalPages ?? 1;
+        bookingAll.value = bookingStatisticsModel?.data ?? [];
+        bookingFiltered.value = bookingAll;
 
         totalBookings.value = bookingStatisticsModel?.totals?.totalBookings ?? 0;
         totalEarnings.value = bookingStatisticsModel?.totals?.totalEarnings ?? 0.0;
@@ -546,15 +556,17 @@ class ReportController extends GetxController {
       print("=====================================================");
     }
     finally {
-      isLoadingStatistics = false;
+      isLoadingStatistics(false);
       update();
     }
   }
 
-  void onBookingSearchChanged() {
+  // -----------Search function
+  void onBookingSearch() {
     currentPage.value = 1;
     getBookingStatistics();
   }
+
 
   void onBookingPageChange(int page) {
     currentPage.value = page;
@@ -811,20 +823,20 @@ void clearBookingReportData() {
 
       if (response.statusCode == 200) {
         employeeReportModel = EmployeeReportModel.fromJson(response.data);
-        final fetchedList = employeeReportModel?.employeeShiftHistory ?? [];
-        employeeShiftHistoryAll.value = fetchedList;
-        employeeHistoryFiltered.value = fetchedList;
-
-        if (fetchedList.isEmpty) {
-          BotToast.showText(text: "No Data Found!");
-        }
-        // employeeShiftHistoryAll.value = employeeReportModel?.employeeShiftHistory ?? [];
-        // employeeHistoryFiltered.value = employeeShiftHistoryAll;
+        // final fetchedList = employeeReportModel?.employeeShiftHistory ?? [];
+        // employeeShiftHistoryAll.value = fetchedList;
+        // employeeHistoryFiltered.value = fetchedList;
         //
-        // if (employeeReportModel?.employeeShiftHistory == null ||
-        //     employeeReportModel!.employeeShiftHistory!.isEmpty) {
+        // if (fetchedList.isEmpty) {
         //   BotToast.showText(text: "No Data Found!");
         // }
+        employeeShiftHistoryAll.value = employeeReportModel?.employeeShiftHistory ?? [];
+        employeeHistoryFiltered.value = employeeShiftHistoryAll;
+
+        if (employeeReportModel?.employeeShiftHistory == null ||
+            employeeReportModel!.employeeShiftHistory!.isEmpty) {
+          BotToast.showText(text: "No Data Found!");
+        }
 
         print("Status Code: ${response.statusCode}");
         print("Response Data: ${response.data}");

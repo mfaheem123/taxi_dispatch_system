@@ -122,11 +122,11 @@ class AllBookingReportContent extends StatelessWidget {
                 // Right Column
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      _infoText("TELEPHONE", topTelephone),
-                      const SizedBox(height: 10),
                       _infoText("EMAIL", topEmail),
+                      const SizedBox(height: 10),
+                      _infoText("TELEPHONE", topTelephone),
                       const SizedBox(height: 10),
                       _infoText("TOTAL FARES", "£ $totalFaresSum"),
                     ],
@@ -190,7 +190,7 @@ class AllBookingReportContent extends StatelessWidget {
                   if (item.pickupDate != null) {
                     String date = DateFormat('dd-MM-yyyy').format(item.pickupDate!);
                     String time = item.pickupTime ?? "";
-                    formattedDateTime = "$date\n$time".trim();
+                    formattedDateTime = "$date $time".trim();
                   }
 
                   // Fare String empty checks
