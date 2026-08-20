@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../component/customButton.dart';
 import '../../../component/datatable_widget.dart';
 import '../../../component/dropdown_button.dart';
+import '../../../component/pagination.dart';
 import '../../../component/radio_button_widget.dart';
 import '../../../component/responsive_datatable_widget.dart';
 import '../../../component/textStyle.dart';
@@ -43,6 +44,11 @@ class _IncomeScreenState extends State<IncomeScreen> {
       controller.getData();
 
     }, builder: (controller) {
+
+      final listToShow = controller.incomeBookingFiltered.isNotEmpty
+          ? controller.incomeBookingFiltered
+          : controller.incomeBookingAll;
+
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -73,7 +79,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          "Report Type",
+                          "REPORT TYPE",
                           style: mozillaTextSemiBoldText(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -265,60 +271,8 @@ class _IncomeScreenState extends State<IncomeScreen> {
                 SizedBox(
                   height: 10,
                 ),
-                // SingleChildScrollView(
-                //   scrollDirection: Axis.horizontal,
-                //   child: SizedBox(
-                //     width: MediaQuery.of(context).size.width,
-                //     child: DatatableWidget(
-                //         columns: [
-                //           buildHeaderWithSearch(title: "REF #"),
-                //           buildHeaderWithSearch(title: "DATETIME"),
-                //           buildHeaderWithSearch(title: "PICKUP"),
-                //           buildHeaderWithSearch(title: "DROPOFF"),
-                //           buildHeaderWithSearch(title: "VEHICLE"),
-                //           buildHeaderWithSearch(title: "DRIVER"),
-                //           buildHeaderWithSearch(title: "ACCOUNT"),
-                //           buildHeaderWithSearch(title: "FARES"),
-                //           buildHeaderWithSearch(title: "PARKING"),
-                //           buildHeaderWithSearch(title: "WAITING"),
-                //           buildHeaderWithSearch(title: "EXTRA DROP"),
-                //           buildHeaderWithSearch(title: "TOTAL"),
-                //         ],
-                //         totalRow: controller.incomeModel?.bookings?.length ?? 0,
-                //         rows: (controller.incomeModel?.bookings ?? []).map((item) {
-                //
-                //           String formattedDateTime = "-";
-                //           if (item.pickupDate != null) {
-                //             String date = DateFormat('dd-MM-yy').format(item.pickupDate!);
-                //             String time = item.pickupTime ?? "";
-                //             formattedDateTime = time.isNotEmpty ? "$date $time" : date;
-                //           }
-                //
-                //           return DataRow(
-                //             cells: [
-                //               DataCell(Center(child: Text(item.referenceNumber ?? ""))),
-                //               DataCell(Center(child: Text(formattedDateTime))),
-                //               DataCell(Center(child: Text((item.pickup ?? "").toUpperCase()))),
-                //               DataCell(Center(child: Text((item.dropoff ?? "").toUpperCase()))),
-                //               DataCell(Center(child: Text((item.vehicle ?? "").toUpperCase()))),
-                //               DataCell(Center(child: Text((item.driverName ?? "").toUpperCase()))),
-                //               DataCell(Center(child: Text(item.account ?? ""))),
-                //               DataCell(Center(child: Text("£${item.fares ?? ""}"))),
-                //               DataCell(Center(child: Text("£${item.parking ?? ""}"))),
-                //               DataCell(Center(child: Text("£${item.waiting ?? ""}"))),
-                //               DataCell(Center(child: Text("£${item.extraDrop ?? ""}"))),
-                //               DataCell(Center(child: Text("£${item.total ?? ""}"))),
-                //             ]
-                //           );
-                //         }).toList(),
-                //     ),
-                //   ),
-                // ),
 
-                // SingleChildScrollView(
-                //   scrollDirection: Axis.horizontal,
-                //   child:
-                controller.isLoadingIncome
+                controller.isLoadingIncome.value
                     ? const Padding(
                   padding: EdgeInsets.symmetric(vertical: 40),
                   child: Center(
@@ -328,20 +282,69 @@ class _IncomeScreenState extends State<IncomeScreen> {
                     : ResponsiveDataTableWidget(
                   totalWidth: totalAvailableWidth,
                   columnConfigs: [
-                    TableColumnConfig(title: "REF #", sizeType: ColumnSizeType.medium),
-                    TableColumnConfig(title: "DATETIME", sizeType: ColumnSizeType.medium),
-                    TableColumnConfig(title: "PICKUP", sizeType: ColumnSizeType.large),
-                    TableColumnConfig(title: "DROPOFF", sizeType: ColumnSizeType.large),
-                    TableColumnConfig(title: "VEHICLE", sizeType: ColumnSizeType.medium),
-                    TableColumnConfig(title: "DRIVER", sizeType: ColumnSizeType.medium),
-                    TableColumnConfig(title: "ACCOUNT", sizeType: ColumnSizeType.medium),
-                    TableColumnConfig(title: "FARES", sizeType: ColumnSizeType.small),
-                    TableColumnConfig(title: "PARKING", sizeType: ColumnSizeType.small),
-                    TableColumnConfig(title: "WAITING", sizeType: ColumnSizeType.small),
-                    TableColumnConfig(title: "EXTRA DROP", sizeType: ColumnSizeType.small),
-                    TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium),
+                    TableColumnConfig(title: "REF #", sizeType: ColumnSizeType.medium,
+                        onChanged: (v) {
+                          controller.searchIncomeRef.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "DATETIME", sizeType: ColumnSizeType.medium,
+                        onChanged: (v) {
+                          controller.searchIncomeDateTime.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "PICKUP", sizeType: ColumnSizeType.large,
+                        onChanged: (v) {
+                          controller.searchIncomePickup.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "DROPOFF", sizeType: ColumnSizeType.large,
+                        onChanged: (v) {
+                          controller.searchIncomeDropoff.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "VEHICLE", sizeType: ColumnSizeType.medium,
+                        onChanged: (v) {
+                          controller.searchIncomeVehicle.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "DRIVER", sizeType: ColumnSizeType.medium,
+                        onChanged: (v) {
+                          controller.searchIncomeDriver.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "ACCOUNT", sizeType: ColumnSizeType.medium,
+                        onChanged: (v) {
+                          controller.searchIncomeAccount.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "FARES", sizeType: ColumnSizeType.small,
+                        onChanged: (v) {
+                          controller.searchIncomeFares.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "PARKING", sizeType: ColumnSizeType.small,
+                        onChanged: (v) {
+                          controller.searchIncomeParking.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "WAITING", sizeType: ColumnSizeType.small,
+                        onChanged: (v) {
+                          controller.searchIncomeWaiting.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "EXTRA DROP", sizeType: ColumnSizeType.small,
+                        onChanged: (v) {
+                          controller.searchIncomeExtraDrop.value = v;
+                          controller.onSearchIncome();
+                        }),
+                    TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium,
+                        onChanged: (v) {
+                          controller.searchIncomeTotal.value = v;
+                          controller.onSearchIncome();
+                        }),
                   ],
-                  items: controller.incomeModel?.bookings ?? [],
+                  // items: controller.incomeModel?.bookings ?? [],
+                  items: listToShow,
                   rowBuilder: (item, widths) {
                     String formattedDateTime = "-";
                     if (item.pickupDate != null) {
@@ -364,7 +367,11 @@ class _IncomeScreenState extends State<IncomeScreen> {
                       "£${item.total ?? ""}",
                     ];
                   },
-                  // )
+                ),
+                PaginationWidget(
+                  currentPage: controller.currentIncomePage.value,
+                  totalPages: controller.totalIncomePages.value,
+                  onPageChange: controller.onPageIncome,
                 ),
               ],
             ));
