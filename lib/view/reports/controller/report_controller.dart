@@ -526,6 +526,7 @@ class ReportController extends GetxController {
           "vehicle_type": searchVehicle.value.toLowerCase(),
           "subsidiary_name": searchSubsidiary.value.toLowerCase(),
           "status_name": searchStatus.value.toLowerCase(),
+          "acc_fare": searchAccFare.value.toLowerCase(),
 
           "account_id": apiSelectedAccount?.id?.toString() ?? "",
           "employee_id": apiSelectedEmployee?.id?.toString() ?? "",
@@ -1049,17 +1050,25 @@ void clearBookingReportData() {
 
   CompanyIncomeModel? companyIncomeModel;
   RxBool companyLoader = false.obs;
+
+  /// >>>>>>>>>>>>>>>>>>>>> Search Work
   RxList<CompanyDatum> companyListAll = <CompanyDatum>[].obs;
   RxList<CompanyDatum> filteredCompany = <CompanyDatum>[].obs;
 
-  RxString searchPickupDate = ''.obs;
-  RxString searchPickupTime = ''.obs;
-  RxString searchPc = ''.obs;
-  RxString searchWc = ''.obs;
-  RxString searchEdc = ''.obs;
-  RxString searchMg = ''.obs;
-  RxString searchCc = ''.obs;
-  RxString searchTotal = ''.obs;
+  RxString searchComRefNo = ''.obs;
+  RxString searchComDateTime = ''.obs;
+  RxString searchComPickup = ''.obs;
+  RxString searchComDropOff = ''.obs;
+  RxString searchComVehicle = ''.obs;
+  RxString searchComDriver = ''.obs;
+  RxString searchComAcc = ''.obs;
+  RxString searchComFare = ''.obs;
+  RxString searchComPc = ''.obs;
+  RxString searchComWc = ''.obs;
+  RxString searchComEdc = ''.obs;
+  RxString searchComMg = ''.obs;
+  RxString searchComCc = ''.obs;
+  RxString searchComTotal = ''.obs;
 
   var comTotalBookings = 0.obs;
   var comTotalEarnings = 0.0.obs;
@@ -1086,21 +1095,24 @@ void clearBookingReportData() {
           "limit": comLimit,
           "from_date": formattedFromDate,
           "to_date": formattedToDate,
-          "reference_number": searchReferenceNo.value,
-          "pickup_date": searchPickupDate.value,
-          "pickup_time": searchPickupTime.value,
-          "pickup": searchPickup.value,
-          "dropoff": searchDropOff.value,
-          // "vehicle_type": searchVehicle.value,
-          // "driver": searchDriver.value,
-          // "account": searchAcc.value.toLowerCase(),
-          // "fares": searchFare.value,
-          // "parking_charges": searchPc.value,
-          // "waiting_charges": searchWc.value,
-          // "extra_drop_charges": searchEdc.value,
-          // "meet_and_greet": searchMg.value,
-          // "congestion_charges": searchCc.value,
-          // "total_charges": searchTotal.value,
+
+
+          "reference_number": searchComRefNo.value.toLowerCase(),
+          "datetime": searchComDateTime.value.contains('-')
+              ? (DateTime.tryParse(searchComDateTime.value.split('-').reversed.join('-'))?.toIso8601String().substring(0, 10) ?? searchComDateTime.value.toLowerCase())
+              : searchComDateTime.value.toLowerCase(),
+          "pickup": searchComPickup.value.toLowerCase(),
+          "dropoff": searchComDropOff.value.toLowerCase(),
+          "vehicle_type": searchComVehicle.value.toLowerCase(),
+          "driver_name": searchComDriver.value.toLowerCase(),
+          "account_name": searchComAcc.value.toLowerCase(),
+          "fare": searchComFare.value.toLowerCase(),
+          "pc": searchComPc.value.toLowerCase(),
+          "wc": searchComWc.value.toLowerCase(),
+          "edc": searchComEdc.value.toLowerCase(),
+          "mg": searchComMg.value.toLowerCase(),
+          "cc": searchComCc.value.toLowerCase(),
+          "total_val": searchComTotal.value.toLowerCase(),
         },
       );
 
@@ -1133,38 +1145,38 @@ void clearBookingReportData() {
     companyToDate.value = DateTime.now();
   }
 
-  void onLocalSearchCompany() {
-    if (searchVehicle.value.isEmpty &&
-        searchDriver.value.isEmpty &&
-        searchAcc.value.isEmpty &&
-        searchFare.value.isEmpty &&
-        searchPc.value.isEmpty &&
-        searchWc.value.isEmpty &&
-        searchEdc.value.isEmpty &&
-        searchMg.value.isEmpty &&
-        searchCc.value.isEmpty &&
-        searchTotal.value.isEmpty) {
-
-      filteredCompany.value = companyListAll;
-    } else {
-      filteredCompany.value = companyListAll.where((item) {
-        final matchVehicle = item.vehicleType?.name?.toLowerCase().contains(searchVehicle.value.toLowerCase()) ?? true;
-        final matchDriver = item.driver?.name?.toLowerCase().contains(searchDriver.value.toLowerCase()) ?? true;
-        final matchAccount = item.account?.name?.toLowerCase().contains(searchAcc.value.toLowerCase()) ?? true;
-        final matchFare = item.fares?.toLowerCase().contains(searchFare.value.toLowerCase()) ?? true;
-        final matchPc = item.parkingCharges?.toLowerCase().contains(searchPc.value.toLowerCase()) ?? true;
-        final matchWc = item.waitingCharges?.toLowerCase().contains(searchWc.value.toLowerCase()) ?? true;
-        final matchEdc = item.extraDropCharges?.toLowerCase().contains(searchEdc.value.toLowerCase()) ?? true;
-        final matchMg = item.meetAndGreet?.toLowerCase().contains(searchMg.value.toLowerCase()) ?? true;
-        final matchCc = item.congestionCharges?.toLowerCase().contains(searchCc.value.toLowerCase()) ?? true;
-        final matchTotal = item.totalCharges?.toLowerCase().contains(searchTotal.value.toLowerCase()) ?? true;
-
-        return matchVehicle && matchDriver && matchAccount && matchFare &&
-            matchPc && matchWc && matchEdc && matchMg && matchCc && matchTotal;
-      }).toList();
-    }
-    update();
-  }
+  // void onLocalSearchCompany() {
+  //   if (searchVehicle.value.isEmpty &&
+  //       searchDriver.value.isEmpty &&
+  //       searchAcc.value.isEmpty &&
+  //       searchFare.value.isEmpty &&
+  //       searchPc.value.isEmpty &&
+  //       searchWc.value.isEmpty &&
+  //       searchEdc.value.isEmpty &&
+  //       searchMg.value.isEmpty &&
+  //       searchCc.value.isEmpty &&
+  //       searchTotal.value.isEmpty) {
+  //
+  //     filteredCompany.value = companyListAll;
+  //   } else {
+  //     filteredCompany.value = companyListAll.where((item) {
+  //       final matchVehicle = item.vehicleType?.name?.toLowerCase().contains(searchVehicle.value.toLowerCase()) ?? true;
+  //       final matchDriver = item.driver?.name?.toLowerCase().contains(searchDriver.value.toLowerCase()) ?? true;
+  //       final matchAccount = item.account?.name?.toLowerCase().contains(searchAcc.value.toLowerCase()) ?? true;
+  //       final matchFare = item.fares?.toLowerCase().contains(searchFare.value.toLowerCase()) ?? true;
+  //       final matchPc = item.parkingCharges?.toLowerCase().contains(searchPc.value.toLowerCase()) ?? true;
+  //       final matchWc = item.waitingCharges?.toLowerCase().contains(searchWc.value.toLowerCase()) ?? true;
+  //       final matchEdc = item.extraDropCharges?.toLowerCase().contains(searchEdc.value.toLowerCase()) ?? true;
+  //       final matchMg = item.meetAndGreet?.toLowerCase().contains(searchMg.value.toLowerCase()) ?? true;
+  //       final matchCc = item.congestionCharges?.toLowerCase().contains(searchCc.value.toLowerCase()) ?? true;
+  //       final matchTotal = item.totalCharges?.toLowerCase().contains(searchTotal.value.toLowerCase()) ?? true;
+  //
+  //       return matchVehicle && matchDriver && matchAccount && matchFare &&
+  //           matchPc && matchWc && matchEdc && matchMg && matchCc && matchTotal;
+  //     }).toList();
+  //   }
+  //   update();
+  // }
   void onSearchCompany() {
     comCurrentPage.value = 1;
     getCompanyIncome();
