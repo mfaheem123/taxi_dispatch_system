@@ -22,7 +22,9 @@ import 'package:get/get.dart';
 // Replace imports with your actual project imports.
 
 class WaitingConfigurationAlert {
-  static void show({List<WaitingCharge>? waitingCharges}) {
+  static void show({
+    required String vehicleTypeName,
+    List<WaitingCharge>? waitingCharges}) {
     final shiftCtrl = TextEditingController();
     final startTimeCtrl = TextEditingController();
     final endTimeCtrl = TextEditingController();
@@ -67,9 +69,9 @@ class WaitingConfigurationAlert {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
-                            "SALOON WAITING CONFIGURATION",
-                            style: TextStyle(
+                          Text(
+                            "${vehicleTypeName.toUpperCase()} WAITING CONFIGURATION",
+                            style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 0.5

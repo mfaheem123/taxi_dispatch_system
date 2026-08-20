@@ -221,9 +221,15 @@ class _FareMeterState extends State<FareMeter> {
                           child: CustomButton(
                             width: isLaptop ? 130 : (fieldWidth / 1.9),
                             onTap: () {
+                              final fareMeterItem = controller.getAllFareMeterRateModel!.fareMeters![index];
                               WaitingConfigurationAlert.show(
-                                  waitingCharges: controller.getAllFareMeterRateModel!.fareMeters![index].waitingCharges
+                                vehicleTypeName: fareMeterItem.vehicleType?.name ?? "VEHICLE",
+                                waitingCharges: fareMeterItem.waitingCharges,
                               );
+
+                              // WaitingConfigurationAlert.show(
+                              //     waitingCharges: controller.getAllFareMeterRateModel!.fareMeters![index].waitingCharges
+                              // );
                             },
                             height: 30,
                             verticalPadding: 0.0,
