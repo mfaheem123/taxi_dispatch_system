@@ -155,12 +155,12 @@ class _IncomeScreenState extends State<IncomeScreen> {
                       label: AppText.selectSubsidiary,
                       items: controller.subsDiaryModel?.subsidiaries ?? [],
                       // value: controller.apiSelectedSubsidiary,
-                      value: controller.subsDiaryModel?.subsidiaries?.any((sub) => sub.id == controller.apiSelectedSubsidiary?.id) ?? false
-                          ? controller.subsDiaryModel!.subsidiaries!.firstWhere((sub) => sub.id == controller.apiSelectedSubsidiary?.id)
+                      value: controller.subsDiaryModel?.subsidiaries?.any((sub) => sub.id == controller.apiSelectedIncomeSubsidiary?.id) ?? false
+                          ? controller.subsDiaryModel!.subsidiaries!.firstWhere((sub) => sub.id == controller.apiSelectedIncomeSubsidiary?.id)
                           : null,
                       itemLabel: (val) => (val.name ?? "").toUpperCase(),
                       onChanged: (val) {
-                        controller.apiSelectedSubsidiary = val;
+                        controller.apiSelectedIncomeSubsidiary = val;
                         controller.apiSelectedAccount = null;
 
                         if (val != null && val.id != null) {

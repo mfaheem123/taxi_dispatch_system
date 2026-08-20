@@ -943,6 +943,7 @@ void clearBookingReportData() {
 
   // subsidiary
   SubsDiaryModel? subsDiaryModel;
+  Subsidiaries? apiSelectedIncomeSubsidiary;
   bool isLoadingSubsidiary = false;
 
   getSubsidiary() async {
@@ -956,6 +957,7 @@ void clearBookingReportData() {
         if (subsDiaryModel?.subsidiaries?.isNotEmpty ?? false) {
           var defaultSubsidiary = subsDiaryModel!.subsidiaries!.first;
           apiSelectedSubsidiary = defaultSubsidiary;
+          apiSelectedIncomeSubsidiary = defaultSubsidiary;
           if (defaultSubsidiary.id != null) {
             getAccountData(defaultSubsidiary.id!);
           }
