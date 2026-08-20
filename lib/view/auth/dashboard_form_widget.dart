@@ -279,7 +279,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.slugControllerReturn.clear();
                                     controller.tempStoreMils = null;
                                     controller.fetchRouteFromOSRM();
-                                    FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
+                                    FocusScope.of(Get.context!).requestFocus(_pickupFieldFocusNode);
                                     controller.update();
                                   },
                                   notesController: controller.pickUpNoteController,
@@ -410,6 +410,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.update();
                                   },
                                   notesController: controller.dropUpNoteController,
+                                  addressFocusNode: controller.dropOffTextFieldFocusNode,
                                   onCurrentLocation: () {
                                     controller.swapeToChangeLocation();
                                   },
@@ -754,6 +755,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             //     .requestFocus(controller.pickupTwoTextFieldFocusNode);
             // _clearTwoWayData(controller);
           },
+          addressFocusNode: controller.pickupTwoTextFieldFocusNode,
           onCurrentLocation: () async {
             controller.swapeToChangeReturnLocation();
             },
@@ -870,6 +872,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             //     .requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
             // _clearTwoWayData(controller, recalcRoute: true);
           },
+          addressFocusNode: controller.dropOffTwoWayTextFieldFocusNode,
           onCurrentLocation: () async {
             controller.swapeToChangeReturnLocation();
           },
