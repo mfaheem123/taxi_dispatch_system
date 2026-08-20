@@ -279,7 +279,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.slugControllerReturn.clear();
                                     controller.tempStoreMils = null;
                                     controller.fetchRouteFromOSRM();
-                                    FocusScope.of(Get.context!).requestFocus(_pickupFieldFocusNode);
+                                    // FocusScope.of(Get.context!).requestFocus(_pickupFieldFocusNode);
                                     controller.update();
                                   },
                                   notesController: controller.pickUpNoteController,
@@ -406,7 +406,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.slugControllerReturn.clear();
                                     controller.tempStoreMils = null;
                                     controller.fetchRouteFromOSRM();
-                                    FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
+                                    // FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
                                     controller.update();
                                   },
                                   notesController: controller.dropUpNoteController,
@@ -554,6 +554,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     },
                                     14,
                                     itemLabel: (p) => p.journeyType!,
+                                    allowUnselect: false
                                   ),
                                   _field('Lead Time',
                                       tab: 15,
@@ -568,12 +569,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                         LengthLimitingTextInputFormatter(2),
                                       ],
                                       controller: controller.passController),
-                                  _field('Fare',
+                                  _field('FARE',
                                       tab: 17,
                                       prefix: Icons.currency_pound,
                                       controller: controller.slugController),
                                   _dropdown<DashboardAccountObject>(
-                                    'Account',
+                                    'SELECT ACCOUNT',
                                     controller.selectAccountValue,
                                     controller.dashboardAccountData?.accounts ??
                                         const [],
@@ -603,6 +604,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.selectPaymentTypeValue = v),
                                     _isReturnJourney?34:19,
                                     itemLabel: (p) => p.name!,
+                                      allowUnselect: false
                                   ),
                                   _dropdown<DashboardVehicleTypeObject>(
                                     'Vehicle Type',
@@ -617,7 +619,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     allowUnselect: false,
                                   ),
                                   _dropdown<DepartmentObject>(
-                                    'Department',
+                                    'Select Department',
                                     controller.selectDepartmentData,
                                     controller.selectAccountValue == null
                                         ? []
@@ -719,7 +721,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           zoneLabel: (z) => z.name!,
           onPickIndex: (index) => controller.tapSelect(index),
           onPressed: () {
-            FocusScope.of(Get.context!).requestFocus(controller.pickupTwoTextFieldFocusNode);
+            // FocusScope.of(Get.context!).requestFocus(controller.pickupTwoTextFieldFocusNode);
 
             final pickupPolylineIndex = controller.polyLineMarkerInfo
                 .indexWhere((e) => e.markerType == "PICKUP TWO WAY LOCATION");
@@ -837,7 +839,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           zoneLabel: (z) => z.name!,
           onPickIndex: (index) => controller.tapSelect(index),
           onPressed: () {
-            FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
+            // FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
 
             final dropPolylineIndex = controller.polyLineMarkerInfo
                 .indexWhere((e) => e.markerType == "DROP TWO WAY LOCATION");
@@ -1143,6 +1145,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                       },
                       1,
                       itemLabel: (p) => p.name ?? '',
+                        allowUnselect: false
                     ),
                   ),
                 ]),
@@ -1249,7 +1252,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       onZone,
       tabBase + 2,
       itemLabel: zoneLabel,
-      hint: 'New Zone',
+      hint: 'SELECT ZONE',
     );
     // Notes is now an editable text field instead of a button.
     final noteHint =
