@@ -302,6 +302,20 @@ class _MyHomePageState extends State<MyHomePage> {
     CompanyIncomeScreen,
     CreiditCardPayments,
     PcoScreen,
+    ComapanyInformationScreen,
+    CompanyConfigurationView,
+    PaymentTypeDialog,
+    DocumentNumberScreen,
+    TemplateSettings,
+    BookingClearingUtilityScreen,
+    LocationTypeShortcuts,
+    VoipSettingsScreen,
+    SmsSettingsScreen,
+    EmailTrackingScreen,
+    CallRecordingScreen,
+    BackSlashAlert,
+    ChatWithDriverAndPassenger,
+    WallboardScreen,
 
 
   };
