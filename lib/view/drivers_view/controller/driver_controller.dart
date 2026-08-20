@@ -1246,7 +1246,7 @@ class DriverController extends GetxController {
   RxBool driverLoading = false.obs;
   var driverCurrentPage = 1.obs;
   var driverTotalPage = 1.obs;
-  final int driverLimit = 15;
+  final int driverLimit = 20;
   RxList<GetDriverList> driverAll = <GetDriverList>[].obs;
   RxList<GetDriverList> driverFilter = <GetDriverList>[].obs;
   RxString searchDriverName = ''.obs;
