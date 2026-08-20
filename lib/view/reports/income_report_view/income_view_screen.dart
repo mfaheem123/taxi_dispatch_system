@@ -78,7 +78,12 @@ class IncomeReportContent extends StatelessWidget {
     String totalEarningSum = controller.incomeModel?.totalEarnings != null
         ? controller.incomeModel!.totalEarnings!.toStringAsFixed(2)
         : "0.00";
-    final currentSubsidiary = controller.apiSelectedSubsidiary;
+    // final currentSubsidiary = controller.apiSelectedSubsidiary;
+    // String subEmail = currentSubsidiary?.email ?? "N/A";
+    // String subPhone = currentSubsidiary?.telephoneNumber ?? "N/A";
+    // String subMobile = currentSubsidiary?.emergencyContactNumber ?? "N/A";
+    final currentSubsidiary = controller.apiSelectedIncomeSubsidiary;
+
     String subEmail = currentSubsidiary?.email ?? "N/A";
     String subPhone = currentSubsidiary?.telephoneNumber ?? "N/A";
     String subMobile = currentSubsidiary?.emergencyContactNumber ?? "N/A";

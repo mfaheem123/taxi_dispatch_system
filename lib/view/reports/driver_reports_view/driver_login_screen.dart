@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import '../../../component/color.dart';
 import '../../../component/datatable_widget.dart';
 import '../../../component/dropdown_button.dart';
+import '../../../component/pagination.dart';
 import '../../../component/textStyle.dart';
 import '../../customer/model/restricDriver.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
@@ -310,6 +311,11 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                           }).toList(),
                         ),
                       ),
+                    ),
+                    PaginationWidget(
+                      currentPage: controller.currentLoginPage.value,
+                      totalPages: controller.totalLoginPages.value,
+                      onPageChange: controller.onPageLogin,
                     ),
                   ],
                 ),
