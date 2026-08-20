@@ -5,6 +5,7 @@ import 'package:dashboard_new1/view/accounts/CompanyAddressAlert.dart';
 import 'package:dashboard_new1/view/accounts/ContactAlert.dart';
 import 'package:dashboard_new1/view/accounts/DepartmentAlert.dart';
 import 'package:dashboard_new1/view/accounts/OrderAlert.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart'
@@ -56,633 +57,635 @@ class _AccountViewState extends State<AccountView> {
     //         .instance.platformDispatcher.views.first.physicalSize.width /
     //     WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<AccountController>(
-      initState: (v) {
-        permissions = Api().sp.read('all_permissions') ?? [];
-        controller.getSubsdairyBank();
-      },
-      builder: (controller) {
-        return controller.SubsdairyBankLoader.value == true
-            ? SizedBox.shrink()
-            : LayoutBuilder(builder: (context, constraints) {
-                final double maxWidth = constraints.maxWidth;
+    return PageScrollWrapper(
+      child: GetBuilder<AccountController>(
+        initState: (v) {
+          permissions = Api().sp.read('all_permissions') ?? [];
+          controller.getSubsdairyBank();
+        },
+        builder: (controller) {
+          return controller.SubsdairyBankLoader.value == true
+              ? SizedBox.shrink()
+              : LayoutBuilder(builder: (context, constraints) {
+                  final double maxWidth = constraints.maxWidth;
 
-                final double leftWidth = maxWidth * 0.61;
-                final double rightWidth = maxWidth * 0.37;
+                  final double leftWidth = maxWidth * 0.61;
+                  final double rightWidth = maxWidth * 0.37;
 
-                final double leftFieldWidth = leftWidth / 6.7;
-                final double rightFieldWidth = rightWidth / 4.6;
+                  final double leftFieldWidth = leftWidth / 6.7;
+                  final double rightFieldWidth = rightWidth / 4.6;
 
-                const double fieldHeight = 30.0;
-                final double dropDownHeight = maxWidth < 1300 ? 34.0 : 28.0;
+                  const double fieldHeight = 30.0;
+                  final double dropDownHeight = maxWidth < 1300 ? 34.0 : 28.0;
 
-                final double checkboxSpacing = maxWidth < 1300 ? 10.0 : 40.0;
-                final double chargesSpacing = maxWidth < 1300 ? 8.0 : 40.0;
+                  final double checkboxSpacing = maxWidth < 1300 ? 10.0 : 40.0;
+                  final double chargesSpacing = maxWidth < 1300 ? 8.0 : 40.0;
 
-                final bool isMobile = maxWidth < 600;
-                final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+                  final bool isMobile = maxWidth < 600;
+                  final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-                return SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: Padding(
-                      padding: const EdgeInsetsGeometry.all(8.0),
-                      child: Column(
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                flex: 61,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // MAIN ACCOUNT CONTAINER
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(color: DynamicColors.textClr),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          // HEADER ROW
-                                          Container(
-                                            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                                            color: DynamicColors.gryClr.withOpacity(0.5),
-                                            child: Row(
-                                              children: [
-                                                Text(AppText.account, style: titleDesign()),
-                                                const Spacer(),
-                                                controller.accountObjectData != null
-                                                    ? Row(
-                                                        children: [
-                                                          Checkbox(
-                                                              value: controller.postactiveDrivers.value,
-                                                              onChanged: (v) {
-                                                                controller.postactiveDrivers.value = v!;
-                                                                controller.update();
-                                                              }),
-                                                          Text(
-                                                            "CLOSED",
-                                                            style: mozillaTextSemiBoldText(
-                                                                fontWeight: FontWeight.w700,
-                                                                fontSize: 14,
-                                                                color: DynamicColors.redClr),
-                                                          )
-                                                        ],
-                                                      )
-                                                    : SizedBox.shrink(),
-                                                Spacer(),
-                                                if (permissions.contains('read_account_web_login'))
-                                                  _headerBtn(AppText.webLogin, () => WebLoginAlert.show()),
-                                                if (permissions.contains('read_account_department'))
-                                                  _headerBtn(AppText.department, () => DepartmentAlert.show()),
-                                                if (permissions.contains('read_account_contact'))
-                                                  _headerBtn(AppText.contact, () => ContactAlert.show()),
-                                                if (permissions.contains('read_account_order_number'))
-                                                  _headerBtn(AppText.order, () => OrderAlert.show()),
-                                                if (permissions.contains('read_account_company_address'))
-                                                  _headerBtn(AppText.companyAddress, () => CompanyAddressAlert.show(), width: 150),
-                                              ],
-                                            ),
-                                          ),
-
-                                          Padding(
-                                            padding: const EdgeInsetsGeometry.all(8.0),
-                                            child: Column(
-                                              spacing: 12,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  spacing: maxWidth < 1300 ? 2 : 8,
-                                                  children: [
-                                                    _buildTextField(
-                                                        controller.accountNameController,
-                                                        AppText.name,
-                                                        leftFieldWidth,
-                                                        fieldHeight,
-                                                        [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
-                                                          UpperCaseTextFormatter()
-                                                        ]),
-                                                    _buildTextField(
-                                                        controller.accountCodeController,
-                                                        AppText.code,
-                                                        leftFieldWidth,
-                                                        fieldHeight,
-                                                        [FilteringTextInputFormatter.digitsOnly
-                                                        ]),
-                                                    _buildTextField(
-                                                        controller.accountEmailController,
-                                                        AppText.email,
-                                                        leftFieldWidth,
-                                                        fieldHeight,
-                                                        [FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                                                          UpperCaseTextFormatter()
-                                                        ]),
-                                                    _buildTextField(
-                                                        controller.accountPasswordController,
-                                                        AppText.password,
-                                                        leftFieldWidth,
-                                                        fieldHeight,
-                                                        [UpperCaseTextFormatter()
-                                                        ]),
-                                                    _buildDropdown(
-                                                        AppText.subsidiary,
-                                                        "SELECT SUBSIDIARY",
-                                                        MediaQuery.of(context).size.width < 1300
-                                                            ? leftFieldWidth * 1.3
-                                                            : leftFieldWidth * 1.1,
-                                                        dropDownHeight,
-                                                        controller.subsidairyBankModel?.subsidiariesList ?? [],
-                                                        controller.subsidiaryStoreValue,
-                                                        (val) {
-                                                      controller.subsidiaryStoreValue = val;
-                                                      controller.update();
-                                                    },
-                                                        (item) => item.name!.toUpperCase()),
-                                                    _buildDropdown(
-                                                        AppText.accountType,
-                                                        "SELECT ACCOUNT",
-                                                        MediaQuery.of(context).size.width < 1300
-                                                            ? leftFieldWidth * 1.1
-                                                            : leftFieldWidth * 0.95,
-                                                        dropDownHeight,
-                                                        ["Cash", "Account"],
-                                                        controller.accountType,
-                                                        (val) {
-                                                      controller.accountType = val;
-                                                      controller.update();
-                                                    }, (item) => item),
-                                                  ],
-                                                ),
-                                                Row(
-                                                  spacing: 8,
-                                                  children: [
-                                                    _buildTextField(
-                                                        controller.accountMobileController,
-                                                        AppText.mobile,
-                                                        leftFieldWidth,
-                                                        fieldHeight,
-                                                        [FilteringTextInputFormatter.digitsOnly
-                                                        ]),
-                                                    _buildTextField(
-                                                        controller.accountTelController,
-                                                        AppText.tel,
-                                                        leftFieldWidth,
-                                                        fieldHeight,
-                                                        [FilteringTextInputFormatter.digitsOnly
-                                                        ]),
-                                                    _buildTextField(
-                                                        controller.accountFaxController,
-                                                        AppText.fax,
-                                                        leftFieldWidth,
-                                                        fieldHeight,
-                                                        [UpperCaseTextFormatter()
-                                                        ]),
-                                                    _buildTextField(
-                                                        controller.accountWebSiteController,
-                                                        AppText.website,
-                                                        leftFieldWidth,
-                                                        fieldHeight,
-                                                        [UpperCaseTextFormatter()
-                                                        ]),
-                                                    _buildTextField(
-                                                        controller.accountNumberController,
-                                                        AppText.accountNumber,
-                                                        leftFieldWidth,
-                                                        fieldHeight,
-                                                        [FilteringTextInputFormatter.digitsOnly
-                                                        ]),
-                                                    _buildTextField(
-                                                        controller.accountCreditCardController,
-                                                        AppText.creditCard,
-                                                        leftFieldWidth,
-                                                        fieldHeight,
-                                                        [FilteringTextInputFormatter.digitsOnly
-                                                        ]),
-                                                  ],
-                                                ),
-                                                Row(
-                                                  spacing: 8,
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    _buildTextField(
-                                                        controller.accountAddressController,
-                                                        AppText.address,
-                                                        leftFieldWidth,
-                                                        82,
-                                                        [UpperCaseTextFormatter()],
-                                                        maxLines: 6),
-                                                    _buildTextField(
-                                                        controller.accountInformationController,
-                                                        AppText.information,
-                                                        leftFieldWidth,
-                                                        82,
-                                                        [],
-                                                        maxLines: 6),
-                                                    Column(
-                                                      spacing: 12,
-                                                      children: [
-                                                        _buildDropdown(
-                                                            AppText.paymentType,
-                                                            "SELECT TYPE",
-                                                            leftFieldWidth,
-                                                            dropDownHeight,
-                                                            ["Cash", "Account"],
-                                                            ["Cash",
-                                                              "Account"].contains(controller.paymentType)
-                                                                ? controller.paymentType : null, (val) {
-                                                          controller.paymentType = val;
-                                                          controller.update();
-                                                        }, (item) => item),
-                                                        // _buildTextField(bankAccountController, "BANK ACCOUNT", leftFieldWidth, fieldHeight, []),
-                                                      ],
-                                                    ),
-                                                    Column(
-                                                      spacing: 12,
-                                                      children: [
-                                                        _buildTextField(
-                                                            controller.accountContactNameController,
-                                                            AppText.contactName,
-                                                            leftFieldWidth,
-                                                            fieldHeight,
-                                                            []),
-                                                      ],
-                                                    ),
-                                                    Column(
-                                                      spacing: 12,
-                                                      children: [
-                                                        Column(
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Padding(
+                        padding: const EdgeInsetsGeometry.all(8.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  flex: 61,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      // MAIN ACCOUNT CONTAINER
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: DynamicColors.textClr),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            // HEADER ROW
+                                            Container(
+                                              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                                              color: DynamicColors.gryClr.withOpacity(0.5),
+                                              child: Row(
+                                                children: [
+                                                  Text(AppText.account, style: titleDesign()),
+                                                  const Spacer(),
+                                                  controller.accountObjectData != null
+                                                      ? Row(
                                                           children: [
-                                                            Text(AppText.backgroundClr,
-                                                                style: mozillaTextSemiBoldText(context: context, fontSize: 11)),
-                                                            SizedBox(
-                                                              width: leftFieldWidth,
-                                                              height: fieldHeight,
-                                                              child: Focus(
-                                                                autofocus: true,
-                                                                child: ColorPickerWidget(
-                                                                  width: leftFieldWidth - 5,
-                                                                  pickerColor: controller.pickerColor,
-                                                                  onColorChanged: (Color newColor) {
-                                                                    // This produces your '0xFF2196F3' format
-                                                                    // String hexString =
-                                                                    //     '0x${newColor.value.toRadixString(16).toUpperCase()}';
-                                                                    // print(hexString);
-                                                                    setState(() {
-                                                                      controller.pickerColor = newColor;
-                                                                    });
-                                                                  },
-                                                                ),
-                                                              ),
+                                                            Checkbox(
+                                                                value: controller.postactiveDrivers.value,
+                                                                onChanged: (v) {
+                                                                  controller.postactiveDrivers.value = v!;
+                                                                  controller.update();
+                                                                }),
+                                                            Text(
+                                                              "CLOSED",
+                                                              style: mozillaTextSemiBoldText(
+                                                                  fontWeight: FontWeight.w700,
+                                                                  fontSize: 14,
+                                                                  color: DynamicColors.redClr),
                                                             )
                                                           ],
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    Column(
-                                                      spacing: 12,
-                                                      children: [
-                                                        Column(
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          children: [
-                                                            Text(AppText.foregroundClr,
-                                                                style: mozillaTextSemiBoldText(context: context, fontSize: 11)),
-                                                            GestureDetector(
-                                                              onTap: () => _showColorPickerDialog(context, controller),
-                                                              child: Container(
-                                                                height: fieldHeight,
+                                                        )
+                                                      : SizedBox.shrink(),
+                                                  Spacer(),
+                                                  if (permissions.contains('read_account_web_login'))
+                                                    _headerBtn(AppText.webLogin, () => WebLoginAlert.show()),
+                                                  if (permissions.contains('read_account_department'))
+                                                    _headerBtn(AppText.department, () => DepartmentAlert.show()),
+                                                  if (permissions.contains('read_account_contact'))
+                                                    _headerBtn(AppText.contact, () => ContactAlert.show()),
+                                                  if (permissions.contains('read_account_order_number'))
+                                                    _headerBtn(AppText.order, () => OrderAlert.show()),
+                                                  if (permissions.contains('read_account_company_address'))
+                                                    _headerBtn(AppText.companyAddress, () => CompanyAddressAlert.show(), width: 150),
+                                                ],
+                                              ),
+                                            ),
+
+                                            Padding(
+                                              padding: const EdgeInsetsGeometry.all(8.0),
+                                              child: Column(
+                                                spacing: 12,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
+                                                    spacing: maxWidth < 1300 ? 2 : 8,
+                                                    children: [
+                                                      _buildTextField(
+                                                          controller.accountNameController,
+                                                          AppText.name,
+                                                          leftFieldWidth,
+                                                          fieldHeight,
+                                                          [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                                                            UpperCaseTextFormatter()
+                                                          ]),
+                                                      _buildTextField(
+                                                          controller.accountCodeController,
+                                                          AppText.code,
+                                                          leftFieldWidth,
+                                                          fieldHeight,
+                                                          [FilteringTextInputFormatter.digitsOnly
+                                                          ]),
+                                                      _buildTextField(
+                                                          controller.accountEmailController,
+                                                          AppText.email,
+                                                          leftFieldWidth,
+                                                          fieldHeight,
+                                                          [FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                                                            UpperCaseTextFormatter()
+                                                          ]),
+                                                      _buildTextField(
+                                                          controller.accountPasswordController,
+                                                          AppText.password,
+                                                          leftFieldWidth,
+                                                          fieldHeight,
+                                                          [UpperCaseTextFormatter()
+                                                          ]),
+                                                      _buildDropdown(
+                                                          AppText.subsidiary,
+                                                          "SELECT SUBSIDIARY",
+                                                          MediaQuery.of(context).size.width < 1300
+                                                              ? leftFieldWidth * 1.3
+                                                              : leftFieldWidth * 1.1,
+                                                          dropDownHeight,
+                                                          controller.subsidairyBankModel?.subsidiariesList ?? [],
+                                                          controller.subsidiaryStoreValue,
+                                                          (val) {
+                                                        controller.subsidiaryStoreValue = val;
+                                                        controller.update();
+                                                      },
+                                                          (item) => item.name!.toUpperCase()),
+                                                      _buildDropdown(
+                                                          AppText.accountType,
+                                                          "SELECT ACCOUNT",
+                                                          MediaQuery.of(context).size.width < 1300
+                                                              ? leftFieldWidth * 1.1
+                                                              : leftFieldWidth * 0.95,
+                                                          dropDownHeight,
+                                                          ["Cash", "Account"],
+                                                          controller.accountType,
+                                                          (val) {
+                                                        controller.accountType = val;
+                                                        controller.update();
+                                                      }, (item) => item),
+                                                    ],
+                                                  ),
+                                                  Row(
+                                                    spacing: 8,
+                                                    children: [
+                                                      _buildTextField(
+                                                          controller.accountMobileController,
+                                                          AppText.mobile,
+                                                          leftFieldWidth,
+                                                          fieldHeight,
+                                                          [FilteringTextInputFormatter.digitsOnly
+                                                          ]),
+                                                      _buildTextField(
+                                                          controller.accountTelController,
+                                                          AppText.tel,
+                                                          leftFieldWidth,
+                                                          fieldHeight,
+                                                          [FilteringTextInputFormatter.digitsOnly
+                                                          ]),
+                                                      _buildTextField(
+                                                          controller.accountFaxController,
+                                                          AppText.fax,
+                                                          leftFieldWidth,
+                                                          fieldHeight,
+                                                          [UpperCaseTextFormatter()
+                                                          ]),
+                                                      _buildTextField(
+                                                          controller.accountWebSiteController,
+                                                          AppText.website,
+                                                          leftFieldWidth,
+                                                          fieldHeight,
+                                                          [UpperCaseTextFormatter()
+                                                          ]),
+                                                      _buildTextField(
+                                                          controller.accountNumberController,
+                                                          AppText.accountNumber,
+                                                          leftFieldWidth,
+                                                          fieldHeight,
+                                                          [FilteringTextInputFormatter.digitsOnly
+                                                          ]),
+                                                      _buildTextField(
+                                                          controller.accountCreditCardController,
+                                                          AppText.creditCard,
+                                                          leftFieldWidth,
+                                                          fieldHeight,
+                                                          [FilteringTextInputFormatter.digitsOnly
+                                                          ]),
+                                                    ],
+                                                  ),
+                                                  Row(
+                                                    spacing: 8,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      _buildTextField(
+                                                          controller.accountAddressController,
+                                                          AppText.address,
+                                                          leftFieldWidth,
+                                                          82,
+                                                          [UpperCaseTextFormatter()],
+                                                          maxLines: 6),
+                                                      _buildTextField(
+                                                          controller.accountInformationController,
+                                                          AppText.information,
+                                                          leftFieldWidth,
+                                                          82,
+                                                          [],
+                                                          maxLines: 6),
+                                                      Column(
+                                                        spacing: 12,
+                                                        children: [
+                                                          _buildDropdown(
+                                                              AppText.paymentType,
+                                                              "SELECT TYPE",
+                                                              leftFieldWidth,
+                                                              dropDownHeight,
+                                                              ["Cash", "Account"],
+                                                              ["Cash",
+                                                                "Account"].contains(controller.paymentType)
+                                                                  ? controller.paymentType : null, (val) {
+                                                            controller.paymentType = val;
+                                                            controller.update();
+                                                          }, (item) => item),
+                                                          // _buildTextField(bankAccountController, "BANK ACCOUNT", leftFieldWidth, fieldHeight, []),
+                                                        ],
+                                                      ),
+                                                      Column(
+                                                        spacing: 12,
+                                                        children: [
+                                                          _buildTextField(
+                                                              controller.accountContactNameController,
+                                                              AppText.contactName,
+                                                              leftFieldWidth,
+                                                              fieldHeight,
+                                                              []),
+                                                        ],
+                                                      ),
+                                                      Column(
+                                                        spacing: 12,
+                                                        children: [
+                                                          Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Text(AppText.backgroundClr,
+                                                                  style: mozillaTextSemiBoldText(context: context, fontSize: 11)),
+                                                              SizedBox(
                                                                 width: leftFieldWidth,
-                                                                decoration: BoxDecoration(
-                                                                  borderRadius: BorderRadius.circular(4),
-                                                                  border: Border.all(color: DynamicColors.primaryClr),
+                                                                height: fieldHeight,
+                                                                child: Focus(
+                                                                  autofocus: true,
+                                                                  child: ColorPickerWidget(
+                                                                    width: leftFieldWidth - 5,
+                                                                    pickerColor: controller.pickerColor,
+                                                                    onColorChanged: (Color newColor) {
+                                                                      // This produces your '0xFF2196F3' format
+                                                                      // String hexString =
+                                                                      //     '0x${newColor.value.toRadixString(16).toUpperCase()}';
+                                                                      // print(hexString);
+                                                                      setState(() {
+                                                                        controller.pickerColor = newColor;
+                                                                      });
+                                                                    },
+                                                                  ),
                                                                 ),
-                                                                child: Center(
-                                                                  child: Container(
-                                                                      color: controller.foregroundClr,
-                                                                      height: 6,
-                                                                      width: leftFieldWidth - 15),
+                                                              )
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Column(
+                                                        spacing: 12,
+                                                        children: [
+                                                          Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Text(AppText.foregroundClr,
+                                                                  style: mozillaTextSemiBoldText(context: context, fontSize: 11)),
+                                                              GestureDetector(
+                                                                onTap: () => _showColorPickerDialog(context, controller),
+                                                                child: Container(
+                                                                  height: fieldHeight,
+                                                                  width: leftFieldWidth,
+                                                                  decoration: BoxDecoration(
+                                                                    borderRadius: BorderRadius.circular(4),
+                                                                    border: Border.all(color: DynamicColors.primaryClr),
+                                                                  ),
+                                                                  child: Center(
+                                                                    child: Container(
+                                                                        color: controller.foregroundClr,
+                                                                        height: 6,
+                                                                        width: leftFieldWidth - 15),
+                                                                  ),
                                                                 ),
                                                               ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        SizedBox(
-                                                            width: leftFieldWidth,
-                                                            height: fieldHeight),
+                                                            ],
+                                                          ),
+                                                          SizedBox(
+                                                              width: leftFieldWidth,
+                                                              height: fieldHeight),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                      const SizedBox(height: 12),
+
+                                      Row(
+                                        spacing: 10,
+                                        children: [
+                                          Expanded(
+                                            flex: 6,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(color: DynamicColors.textClr),
+                                                borderRadius: BorderRadius.circular(4),
+                                              ),
+                                              child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                    width: double.infinity,
+                                                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                                                    color: DynamicColors.gryClr.withOpacity(0.5),
+                                                    child: Text(AppText.informationControl, style: titleDesign()),
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    child: Wrap(
+                                                      spacing: checkboxSpacing,
+                                                      runSpacing: 6,
+                                                      crossAxisAlignment: WrapCrossAlignment.center,
+                                                      children: [
+                                                        _buildCheckbox(
+                                                            controller.orderCheckBox,
+                                                            AppText.order),
+                                                        _buildCheckbox(
+                                                            controller.bookedByCheckBox,
+                                                            AppText.bookedBy),
+                                                        _buildCheckbox(
+                                                            controller.escoptCheckBox,
+                                                            AppText.escopt),
+                                                        _buildCheckbox(
+                                                            controller.fareControllerCheckBox,
+                                                            AppText.fareController),
+                                                        _buildCheckbox(
+                                                            controller.bankInfoCheckBox,
+                                                            AppText.bankInfo),
                                                       ],
                                                     ),
-                                                  ],
-                                                ),
-                                              ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 3,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(color: DynamicColors.textClr),
+                                                borderRadius: BorderRadius.circular(4),
+                                              ),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                    width: double.infinity,
+                                                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                                                    color: DynamicColors.gryClr.withOpacity(0.5),
+                                                    child: Text(AppText.chargesControl, style: titleDesign()),
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    child: Wrap(
+                                                      spacing: chargesSpacing,
+                                                      runSpacing: 6,
+                                                      crossAxisAlignment: WrapCrossAlignment.center,
+                                                      children: [
+                                                        _buildCheckbox(
+                                                            controller.adminFeeCheckBox,
+                                                            AppText.adminFee),
+                                                        _buildCheckbox(
+                                                            controller.accountFeeCheckBox,
+                                                            AppText.accountFee),
+                                                        _buildCheckbox(
+                                                            controller.vatCheckBox,
+                                                            AppText.vat),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ],
                                       ),
-                                    ),
-
-                                    const SizedBox(height: 12),
-
-                                    Row(
-                                      spacing: 10,
-                                      children: [
-                                        Expanded(
-                                          flex: 6,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              border: Border.all(color: DynamicColors.textClr),
-                                              borderRadius: BorderRadius.circular(4),
-                                            ),
-                                            child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Container(
-                                                  width: double.infinity,
-                                                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                                                  color: DynamicColors.gryClr.withOpacity(0.5),
-                                                  child: Text(AppText.informationControl, style: titleDesign()),
-                                                ),
-                                                Padding(
-                                                  padding: const EdgeInsets.all(8.0),
-                                                  child: Wrap(
-                                                    spacing: checkboxSpacing,
-                                                    runSpacing: 6,
-                                                    crossAxisAlignment: WrapCrossAlignment.center,
-                                                    children: [
-                                                      _buildCheckbox(
-                                                          controller.orderCheckBox,
-                                                          AppText.order),
-                                                      _buildCheckbox(
-                                                          controller.bookedByCheckBox,
-                                                          AppText.bookedBy),
-                                                      _buildCheckbox(
-                                                          controller.escoptCheckBox,
-                                                          AppText.escopt),
-                                                      _buildCheckbox(
-                                                          controller.fareControllerCheckBox,
-                                                          AppText.fareController),
-                                                      _buildCheckbox(
-                                                          controller.bankInfoCheckBox,
-                                                          AppText.bankInfo),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          flex: 3,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              border: Border.all(color: DynamicColors.textClr),
-                                              borderRadius: BorderRadius.circular(4),
-                                            ),
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Container(
-                                                  width: double.infinity,
-                                                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                                                  color: DynamicColors.gryClr.withOpacity(0.5),
-                                                  child: Text(AppText.chargesControl, style: titleDesign()),
-                                                ),
-                                                Padding(
-                                                  padding: const EdgeInsets.all(8.0),
-                                                  child: Wrap(
-                                                    spacing: chargesSpacing,
-                                                    runSpacing: 6,
-                                                    crossAxisAlignment: WrapCrossAlignment.center,
-                                                    children: [
-                                                      _buildCheckbox(
-                                                          controller.adminFeeCheckBox,
-                                                          AppText.adminFee),
-                                                      _buildCheckbox(
-                                                          controller.accountFeeCheckBox,
-                                                          AppText.accountFee),
-                                                      _buildCheckbox(
-                                                          controller.vatCheckBox,
-                                                          AppText.vat),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              SizedBox(width: maxWidth < 1300 ? 5 : 15),
-                              Expanded(
-                                flex: 37,
-                                child: Column(
-                                  spacing: maxWidth < 1300 ? 17 : 25,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // FEE SECTION CONTAINER
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(color: DynamicColors.textClr),
-                                        borderRadius: BorderRadius.circular(4),
+                                SizedBox(width: maxWidth < 1300 ? 5 : 15),
+                                Expanded(
+                                  flex: 37,
+                                  child: Column(
+                                    spacing: maxWidth < 1300 ? 17 : 25,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      // FEE SECTION CONTAINER
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: DynamicColors.textClr),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              width: double.infinity,
+                                              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                                              color: DynamicColors.gryClr.withOpacity(0.5),
+                                              child: Text(AppText.feeSection, style: titleDesign()),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Row(
+                                                spacing: 8,
+                                                crossAxisAlignment: CrossAxisAlignment.end,
+                                                children: [
+                                                  Expanded(
+                                                    flex: 3,
+                                                    child: _buildDropdown(
+                                                        AppText.adminFeeType,
+                                                        "SELECT TYPE",
+                                                        double.infinity,
+                                                        dropDownHeight,
+                                                        ["PERCENTAGE", "AMOUNT"],
+                                                        controller.adminFeesDropDown,
+                                                        (val) {
+                                                      controller.adminFeesDropDown = val;
+                                                      controller.update();
+                                                    }, (item) => item),
+                                                  ),
+                                                  Expanded(
+                                                    flex: 2,
+                                                    child: _buildTextField(
+                                                        controller.accountAdminFeeController,
+                                                        AppText.adminFee,
+                                                        double.infinity,
+                                                        fieldHeight,
+                                                        [FilteringTextInputFormatter.digitsOnly
+                                                        ]),
+                                                  ),
+                                                  Expanded(
+                                                    flex: 3,
+                                                    child: _buildDropdown(
+                                                        AppText.accountFeeType,
+                                                        "SELECT TYPE",
+                                                        double.infinity,
+                                                        dropDownHeight,
+                                                        ["PERCENTAGE", "AMOUNT"],
+                                                        controller.accountTypeDropDown,
+                                                        (val) {
+                                                      controller.accountTypeDropDown =
+                                                          val;
+                                                      controller.update();
+                                                    }, (item) => item),
+                                                  ),
+                                                  Expanded(
+                                                    flex: 2,
+                                                    child: _buildTextField(
+                                                        controller.accountAccountFeeController,
+                                                        AppText.accountFee,
+                                                        double.infinity,
+                                                        fieldHeight,
+                                                        [FilteringTextInputFormatter.digitsOnly
+                                                        ]),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(height: 15),
+                                          ],
+                                        ),
                                       ),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            width: double.infinity,
-                                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                                            color: DynamicColors.gryClr.withOpacity(0.5),
-                                            child: Text(AppText.feeSection, style: titleDesign()),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Row(
-                                              spacing: 8,
-                                              crossAxisAlignment: CrossAxisAlignment.end,
-                                              children: [
-                                                Expanded(
-                                                  flex: 3,
-                                                  child: _buildDropdown(
-                                                      AppText.adminFeeType,
-                                                      "SELECT TYPE",
-                                                      double.infinity,
+
+                                      // AGENT COMMISSION CONTAINER
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: DynamicColors.textClr),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              width: double.infinity,
+                                              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                                              color: DynamicColors.gryClr.withOpacity(0.5),
+                                              child: Text(AppText.agentCommission, style: titleDesign()),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Row(
+                                                spacing: 8,
+                                                children: [
+                                                  SizedBox(width: 10),
+                                                  _buildDropdown(
+                                                      AppText.agentCommissionType,
+                                                      "SELECT COMMISSION TYPE",
+                                                      rightFieldWidth * 2,
                                                       dropDownHeight,
                                                       ["PERCENTAGE", "AMOUNT"],
-                                                      controller.adminFeesDropDown,
+                                                      controller.commissionDropDown,
                                                       (val) {
-                                                    controller.adminFeesDropDown = val;
+                                                    controller.commissionDropDown = val;
                                                     controller.update();
                                                   }, (item) => item),
-                                                ),
-                                                Expanded(
-                                                  flex: 2,
-                                                  child: _buildTextField(
-                                                      controller.accountAdminFeeController,
-                                                      AppText.adminFee,
-                                                      double.infinity,
+                                                  SizedBox(width: 10),
+                                                  _buildTextField(
+                                                      controller.accountAgentCommissionController,
+                                                      AppText.agentCommission,
+                                                      rightFieldWidth * 1.5,
                                                       fieldHeight,
-                                                      [FilteringTextInputFormatter.digitsOnly
-                                                      ]),
-                                                ),
-                                                Expanded(
-                                                  flex: 3,
-                                                  child: _buildDropdown(
-                                                      AppText.accountFeeType,
-                                                      "SELECT TYPE",
-                                                      double.infinity,
-                                                      dropDownHeight,
-                                                      ["PERCENTAGE", "AMOUNT"],
-                                                      controller.accountTypeDropDown,
-                                                      (val) {
-                                                    controller.accountTypeDropDown =
-                                                        val;
-                                                    controller.update();
-                                                  }, (item) => item),
-                                                ),
-                                                Expanded(
-                                                  flex: 2,
-                                                  child: _buildTextField(
-                                                      controller.accountAccountFeeController,
-                                                      AppText.accountFee,
-                                                      double.infinity,
-                                                      fieldHeight,
-                                                      [FilteringTextInputFormatter.digitsOnly
-                                                      ]),
-                                                ),
-                                              ],
+                                                      [FilteringTextInputFormatter.digitsOnly]),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                          SizedBox(height: 15),
-                                        ],
+                                            SizedBox(height: 15),
+                                          ],
+                                        ),
                                       ),
-                                    ),
 
-                                    // AGENT COMMISSION CONTAINER
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color: DynamicColors.textClr),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            width: double.infinity,
-                                            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                                            color: DynamicColors.gryClr.withOpacity(0.5),
-                                            child: Text(AppText.agentCommission, style: titleDesign()),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Row(
-                                              spacing: 8,
-                                              children: [
-                                                SizedBox(width: 10),
-                                                _buildDropdown(
-                                                    AppText.agentCommissionType,
-                                                    "SELECT COMMISSION TYPE",
-                                                    rightFieldWidth * 2,
-                                                    dropDownHeight,
-                                                    ["PERCENTAGE", "AMOUNT"],
-                                                    controller.commissionDropDown,
-                                                    (val) {
-                                                  controller.commissionDropDown = val;
-                                                  controller.update();
-                                                }, (item) => item),
-                                                SizedBox(width: 10),
-                                                _buildTextField(
-                                                    controller.accountAgentCommissionController,
-                                                    AppText.agentCommission,
-                                                    rightFieldWidth * 1.5,
-                                                    fieldHeight,
-                                                    [FilteringTextInputFormatter.digitsOnly]),
-                                              ],
+                                      //  SMS CONTROL CONTAINER
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: DynamicColors.textClr),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              width: double.infinity,
+                                              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                                              color: DynamicColors.gryClr.withOpacity(0.5),
+                                              child: Text(AppText.smsControl, style: titleDesign()),
                                             ),
-                                          ),
-                                          SizedBox(height: 15),
-                                        ],
-                                      ),
-                                    ),
-
-                                    //  SMS CONTROL CONTAINER
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(color: DynamicColors.textClr),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            width: double.infinity,
-                                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                                            color: DynamicColors.gryClr.withOpacity(0.5),
-                                            child: Text(AppText.smsControl, style: titleDesign()),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Wrap(
-                                              spacing: checkboxSpacing,
-                                              runSpacing: 6,
-                                              crossAxisAlignment: WrapCrossAlignment.center,
-                                              children: [
-                                                _buildCheckbox(
-                                                    controller.dispatchSmsCheckBox,
-                                                    AppText.dispatchSms),
-                                                _buildCheckbox(
-                                                    controller.confirmSmsCheckBox,
-                                                    AppText.confirmSms),
-                                                _buildCheckbox(
-                                                    controller.arrivalSmsCheckBox,
-                                                    AppText.arrivalSms),
-                                                _buildCheckbox(
-                                                    controller.clearJobSmsCheckBox,
-                                                    AppText.clearJobSms),
-                                              ],
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Wrap(
+                                                spacing: checkboxSpacing,
+                                                runSpacing: 6,
+                                                crossAxisAlignment: WrapCrossAlignment.center,
+                                                children: [
+                                                  _buildCheckbox(
+                                                      controller.dispatchSmsCheckBox,
+                                                      AppText.dispatchSms),
+                                                  _buildCheckbox(
+                                                      controller.confirmSmsCheckBox,
+                                                      AppText.confirmSms),
+                                                  _buildCheckbox(
+                                                      controller.arrivalSmsCheckBox,
+                                                      AppText.arrivalSms),
+                                                  _buildCheckbox(
+                                                      controller.clearJobSmsCheckBox,
+                                                      AppText.clearJobSms),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                  ],
+                                      const SizedBox(height: 10),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 24),
-                          Center(
-                            child: CustomButton(
-                              height: 35,
-                              width: 360,
-                              borderRadius: 4,
-                              btnText: controller.accountObjectData != null
-                                  ? "UPDATE"
-                                  : AppText.save,
-                              verticalPadding: 0.0,
-                              fontSize: 13,
-                              onTap: () {
-                                String email = controller.accountEmailController.text.trim();
-                                if (email.isEmpty) {
-                                  BotToast.showText(text: "EMAIL IS REQUIRED");
-                                } else if (!email.contains('@')) {
-                                  BotToast.showText(
-                                      text: "INVALID EMAIL FORMAT");
-                                } else {
-                                  controller.postAccount();
-                                }
-                              },
+                              ],
                             ),
-                          ),
-                          const SizedBox(height: 20),
-                        ],
-                      )),
-                );
-              });
-      },
+                            const SizedBox(height: 24),
+                            Center(
+                              child: CustomButton(
+                                height: 35,
+                                width: 360,
+                                borderRadius: 4,
+                                btnText: controller.accountObjectData != null
+                                    ? "UPDATE"
+                                    : AppText.save,
+                                verticalPadding: 0.0,
+                                fontSize: 13,
+                                onTap: () {
+                                  String email = controller.accountEmailController.text.trim();
+                                  if (email.isEmpty) {
+                                    BotToast.showText(text: "EMAIL IS REQUIRED");
+                                  } else if (!email.contains('@')) {
+                                    BotToast.showText(
+                                        text: "INVALID EMAIL FORMAT");
+                                  } else {
+                                    controller.postAccount();
+                                  }
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                        )),
+                  );
+                });
+        },
+      ),
     );
   }
 

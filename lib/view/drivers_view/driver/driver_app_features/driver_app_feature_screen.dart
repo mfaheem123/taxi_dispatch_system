@@ -2,6 +2,7 @@ import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/drivers_view/driver/driver_app_features/pda_details_widget.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -33,144 +34,146 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
 
     return FocusTraversalGroup(
       policy: OrderedTraversalPolicy(),
-      child: GetBuilder<DriverController>(
-        initState: (state) {
-          permissions = Api().sp.read('all_permissions') ?? [];
-          controller.clearDriverFeaturesFields();
-          controller.getAllDrivers();
-        },
-        builder: (controller) {
-          if (controller.isDriversLoading || controller.allDriverData == null) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              double totalWidth = constraints.maxWidth;
-              bool isLargeScreen = totalWidth > 1200;
-              bool isLaptopScreen = totalWidth <= 1200 && totalWidth > 800;
+      child: PageScrollWrapper(
+        child: GetBuilder<DriverController>(
+          initState: (state) {
+            permissions = Api().sp.read('all_permissions') ?? [];
+            controller.clearDriverFeaturesFields();
+            controller.getAllDrivers();
+          },
+          builder: (controller) {
+            if (controller.isDriversLoading || controller.allDriverData == null) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                double totalWidth = constraints.maxWidth;
+                bool isLargeScreen = totalWidth > 1200;
+                bool isLaptopScreen = totalWidth <= 1200 && totalWidth > 800;
 
-// Responsive Widths & Sizes
-              double dropdownWidth = isLargeScreen
-                  ? 320
-                  : (isLaptopScreen ? 240 : double.infinity);
-              double saveButtonWidth = isLargeScreen ? 170 : 120;
-              double currentVersionFontSize = isLargeScreen ? 16 : 14;
-              double spacingBetween = isLargeScreen ? 15 : 10;
-              double totalFlex = isLargeScreen ? 7 : 5;
-              double leftTableWidth =
-                  totalWidth * ((isLargeScreen ? 2 : 1) / totalFlex);
+        // Responsive Widths & Sizes
+                double dropdownWidth = isLargeScreen
+                    ? 320
+                    : (isLaptopScreen ? 240 : double.infinity);
+                double saveButtonWidth = isLargeScreen ? 170 : 120;
+                double currentVersionFontSize = isLargeScreen ? 16 : 14;
+                double spacingBetween = isLargeScreen ? 15 : 10;
+                double totalFlex = isLargeScreen ? 7 : 5;
+                double leftTableWidth =
+                    totalWidth * ((isLargeScreen ? 2 : 1) / totalFlex);
 
-              return SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 8,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              CustomDropdownField<DriverObject>(
-                                label: "SELECT DRIVERS",
-                                width: 320,
-                                height: 35,
-                                items: controller.allDriverData!.drivers!,
-                                value: controller.allDriverData!.drivers!
-                                        .contains(controller.selectDriverObject)
-                                    ? controller.selectDriverObject
-                                    : null,
-                                itemLabel: (driver) =>
-                                    "${driver.username} ${driver.name}",
-                                // driver.name!,
-                                onChanged: (val) {
-                                  controller.selectDriverObject = val;
-                                  controller.getDriversAppFuture(val!.id!);
-                                  controller.update();
-                                },
-                              ),
-                              SizedBox(
-                                width: 15,
-                              ),
-                              Text(
-                                AppText.currentVersion,
-                                style: mozillaTextSemiBoldText(
-                                    fontSize: 16, fontWeight: FontWeight.w800),
-                              ),
-                            ],
-                          ),
-                          Text(
-                            AppText.driverAppFeatures,
-                            style: mozillaTextSemiBoldText(
-                                fontSize: 16, fontWeight: FontWeight.w800),
-                          ),
-                          if (permissions.contains('update_app_feature'))
-                            CustomButton(
-                              onTap: () {
-                                controller.saveDriverFeatures();
-                              },
-                              height: 35,
-                              verticalPadding: 0.0,
-                              borderRadius: 4,
-                              width: saveButtonWidth,
-                              btnText: AppText.save,
-                            )
-                        ],
-                      ),
-
-                      SizedBox(
-                        height: 10,
-                      ),
-
-                      // width < 1920 ? Column(
-                      //   crossAxisAlignment: CrossAxisAlignment.start,
-                      //   children: [
-                      //     DriversListFeature(),
-                      //
-                      //     SizedBox(
-                      //       height: 10,
-                      //     ),
-                      //     AppVersionWidget(),
-                      //     PdaDetailsWidget(),
-                      //   ],
-                      // )
-                      //     :
-
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                              flex: isLargeScreen ? 2 : 1,
-                              child: DriversListFeature(
-                                availableWidth: leftTableWidth,
-                              )),
-                          Expanded(
-                            flex: isLargeScreen ? 5 : 4,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                return SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
                               children: [
-                                AppVersionWidget(),
-                                const SizedBox(height: 16),
-                                PdaDetailsWidget(),
+                                CustomDropdownField<DriverObject>(
+                                  label: "SELECT DRIVERS",
+                                  width: 320,
+                                  height: 35,
+                                  items: controller.allDriverData!.drivers!,
+                                  value: controller.allDriverData!.drivers!
+                                          .contains(controller.selectDriverObject)
+                                      ? controller.selectDriverObject
+                                      : null,
+                                  itemLabel: (driver) =>
+                                      "${driver.username} ${driver.name}",
+                                  // driver.name!,
+                                  onChanged: (val) {
+                                    controller.selectDriverObject = val;
+                                    controller.getDriversAppFuture(val!.id!);
+                                    controller.update();
+                                  },
+                                ),
+                                SizedBox(
+                                  width: 15,
+                                ),
+                                Text(
+                                  AppText.currentVersion,
+                                  style: mozillaTextSemiBoldText(
+                                      fontSize: 16, fontWeight: FontWeight.w800),
+                                ),
                               ],
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                    ],
+                            Text(
+                              AppText.driverAppFeatures,
+                              style: mozillaTextSemiBoldText(
+                                  fontSize: 16, fontWeight: FontWeight.w800),
+                            ),
+                            if (permissions.contains('update_app_feature'))
+                              CustomButton(
+                                onTap: () {
+                                  controller.saveDriverFeatures();
+                                },
+                                height: 35,
+                                verticalPadding: 0.0,
+                                borderRadius: 4,
+                                width: saveButtonWidth,
+                                btnText: AppText.save,
+                              )
+                          ],
+                        ),
+
+                        SizedBox(
+                          height: 10,
+                        ),
+
+                        // width < 1920 ? Column(
+                        //   crossAxisAlignment: CrossAxisAlignment.start,
+                        //   children: [
+                        //     DriversListFeature(),
+                        //
+                        //     SizedBox(
+                        //       height: 10,
+                        //     ),
+                        //     AppVersionWidget(),
+                        //     PdaDetailsWidget(),
+                        //   ],
+                        // )
+                        //     :
+
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                                flex: isLargeScreen ? 2 : 1,
+                                child: DriversListFeature(
+                                  availableWidth: leftTableWidth,
+                                )),
+                            Expanded(
+                              flex: isLargeScreen ? 5 : 4,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  AppVersionWidget(),
+                                  const SizedBox(height: 16),
+                                  PdaDetailsWidget(),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
-          );
-        },
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

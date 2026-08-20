@@ -4,6 +4,7 @@ import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/pagination.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:dashboard_new1/view/vehicles_view/controller/controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -73,211 +74,213 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
       autofocus: true,
       focusNode: FocusNode(),
       onKey: _handleKey,
-      child: GetBuilder<VehicleController>(
-          initState: (v){
-            permissions = Api().sp.read('all_permissions') ?? [];
-          },
-          builder: (controller) {
-        final listToShow = controller.filteredCompanyVehicle.isNotEmpty
-            ? controller.filteredCompanyVehicle
-            : controller.companyAllVehicle;
+      child: PageScrollWrapper(
+        child: GetBuilder<VehicleController>(
+            initState: (v){
+              permissions = Api().sp.read('all_permissions') ?? [];
+            },
+            builder: (controller) {
+          final listToShow = controller.filteredCompanyVehicle.isNotEmpty
+              ? controller.filteredCompanyVehicle
+              : controller.companyAllVehicle;
 
-        return controller.isCompanyVehicle.value == true
-            ? Center(child: CircularProgressIndicator())
+          return controller.isCompanyVehicle.value == true
+              ? Center(child: CircularProgressIndicator())
 
-            :(controller.companyVehicleModel?.vehicles == null || controller.companyVehicleModel!.vehicles!.isEmpty)
-            ? Center(
-          child: Text("NO DATA"),
-        )
+              :(controller.companyVehicleModel?.vehicles == null || controller.companyVehicleModel!.vehicles!.isEmpty)
+              ? Center(
+            child: Text("NO DATA"),
+          )
 
-            : SingleChildScrollView(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Text(
-                    "COMPANY VEHICLES" +
-                        " (${controller.companyVehicleModel?.count})",
-                    style: mozillaTextSemiBoldText(
-                        fontWeight: FontWeight.w800, fontSize: 17),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  SizedBox(
-                    width: 60,
-                  ),
-                  CustomButton(
-                    height: 40,
-                    width: 80,
-                    verticalPadding: 0.0,
-                    borderRadius: 4,
-                    widget: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 0.0),
-                      child: Icon(
-                        Icons.refresh,
-                        color: DynamicColors.whiteClr,
-                        size: 25,
+              : SingleChildScrollView(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      "COMPANY VEHICLES" +
+                          " (${controller.companyVehicleModel?.count})",
+                      style: mozillaTextSemiBoldText(
+                          fontWeight: FontWeight.w800, fontSize: 17),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    SizedBox(
+                      width: 60,
+                    ),
+                    CustomButton(
+                      height: 40,
+                      width: 80,
+                      verticalPadding: 0.0,
+                      borderRadius: 4,
+                      widget: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 0.0),
+                        child: Icon(
+                          Icons.refresh,
+                          color: DynamicColors.whiteClr,
+                          size: 25,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 12,
-              ),
-              SizedBox(
-                width: Get.width,
-                child: DatatableWidget(
-                  columns: [
-                    buildHeaderWithSearch(
-                      title: "VEHICLE #",
-                      onChanged: (v) {
-                        controller.searchVehicle.text = v;
-                        controller.SearchingOnCompany();
-                      },
-                    ),
-
-                    buildHeaderWithSearch(
-                        title: "VEHICLE TYPE",
-                        onChanged: (v) {
-                          controller.searchVehicleType.text = v;
-                          controller.SearchingOnCompany();
-                        }),
-                    buildHeaderWithSearch(
-                        title: "OWNER",
-                        onChanged: (v) {
-                          controller.searchOwner.text = v;
-                          controller.SearchingOnCompany();
-                        }),
-                    buildHeaderWithSearch(
-                        title: "MAKE",
-                        onChanged: (v) {
-                          controller.searchMake.text = v;
-                          controller.SearchingOnCompany();
-                        }),
-                    buildHeaderWithSearch(
-                        title: "MODEL",
-                        onChanged: (v) {
-                          controller.searchModel.text = v;
-                          controller.SearchingOnCompany();
-                        }),
-                    buildHeaderWithSearch(
-                        title: "COLOR",
-                        onChanged: (v) {
-                          controller.searchColor.text  = v;
-                          controller.SearchingOnCompany();
-                        }),
-                    buildHeaderWithSearch(
-                        title: "ACTIONS", removeSearching: true),
                   ],
-                  totalRow:
-                  controller.companyVehicleModel?.vehicles?.length ??
-                      0,
-                  rows: (controller.companyVehicleModel?.vehicles ?? [])
-                      .map((item) {
-                    return DataRow(
-                      cells: [
-                        DataCell(Center(
-                            child: Text((item.vehicleNumber.toString().toUpperCase())))),
-                        DataCell(Center(
-                            child: Text((
-                                item.vehicleType?.name.toString() ??
-                                    "no data").toUpperCase()))),
-                        DataCell(Center(
-                            child: Text((
-                                item.owner.toString() ?? "no data").toUpperCase()))),
-                        DataCell(Center(
-                            child:
-                            Text((item.make.toString() ?? "no data").toUpperCase()))),
-                        DataCell(Center(
-                            child: Text((
-                                item.model.toString() ?? "no data").toUpperCase()))),
-                        DataCell(Center(
-                            child: Text((
-                                item.color.toString() ?? "no data").toUpperCase()))),
-                        DataCell(
-                          Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    side: BorderSide(
-                                      color: Colors.transparent,
-                                    ), // border color & thickness
-                                  ),
-                                  onPressed: () {
-                                    if(permissions.contains('update_company_vehicle')){
-                                      controller.companyDataBinding(
-                                          data: item);
-                                      int index = _controller
-                                          .selectedMenuItems
-                                          .indexWhere((element) =>
-                                      element.title ==
-                                          "LocationForm");
-                                      if (index != -1) {
-                                        _controller.selectedMenuItems[index]
-                                            .selectedItem = true;
-                                        _controller.currentPage.value =
-                                            CreateCompanyVehicle();
-                                      } else {
-                                        _controller.currentPage.value =
-                                            CreateCompanyVehicle();
-                                        _controller.menuBarRefresh(
-                                            title: "UPDATE COMPANY VEHICLE",
-                                            pageName:
-                                            CreateCompanyVehicle());
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                SizedBox(
+                  width: Get.width,
+                  child: DatatableWidget(
+                    columns: [
+                      buildHeaderWithSearch(
+                        title: "VEHICLE #",
+                        onChanged: (v) {
+                          controller.searchVehicle.text = v;
+                          controller.SearchingOnCompany();
+                        },
+                      ),
+
+                      buildHeaderWithSearch(
+                          title: "VEHICLE TYPE",
+                          onChanged: (v) {
+                            controller.searchVehicleType.text = v;
+                            controller.SearchingOnCompany();
+                          }),
+                      buildHeaderWithSearch(
+                          title: "OWNER",
+                          onChanged: (v) {
+                            controller.searchOwner.text = v;
+                            controller.SearchingOnCompany();
+                          }),
+                      buildHeaderWithSearch(
+                          title: "MAKE",
+                          onChanged: (v) {
+                            controller.searchMake.text = v;
+                            controller.SearchingOnCompany();
+                          }),
+                      buildHeaderWithSearch(
+                          title: "MODEL",
+                          onChanged: (v) {
+                            controller.searchModel.text = v;
+                            controller.SearchingOnCompany();
+                          }),
+                      buildHeaderWithSearch(
+                          title: "COLOR",
+                          onChanged: (v) {
+                            controller.searchColor.text  = v;
+                            controller.SearchingOnCompany();
+                          }),
+                      buildHeaderWithSearch(
+                          title: "ACTIONS", removeSearching: true),
+                    ],
+                    totalRow:
+                    controller.companyVehicleModel?.vehicles?.length ??
+                        0,
+                    rows: (controller.companyVehicleModel?.vehicles ?? [])
+                        .map((item) {
+                      return DataRow(
+                        cells: [
+                          DataCell(Center(
+                              child: Text((item.vehicleNumber.toString().toUpperCase())))),
+                          DataCell(Center(
+                              child: Text((
+                                  item.vehicleType?.name.toString() ??
+                                      "no data").toUpperCase()))),
+                          DataCell(Center(
+                              child: Text((
+                                  item.owner.toString() ?? "no data").toUpperCase()))),
+                          DataCell(Center(
+                              child:
+                              Text((item.make.toString() ?? "no data").toUpperCase()))),
+                          DataCell(Center(
+                              child: Text((
+                                  item.model.toString() ?? "no data").toUpperCase()))),
+                          DataCell(Center(
+                              child: Text((
+                                  item.color.toString() ?? "no data").toUpperCase()))),
+                          DataCell(
+                            Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(
+                                        color: Colors.transparent,
+                                      ), // border color & thickness
+                                    ),
+                                    onPressed: () {
+                                      if(permissions.contains('update_company_vehicle')){
+                                        controller.companyDataBinding(
+                                            data: item);
+                                        int index = _controller
+                                            .selectedMenuItems
+                                            .indexWhere((element) =>
+                                        element.title ==
+                                            "LocationForm");
+                                        if (index != -1) {
+                                          _controller.selectedMenuItems[index]
+                                              .selectedItem = true;
+                                          _controller.currentPage.value =
+                                              CreateCompanyVehicle();
+                                        } else {
+                                          _controller.currentPage.value =
+                                              CreateCompanyVehicle();
+                                          _controller.menuBarRefresh(
+                                              title: "UPDATE COMPANY VEHICLE",
+                                              pageName:
+                                              CreateCompanyVehicle());
+                                        }
+                                        controller.update();
                                       }
-                                      controller.update();
-                                    }
-                                  },
-                                  child: Icon(
-                                    Icons.edit_calendar,
-                                    size: 28,
+                                    },
+                                    child: Icon(
+                                      Icons.edit_calendar,
+                                      size: 28,
+                                    ),
                                   ),
-                                ),
-                                Text("|"),
-                                OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    side: BorderSide(
-                                      color: Colors.transparent,
-                                    ), // border color & thickness
-                                  ),
-                                  onPressed: () {
-            if(permissions.contains('delete_company_vehicle')){
-              controller
-                  .deleteCompanyVehicle(
-                  item.id!);
-            }
+                                  Text("|"),
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(
+                                        color: Colors.transparent,
+                                      ), // border color & thickness
+                                    ),
+                                    onPressed: () {
+              if(permissions.contains('delete_company_vehicle')){
+                controller
+                    .deleteCompanyVehicle(
+                    item.id!);
+              }
 
 
-                                  },
-                                  child: Icon(
-                                    Icons.delete_forever,
-                                    color: DynamicColors.redClr,
-                                    size: 28,
+                                    },
+                                    child: Icon(
+                                      Icons.delete_forever,
+                                      color: DynamicColors.redClr,
+                                      size: 28,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    );
-                  }).toList(),
+                        ],
+                      );
+                    }).toList(),
+                  ),
                 ),
-              ),
-              PaginationWidget(
-                  currentPage: controller.companycurrentPage.value,
-                  totalPages: controller.companytotalPages.value,
-                  onPageChange: controller.PageOnCompany)
-            ],
-          ),
-        );
-      }),
+                PaginationWidget(
+                    currentPage: controller.companycurrentPage.value,
+                    totalPages: controller.companytotalPages.value,
+                    onPageChange: controller.PageOnCompany)
+              ],
+            ),
+          );
+        }),
+      ),
     );
   }
 }
