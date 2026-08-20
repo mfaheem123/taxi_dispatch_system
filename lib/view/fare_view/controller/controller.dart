@@ -221,7 +221,7 @@ class FareController extends GetxController {
   ///--------------------- Pagination
   var currentPage = 1.obs;
   var totalPages = 1.obs;
-  final int limit = 10;
+  final int limit = 20;
 
   /// >>>>>>>>>>>>>>>>>>>>> Search Work
   RxList<FixedFare> fixedFareAll = <FixedFare>[].obs;
@@ -234,7 +234,7 @@ class FareController extends GetxController {
   ///--------------------- Pagination
   var currentPageFixedFare = 1.obs;
   var totalPagesFixedFare = 1.obs;
-  final int limitFixedFare = 10;
+  final int limitFixedFare = 20;
 
   getAllFixedFare() async {
     fixedFareLoader(true);

@@ -4,27 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-
-
-
-import 'dart:io';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
 import '../../../component/color.dart';
-import '../../../component/textStyle.dart';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class CustomTimePicker extends StatefulWidget {
   final TextEditingController? controller;
@@ -128,66 +108,97 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
   void _scrollToSelected() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_hourScrollController.hasClients) {
-        _hourScrollController.animateTo(
-          (selectedHour * 38.0).clamp(0, _hourScrollController.position.maxScrollExtent),
-          duration: const Duration(milliseconds: 150),
-          curve: Curves.easeOut,
-        );
+        final targetHourOffset = ((selectedHour - 2) * 38.0).clamp(0.0, _hourScrollController.position.maxScrollExtent);
+        _hourScrollController.jumpTo(targetHourOffset);
       }
       if (_minuteScrollController.hasClients) {
-        _minuteScrollController.animateTo(
-          (selectedMinute * 38.0).clamp(0, _minuteScrollController.position.maxScrollExtent),
-          duration: const Duration(milliseconds: 150),
-          curve: Curves.easeOut,
-        );
+        final targetMinuteOffset = ((selectedMinute - 2) * 38.0).clamp(0.0, _minuteScrollController.position.maxScrollExtent);
+        _minuteScrollController.jumpTo(targetMinuteOffset);
       }
     });
   }
 
-  // Double jump issue fix karne k liye logic clean kar di gayi hai
-  void _handleKeyNavigation(LogicalKeyboardKey key) {
+  void _ensureVisible(ScrollController controller, int index) {
+    if (!controller.hasClients) return;
+    final itemTop = index * 38.0;
+    final itemBottom = itemTop + 38.0;
+    final currentScroll = controller.offset;
+    final viewportHeight = controller.position.viewportDimension;
+
+    // Scroller tabhi move karega jab highlight visible viewport se bahar jaye
+    if (itemTop < currentScroll) {
+      controller.animateTo(
+        itemTop.clamp(0.0, controller.position.maxScrollExtent),
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.easeOut,
+      );
+    } else if (itemBottom > currentScroll + viewportHeight) {
+      controller.animateTo(
+        (itemBottom - viewportHeight).clamp(0.0, controller.position.maxScrollExtent),
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  bool _handleKeyNavigation(LogicalKeyboardKey key) {
     if (_overlayEntry == null) {
-      if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.arrowDown || key == LogicalKeyboardKey.space) {
+      if (key == LogicalKeyboardKey.enter ||
+          key == LogicalKeyboardKey.arrowDown ||
+          key == LogicalKeyboardKey.space) {
         _openDropdown();
+        return true;
       }
-      return;
+      return false;
     }
 
     bool shouldUpdateText = false;
+    bool handled = false;
 
     if (key == LogicalKeyboardKey.arrowLeft) {
       _activeColumnIndex = 0;
+      handled = true;
     } else if (key == LogicalKeyboardKey.arrowRight) {
       _activeColumnIndex = 1;
+      handled = true;
     } else if (key == LogicalKeyboardKey.arrowUp) {
       if (_activeColumnIndex == 0) {
         selectedHour = (selectedHour - 1 < 0) ? 23 : selectedHour - 1;
+        _ensureVisible(_hourScrollController, selectedHour);
       } else {
         selectedMinute = (selectedMinute - 1 < 0) ? 59 : selectedMinute - 1;
+        _ensureVisible(_minuteScrollController, selectedMinute);
       }
       shouldUpdateText = true;
+      handled = true;
     } else if (key == LogicalKeyboardKey.arrowDown) {
       if (_activeColumnIndex == 0) {
         selectedHour = (selectedHour + 1 > 23) ? 0 : selectedHour + 1;
+        _ensureVisible(_hourScrollController, selectedHour);
       } else {
         selectedMinute = (selectedMinute + 1 > 59) ? 0 : selectedMinute + 1;
+        _ensureVisible(_minuteScrollController, selectedMinute);
       }
       shouldUpdateText = true;
+      handled = true;
     } else if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.escape) {
       _closeDropdown();
-      return;
+      return true;
     }
 
     if (shouldUpdateText) {
       _updateTimeText();
-      _scrollToSelected();
     }
 
-    // Single trigger for parent & overlay rebuild
-    setState(() {});
-    if (_overlaySetState != null) {
-      _overlaySetState!(() {});
+    if (handled) {
+      setState(() {});
+      if (_overlaySetState != null) {
+        _overlaySetState!(() {});
+      }
+      return true;
     }
+
+    return false;
   }
 
   OverlayEntry _buildOverlayEntry() {
@@ -266,7 +277,6 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                                     selectedHour = val;
                                     _activeColumnIndex = 0;
                                     _updateTimeText();
-                                    _scrollToSelected();
                                     setState(() {});
                                     setOverlayState(() {});
                                   },
@@ -282,7 +292,6 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                                     selectedMinute = val;
                                     _activeColumnIndex = 1;
                                     _updateTimeText();
-                                    _scrollToSelected();
                                     setState(() {});
                                     setOverlayState(() {});
                                   },
@@ -363,9 +372,19 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
     return Focus(
       focusNode: _focusNode,
       onKeyEvent: (FocusNode node, KeyEvent event) {
-        if (event is KeyDownEvent) {
-          _handleKeyNavigation(event.logicalKey);
-          return KeyEventResult.handled;
+        if (event is KeyDownEvent || event is KeyRepeatEvent) {
+          if (event.logicalKey == LogicalKeyboardKey.tab) {
+            if (_overlayEntry != null) {
+              _closeDropdown();
+            }
+            // Tab key Flutter focus traversal ko de taake next field per focus ho sake
+            return KeyEventResult.ignored;
+          }
+
+          final handled = _handleKeyNavigation(event.logicalKey);
+          if (handled) {
+            return KeyEventResult.handled;
+          }
         }
         return KeyEventResult.ignored;
       },
@@ -391,23 +410,22 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                   color: Colors.grey.shade700,
                 ),
               ),
-              // Focused & Enabled Border Colors Tab Highlight ke liye sync kar diye gaye hain
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(5),
                 borderSide: BorderSide(
-                  color: _focusNode.hasFocus ? Colors.blue : Colors.grey.shade400,
+                  color: _focusNode.hasFocus ? Colors.blue :  DynamicColors.primaryClr,
                   width: _focusNode.hasFocus ? 2.0 : 1.0,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(5),
                 borderSide: BorderSide(
-                  color: _focusNode.hasFocus ? Colors.blue : Colors.grey.shade300,
+                  color: _focusNode.hasFocus ? Colors.blue :  DynamicColors.primaryClr,
                   width: _focusNode.hasFocus ? 2.0 : 1.0,
                 ),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(5),
                 borderSide: const BorderSide(color: Colors.blue, width: 2.0),
               ),
             ),

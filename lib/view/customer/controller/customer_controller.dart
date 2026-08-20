@@ -330,7 +330,7 @@ sendCompanyId: true,
   ///--------------------- Pagination
   var currentPageLostProperty = 1.obs;
   var totalPagesLostProperty = 1.obs;
-  final int limitLostProperty = 10;
+  final int limitLostProperty = 20;
 
   getAllLostProperty() async {
     lostPropertyLoader(true);
@@ -837,7 +837,7 @@ sendCompanyId: true,
   /// Pagination
   var currentPageComplaints = 1.obs;
   var totalPagesComplaints = 1.obs;
-  final int limitComplaints = 10;
+  final int limitComplaints = 20;
 
   Future<void> getCustomerComplaints() async {
     complaintsLoader(true);
