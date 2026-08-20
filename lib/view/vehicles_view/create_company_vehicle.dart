@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../../component/dropdown_button.dart';
 import '../../component/image_pick_widget.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
@@ -113,47 +114,34 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                                 inputFormatters: [UpperCaseTextFormatter()],
                               ),
                               Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(AppText.vehicleType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                                    const SizedBox(height: 2),
-                                    Obx(() {
-                                      return Container(
-                                        height: 35,
-                                        width: fieldWidth / 1.5,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(6),
-                                          border: Border.all(color: DynamicColors.primaryClr, width: 1.2)),
-                                        child: DropdownButtonFormField<VehicleType>(
-                                          decoration: const InputDecoration(
-                                            border: InputBorder.none,
-                                            isDense: true,
-                                            contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4)),
-                                          // YAHAN BADLAO KIYA HAI: Direct reference check karne ki jagah ID se match karwaya hai
-                                          value: controller.selectVehicleValue == null
-                                              ? null
-                                              : controller.allVehicleTypes.firstWhereOrNull(
-                                                  (element) => element.id == controller.selectVehicleValue!.id),
-                                            hint: Text(
-                                              "Select Vehicle Type",
-                                              style: mozillaTextRegularText(fontSize: 12, color: DynamicColors.textClr.withOpacity(0.6)),
-                                            ),
-                                          items: controller.allVehicleTypes
-                                              .map((vehicle) => DropdownMenuItem<VehicleType>(
-                                            value: vehicle,
-                                            child: Text(
-                                              (vehicle.name ?? "").toUpperCase(),
-                                              style: mozillaTextRegularText(fontSize: 12, color: DynamicColors.textClr),
-                                            ),
-                                          )).toList(),
-                                          onChanged: (VehicleType? v) {
-                                            controller.selectVehicleValue = v;
-                                            controller.update();
-                                            },
-                                        ),
-                                      );
-                                    }),
-                                  ]),
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    AppText.vehicleType,
+                                    style: mozillaTextSemiBoldText(context: context, fontSize: 13),
+                                  ),
+
+                                  Obx(() {
+                                    return CustomDropdownField<VehicleType>(
+                                      label: "Select Vehicle Type",
+                                      width: fieldWidth / 1.5,
+                                      height: 30,
+                                      items: controller.allVehicleTypes,
+                                      value: controller.selectVehicleValue == null
+                                          ? null
+                                          : controller.allVehicleTypes.firstWhereOrNull(
+                                            (element) => element.id == controller.selectVehicleValue!.id,
+                                      ),
+                                      itemLabel: (vehicle) => (vehicle.name ?? "").toUpperCase(),
+                                      onChanged: (VehicleType? v) {
+                                        controller.selectVehicleValue = v;
+                                        controller.update();
+                                      },
+                                    );
+                                  }),
+                                ],
+                              ),
 
                               CustomTextField(
                                 borderRadius: 4,
@@ -419,40 +407,53 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                                             : null),
                                       ),
                                       // Text tab hide hoga jab local image ho YA network image ho
-                                    child: (controller.phcVehicleDocPic != null || controller.singleVehicleData?.phcVehicleDocument != null)
-                                        ? SizedBox.shrink()
-                                        : Center(
-                                      child: Text(
-                                        AppText.phcVehicleDoc,
-                                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black),
+                                      child: (controller.phcVehicleDocPic != null || controller.singleVehicleData?.phcVehicleDocument != null)
+                                          ? SizedBox.shrink()
+                                          : Center(
+                                        child: Text(
+                                          AppText.phcVehicleDoc,
+                                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black),
+                                        ),
                                       ),
                                     ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () async {
-                                        // Agar pehle se koi image hai (Local ya Network), to usay remove karo
-                                        if (controller.phcVehicleDocPic != null || controller.singleVehicleData?.phcVehicleDocument != null) {
-                                          controller.phcVehicleDocPic = null;
-                                          if (controller.singleVehicleData != null) {
-                                            controller.singleVehicleData!.phcVehicleDocument = null; // Model se clear karein
-                                          }
-                                        } else {
-                                          // Nayi image pick karo
-                                          final image = await ImagePickerHelper.pickImage();
-                                          if (image != null) {
-                                            controller.phcVehicleDocPic = image.bytes;
-                                          }
-                                        }
-                                        controller.update();
-                                      },
-                                      child: Icon(
-                                        (controller.phcVehicleDocPic != null || controller.singleVehicleData?.phcVehicleDocument != null)
-                                            ? Icons.remove_circle
-                                            : Icons.add_circle_outlined,
-                                        size: 30,
-                                        color: (controller.phcVehicleDocPic != null || controller.singleVehicleData?.phcVehicleDocument != null)
-                                            ? DynamicColors.redClr // Remove ke liye Red color
-                                            : DynamicColors.primaryClr,
+                                    Focus(
+                                      child: Builder(
+                                        builder: (focusContext) {
+                                          final isFocused = Focus.of(focusContext).hasFocus;
+                                          return InkWell(
+                                            borderRadius: BorderRadius.circular(15),
+                                            focusColor: DynamicColors.primaryClr.withOpacity(0.2),
+                                            onTap: () async {
+                                              if (controller.phcVehicleDocPic != null || controller.singleVehicleData?.phcVehicleDocument != null) {
+                                                controller.phcVehicleDocPic = null;
+                                                if (controller.singleVehicleData != null) {
+                                                  controller.singleVehicleData!.phcVehicleDocument = null;
+                                                }
+                                              } else {
+                                                final image = await ImagePickerHelper.pickImage();
+                                                if (image != null) {
+                                                  controller.phcVehicleDocPic = image.bytes;
+                                                }
+                                              }
+                                              controller.update();
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: isFocused ? Border.all(color: DynamicColors.primaryClr, width: 2) : null,
+                                              ),
+                                              child: Icon(
+                                                (controller.phcVehicleDocPic != null || controller.singleVehicleData?.phcVehicleDocument != null)
+                                                    ? Icons.remove_circle
+                                                    : Icons.add_circle_outlined,
+                                                size: 30,
+                                                color: (controller.phcVehicleDocPic != null || controller.singleVehicleData?.phcVehicleDocument != null)
+                                                    ? DynamicColors.redClr
+                                                    : DynamicColors.primaryClr,
+                                              ),
+                                            ),
+                                          );
+                                        },
                                       ),
                                     )
                                   ],
@@ -505,31 +506,44 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                                         ),
                                       ),
                                     ),
-                                    GestureDetector(
-                                      onTap: () async {
-                                        // Agar pehle se koi image hai (Local ya Network), to usay remove karo
-                                        if (controller.motDocPic != null || controller.singleVehicleData?.motDocument != null) {
-                                          controller.motDocPic = null;
-                                          if (controller.singleVehicleData != null) {
-                                            controller.singleVehicleData!.motDocument = null; // Model se path clear karein
-                                          }
-                                        } else {
-                                          // Warna nayi image pick karo
-                                          final image = await ImagePickerHelper.pickImage();
-                                          if (image != null) {
-                                            controller.motDocPic = image.bytes;
-                                          }
-                                        }
-                                        controller.update();
+                                    Focus(
+                                      child: Builder(
+                                        builder: (focusContext) {
+                                          final isFocused = Focus.of(focusContext).hasFocus;
+                                          return InkWell(
+                                            borderRadius: BorderRadius.circular(15),
+                                            focusColor: DynamicColors.primaryClr.withOpacity(0.2),
+                                            onTap: () async {
+                                              if (controller.motDocPic != null || controller.singleVehicleData?.motDocument != null) {
+                                                controller.motDocPic = null;
+                                                if (controller.singleVehicleData != null) {
+                                                  controller.singleVehicleData!.motDocument = null;
+                                                }
+                                              } else {
+                                                final image = await ImagePickerHelper.pickImage();
+                                                if (image != null) {
+                                                  controller.motDocPic = image.bytes;
+                                                }
+                                              }
+                                              controller.update();
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: isFocused ? Border.all(color: DynamicColors.primaryClr, width: 2) : null,
+                                              ),
+                                              child: Icon(
+                                                (controller.motDocPic != null || controller.singleVehicleData?.motDocument != null)
+                                                    ? Icons.remove_circle
+                                                    : Icons.add_circle_outlined,
+                                                size: 30,
+                                                color: (controller.motDocPic != null || controller.singleVehicleData?.motDocument != null)
+                                                    ? DynamicColors.redClr
+                                                    : DynamicColors.primaryClr,
+                                              ),
+                                            ),
+                                          );
                                         },
-                                      child: Icon(
-                                        (controller.motDocPic != null || controller.singleVehicleData?.motDocument != null)
-                                            ? Icons.remove_circle
-                                            : Icons.add_circle_outlined,
-                                        size: 30,
-                                        color: (controller.motDocPic != null || controller.singleVehicleData?.motDocument != null)
-                                            ? DynamicColors.redClr // Image hai to remove icon red dikhao
-                                        : DynamicColors.primaryClr,
                                       ),
                                     )
                                   ],
@@ -581,31 +595,44 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                                         ),
                                       ),
                                     ),
-                                    GestureDetector(
-                                      onTap: () async {
-                                        // Agar pehle se koi image hai (Local ya Network), to usay remove karo
-                                        if (controller.mot2DocPic != null || controller.singleVehicleData?.mot2Document != null) {
-                                          controller.mot2DocPic = null;
-                                          if (controller.singleVehicleData != null) {
-                                            controller.singleVehicleData!.mot2Document = null; // ✅ MOT2 model clear
-                                          }
-                                        } else {
-                                          // Warna nayi image pick karo
-                                          final image = await ImagePickerHelper.pickImage();
-                                          if (image != null) {
-                                            controller.mot2DocPic = image.bytes;
-                                          }
-                                        }
-                                        controller.update();
+                                    Focus(
+                                      child: Builder(
+                                        builder: (focusContext) {
+                                          final isFocused = Focus.of(focusContext).hasFocus;
+                                          return InkWell(
+                                            borderRadius: BorderRadius.circular(15),
+                                            focusColor: DynamicColors.primaryClr.withOpacity(0.2),
+                                            onTap: () async {
+                                              if (controller.mot2DocPic != null || controller.singleVehicleData?.mot2Document != null) {
+                                                controller.mot2DocPic = null;
+                                                if (controller.singleVehicleData != null) {
+                                                  controller.singleVehicleData!.mot2Document = null;
+                                                }
+                                              } else {
+                                                final image = await ImagePickerHelper.pickImage();
+                                                if (image != null) {
+                                                  controller.mot2DocPic = image.bytes;
+                                                }
+                                              }
+                                              controller.update();
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: isFocused ? Border.all(color: DynamicColors.primaryClr, width: 2) : null,
+                                              ),
+                                              child: Icon(
+                                                (controller.mot2DocPic != null || controller.singleVehicleData?.mot2Document != null)
+                                                    ? Icons.remove_circle
+                                                    : Icons.add_circle_outlined,
+                                                size: 30,
+                                                color: (controller.mot2DocPic != null || controller.singleVehicleData?.mot2Document != null)
+                                                    ? DynamicColors.redClr
+                                                    : DynamicColors.primaryClr,
+                                              ),
+                                            ),
+                                          );
                                         },
-                                      child: Icon(
-                                        (controller.mot2DocPic != null || controller.singleVehicleData?.mot2Document != null)
-                                            ? Icons.remove_circle
-                                            : Icons.add_circle_outlined,
-                                        size: 30,
-                                        color: (controller.mot2DocPic != null || controller.singleVehicleData?.mot2Document != null)
-                                            ? DynamicColors.redClr
-                                            : DynamicColors.primaryClr,
                                       ),
                                     )
                                   ],
@@ -658,31 +685,44 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                                         ),
                                       ),
                                     ),
-                                    GestureDetector(
-                                      onTap: () async {
-                                        // Agar pehle se koi image hai (Local ya Network), to usay remove karo
-                                        if (controller.insuranceDocPic != null || controller.singleVehicleData?.insuranceDocument != null) {
-                                          controller.insuranceDocPic = null;
-                                          if (controller.singleVehicleData != null) {
-                                            controller.singleVehicleData!.insuranceDocument = null; // Model se path clear karein
-                                          }
-                                        } else {
-                                          // Warna nayi image pick karo
-                                          final image = await ImagePickerHelper.pickImage();
-                                          if (image != null) {
-                                            controller.insuranceDocPic = image.bytes;
-                                          }
-                                        }
-                                        controller.update();
+                                    Focus(
+                                      child: Builder(
+                                        builder: (focusContext) {
+                                          final isFocused = Focus.of(focusContext).hasFocus;
+                                          return InkWell(
+                                            borderRadius: BorderRadius.circular(15),
+                                            focusColor: DynamicColors.primaryClr.withOpacity(0.2),
+                                            onTap: () async {
+                                              if (controller.insuranceDocPic != null || controller.singleVehicleData?.insuranceDocument != null) {
+                                                controller.insuranceDocPic = null;
+                                                if (controller.singleVehicleData != null) {
+                                                  controller.singleVehicleData!.insuranceDocument = null;
+                                                }
+                                              } else {
+                                                final image = await ImagePickerHelper.pickImage();
+                                                if (image != null) {
+                                                  controller.insuranceDocPic = image.bytes;
+                                                }
+                                              }
+                                              controller.update();
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: isFocused ? Border.all(color: DynamicColors.primaryClr, width: 2) : null,
+                                              ),
+                                              child: Icon(
+                                                (controller.insuranceDocPic != null || controller.singleVehicleData?.insuranceDocument != null)
+                                                    ? Icons.remove_circle
+                                                    : Icons.add_circle_outlined,
+                                                size: 30,
+                                                color: (controller.insuranceDocPic != null || controller.singleVehicleData?.insuranceDocument != null)
+                                                    ? DynamicColors.redClr
+                                                    : DynamicColors.primaryClr,
+                                              ),
+                                            ),
+                                          );
                                         },
-                                      child: Icon(
-                                        (controller.insuranceDocPic != null || controller.singleVehicleData?.insuranceDocument != null)
-                                            ? Icons.remove_circle
-                                            : Icons.add_circle_outlined,
-                                        size: 30,
-                                        color: (controller.insuranceDocPic != null || controller.singleVehicleData?.insuranceDocument != null)
-                                            ? DynamicColors.redClr
-                                            : DynamicColors.primaryClr,
                                       ),
                                     )
                                   ],
