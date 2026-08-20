@@ -1964,7 +1964,7 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
       builder: (context, child) {
         final isFocused = _dropdownFocusNode.hasFocus;
         return Container(
-          height: 42,
+          height: 31,
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             color: isFocused ? _focusFill : Colors.white,
