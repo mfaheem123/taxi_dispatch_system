@@ -279,7 +279,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.slugControllerReturn.clear();
                                     controller.tempStoreMils = null;
                                     controller.fetchRouteFromOSRM();
-                                    // FocusScope.of(Get.context!).requestFocus(_pickupFieldFocusNode);
+                                    FocusScope.of(Get.context!).requestFocus(_pickupFieldFocusNode);
                                     controller.update();
                                   },
                                   notesController: controller.pickUpNoteController,
@@ -1904,10 +1904,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     states.contains(WidgetState.focused) ? _focusFill : Colors.white),
     border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
-        borderSide: const BorderSide(color: _border)),
+        borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
     enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
-        borderSide: const BorderSide(color: _border)),
+        borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
     focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
         borderSide: const BorderSide(color: _purple, width: 2)),
@@ -1969,7 +1969,7 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
           decoration: BoxDecoration(
             color: isFocused ? _focusFill : Colors.white,
             border: Border.all(
-              color: isFocused ? _purple : _border,
+              color: isFocused ? _purple : Colors.grey.withOpacity(0.7),
               width: isFocused ? 2 : 1,
             ),
             borderRadius: BorderRadius.circular(6),
