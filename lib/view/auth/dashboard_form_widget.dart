@@ -279,7 +279,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.slugControllerReturn.clear();
                                     controller.tempStoreMils = null;
                                     controller.fetchRouteFromOSRM();
-                                    // FocusScope.of(Get.context!).requestFocus(_pickupFieldFocusNode);
+                                    FocusScope.of(Get.context!).requestFocus(_pickupFieldFocusNode);
                                     controller.update();
                                   },
                                   notesController: controller.pickUpNoteController,
@@ -406,7 +406,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.slugControllerReturn.clear();
                                     controller.tempStoreMils = null;
                                     controller.fetchRouteFromOSRM();
-                                    // FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
+                                    FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
                                     controller.update();
                                   },
                                   notesController: controller.dropUpNoteController,
@@ -721,7 +721,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           zoneLabel: (z) => z.name!,
           onPickIndex: (index) => controller.tapSelect(index),
           onPressed: () {
-            // FocusScope.of(Get.context!).requestFocus(controller.pickupTwoTextFieldFocusNode);
+            FocusScope.of(Get.context!).requestFocus(controller.pickupTwoTextFieldFocusNode);
 
             final pickupPolylineIndex = controller.polyLineMarkerInfo
                 .indexWhere((e) => e.markerType == "PICKUP TWO WAY LOCATION");
@@ -839,7 +839,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           zoneLabel: (z) => z.name!,
           onPickIndex: (index) => controller.tapSelect(index),
           onPressed: () {
-            // FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
+            FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
 
             final dropPolylineIndex = controller.polyLineMarkerInfo
                 .indexWhere((e) => e.markerType == "DROP TWO WAY LOCATION");
