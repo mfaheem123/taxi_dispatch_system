@@ -13,14 +13,12 @@ class SubscriptionSocketService {
   static void initSocket() {
     try {
       final String companyId = Api.singleton.globalCompanyId;
-      final String baseUrl = socketUrl; // Api.dart se `socketUrl` use ho raha hai
-
-      // Construct Full Socket URL
-      final String fullUrl = "ws://158.220.92.206:5000/websocket/company-subscription?company_id=3";
+      final String baseUrl = socketUrl;
+      final String fullUrl = "$baseUrl/company-subscription?company_id=$companyId";
 
       print("Connecting to WebSocket: $fullUrl");
 
-      _channel = IOWebSocketChannel.connect(Uri.parse(fullUrl));
+      _channel = WebSocketChannel.connect(Uri.parse(fullUrl));
 
       _channel!.stream.listen(
             (message) {
@@ -67,7 +65,7 @@ class SubscriptionSocketService {
     }
   }
 
-  /// 1 & 2: Warning and Grace Days Dialog (Cancel / OK normal dialog)
+  ///  (Cancel / OK )
   static void _showWarningDialog(String title, String message) {
     if (getx.Get.context != null) {
       showDialog(
@@ -89,14 +87,14 @@ class SubscriptionSocketService {
     }
   }
 
-  /// 3: Force Logout Dialog (Blocking Dialog with single OK button)
+  /// 3: Force Logout
   static void _showForceLogoutDialog(String title, String message) {
     if (getx.Get.context != null) {
       showDialog(
         context: getx.Get.context!,
-        barrierDismissible: false, // User screen ke bahar click karke close na kar sake
+        barrierDismissible: false,
         builder: (context) => WillPopScope(
-          onWillPop: () async => false, // Back button disable karne ke liye
+          onWillPop: () async => false,
           child: AlertDialog(
             title: Text(
               title,
@@ -122,22 +120,22 @@ class SubscriptionSocketService {
     }
   }
 
-  /// Storage clear karne aur Login screen par redirect karne ka logic
+  /// Storage clear
   static void _performLogout() {
     // 1. Socket connection close karein
     closeSocket();
 
-    // 2. Clear storage (GetStorage)
+    // 2. Clear storage
     Api.singleton.sp.erase();
 
     // 3. Clear session count if used
     count = 0;
 
-    // 4. Login screen par navigate karein
+    // 4. Login screen
     getx.Get.offAllNamed(Routes.loginScreen);
   }
 
-  /// Socket manually disconnect karne ke liye
+  /// Socket manually disconnect
   static void closeSocket() {
     _channel?.sink.close();
     _channel = null;

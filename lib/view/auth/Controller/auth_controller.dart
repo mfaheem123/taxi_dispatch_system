@@ -11,6 +11,10 @@ import 'package:get_storage/get_storage.dart';
 import '../../../alert/cli_extention_alert.dart';
 import '../../administration/model/user_model.dart';
 
+import '../reminder_payment_alert.dart';
+
+// SOCKET SERVICE IMPORT
+
 class AuthController extends GetxController {
 
   final sp = GetStorage();
@@ -22,53 +26,17 @@ class AuthController extends GetxController {
       if (storedUser != null) {
         Employee.selectedEmployee = Employee.fromJson(storedUser);
         update();
+
+        // --- SOCKET CONNECT (Auto Login / Session Restore) ---
+        SubscriptionSocketService.initSocket();
       }
     }
   }
-
-
-
 
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   RxBool PostAuthLoader = false.obs;
 
-  // postLoginDetails() async {
-  //   PostAuthLoader(true);
-  //   var formData = {
-  //     "username": usernameController.text,
-  //     "password": passwordController.text,
-  //     "web_device_id": passwordController.text,
-  //
-  //   };
-  //   var response = await Api().post(formData, 'employees/login', auth: false);
-  //   if (response.statusCode == 200) {
-  //     var employeeData = response.data['employee'];
-  //     var token = response.data['token'];
-  //     sp.write('userRole', employeeData['role']['name']);
-  //     sp.write('token', token);
-  //     sp.write('userData', employeeData);
-  //     await getRole(id: employeeData['role_id']);
-  //     Employee.selectedEmployee = Employee.fromJson(employeeData);
-  //     List extensions = employeeData['employee_extensions'] ?? [];
-  //     // await addData();
-  //     if (extensions.isEmpty) {
-  //       Get.offAllNamed(Routes.myHomePage);
-  //       Future.delayed(const Duration(milliseconds: 800), () {
-  //         ExtensionAlert.show();
-  //       });
-  //     } else {
-  //       String latestExtension = extensions.last['extension_number'].toString();
-  //       Employee.selectedEmployee!.extensionNumber = latestExtension;
-  //       print("Extension Found: $latestExtension");
-  //       Get.offAllNamed(Routes.myHomePage);
-  //       update();
-  //     }
-  //   } else {
-  //     BotToast.showText(text: "Login failed!");
-  //   }
-  //   PostAuthLoader(false);
-  // }
   postLoginDetails() async {
     PostAuthLoader(true);
     try {
@@ -95,6 +63,12 @@ class AuthController extends GetxController {
         sp.write('token', token);
         sp.write('userData', employeeData);
 
+        // --- COMPANY ID SAVE & SOCKET CONNECT ---
+        if (employeeData['company_id'] != null) {
+          sp.write('company_id', employeeData['company_id'].toString());
+        }
+        SubscriptionSocketService.initSocket();
+
         await getRole(id: employeeData['role_id']);
         Employee.selectedEmployee = Employee.fromJson(employeeData);
 
@@ -108,7 +82,7 @@ class AuthController extends GetxController {
           });
         } else {
           String latestExtension =
-              extensions.last['extension_number'].toString();
+          extensions.last['extension_number'].toString();
           Employee.selectedEmployee!.extensionNumber = latestExtension;
           print("Extension Found: $latestExtension");
           Get.offAllNamed(Routes.myHomePage);
@@ -158,8 +132,12 @@ class AuthController extends GetxController {
     } catch (e) {
       print("Logout API Error: $e");
     } finally {
+      // --- SOCKET CLOSE ---
+      SubscriptionSocketService.closeSocket();
+
       sp.remove('token');
       sp.remove('userData');
+      sp.remove('company_id');
       Employee.selectedEmployee = null;
       currentExtension.value = "---";
       Get.offAllNamed(Routes.loginScreen);
