@@ -84,8 +84,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
               Row(
                 children: [
                   Text(
-                    AppText.customer +
-                        "(${controller.getCustomerModel?.count})",
+                    AppText.customer + "(${controller.getCustomerModel?.count})",
                     style: mozillaTextSemiBoldText(
                         fontWeight: FontWeight.w800, fontSize: 17),
                   ),

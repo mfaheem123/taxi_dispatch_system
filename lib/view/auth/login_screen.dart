@@ -14,7 +14,7 @@
 //
 //   @override
 //   State<LoginScreen> createState() => _LoginScreenState();
-// }
+// } .
 //
 // class _LoginScreenState extends State<LoginScreen> {
 //   AuthController controller = Get.put(AuthController());
