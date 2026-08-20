@@ -62,6 +62,11 @@ class ReportController extends GetxController {
   RxString searchLogoutDate = ''.obs;
   RxString searchLogoutTime = ''.obs;
 
+  /// >>>>>>>>>>>>>>>>>>>>> Pagination Work
+  var currentLoginPage = 1.obs;
+  var totalLoginPages = 1.obs;
+  final int loginLimit = 20;
+
   DriverLoginReportListModel? driverLoginReportListModel;
   RxBool isLoadingShift = false.obs;
 
@@ -80,6 +85,8 @@ class ReportController extends GetxController {
           : "";
       var response = await Api().get("driver_shift_history/login",
           queryParameters: {
+            "page": currentLoginPage.value,
+            "limit": loginLimit,
             "driver_id": selectDriverObject?.id.toString(),
             "from_date": formattedFromDate,
             "to_date" : toDateFormate,
@@ -93,6 +100,7 @@ class ReportController extends GetxController {
       );
       if (response.statusCode == 200) {
         driverLoginReportListModel = DriverLoginReportListModel.fromJson(response.data);
+        totalLoginPages.value = driverLoginReportListModel?.totalPages ?? 1;
         driverShiftHistoryAll.value = driverLoginReportListModel?.driverShiftHistories ?? [];
         driverHistoryFiltered.value = driverShiftHistoryAll;
         print("Shift History Data: ${response.data}");
@@ -112,6 +120,13 @@ class ReportController extends GetxController {
   }
   // -----------Search function
   void onSearchDriverShift() {
+    currentLoginPage.value = 1;
+    getDriverShiftHistory();
+  }
+
+  // -----------Pagination function
+  void onPageLogin(int page) {
+    currentLoginPage.value = page;
     getDriverShiftHistory();
   }
 
@@ -1145,38 +1160,6 @@ void clearBookingReportData() {
     companyToDate.value = DateTime.now();
   }
 
-  // void onLocalSearchCompany() {
-  //   if (searchVehicle.value.isEmpty &&
-  //       searchDriver.value.isEmpty &&
-  //       searchAcc.value.isEmpty &&
-  //       searchFare.value.isEmpty &&
-  //       searchPc.value.isEmpty &&
-  //       searchWc.value.isEmpty &&
-  //       searchEdc.value.isEmpty &&
-  //       searchMg.value.isEmpty &&
-  //       searchCc.value.isEmpty &&
-  //       searchTotal.value.isEmpty) {
-  //
-  //     filteredCompany.value = companyListAll;
-  //   } else {
-  //     filteredCompany.value = companyListAll.where((item) {
-  //       final matchVehicle = item.vehicleType?.name?.toLowerCase().contains(searchVehicle.value.toLowerCase()) ?? true;
-  //       final matchDriver = item.driver?.name?.toLowerCase().contains(searchDriver.value.toLowerCase()) ?? true;
-  //       final matchAccount = item.account?.name?.toLowerCase().contains(searchAcc.value.toLowerCase()) ?? true;
-  //       final matchFare = item.fares?.toLowerCase().contains(searchFare.value.toLowerCase()) ?? true;
-  //       final matchPc = item.parkingCharges?.toLowerCase().contains(searchPc.value.toLowerCase()) ?? true;
-  //       final matchWc = item.waitingCharges?.toLowerCase().contains(searchWc.value.toLowerCase()) ?? true;
-  //       final matchEdc = item.extraDropCharges?.toLowerCase().contains(searchEdc.value.toLowerCase()) ?? true;
-  //       final matchMg = item.meetAndGreet?.toLowerCase().contains(searchMg.value.toLowerCase()) ?? true;
-  //       final matchCc = item.congestionCharges?.toLowerCase().contains(searchCc.value.toLowerCase()) ?? true;
-  //       final matchTotal = item.totalCharges?.toLowerCase().contains(searchTotal.value.toLowerCase()) ?? true;
-  //
-  //       return matchVehicle && matchDriver && matchAccount && matchFare &&
-  //           matchPc && matchWc && matchEdc && matchMg && matchCc && matchTotal;
-  //     }).toList();
-  //   }
-  //   update();
-  // }
   void onSearchCompany() {
     comCurrentPage.value = 1;
     getCompanyIncome();

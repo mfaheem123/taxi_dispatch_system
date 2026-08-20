@@ -1092,16 +1092,11 @@ class _AllBookingViewState extends State<AllBookingView> {
                     );
                   },
                 ),
-                // Container(
-                //   color: Colors.white,
-                //   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                //   child:
                   PaginationWidget(
                     currentPage: controller.currentPage.value,
                     totalPages: controller.totalPages.value,
                     onPageChange: controller.onBookingPageChange,
                   ),
-                // ),
               ],
             ));
       });
