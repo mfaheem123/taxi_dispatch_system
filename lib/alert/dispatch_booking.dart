@@ -78,10 +78,12 @@ class _DispatchBookingState extends State<DispatchBooking> {
                 const Divider(height: 30, thickness: 1),
                 // Sub-Header
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text("SELECT DRIVER TO DISPATCH",
                         style: mozillaTextSemiBoldText(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black54)),
+                    // const Spacer(),
+                    const SizedBox(width: 40),
                     CustomButton(
                       width: 165, height: 35, verticalPadding: 0.0, borderRadius: 4,
                       btnText: "CALCULATE DISTANCE",

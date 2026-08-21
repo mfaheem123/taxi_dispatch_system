@@ -497,7 +497,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Image.asset(
-                        'assets/cabflow_logo.jpeg',
+                        'assets/cabflow_logo.png',
                         height: 26,
                         fit: BoxFit.contain,
                         filterQuality: FilterQuality.high,
