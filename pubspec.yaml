@@ -85,6 +85,13 @@ dependencies:
       url: https://github.com/hubaib33/timerpicker.git
       ref: main
 
+  # Dropdown date field (WebDateField / GlowFocus). For local iteration on the
+  # package, swap this for:  path: ../../flutter_web_date_picker
+  flutter_web_date_picker:
+    git:
+      url: https://github.com/hubaib33/flutter_web_date_picker.git
+      ref: main
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

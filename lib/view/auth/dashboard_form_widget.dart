@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_web_date_picker/flutter_web_date_picker.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:timepickerfield/timepickerfield.dart';
@@ -493,7 +494,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   ),
                                 ]),
                                 _grid(cols, [
-                                  _dateField('Date',
+                                  WebDateField('Date',
                                       tab: 12,
                                       value: controller.pickUpDate,
                                       onChanged: (d) => setState(() {
@@ -881,7 +882,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         ),
         const SizedBox(height: 8),
         _grid(cols, [
-          _dateField('R/Date',
+          WebDateField('R/Date',
               tab: 28,
               value: controller.pickUpDateReturn,
               onChanged: (d) => setState(() {
@@ -1023,7 +1024,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         // Tab reached it only after the whole form had been traversed.
         FocusTraversalOrder(
           order: const NumericFocusOrder(31.5),
-          child: _GlowFocus(
+          child: GlowFocus(
             radius: 4,
             child: SizedBox(
             width: 20,
@@ -1056,7 +1057,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             color: Colors.transparent,
             child: FocusTraversalOrder(
               order: NumericFocusOrder(order),
-              child: _GlowFocus(
+              child: GlowFocus(
               radius: 8,
               child: InkWell(
               onTap: onTap,
@@ -1209,7 +1210,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               controller.text.isNotEmpty
                   ? FocusTraversalOrder(
                 order: NumericFocusOrder(tabBase + 1.3),
-                child: _GlowFocus(
+                child: GlowFocus(
                   radius: 14,
                   child: IconButton(
                     tooltip: 'Clear',
@@ -1226,7 +1227,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   : const SizedBox.shrink(),
               FocusTraversalOrder(
                 order: NumericFocusOrder(tabBase + 1.6),
-                child: _GlowFocus(
+                child: GlowFocus(
                   radius: 14,
                   child: IconButton(
                     tooltip: 'Use current location',
@@ -1259,7 +1260,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         '${label[0]}${label.substring(1).toLowerCase().trim()} Notes';
     final notes = FocusTraversalOrder(
       order: NumericFocusOrder((tabBase + 3).toDouble()),
-      child: _GlowFocus(
+      child: GlowFocus(
         child: TextField(
           controller: notesController,
           textCapitalization: TextCapitalization.characters,
@@ -1307,7 +1308,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     Widget checkbox(String label, bool value, ValueChanged<bool?> onChanged, {required num tab}) =>
         FocusTraversalOrder(
           order: NumericFocusOrder(tab.toDouble()),
-          child: _GlowFocus(
+          child: GlowFocus(
             child: Row(mainAxisSize: MainAxisSize.min, children: [
               SizedBox(
                 width: 20,
@@ -1338,7 +1339,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             const SizedBox(height: 2),
             FocusTraversalOrder(
               order: NumericFocusOrder(tab.toDouble()),
-              child: _GlowFocus(
+              child: GlowFocus(
                 child: TextField(
                   controller: controller,
                   style: const TextStyle(fontSize: _fsField),
@@ -1369,7 +1370,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     Widget iconBtn(IconData icon, {VoidCallback? onPressed, required int tab}) =>
         FocusTraversalOrder(
           order: NumericFocusOrder(tab.toDouble()),
-          child: _GlowFocus(
+          child: GlowFocus(
             child: Focus(
               // Key-handling only: the inner IconButton is the single Tab stop.
               // A focusable wrapper here would double every Tab press, and key
@@ -1544,7 +1545,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     );
     final clear = FocusTraversalOrder(
       order: NumericFocusOrder((_isReturnJourney ? 44 : 29).toDouble()),
-      child: _GlowFocus(
+      child: GlowFocus(
         child: ElevatedButton(
           onPressed: () {
             controller.refreshPostAllFields();
@@ -1563,7 +1564,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     );
     final home = FocusTraversalOrder(
       order: NumericFocusOrder((_isReturnJourney ? 45 : 30).toDouble()),
-      child: _GlowFocus(
+      child: GlowFocus(
         child: Focus(
           // Intercept Tab so focus jumps from the Home button directly to the
           // Driver panel's first focusable item, skipping any remaining items
@@ -1712,36 +1713,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ),
     ]);
   }
-  // Read-only date field backed by a [DateTime?] value (no TextEditingController).
-  // • Tab focuses it (icon + border turn purple, date text shows the selection color).
-  // • Enter / Space opens a React-datepicker-style dropdown calendar (anchored
-  //   under the field) with month / year navigation, arrow-key day navigation,
-  //   and the purple selection palette.
-  Widget _dateField(String label,
-      {required int tab,
-        required DateTime? value,
-        required ValueChanged<DateTime> onChanged}) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      // Text(label.toUpperCase(),
-      //     style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
-      const SizedBox(height: 4),
-      FocusTraversalOrder(
-        order: NumericFocusOrder(tab.toDouble()),
-        child: _GlowFocus(
-          child: _CalendarDropdownField(
-            value: value,
-            label: label,
-            onChanged: onChanged,
-            decoration: _inputDecoration(),
-            textStyle: const TextStyle(fontSize: _fsField, color: Colors.black87),
-            accent: _purple,
-            accentSoft: _purpleSoft,
-            idleColor: Colors.grey,
-          ),
-        ),
-      ),
-    ]);
-  }
 
   /// [onPicked] fires only when the user confirms a time in the dropdown, so
   /// the controller can tell a chosen time apart from the pre-filled "now".
@@ -1755,7 +1726,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       // const SizedBox(height: 2),
       FocusTraversalOrder(
         order: NumericFocusOrder(tab.toDouble()),
-        child: _GlowFocus(
+        child: GlowFocus(
           child: TimePickerField(
             controller: controller,
             onChanged: onPicked == null ? null : (_) => onPicked(),
@@ -1795,7 +1766,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       // const SizedBox(height: 2),
       FocusTraversalOrder(
         order: NumericFocusOrder(tab.toDouble()),
-        child: _GlowFocus(
+        child: GlowFocus(
           child: TextField(
             controller: controller,
             textCapitalization: TextCapitalization.characters,
@@ -1839,7 +1810,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         ],
         FocusTraversalOrder(
           order: NumericFocusOrder(tab.toDouble()),
-          child: _GlowFocus(
+          child: GlowFocus(
             child: _DropdownField<T>(
               value: value,
               items: items,
@@ -1872,7 +1843,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             child: Focus(
               // The Switch itself is the Tab stop and handles Enter/Space.
               canRequestFocus: false,
-              child: _GlowFocus(
+              child: GlowFocus(
                 radius: 20,
                 child: Obx(() => Switch(
                   value: controller.dropDownShow.value,
@@ -2368,7 +2339,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
       link: _layerLink,
-      child: _GlowFocus(
+      child: GlowFocus(
         child: Focus(
           // Key-handling only (arrows / Enter / Esc drive the suggestion
           // panel). The inner TextField owns the single Tab stop; a focusable
@@ -2603,7 +2574,7 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
       link: _layerLink,
-      child: _GlowFocus(
+      child: GlowFocus(
         child: Focus(
           // Key-handling only (arrows / Enter / Esc drive the suggestion
           // panel). The inner TextField owns the single Tab stop; a focusable
@@ -2942,7 +2913,7 @@ class _CustomerModelAutocompleteState
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
       link: _layerLink,
-      child: _GlowFocus(
+      child: GlowFocus(
         child: Focus(
           // Key-handling only (arrows / Enter / Esc drive the suggestion
           // panel). The inner TextField owns the single Tab stop; a focusable
@@ -2965,637 +2936,6 @@ class _CustomerModelAutocompleteState
   }
 }
 // ════════════════════════════════════════════════════════════════════
-// Focus glow — soft animated "shining" purple halo shown around whichever
-// field currently holds keyboard focus (reached via Tab / Shift+Tab).
+// The focus ring and the dropdown date field now live in the
+// flutter_web_date_picker package (GlowFocus / WebDateField).
 // ════════════════════════════════════════════════════════════════════
-// ════════════════════════════════════════════════════════════════════
-// Focus ring — paints a crisp accent outline plus a soft halo around
-// whichever control currently holds keyboard focus, so Tab / Shift+Tab has an
-// unmistakable indicator on EVERY control type, not just the text inputs that
-// get a coloured `focusedBorder`. Every field on this form sits on a black 1px
-// border, which made a border-colour-only cue very hard to spot.
-//
-// Both cues are box shadows, so they paint OUTSIDE the child's rect and cost
-// no layout: nothing shifts or resizes when focus arrives.
-//
-// The wrapper node is deliberately non-focusable and non-traversable — it only
-// observes. `FocusNode.hasFocus` is true when the node OR ANY DESCENDANT holds
-// primary focus, so this reports the focus state of whatever it wraps.
-// ════════════════════════════════════════════════════════════════════
-class _GlowFocus extends StatefulWidget {
-  const _GlowFocus({required this.child, this.radius = 6});
-  final Widget child;
-
-  /// Corner radius of the ring. Match the wrapped control so the outline
-  /// hugs it (6 = text fields / dropdowns / buttons, 8 = top tabs,
-  /// 14+ = round icon buttons, switches and checkboxes).
-  final double radius;
-
-  @override
-  State<_GlowFocus> createState() => _GlowFocusState();
-}
-
-class _GlowFocusState extends State<_GlowFocus> {
-  static const _accent = Color(0xFF312E81);
-  bool _focused = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Focus(
-      canRequestFocus: false,
-      skipTraversal: true,
-      onFocusChange: (hasFocus) {
-        if (hasFocus != _focused) setState(() => _focused = hasFocus);
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 120),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(widget.radius),
-          // Painted in list order, so the soft halo goes down first and the
-          // crisp ring lands on top of it.
-          boxShadow: _focused
-              ? const [
-            BoxShadow(
-                color: Color(0x40312E81), blurRadius: 8, spreadRadius: 4),
-            BoxShadow(color: _accent, blurRadius: 0, spreadRadius: 2),
-          ]
-              : const [],
-        ),
-        child: widget.child,
-      ),
-    );
-  }
-}
-
-// ════════════════════════════════════════════════════════════════════
-// React-datepicker-style date field.
-// • Single Tab focus stop → icon + border + date text take the accent color.
-// • Enter / Space / Down (or click) opens a dropdown calendar anchored under
-//   the field (an Overlay popup, NOT a Material dialog).
-// • In the calendar: ‹ › navigate months, the title toggles month / year
-//   pickers, arrow keys move the day selection, Enter confirms, Esc closes.
-// • Selected day, today, headers and chips all use the accent (purple) palette.
-// ════════════════════════════════════════════════════════════════════
-class _CalendarDropdownField extends StatefulWidget {
-  const _CalendarDropdownField({
-    required this.value,
-    required this.onChanged,
-    required this.decoration,
-    required this.textStyle,
-    required this.accent,
-    required this.accentSoft,
-    required this.idleColor,
-    required this.label
-  });
-
-  final DateTime? value;
-  final ValueChanged<DateTime> onChanged;
-  final InputDecoration decoration;
-  final TextStyle textStyle;
-  final Color accent;
-  final Color accentSoft;
-  final Color idleColor;
-  final String label;
-
-  @override
-  State<_CalendarDropdownField> createState() => _CalendarDropdownFieldState();
-}
-
-class _CalendarDropdownFieldState extends State<_CalendarDropdownField> {
-  static const _months = [
-    'January', 'February', 'March', 'April', 'May', 'June', //
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
-  static const _weekdays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-
-  // 0 = days, 1 = months, 2 = years
-  static const _viewDays = 0;
-  static const _viewMonths = 1;
-  static const _viewYears = 2;
-
-  final LayerLink _link = LayerLink();
-  final FocusNode _fieldFocus = FocusNode(debugLabel: 'dateField');
-  final FocusNode _calendarFocus = FocusNode(debugLabel: 'dateCalendar');
-  final GlobalKey _fieldKey = GlobalKey();
-  // Shared so a tap on the field is NOT treated as "outside" the calendar
-  // (otherwise the field click closes via TapRegion AND reopens via InkWell).
-  final Object _tapGroupId = Object();
-  OverlayEntry? _entry;
-
-  bool _focused = false;
-  int _view = _viewDays;
-  late DateTime _visibleMonth; // first-of-month being displayed
-  DateTime? _selected;
-  late int _yearPageStart;
-
-  @override
-  void initState() {
-    super.initState();
-    _fieldFocus.addListener(_onFocusChange);
-    _selected = widget.value;
-    final base = widget.value ?? DateTime.now();
-    _visibleMonth = DateTime(base.year, base.month);
-  }
-
-  @override
-  void didUpdateWidget(covariant _CalendarDropdownField old) {
-    super.didUpdateWidget(old);
-    if (old.value != widget.value) {
-      _selected = widget.value;
-      if (widget.value != null) {
-        _visibleMonth = DateTime(widget.value!.year, widget.value!.month);
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    _closeCalendar(notify: false);
-    _fieldFocus.removeListener(_onFocusChange);
-    _fieldFocus.dispose();
-    _calendarFocus.dispose();
-    super.dispose();
-  }
-
-  void _onFocusChange() {
-    if (_focused != _fieldFocus.hasFocus) {
-      setState(() => _focused = _fieldFocus.hasFocus);
-    }
-  }
-
-  bool get _isOpen => _entry != null;
-
-  void _toggleCalendar() => _isOpen ? _closeCalendar() : _openCalendar();
-
-  void _openCalendar() {
-    if (_isOpen) return;
-    _view = _viewDays;
-    final base = _selected ?? DateTime.now();
-    _visibleMonth = DateTime(base.year, base.month);
-    _entry = OverlayEntry(builder: _buildCalendarPanel);
-    Overlay.of(context).insert(_entry!);
-    setState(() {}); // refresh field chrome (arrow / accent)
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _calendarFocus.requestFocus();
-    });
-  }
-
-  void _closeCalendar({bool notify = true}) {
-    _entry?.remove();
-    _entry = null;
-    if (notify && mounted) {
-      setState(() {});
-    }
-  }
-
-  void _rebuildPanel() => _entry?.markNeedsBuild();
-
-  void _setView(int v) {
-    if (v == _viewYears) _yearPageStart = _visibleMonth.year - 5;
-    _view = v;
-    _rebuildPanel();
-  }
-
-  void _navPrev() {
-    if (_view == _viewDays) {
-      _visibleMonth = DateTime(_visibleMonth.year, _visibleMonth.month - 1);
-    } else if (_view == _viewMonths) {
-      _visibleMonth = DateTime(_visibleMonth.year - 1, _visibleMonth.month);
-    } else {
-      _yearPageStart -= 12;
-    }
-    _rebuildPanel();
-  }
-
-  void _navNext() {
-    if (_view == _viewDays) {
-      _visibleMonth = DateTime(_visibleMonth.year, _visibleMonth.month + 1);
-    } else if (_view == _viewMonths) {
-      _visibleMonth = DateTime(_visibleMonth.year + 1, _visibleMonth.month);
-    } else {
-      _yearPageStart += 12;
-    }
-    _rebuildPanel();
-  }
-
-  void _pick(DateTime day) {
-    _selected = DateTime(day.year, day.month, day.day);
-    widget.onChanged(_selected!);
-    _closeCalendar();
-    _fieldFocus.requestFocus();
-  }
-
-  void _moveSelection(int days) {
-    final base = _selected ?? _visibleMonth;
-    final next = DateTime(base.year, base.month, base.day + days);
-    _selected = next;
-    _visibleMonth = DateTime(next.year, next.month);
-    _view = _viewDays;
-    _rebuildPanel();
-  }
-
-  static bool _sameDay(DateTime a, DateTime b) =>
-      a.year == b.year && a.month == b.month && a.day == b.day;
-
-  String _format(DateTime? v) {
-    if (v == null) return '';
-    final d = v.day.toString().padLeft(2, '0');
-    final m = v.month.toString().padLeft(2, '0');
-    return '$d / $m / ${v.year}';
-  }
-
-  // ── field key handling: open the calendar
-  KeyEventResult _onFieldKey(FocusNode node, KeyEvent e) {
-    if (e is! KeyDownEvent) return KeyEventResult.ignored;
-    final k = e.logicalKey;
-    if (k == LogicalKeyboardKey.enter ||
-        k == LogicalKeyboardKey.numpadEnter ||
-        k == LogicalKeyboardKey.space ||
-        k == LogicalKeyboardKey.arrowDown) {
-      _openCalendar();
-      return KeyEventResult.handled;
-    }
-    return KeyEventResult.ignored;
-  }
-
-  // ── calendar key handling: navigate / confirm / close
-  KeyEventResult _onCalendarKey(FocusNode node, KeyEvent e) {
-    if (e is! KeyDownEvent && e is! KeyRepeatEvent) {
-      return KeyEventResult.ignored;
-    }
-    final k = e.logicalKey;
-    if (k == LogicalKeyboardKey.arrowLeft) {
-      _moveSelection(-1);
-      return KeyEventResult.handled;
-    }
-    if (k == LogicalKeyboardKey.arrowRight) {
-      _moveSelection(1);
-      return KeyEventResult.handled;
-    }
-    if (k == LogicalKeyboardKey.arrowUp) {
-      _moveSelection(-7);
-      return KeyEventResult.handled;
-    }
-    if (k == LogicalKeyboardKey.arrowDown) {
-      _moveSelection(7);
-      return KeyEventResult.handled;
-    }
-    if (k == LogicalKeyboardKey.pageUp) {
-      _navPrev();
-      return KeyEventResult.handled;
-    }
-    if (k == LogicalKeyboardKey.pageDown) {
-      _navNext();
-      return KeyEventResult.handled;
-    }
-    if (k == LogicalKeyboardKey.enter || k == LogicalKeyboardKey.numpadEnter) {
-      _pick(_selected ?? _visibleMonth);
-      return KeyEventResult.handled;
-    }
-    if (k == LogicalKeyboardKey.escape) {
-      _closeCalendar();
-      _fieldFocus.requestFocus();
-      return KeyEventResult.handled;
-    }
-    return KeyEventResult.ignored;
-  }
-
-  // ──────────────────────────────── field
-  @override
-  Widget build(BuildContext context) {
-    final highlight = _focused || _isOpen;
-    final iconColor = highlight ? widget.accent : widget.idleColor;
-
-    final decoration = widget.decoration.copyWith(
-      prefixIconConstraints: const BoxConstraints(minWidth: 28, minHeight: 0),
-      label: Text(widget.label.toUpperCase(),),
-      labelStyle: TextStyle(fontSize: 13, color: Colors.black),
-      prefixIcon: Padding(
-        padding: const EdgeInsets.only(left: 8, right: 4),
-        child: Icon(Icons.calendar_today, size: 15, color: iconColor),
-      ),
-      suffixIconConstraints: const BoxConstraints(minWidth: 28, minHeight: 0),
-      suffixIcon: Icon(
-        _isOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-        size: 20,
-        color: highlight ? widget.accent : widget.idleColor,
-      ),
-    );
-
-    return TapRegion(
-      groupId: _tapGroupId,
-      child: CompositedTransformTarget(
-        link: _link,
-        child: Focus(
-          focusNode: _fieldFocus,
-          onKeyEvent: _onFieldKey,
-          child: InkWell(
-            key: _fieldKey,
-            canRequestFocus: false,
-            borderRadius: BorderRadius.circular(6),
-            onTap: () {
-              _fieldFocus.requestFocus();
-              _toggleCalendar();
-            },
-            child: InputDecorator(
-              isFocused: highlight,
-              decoration: decoration,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
-                decoration: highlight
-                    ? BoxDecoration(
-                  color: widget.accent.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(3),
-                )
-                    : null,
-                child: Text(
-                  _format(widget.value),
-                  style: widget.textStyle.copyWith(
-                    color: highlight ? widget.accent : widget.textStyle.color,
-                    fontWeight: highlight ? FontWeight.w600 : FontWeight.w400,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ──────────────────────────────── calendar popup
-  Widget _buildCalendarPanel(BuildContext context) {
-    final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
-    final fieldWidth = box?.size.width ?? 280.0;
-    final fieldHeight = box?.size.height ?? 40.0;
-    final panelWidth = fieldWidth < 300 ? 300.0 : fieldWidth;
-
-    return Positioned(
-      width: panelWidth,
-      child: CompositedTransformFollower(
-        link: _link,
-        showWhenUnlinked: false,
-        offset: Offset(0, fieldHeight + 4),
-        child: TapRegion(
-          groupId: _tapGroupId,
-          onTapOutside: (_) => _closeCalendar(),
-          child: Focus(
-            focusNode: _calendarFocus,
-            onKeyEvent: _onCalendarKey,
-            child: Material(
-              elevation: 8,
-              borderRadius: BorderRadius.circular(10),
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFFE5E7EB)),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _header(),
-                    const SizedBox(height: 8),
-                    if (_view == _viewDays) ...[
-                      _weekdayRow(),
-                      const SizedBox(height: 4),
-                      _daysGrid(),
-                    ] else if (_view == _viewMonths)
-                      _monthsGrid()
-                    else
-                      _yearsGrid(),
-                    const SizedBox(height: 6),
-                    _footer(),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _header() {
-    final String title = _view == _viewYears
-        ? '$_yearPageStart - ${_yearPageStart + 11}'
-        : '${_months[_visibleMonth.month - 1]} ${_visibleMonth.year}';
-    return Row(
-      children: [
-        _navButton(Icons.chevron_left, _navPrev),
-        Expanded(
-          child: InkWell(
-            borderRadius: BorderRadius.circular(6),
-            onTap: () => _setView(_view == _viewDays ? _viewYears : _viewDays),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Center(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: widget.accent,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        _navButton(Icons.chevron_right, _navNext),
-      ],
-    );
-  }
-
-  Widget _navButton(IconData icon, VoidCallback onTap) => InkWell(
-    borderRadius: BorderRadius.circular(20),
-    onTap: onTap,
-    child: Padding(
-      padding: const EdgeInsets.all(6),
-      child: Icon(icon, size: 18, color: widget.accent),
-    ),
-  );
-
-  Widget _weekdayRow() => Row(
-    children: [
-      for (final w in _weekdays)
-        Expanded(
-          child: Center(
-            child: Text(
-              w,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: widget.accent.withValues(alpha: 0.7),
-              ),
-            ),
-          ),
-        ),
-    ],
-  );
-
-  Widget _daysGrid() {
-    final firstOfMonth = DateTime(_visibleMonth.year, _visibleMonth.month, 1);
-    final daysInMonth =
-        DateTime(_visibleMonth.year, _visibleMonth.month + 1, 0).day;
-    final leadingBlanks = firstOfMonth.weekday % 7; // Sunday = 0
-    final today = DateTime.now();
-
-    final cells = <Widget>[];
-    for (var i = 0; i < leadingBlanks; i++) {
-      cells.add(const SizedBox.shrink());
-    }
-    for (var d = 1; d <= daysInMonth; d++) {
-      final day = DateTime(_visibleMonth.year, _visibleMonth.month, d);
-      final isSelected = _selected != null && _sameDay(_selected!, day);
-      final isToday = _sameDay(today, day);
-      cells.add(_dayCell(d, isSelected, isToday, () => _pick(day)));
-    }
-
-    return GridView.count(
-      crossAxisCount: 7,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 2,
-      crossAxisSpacing: 2,
-      childAspectRatio: 1.1,
-      children: cells,
-    );
-  }
-
-  Widget _dayCell(int day, bool selected, bool today, VoidCallback onTap) {
-    Color bg = Colors.transparent;
-    Color fg = Colors.black87;
-    if (selected) {
-      bg = widget.accent;
-      fg = Colors.white;
-    } else if (today) {
-      bg = widget.accentSoft;
-      fg = widget.accent;
-    }
-    return InkWell(
-      borderRadius: BorderRadius.circular(8),
-      onTap: onTap,
-      child: Container(
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(8),
-          border: today && !selected
-              ? Border.all(color: widget.accent, width: 1)
-              : null,
-        ),
-        child: Text(
-          '$day',
-          style: TextStyle(
-            fontSize: 12,
-            color: fg,
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _monthsGrid() => GridView.count(
-    crossAxisCount: 3,
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    mainAxisSpacing: 6,
-    crossAxisSpacing: 6,
-    childAspectRatio: 1.8,
-    children: [
-      for (var m = 1; m <= 12; m++)
-        _chip(
-          _months[m - 1].substring(0, 3),
-          m == _visibleMonth.month,
-              () {
-            _visibleMonth = DateTime(_visibleMonth.year, m);
-            _setView(_viewDays);
-          },
-        ),
-    ],
-  );
-
-  Widget _yearsGrid() => GridView.count(
-    crossAxisCount: 3,
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    mainAxisSpacing: 6,
-    crossAxisSpacing: 6,
-    childAspectRatio: 1.8,
-    children: [
-      for (var i = 0; i < 12; i++)
-        _chip(
-          '${_yearPageStart + i}',
-          (_yearPageStart + i) == _visibleMonth.year,
-              () {
-            _visibleMonth =
-                DateTime(_yearPageStart + i, _visibleMonth.month);
-            _setView(_viewMonths);
-          },
-        ),
-    ],
-  );
-
-  Widget _chip(String label, bool selected, VoidCallback onTap) => InkWell(
-    borderRadius: BorderRadius.circular(8),
-    onTap: onTap,
-    child: Container(
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: selected ? widget.accent : widget.accentSoft,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 12,
-          color: selected ? Colors.white : widget.accent,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    ),
-  );
-
-  Widget _footer() => Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      TextButton(
-        onPressed: () => _pick(DateTime.now()),
-        style: TextButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          minimumSize: const Size(0, 32),
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        ),
-        child: Text(
-          'Today',
-          style: TextStyle(
-              color: widget.accent,
-              fontSize: 12,
-              fontWeight: FontWeight.w700),
-        ),
-      ),
-      TextButton(
-        onPressed: () {
-          _closeCalendar();
-          _fieldFocus.requestFocus();
-        },
-        style: TextButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          minimumSize: const Size(0, 32),
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        ),
-        child: const Text(
-          'Close',
-          style: TextStyle(
-              color: Colors.grey,
-              fontSize: 12,
-              fontWeight: FontWeight.w700),
-        ),
-      ),
-    ],
-  );
-}
-
