@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../component/color.dart';
 import '../component/customButton.dart';
 import '../component/dropdown_button.dart';
 import '../component/textStyle.dart';
@@ -23,6 +24,8 @@ class CompleteBookingAlert extends StatefulWidget {
 
 class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
   final controller = Get.put(FobController());
+  final FocusNode closeButtonFocusNode = FocusNode();
+
 
   @override
   void initState() {
@@ -59,9 +62,27 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
                     ),
                   ),
                   const Spacer(),
-                  InkWell(
-                    onTap: () => Get.back(),
-                    child: const Icon(Icons.close, size: 22, color: Colors.grey),
+                  AnimatedBuilder(
+                    animation: closeButtonFocusNode,
+                    builder: (context, child) {
+                      final isFocused = closeButtonFocusNode.hasFocus;
+                      return Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
+                            width: 2,
+                          ),
+                          color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
+                        ),
+                        child: IconButton(
+                          focusNode: closeButtonFocusNode,
+                          onPressed: () => Get.back(),
+                          icon: const Icon(Icons.close, size: 22, color: Colors.grey),
+                          splashRadius: 20,
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
