@@ -536,8 +536,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                           } else if (type == "r/n") {
                                             controller.jourValue = "R/N";
                                           } else if (type == "w/r") {
-                                            controller.changeJourneyFtn();
                                             controller.jourValue = "W/R";
+                                            controller.changeJourneyFtn();
                                           } else {
                                             controller.jourValue = null;
                                             print("⚠️ NO MATCH FOUND for type: '$type' — jourValue set to null");
