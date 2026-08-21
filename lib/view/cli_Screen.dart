@@ -1316,7 +1316,7 @@ class _CenterAreaState extends State<_CenterArea> {
                           BotToast.showText(text: "Location data missing");
                           return;
                         }
-                        await _controller.cliDataBinding(
+                           await _controller.cliDataBinding(
                           pickup: pickupController.text,
                           dropoff: dropoffController.text,
                           pickupLatitude: pickupPoints!.latitude.toString(),
@@ -1327,7 +1327,7 @@ class _CenterAreaState extends State<_CenterArea> {
                           mobile: mobileNumber,
                           email: email,
                           phoneNumber: telNumber,
-
+                             pickupTime: DateFormat('HH:mm').format(DateTime.now()),
                         );
                         if (!mounted) return;
                       } else {

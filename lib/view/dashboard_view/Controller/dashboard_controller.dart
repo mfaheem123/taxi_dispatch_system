@@ -1952,7 +1952,7 @@ class DashboardController extends GetxController {
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard table data
   DashboardTableModel? dashboardTableModelData;
   final referenceNumber = TextEditingController();
-  final pickupDate = TextEditingController();
+   final pickupDate = TextEditingController();
   final pickupTime = TextEditingController();
   final name = TextEditingController();
   final pickup = TextEditingController();
@@ -3273,14 +3273,23 @@ class DashboardController extends GetxController {
     name,
     mobile,
     phoneNumber,
-
+    String? pickupTime,
   }) async {
+
+    DateTime now = DateTime.now();
+
+    pickUpDate = now;
+
+
+    String currentTime = pickupTime ?? DateFormat('HH:mm').format(now);
+    pickUpTimeController.text = currentTime;
+
+
     polyLineMarkerInfo.clear();
     viaPoints.clear();
     polylinePoints.clear();
     pickupController.text = pickup.toString().toUpperCase();
     dropOffController.text = dropoff.toString().toUpperCase();
-
     polylinePoints.add(
       LatLng(double.parse(pickupLatitude!), double.parse(pickupLongitude!)),
     );
