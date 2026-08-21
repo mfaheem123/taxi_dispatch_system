@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -54,396 +55,398 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<ReportController>(
-      initState: (state) {
-        controller.clearEarningData();
-        controller.selectDriverObject = null;
-        controller.getAllDrivers();
-      },
-      builder: (controller) {
-        return LayoutBuilder(builder: (context, constraints) {
-          final double maxWidth = constraints.maxWidth;
-          final bool isMobile = maxWidth < 600;
+    return PageScrollWrapper(
+      child: GetBuilder<ReportController>(
+        initState: (state) {
+          controller.clearEarningData();
+          controller.selectDriverObject = null;
+          controller.getAllDrivers();
+        },
+        builder: (controller) {
+          return LayoutBuilder(builder: (context, constraints) {
+            final double maxWidth = constraints.maxWidth;
+            final bool isMobile = maxWidth < 600;
 
-          final driverData = controller.earningInfoListModel?.data;
-          int totalTrips = driverData?.totalTrips ?? 0;
-          double totalEarnings = (driverData?.totalEarnings ?? 0).toDouble();
-          double averagePerTrip = (driverData?.averagePerTrip ?? 0).toDouble();
-          double cashCollected = (driverData?.cashCollected ?? 0).toDouble();
-          List<ChartDatum> chartList = driverData?.chartData ?? [];
+            final driverData = controller.earningInfoListModel?.data;
+            int totalTrips = driverData?.totalTrips ?? 0;
+            double totalEarnings = (driverData?.totalEarnings ?? 0).toDouble();
+            double averagePerTrip = (driverData?.averagePerTrip ?? 0).toDouble();
+            double cashCollected = (driverData?.cashCollected ?? 0).toDouble();
+            List<ChartDatum> chartList = driverData?.chartData ?? [];
 
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 15),
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 15),
 
-                // MAIN CONTAINER
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 15),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: DynamicColors.gryClr.withOpacity(0.5)),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        height: 50,
-                        width: double.infinity,
-                        color: DynamicColors.gryClr,
-                        padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
-                        child: Text(
-                          "DRIVER EARNING REPORT",
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  // MAIN CONTAINER
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 15),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: DynamicColors.gryClr.withOpacity(0.5)),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          height: 50,
+                          width: double.infinity,
+                          color: DynamicColors.gryClr,
+                          padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
+                          child: Text(
+                            "DRIVER EARNING REPORT",
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
                         ),
-                      ),
 
-                      Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.only(bottom: 25),
-                              decoration: BoxDecoration(
-                                  border: Border(
-                                      bottom: BorderSide(color: Colors.grey.shade200, width: 1)
-                                  )
-                              ),
-                              child: Wrap(
-                                spacing: 24,
-                                runSpacing: 20,
-                                alignment: WrapAlignment.spaceBetween,
-                                crossAxisAlignment: WrapCrossAlignment.end,
-                                children: [
-                                  // SELECT DRIVER DROPDOWN
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "SELECT DRIVER",
-                                        style: mozillaTextSemiBoldText(context: context, fontSize: 12),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      CustomDropdownField<DriverObject>(
-                                        label: "SELECT DRIVERS",
-                                        width: 240,
-                                        height: 42,
-                                        items: controller.allDriverData?.drivers ?? [],
-                                        value: controller.allDriverData?.drivers?.any((d) => d.id == controller.selectDriverObject?.id) ?? false
-                                            ? controller.allDriverData!.drivers!.firstWhere((d) => d.id == controller.selectDriverObject?.id)
-                                            : null,
-                                        itemLabel: (driver) =>
-                                            "${driver.username} ${driver.name}" .toUpperCase(),
-                                        onChanged: (val) {
-                                          if (val != null) {
-                                            if (!selectedDriversList.contains(val)) {
-                                              selectedDriversList.add(val);
+                        Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.only(bottom: 25),
+                                decoration: BoxDecoration(
+                                    border: Border(
+                                        bottom: BorderSide(color: Colors.grey.shade200, width: 1)
+                                    )
+                                ),
+                                child: Wrap(
+                                  spacing: 24,
+                                  runSpacing: 20,
+                                  alignment: WrapAlignment.spaceBetween,
+                                  crossAxisAlignment: WrapCrossAlignment.end,
+                                  children: [
+                                    // SELECT DRIVER DROPDOWN
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "SELECT DRIVER",
+                                          style: mozillaTextSemiBoldText(context: context, fontSize: 12),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        CustomDropdownField<DriverObject>(
+                                          label: "SELECT DRIVERS",
+                                          width: 240,
+                                          height: 42,
+                                          items: controller.allDriverData?.drivers ?? [],
+                                          value: controller.allDriverData?.drivers?.any((d) => d.id == controller.selectDriverObject?.id) ?? false
+                                              ? controller.allDriverData!.drivers!.firstWhere((d) => d.id == controller.selectDriverObject?.id)
+                                              : null,
+                                          itemLabel: (driver) =>
+                                              "${driver.username} ${driver.name}" .toUpperCase(),
+                                          onChanged: (val) {
+                                            if (val != null) {
+                                              if (!selectedDriversList.contains(val)) {
+                                                selectedDriversList.add(val);
+                                              }
+                                              updateDriverData(val, controller.reportViewType);
                                             }
-                                            updateDriverData(val, controller.reportViewType);
-                                          }
-                                        },
-                                      ),
-                                    ],
-                                  ),
-
-                                  // VIEW TYPE BUTTONS
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "View",
-                                        style: mozillaTextSemiBoldText(context: context, fontSize: 12),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          CustomButton(
-                                            verticalPadding: 0.0,
-                                            width: 115,
-                                            height: 42,
-                                            borderRadius: 4,
-                                            fontSize: 14,
-                                            btnText: "DAILY",
-                                            btnColor: controller.reportViewType == "daily" ? DynamicColors.primaryClr : Colors.grey.shade500,
-                                            onTap: () {
-                                              if (activeRadioDriver != null) {
-                                                updateDriverData(activeRadioDriver!, "daily");
-                                              } else {
-                                                controller.reportViewType = "daily";
-                                                controller.update();
-                                              }
-                                            },
-                                          ),
-                                          const SizedBox(width: 6),
-                                          CustomButton(
-                                            verticalPadding: 0.0,
-                                            width: 115,
-                                            height: 42,
-                                            borderRadius: 4,
-                                            fontSize: 14,
-                                            btnText: "WEEKLY",
-                                            btnColor: controller.reportViewType == "weekly" ? DynamicColors.primaryClr : Colors.grey.shade500,
-                                            onTap: () {
-                                              if (activeRadioDriver != null) {
-                                                updateDriverData(activeRadioDriver!, "weekly");
-                                              } else {
-                                                controller.reportViewType = "weekly";
-                                                controller.update();
-                                              }
-                                            },
-                                          ),
-                                          const SizedBox(width: 6),
-                                          CustomButton(
-                                            verticalPadding: 0.0,
-                                            width: 115,
-                                            height: 42,
-                                            borderRadius: 4,
-                                            fontSize: 14,
-                                            btnText: "MONTHLY",
-                                            btnColor: controller.reportViewType == "monthly" ? DynamicColors.primaryClr : Colors.grey.shade500,
-                                            onTap: () {
-                                              if (activeRadioDriver != null) {
-                                                updateDriverData(activeRadioDriver!, "monthly");
-                                              } else {
-                                                controller.reportViewType = "monthly";
-                                                controller.update();
-                                              }
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      labeledField(
-                                        context: context,
-                                        isMobile: isMobile,
-                                        label: AppText.from,
-                                        column: true,
-                                        width: 150,
-                                        child: SizedBox(
-                                          height: 40,
-                                          child: KeyboardDatePicker(
-                                            initialDate: controller.earningFromDate.value,
-                                            onChanged: (date) {
-                                              controller.earningFromDate.value = date;
-                                              controller.update();
-                                              if (controller.selectDriverObject != null) {
-                                                controller.getAllDriversEarnings();
-                                              }
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      labeledField(
-                                        context: context,
-                                        isMobile: isMobile,
-                                        label: AppText.to,
-                                        column: true,
-                                        width: 150,
-                                        child: SizedBox(
-                                          height: 40,
-                                          child: KeyboardDatePicker(
-                                            initialDate: controller.earningToDate.value,
-                                            onChanged: (date) {
-                                              controller.earningToDate.value = date;
-                                              controller.update();
-                                              // if(activeRadioDriver != null) {
-                                              //   updateDriverData(activeRadioDriver!, controller.reportViewType);
-                                              // }
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-
-                                  // VIEW BUTTON
-                                  CustomButton(
-                                    verticalPadding: 0.0,
-                                    width: 100,
-                                    height: 42,
-                                    borderRadius: 4,
-                                    fontSize: 13,
-                                    btnText: AppText.view,
-                                    onTap: () {
-                                      handleView();
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 25),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  width: 300,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      if (selectedDriversList.isNotEmpty) ...[
-                                        Container(
-                                          height: 420,
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.shade50,
-                                            borderRadius: BorderRadius.circular(6),
-                                            border: Border.all(color: Colors.grey.shade200),
-                                          ),
-                                          child: ListView.builder(
-                                            shrinkWrap: true,
-                                            physics: const BouncingScrollPhysics(),
-                                            itemCount: selectedDriversList.length,
-                                            itemBuilder: (context, index) {
-                                              final driver = selectedDriversList[index];
-                                              final bool isSelected = activeRadioDriver == driver;
-
-                                              return InkWell(
-                                                onTap: () => updateDriverData(driver, controller.reportViewType),
-                                                child: Padding(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
-                                                  child: Row(
-                                                    children: [
-                                                      Icon(
-                                                        isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-                                                        color: isSelected ? DynamicColors.primaryClr : Colors.grey,
-                                                        size: 18,
-                                                      ),
-                                                      const SizedBox(width: 12),
-                                                      Expanded(
-                                                        child: Text(
-                                                          (driver.name ?? "").toUpperCase(),
-                                                          style: TextStyle(
-                                                            fontSize: 13,
-                                                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                                            color: isSelected ? Colors.black : Colors.grey.shade700,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          ),
+                                          },
                                         ),
                                       ],
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 24),
+                                    ),
 
-                                Expanded(
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        width: double.infinity,
-                                        padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
-                                        decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(8),
-                                            border: Border.all(color: Colors.grey.shade200),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey.withOpacity(0.05),
-                                                spreadRadius: 2,
-                                                blurRadius: 5,
-                                              )
-                                            ]),
-                                        child: controller.isLoadingEarning
-                                            ? const Center(child: CircularProgressIndicator())
-                                            : Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    // VIEW TYPE BUTTONS
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "View",
+                                          style: mozillaTextSemiBoldText(context: context, fontSize: 12),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            _buildStatCard(
-                                              label: "TOTAL EARNINGS",
-                                              value: isDataLoaded ? "£ ${totalEarnings.toStringAsFixed(2)}" : "",
-                                              icon: Icons.currency_pound,
-                                              iconColor: Colors.green,
-                                              bgColor: Colors.green.withOpacity(0.1),
+                                            CustomButton(
+                                              verticalPadding: 0.0,
+                                              width: 115,
+                                              height: 42,
+                                              borderRadius: 4,
+                                              fontSize: 14,
+                                              btnText: "DAILY",
+                                              btnColor: controller.reportViewType == "daily" ? DynamicColors.primaryClr : Colors.grey.shade500,
+                                              onTap: () {
+                                                if (activeRadioDriver != null) {
+                                                  updateDriverData(activeRadioDriver!, "daily");
+                                                } else {
+                                                  controller.reportViewType = "daily";
+                                                  controller.update();
+                                                }
+                                              },
                                             ),
-                                            _buildStatCard(
-                                              label: "TOTAL TRIPS",
-                                              value: isDataLoaded ? "$totalTrips" : "",
-                                              icon: Icons.location_on_outlined,
-                                              iconColor: Colors.blue,
-                                              bgColor: Colors.blue.withOpacity(0.1),
+                                            const SizedBox(width: 6),
+                                            CustomButton(
+                                              verticalPadding: 0.0,
+                                              width: 115,
+                                              height: 42,
+                                              borderRadius: 4,
+                                              fontSize: 14,
+                                              btnText: "WEEKLY",
+                                              btnColor: controller.reportViewType == "weekly" ? DynamicColors.primaryClr : Colors.grey.shade500,
+                                              onTap: () {
+                                                if (activeRadioDriver != null) {
+                                                  updateDriverData(activeRadioDriver!, "weekly");
+                                                } else {
+                                                  controller.reportViewType = "weekly";
+                                                  controller.update();
+                                                }
+                                              },
                                             ),
-                                            _buildStatCard(
-                                              label: "AVERAGE PER TRIP",
-                                              value: isDataLoaded ? "£ ${averagePerTrip.toStringAsFixed(2)}" : "",
-                                              icon: Icons.bar_chart_rounded,
-                                              iconColor: Colors.orange,
-                                              bgColor: Colors.orange.withOpacity(0.1),
-                                            ),
-                                            _buildStatCard(
-                                              label: "CASH COLLECTED",
-                                              value: isDataLoaded ? "£ ${cashCollected.toStringAsFixed(2)}" : "",
-                                              icon: Icons.account_balance_wallet_outlined,
-                                              iconColor: Colors.purple,
-                                              bgColor: Colors.purple.withOpacity(0.1),
+                                            const SizedBox(width: 6),
+                                            CustomButton(
+                                              verticalPadding: 0.0,
+                                              width: 115,
+                                              height: 42,
+                                              borderRadius: 4,
+                                              fontSize: 14,
+                                              btnText: "MONTHLY",
+                                              btnColor: controller.reportViewType == "monthly" ? DynamicColors.primaryClr : Colors.grey.shade500,
+                                              onTap: () {
+                                                if (activeRadioDriver != null) {
+                                                  updateDriverData(activeRadioDriver!, "monthly");
+                                                } else {
+                                                  controller.reportViewType = "monthly";
+                                                  controller.update();
+                                                }
+                                              },
                                             ),
                                           ],
                                         ),
-                                      ),
+                                      ],
+                                    ),
 
-                                      const SizedBox(height: 20),
-
-                                      // GRAPH SECTION
-                                      Container(
-                                        height: 320,
-                                        width: double.infinity,
-                                        padding: const EdgeInsets.all(20),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(8),
-                                          border: Border.all(color: Colors.grey.shade200),
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        labeledField(
+                                          context: context,
+                                          isMobile: isMobile,
+                                          label: AppText.from,
+                                          column: true,
+                                          width: 150,
+                                          child: SizedBox(
+                                            height: 40,
+                                            child: KeyboardDatePicker(
+                                              initialDate: controller.earningFromDate.value,
+                                              onChanged: (date) {
+                                                controller.earningFromDate.value = date;
+                                                controller.update();
+                                                if (controller.selectDriverObject != null) {
+                                                  controller.getAllDriversEarnings();
+                                                }
+                                              },
+                                            ),
+                                          ),
                                         ),
-                                        child: controller.isLoadingEarning
-                                            ? const Center(child: CircularProgressIndicator())
-                                            : (isDataLoaded && activeRadioDriver != null)
-                                            ? _buildEarningChart(chartList)
-                                            : Center(
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
+                                        const SizedBox(width: 10),
+                                        labeledField(
+                                          context: context,
+                                          isMobile: isMobile,
+                                          label: AppText.to,
+                                          column: true,
+                                          width: 150,
+                                          child: SizedBox(
+                                            height: 40,
+                                            child: KeyboardDatePicker(
+                                              initialDate: controller.earningToDate.value,
+                                              onChanged: (date) {
+                                                controller.earningToDate.value = date;
+                                                controller.update();
+                                                // if(activeRadioDriver != null) {
+                                                //   updateDriverData(activeRadioDriver!, controller.reportViewType);
+                                                // }
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+
+                                    // VIEW BUTTON
+                                    CustomButton(
+                                      verticalPadding: 0.0,
+                                      width: 100,
+                                      height: 42,
+                                      borderRadius: 4,
+                                      fontSize: 13,
+                                      btnText: AppText.view,
+                                      onTap: () {
+                                        handleView();
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 25),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width: 300,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        if (selectedDriversList.isNotEmpty) ...[
+                                          Container(
+                                            height: 420,
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade50,
+                                              borderRadius: BorderRadius.circular(6),
+                                              border: Border.all(color: Colors.grey.shade200),
+                                            ),
+                                            child: ListView.builder(
+                                              shrinkWrap: true,
+                                              physics: const BouncingScrollPhysics(),
+                                              itemCount: selectedDriversList.length,
+                                              itemBuilder: (context, index) {
+                                                final driver = selectedDriversList[index];
+                                                final bool isSelected = activeRadioDriver == driver;
+
+                                                return InkWell(
+                                                  onTap: () => updateDriverData(driver, controller.reportViewType),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(
+                                                          isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+                                                          color: isSelected ? DynamicColors.primaryClr : Colors.grey,
+                                                          size: 18,
+                                                        ),
+                                                        const SizedBox(width: 12),
+                                                        Expanded(
+                                                          child: Text(
+                                                            (driver.name ?? "").toUpperCase(),
+                                                            style: TextStyle(
+                                                              fontSize: 13,
+                                                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                                              color: isSelected ? Colors.black : Colors.grey.shade700,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 24),
+
+                                  Expanded(
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
+                                          decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius: BorderRadius.circular(8),
+                                              border: Border.all(color: Colors.grey.shade200),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey.withOpacity(0.05),
+                                                  spreadRadius: 2,
+                                                  blurRadius: 5,
+                                                )
+                                              ]),
+                                          child: controller.isLoadingEarning
+                                              ? const Center(child: CircularProgressIndicator())
+                                              : Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Icon(Icons.insert_chart_outlined, size: 65, color: Colors.grey.shade300),
-                                              const SizedBox(height: 10),
-                                              Text(
-                                                "SELECT A DRIVER TO VIEW EARNINGS GRAPH",
-                                                style: TextStyle(color: Colors.grey.shade500, fontSize: 13, fontWeight: FontWeight.bold),
+                                              _buildStatCard(
+                                                label: "TOTAL EARNINGS",
+                                                value: isDataLoaded ? "£ ${totalEarnings.toStringAsFixed(2)}" : "",
+                                                icon: Icons.currency_pound,
+                                                iconColor: Colors.green,
+                                                bgColor: Colors.green.withOpacity(0.1),
+                                              ),
+                                              _buildStatCard(
+                                                label: "TOTAL TRIPS",
+                                                value: isDataLoaded ? "$totalTrips" : "",
+                                                icon: Icons.location_on_outlined,
+                                                iconColor: Colors.blue,
+                                                bgColor: Colors.blue.withOpacity(0.1),
+                                              ),
+                                              _buildStatCard(
+                                                label: "AVERAGE PER TRIP",
+                                                value: isDataLoaded ? "£ ${averagePerTrip.toStringAsFixed(2)}" : "",
+                                                icon: Icons.bar_chart_rounded,
+                                                iconColor: Colors.orange,
+                                                bgColor: Colors.orange.withOpacity(0.1),
+                                              ),
+                                              _buildStatCard(
+                                                label: "CASH COLLECTED",
+                                                value: isDataLoaded ? "£ ${cashCollected.toStringAsFixed(2)}" : "",
+                                                icon: Icons.account_balance_wallet_outlined,
+                                                iconColor: Colors.purple,
+                                                bgColor: Colors.purple.withOpacity(0.1),
                                               ),
                                             ],
                                           ),
                                         ),
-                                      ),
-                                    ],
+
+                                        const SizedBox(height: 20),
+
+                                        // GRAPH SECTION
+                                        Container(
+                                          height: 320,
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.all(20),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(8),
+                                            border: Border.all(color: Colors.grey.shade200),
+                                          ),
+                                          child: controller.isLoadingEarning
+                                              ? const Center(child: CircularProgressIndicator())
+                                              : (isDataLoaded && activeRadioDriver != null)
+                                              ? _buildEarningChart(chartList)
+                                              : Center(
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Icon(Icons.insert_chart_outlined, size: 65, color: Colors.grey.shade300),
+                                                const SizedBox(height: 10),
+                                                Text(
+                                                  "SELECT A DRIVER TO VIEW EARNINGS GRAPH",
+                                                  style: TextStyle(color: Colors.grey.shade500, fontSize: 13, fontWeight: FontWeight.bold),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
-                          ],
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-              ],
-            ),
-          );
-        });
-      },
+                  const SizedBox(height: 20),
+                ],
+              ),
+            );
+          });
+        },
+      ),
     );
   }
 

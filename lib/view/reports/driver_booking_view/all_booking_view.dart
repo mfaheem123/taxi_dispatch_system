@@ -2,6 +2,7 @@ import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/customer/model/search_customer_by_mobile.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -43,1064 +44,1066 @@ class _AllBookingViewState extends State<AllBookingView> {
   @override
   Widget build(BuildContext context) {
     double widthss = MediaQuery.of(context).size.width;
-    return GetBuilder<ReportController>(initState: (state) {
-      controller.clearBookingReportData();
-      controller.clearDropdowns();
-      controller.selectDriverObject = null;
-      controller.getAllDrivers();
-      controller.getData();
-      controller.getEmployeeData();
-      controller.bookingStartTimeController.text = "12:00";
-      controller.bookingEndTimeController.text =
-          DateFormat('HH:mm').format(DateTime.now());
-    }, builder: (controller) {
+    return PageScrollWrapper(
+      child: GetBuilder<ReportController>(initState: (state) {
+        controller.clearBookingReportData();
+        controller.clearDropdowns();
+        controller.selectDriverObject = null;
+        controller.getAllDrivers();
+        controller.getData();
+        controller.getEmployeeData();
+        controller.bookingStartTimeController.text = "12:00";
+        controller.bookingEndTimeController.text =
+            DateFormat('HH:mm').format(DateTime.now());
+      }, builder: (controller) {
 
-      final listToShow = controller.bookingFiltered.isNotEmpty
-          ? controller.bookingFiltered
-          : controller.bookingAll;
+        final listToShow = controller.bookingFiltered.isNotEmpty
+            ? controller.bookingFiltered
+            : controller.bookingAll;
 
 
-      return LayoutBuilder(builder: (context, constraints) {
-        final double maxWidth = constraints.maxWidth;
-        final bool isMobile = maxWidth < 600;
-        final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
-        final bool isHighScale = MediaQuery.of(context).devicePixelRatio >= 1.25;
+        return LayoutBuilder(builder: (context, constraints) {
+          final double maxWidth = constraints.maxWidth;
+          final bool isMobile = maxWidth < 600;
+          final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+          final bool isHighScale = MediaQuery.of(context).devicePixelRatio >= 1.25;
 
-        // Instead of fixed width, we calculate flexible field widths
-        double fieldWidth = isMobile
-            ? maxWidth // full width
-            : isTablet
-            ? maxWidth / 2
-            : maxWidth / 4;
+          // Instead of fixed width, we calculate flexible field widths
+          double fieldWidth = isMobile
+              ? maxWidth // full width
+              : isTablet
+              ? maxWidth / 2
+              : maxWidth / 4;
 
-        if (!isMobile && isHighScale) {
-          fieldWidth = maxWidth / 4.8;
-        }
+          if (!isMobile && isHighScale) {
+            fieldWidth = maxWidth / 4.8;
+          }
 
-        // final double cellWidth = (widthss - 80) / 16;
-        return SingleChildScrollView(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsetsGeometry.all(16),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: DynamicColors.gryClr),
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            AppText.status,
-                            style: mozillaTextRegularText(fontSize: 12),
-                          ),
-                          StatusRadioGroup(
-                            options: const [
-                              "ALL",
-                              "COMPLETED",
-                              "INCOMPLETE",
-                              "MISSED",
-                              "DECLINED",
-                              "CANCELLED"
-                            ],
-                            onChanged: (index, value) {
-                              controller.setSelectedStatusByName(value);
-                            },
-                          ),
-                          const Spacer(),
-                          Wrap(
-                            spacing: 12,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            children: [
-                              Text(
-                                AppText.pt,
-                                style: mozillaTextRegularText(
-                                    fontSize: 14, fontWeight: FontWeight.bold),
+          // final double cellWidth = (widthss - 80) / 16;
+          return SingleChildScrollView(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsetsGeometry.all(16),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: DynamicColors.gryClr),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              AppText.status,
+                              style: mozillaTextRegularText(fontSize: 12),
+                            ),
+                            StatusRadioGroup(
+                              options: const [
+                                "ALL",
+                                "COMPLETED",
+                                "INCOMPLETE",
+                                "MISSED",
+                                "DECLINED",
+                                "CANCELLED"
+                              ],
+                              onChanged: (index, value) {
+                                controller.setSelectedStatusByName(value);
+                              },
+                            ),
+                            const Spacer(),
+                            Wrap(
+                              spacing: 12,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                Text(
+                                  AppText.pt,
+                                  style: mozillaTextRegularText(
+                                      fontSize: 14, fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(width: 4),
+                                if (controller.apiDashboardData?.paymentTypes
+                                    ?.isNotEmpty ??
+                                    false)
+                                  ...controller.apiDashboardData!.paymentTypes!
+                                      .map((paymentType) {
+                                    final int typeId = paymentType.id ?? 0;
+                                    String typeLabel = "";
+                                    try {
+                                      typeLabel =
+                                          (paymentType.name ?? "").toUpperCase();
+                                    } catch (_) {
+                                      typeLabel =
+                                          paymentType.toString().toUpperCase();
+                                    }
+
+                                    return KeyboardCheckbox(
+                                      focusNode: FocusNode(),
+                                      value: controller.apiSelectedPaymentTypeIds
+                                          .contains(typeId),
+                                      label: typeLabel,
+                                      width: typeLabel.length > 10 ? 140 : 90,
+                                      onChanged: (val) {
+                                        controller.toggleApiPaymentType(typeId);
+                                      },
+                                    );
+                                  }).toList(),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 16,
+                          children: [
+                            labeledField(
+                              context: context,
+                              isMobile: isMobile,
+                              label: "FROM:",
+                              column: false,
+                              width: fieldWidth / 2.2,
+                              child: SizedBox(
+                                height: 30,
+                                child: KeyboardDatePicker(
+                                  initialDate: controller.bookingFromDate.value,
+                                  onChanged: (date) {
+                                    controller.bookingFromDate.value = date;
+                                    controller.update();
+                                  },
+                                ),
                               ),
-                              const SizedBox(width: 4),
-                              if (controller.apiDashboardData?.paymentTypes
-                                  ?.isNotEmpty ??
-                                  false)
-                                ...controller.apiDashboardData!.paymentTypes!
-                                    .map((paymentType) {
-                                  final int typeId = paymentType.id ?? 0;
-                                  String typeLabel = "";
-                                  try {
-                                    typeLabel =
-                                        (paymentType.name ?? "").toUpperCase();
-                                  } catch (_) {
-                                    typeLabel =
-                                        paymentType.toString().toUpperCase();
+                            ),
+                            labeledField(
+                              context: context,
+                              isMobile: isMobile,
+                              label: "",
+                              column: false,
+                              width: fieldWidth / 2.9,
+                              child: CustomTimePicker(
+                                controller: controller.bookingStartTimeController,
+                                onTimeSelected: (time) => setState(() {}),
+                              ),
+                            ),
+                            // To Date
+                            labeledField(
+                              context: context,
+                              isMobile: isMobile,
+                              label: "TO:",
+                              column: false,
+                              width: fieldWidth / 2.2,
+                              child: SizedBox(
+                                height: 30,
+                                child: KeyboardDatePicker(
+                                  initialDate: controller.bookingToDate.value,
+                                  onChanged: (date) {
+                                    controller.bookingToDate.value = date;
+                                    controller.update();
+                                  },
+                                ),
+                              ),
+                            ),
+
+                            // End Time
+                            labeledField(
+                              context: context,
+                              isMobile: isMobile,
+                              label: "",
+                              column: false,
+                              width: fieldWidth / 2.9,
+                              child: CustomTimePicker(
+                                controller: controller.bookingEndTimeController,
+                                onTimeSelected: (time) => setState(() {}),
+                              ),
+                            ),
+
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.customerController,
+                              width: fieldWidth / 2.2,
+                              hintText: AppText.customer,
+                              inputFormatters: [UpperCaseTextFormatter()],
+                            ),
+
+                            labeledField(
+                              context: context,
+                              isMobile: isMobile,
+                              label: "",
+                              column: false,
+                              width: fieldWidth / 2.2,
+                              child: RawAutocomplete<SearchCustomer>(
+                                textEditingController: controller.mobileController,
+                                focusNode: _mobileFocusNode,
+                                displayStringForOption: (SearchCustomer option) => option.mobile ?? '',
+                                optionsBuilder: (TextEditingValue textEditingValue) async {
+                                  if (textEditingValue.text.trim().isEmpty) {
+                                    return const Iterable<SearchCustomer>.empty();
                                   }
 
-                                  return KeyboardCheckbox(
-                                    focusNode: FocusNode(),
-                                    value: controller.apiSelectedPaymentTypeIds
-                                        .contains(typeId),
-                                    label: typeLabel,
-                                    width: typeLabel.length > 10 ? 140 : 90,
-                                    onChanged: (val) {
-                                      controller.toggleApiPaymentType(typeId);
+                                  await controller.getCustomer(textEditingValue.text);
+                                  return controller.searchCustomerByMobile?.customer ?? [];
+                                },
+                                onSelected: (SearchCustomer selection) {
+                                  controller.mobileController.text = selection.mobile ?? '';
+                                  controller.customerController.text = selection.name ?? '';
+                                  controller.phoneController.text = selection.telephone ?? '';
+                                  controller.update();
+                                },
+                                fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
+                                  return CustomTextField(
+                                    borderRadius: 4,
+                                    controller: textEditingController,
+                                    focusNode: focusNode,
+                                    width: fieldWidth / 2.2,
+                                    hintText: "MOBILE",
+                                    onSubmitted: (value) {
+                                      onFieldSubmitted();
                                     },
-                                  );
-                                }).toList(),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      Wrap(
-                        spacing: 10,
-                        runSpacing: 16,
-                        children: [
-                          labeledField(
-                            context: context,
-                            isMobile: isMobile,
-                            label: "FROM:",
-                            column: false,
-                            width: fieldWidth / 2.2,
-                            child: SizedBox(
-                              height: 30,
-                              child: KeyboardDatePicker(
-                                initialDate: controller.bookingFromDate.value,
-                                onChanged: (date) {
-                                  controller.bookingFromDate.value = date;
-                                  controller.update();
-                                },
-                              ),
-                            ),
-                          ),
-                          labeledField(
-                            context: context,
-                            isMobile: isMobile,
-                            label: "",
-                            column: false,
-                            width: fieldWidth / 2.9,
-                            child: CustomTimePicker(
-                              controller: controller.bookingStartTimeController,
-                              onTimeSelected: (time) => setState(() {}),
-                            ),
-                          ),
-                          // To Date
-                          labeledField(
-                            context: context,
-                            isMobile: isMobile,
-                            label: "TO:",
-                            column: false,
-                            width: fieldWidth / 2.2,
-                            child: SizedBox(
-                              height: 30,
-                              child: KeyboardDatePicker(
-                                initialDate: controller.bookingToDate.value,
-                                onChanged: (date) {
-                                  controller.bookingToDate.value = date;
-                                  controller.update();
-                                },
-                              ),
-                            ),
-                          ),
-
-                          // End Time
-                          labeledField(
-                            context: context,
-                            isMobile: isMobile,
-                            label: "",
-                            column: false,
-                            width: fieldWidth / 2.9,
-                            child: CustomTimePicker(
-                              controller: controller.bookingEndTimeController,
-                              onTimeSelected: (time) => setState(() {}),
-                            ),
-                          ),
-
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.customerController,
-                            width: fieldWidth / 2.2,
-                            hintText: AppText.customer,
-                            inputFormatters: [UpperCaseTextFormatter()],
-                          ),
-
-                          labeledField(
-                            context: context,
-                            isMobile: isMobile,
-                            label: "",
-                            column: false,
-                            width: fieldWidth / 2.2,
-                            child: RawAutocomplete<SearchCustomer>(
-                              textEditingController: controller.mobileController,
-                              focusNode: _mobileFocusNode,
-                              displayStringForOption: (SearchCustomer option) => option.mobile ?? '',
-                              optionsBuilder: (TextEditingValue textEditingValue) async {
-                                if (textEditingValue.text.trim().isEmpty) {
-                                  return const Iterable<SearchCustomer>.empty();
-                                }
-
-                                await controller.getCustomer(textEditingValue.text);
-                                return controller.searchCustomerByMobile?.customer ?? [];
-                              },
-                              onSelected: (SearchCustomer selection) {
-                                controller.mobileController.text = selection.mobile ?? '';
-                                controller.customerController.text = selection.name ?? '';
-                                controller.phoneController.text = selection.telephone ?? '';
-                                controller.update();
-                              },
-                              fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
-                                return CustomTextField(
-                                  borderRadius: 4,
-                                  controller: textEditingController,
-                                  focusNode: focusNode,
-                                  width: fieldWidth / 2.2,
-                                  hintText: "MOBILE",
-                                  onSubmitted: (value) {
-                                    onFieldSubmitted();
-                                  },
-                                  suffixIcon: GestureDetector(
-                                    onTap: () {},
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.shade300,
-                                        border: Border.all(color: DynamicColors.gryClr),
-                                        borderRadius: BorderRadius.circular(4),
+                                    suffixIcon: GestureDetector(
+                                      onTap: () {},
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.shade300,
+                                          border: Border.all(color: DynamicColors.gryClr),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: const Icon(Icons.search, size: 25, color: Colors.black),
                                       ),
-                                      child: const Icon(Icons.search, size: 25, color: Colors.black),
                                     ),
-                                  ),
-                                );
-                              },
-                              optionsViewBuilder: (context, onSelected, options) {
-                                return Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Material(
-                                    elevation: 6.0,
-                                    borderRadius: BorderRadius.circular(4),
-                                    child: Container(
-                                      width: fieldWidth / 2.2,
-                                      constraints: const BoxConstraints(maxHeight: 220),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(4),
-                                        border: Border.all(color: Colors.grey.shade300),
-                                      ),
-                                      child: ListView.builder(
-                                        controller: _scrollController,
-                                        padding: EdgeInsets.zero,
-                                        shrinkWrap: true,
-                                        itemCount: options.length,
-                                        itemBuilder: (BuildContext itemBuilderContext, int index) {
-                                          final SearchCustomer option = options.elementAt(index);
-                                          final bool isHighlighted = AutocompleteHighlightedOption.of(itemBuilderContext) == index;
+                                  );
+                                },
+                                optionsViewBuilder: (context, onSelected, options) {
+                                  return Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Material(
+                                      elevation: 6.0,
+                                      borderRadius: BorderRadius.circular(4),
+                                      child: Container(
+                                        width: fieldWidth / 2.2,
+                                        constraints: const BoxConstraints(maxHeight: 220),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(4),
+                                          border: Border.all(color: Colors.grey.shade300),
+                                        ),
+                                        child: ListView.builder(
+                                          controller: _scrollController,
+                                          padding: EdgeInsets.zero,
+                                          shrinkWrap: true,
+                                          itemCount: options.length,
+                                          itemBuilder: (BuildContext itemBuilderContext, int index) {
+                                            final SearchCustomer option = options.elementAt(index);
+                                            final bool isHighlighted = AutocompleteHighlightedOption.of(itemBuilderContext) == index;
 
-                                          if (isHighlighted) {
-                                            SchedulerBinding.instance.addPostFrameCallback((_) {
-                                              if (_scrollController.hasClients) {
-                                                final double targetOffset = index * 42.0;
-                                                final double maxScroll = _scrollController.position.maxScrollExtent;
-                                                final double clampedOffset = targetOffset.clamp(0.0, maxScroll);
+                                            if (isHighlighted) {
+                                              SchedulerBinding.instance.addPostFrameCallback((_) {
+                                                if (_scrollController.hasClients) {
+                                                  final double targetOffset = index * 42.0;
+                                                  final double maxScroll = _scrollController.position.maxScrollExtent;
+                                                  final double clampedOffset = targetOffset.clamp(0.0, maxScroll);
 
-                                                _scrollController.animateTo(
-                                                  clampedOffset,
-                                                  duration: const Duration(milliseconds: 100),
-                                                  curve: Curves.easeInOut,
-                                                );
-                                              }
-                                            });
-                                          }
+                                                  _scrollController.animateTo(
+                                                    clampedOffset,
+                                                    duration: const Duration(milliseconds: 100),
+                                                    curve: Curves.easeInOut,
+                                                  );
+                                                }
+                                              });
+                                            }
 
-                                          return InkWell(
-                                            onTap: () => onSelected(option),
-                                            child: Container(
-                                              color: isHighlighted
-                                                  ? Colors.blue.withOpacity(0.15)
-                                                  : Colors.transparent,
-                                              padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
-                                              child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Flexible(
-                                                    child: Text(
-                                                      option.name ?? '',
-                                                      overflow: TextOverflow.ellipsis,
-                                                      style: const TextStyle(
-                                                        fontWeight: FontWeight.w600,
-                                                        fontSize: 13,
-                                                        color: Colors.black87,
+                                            return InkWell(
+                                              onTap: () => onSelected(option),
+                                              child: Container(
+                                                color: isHighlighted
+                                                    ? Colors.blue.withOpacity(0.15)
+                                                    : Colors.transparent,
+                                                padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Flexible(
+                                                      child: Text(
+                                                        option.name ?? '',
+                                                        overflow: TextOverflow.ellipsis,
+                                                        style: const TextStyle(
+                                                          fontWeight: FontWeight.w600,
+                                                          fontSize: 13,
+                                                          color: Colors.black87,
+                                                        ),
                                                       ),
                                                     ),
-                                                  ),
-                                                  const SizedBox(width: 8),
-                                                  Text(
-                                                    option.mobile ?? '',
-                                                    style: TextStyle(
-                                                      color: Colors.grey.shade700,
-                                                      fontSize: 12,
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                      option.mobile ?? '',
+                                                      style: TextStyle(
+                                                        color: Colors.grey.shade700,
+                                                        fontSize: 12,
+                                                      ),
                                                     ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                          );
-                                        },
+                                            );
+                                          },
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                );
+                                  );
+                                },
+                              ),
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.phoneController,
+                              width: fieldWidth / 2.2,
+                              hintText: AppText.tel,
+                            ),
+                            CustomDropdownField<DriverObject>(
+                              label: "SELECT DRIVERS",
+                              width: maxWidth < 1366 ? fieldWidth / 1.8 : fieldWidth / 2,
+                              // height: 35,
+                              items: controller.allDriverData?.drivers ?? [],
+                              value: controller.allDriverData?.drivers?.any((d) =>
+                              d.id ==
+                                  controller.selectDriverObject?.id) ??
+                                  false
+                                  ? controller.allDriverData!.drivers!.firstWhere(
+                                      (d) =>
+                                  d.id ==
+                                      controller.selectDriverObject?.id)
+                                  : null,
+                              itemLabel: (driver) => "${driver.username} ${driver.name}" .toUpperCase(),
+                              onChanged: (val) {
+                                controller.selectDriverObject = val;
+                                controller.update();
                               },
                             ),
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.phoneController,
-                            width: fieldWidth / 2.2,
-                            hintText: AppText.tel,
-                          ),
-                          CustomDropdownField<DriverObject>(
-                            label: "SELECT DRIVERS",
-                            width: maxWidth < 1366 ? fieldWidth / 1.8 : fieldWidth / 2,
-                            // height: 35,
-                            items: controller.allDriverData?.drivers ?? [],
-                            value: controller.allDriverData?.drivers?.any((d) =>
-                            d.id ==
-                                controller.selectDriverObject?.id) ??
-                                false
-                                ? controller.allDriverData!.drivers!.firstWhere(
-                                    (d) =>
-                                d.id ==
-                                    controller.selectDriverObject?.id)
-                                : null,
-                            itemLabel: (driver) => "${driver.username} ${driver.name}" .toUpperCase(),
-                            onChanged: (val) {
-                              controller.selectDriverObject = val;
-                              controller.update();
-                            },
-                          ),
-                          (() {
-                            final ScrollController pickupScrollController =
-                            ScrollController();
+                            (() {
+                              final ScrollController pickupScrollController =
+                              ScrollController();
 
-                            return SizedBox(
-                              width: fieldWidth / 1.2,
-                              height: 30,
-                              child: Autocomplete<String>(
-                                optionsBuilder:
-                                    (TextEditingValue textEditingValue) async {
-                                  if (textEditingValue.text.isEmpty) {
-                                    return const Iterable<String>.empty();
-                                  }
-                                  return await controller.getSearchPostcodes(
-                                      textEditingValue.text);
-                                },
-                                onSelected: (String selection) {
-                                  controller.pickUpController.text = selection;
-                                  controller.update();
-                                },
-                                optionsViewBuilder:
-                                    (context, onSelected, options) {
-                                  final int highlightedIndex =
-                                  AutocompleteHighlightedOption.of(context);
-
-                                  if (pickupScrollController.hasClients &&
-                                      highlightedIndex >= 0) {
-                                    final double itemHeight = 32.0;
-                                    final double currentScroll =
-                                        pickupScrollController.offset;
-                                    final double viewportHeight = 200.0;
-                                    final double targetOffset =
-                                        highlightedIndex * itemHeight;
-
-                                    if (targetOffset + itemHeight >
-                                        currentScroll + viewportHeight) {
-                                      pickupScrollController.jumpTo(
-                                          targetOffset +
-                                              itemHeight -
-                                              viewportHeight);
-                                    } else if (targetOffset < currentScroll) {
-                                      pickupScrollController
-                                          .jumpTo(targetOffset);
+                              return SizedBox(
+                                width: fieldWidth / 1.2,
+                                height: 30,
+                                child: Autocomplete<String>(
+                                  optionsBuilder:
+                                      (TextEditingValue textEditingValue) async {
+                                    if (textEditingValue.text.isEmpty) {
+                                      return const Iterable<String>.empty();
                                     }
-                                  }
+                                    return await controller.getSearchPostcodes(
+                                        textEditingValue.text);
+                                  },
+                                  onSelected: (String selection) {
+                                    controller.pickUpController.text = selection;
+                                    controller.update();
+                                  },
+                                  optionsViewBuilder:
+                                      (context, onSelected, options) {
+                                    final int highlightedIndex =
+                                    AutocompleteHighlightedOption.of(context);
 
-                                  return Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Material(
-                                      elevation: 4.0,
-                                      borderRadius: BorderRadius.circular(4),
-                                      child: ConstrainedBox(
-                                        constraints: const BoxConstraints(
-                                            maxHeight: 200),
-                                        child: SizedBox(
-                                          width: fieldWidth / 1.2,
-                                          child: ListView.builder(
-                                            controller: pickupScrollController,
-                                            padding: EdgeInsets.zero,
-                                            shrinkWrap: true,
-                                            itemCount: options.length,
-                                            itemBuilder: (BuildContext context,
-                                                int index) {
-                                              final String option =
-                                              options.elementAt(index);
-                                              final bool highlight =
-                                                  highlightedIndex == index;
+                                    if (pickupScrollController.hasClients &&
+                                        highlightedIndex >= 0) {
+                                      final double itemHeight = 32.0;
+                                      final double currentScroll =
+                                          pickupScrollController.offset;
+                                      final double viewportHeight = 200.0;
+                                      final double targetOffset =
+                                          highlightedIndex * itemHeight;
 
-                                              return InkWell(
-                                                onTap: () => onSelected(option),
-                                                child: Container(
-                                                  color: highlight
-                                                      ? Colors.blue
-                                                      .withOpacity(0.1)
-                                                      : null,
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 16.0,
-                                                      vertical: 8.0),
-                                                  child: Text(
-                                                    option,
-                                                    maxLines: 1,
-                                                    overflow:
-                                                    TextOverflow.ellipsis,
-                                                    style: const TextStyle(
-                                                        fontSize: 12),
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                                fieldViewBuilder: (context,
-                                    textEditingController,
-                                    focusNode,
-                                    onFieldSubmitted) {
-                                  if (textEditingController.text !=
-                                      controller.pickUpController.text) {
-                                    textEditingController.text =
-                                        controller.pickUpController.text;
-                                  }
-                                  return TextField(
-                                    controller: textEditingController,
-                                    focusNode: focusNode,
-                                    onSubmitted: (String value) =>
-                                        onFieldSubmitted(),
-                                    style: const TextStyle(fontSize: 13),
-                                    decoration: InputDecoration(
-                                      hintText: "PICKUP",
-                                      hintStyle: const TextStyle(fontSize: 12),
-                                      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-                                      border: OutlineInputBorder(borderRadius:
-                                      BorderRadius.circular(4)),
-                                      suffixIcon: GestureDetector(
-                                        onTap: () {},
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.shade300,
-                                            border: Border.all(color: DynamicColors.gryClr),
-                                            borderRadius: BorderRadius.circular(4),
-                                          ),
-                                          child: const Icon(Icons.search, size: 25, color: Colors.black),
-                                        ),
-                                      ),
-                                    ),
-                                    onChanged: (val) {
-                                      controller.pickUpController.text = val;
-                                    },
-                                  );
-                                },
-                              ),
-                            );
-                          })(),
-                          (() {
-                            final ScrollController dropoffScrollController =
-                            ScrollController();
-
-                            return SizedBox(
-                              width: fieldWidth / 1.2,
-                              height: 30,
-                              child: Autocomplete<String>(
-                                optionsBuilder:
-                                    (TextEditingValue textEditingValue) async {
-                                  if (textEditingValue.text.isEmpty) {
-                                    return const Iterable<String>.empty();
-                                  }
-                                  return await controller.getSearchPostcodes(
-                                      textEditingValue.text);
-                                },
-                                onSelected: (String selection) {
-                                  controller.dropOffController.text = selection;
-                                  controller.update();
-                                },
-                                optionsViewBuilder:
-                                    (context, onSelected, options) {
-                                  final int highlightedIndex =
-                                  AutocompleteHighlightedOption.of(context);
-
-                                  if (dropoffScrollController.hasClients &&
-                                      highlightedIndex >= 0) {
-                                    final double itemHeight = 32.0;
-                                    final double currentScroll =
-                                        dropoffScrollController.offset;
-                                    final double viewportHeight = 200.0;
-                                    final double targetOffset =
-                                        highlightedIndex * itemHeight;
-
-                                    if (targetOffset + itemHeight >
-                                        currentScroll + viewportHeight) {
-                                      dropoffScrollController.jumpTo(
-                                          targetOffset +
-                                              itemHeight -
-                                              viewportHeight);
-                                    } else if (targetOffset < currentScroll) {
-                                      dropoffScrollController
-                                          .jumpTo(targetOffset);
+                                      if (targetOffset + itemHeight >
+                                          currentScroll + viewportHeight) {
+                                        pickupScrollController.jumpTo(
+                                            targetOffset +
+                                                itemHeight -
+                                                viewportHeight);
+                                      } else if (targetOffset < currentScroll) {
+                                        pickupScrollController
+                                            .jumpTo(targetOffset);
+                                      }
                                     }
-                                  }
 
-                                  return Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Material(
-                                      elevation: 4.0,
-                                      borderRadius: BorderRadius.circular(4),
-                                      child: ConstrainedBox(
-                                        constraints: const BoxConstraints(
-                                            maxHeight: 200),
-                                        child: SizedBox(
-                                          width: fieldWidth / 1.2,
-                                          child: ListView.builder(
-                                            controller: dropoffScrollController,
-                                            padding: EdgeInsets.zero,
-                                            shrinkWrap: true,
-                                            itemCount: options.length,
-                                            itemBuilder: (BuildContext context,
-                                                int index) {
-                                              final String option =
-                                              options.elementAt(index);
-                                              final bool highlight =
-                                                  highlightedIndex == index;
+                                    return Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Material(
+                                        elevation: 4.0,
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: ConstrainedBox(
+                                          constraints: const BoxConstraints(
+                                              maxHeight: 200),
+                                          child: SizedBox(
+                                            width: fieldWidth / 1.2,
+                                            child: ListView.builder(
+                                              controller: pickupScrollController,
+                                              padding: EdgeInsets.zero,
+                                              shrinkWrap: true,
+                                              itemCount: options.length,
+                                              itemBuilder: (BuildContext context,
+                                                  int index) {
+                                                final String option =
+                                                options.elementAt(index);
+                                                final bool highlight =
+                                                    highlightedIndex == index;
 
-                                              return InkWell(
-                                                onTap: () => onSelected(option),
-                                                child: Container(
-                                                  color: highlight
-                                                      ? Colors.blue
-                                                      .withOpacity(0.1)
-                                                      : null,
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 16.0,
-                                                      vertical: 8.0),
-                                                  child: Text(
-                                                    option,
-                                                    maxLines: 1,
-                                                    overflow:
-                                                    TextOverflow.ellipsis,
-                                                    style: const TextStyle(
-                                                        fontSize: 12),
+                                                return InkWell(
+                                                  onTap: () => onSelected(option),
+                                                  child: Container(
+                                                    color: highlight
+                                                        ? Colors.blue
+                                                        .withOpacity(0.1)
+                                                        : null,
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 16.0,
+                                                        vertical: 8.0),
+                                                    child: Text(
+                                                      option,
+                                                      maxLines: 1,
+                                                      overflow:
+                                                      TextOverflow.ellipsis,
+                                                      style: const TextStyle(
+                                                          fontSize: 12),
+                                                    ),
                                                   ),
-                                                ),
-                                              );
-                                            },
+                                                );
+                                              },
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  );
-                                },
-                                fieldViewBuilder: (context,
-                                    textEditingController,
-                                    focusNode,
-                                    onFieldSubmitted) {
-                                  if (textEditingController.text !=
-                                      controller.dropOffController.text) {
-                                    textEditingController.text =
-                                        controller.dropOffController.text;
-                                  }
-                                  return TextField(
-                                    controller: textEditingController,
-                                    focusNode: focusNode,
-                                    onSubmitted: (String value) =>
-                                        onFieldSubmitted(),
-                                    style: const TextStyle(fontSize: 13),
-                                    decoration: InputDecoration(
-                                      hintText: "DROPOFF",
-                                      hintStyle: const TextStyle(fontSize: 12),
-                                      contentPadding:
-                                      const EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 12),
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                          BorderRadius.circular(4)),
-                                      suffixIcon: GestureDetector(
-                                        onTap: () {},
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.shade300,
-                                            border: Border.all(color: DynamicColors.gryClr),
-                                            borderRadius: BorderRadius.circular(4),
+                                    );
+                                  },
+                                  fieldViewBuilder: (context,
+                                      textEditingController,
+                                      focusNode,
+                                      onFieldSubmitted) {
+                                    if (textEditingController.text !=
+                                        controller.pickUpController.text) {
+                                      textEditingController.text =
+                                          controller.pickUpController.text;
+                                    }
+                                    return TextField(
+                                      controller: textEditingController,
+                                      focusNode: focusNode,
+                                      onSubmitted: (String value) =>
+                                          onFieldSubmitted(),
+                                      style: const TextStyle(fontSize: 13),
+                                      decoration: InputDecoration(
+                                        hintText: "PICKUP",
+                                        hintStyle: const TextStyle(fontSize: 12),
+                                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                                        border: OutlineInputBorder(borderRadius:
+                                        BorderRadius.circular(4)),
+                                        suffixIcon: GestureDetector(
+                                          onTap: () {},
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade300,
+                                              border: Border.all(color: DynamicColors.gryClr),
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: const Icon(Icons.search, size: 25, color: Colors.black),
                                           ),
-                                          child: const Icon(Icons.search, size: 25, color: Colors.black),
                                         ),
                                       ),
-                                    ),
-                                    onChanged: (val) {
-                                      controller.dropOffController.text = val;
-                                    },
-                                  );
-                                },
-                              ),
-                            );
-                          })(),
+                                      onChanged: (val) {
+                                        controller.pickUpController.text = val;
+                                      },
+                                    );
+                                  },
+                                ),
+                              );
+                            })(),
+                            (() {
+                              final ScrollController dropoffScrollController =
+                              ScrollController();
 
-                          CustomDropdownField<dynamic>(
-                            width: maxWidth < 1400 ? fieldWidth / 1.7 : fieldWidth / 1.9,
-                            label: AppText.selectSubsidiary,
-                            items:
-                            controller.apiDashboardData?.subsidiaries ?? [],
-                            value: controller.apiSelectedSubsidiary,
-                            itemLabel: (val) => (val.name ?? "").toUpperCase(),
-                            onChanged: (val) {
-                              controller.apiSelectedSubsidiary = val;
-                              controller.apiSelectedAccount = null;
-                              controller.apiSelectedDepartment = null;
+                              return SizedBox(
+                                width: fieldWidth / 1.2,
+                                height: 30,
+                                child: Autocomplete<String>(
+                                  optionsBuilder:
+                                      (TextEditingValue textEditingValue) async {
+                                    if (textEditingValue.text.isEmpty) {
+                                      return const Iterable<String>.empty();
+                                    }
+                                    return await controller.getSearchPostcodes(
+                                        textEditingValue.text);
+                                  },
+                                  onSelected: (String selection) {
+                                    controller.dropOffController.text = selection;
+                                    controller.update();
+                                  },
+                                  optionsViewBuilder:
+                                      (context, onSelected, options) {
+                                    final int highlightedIndex =
+                                    AutocompleteHighlightedOption.of(context);
 
-                              if (val != null && val.id != null) {
-                                controller.getAccountData(val.id);
-                              }
-                              controller.update();
-                            },
-                          ),
-                          CustomDropdownField<dynamic>(
-                            width: maxWidth < 1400 ? fieldWidth / 1.7 : fieldWidth / 1.9,
-                            label: AppText.selectAccount,
-                            items: controller.dashboardAccountModel?.accounts ??
-                                [],
-                            value: controller.apiSelectedAccount,
-                            itemLabel: (val) => (val.name ?? "").toUpperCase(),
-                            onChanged: (val) {
-                              controller.apiSelectedAccount = val;
+                                    if (dropoffScrollController.hasClients &&
+                                        highlightedIndex >= 0) {
+                                      final double itemHeight = 32.0;
+                                      final double currentScroll =
+                                          dropoffScrollController.offset;
+                                      final double viewportHeight = 200.0;
+                                      final double targetOffset =
+                                          highlightedIndex * itemHeight;
 
-                              controller.apiSelectedDepartment = null;
-                              controller.accountDepartmentsList.clear();
+                                      if (targetOffset + itemHeight >
+                                          currentScroll + viewportHeight) {
+                                        dropoffScrollController.jumpTo(
+                                            targetOffset +
+                                                itemHeight -
+                                                viewportHeight);
+                                      } else if (targetOffset < currentScroll) {
+                                        dropoffScrollController
+                                            .jumpTo(targetOffset);
+                                      }
+                                    }
 
-                              if (val != null && val.departments != null) {
-                                controller.accountDepartmentsList
-                                    .addAll(val.departments);
-                              }
-                              controller.update();
-                            },
-                          ),
-                          CustomDropdownField<dynamic>(
-                            width: maxWidth < 1400 ? fieldWidth / 1.7 : fieldWidth / 1.9,
-                            label: AppText.selectDepartment,
-                            items: controller.accountDepartmentsList,
-                            value: controller.apiSelectedDepartment,
-                            itemLabel: (val) => (val.name ?? "").toUpperCase(),
-                            onChanged: (val) {
-                              controller.apiSelectedDepartment = val;
-                              controller.update();
-                            },
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.orderNumberController,
-                            width: fieldWidth / 2,
-                            hintText: AppText.orderNumber,
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.bookedByController,
-                            width: fieldWidth / 2,
-                            hintText: AppText.bookedBy,
-                          ),
-                          CustomDropdownField<dynamic>(
-                            width: fieldWidth / 1.5,
-                            label: AppText.selectEmployee,
-                            items: controller.userModel?.employees ?? [],
-                            value: controller.apiSelectedEmployee,
-                            itemLabel: (val) =>
-                                (val.username ?? "").toUpperCase(),
-                            onChanged: (val) {
-                              controller.apiSelectedEmployee = val;
-                              controller.update();
-                            },
-                          ),
-                          CustomDropdownField<String>(
-                            // text: AppText.selectRefNumber,
-                            width: fieldWidth / 1.5,
-                            label: AppText.selectRefNumber,
-                            items: [
-                              "REFERENCE NUMBER",
-                              "DATETIME",
-                              "CUSTOMER",
-                              "MOBILE",
-                              "TELEPHONE",
-                              "PICKUP",
-                              "DROPOFF",
-                              "FARE",
-                              "ACCOUNT",
-                              "ORDER NUMBER",
-                              "PAYMENT TYPE",
-                              "DRIVER",
-                              "VEHICLE TYPE",
-                              "STATUS",
-                            ],
-                            value: controller.selectRefNumber,
-                            itemLabel: (val) => val,
-                            onChanged: (val) {
-                              controller.selectRefNumber = val!;
-                              controller.update();
-                            },
-                          ),
-                          CustomDropdownField<String>(
-                            // text: AppText.selectRefNumber,
-                            width: fieldWidth / 1.5,
-                            label: AppText.ascending,
-                            items: ["ASCENDING", "DESCENDING"],
-                            value: controller.selectAscending,
-                            itemLabel: (val) => val,
-                            onChanged: (val) {
-                              controller.selectAscending = val!;
-                              controller.update();
-                            },
-                          ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          CustomButton(
-                            width: 120,
-                            height: 30,
-                            borderRadius: 4,
-                            verticalPadding: 0.0,
-                            btnText: AppText.filter,
-                            fontSize: 12,
-                            onTap: () async {
-                              controller.isFiltered.value = true;
-                              await controller.getBookingStatistics();
-                            },
-                          ),
-                          CustomButton(
-                            width: 120,
-                            height: 30,
-                            borderRadius: 4,
-                            verticalPadding: 0.0,
-                            btnText: AppText.view,
-                            fontSize: 12,
-                            onTap: () {
-                              Get.dialog(AllBookingViewWindow());
-                            },
-                          ),
-                          CustomButton(
-                            width: 120,
-                            height: 30,
-                            borderRadius: 4,
-                            verticalPadding: 0.0,
-                            btnText: AppText.statistics,
-                            fontSize: 12,
-                            onTap: () {
-                              String? statusId = controller
-                                  .apiSelectedBookingStatus?.id
-                                  ?.toString();
-                              controller.getBookingStatisticsGraph(
-                                  statusId: statusId);
+                                    return Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Material(
+                                        elevation: 4.0,
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: ConstrainedBox(
+                                          constraints: const BoxConstraints(
+                                              maxHeight: 200),
+                                          child: SizedBox(
+                                            width: fieldWidth / 1.2,
+                                            child: ListView.builder(
+                                              controller: dropoffScrollController,
+                                              padding: EdgeInsets.zero,
+                                              shrinkWrap: true,
+                                              itemCount: options.length,
+                                              itemBuilder: (BuildContext context,
+                                                  int index) {
+                                                final String option =
+                                                options.elementAt(index);
+                                                final bool highlight =
+                                                    highlightedIndex == index;
 
-                              // Get.dialog(BookingStatisticsWindow());
-                              Get.dialog(BookingStatisticsWindow());
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
+                                                return InkWell(
+                                                  onTap: () => onSelected(option),
+                                                  child: Container(
+                                                    color: highlight
+                                                        ? Colors.blue
+                                                        .withOpacity(0.1)
+                                                        : null,
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 16.0,
+                                                        vertical: 8.0),
+                                                    child: Text(
+                                                      option,
+                                                      maxLines: 1,
+                                                      overflow:
+                                                      TextOverflow.ellipsis,
+                                                      style: const TextStyle(
+                                                          fontSize: 12),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  fieldViewBuilder: (context,
+                                      textEditingController,
+                                      focusNode,
+                                      onFieldSubmitted) {
+                                    if (textEditingController.text !=
+                                        controller.dropOffController.text) {
+                                      textEditingController.text =
+                                          controller.dropOffController.text;
+                                    }
+                                    return TextField(
+                                      controller: textEditingController,
+                                      focusNode: focusNode,
+                                      onSubmitted: (String value) =>
+                                          onFieldSubmitted(),
+                                      style: const TextStyle(fontSize: 13),
+                                      decoration: InputDecoration(
+                                        hintText: "DROPOFF",
+                                        hintStyle: const TextStyle(fontSize: 12),
+                                        contentPadding:
+                                        const EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 12),
+                                        border: OutlineInputBorder(
+                                            borderRadius:
+                                            BorderRadius.circular(4)),
+                                        suffixIcon: GestureDetector(
+                                          onTap: () {},
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade300,
+                                              border: Border.all(color: DynamicColors.gryClr),
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: const Icon(Icons.search, size: 25, color: Colors.black),
+                                          ),
+                                        ),
+                                      ),
+                                      onChanged: (val) {
+                                        controller.dropOffController.text = val;
+                                      },
+                                    );
+                                  },
+                                ),
+                              );
+                            })(),
+
+                            CustomDropdownField<dynamic>(
+                              width: maxWidth < 1400 ? fieldWidth / 1.7 : fieldWidth / 1.9,
+                              label: AppText.selectSubsidiary,
+                              items:
+                              controller.apiDashboardData?.subsidiaries ?? [],
+                              value: controller.apiSelectedSubsidiary,
+                              itemLabel: (val) => (val.name ?? "").toUpperCase(),
+                              onChanged: (val) {
+                                controller.apiSelectedSubsidiary = val;
+                                controller.apiSelectedAccount = null;
+                                controller.apiSelectedDepartment = null;
+
+                                if (val != null && val.id != null) {
+                                  controller.getAccountData(val.id);
+                                }
+                                controller.update();
+                              },
+                            ),
+                            CustomDropdownField<dynamic>(
+                              width: maxWidth < 1400 ? fieldWidth / 1.7 : fieldWidth / 1.9,
+                              label: AppText.selectAccount,
+                              items: controller.dashboardAccountModel?.accounts ??
+                                  [],
+                              value: controller.apiSelectedAccount,
+                              itemLabel: (val) => (val.name ?? "").toUpperCase(),
+                              onChanged: (val) {
+                                controller.apiSelectedAccount = val;
+
+                                controller.apiSelectedDepartment = null;
+                                controller.accountDepartmentsList.clear();
+
+                                if (val != null && val.departments != null) {
+                                  controller.accountDepartmentsList
+                                      .addAll(val.departments);
+                                }
+                                controller.update();
+                              },
+                            ),
+                            CustomDropdownField<dynamic>(
+                              width: maxWidth < 1400 ? fieldWidth / 1.7 : fieldWidth / 1.9,
+                              label: AppText.selectDepartment,
+                              items: controller.accountDepartmentsList,
+                              value: controller.apiSelectedDepartment,
+                              itemLabel: (val) => (val.name ?? "").toUpperCase(),
+                              onChanged: (val) {
+                                controller.apiSelectedDepartment = val;
+                                controller.update();
+                              },
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.orderNumberController,
+                              width: fieldWidth / 2,
+                              hintText: AppText.orderNumber,
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.bookedByController,
+                              width: fieldWidth / 2,
+                              hintText: AppText.bookedBy,
+                            ),
+                            CustomDropdownField<dynamic>(
+                              width: fieldWidth / 1.5,
+                              label: AppText.selectEmployee,
+                              items: controller.userModel?.employees ?? [],
+                              value: controller.apiSelectedEmployee,
+                              itemLabel: (val) =>
+                                  (val.username ?? "").toUpperCase(),
+                              onChanged: (val) {
+                                controller.apiSelectedEmployee = val;
+                                controller.update();
+                              },
+                            ),
+                            CustomDropdownField<String>(
+                              // text: AppText.selectRefNumber,
+                              width: fieldWidth / 1.5,
+                              label: AppText.selectRefNumber,
+                              items: [
+                                "REFERENCE NUMBER",
+                                "DATETIME",
+                                "CUSTOMER",
+                                "MOBILE",
+                                "TELEPHONE",
+                                "PICKUP",
+                                "DROPOFF",
+                                "FARE",
+                                "ACCOUNT",
+                                "ORDER NUMBER",
+                                "PAYMENT TYPE",
+                                "DRIVER",
+                                "VEHICLE TYPE",
+                                "STATUS",
+                              ],
+                              value: controller.selectRefNumber,
+                              itemLabel: (val) => val,
+                              onChanged: (val) {
+                                controller.selectRefNumber = val!;
+                                controller.update();
+                              },
+                            ),
+                            CustomDropdownField<String>(
+                              // text: AppText.selectRefNumber,
+                              width: fieldWidth / 1.5,
+                              label: AppText.ascending,
+                              items: ["ASCENDING", "DESCENDING"],
+                              value: controller.selectAscending,
+                              itemLabel: (val) => val,
+                              onChanged: (val) {
+                                controller.selectAscending = val!;
+                                controller.update();
+                              },
+                            ),
+                            SizedBox(
+                              width: 20,
+                            ),
+                            CustomButton(
+                              width: 120,
+                              height: 30,
+                              borderRadius: 4,
+                              verticalPadding: 0.0,
+                              btnText: AppText.filter,
+                              fontSize: 12,
+                              onTap: () async {
+                                controller.isFiltered.value = true;
+                                await controller.getBookingStatistics();
+                              },
+                            ),
+                            CustomButton(
+                              width: 120,
+                              height: 30,
+                              borderRadius: 4,
+                              verticalPadding: 0.0,
+                              btnText: AppText.view,
+                              fontSize: 12,
+                              onTap: () {
+                                Get.dialog(AllBookingViewWindow());
+                              },
+                            ),
+                            CustomButton(
+                              width: 120,
+                              height: 30,
+                              borderRadius: 4,
+                              verticalPadding: 0.0,
+                              btnText: AppText.statistics,
+                              fontSize: 12,
+                              onTap: () {
+                                String? statusId = controller
+                                    .apiSelectedBookingStatus?.id
+                                    ?.toString();
+                                controller.getBookingStatisticsGraph(
+                                    statusId: statusId);
+
+                                // Get.dialog(BookingStatisticsWindow());
+                                Get.dialog(BookingStatisticsWindow());
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Obx(() => Container(
-                  margin: const EdgeInsets.symmetric(vertical: 10),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: DynamicColors.secondaryClr,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                        color: DynamicColors.gryClr.withOpacity(0.5)),
+                  SizedBox(
+                    height: 20,
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Total Bookings
-                      _buildSummaryItem(
-                        label: "TOTAL BOOKINGS",
-                        value: controller.isFiltered.value
-                            ? "£ ${controller.totalBookings.value}"
-                            : "",
-                      ),
-                      // Total Earning
-                      _buildSummaryItem(
-                        label: "TOTAL EARNINGS",
-                        value: controller.isFiltered.value
-                            ? "£ ${controller.totalEarnings.value.toStringAsFixed(2)}"
-                            : "",
-                      ),
-                      // Total Account Earning
-                      _buildSummaryItem(
-                        label: "TOTAL ACCOUNT EARNINGS",
-                        value: controller.isFiltered.value
-                            ? "£ ${controller.totalAccountEarnings.value.toStringAsFixed(2)}"
-                            : "",
-                      ),
-                    ],
-                  ),
-                )),
-                const SizedBox(height: 10),
+                  Obx(() => Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: DynamicColors.secondaryClr,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                          color: DynamicColors.gryClr.withOpacity(0.5)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Total Bookings
+                        _buildSummaryItem(
+                          label: "TOTAL BOOKINGS",
+                          value: controller.isFiltered.value
+                              ? "£ ${controller.totalBookings.value}"
+                              : "",
+                        ),
+                        // Total Earning
+                        _buildSummaryItem(
+                          label: "TOTAL EARNINGS",
+                          value: controller.isFiltered.value
+                              ? "£ ${controller.totalEarnings.value.toStringAsFixed(2)}"
+                              : "",
+                        ),
+                        // Total Account Earning
+                        _buildSummaryItem(
+                          label: "TOTAL ACCOUNT EARNINGS",
+                          value: controller.isFiltered.value
+                              ? "£ ${controller.totalAccountEarnings.value.toStringAsFixed(2)}"
+                              : "",
+                        ),
+                      ],
+                    ),
+                  )),
+                  const SizedBox(height: 10),
 
-                GetBuilder<ReportController>(
-                  builder: (controller) {
-                    var dataList = controller.bookingStatisticsModel?.data ?? [];
+                  GetBuilder<ReportController>(
+                    builder: (controller) {
+                      var dataList = controller.bookingStatisticsModel?.data ?? [];
 
 
-                    final double baseWidth = widthss - 90;
-                    final double smallCellWidth = baseWidth / 20;
-                    final double largeCellWidth = baseWidth / 14;
-                    const double actionCellWidth = 65.0;
+                      final double baseWidth = widthss - 90;
+                      final double smallCellWidth = baseWidth / 20;
+                      final double largeCellWidth = baseWidth / 14;
+                      const double actionCellWidth = 65.0;
 
-                    Widget buildCenteredCellText(String text, double width) {
+                      Widget buildCenteredCellText(String text, double width) {
+                        return SizedBox(
+                          width: width,
+                          child: Text(
+                            text,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+                          ),
+                        );
+                      }
+
                       return SizedBox(
-                        width: width,
-                        child: Text(
-                          text,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+                        width: widthss,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            DataTable(
+                              headingRowColor: MaterialStateProperty.all(DynamicColors.gryClr),
+                              columnSpacing: 1.0,
+                              horizontalMargin: 4.0,
+                              dataRowMinHeight: 40,
+                              dataRowMaxHeight: 48,
+                              headingTextStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 11),
+                              border: TableBorder(
+                                horizontalInside: BorderSide(width: 0.5, color: Colors.grey.shade400),
+                                verticalInside: BorderSide(width: 0.5, color: Colors.grey.shade400),
+                                bottom: BorderSide(width: 0.5, color: Colors.grey.shade400),
+                                top: BorderSide(width: 0.5, color: Colors.grey.shade400),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              columns: [
+                                buildHeaderWithSearch(widhtss: smallCellWidth, title: "REF #",
+                                    onChanged: (v) {
+                                      controller.searchReferenceNo.value = v;
+                                      controller.onBookingSearch();
+                                    }),
+                                buildHeaderWithSearch(widhtss: smallCellWidth, title: "INVOICE #",
+                                    onChanged: (v) {
+                                      controller.searchInvoiceNo.value = v;
+                                      controller.onBookingSearch();
+                                    }),
+                                buildHeaderWithSearch(widhtss: largeCellWidth, title: "DATETIME",
+                                    onChanged: (v) {
+                                      controller.searchDateTime.value = v;
+                                      controller.onBookingSearch();
+                                    }),
+                                buildHeaderWithSearch(widhtss: largeCellWidth, title: "CUSTOMER",
+                                    onChanged: (v) {
+                                      controller.searchCustomer.value = v;
+                                      controller.onBookingSearch();
+                                    }),
+                                buildHeaderWithSearch(widhtss: largeCellWidth, title: "PICKUP",
+                                    onChanged: (v) {
+                                      controller.searchPickup.value = v;
+                                      controller.onBookingSearch();
+                                    }),
+                                buildHeaderWithSearch(widhtss: largeCellWidth, title: "DROPOFF",
+                                    onChanged: (v) {
+                                      controller.searchDropOff.value = v;
+                                      controller.onBookingSearch();
+                                    }),
+                                buildHeaderWithSearch(widhtss: smallCellWidth, title: "FARE",
+                                    onChanged: (v) {
+                                      controller.searchFare.value = v;
+                                      controller.onBookingSearch();
+                                    }),
+                                buildHeaderWithSearch(widhtss: smallCellWidth, title: "ACC FARE",
+                                    onChanged: (v) {
+                                      controller.searchAccFare.value = v;
+                                      controller.onBookingSearch();
+                                    }),
+                                buildHeaderWithSearch(widhtss: largeCellWidth, title: "ACC",
+                                    onChanged: (v) {
+                                      controller.searchAcc.value = v;
+                                      controller.onBookingSearch();
+                                    }),
+                                buildHeaderWithSearch(widhtss: smallCellWidth, title: "ORDER #",
+                                    onChanged: (v) {
+                                      controller.searchOrderNO.value = v;
+                                      controller.onBookingSearch();
+                                    }),
+                                buildHeaderWithSearch(widhtss: smallCellWidth, title: "P/T",
+                                    onChanged: (v) {
+                                      controller.searchPaymentType.value = v;
+                                      controller.onBookingSearch();
+                                    }),
+                                buildHeaderWithSearch(widhtss: smallCellWidth, title: "J/T",
+                                    onChanged: (v) {
+                                      controller.searchJourneyType.value = v;
+                                      controller.onBookingSearch();
+                                    }),
+                                buildHeaderWithSearch(widhtss: largeCellWidth, title: "DRV",
+                                    onChanged: (v) {
+                                      controller.searchDriver.value = v;
+                                      controller.onBookingSearch();
+                                    }),
+                                buildHeaderWithSearch(widhtss: smallCellWidth, title: "VEH",
+                                    onChanged: (v) {
+                                      controller.searchVehicle.value = v;
+                                      controller.onBookingSearch();
+                                    }),
+                                buildHeaderWithSearch(widhtss: largeCellWidth, title: "SUBS",
+                                    onChanged: (v) {
+                                      controller.searchSubsidiary.value = v;
+                                      controller.onBookingSearch();
+                                    }),
+                                buildHeaderWithSearch(widhtss: smallCellWidth, title: "STATUS",
+                                    onChanged: (v) {
+                                      controller.searchStatus.value = v;
+                                      controller.onBookingSearch();
+                                    }),
+                                buildHeaderWithSearch(widhtss: actionCellWidth, title: "ACTION", removeSearching: true),
+                              ],
+                              rows: List.generate(dataList.length, (index) {
+                                var item = dataList[index];
+                                String formattedDateTime = "-";
+                                if (item.pickupDate != null) {
+                                  String date = DateFormat('dd-MM-yyyy').format(item.pickupDate!);
+                                  String time = item.pickupTime ?? "";
+                                  formattedDateTime = "$date $time".trim();
+                                }
+
+                                return DataRow(
+                                  cells: [
+                                    DataCell(buildCenteredCellText(item.referenceNumber ?? "-", smallCellWidth)),
+                                    DataCell(buildCenteredCellText(item.invoiceNumber?.toString() ?? "-", smallCellWidth)),
+                                    DataCell(buildCenteredCellText(formattedDateTime, largeCellWidth)), // Datetime with ...
+                                    DataCell(buildCenteredCellText((item.name ?? "-").toUpperCase(), largeCellWidth)),
+                                    DataCell(buildCenteredCellText((item.pickup ?? "-").toUpperCase(), largeCellWidth)),
+                                    DataCell(buildCenteredCellText((item.dropoff ?? "-").toUpperCase(), largeCellWidth)),
+
+                                    // FARE EDITABLE CELL
+                                    DataCell(Obx(() {
+                                      bool isEditing = controller.editingRowIndex.value == index;
+                                      return isEditing
+                                          ? SizedBox(
+                                        width: smallCellWidth > 55 ? smallCellWidth : 55,
+                                        height: 32,
+                                        child: TextField(
+                                          controller: controller.fareController,
+                                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                          autofocus: true,
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(fontSize: 11, color: Colors.black),
+                                          decoration: const InputDecoration(
+                                            prefixText: "£",
+                                            isDense: true,
+                                            contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                                            border: OutlineInputBorder(),
+                                          ),
+                                        ),
+                                      )
+                                          : buildCenteredCellText(
+                                        (item.fares == null || item.fares!.trim().isEmpty)
+                                            ? "£0.00"
+                                            : "£${item.fares}",
+                                        smallCellWidth,
+                                      );
+                                    })),
+
+                                    DataCell(buildCenteredCellText("£ ${item.companyPrice ?? '0.00'}", smallCellWidth)),
+                                    DataCell(buildCenteredCellText((item.account?.name ?? "-").toUpperCase(), largeCellWidth)),
+                                    DataCell(buildCenteredCellText(item.orderNumber?.toString() ?? "-", smallCellWidth)),
+                                    DataCell(buildCenteredCellText((item.paymentType?.name ?? "-").toUpperCase(), smallCellWidth)),
+                                    DataCell(buildCenteredCellText((item.journeyType?.journeyType ?? "-").toUpperCase(), smallCellWidth)),
+                                    DataCell(buildCenteredCellText((item.driver?.name ?? "-").toUpperCase(), largeCellWidth)),
+                                    DataCell(buildCenteredCellText((item.vehicleType?.name ?? "-").toUpperCase(), smallCellWidth)),
+                                    DataCell(buildCenteredCellText((item.subsidiary?.name ?? "-").toUpperCase(), largeCellWidth)),
+                                    DataCell(buildCenteredCellText((item.bookingStatus?.bookingStatus ?? "-").toUpperCase(), smallCellWidth)),
+
+                                    DataCell(
+                                      Center(
+                                        child: Obx(() {
+                                          bool isEditing = controller.editingRowIndex.value == index;
+                                          bool isLoading = controller.isFareLoading && isEditing;
+                                          return SizedBox(
+                                            height: 24,
+                                            width: actionCellWidth - 5,
+                                            child: ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: isEditing ? Colors.green : DynamicColors.primaryClr,
+                                                foregroundColor: Colors.white,
+                                                padding: EdgeInsets.zero,
+                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                                              ),
+                                              onPressed: () {
+                                                if (controller.isFareLoading) return;
+                                                if (isEditing) {
+                                                  controller.updateBookingFare(item.id, controller.fareController.text, index);
+                                                } else {
+                                                  controller.fareController.text = item.fares ?? '0.00';
+                                                  controller.editingRowIndex.value = index;
+                                                }
+                                              },
+                                              child: isLoading
+                                                  ? const SizedBox(
+                                                height: 10,
+                                                width: 10,
+                                                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 1.2),
+                                              )
+                                                  : Text(isEditing ? "SAVE" : "EDIT", style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold)),
+                                            ),
+                                          );
+                                        }),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }),
+                            ),
+                            if (dataList.isEmpty)
+                              const Padding(
+                                padding: EdgeInsets.all(30.0),
+                                child: Center(child: Text("No Data Found", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
+                              ),
+                          ],
                         ),
                       );
-                    }
-
-                    return SizedBox(
-                      width: widthss,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          DataTable(
-                            headingRowColor: MaterialStateProperty.all(DynamicColors.gryClr),
-                            columnSpacing: 1.0,
-                            horizontalMargin: 4.0,
-                            dataRowMinHeight: 40,
-                            dataRowMaxHeight: 48,
-                            headingTextStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 11),
-                            border: TableBorder(
-                              horizontalInside: BorderSide(width: 0.5, color: Colors.grey.shade400),
-                              verticalInside: BorderSide(width: 0.5, color: Colors.grey.shade400),
-                              bottom: BorderSide(width: 0.5, color: Colors.grey.shade400),
-                              top: BorderSide(width: 0.5, color: Colors.grey.shade400),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            columns: [
-                              buildHeaderWithSearch(widhtss: smallCellWidth, title: "REF #",
-                                  onChanged: (v) {
-                                    controller.searchReferenceNo.value = v;
-                                    controller.onBookingSearch();
-                                  }),
-                              buildHeaderWithSearch(widhtss: smallCellWidth, title: "INVOICE #",
-                                  onChanged: (v) {
-                                    controller.searchInvoiceNo.value = v;
-                                    controller.onBookingSearch();
-                                  }),
-                              buildHeaderWithSearch(widhtss: largeCellWidth, title: "DATETIME",
-                                  onChanged: (v) {
-                                    controller.searchDateTime.value = v;
-                                    controller.onBookingSearch();
-                                  }),
-                              buildHeaderWithSearch(widhtss: largeCellWidth, title: "CUSTOMER",
-                                  onChanged: (v) {
-                                    controller.searchCustomer.value = v;
-                                    controller.onBookingSearch();
-                                  }),
-                              buildHeaderWithSearch(widhtss: largeCellWidth, title: "PICKUP",
-                                  onChanged: (v) {
-                                    controller.searchPickup.value = v;
-                                    controller.onBookingSearch();
-                                  }),
-                              buildHeaderWithSearch(widhtss: largeCellWidth, title: "DROPOFF",
-                                  onChanged: (v) {
-                                    controller.searchDropOff.value = v;
-                                    controller.onBookingSearch();
-                                  }),
-                              buildHeaderWithSearch(widhtss: smallCellWidth, title: "FARE",
-                                  onChanged: (v) {
-                                    controller.searchFare.value = v;
-                                    controller.onBookingSearch();
-                                  }),
-                              buildHeaderWithSearch(widhtss: smallCellWidth, title: "ACC FARE",
-                                  onChanged: (v) {
-                                    controller.searchAccFare.value = v;
-                                    controller.onBookingSearch();
-                                  }),
-                              buildHeaderWithSearch(widhtss: largeCellWidth, title: "ACC",
-                                  onChanged: (v) {
-                                    controller.searchAcc.value = v;
-                                    controller.onBookingSearch();
-                                  }),
-                              buildHeaderWithSearch(widhtss: smallCellWidth, title: "ORDER #",
-                                  onChanged: (v) {
-                                    controller.searchOrderNO.value = v;
-                                    controller.onBookingSearch();
-                                  }),
-                              buildHeaderWithSearch(widhtss: smallCellWidth, title: "P/T",
-                                  onChanged: (v) {
-                                    controller.searchPaymentType.value = v;
-                                    controller.onBookingSearch();
-                                  }),
-                              buildHeaderWithSearch(widhtss: smallCellWidth, title: "J/T",
-                                  onChanged: (v) {
-                                    controller.searchJourneyType.value = v;
-                                    controller.onBookingSearch();
-                                  }),
-                              buildHeaderWithSearch(widhtss: largeCellWidth, title: "DRV",
-                                  onChanged: (v) {
-                                    controller.searchDriver.value = v;
-                                    controller.onBookingSearch();
-                                  }),
-                              buildHeaderWithSearch(widhtss: smallCellWidth, title: "VEH",
-                                  onChanged: (v) {
-                                    controller.searchVehicle.value = v;
-                                    controller.onBookingSearch();
-                                  }),
-                              buildHeaderWithSearch(widhtss: largeCellWidth, title: "SUBS",
-                                  onChanged: (v) {
-                                    controller.searchSubsidiary.value = v;
-                                    controller.onBookingSearch();
-                                  }),
-                              buildHeaderWithSearch(widhtss: smallCellWidth, title: "STATUS",
-                                  onChanged: (v) {
-                                    controller.searchStatus.value = v;
-                                    controller.onBookingSearch();
-                                  }),
-                              buildHeaderWithSearch(widhtss: actionCellWidth, title: "ACTION", removeSearching: true),
-                            ],
-                            rows: List.generate(dataList.length, (index) {
-                              var item = dataList[index];
-                              String formattedDateTime = "-";
-                              if (item.pickupDate != null) {
-                                String date = DateFormat('dd-MM-yyyy').format(item.pickupDate!);
-                                String time = item.pickupTime ?? "";
-                                formattedDateTime = "$date $time".trim();
-                              }
-
-                              return DataRow(
-                                cells: [
-                                  DataCell(buildCenteredCellText(item.referenceNumber ?? "-", smallCellWidth)),
-                                  DataCell(buildCenteredCellText(item.invoiceNumber?.toString() ?? "-", smallCellWidth)),
-                                  DataCell(buildCenteredCellText(formattedDateTime, largeCellWidth)), // Datetime with ...
-                                  DataCell(buildCenteredCellText((item.name ?? "-").toUpperCase(), largeCellWidth)),
-                                  DataCell(buildCenteredCellText((item.pickup ?? "-").toUpperCase(), largeCellWidth)),
-                                  DataCell(buildCenteredCellText((item.dropoff ?? "-").toUpperCase(), largeCellWidth)),
-
-                                  // FARE EDITABLE CELL
-                                  DataCell(Obx(() {
-                                    bool isEditing = controller.editingRowIndex.value == index;
-                                    return isEditing
-                                        ? SizedBox(
-                                      width: smallCellWidth > 55 ? smallCellWidth : 55,
-                                      height: 32,
-                                      child: TextField(
-                                        controller: controller.fareController,
-                                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                        autofocus: true,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(fontSize: 11, color: Colors.black),
-                                        decoration: const InputDecoration(
-                                          prefixText: "£",
-                                          isDense: true,
-                                          contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                                          border: OutlineInputBorder(),
-                                        ),
-                                      ),
-                                    )
-                                        : buildCenteredCellText(
-                                      (item.fares == null || item.fares!.trim().isEmpty)
-                                          ? "£0.00"
-                                          : "£${item.fares}",
-                                      smallCellWidth,
-                                    );
-                                  })),
-
-                                  DataCell(buildCenteredCellText("£ ${item.companyPrice ?? '0.00'}", smallCellWidth)),
-                                  DataCell(buildCenteredCellText((item.account?.name ?? "-").toUpperCase(), largeCellWidth)),
-                                  DataCell(buildCenteredCellText(item.orderNumber?.toString() ?? "-", smallCellWidth)),
-                                  DataCell(buildCenteredCellText((item.paymentType?.name ?? "-").toUpperCase(), smallCellWidth)),
-                                  DataCell(buildCenteredCellText((item.journeyType?.journeyType ?? "-").toUpperCase(), smallCellWidth)),
-                                  DataCell(buildCenteredCellText((item.driver?.name ?? "-").toUpperCase(), largeCellWidth)),
-                                  DataCell(buildCenteredCellText((item.vehicleType?.name ?? "-").toUpperCase(), smallCellWidth)),
-                                  DataCell(buildCenteredCellText((item.subsidiary?.name ?? "-").toUpperCase(), largeCellWidth)),
-                                  DataCell(buildCenteredCellText((item.bookingStatus?.bookingStatus ?? "-").toUpperCase(), smallCellWidth)),
-
-                                  DataCell(
-                                    Center(
-                                      child: Obx(() {
-                                        bool isEditing = controller.editingRowIndex.value == index;
-                                        bool isLoading = controller.isFareLoading && isEditing;
-                                        return SizedBox(
-                                          height: 24,
-                                          width: actionCellWidth - 5,
-                                          child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: isEditing ? Colors.green : DynamicColors.primaryClr,
-                                              foregroundColor: Colors.white,
-                                              padding: EdgeInsets.zero,
-                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                                            ),
-                                            onPressed: () {
-                                              if (controller.isFareLoading) return;
-                                              if (isEditing) {
-                                                controller.updateBookingFare(item.id, controller.fareController.text, index);
-                                              } else {
-                                                controller.fareController.text = item.fares ?? '0.00';
-                                                controller.editingRowIndex.value = index;
-                                              }
-                                            },
-                                            child: isLoading
-                                                ? const SizedBox(
-                                              height: 10,
-                                              width: 10,
-                                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 1.2),
-                                            )
-                                                : Text(isEditing ? "SAVE" : "EDIT", style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold)),
-                                          ),
-                                        );
-                                      }),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }),
-                          ),
-                          if (dataList.isEmpty)
-                            const Padding(
-                              padding: EdgeInsets.all(30.0),
-                              child: Center(child: Text("No Data Found", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
-                            ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-                  PaginationWidget(
-                    currentPage: controller.currentPage.value,
-                    totalPages: controller.totalPages.value,
-                    onPageChange: controller.onBookingPageChange,
+                    },
                   ),
-              ],
-            ));
-      });
-    });
+                    PaginationWidget(
+                      currentPage: controller.currentPage.value,
+                      totalPages: controller.totalPages.value,
+                      onPageChange: controller.onBookingPageChange,
+                    ),
+                ],
+              ));
+        });
+      }),
+    );
   }
 
   Widget _buildSummaryItem({required String label, required String value}) {

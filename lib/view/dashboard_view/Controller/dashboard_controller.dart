@@ -3273,6 +3273,7 @@ class DashboardController extends GetxController {
     name,
     mobile,
     phoneNumber,
+
   }) async {
     polyLineMarkerInfo.clear();
     viaPoints.clear();
