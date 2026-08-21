@@ -1351,7 +1351,7 @@ class _CenterAreaState extends State<_CenterArea> {
                       _isLoading = false;
                     }
                   },
-                  child: const Text("New Booking"),
+                  child: actionValue == false ? Text("New Booking"):Text("SAVE"),
                 ),
               ],
             ),
