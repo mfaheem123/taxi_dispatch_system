@@ -1332,7 +1332,8 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
   late int year;
 
   int activePart = 0; // 0: Day, 1: Month, 2: Year
-  final FocusNode _focusNode = FocusNode();
+  final FocusNode _focusNode = FocusNode(debugLabel: 'datePickerDigits');
+  final FocusNode _iconFocusNode = FocusNode(debugLabel: 'datePickerIcon');
 
   @override
   void initState() {
@@ -1344,17 +1345,21 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
     _clampToBounds();
 
     _focusNode.addListener(_onFocusChange);
+    _iconFocusNode.addListener(_onFocusChange);
   }
 
   @override
   void dispose() {
     _focusNode.removeListener(_onFocusChange);
     _focusNode.dispose();
+    _iconFocusNode.removeListener(_onFocusChange);
+    _iconFocusNode.dispose();
     super.dispose();
   }
 
   void _onFocusChange() {
-    KeyboardDatePicker.isAnyDatePickerFocused = _focusNode.hasFocus;
+    KeyboardDatePicker.isAnyDatePickerFocused =
+        _focusNode.hasFocus || _iconFocusNode.hasFocus;
     setState(() {});
   }
 
@@ -1434,7 +1439,19 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    // Key events from the calendar icon bubble up to this node, so only act
+    // when the digits themselves hold the focus.
+    if (!_focusNode.hasPrimaryFocus) return KeyEventResult.ignored;
+
     if (event is KeyDownEvent || event is KeyRepeatEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.tab) {
+        // Tab moves from the digits to the calendar icon; Shift+Tab leaves the field.
+        if (HardwareKeyboard.instance.isShiftPressed) {
+          return KeyEventResult.ignored;
+        }
+        _iconFocusNode.requestFocus();
+        return KeyEventResult.handled;
+      }
       if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
         _onIncrementActive(1);
         return KeyEventResult.handled;
@@ -1469,9 +1486,32 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
     return KeyEventResult.ignored;
   }
 
+  KeyEventResult _handleIconKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is KeyDownEvent || event is KeyRepeatEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.enter ||
+          event.logicalKey == LogicalKeyboardKey.numpadEnter ||
+          event.logicalKey == LogicalKeyboardKey.space) {
+        // Enter on the focused calendar icon fires its onTap.
+        _openNativeCalendar();
+        return KeyEventResult.handled;
+      }
+      if (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
+          (event.logicalKey == LogicalKeyboardKey.tab &&
+              HardwareKeyboard.instance.isShiftPressed)) {
+        // Shift+Tab (or Left) goes back to the digits.
+        _focusNode.requestFocus();
+        return KeyEventResult.handled;
+      }
+    }
+    // Plain Tab falls through so traversal leaves the field.
+    return KeyEventResult.ignored;
+  }
+
+  bool get _hasAnyFocus => _focusNode.hasFocus || _iconFocusNode.hasFocus;
+
   // 🟦 Blue Highlight Text Segment Helper Widget
   Widget _buildDateSegment(String text, int partIndex) {
-    bool isSelected = _focusNode.hasFocus && activePart == partIndex;
+    bool isSelected = _focusNode.hasPrimaryFocus && activePart == partIndex;
 
     return GestureDetector(
       onTap: () {
@@ -1511,10 +1551,10 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           border: Border.all(
-            color: _focusNode.hasFocus
+            color: _hasAnyFocus
                 ? Colors.blue
                 : (widget.borderClr ?? Colors.grey),
-            width: _focusNode.hasFocus ? 1.5 : 1.0,
+            width: _hasAnyFocus ? 1.5 : 1.0,
           ),
           borderRadius: BorderRadius.circular(4),
         ),
@@ -1530,12 +1570,28 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
                 _buildDateSegment(yearStr, 2),
               ],
             ),
-            InkWell(
-              onTap: _openNativeCalendar,
-              child: Icon(
-                Icons.calendar_today,
-                size: widget.iconSize,
-                color: Colors.black87,
+            Focus(
+              focusNode: _iconFocusNode,
+              onKeyEvent: _handleIconKeyEvent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(3),
+                onTap: _openNativeCalendar,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: _iconFocusNode.hasFocus
+                        ? Colors.blue
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                  child: Icon(
+                    Icons.calendar_today,
+                    size: widget.iconSize,
+                    color: _iconFocusNode.hasFocus
+                        ? Colors.white
+                        : Colors.black87,
+                  ),
+                ),
               ),
             ),
           ],
