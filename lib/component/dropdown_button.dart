@@ -37,6 +37,7 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
   late ScrollController _scrollController;
 
   final LayerLink _layerLink = LayerLink();
+  final GlobalKey _fieldKey = GlobalKey();
 
   int _highlightedIndex = -1;
   bool _isOpen = false;
@@ -64,10 +65,26 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
 
   @override
   void dispose() {
+    // Overlay pehle hatao, warna _closeDropdown ka setState dispose ke baad chalta hai
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    _isOpen = false;
     _focusNode.dispose();
     _scrollController.dispose();
-    _closeDropdown(retainFocus: false);
     super.dispose();
+  }
+
+  /// Overlay ki width. `widget.width` infinite ho sakti hai (jaise Expanded ke
+  /// andar `double.infinity`), aur `Positioned` ko infinite width dene par
+  /// layout assert fail hota hai — is liye actual render size use karte hain.
+  double _overlayWidth() {
+    final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
+    if (box != null && box.hasSize && box.size.width.isFinite && box.size.width > 0) {
+      return box.size.width;
+    }
+    final w = widget.width;
+    if (w != null && w.isFinite && w > 0) return w;
+    return Get.width / 4;
   }
 
   void _scrollToIndex(int index) {
@@ -116,7 +133,7 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
 
     _overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
-        width: widget.width ?? Get.width / 4,
+        width: _overlayWidth(),
         child: CompositedTransformFollower(
           link: _layerLink,
           showWhenUnlinked: false,
@@ -272,6 +289,7 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
                 }
               },
               child: SizedBox(
+                key: _fieldKey,
                 width: widget.width ?? Get.width / 4,
                 height: widget.height ?? 30,
                 child: InputDecorator(
