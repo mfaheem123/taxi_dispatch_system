@@ -482,7 +482,30 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Stack(
             alignment: Alignment.centerRight,
             children: [
-              NestedMenuBar(
+              Row(
+                children: [
+                  // CabFlow logo — menu bar ke "NEXUS" slot ki jagah.
+                  Container(
+                    height: 45,
+                    color: DynamicColors.primaryClr,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    alignment: Alignment.center,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Image.asset(
+                        'assets/cabflow_logo.jpeg',
+                        height: 26,
+                        fit: BoxFit.contain,
+                        filterQuality: FilterQuality.high,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: NestedMenuBar(
                 menuBarPadding: 0.0,
                 menus: hoverMenu,
                 popUpMenuItemBorderRadius: 8,
@@ -501,6 +524,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 popUpMenuItemForegroundColor: Colors.black,
                 popUpMenuItemBackgroundColor: Colors.white,
                 popUpMenuItemHoverBackgroundColor: Colors.black,
+                    ),
+                  ),
+                ],
               ),
               // Spacer(),
               Row(
@@ -824,9 +850,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<NestedMenuItem> _makeMenus(BuildContext context) {
     return [
-      NestedMenuItem(
-        title: "NEXUS",
-      ),
+      // Brand slot: pehle yahan "NEXUS" ka text item tha. NestedMenuItem sirf
+      // title/IconData leta hai, koi widget nahi, is liye CabFlow ka logo
+      // menu bar ke bahar (build mein) issi jagah render hota hai.
       /* NestedMenuItem(title: "App Development",onTap: () => message(context, "App Development"),
           children: [
             NestedMenuItem(title: "Mobile App Development",
