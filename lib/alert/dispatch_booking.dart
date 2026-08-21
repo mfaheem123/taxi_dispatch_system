@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../component/color.dart';
 import '../component/customButton.dart';
 import '../component/textStyle.dart';
 import '../view/dashboard_view/Controller/booking_dispatch_controller.dart';
@@ -17,6 +18,8 @@ class _DispatchBookingState extends State<DispatchBooking> {
 
   final controller = Get.put(DispatchController());
   final _controller = Get.find<DashboardController>();
+
+  final FocusNode closeButtonFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -50,9 +53,25 @@ class _DispatchBookingState extends State<DispatchBooking> {
             Text("DISPATCH BOOKING ${widget.bookingItem?.referenceNumber ?? "N/A"}",
                         style: mozillaTextSemiBoldText(
                             fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
-                    InkWell(
-                      onTap: () => Get.back(),
-                      child: const Icon(Icons.close, size: 22, color: Colors.grey),
+                    AnimatedBuilder(
+                      animation: closeButtonFocusNode,
+                      builder: (context, child) {
+                        final isFocused = closeButtonFocusNode.hasFocus;
+                        return Container(
+                          decoration: BoxDecoration(shape: BoxShape.circle,
+                            border: Border.all(color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
+                              width: 2,
+                            ),
+                            color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
+                          ),
+                          child: IconButton(
+                            focusNode: closeButtonFocusNode,
+                            onPressed: () => Get.back(),
+                            icon: const Icon(Icons.close, size: 22, color: Colors.grey),
+                            splashRadius: 20,
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),

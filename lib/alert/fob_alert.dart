@@ -26,6 +26,8 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
   final controller = Get.put(FobController());
   final _controller = Get.find<DashboardController>();
 
+  final FocusNode closeButtonFocusNode = FocusNode();
+
   @override
   void initState() {
     super.initState();
@@ -54,10 +56,27 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
                       style: mozillaTextSemiBoldText(
                           fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
                   const Spacer(),
-                  InkWell(
-                    onTap: () => Get.back(),
-                    child: const Icon(
-                        Icons.close, size: 22, color: Colors.grey),
+                  AnimatedBuilder(
+                    animation: closeButtonFocusNode,
+                    builder: (context, child) {
+                      final isFocused = closeButtonFocusNode.hasFocus;
+                      return Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
+                            width: 2,
+                          ),
+                          color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
+                        ),
+                        child: IconButton(
+                          focusNode: closeButtonFocusNode,
+                          onPressed: () => Get.back(),
+                          icon: const Icon(Icons.close, size: 22, color: Colors.grey),
+                          splashRadius: 20,
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

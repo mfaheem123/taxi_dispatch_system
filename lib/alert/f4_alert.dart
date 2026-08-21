@@ -34,6 +34,8 @@ class _DriverEarningsAlertState extends State<DriverEarningsAlert> {
       ? Get.find<DashboardAlertController>()
       : Get.put(DashboardAlertController());
 
+  final FocusNode closeButtonFocusNode = FocusNode();
+
   @override
   void initState() {
     super.initState();
@@ -45,7 +47,9 @@ class _DriverEarningsAlertState extends State<DriverEarningsAlert> {
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
+      child: FocusScope(
+        autofocus: true,
+        child: Container(
         width: 950,
         decoration: BoxDecoration(
           color: Colors.white,
@@ -83,12 +87,30 @@ class _DriverEarningsAlertState extends State<DriverEarningsAlert> {
                         ),
                       ),
                       const Spacer(),
-                      InkWell(
-                        onTap: () {
-                          controller.clearEarnings();
-                          Get.back();
+                      AnimatedBuilder(
+                        animation: closeButtonFocusNode,
+                        builder: (context, child) {
+                          final isFocused = closeButtonFocusNode.hasFocus;
+                          return Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
+                                width: 2,
+                              ),
+                              color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
+                            ),
+                            child: IconButton(
+                              focusNode: closeButtonFocusNode,
+                              onPressed: () {
+                                controller.clearEarnings();
+                                Get.back();
+                              },
+                              icon: const Icon(Icons.close, size: 22, color: Colors.grey),
+                              splashRadius: 20,
+                            ),
+                          );
                         },
-                        child: const Icon(Icons.close, size: 22, color: Colors.grey),
                       ),
                     ],
                   ),
@@ -278,7 +300,7 @@ class _DriverEarningsAlertState extends State<DriverEarningsAlert> {
             );
           },
         ),
-      ),
+      )),
     );
   }
 }
