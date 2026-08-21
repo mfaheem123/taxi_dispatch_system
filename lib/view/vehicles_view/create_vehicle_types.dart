@@ -1,6 +1,7 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:dashboard_new1/view/vehicles_view/controller/controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -46,337 +47,339 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
     double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
     WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<VehicleController>(builder: (controller) {
-      return LayoutBuilder(builder: (context, constraints) {
-        final double maxWidth = constraints.maxWidth;
-        final bool isMobile = maxWidth < 600;
-        final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+    return PageScrollWrapper(
+      child: GetBuilder<VehicleController>(builder: (controller) {
+        return LayoutBuilder(builder: (context, constraints) {
+          final double maxWidth = constraints.maxWidth;
+          final bool isMobile = maxWidth < 600;
+          final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-        // Instead of fixed width, we calculate flexible field widths
-        final double fieldWidth = isMobile
-            ? maxWidth // full width
-            : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
+          // Instead of fixed width, we calculate flexible field widths
+          final double fieldWidth = isMobile
+              ? maxWidth // full width
+              : isTablet
+                  ? maxWidth / 2
+                  : maxWidth / 4;
 
-        return Column(
-          children: [
-            SizedBox(
-              height: 10,
-            ),
-            Wrap(
-              runSpacing: 16,
-              spacing: 10,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    // Agar koi image nahi hai (na local na network), tabhi picker khule
-                    if (controller.profileImg == null && controller.singleVehicle?.image == null) {
-                      controller.pickImage();
-                    }
-                  },
-                  child: Container(
-                    height: isMobile ? 200 : 400,
-                    width: fieldWidth,
-                    margin: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Colors.grey),
-                      image: controller.profileImg != null
-                          ? DecorationImage(
-                        image: MemoryImage(controller.profileImg!.bytes),
-                        fit: BoxFit.fill,
-                      )
-                          : (controller.singleVehicle?.image != null
-                          ? DecorationImage(
-                        // Agar server se sirf path aata hai to base URL lazmi lagayein
-                        image: NetworkImage(controller.singleVehicle!.image!),
-                        fit: BoxFit.fill,
-                      )
-                          : null),
-                    ),
-                    // Check: Agar koi bhi image maujood hai to close button dikhao, warna text dikhao
-                    child: (controller.profileImg != null || controller.singleVehicle?.image != null)
-                        ? Align(
-                      alignment: Alignment.topRight,
-                      child: GestureDetector(
-                        onTap: () {
-                          controller.profileImg = null;
-                          if (controller.singleVehicle != null) {
-                            controller.singleVehicle!.image = null; // Purani image hide karne ke liye
-                          }
-                          controller.update();
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(4),
-                          margin: EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.7),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.close_rounded,
-                            color: DynamicColors.redClr,
+          return Column(
+            children: [
+              SizedBox(
+                height: 10,
+              ),
+              Wrap(
+                runSpacing: 16,
+                spacing: 10,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      // Agar koi image nahi hai (na local na network), tabhi picker khule
+                      if (controller.profileImg == null && controller.singleVehicle?.image == null) {
+                        controller.pickImage();
+                      }
+                    },
+                    child: Container(
+                      height: isMobile ? 200 : 400,
+                      width: fieldWidth,
+                      margin: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.grey),
+                        image: controller.profileImg != null
+                            ? DecorationImage(
+                          image: MemoryImage(controller.profileImg!.bytes),
+                          fit: BoxFit.fill,
+                        )
+                            : (controller.singleVehicle?.image != null
+                            ? DecorationImage(
+                          // Agar server se sirf path aata hai to base URL lazmi lagayein
+                          image: NetworkImage(controller.singleVehicle!.image!),
+                          fit: BoxFit.fill,
+                        )
+                            : null),
+                      ),
+                      // Check: Agar koi bhi image maujood hai to close button dikhao, warna text dikhao
+                      child: (controller.profileImg != null || controller.singleVehicle?.image != null)
+                          ? Align(
+                        alignment: Alignment.topRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            controller.profileImg = null;
+                            if (controller.singleVehicle != null) {
+                              controller.singleVehicle!.image = null; // Purani image hide karne ke liye
+                            }
+                            controller.update();
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(4),
+                            margin: EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.7),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.close_rounded,
+                              color: DynamicColors.redClr,
+                            ),
                           ),
                         ),
-                      ),
-                    )
-                        : Center(
-                      child: Text(
-                        "UPLOAD IMAGE",
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                      )
+                          : Center(
+                        child: Text(
+                          "UPLOAD IMAGE",
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  width: fieldWidth * 2.7,
-                  child: Column(
-                    children: [
-                      Container(
-                        // height: screenHeight / 20,
-                        width: Get.width,
-                        color: DynamicColors.gryClr,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 18.0, vertical: 12),
-                          child: Text(
-                            AppText.vehicleType,
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                  SizedBox(
+                    width: fieldWidth * 2.7,
+                    child: Column(
+                      children: [
+                        Container(
+                          // height: screenHeight / 20,
+                          width: Get.width,
+                          color: DynamicColors.gryClr,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 18.0, vertical: 12),
+                            child: Text(
+                              AppText.vehicleType,
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      customWidget(
-                        value: controller.defaultVehicleValue.value,
-                        onChanged: (v) {
-                          controller.defaultVehicleValue.value = v!;
-                          controller.update();
-                        },
-                        text: AppText.defaultVehicle,
-                        width: 140,
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Wrap(
-                        runSpacing: 16,
-                        spacing: 10,
-                        children: [
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.vehicleTypeController,
-                            width: fieldWidth / 2,
-                            hintText: AppText.vehicleType,
-                            columnText: true,
-                            height: 35,
-                            inputFormatters: [
-                              UpperCaseTextFormatter()
-                            ],
-                          ),
-                          CustomTextField(
-                            inputFormatters:  [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            borderRadius: 4,
-                            controller: controller.passengersController,
-                            width: fieldWidth / 2,
-                            hintText: AppText.passengers,
-                            columnText: true,
-                            height: 35,
-                          ),
-                          CustomTextField(
-                            inputFormatters:  [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            borderRadius: 4,
-                            controller: controller.luggagesController,
-                            width: fieldWidth / 2,
-                            hintText: AppText.luggages,
-                            columnText: true,
-                            height: 35,
-                          ),
-                          CustomTextField(
-                            inputFormatters:  [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            borderRadius: 4,
-                            controller: controller.handLuggagesController,
-                            width: fieldWidth / 2,
-                            hintText: AppText.handLuggages,
-                            columnText: true,
-                            height: 35,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              customWidget(
-                                value: controller.minimumMilesValue.value,
-                                onChanged: (v) {
-                                  controller.minimumMilesValue.value = v!;
-                                  controller.update();
-                                },
-                                text: AppText.minimumMiles,
-                                width: 140,
-                              ),
-                              CustomTextField(
-                                inputFormatters:  [
-                                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-                                ],
-                                borderRadius: 4,
-                                controller: controller.minimumMilesController,
-                                width: fieldWidth / 2,
-                                hintText: "",
-                                readOnly: !controller.minimumMilesValue.value,
-                                columnText: false,
-                                height: 35,
-                              ),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              customWidget(
-                                value: controller.minimumFaresValue.value,
-                                onChanged: (v) {
-                                  controller.minimumFaresValue.value = v!;
-                                  controller.update();
-                                },
-                                text: AppText.minimumFares,
-                                width: 140,
-                              ),
-                              CustomTextField(
-                                inputFormatters:  [
-                                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-                                ],
-                                borderRadius: 4,
-                                controller: controller.minimumFaresController,
-                                width: fieldWidth / 2,
-                                hintText: "",
-                                readOnly: !controller.minimumMilesValue.value,
-                                columnText: false,
-                                height: 35,
-                              ),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(AppText.backgroundClr,
-                                  style: mozillaTextSemiBoldText(
-                                      context: context, fontSize: 13)),
-                              ColorPickerWidget(
-                                width: fieldWidth / 2,
-                                pickerColor: controller.pickerColor,
-                                onColorChanged: (color) {
-                                  setState(() {
-                                    controller.pickerColor =
-                                        color; // live preview
-                                  });
-                                },
-                                onColorSelected: (color) {
-                                  setState(() {
-                                    controller.pickerColor =
-                                        color; // final selected
-                                  });
-                                },
-                                borderColor: DynamicColors.gryClr,
-                              ),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(AppText.foregroundClr,
-                                  style: mozillaTextSemiBoldText(
-                                      context: context, fontSize: 13)),
-                              ColorPickerWidget(
-                                width: fieldWidth / 2,
-                                pickerColor: controller.foregroundColor,
-                                onColorChanged: (color) {
-                                  setState(() {
-                                    controller.foregroundColor =
-                                        color; // live preview
-                                  });
-                                },
-                                onColorSelected: (color) {
-                                  setState(() {
-                                    controller.foregroundColor =
-                                        color; // final selected
-                                  });
-                                },
-                                borderColor: DynamicColors.gryClr,
-                              ),
-                            ],
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller:
-                                controller.driverWaitingChargesController,
-                            inputFormatters:  [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            width: fieldWidth / 2,
-                            hintText: AppText.driverWaitingCharges,
-                            columnText: true,
-                            height: 35,
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            inputFormatters:  [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            controller:
-                                controller.accountWaitingChargesController,
-                            width: fieldWidth / 2,
-                            hintText: AppText.accountWaitingCharges,
-                            columnText: true,
-                            height: 35,
-                          ),
-                          CustomTextField(
-                            inputFormatters:  [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            borderRadius: 4,
-                            controller: controller.waitingTimeController,
-                            width: fieldWidth / 2,
-                            hintText: AppText.waitingTime,
-                            columnText: true,
-                            height: 35,
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      CustomButton(
-                        onTap: () {
-                          controller.createVehicleType();
-                        },
-                        height: 30,
-                        width: fieldWidth,
-                        btnText:
-                        controller.singleVehicle == null?
-                        AppText.save: "UPDATE",
-                        fontSize: 11,
-                        verticalPadding: 0.0,
-                        borderRadius: 4,
-                      )
-                    ],
+                        SizedBox(
+                          height: 10,
+                        ),
+                        customWidget(
+                          value: controller.defaultVehicleValue.value,
+                          onChanged: (v) {
+                            controller.defaultVehicleValue.value = v!;
+                            controller.update();
+                          },
+                          text: AppText.defaultVehicle,
+                          width: 140,
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Wrap(
+                          runSpacing: 16,
+                          spacing: 10,
+                          children: [
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.vehicleTypeController,
+                              width: fieldWidth / 2,
+                              hintText: AppText.vehicleType,
+                              columnText: true,
+                              height: 35,
+                              inputFormatters: [
+                                UpperCaseTextFormatter()
+                              ],
+                            ),
+                            CustomTextField(
+                              inputFormatters:  [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              borderRadius: 4,
+                              controller: controller.passengersController,
+                              width: fieldWidth / 2,
+                              hintText: AppText.passengers,
+                              columnText: true,
+                              height: 35,
+                            ),
+                            CustomTextField(
+                              inputFormatters:  [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              borderRadius: 4,
+                              controller: controller.luggagesController,
+                              width: fieldWidth / 2,
+                              hintText: AppText.luggages,
+                              columnText: true,
+                              height: 35,
+                            ),
+                            CustomTextField(
+                              inputFormatters:  [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              borderRadius: 4,
+                              controller: controller.handLuggagesController,
+                              width: fieldWidth / 2,
+                              hintText: AppText.handLuggages,
+                              columnText: true,
+                              height: 35,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                customWidget(
+                                  value: controller.minimumMilesValue.value,
+                                  onChanged: (v) {
+                                    controller.minimumMilesValue.value = v!;
+                                    controller.update();
+                                  },
+                                  text: AppText.minimumMiles,
+                                  width: 140,
+                                ),
+                                CustomTextField(
+                                  inputFormatters:  [
+                                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                                  ],
+                                  borderRadius: 4,
+                                  controller: controller.minimumMilesController,
+                                  width: fieldWidth / 2,
+                                  hintText: "",
+                                  readOnly: !controller.minimumMilesValue.value,
+                                  columnText: false,
+                                  height: 35,
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                customWidget(
+                                  value: controller.minimumFaresValue.value,
+                                  onChanged: (v) {
+                                    controller.minimumFaresValue.value = v!;
+                                    controller.update();
+                                  },
+                                  text: AppText.minimumFares,
+                                  width: 140,
+                                ),
+                                CustomTextField(
+                                  inputFormatters:  [
+                                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                                  ],
+                                  borderRadius: 4,
+                                  controller: controller.minimumFaresController,
+                                  width: fieldWidth / 2,
+                                  hintText: "",
+                                  readOnly: !controller.minimumMilesValue.value,
+                                  columnText: false,
+                                  height: 35,
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(AppText.backgroundClr,
+                                    style: mozillaTextSemiBoldText(
+                                        context: context, fontSize: 13)),
+                                ColorPickerWidget(
+                                  width: fieldWidth / 2,
+                                  pickerColor: controller.pickerColor,
+                                  onColorChanged: (color) {
+                                    setState(() {
+                                      controller.pickerColor =
+                                          color; // live preview
+                                    });
+                                  },
+                                  onColorSelected: (color) {
+                                    setState(() {
+                                      controller.pickerColor =
+                                          color; // final selected
+                                    });
+                                  },
+                                  borderColor: DynamicColors.gryClr,
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(AppText.foregroundClr,
+                                    style: mozillaTextSemiBoldText(
+                                        context: context, fontSize: 13)),
+                                ColorPickerWidget(
+                                  width: fieldWidth / 2,
+                                  pickerColor: controller.foregroundColor,
+                                  onColorChanged: (color) {
+                                    setState(() {
+                                      controller.foregroundColor =
+                                          color; // live preview
+                                    });
+                                  },
+                                  onColorSelected: (color) {
+                                    setState(() {
+                                      controller.foregroundColor =
+                                          color; // final selected
+                                    });
+                                  },
+                                  borderColor: DynamicColors.gryClr,
+                                ),
+                              ],
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller:
+                                  controller.driverWaitingChargesController,
+                              inputFormatters:  [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              width: fieldWidth / 2,
+                              hintText: AppText.driverWaitingCharges,
+                              columnText: true,
+                              height: 35,
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              inputFormatters:  [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              controller:
+                                  controller.accountWaitingChargesController,
+                              width: fieldWidth / 2,
+                              hintText: AppText.accountWaitingCharges,
+                              columnText: true,
+                              height: 35,
+                            ),
+                            CustomTextField(
+                              inputFormatters:  [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              borderRadius: 4,
+                              controller: controller.waitingTimeController,
+                              width: fieldWidth / 2,
+                              hintText: AppText.waitingTime,
+                              columnText: true,
+                              height: 35,
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        CustomButton(
+                          onTap: () {
+                            controller.createVehicleType();
+                          },
+                          height: 30,
+                          width: fieldWidth,
+                          btnText:
+                          controller.singleVehicle == null?
+                          AppText.save: "UPDATE",
+                          fontSize: 11,
+                          verticalPadding: 0.0,
+                          borderRadius: 4,
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
-        );
-      });
-    });
+                ],
+              ),
+            ],
+          );
+        });
+      }),
+    );
   }
 }

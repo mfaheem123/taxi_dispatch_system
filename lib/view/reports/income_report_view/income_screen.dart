@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../component/customButton.dart';
 import '../../../component/datatable_widget.dart';
 import '../../../component/dropdown_button.dart';
+import '../../../component/pagination.dart';
 import '../../../component/radio_button_widget.dart';
 import '../../../component/responsive_datatable_widget.dart';
 import '../../../component/textStyle.dart';
@@ -78,7 +79,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          "Report Type",
+                          "REPORT TYPE",
                           style: mozillaTextSemiBoldText(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -154,12 +155,12 @@ class _IncomeScreenState extends State<IncomeScreen> {
                       label: AppText.selectSubsidiary,
                       items: controller.subsDiaryModel?.subsidiaries ?? [],
                       // value: controller.apiSelectedSubsidiary,
-                      value: controller.subsDiaryModel?.subsidiaries?.any((sub) => sub.id == controller.apiSelectedSubsidiary?.id) ?? false
-                          ? controller.subsDiaryModel!.subsidiaries!.firstWhere((sub) => sub.id == controller.apiSelectedSubsidiary?.id)
+                      value: controller.subsDiaryModel?.subsidiaries?.any((sub) => sub.id == controller.apiSelectedIncomeSubsidiary?.id) ?? false
+                          ? controller.subsDiaryModel!.subsidiaries!.firstWhere((sub) => sub.id == controller.apiSelectedIncomeSubsidiary?.id)
                           : null,
                       itemLabel: (val) => (val.name ?? "").toUpperCase(),
                       onChanged: (val) {
-                        controller.apiSelectedSubsidiary = val;
+                        controller.apiSelectedIncomeSubsidiary = val;
                         controller.apiSelectedAccount = null;
 
                         if (val != null && val.id != null) {
@@ -270,59 +271,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
                 SizedBox(
                   height: 10,
                 ),
-                // SingleChildScrollView(
-                //   scrollDirection: Axis.horizontal,
-                //   child: SizedBox(
-                //     width: MediaQuery.of(context).size.width,
-                //     child: DatatableWidget(
-                //         columns: [
-                //           buildHeaderWithSearch(title: "REF #"),
-                //           buildHeaderWithSearch(title: "DATETIME"),
-                //           buildHeaderWithSearch(title: "PICKUP"),
-                //           buildHeaderWithSearch(title: "DROPOFF"),
-                //           buildHeaderWithSearch(title: "VEHICLE"),
-                //           buildHeaderWithSearch(title: "DRIVER"),
-                //           buildHeaderWithSearch(title: "ACCOUNT"),
-                //           buildHeaderWithSearch(title: "FARES"),
-                //           buildHeaderWithSearch(title: "PARKING"),
-                //           buildHeaderWithSearch(title: "WAITING"),
-                //           buildHeaderWithSearch(title: "EXTRA DROP"),
-                //           buildHeaderWithSearch(title: "TOTAL"),
-                //         ],
-                //         totalRow: controller.incomeModel?.bookings?.length ?? 0,
-                //         rows: (controller.incomeModel?.bookings ?? []).map((item) {
-                //
-                //           String formattedDateTime = "-";
-                //           if (item.pickupDate != null) {
-                //             String date = DateFormat('dd-MM-yy').format(item.pickupDate!);
-                //             String time = item.pickupTime ?? "";
-                //             formattedDateTime = time.isNotEmpty ? "$date $time" : date;
-                //           }
-                //
-                //           return DataRow(
-                //             cells: [
-                //               DataCell(Center(child: Text(item.referenceNumber ?? ""))),
-                //               DataCell(Center(child: Text(formattedDateTime))),
-                //               DataCell(Center(child: Text((item.pickup ?? "").toUpperCase()))),
-                //               DataCell(Center(child: Text((item.dropoff ?? "").toUpperCase()))),
-                //               DataCell(Center(child: Text((item.vehicle ?? "").toUpperCase()))),
-                //               DataCell(Center(child: Text((item.driverName ?? "").toUpperCase()))),
-                //               DataCell(Center(child: Text(item.account ?? ""))),
-                //               DataCell(Center(child: Text("£${item.fares ?? ""}"))),
-                //               DataCell(Center(child: Text("£${item.parking ?? ""}"))),
-                //               DataCell(Center(child: Text("£${item.waiting ?? ""}"))),
-                //               DataCell(Center(child: Text("£${item.extraDrop ?? ""}"))),
-                //               DataCell(Center(child: Text("£${item.total ?? ""}"))),
-                //             ]
-                //           );
-                //         }).toList(),
-                //     ),
-                //   ),
-                // ),
 
-                // SingleChildScrollView(
-                //   scrollDirection: Axis.horizontal,
-                //   child:
                 controller.isLoadingIncome.value
                     ? const Padding(
                   padding: EdgeInsets.symmetric(vertical: 40),
@@ -418,7 +367,11 @@ class _IncomeScreenState extends State<IncomeScreen> {
                       "£${item.total ?? ""}",
                     ];
                   },
-                  // )
+                ),
+                PaginationWidget(
+                  currentPage: controller.currentIncomePage.value,
+                  totalPages: controller.totalIncomePages.value,
+                  onPageChange: controller.onPageIncome,
                 ),
               ],
             ));

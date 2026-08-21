@@ -8,6 +8,7 @@ import 'package:dashboard_new1/component/pagination.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/accounts/account/account_view.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -85,229 +86,231 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
             : isTablet
                 ? maxWidth / 2
                 : maxWidth / 4;
-        return GetBuilder<AccountController>(
-            initState: (v){
-              permissions = Api().sp.read('all_permissions') ?? [];
-            },
-            builder: (controller) {
-          final listToShow = controller.filteredAccount.isNotEmpty
-              ? controller.filteredAccount
-              : controller.AccountList;
+        return PageScrollWrapper(
+          child: GetBuilder<AccountController>(
+              initState: (v){
+                permissions = Api().sp.read('all_permissions') ?? [];
+              },
+              builder: (controller) {
+            final listToShow = controller.filteredAccount.isNotEmpty
+                ? controller.filteredAccount
+                : controller.AccountList;
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      "ACCOUNTS (${controller.listofAccount?.count})",
-                      style: mozillaTextSemiBoldText(
-                          fontWeight: FontWeight.w800, fontSize: 17),
-                    ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    Checkbox(
-                        value: controller.activeDrivers.value,
-                        onChanged: (v) {
-                          controller.activeDrivers.value = v!;
-                          controller.listOFAccount();
-                          controller.update();
-                        }),
-                    Text(
-                      "CLOSED",
-                      style: mozillaTextSemiBoldText(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                          color: DynamicColors.redClr),
-                    ),
-                    SizedBox(
-                      width: 60,
-                    ),
-                    CustomButton(
-                      height: 40,
-                      width: 80,
-                      verticalPadding: 0.0,
-                      borderRadius: 4,
-                      widget: Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
-                        child: Icon(
-                          Icons.refresh,
-                          color: DynamicColors.whiteClr,
-                          size: 25,
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        "ACCOUNTS (${controller.listofAccount?.count})",
+                        style: mozillaTextSemiBoldText(
+                            fontWeight: FontWeight.w800, fontSize: 17),
+                      ),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Checkbox(
+                          value: controller.activeDrivers.value,
+                          onChanged: (v) {
+                            controller.activeDrivers.value = v!;
+                            controller.listOFAccount();
+                            controller.update();
+                          }),
+                      Text(
+                        "CLOSED",
+                        style: mozillaTextSemiBoldText(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: DynamicColors.redClr),
+                      ),
+                      SizedBox(
+                        width: 60,
+                      ),
+                      CustomButton(
+                        height: 40,
+                        width: 80,
+                        verticalPadding: 0.0,
+                        borderRadius: 4,
+                        widget: Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
+                          child: Icon(
+                            Icons.refresh,
+                            color: DynamicColors.whiteClr,
+                            size: 25,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                controller.isLoadingListOfAccount.value == true
-                    ? Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: SizedBox(
-                          width: isMobile || isTablet
-                              ? Get.width + 600
-                              : Get.width, // give extra space for last column
-                          child: DatatableWidget(
-                              columns: [
-                                buildHeaderWithSearch(
-                                  title: "NAME",
-                                  onChanged: (value) {
-                                    controller.searchName.value = value;
-                                    controller.onSearchChanged();
-                                  },
-                                ),
-                                buildHeaderWithSearch(
-                                  title: "ACCOUNT TYPE",
-                                  onChanged: (value) {
-                                    controller.searchAccountType.value = value;
-                                    controller.onSearchChanged();
-                                  },
-                                ),
-                                buildHeaderWithSearch(
-                                  title: "ADDRESS",
-                                  onChanged: (value) {
-                                    controller.searchAddress.value = value;
-                                    controller.onSearchChanged();
-                                  },
-                                ),
-                                buildHeaderWithSearch(
-                                  title: "EMAIL",
-                                  onChanged: (value) {
-                                    controller.searchEmail.value = value;
-                                    controller.onSearchChanged();
-                                  },
-                                ),
-                                buildHeaderWithSearch(
-                                  title: "MOBILE",
-                                  onChanged: (value) {
-                                    controller.searchMobile.value = value;
-                                    controller.onSearchChanged();
-                                  },
-                                ),
-                                buildHeaderWithSearch(
-                                  title: "TELEPHONE",
-                                  onChanged: (value) {
-                                    controller.searchTelephone.value = value;
-                                    controller.onSearchChanged();
-                                  },
-                                ),
-                                buildHeaderWithSearch(
-                                  title: "CONTACT NAME",
-                                  onChanged: (value) {
-                                    controller.searchcontactName.value = value;
-                                    controller.onSearchChanged();
-                                  },
-                                ),
-                                buildHeaderWithSearch(
-                                  title: "SUBSIDIARY",
-                                  onChanged: (value) {
-                                    controller.searchSubsiDiary.value = value;
-                                    controller.onSearchChanged();
-                                  },
-                                ),
-                                buildHeaderWithSearch(
-                                    title: "ACTIONS", removeSearching: true),
-                              ],
-                              totalRow: listToShow.length,
-                              rows: (listToShow ?? []).map((item) {
-                                return DataRow(
-                                  cells: [
-                                    DataCell(Center(
-                                        child: Text((item.name ?? "-").toUpperCase()))),
-                                    DataCell(Center(
-                                        child: Text((
-                                            item.accountType ?? "-").toUpperCase()))),
-                                    DataCell(Center(
-                                        child: Text((item.address ?? "-").toUpperCase()))),
-                                    DataCell(Center(
-                                        child: Text((item.email ?? "-").toUpperCase()))),
-                                    DataCell(Center(
-                                        child: Text(item.mobile ?? "-"))),
-                                    DataCell(Center(
-                                        child:
-                                            Text(item.telephone ?? "-"))),
-                                    DataCell(Center(
-                                        child: Text(
-                                            item.contactName ?? "-"))),
-                                    DataCell(Center(
-                                        child: Text((
-                                            item.subsidiary?.name ?? "-").toUpperCase()))),
-                                    DataCell(
-                                      Center(
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            if(permissions.contains('update_account')) OutlinedButton(
-                                              style: OutlinedButton.styleFrom(
-                                                side: BorderSide(
-                                                  color: Colors.transparent,
-                                                ), // border color & thickness
-                                              ),
-                                              onPressed: () {
-                                                controller.bindAccountUpdateValue(data: item);
+                    ],
+                  ),
+                  SizedBox(
+                    height: 12,
+                  ),
+                  controller.isLoadingListOfAccount.value == true
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: SizedBox(
+                            width: isMobile || isTablet
+                                ? Get.width + 600
+                                : Get.width, // give extra space for last column
+                            child: DatatableWidget(
+                                columns: [
+                                  buildHeaderWithSearch(
+                                    title: "NAME",
+                                    onChanged: (value) {
+                                      controller.searchName.value = value;
+                                      controller.onSearchChanged();
+                                    },
+                                  ),
+                                  buildHeaderWithSearch(
+                                    title: "ACCOUNT TYPE",
+                                    onChanged: (value) {
+                                      controller.searchAccountType.value = value;
+                                      controller.onSearchChanged();
+                                    },
+                                  ),
+                                  buildHeaderWithSearch(
+                                    title: "ADDRESS",
+                                    onChanged: (value) {
+                                      controller.searchAddress.value = value;
+                                      controller.onSearchChanged();
+                                    },
+                                  ),
+                                  buildHeaderWithSearch(
+                                    title: "EMAIL",
+                                    onChanged: (value) {
+                                      controller.searchEmail.value = value;
+                                      controller.onSearchChanged();
+                                    },
+                                  ),
+                                  buildHeaderWithSearch(
+                                    title: "MOBILE",
+                                    onChanged: (value) {
+                                      controller.searchMobile.value = value;
+                                      controller.onSearchChanged();
+                                    },
+                                  ),
+                                  buildHeaderWithSearch(
+                                    title: "TELEPHONE",
+                                    onChanged: (value) {
+                                      controller.searchTelephone.value = value;
+                                      controller.onSearchChanged();
+                                    },
+                                  ),
+                                  buildHeaderWithSearch(
+                                    title: "CONTACT NAME",
+                                    onChanged: (value) {
+                                      controller.searchcontactName.value = value;
+                                      controller.onSearchChanged();
+                                    },
+                                  ),
+                                  buildHeaderWithSearch(
+                                    title: "SUBSIDIARY",
+                                    onChanged: (value) {
+                                      controller.searchSubsiDiary.value = value;
+                                      controller.onSearchChanged();
+                                    },
+                                  ),
+                                  buildHeaderWithSearch(
+                                      title: "ACTIONS", removeSearching: true),
+                                ],
+                                totalRow: listToShow.length,
+                                rows: (listToShow ?? []).map((item) {
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(Center(
+                                          child: Text((item.name ?? "-").toUpperCase()))),
+                                      DataCell(Center(
+                                          child: Text((
+                                              item.accountType ?? "-").toUpperCase()))),
+                                      DataCell(Center(
+                                          child: Text((item.address ?? "-").toUpperCase()))),
+                                      DataCell(Center(
+                                          child: Text((item.email ?? "-").toUpperCase()))),
+                                      DataCell(Center(
+                                          child: Text(item.mobile ?? "-"))),
+                                      DataCell(Center(
+                                          child:
+                                              Text(item.telephone ?? "-"))),
+                                      DataCell(Center(
+                                          child: Text(
+                                              item.contactName ?? "-"))),
+                                      DataCell(Center(
+                                          child: Text((
+                                              item.subsidiary?.name ?? "-").toUpperCase()))),
+                                      DataCell(
+                                        Center(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              if(permissions.contains('update_account')) OutlinedButton(
+                                                style: OutlinedButton.styleFrom(
+                                                  side: BorderSide(
+                                                    color: Colors.transparent,
+                                                  ), // border color & thickness
+                                                ),
+                                                onPressed: () {
+                                                  controller.bindAccountUpdateValue(data: item);
 
-                                                // 🔥 SAFE: clear sensitive fields before navigation
-                                                controller.accountPasswordController.clear();
-                                                int index = _controller.selectedMenuItems.indexWhere(
-                                                        (element) => element.title == "UPDATE ACCOUNT");
-                                                if (index != -1) {
-                                                  _controller.selectedMenuItems[index].selectedItem = true;
-                                                  _controller.currentPage.value = AccountView();
-                                                }else{
-                                                  _controller.currentPage.value = AccountView();
-                                                  _controller.menuBarRefresh(
-                                                      title: "UPDATE ACCOUNT", pageName: AccountView());
-                                                }
-                                                controller.update();
-                                              },
-                                              child: Icon(
-                                                Icons.edit_calendar,
-                                                size: 28,
+                                                  // 🔥 SAFE: clear sensitive fields before navigation
+                                                  controller.accountPasswordController.clear();
+                                                  int index = _controller.selectedMenuItems.indexWhere(
+                                                          (element) => element.title == "UPDATE ACCOUNT");
+                                                  if (index != -1) {
+                                                    _controller.selectedMenuItems[index].selectedItem = true;
+                                                    _controller.currentPage.value = AccountView();
+                                                  }else{
+                                                    _controller.currentPage.value = AccountView();
+                                                    _controller.menuBarRefresh(
+                                                        title: "UPDATE ACCOUNT", pageName: AccountView());
+                                                  }
+                                                  controller.update();
+                                                },
+                                                child: Icon(
+                                                  Icons.edit_calendar,
+                                                  size: 28,
+                                                ),
                                               ),
-                                            ),
-                                            Text("|"),
-                                            if(permissions.contains('delete_account')) OutlinedButton(
-                                              style: OutlinedButton.styleFrom(
-                                                side: BorderSide(
-                                                  color: Colors.transparent,
-                                                ), // border color & thickness
+                                              Text("|"),
+                                              if(permissions.contains('delete_account')) OutlinedButton(
+                                                style: OutlinedButton.styleFrom(
+                                                  side: BorderSide(
+                                                    color: Colors.transparent,
+                                                  ), // border color & thickness
+                                                ),
+                                                onPressed: () {
+                                                 controller.listOfAccountDelete(item.id);
+                                                },
+                                                child: Icon(
+                                                  Icons.delete_forever,
+                                                  size: 28,
+                                                  color: Colors.red,
+                                                ),
                                               ),
-                                              onPressed: () {
-                                               controller.listOfAccountDelete(item.id);
-                                              },
-                                              child: Icon(
-                                                Icons.delete_forever,
-                                                size: 28,
-                                                color: Colors.red,
-                                              ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                );
-                              }).toList()),
+                                    ],
+                                  );
+                                }).toList()),
+                          ),
                         ),
-                      ),
-                PaginationWidget(
-                  currentPage: controller.currentPage.value,
-                  totalPages: controller.totalPages.value,
-                  onPageChange: controller.onPageChange,
-                ),
-              ],
-            ),
-          );
-        });
+                  PaginationWidget(
+                    currentPage: controller.currentPage.value,
+                    totalPages: controller.totalPages.value,
+                    onPageChange: controller.onPageChange,
+                  ),
+                ],
+              ),
+            );
+          }),
+        );
       }),
     );
   }

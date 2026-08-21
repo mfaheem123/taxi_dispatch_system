@@ -1,4 +1,5 @@
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -70,92 +71,94 @@ class _DriverRentState extends State<DriverRent> {
       autofocus: true,
       focusNode: FocusNode(),
       onKey: _handleKey,
-      child: GetBuilder<DriverController>(
-        initState: (state) {
-          controller.getDriverRent();
-        },
-        builder: (controller) {
-          final driverRentList = controller.listDriverRentModel?.driverRents ?? [];
-          final countList = controller.listDriverRentModel?.count ?? [];
+      child: PageScrollWrapper(
+        child: GetBuilder<DriverController>(
+          initState: (state) {
+            controller.getDriverRent();
+          },
+          builder: (controller) {
+            final driverRentList = controller.listDriverRentModel?.driverRents ?? [];
+            final countList = controller.listDriverRentModel?.count ?? [];
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      "${AppText.driverRent} (${driverRentList.length})",
-                      style: mozillaTextSemiBoldText(
-                          fontWeight: FontWeight.w800, fontSize: 17),
-                    ),
-                    const SizedBox(width: 60),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: CustomButton(
-                        height: 40,
-                        width: 80,
-                        onTap: () => controller.getDriverRent(), // Refresh logic
-                        verticalPadding: 0.0,
-                        borderRadius: 4,
-                        widget: Icon(
-                          Icons.refresh,
-                          color: DynamicColors.whiteClr,
-                          size: 25,
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        "${AppText.driverRent} (${driverRentList.length})",
+                        style: mozillaTextSemiBoldText(
+                            fontWeight: FontWeight.w800, fontSize: 17),
+                      ),
+                      const SizedBox(width: 60),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: CustomButton(
+                          height: 40,
+                          width: 80,
+                          onTap: () => controller.getDriverRent(), // Refresh logic
+                          verticalPadding: 0.0,
+                          borderRadius: 4,
+                          widget: Icon(
+                            Icons.refresh,
+                            color: DynamicColors.whiteClr,
+                            size: 25,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: Get.width,
-                  child: DatatableWidget(
-                    columns: [
-                      buildHeaderWithSearch(title: "USERNAME"),
-                      buildHeaderWithSearch(title: "NAME"),
-                      buildHeaderWithSearch(title: "TYPE"),
-                      buildHeaderWithSearch(title: "RENT"),
-                      buildHeaderWithSearch(title: "LAST MODIFIED"),
                     ],
-                    totalRow: driverRentList.length,
-                    rows: List<DataRow>.generate(driverRentList.length, (index) {
-                      final driverRent = driverRentList[index];
-                      final driver = driverRent.driver;
-                      final lastModified = getLastModified(driverRent.driverId, countList);
-
-                      return DataRow(
-                        selected: selectedRowIndex == index,
-                        cells: [
-                          DataCell(
-                            Center(child: Text(driver?.username ?? "0")),
-                            onTap: () => _onRowTap(driverRent.driverId),
-                          ),
-                          DataCell(
-                            Center(child: Text((driver?.name ?? "-").toUpperCase())),
-                            onTap: () => _onRowTap(driverRent.driverId),
-                          ),
-                          DataCell(
-                            Center(child: Text((driver?.driverType ?? "-").toUpperCase())),
-                            onTap: () => _onRowTap(driverRent.driverId),
-                          ),
-                          DataCell(
-                            Center(child: Text(driver?.driverRent?.toString() ?? "0")),
-                            onTap: () => _onRowTap(driverRent.driverId),
-                          ),
-                          DataCell(
-                            Center(child: Text(lastModified)),
-                            onTap: () => _onRowTap(driverRent.driverId),
-                          ),
-                        ],
-                      );
-                    }),
                   ),
-                ),
-              ],
-            ),
-          );
-        },
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: Get.width,
+                    child: DatatableWidget(
+                      columns: [
+                        buildHeaderWithSearch(title: "USERNAME"),
+                        buildHeaderWithSearch(title: "NAME"),
+                        buildHeaderWithSearch(title: "TYPE"),
+                        buildHeaderWithSearch(title: "RENT"),
+                        buildHeaderWithSearch(title: "LAST MODIFIED"),
+                      ],
+                      totalRow: driverRentList.length,
+                      rows: List<DataRow>.generate(driverRentList.length, (index) {
+                        final driverRent = driverRentList[index];
+                        final driver = driverRent.driver;
+                        final lastModified = getLastModified(driverRent.driverId, countList);
+
+                        return DataRow(
+                          selected: selectedRowIndex == index,
+                          cells: [
+                            DataCell(
+                              Center(child: Text(driver?.username ?? "0")),
+                              onTap: () => _onRowTap(driverRent.driverId),
+                            ),
+                            DataCell(
+                              Center(child: Text((driver?.name ?? "-").toUpperCase())),
+                              onTap: () => _onRowTap(driverRent.driverId),
+                            ),
+                            DataCell(
+                              Center(child: Text((driver?.driverType ?? "-").toUpperCase())),
+                              onTap: () => _onRowTap(driverRent.driverId),
+                            ),
+                            DataCell(
+                              Center(child: Text(driver?.driverRent?.toString() ?? "0")),
+                              onTap: () => _onRowTap(driverRent.driverId),
+                            ),
+                            DataCell(
+                              Center(child: Text(lastModified)),
+                              onTap: () => _onRowTap(driverRent.driverId),
+                            ),
+                          ],
+                        );
+                      }),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

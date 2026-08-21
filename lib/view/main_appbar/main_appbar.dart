@@ -156,6 +156,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    
+    // Prevent the browser UI (like the URL bar) from receiving focus when pressing Tab
+    html.window.onKeyDown.listen((html.KeyboardEvent e) {
+      if (e.key == 'Tab') {
+        e.preventDefault();
+      }
+    });
+
     authController.checkUserStatus();
     RawKeyboard.instance.addListener(_handleKey);
     FocusManager.instance.addListener(_handleFocusChanged);
@@ -302,6 +310,20 @@ class _MyHomePageState extends State<MyHomePage> {
     CompanyIncomeScreen,
     CreiditCardPayments,
     PcoScreen,
+    ComapanyInformationScreen,
+    CompanyConfigurationView,
+    PaymentTypeDialog,
+    DocumentNumberScreen,
+    TemplateSettings,
+    BookingClearingUtilityScreen,
+    LocationTypeShortcuts,
+    VoipSettingsScreen,
+    SmsSettingsScreen,
+    EmailTrackingScreen,
+    CallRecordingScreen,
+    BackSlashAlert,
+    ChatWithDriverAndPassenger,
+    WallboardScreen,
 
 
   };
@@ -501,6 +523,23 @@ class _MyHomePageState extends State<MyHomePage> {
                     Icons.notifications,
                     size: 24,
                     color: DynamicColors.whiteClr,
+                  ),
+                  SizedBox(
+                    width: 9,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      if (html.document.fullscreenElement == null) {
+                        html.document.documentElement?.requestFullscreen();
+                      } else {
+                        html.document.exitFullscreen();
+                      }
+                    },
+                    child: Icon(
+                      Icons.fullscreen,
+                      size: 26,
+                      color: DynamicColors.whiteClr,
+                    ),
                   ),
                   SizedBox(
                     width: 9,

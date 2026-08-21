@@ -1,5 +1,6 @@
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/text_field.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -38,220 +39,222 @@ class _AirportChargesState extends State<AirportCharges> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<FareController>(initState: (v) {
-      controller.getAllAirPortCharges();
-    }, builder: (controller) {
-      return LayoutBuilder(builder: (context, constraints) {
-        final double maxWidth = constraints.maxWidth;
-        final bool isMobile = maxWidth < 600;
-        final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+    return PageScrollWrapper(
+      child: GetBuilder<FareController>(initState: (v) {
+        controller.getAllAirPortCharges();
+      }, builder: (controller) {
+        return LayoutBuilder(builder: (context, constraints) {
+          final double maxWidth = constraints.maxWidth;
+          final bool isMobile = maxWidth < 600;
+          final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-        // Instead of fixed width, we calculate flexible field widths
-        final double fieldWidth = isMobile
-            ? maxWidth // full width
-            : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
+          // Instead of fixed width, we calculate flexible field widths
+          final double fieldWidth = isMobile
+              ? maxWidth // full width
+              : isTablet
+                  ? maxWidth / 2
+                  : maxWidth / 4;
 
-        return Container(
-          width: Get.width / 1.5,
-          decoration:
-              BoxDecoration(border: Border.all(color: DynamicColors.gryClr)),
-          child: controller.getAllAirPortChargesLoader.value == false
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : Column(
-                  children: [
-                    Container(
-                      width: Get.width,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 12),
-                      color: DynamicColors.gryClr.withOpacity(0.5),
-                      child: Text(AppText.airportCharges, style: titleDesign()),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    SizedBox(
-                      width: Get.width,
-                      height: Get.height / 1.2,
-                      child: SingleChildScrollView(
-                        child: DataTable(
-                          headingRowColor:
-                              MaterialStateProperty.all(Colors.grey[200]),
-                          dataRowMinHeight: 48,
-                          dataRowMaxHeight: 56,
-                          headingTextStyle: const TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 13,
-                          ),
-                          dataTextStyle: TextStyle(),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              border: Border.all(
-                                  color:
-                                      DynamicColors.textClr.withOpacity(0.5))),
-                          columns: [
-                            buildHeaderWithSearch(
-                                title: "AIRPORTS", removeSearching: true),
-                            buildHeaderWithSearch(
-                                title: "PICKUP CHARGES", removeSearching: true),
-                            buildHeaderWithSearch(
-                                title: "DROPOFF CHARGES",
-                                removeSearching: true),
-                            buildHeaderWithSearch(
-                                title: "ACTIONS", removeSearching: true),
-                          ],
-                          rows: [
-                            /// 🔍 Search row (only on top)
-                            DataRow(
-                              color:
-                                  MaterialStateProperty.all(Colors.grey[100]),
-                              cells: [
-                                // DataCell(
-                                //   Text(""),
-                                // ),
-                                DataCell(
-                                  CustomTextField(
-                                    columnText: false,
-                                    controller:
-                                        controller.airportChargesController,
-                                    width: fieldWidth / 2,
-                                    hintText: "FROM",
-                                    prefixIcon: Icon(Icons.search),
-                                    inputFormatters: [UpperCaseTextFormatter()],
-                                    onChanged: (value) {
-                                      controller.filterAirports(value);
-                                    },
+          return Container(
+            width: Get.width / 1.5,
+            decoration:
+                BoxDecoration(border: Border.all(color: DynamicColors.gryClr)),
+            child: controller.getAllAirPortChargesLoader.value == false
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : Column(
+                    children: [
+                      Container(
+                        width: Get.width,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 12),
+                        color: DynamicColors.gryClr.withOpacity(0.5),
+                        child: Text(AppText.airportCharges, style: titleDesign()),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      SizedBox(
+                        width: Get.width,
+                        height: Get.height / 1.2,
+                        child: SingleChildScrollView(
+                          child: DataTable(
+                            headingRowColor:
+                                MaterialStateProperty.all(Colors.grey[200]),
+                            dataRowMinHeight: 48,
+                            dataRowMaxHeight: 56,
+                            headingTextStyle: const TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 13,
+                            ),
+                            dataTextStyle: TextStyle(),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(
+                                    color:
+                                        DynamicColors.textClr.withOpacity(0.5))),
+                            columns: [
+                              buildHeaderWithSearch(
+                                  title: "AIRPORTS", removeSearching: true),
+                              buildHeaderWithSearch(
+                                  title: "PICKUP CHARGES", removeSearching: true),
+                              buildHeaderWithSearch(
+                                  title: "DROPOFF CHARGES",
+                                  removeSearching: true),
+                              buildHeaderWithSearch(
+                                  title: "ACTIONS", removeSearching: true),
+                            ],
+                            rows: [
+                              /// 🔍 Search row (only on top)
+                              DataRow(
+                                color:
+                                    MaterialStateProperty.all(Colors.grey[100]),
+                                cells: [
+                                  // DataCell(
+                                  //   Text(""),
+                                  // ),
+                                  DataCell(
+                                    CustomTextField(
+                                      columnText: false,
+                                      controller:
+                                          controller.airportChargesController,
+                                      width: fieldWidth / 2,
+                                      hintText: "FROM",
+                                      prefixIcon: Icon(Icons.search),
+                                      inputFormatters: [UpperCaseTextFormatter()],
+                                      onChanged: (value) {
+                                        controller.filterAirports(value);
+                                      },
+                                    ),
                                   ),
-                                ),
-                                DataCell(
-                                  CustomTextField(
-                                    columnText: false,
-                                    controller:
-                                        controller.pickUpChargesController,
-                                    width: fieldWidth / 2,
-                                    hintText: "TO",
-                                    prefixIcon: Icon(Icons.search),
-                                    onChanged: (value) {
-                                      controller.filterAirports(value);
-                                    },
+                                  DataCell(
+                                    CustomTextField(
+                                      columnText: false,
+                                      controller:
+                                          controller.pickUpChargesController,
+                                      width: fieldWidth / 2,
+                                      hintText: "TO",
+                                      prefixIcon: Icon(Icons.search),
+                                      onChanged: (value) {
+                                        controller.filterAirports(value);
+                                      },
+                                    ),
                                   ),
-                                ),
 
-                                DataCell(
-                                  CustomTextField(
-                                    columnText: false,
-                                    controller:
-                                        controller.dropOffChargesController,
-                                    width: fieldWidth / 2,
-                                    hintText: "FARES",
-                                    prefixIcon: Icon(Icons.search),
-                                    onChanged: (value) {
-                                      controller.filterAirports(value);
-                                    },
+                                  DataCell(
+                                    CustomTextField(
+                                      columnText: false,
+                                      controller:
+                                          controller.dropOffChargesController,
+                                      width: fieldWidth / 2,
+                                      hintText: "FARES",
+                                      prefixIcon: Icon(Icons.search),
+                                      onChanged: (value) {
+                                        controller.filterAirports(value);
+                                      },
+                                    ),
                                   ),
-                                ),
 
-                                DataCell(
-                                  CustomButton(
-                                    height: 35,
-                                    width: 80,
-                                    verticalPadding: 0.0,
-                                    borderRadius: 4,
-                                    onTap: () {
-                                      controller.editAirPortCharge();
-                                    },
-                                    widget: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 0.0),
-                                      child: Text(
-                                        AppText.save,
-                                        style: mozillaTextRegularText(
-                                            fontSize: 12,
-                                            color: DynamicColors.whiteClr),
+                                  DataCell(
+                                    CustomButton(
+                                      height: 35,
+                                      width: 80,
+                                      verticalPadding: 0.0,
+                                      borderRadius: 4,
+                                      onTap: () {
+                                        controller.editAirPortCharge();
+                                      },
+                                      widget: Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 15, vertical: 0.0),
+                                        child: Text(
+                                          AppText.save,
+                                          style: mozillaTextRegularText(
+                                              fontSize: 12,
+                                              color: DynamicColors.whiteClr),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-
-                            /// 🔽 Normal data rows
-                            ...(controller.filteredLocations ?? [])
-                                .map((location) {
-                              return DataRow(
-                                cells: [
-                                  DataCell(Text(location.name.toString().toUpperCase())),
-                                  DataCell(Text(location.pickupCharges ?? "0")),
-                                  DataCell(
-                                      Text(location.dropoffCharges ?? "0")),
-                                  DataCell(
-                                    Row(
-                                      children: [
-                                        OutlinedButton(
-                                          style: OutlinedButton.styleFrom(
-                                            side: const BorderSide(
-                                                color: Colors.transparent),
-                                          ),
-                                          onPressed: () {
-                                            controller.isEditing = true;
-                                            controller.airportChargesController
-                                                    .text =
-                                                location.name.toString().toUpperCase();
-                                            controller.pickUpChargesController
-                                                    .text =
-                                                location.pickupCharges
-                                                    .toString();
-                                            controller.dropOffChargesController
-                                                    .text =
-                                                location.dropoffCharges
-                                                    .toString();
-                                            controller.airPortSelectedItemId =
-                                                location.id;
-                                            controller.update();
-                                            Future.delayed(
-                                                const Duration(
-                                                    milliseconds: 5000), () {
-                                              controller.isEditing = false;
-                                            });
-                                          },
-                                          child: Icon(
-                                            Icons.edit_calendar,
-                                            size: 28,
-                                            color: DynamicColors.primaryClr,
-                                          ),
-                                        ),
-                                        OutlinedButton(
-                                          style: OutlinedButton.styleFrom(
-                                            side: const BorderSide(
-                                                color: Colors.transparent),
-                                          ),
-                                          onPressed: () {
-                                            controller.clearAirPortCharges(
-                                                location.id);
-                                          },
-                                          child: Icon(
-                                            Icons.clear,
-                                            size: 28,
-                                            color: DynamicColors.redClr,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
                                 ],
-                              );
-                            }),
-                          ],
+                              ),
+
+                              /// 🔽 Normal data rows
+                              ...(controller.filteredLocations ?? [])
+                                  .map((location) {
+                                return DataRow(
+                                  cells: [
+                                    DataCell(Text(location.name.toString().toUpperCase())),
+                                    DataCell(Text(location.pickupCharges ?? "0")),
+                                    DataCell(
+                                        Text(location.dropoffCharges ?? "0")),
+                                    DataCell(
+                                      Row(
+                                        children: [
+                                          OutlinedButton(
+                                            style: OutlinedButton.styleFrom(
+                                              side: const BorderSide(
+                                                  color: Colors.transparent),
+                                            ),
+                                            onPressed: () {
+                                              controller.isEditing = true;
+                                              controller.airportChargesController
+                                                      .text =
+                                                  location.name.toString().toUpperCase();
+                                              controller.pickUpChargesController
+                                                      .text =
+                                                  location.pickupCharges
+                                                      .toString();
+                                              controller.dropOffChargesController
+                                                      .text =
+                                                  location.dropoffCharges
+                                                      .toString();
+                                              controller.airPortSelectedItemId =
+                                                  location.id;
+                                              controller.update();
+                                              Future.delayed(
+                                                  const Duration(
+                                                      milliseconds: 5000), () {
+                                                controller.isEditing = false;
+                                              });
+                                            },
+                                            child: Icon(
+                                              Icons.edit_calendar,
+                                              size: 28,
+                                              color: DynamicColors.primaryClr,
+                                            ),
+                                          ),
+                                          OutlinedButton(
+                                            style: OutlinedButton.styleFrom(
+                                              side: const BorderSide(
+                                                  color: Colors.transparent),
+                                            ),
+                                            onPressed: () {
+                                              controller.clearAirPortCharges(
+                                                  location.id);
+                                            },
+                                            child: Icon(
+                                              Icons.clear,
+                                              size: 28,
+                                              color: DynamicColors.redClr,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-        );
-      });
-    });
+                    ],
+                  ),
+          );
+        });
+      }),
+    );
   }
 }

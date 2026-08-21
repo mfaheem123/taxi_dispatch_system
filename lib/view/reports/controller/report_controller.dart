@@ -62,6 +62,11 @@ class ReportController extends GetxController {
   RxString searchLogoutDate = ''.obs;
   RxString searchLogoutTime = ''.obs;
 
+  /// >>>>>>>>>>>>>>>>>>>>> Pagination Work
+  var currentLoginPage = 1.obs;
+  var totalLoginPages = 1.obs;
+  final int loginLimit = 20;
+
   DriverLoginReportListModel? driverLoginReportListModel;
   RxBool isLoadingShift = false.obs;
 
@@ -80,10 +85,12 @@ class ReportController extends GetxController {
           : "";
       var response = await Api().get("driver_shift_history/login",
           queryParameters: {
+            "page": currentLoginPage.value,
+            "limit": loginLimit,
             "driver_id": selectDriverObject?.id.toString(),
             "from_date": formattedFromDate,
             "to_date" : toDateFormate,
-            "driver_name": searchDrivers.value.toLowerCase(),
+            "username": searchDrivers.value.toLowerCase(),
             "booking": searchBookings.value.toLowerCase(),
             "login_date": searchLoginDate.value.toLowerCase(),
             "login_time": searchLoginTime.value.toLowerCase(),
@@ -93,6 +100,7 @@ class ReportController extends GetxController {
       );
       if (response.statusCode == 200) {
         driverLoginReportListModel = DriverLoginReportListModel.fromJson(response.data);
+        totalLoginPages.value = driverLoginReportListModel?.totalPages ?? 1;
         driverShiftHistoryAll.value = driverLoginReportListModel?.driverShiftHistories ?? [];
         driverHistoryFiltered.value = driverShiftHistoryAll;
         print("Shift History Data: ${response.data}");
@@ -112,6 +120,13 @@ class ReportController extends GetxController {
   }
   // -----------Search function
   void onSearchDriverShift() {
+    currentLoginPage.value = 1;
+    getDriverShiftHistory();
+  }
+
+  // -----------Pagination function
+  void onPageLogin(int page) {
+    currentLoginPage.value = page;
     getDriverShiftHistory();
   }
 
@@ -148,13 +163,18 @@ class ReportController extends GetxController {
   RxString searchLogsDropoff = ''.obs;
   RxString searchLogsFares = ''.obs;
 
+  /// >>>>>>>>>>>>>>>>>>>>> Pagination Work
+  var currentLogsPage = 1.obs;
+  var totalLogsPages = 1.obs;
+  final int logsLimit = 20;
+
+
   getDriverLogs() async {
     if(selectDriverObject == null) {
       BotToast.showText(text: "PLEASE SELECT A DRIVER");
       return;
     }
     isLoadingLogs(true);
-
     try{
       String formattedFromDate = fromDate.value != null
           ? DateFormat('yyyy-MM-dd').format(fromDate.value!)
@@ -165,6 +185,9 @@ class ReportController extends GetxController {
           : "";
       var response = await Api().get("bookings/driver-logs",
           queryParameters: {
+            "page": currentLogsPage.value,
+            "limit": logsLimit,
+
             "driver_id": selectDriverObject?.id.toString(),
             "from_date": formattedFromDate,
             "to_date": formattedToDate,
@@ -181,6 +204,7 @@ class ReportController extends GetxController {
       );
       if (response.statusCode == 200) {
         driverLogsData = DriverLogsReportListModel.fromJson(response.data);
+        totalLogsPages.value = driverLogsData?.totalPages ?? 1;
         logsBookingAll.value = driverLogsData?.bookings ?? [];
         logsBookingFiltered.value = logsBookingAll;
         // print("Driver Logs Data Fetched: ${driverLogsData?.count}");
@@ -196,6 +220,13 @@ class ReportController extends GetxController {
 
   // -----------Search function
   void onSearchDriverLogs() {
+    currentLogsPage.value = 1;
+    getDriverLogs();
+  }
+
+  // -----------Pagination function
+  void onPageLogs(int page) {
+    currentLogsPage.value = page;
     getDriverLogs();
   }
 
@@ -452,14 +483,13 @@ class ReportController extends GetxController {
   String? selectRefNumber = "REFERENCE NUMBER";
   String? selectAscending = "ASCENDING";
 
-  BookingStatisticsModel? bookingStatisticsModel;
-  RxBool isLoadingStatistics = false.obs;
-
 
   /// >>>>>>>>>>>>>>>>>>>>> Search Work
   RxList<BookingDatum> bookingAll = <BookingDatum>[].obs;
   RxList<BookingDatum> bookingFiltered = <BookingDatum>[].obs;
 
+  BookingStatisticsModel? bookingStatisticsModel;
+  RxBool isLoadingStatistics = false.obs;
 
   RxString searchReferenceNo = ''.obs;
   RxString searchInvoiceNo = ''.obs;
@@ -478,6 +508,7 @@ class ReportController extends GetxController {
   RxString searchSubsidiary = ''.obs;
   RxString searchStatus = ''.obs;
 
+  /// >>>>>>>>>>>>>>>>>>>>> Pagination Work
   var currentPage = 1.obs;
   var totalPages = 1.obs;
   final int limit = 20;
@@ -526,24 +557,17 @@ class ReportController extends GetxController {
           "vehicle_type": searchVehicle.value.toLowerCase(),
           "subsidiary_name": searchSubsidiary.value.toLowerCase(),
           "status_name": searchStatus.value.toLowerCase(),
+          "acc_fare": searchAccFare.value.toLowerCase(),
 
-
-
-
-          // "mobile": mobileController.text.toLowerCase(),
-          // "telephone": phoneController.text.toLowerCase(),
-
-          // "company_price": searchAccFare.value,
-          // "booked_by": bookedByController.text,
-          // "account_id": apiSelectedAccount?.id?.toString() ?? "",
-          // "employee_id": apiSelectedEmployee?.id?.toString() ?? "",
-          // "subsidiary_id": apiSelectedSubsidiary?.id?.toString() ?? "",
-          //
-          // "driver_id": selectDriverObject?.id?.toString() ?? "",
-          // "payment_type_id": paymentTypeIdsString,
-          // "booking_status_id": selectedBookingStatusIds,
-          // "sort_order": apiSortOrder,
-          // "sort_by": apiSortBy
+          "account_id": apiSelectedAccount?.id?.toString() ?? "",
+          "employee_id": apiSelectedEmployee?.id?.toString() ?? "",
+          "subsidiary_id": apiSelectedSubsidiary?.id?.toString() ?? "",
+          "driver": searchDriver.value,
+          "driver_id": selectDriverObject?.id?.toString() ?? "",
+          "payment_type_id": paymentTypeIdsString,
+          "booking_status_id": selectedBookingStatusIds,
+          "sort_order": apiSortOrder,
+          "sort_by": apiSortBy
         },
       );
 
@@ -553,7 +577,6 @@ class ReportController extends GetxController {
         totalPages.value = bookingStatisticsModel?.totalPages ?? 1;
         bookingAll.value = bookingStatisticsModel?.data ?? [];
         bookingFiltered.value = bookingAll;
-
 
         totalBookings.value = bookingStatisticsModel?.totals?.totalBookings ?? 0;
         totalEarnings.value = bookingStatisticsModel?.totals?.totalEarnings ?? 0.0;
@@ -570,12 +593,13 @@ class ReportController extends GetxController {
       update();
     }
   }
+
   // -----------Search function
   void onBookingSearch() {
     currentPage.value = 1;
     getBookingStatistics();
   }
-
+  // -----------Pagination function
   void onBookingPageChange(int page) {
     currentPage.value = page;
     getBookingStatistics();
@@ -784,6 +808,10 @@ void clearBookingReportData() {
   RxString searchBookingsCancelled = ''.obs;
   RxString searchCallsAnswered = ''.obs;
 
+  /// >>>>>>>>>>>>>>>>>>>>> Pagination Work
+  var currentEmployeePage = 1.obs;
+  var totalEmployeePages = 1.obs;
+  final int employeeLimit = 20;
 
   getEmployeeActivity() async {
     if (apiSelectedEmployee == null) {
@@ -814,6 +842,8 @@ void clearBookingReportData() {
       var response = await Api().get(
         "employee_shift_history/activity",
         queryParameters: {
+          "page": currentEmployeePage.value,
+          "limit": employeeLimit,
           "employee_id": apiSelectedEmployee?.id.toString(),
           "from_date": formattedFromDate,
           "to_date": formattedToDate,
@@ -831,13 +861,7 @@ void clearBookingReportData() {
 
       if (response.statusCode == 200) {
         employeeReportModel = EmployeeReportModel.fromJson(response.data);
-        // final fetchedList = employeeReportModel?.employeeShiftHistory ?? [];
-        // employeeShiftHistoryAll.value = fetchedList;
-        // employeeHistoryFiltered.value = fetchedList;
-        //
-        // if (fetchedList.isEmpty) {
-        //   BotToast.showText(text: "No Data Found!");
-        // }
+        totalEmployeePages.value = employeeReportModel?.totalPages ?? 1;
         employeeShiftHistoryAll.value = employeeReportModel?.employeeShiftHistory ?? [];
         employeeHistoryFiltered.value = employeeShiftHistoryAll;
 
@@ -892,8 +916,17 @@ void clearBookingReportData() {
 
   // -----------Search function
   void onSearchActivity() {
+    currentEmployeePage.value = 1;
     getEmployeeActivity();
   }
+
+  // -----------Pagination function
+  void onPageActivity(int page) {
+    currentEmployeePage.value = page;
+    getEmployeeActivity();
+  }
+
+
 
   void clearActivityData() {
     employeeReportModel = null;
@@ -910,6 +943,7 @@ void clearBookingReportData() {
 
   // subsidiary
   SubsDiaryModel? subsDiaryModel;
+  Subsidiaries? apiSelectedIncomeSubsidiary;
   bool isLoadingSubsidiary = false;
 
   getSubsidiary() async {
@@ -923,6 +957,7 @@ void clearBookingReportData() {
         if (subsDiaryModel?.subsidiaries?.isNotEmpty ?? false) {
           var defaultSubsidiary = subsDiaryModel!.subsidiaries!.first;
           apiSelectedSubsidiary = defaultSubsidiary;
+          apiSelectedIncomeSubsidiary = defaultSubsidiary;
           if (defaultSubsidiary.id != null) {
             getAccountData(defaultSubsidiary.id!);
           }
@@ -935,6 +970,7 @@ void clearBookingReportData() {
       update();
     }
   }
+
 
   /// >>>>>>>>>>>>>>>>>>>>> Search Work
   RxList<IncomeBooking> incomeBookingAll = <IncomeBooking>[].obs;
@@ -951,6 +987,12 @@ void clearBookingReportData() {
   RxString searchIncomeWaiting = ''.obs;
   RxString searchIncomeExtraDrop = ''.obs;
   RxString searchIncomeTotal = ''.obs;
+
+  /// >>>>>>>>>>>>>>>>>>>>> Pagination Work
+  var currentIncomePage = 1.obs;
+  var totalIncomePages = 1.obs;
+  final int incomeLimit = 20;
+
 
 
   // filter
@@ -984,6 +1026,8 @@ void clearBookingReportData() {
 
       var response = await Api().get("bookings/income-report",
         queryParameters: {
+          "page": currentIncomePage.value,
+          "limit": incomeLimit,
           "from_date": formattedFromDate,
           "to_date": formattedToDate,
 
@@ -1000,11 +1044,13 @@ void clearBookingReportData() {
           "search_extra_drop": searchIncomeExtraDrop.value.toLowerCase(),
           "search_total": searchIncomeTotal.value.toLowerCase(),
 
+
           if (selectDriverObject != null) "driver_id": selectDriverObject?.id.toString(),
         },
       );
       if (response.statusCode == 200) {
         incomeModel = IncomeModel.fromJson(response.data);
+        totalIncomePages.value = incomeModel?.totalPages ?? 1;
         incomeBookingAll.value = incomeModel?.bookings ?? [];
         incomeBookingFiltered.value = incomeBookingAll;
       }
@@ -1018,8 +1064,16 @@ void clearBookingReportData() {
 
   // -----------Search function
   void onSearchIncome() {
+    currentIncomePage.value = 1;
     getIncome();
   }
+
+  // -----------Pagination function
+  void onPageIncome(int page) {
+    currentIncomePage.value = page;
+    getIncome();
+  }
+
 
   void clearIncomeData() {
     incomeModel = null;
@@ -1058,16 +1112,17 @@ void clearBookingReportData() {
   RxString searchComCc = ''.obs;
   RxString searchComTotal = ''.obs;
 
+  var comTotalBookings = 0.obs;
+  var comTotalEarnings = 0.0.obs;
+
   var comCurrentPage = 1.obs;
   var comTotalPages = 1.obs;
   final int comLimit = 20;
 
-  var comTotalBookings = 0.obs;
-  var comTotalEarnings = 0.0.obs;
-
   getCompanyIncome() async {
     try {
       companyLoader(true);
+      update();
 
       String formattedFromDate = "";
       String formattedToDate = "";
@@ -1085,7 +1140,9 @@ void clearBookingReportData() {
 
 
           "reference_number": searchComRefNo.value.toLowerCase(),
-          "datetime": searchComDateTime.value.toLowerCase(),
+          "datetime": searchComDateTime.value.contains('-')
+              ? (DateTime.tryParse(searchComDateTime.value.split('-').reversed.join('-'))?.toIso8601String().substring(0, 10) ?? searchComDateTime.value.toLowerCase())
+              : searchComDateTime.value.toLowerCase(),
           "pickup": searchComPickup.value.toLowerCase(),
           "dropoff": searchComDropOff.value.toLowerCase(),
           "vehicle_type": searchComVehicle.value.toLowerCase(),
@@ -1098,13 +1155,6 @@ void clearBookingReportData() {
           "mg": searchComMg.value.toLowerCase(),
           "cc": searchComCc.value.toLowerCase(),
           "total_val": searchComTotal.value.toLowerCase(),
-
-
-          // "pickup_date": searchPickupDate.value,
-          // "pickup_time": searchPickupTime.value,
-          // "pickup": searchPickup.value,
-          // "dropoff": searchDropOff.value,
-
         },
       );
 
@@ -1137,38 +1187,6 @@ void clearBookingReportData() {
     companyToDate.value = DateTime.now();
   }
 
-  // void onLocalSearchCompany() {
-  //   if (searchVehicle.value.isEmpty &&
-  //       searchDriver.value.isEmpty &&
-  //       searchAcc.value.isEmpty &&
-  //       searchFare.value.isEmpty &&
-  //       searchPc.value.isEmpty &&
-  //       searchWc.value.isEmpty &&
-  //       searchEdc.value.isEmpty &&
-  //       searchMg.value.isEmpty &&
-  //       searchCc.value.isEmpty &&
-  //       searchTotal.value.isEmpty) {
-  //
-  //     filteredCompany.value = companyListAll;
-  //   } else {
-  //     filteredCompany.value = companyListAll.where((item) {
-  //       final matchVehicle = item.vehicleType?.name?.toLowerCase().contains(searchVehicle.value.toLowerCase()) ?? true;
-  //       final matchDriver = item.driver?.name?.toLowerCase().contains(searchDriver.value.toLowerCase()) ?? true;
-  //       final matchAccount = item.account?.name?.toLowerCase().contains(searchAcc.value.toLowerCase()) ?? true;
-  //       final matchFare = item.fares?.toLowerCase().contains(searchFare.value.toLowerCase()) ?? true;
-  //       final matchPc = item.parkingCharges?.toLowerCase().contains(searchPc.value.toLowerCase()) ?? true;
-  //       final matchWc = item.waitingCharges?.toLowerCase().contains(searchWc.value.toLowerCase()) ?? true;
-  //       final matchEdc = item.extraDropCharges?.toLowerCase().contains(searchEdc.value.toLowerCase()) ?? true;
-  //       final matchMg = item.meetAndGreet?.toLowerCase().contains(searchMg.value.toLowerCase()) ?? true;
-  //       final matchCc = item.congestionCharges?.toLowerCase().contains(searchCc.value.toLowerCase()) ?? true;
-  //       final matchTotal = item.totalCharges?.toLowerCase().contains(searchTotal.value.toLowerCase()) ?? true;
-  //
-  //       return matchVehicle && matchDriver && matchAccount && matchFare &&
-  //           matchPc && matchWc && matchEdc && matchMg && matchCc && matchTotal;
-  //     }).toList();
-  //   }
-  //   update();
-  // }
   void onSearchCompany() {
     comCurrentPage.value = 1;
     getCompanyIncome();

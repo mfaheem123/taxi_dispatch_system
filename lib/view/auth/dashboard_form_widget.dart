@@ -279,7 +279,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.slugControllerReturn.clear();
                                     controller.tempStoreMils = null;
                                     controller.fetchRouteFromOSRM();
-                                    FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
+                                    FocusScope.of(Get.context!).requestFocus(_pickupFieldFocusNode);
                                     controller.update();
                                   },
                                   notesController: controller.pickUpNoteController,
@@ -410,6 +410,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.update();
                                   },
                                   notesController: controller.dropUpNoteController,
+                                  addressFocusNode: controller.dropOffTextFieldFocusNode,
                                   onCurrentLocation: () {
                                     controller.swapeToChangeLocation();
                                   },
@@ -553,6 +554,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     },
                                     14,
                                     itemLabel: (p) => p.journeyType!,
+                                    allowUnselect: false
                                   ),
                                   _field('Lead Time',
                                       tab: 15,
@@ -567,12 +569,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                         LengthLimitingTextInputFormatter(2),
                                       ],
                                       controller: controller.passController),
-                                  _field('Fare',
+                                  _field('FARE',
                                       tab: 17,
                                       prefix: Icons.currency_pound,
                                       controller: controller.slugController),
                                   _dropdown<DashboardAccountObject>(
-                                    'Account',
+                                    'SELECT ACCOUNT',
                                     controller.selectAccountValue,
                                     controller.dashboardAccountData?.accounts ??
                                         const [],
@@ -602,6 +604,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.selectPaymentTypeValue = v),
                                     _isReturnJourney?34:19,
                                     itemLabel: (p) => p.name!,
+                                      allowUnselect: false
                                   ),
                                   _dropdown<DashboardVehicleTypeObject>(
                                     'Vehicle Type',
@@ -613,9 +616,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     }),
                                     _isReturnJourney?35:20,
                                     itemLabel: (p) => p.name!,
+                                    allowUnselect: false,
                                   ),
                                   _dropdown<DepartmentObject>(
-                                    'Department',
+                                    'Select Department',
                                     controller.selectDepartmentData,
                                     controller.selectAccountValue == null
                                         ? []
@@ -753,6 +757,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             //     .requestFocus(controller.pickupTwoTextFieldFocusNode);
             // _clearTwoWayData(controller);
           },
+          addressFocusNode: controller.pickupTwoTextFieldFocusNode,
           onCurrentLocation: () async {
             controller.swapeToChangeReturnLocation();
             },
@@ -869,6 +874,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             //     .requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
             // _clearTwoWayData(controller, recalcRoute: true);
           },
+          addressFocusNode: controller.dropOffTwoWayTextFieldFocusNode,
           onCurrentLocation: () async {
             controller.swapeToChangeReturnLocation();
           },
@@ -936,6 +942,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               );},
             32,
             itemLabel: (p) => p.name!,
+            allowUnselect: false,
           ),
           const SizedBox(height: 8),
           _dropdown<DashboardDriverObject>(
@@ -991,6 +998,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 },
               32,
               itemLabel: (p) => p.name!,
+              allowUnselect: false,
             ),
           ),
           const SizedBox(width: 12),
@@ -1137,6 +1145,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                       },
                       1,
                       itemLabel: (p) => p.name ?? '',
+                        allowUnselect: false
                     ),
                   ),
                 ]),
@@ -1243,7 +1252,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       onZone,
       tabBase + 2,
       itemLabel: zoneLabel,
-      hint: 'New Zone',
+      hint: 'SELECT ZONE',
     );
     // Notes is now an editable text field instead of a button.
     final noteHint =
@@ -1818,8 +1827,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         String Function(T item)? itemLabel,
         String? hint,
         bool isExpanded = true,
+        bool allowUnselect = true,
       }) {
-    String labelOf(T item) => itemLabel?.call(item) ?? item.toString();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1831,38 +1840,14 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         FocusTraversalOrder(
           order: NumericFocusOrder(tab.toDouble()),
           child: _GlowFocus(
-            child: DropdownButtonFormField<T>(
+            child: _DropdownField<T>(
               value: value,
-              isExpanded: isExpanded,
-              // isDense: true,
-              // itemHeight: 40, // default is around 48
-              style: const TextStyle(fontSize: _fsField, color: Colors.black87),
-              hint: hint != null
-                  ? Text(hint.toUpperCase(),
-                  style: const TextStyle(
-                      fontSize: _fsField, color: Colors.black))
-                  : null,
-              decoration: _inputDecoration().copyWith(
-                label: Text(label?.toUpperCase() ?? '',
-                    style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8, // reduce vertical padding
-                ),
-              ),
-              items: items
-                  .map((e) => DropdownMenuItem<T>(
-                value: e,
-                child: Text(
-                  labelOf(e).toUpperCase(),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: _fsField),
-                ),
-              ))
-                  .toList(),
+              items: items,
               onChanged: onChanged,
+              isExpanded: isExpanded,
+              hintText: (hint ?? label ?? '').toUpperCase(),
+              itemLabel: itemLabel,
+              allowUnselect: allowUnselect,
             ),
           ),
         ),
@@ -1919,14 +1904,137 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     states.contains(WidgetState.focused) ? _focusFill : Colors.white),
     border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
-        borderSide: const BorderSide(color: _border)),
+        /*borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))*/),
     enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
-        borderSide: const BorderSide(color: _border)),
+        /*borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))*/),
     focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
         borderSide: const BorderSide(color: _purple, width: 2)),
   );
+}
+// ════════════════════════════════════════════════════════════════════
+// Focus-aware dropdown with unselect support (matches f3_alert.dart pattern)
+// ════════════════════════════════════════════════════════════════════
+class _DropdownField<T> extends StatefulWidget {
+  const _DropdownField({
+    super.key,
+    required this.value,
+    required this.items,
+    required this.onChanged,
+    required this.hintText,
+    this.itemLabel,
+    this.isExpanded = true,
+    this.allowUnselect = true,
+  });
+
+  final T? value;
+  final List<T> items;
+  final ValueChanged<T?> onChanged;
+  final String hintText;
+  final String Function(T item)? itemLabel;
+  final bool isExpanded;
+  final bool allowUnselect;
+
+  @override
+  State<_DropdownField<T>> createState() => _DropdownFieldState<T>();
+}
+
+class _DropdownFieldState<T> extends State<_DropdownField<T>> {
+  static const _purple = Color(0xFF312E81);
+  static const _focusFill = Color(0xFFE0E7FF);
+  static const _border = Colors.black;
+  static const _fsField = 12.0;
+
+  final FocusNode _dropdownFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _dropdownFocusNode.dispose();
+    super.dispose();
+  }
+
+  String _labelOf(T item) =>
+      widget.itemLabel?.call(item) ?? item.toString();
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _dropdownFocusNode,
+      builder: (context, child) {
+        final isFocused = _dropdownFocusNode.hasFocus;
+        return Container(
+          height: 31,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: isFocused ? _focusFill : Colors.white,
+            border: Border.all(
+              color: isFocused ? _purple : Colors.black,
+              width: isFocused ? 2 : 1,
+            ),
+            borderRadius: BorderRadius.circular(6),
+            boxShadow: isFocused
+                ? [BoxShadow(
+                    color: _purple.withOpacity(0.25),
+                    blurRadius: 6,
+                    spreadRadius: 1,
+                  )]
+                : [],
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<T?>(
+              focusNode: _dropdownFocusNode,
+              focusColor: Colors.transparent,
+              value: widget.value,
+              hint: Text(
+                widget.hintText,
+                style: TextStyle(
+                  fontSize: _fsField,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey.shade700,
+                ),
+              ),
+              isExpanded: widget.isExpanded,
+              icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
+              style: const TextStyle(
+                fontSize: _fsField,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+              items: [
+                // Placeholder item: allows the user to unselect / reset
+                if (widget.allowUnselect)
+                  DropdownMenuItem<T?>(
+                    value: null,
+                    child: Text(
+                      widget.hintText,
+                      style: TextStyle(
+                        fontSize: _fsField,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+                  ),
+                // Actual items
+                ...widget.items.map((e) => DropdownMenuItem<T?>(
+                  value: e,
+                  child: Text(
+                    _labelOf(e).toUpperCase(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: _fsField),
+                  ),
+                )),
+              ],
+              onChanged: (T? newValue) {
+                widget.onChanged(newValue);
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 // ════════════════════════════════════════════════════════════════════
 // Autocomplete: backed by AllAddressesModel (name + postcode + lat/lon)

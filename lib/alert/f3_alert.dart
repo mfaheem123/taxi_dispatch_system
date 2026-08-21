@@ -27,6 +27,9 @@ class DriverInfoAlert extends StatefulWidget {
 class _DriverInfoAlertState extends State<DriverInfoAlert> {
   final controller = Get.find<DashboardAlertController>();
 
+  final FocusNode dropdownFocusNode = FocusNode();
+  final FocusNode closeButtonFocusNode = FocusNode();
+
   // Initially keeping selected driver as null so "SELECT DRIVER" is active
   DriverObject? localSelectedDriver;
 
@@ -35,7 +38,11 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
+      child: FocusScope(
+          autofocus: true,
+          child: FocusTraversalGroup(
+            policy: WidgetOrderTraversalPolicy(),
+            child: Container(
         width: 650,
         decoration: BoxDecoration(
           color: Colors.white,
@@ -92,9 +99,27 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                       ),
                     ),
                     const Spacer(),
-                    InkWell(
-                      onTap: () => Get.back(),
-                      child: const Icon(Icons.close, size: 22, color: Colors.grey),
+                    AnimatedBuilder(
+                      animation: closeButtonFocusNode,
+                      builder: (context, child) {
+                        final isFocused = closeButtonFocusNode.hasFocus;
+                        return Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
+                              width: 2,
+                            ),
+                            color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
+                          ),
+                          child: IconButton(
+                            focusNode: closeButtonFocusNode,
+                            onPressed: () => Get.back(),
+                            icon: const Icon(Icons.close, size: 22, color: Colors.grey),
+                            splashRadius: 20,
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -108,16 +133,31 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                     Row(
                       children: [
                         // Dropdown with Default "SELECT DRIVER" Option
-                        Container(
-                          width: 250,
-                          height: 42,
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade500),
-                            borderRadius: BorderRadius.circular(6),
+                  AnimatedBuilder(
+                    animation: dropdownFocusNode,
+                    builder: (context, child) {
+                      final isFocused = dropdownFocusNode.hasFocus;
+                      return Container(
+                        width: 250,
+                        height: 42,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: isFocused ? DynamicColors.primaryClr : Colors.grey.shade500,
+                            width: isFocused ? 2 : 1,
                           ),
+                          borderRadius: BorderRadius.circular(6),
+                          boxShadow: isFocused
+                              ? [BoxShadow(
+                                  color: DynamicColors.primaryClr.withOpacity(0.25),
+                                  blurRadius: 6, spreadRadius: 1,
+                                )]
+                              : [],
+                        ),
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<DriverObject?>(
+                              focusNode: dropdownFocusNode,
+                              focusColor: Colors.transparent,
                               value: currentDriver,
                               hint: Text(
                                 "SELECT DRIVER",
@@ -175,7 +215,9 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                               },
                             ),
                           ),
-                        ),
+                      );
+                      },
+                  ),
                         const Spacer(),
 
                         // Logged status text and button show only when a driver is selected
@@ -381,7 +423,7 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
             ],
           );
         }),
-      ),
+      ))),
     );
   }
 

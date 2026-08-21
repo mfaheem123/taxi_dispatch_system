@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import '../../../component/color.dart';
 import '../../../component/datatable_widget.dart';
 import '../../../component/dropdown_button.dart';
+import '../../../component/pagination.dart';
 import '../../../component/textStyle.dart';
 import '../../customer/model/restricDriver.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
@@ -372,6 +373,11 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                         }).toList(),
                       ),
                     ),
+                  ),
+                  PaginationWidget(
+                    currentPage: controller.currentLogsPage.value,
+                    totalPages: controller.totalLogsPages.value,
+                    onPageChange: controller.onPageLogs,
                   ),
                 ],
               ),

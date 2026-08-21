@@ -488,7 +488,7 @@ class AccountController extends GetxController {
   ///
   var currentPage = 1.obs;
   var totalPages = 1.obs;
-  final int limit = 5;
+  final int limit = 20;
   RxBool isLoadingListOfAccount = false.obs;
 
   /// >>>>>>>>>>>>>>>>>>>>> Search Work
@@ -822,7 +822,7 @@ void clearEscortFields() {
   ///------------------------- Pagination
   var escortCurrentPage = 1.obs;
   var escortTotalPages = 1.obs;
-  final int escortLimit = 10;
+  final int escortLimit = 20;
   listEscort() async {
     try {
       listEscortLoding.value = true;

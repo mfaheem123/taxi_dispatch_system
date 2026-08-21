@@ -143,11 +143,11 @@ class _DashboardShortcutsState extends State<DashboardShortcuts> {
     // app's own shortcut sheet (back_slash_alert.dart). Both were pointed at
     // the multi-vehicles alert in the booking form; that placeholder is kept
     // here so no key silently stops working, but they need their real screens.
-    final baseAddress = _guard(DashboardF9Alert.show);
-    final saveQuotation = _guard(DashboardF9Alert.show);
+    final baseAddress = _guard(DashboardF9Alert.show, needsJourney: true);
+    final saveQuotation = _guard(DashboardF9Alert.show, needsJourney: true);
 
-    final driverVehicle = _guard(showDriverInfoAlert);
-    final driverEarning = _guard(showDriverEarningsAlert);
+    final driverVehicle = _guard(showDriverInfoAlert, needsJourney: true);
+    final driverEarning = _guard(showDriverEarningsAlert, needsJourney: true);
     final clearBooking = _guard(() => controller.refreshPostAllFields());
     final multiBookings = _guard(DashboardF8Alert.show, needsJourney: true);
     final multiVehicles = _guard(DashboardF9Alert.show, needsJourney: true);

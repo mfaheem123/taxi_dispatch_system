@@ -9,21 +9,41 @@ DriverLoginReportListModel driverLoginReportListModelFromJson(String str) => Dri
 String driverLoginReportListModelToJson(DriverLoginReportListModel data) => json.encode(data.toJson());
 
 class DriverLoginReportListModel {
-  bool? status;
+  bool? success;
+  int? page;
+  int? limit;
+  int? total;
+  int? totalPages;
+  int? count;
   List<DriverShiftHistory>? driverShiftHistories;
 
   DriverLoginReportListModel({
-    this.status,
+    this.success,
+    this.page,
+    this.limit,
+    this.total,
+    this.totalPages,
+    this.count,
     this.driverShiftHistories,
   });
 
   factory DriverLoginReportListModel.fromJson(Map<String, dynamic> json) => DriverLoginReportListModel(
-    status: json["status"],
+    success: json["success"],
+    page: json["page"],
+    limit: json["limit"],
+    total: json["total"],
+    totalPages: json["total_pages"],
+    count: json["count"],
     driverShiftHistories: json["driver_shift_histories"] == null ? [] : List<DriverShiftHistory>.from(json["driver_shift_histories"]!.map((x) => DriverShiftHistory.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
-    "status": status,
+    "success": success,
+    "page": page,
+    "limit": limit,
+    "total": total,
+    "total_pages": totalPages,
+    "count": count,
     "driver_shift_histories": driverShiftHistories == null ? [] : List<dynamic>.from(driverShiftHistories!.map((x) => x.toJson())),
   };
 }
@@ -75,10 +95,10 @@ class DriverShiftHistory {
   Map<String, dynamic> toJson() => {
     "id": id,
     "driver_id": driverId,
-    "login_date": "${loginDate!.year.toString().padLeft(4, '0')}-${loginDate!.month.toString().padLeft(2, '0')}-${loginDate!.day.toString().padLeft(2, '0')}",
+    "login_date": loginDate == null ? null : "${loginDate!.year.toString().padLeft(4, '0')}-${loginDate!.month.toString().padLeft(2, '0')}-${loginDate!.day.toString().padLeft(2, '0')}",
     "login_latitude": loginLatitude,
     "login_longitude": loginLongitude,
-    "logout_date": "${logoutDate!.year.toString().padLeft(4, '0')}-${logoutDate!.month.toString().padLeft(2, '0')}-${logoutDate!.day.toString().padLeft(2, '0')}",
+    "logout_date": logoutDate == null ? null : "${logoutDate!.year.toString().padLeft(4, '0')}-${logoutDate!.month.toString().padLeft(2, '0')}-${logoutDate!.day.toString().padLeft(2, '0')}",
     "logout_latitude": logoutLatitude,
     "logout_longitude": logoutLongitude,
     "booking": booking == null ? [] : List<dynamic>.from(booking!.map((x) => x)),

@@ -59,6 +59,7 @@ class _AllBookingViewState extends State<AllBookingView> {
           ? controller.bookingFiltered
           : controller.bookingAll;
 
+
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -861,7 +862,8 @@ class _AllBookingViewState extends State<AllBookingView> {
 
                 GetBuilder<ReportController>(
                   builder: (controller) {
-                    var dataList = listToShow;
+                    var dataList = controller.bookingStatisticsModel?.data ?? [];
+
 
                     final double baseWidth = widthss - 90;
                     final double smallCellWidth = baseWidth / 20;
@@ -896,88 +898,90 @@ class _AllBookingViewState extends State<AllBookingView> {
                             border: TableBorder(
                               horizontalInside: BorderSide(width: 0.5, color: Colors.grey.shade400),
                               verticalInside: BorderSide(width: 0.5, color: Colors.grey.shade400),
+                              bottom: BorderSide(width: 0.5, color: Colors.grey.shade400),
+                              top: BorderSide(width: 0.5, color: Colors.grey.shade400),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             columns: [
                               buildHeaderWithSearch(widhtss: smallCellWidth, title: "REF #",
                                   onChanged: (v) {
                                     controller.searchReferenceNo.value = v;
-                                    controller.onSearchDriverShift();
+                                    controller.onBookingSearch();
                                   }),
                               buildHeaderWithSearch(widhtss: smallCellWidth, title: "INVOICE #",
                                   onChanged: (v) {
                                     controller.searchInvoiceNo.value = v;
-                                    controller.onSearchDriverShift();
+                                    controller.onBookingSearch();
                                   }),
                               buildHeaderWithSearch(widhtss: largeCellWidth, title: "DATETIME",
                                   onChanged: (v) {
                                     controller.searchDateTime.value = v;
-                                    controller.onSearchDriverShift();
+                                    controller.onBookingSearch();
                                   }),
                               buildHeaderWithSearch(widhtss: largeCellWidth, title: "CUSTOMER",
                                   onChanged: (v) {
                                     controller.searchCustomer.value = v;
-                                    controller.onSearchDriverShift();
+                                    controller.onBookingSearch();
                                   }),
                               buildHeaderWithSearch(widhtss: largeCellWidth, title: "PICKUP",
                                   onChanged: (v) {
                                     controller.searchPickup.value = v;
-                                    controller.onSearchDriverShift();
+                                    controller.onBookingSearch();
                                   }),
                               buildHeaderWithSearch(widhtss: largeCellWidth, title: "DROPOFF",
                                   onChanged: (v) {
                                     controller.searchDropOff.value = v;
-                                    controller.onSearchDriverShift();
+                                    controller.onBookingSearch();
                                   }),
                               buildHeaderWithSearch(widhtss: smallCellWidth, title: "FARE",
                                   onChanged: (v) {
                                     controller.searchFare.value = v;
-                                    controller.onSearchDriverShift();
+                                    controller.onBookingSearch();
                                   }),
                               buildHeaderWithSearch(widhtss: smallCellWidth, title: "ACC FARE",
                                   onChanged: (v) {
                                     controller.searchAccFare.value = v;
-                                    controller.onSearchDriverShift();
+                                    controller.onBookingSearch();
                                   }),
                               buildHeaderWithSearch(widhtss: largeCellWidth, title: "ACC",
                                   onChanged: (v) {
                                     controller.searchAcc.value = v;
-                                    controller.onSearchDriverShift();
+                                    controller.onBookingSearch();
                                   }),
                               buildHeaderWithSearch(widhtss: smallCellWidth, title: "ORDER #",
                                   onChanged: (v) {
                                     controller.searchOrderNO.value = v;
-                                    controller.onSearchDriverShift();
+                                    controller.onBookingSearch();
                                   }),
                               buildHeaderWithSearch(widhtss: smallCellWidth, title: "P/T",
                                   onChanged: (v) {
                                     controller.searchPaymentType.value = v;
-                                    controller.onSearchDriverShift();
+                                    controller.onBookingSearch();
                                   }),
                               buildHeaderWithSearch(widhtss: smallCellWidth, title: "J/T",
                                   onChanged: (v) {
                                     controller.searchJourneyType.value = v;
-                                    controller.onSearchDriverShift();
+                                    controller.onBookingSearch();
                                   }),
                               buildHeaderWithSearch(widhtss: largeCellWidth, title: "DRV",
                                   onChanged: (v) {
                                     controller.searchDriver.value = v;
-                                    controller.onSearchDriverShift();
+                                    controller.onBookingSearch();
                                   }),
                               buildHeaderWithSearch(widhtss: smallCellWidth, title: "VEH",
                                   onChanged: (v) {
                                     controller.searchVehicle.value = v;
-                                    controller.onSearchDriverShift();
+                                    controller.onBookingSearch();
                                   }),
                               buildHeaderWithSearch(widhtss: largeCellWidth, title: "SUBS",
                                   onChanged: (v) {
                                     controller.searchSubsidiary.value = v;
-                                    controller.onSearchDriverShift();
+                                    controller.onBookingSearch();
                                   }),
                               buildHeaderWithSearch(widhtss: smallCellWidth, title: "STATUS",
                                   onChanged: (v) {
                                     controller.searchStatus.value = v;
-                                    controller.onSearchDriverShift();
+                                    controller.onBookingSearch();
                                   }),
                               buildHeaderWithSearch(widhtss: actionCellWidth, title: "ACTION", removeSearching: true),
                             ],
@@ -994,7 +998,7 @@ class _AllBookingViewState extends State<AllBookingView> {
                                 cells: [
                                   DataCell(buildCenteredCellText(item.referenceNumber ?? "-", smallCellWidth)),
                                   DataCell(buildCenteredCellText(item.invoiceNumber?.toString() ?? "-", smallCellWidth)),
-                                  DataCell(buildCenteredCellText(formattedDateTime, largeCellWidth)),
+                                  DataCell(buildCenteredCellText(formattedDateTime, largeCellWidth)), // Datetime with ...
                                   DataCell(buildCenteredCellText((item.name ?? "-").toUpperCase(), largeCellWidth)),
                                   DataCell(buildCenteredCellText((item.pickup ?? "-").toUpperCase(), largeCellWidth)),
                                   DataCell(buildCenteredCellText((item.dropoff ?? "-").toUpperCase(), largeCellWidth)),
@@ -1078,26 +1082,21 @@ class _AllBookingViewState extends State<AllBookingView> {
                               );
                             }),
                           ),
-                          // if (dataList.isEmpty)
-                          //   const Padding(
-                          //     padding: EdgeInsets.all(30.0),
-                          //     child: Center(child: Text("No Data Found", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
-                          //   ),
+                          if (dataList.isEmpty)
+                            const Padding(
+                              padding: EdgeInsets.all(30.0),
+                              child: Center(child: Text("No Data Found", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
+                            ),
                         ],
                       ),
                     );
                   },
                 ),
-                // Container(
-                //   color: Colors.white,
-                //   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                //   child:
                   PaginationWidget(
                     currentPage: controller.currentPage.value,
                     totalPages: controller.totalPages.value,
                     onPageChange: controller.onBookingPageChange,
                   ),
-                // ),
               ],
             ));
       });

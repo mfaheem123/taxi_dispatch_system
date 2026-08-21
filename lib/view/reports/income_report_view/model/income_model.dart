@@ -10,12 +10,20 @@ String incomeModelToJson(IncomeModel data) => json.encode(data.toJson());
 
 class IncomeModel {
   bool? success;
+  int? page;
+  int? limit;
+  int? totalPages;
+  int? count;
   int? totalBookings;
   double? totalEarnings;
   List<IncomeBooking>? bookings;
 
   IncomeModel({
     this.success,
+    this.page,
+    this.limit,
+    this.totalPages,
+    this.count,
     this.totalBookings,
     this.totalEarnings,
     this.bookings,
@@ -23,6 +31,10 @@ class IncomeModel {
 
   factory IncomeModel.fromJson(Map<String, dynamic> json) => IncomeModel(
     success: json["success"],
+    page: json["page"],
+    limit: json["limit"],
+    totalPages: json["total_pages"],
+    count: json["count"],
     totalBookings: json["total_bookings"],
     totalEarnings: json["total_earnings"]?.toDouble(),
     bookings: json["bookings"] == null ? [] : List<IncomeBooking>.from(json["bookings"]!.map((x) => IncomeBooking.fromJson(x))),
@@ -30,6 +42,10 @@ class IncomeModel {
 
   Map<String, dynamic> toJson() => {
     "success": success,
+    "page": page,
+    "limit": limit,
+    "total_pages": totalPages,
+    "count": count,
     "total_bookings": totalBookings,
     "total_earnings": totalEarnings,
     "bookings": bookings == null ? [] : List<dynamic>.from(bookings!.map((x) => x.toJson())),
@@ -46,7 +62,7 @@ class IncomeBooking {
   String? vehicle;
   String? driverUsername;
   String? driverName;
-  dynamic account;
+  String? account;
   String? fares;
   String? parking;
   String? waiting;
