@@ -31,6 +31,8 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
     "GUEST STAYING AT HOME"
   ];
 
+  String? focusedReason;
+
   void onReasonSelected(String reason) {
     setState(() {
       reasonController.text = reason;
@@ -98,20 +100,36 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
                       spacing: 10,
                       runSpacing: 10,
                       children: reasons.map((reason) {
+                        final bool isSelected = reasonController.text == reason;
+                        final bool isFocused = focusedReason == reason;
+
+                        final bool isActive = isSelected || isFocused;
+
                         return InkWell(
                           onTap: () => onReasonSelected(reason),
+                          onFocusChange: (hasFocus) {
+                            setState(() {
+                              if (hasFocus) {
+                                focusedReason = reason;
+                              } else if (focusedReason == reason) {
+                                focusedReason = null;
+                              }
+                            });
+                          },
                           borderRadius: BorderRadius.circular(6),
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(6),
                               border: Border.all(color: DynamicColors.primaryClr),
-                              color: Colors.transparent,
+                              color: isActive ? DynamicColors.primaryClr : Colors.transparent
+                              // color: Colors.transparent,
                             ),
                             child: Text(
                               reason,
                               style: TextStyle(
-                                color: DynamicColors.primaryClr,
+                                color: isActive ? Colors.white : DynamicColors.primaryClr,
+                                // color: DynamicColors.primaryClr,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 12,
                               ),
