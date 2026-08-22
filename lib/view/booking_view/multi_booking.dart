@@ -1,5 +1,6 @@
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -45,172 +46,174 @@ class _MultiBookingState extends State<MultiBooking> {
     final listToShow = controller.multiBookingFiltered.isNotEmpty
         ? controller.multiBookingFiltered
         : controller.multiBookingAll;
-    return GetBuilder<BookingController>(builder: (controller) {
-      return LayoutBuilder(builder: (context, constraints) {
-        final double maxWidth = constraints.maxWidth;
-        final bool isMobile = maxWidth < 600;
-        final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+    return PageScrollWrapper(
+      child: GetBuilder<BookingController>(builder: (controller) {
+        return LayoutBuilder(builder: (context, constraints) {
+          final double maxWidth = constraints.maxWidth;
+          final bool isMobile = maxWidth < 600;
+          final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-        // Instead of fixed width, we calculate flexible field widths
-        final double fieldWidth = isMobile
-            ? maxWidth // full width
-            : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
+          // Instead of fixed width, we calculate flexible field widths
+          final double fieldWidth = isMobile
+              ? maxWidth // full width
+              : isTablet
+                  ? maxWidth / 2
+                  : maxWidth / 4;
 
-        return
-          controller.trashBookingLoad == true? Center(child: CircularProgressIndicator(),):
-          Container(
-          color: const Color(0xFFF7F9FC),
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    AppText.multiBookings + " (${controller.multiBookingModelData?.total.toString()})",
-                    style: mozillaTextSemiBoldText(
-                        fontWeight: FontWeight.w800, fontSize: 17),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                   Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: CustomButton(
-                        height: 40,
-                        width: 80,
-                        verticalPadding: 0.0,
-                        borderRadius: 4,
-                        widget: Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
-                          child: Icon(
-                            Icons.refresh,
-                            color: DynamicColors.whiteClr,
-                            size: 25,
+          return
+            controller.trashBookingLoad == true? Center(child: CircularProgressIndicator(),):
+            Container(
+            color: const Color(0xFFF7F9FC),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      AppText.multiBookings + " (${controller.multiBookingModelData?.total.toString()})",
+                      style: mozillaTextSemiBoldText(
+                          fontWeight: FontWeight.w800, fontSize: 17),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                     Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: CustomButton(
+                          height: 40,
+                          width: 80,
+                          verticalPadding: 0.0,
+                          borderRadius: 4,
+                          widget: Padding(
+                            padding:
+                                EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
+                            child: Icon(
+                              Icons.refresh,
+                              color: DynamicColors.whiteClr,
+                              size: 25,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              // 📋 Data Table
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: DatatableWidget(
-                    columns: [
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                // 📋 Data Table
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: DatatableWidget(
+                      columns: [
 
-                      buildHeaderWithSearch(title: "DATETIME",
-                        onChanged: (v) {
-                          controller.multipickupDate.text = v;
-                          controller.multiBookingonSearch();
-                        },
+                        buildHeaderWithSearch(title: "DATETIME",
+                          onChanged: (v) {
+                            controller.multipickupDate.text = v;
+                            controller.multiBookingonSearch();
+                          },
 
-                      ),
+                        ),
 
-                      buildHeaderWithSearch(title: "CUSTOMER",
-                        onChanged: (v) {
-                          controller.multiCustomerName.text = v;
-                          controller.multiBookingonSearch();
-                        },
-                      ),
-                      buildHeaderWithSearch(title: "MOBILE",
-                        onChanged: (v) {
-                          controller.multiMobile.text = v;
-                          controller.multiBookingonSearch();
-                        },
-                      ),
-                      buildHeaderWithSearch(title: "PICKUP"
-                      , onChanged: (v) {
-                          controller.multipickup.text = v;
-                          controller.multiBookingonSearch();
-                        },
-                      ),
-                      buildHeaderWithSearch(title: "DROPOFF"
+                        buildHeaderWithSearch(title: "CUSTOMER",
+                          onChanged: (v) {
+                            controller.multiCustomerName.text = v;
+                            controller.multiBookingonSearch();
+                          },
+                        ),
+                        buildHeaderWithSearch(title: "MOBILE",
+                          onChanged: (v) {
+                            controller.multiMobile.text = v;
+                            controller.multiBookingonSearch();
+                          },
+                        ),
+                        buildHeaderWithSearch(title: "PICKUP"
                         , onChanged: (v) {
-                          controller.multidropOff.text = v;
-                          controller.multiBookingonSearch();
-                        },),
-                      buildHeaderWithSearch(
-                          title: "ACTIONS", removeSearching: true),
-                    ],
+                            controller.multipickup.text = v;
+                            controller.multiBookingonSearch();
+                          },
+                        ),
+                        buildHeaderWithSearch(title: "DROPOFF"
+                          , onChanged: (v) {
+                            controller.multidropOff.text = v;
+                            controller.multiBookingonSearch();
+                          },),
+                        buildHeaderWithSearch(
+                            title: "ACTIONS", removeSearching: true),
+                      ],
 
-        totalRow: listToShow.length,
-        rows: listToShow.map((item) {
-        return DataRow(
-          cells: [
-            DataCell(Center(child: Text("${DateFormat('dd-MM-yyyy').format(item.pickupDate!)} ${item.pickupTime}"))),
-            DataCell(Center(child: Text((item.customer.toString() ?? "").toUpperCase()))),
-            DataCell(Center(child: Text(item.mobile ?? ""))),
-            DataCell(Center(child: Text((item.pickup ?? "").toUpperCase()))),
-            DataCell(Center(child: Text((item.dropoff ?? "").toUpperCase()))),
-            DataCell(
-            Center(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      padding:
-                      EdgeInsets.zero, // 👈 remove inner padding
-                      minimumSize:
-                      Size(24, 24), // 👈 shrink button size
-                      side: BorderSide.none, // 👈 remove border
+          totalRow: listToShow.length,
+          rows: listToShow.map((item) {
+          return DataRow(
+            cells: [
+              DataCell(Center(child: Text("${DateFormat('dd-MM-yyyy').format(item.pickupDate!)} ${item.pickupTime}"))),
+              DataCell(Center(child: Text((item.customer.toString() ?? "").toUpperCase()))),
+              DataCell(Center(child: Text(item.mobile ?? ""))),
+              DataCell(Center(child: Text((item.pickup ?? "").toUpperCase()))),
+              DataCell(Center(child: Text((item.dropoff ?? "").toUpperCase()))),
+              DataCell(
+              Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        padding:
+                        EdgeInsets.zero, // 👈 remove inner padding
+                        minimumSize:
+                        Size(24, 24), // 👈 shrink button size
+                        side: BorderSide.none, // 👈 remove border
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          // _currentPage = CompleteBookingsScreen();
+                          controller.menuBarController.menuBarRefresh(title: "COMPLETE BOOKINGS", pageName: CompleteBookingsScreen());
+                        });
+
+                      },
+                      child: Icon(Icons.edit_calendar, size: 20),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        // _currentPage = CompleteBookingsScreen();
-                        controller.menuBarController.menuBarRefresh(title: "COMPLETE BOOKINGS", pageName: CompleteBookingsScreen());
-                      });
-
-                    },
-                    child: Icon(Icons.edit_calendar, size: 20),
-                  ),
-                  const SizedBox(
-                      width: 4), // 👈 replace "|" with small spacing
-                  if(permissions.contains('delete_booking'))  IconButton(
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    icon: Icon(Icons.delete_forever, size: 22, color: Colors.red),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (_) =>
-                            DeletePermissionAlert(
-                              deleteFunctionName: () async {
-                                await controller.deleteBooking(item.id);
-                                controller.getMultiBookingData();
-                              },
-                            ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],    );}).toList(),
-
-                  ),
+                    const SizedBox(
+                        width: 4), // 👈 replace "|" with small spacing
+                    if(permissions.contains('delete_booking'))  IconButton(
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      icon: Icon(Icons.delete_forever, size: 22, color: Colors.red),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (_) =>
+                              DeletePermissionAlert(
+                                deleteFunctionName: () async {
+                                  await controller.deleteBooking(item.id);
+                                  controller.getMultiBookingData();
+                                },
+                              ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
-              PaginationWidget(
-                currentPage: controller.multiBookingCurrentPage.value,
-                totalPages: controller.multiBookingTotalPages.value,
-                onPageChange: controller.multiBookingPageChange,),
+            ),
+          ],    );}).toList(),
+
+                    ),
+                  ),
+                ),
+                PaginationWidget(
+                  currentPage: controller.multiBookingCurrentPage.value,
+                  totalPages: controller.multiBookingTotalPages.value,
+                  onPageChange: controller.multiBookingPageChange,),
 
 
-            ],
-          ),
-        );
-      });
-    });
+              ],
+            ),
+          );
+        });
+      }),
+    );
   }
 }

@@ -15,6 +15,7 @@
 // ...) live under booking_view/widgets/ — this file wires them together into
 // the actual screen.
 
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -262,280 +263,282 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                       // getAddresses() finishes and refills
                       // controller.allAddressesData, feeding PICK/DROP/R-PICK/
                       // R-DROP's suggestion lists.
-                      child: GetBuilder<LocationController>(
-                        builder: (_) => GetBuilder<DashboardController>(
-                        builder: (controller) => Column(
-                        children: [
-                          const TopTabs(),
-                          const SizedBox(height: Density.cardGap),
+                      child: PageScrollWrapper(
+                        child: GetBuilder<LocationController>(
+                          builder: (_) => GetBuilder<DashboardController>(
+                          builder: (controller) => Column(
+                          children: [
+                            const TopTabs(),
+                            const SizedBox(height: Density.cardGap),
 
-                          // ---- Booking header: source + sub ----
-                          SectionCard(
-                            child: ResponsiveGrid(
-                              orderBase: 100,
-                              children: [
-                                SpanField(HeaderTitle('BOOKING'), span: 2),
-                                SpanField(LabeledDropdown('SOURCE',
-                                    items: ['OPT', 'WEB', 'APP', 'PHONE'])),
-                                SpanField(LabeledDropdown('SUB', items: [
-                                  'DEMO COMPANY',
-                                  'Company 2',
-                                  'Company 3'
-                                ])),
-                              ],
+                            // ---- Booking header: source + sub ----
+                            SectionCard(
+                              child: ResponsiveGrid(
+                                orderBase: 100,
+                                children: [
+                                  SpanField(HeaderTitle('BOOKING'), span: 2),
+                                  SpanField(LabeledDropdown('SOURCE',
+                                      items: ['OPT', 'WEB', 'APP', 'PHONE'])),
+                                  SpanField(LabeledDropdown('SUB', items: [
+                                    'DEMO COMPANY',
+                                    'Company 2',
+                                    'Company 3'
+                                  ])),
+                                ],
+                              ),
                             ),
-                          ),
 
-                          // ---- Pick / Drop + contact ----
-                          SectionCard(
-                            child: ResponsiveGrid(
-                              orderBase: 200,
-                              children: [
-                                SpanField(
-                                    LabeledAddressField(
-                                      'PICK',
-                                      controller: controller.pickupTwoWayController,
-                                      addresses: _addresses,
-                                      dotColor: Colors.green,
-                                      onSwap: () => _swap(controller.pickupTwoWayController, controller.dropOffController),
-                                      onSearch: _onPickupSearch,
-                                      onPicked: (a) =>
-                                          _selectedPickup = _modelFor(a),
-                                    ),
-                                    span: 2),
-                                SpanField(LabeledZoneDropdown(
-                                  'PICK ZONE',
-                                  items: _zones,
-                                  value: controller.dashboardZoneValue,
-                                  onChanged: (v) =>
-                                      setState(() => controller.dashboardZoneValue = v),
-                                )),
-                                SpanField(
-                                    LabeledInput('PICKUP NOTES',
-                                        uppercase: true)),
-                                SpanField(
-                                    LabeledAddressField(
-                                      'DROP',
-                                      controller: controller.dropOffController,
-                                      addresses: _addresses,
-                                      dotColor: Colors.red,
-                                      onSwap: () => _swap(controller.pickupTwoWayController, controller.dropOffController),
-                                      onSearch: _onDropSearch,
-                                      onPicked: (a) =>
-                                          _selectedDrop = _modelFor(a),
-                                    ),
-                                    span: 2),
-                                SpanField(LabeledZoneDropdown(
-                                  'DROP ZONE',
-                                  items: _zones,
-                                  value: controller.dashboardDZoneValue,
-                                  onChanged: (v) =>
-                                      setState(() => controller.dashboardDZoneValue = v),
-                                )),
-                                SpanField(
-                                    LabeledInput('DROPOFF NOTES',
-                                        uppercase: true)),
-                                SpanField(
-                                    LabeledInput('NAME', controller: controller.nameController)),
-                                SpanField(LabeledInput('EMAIL',
-                                    controller: controller.emailController,
-                                    keyboardType: TextInputType.emailAddress)),
-                                SpanField(LabeledMobileField(
-                                  'MOBILE',
-                                  controller: controller.mobileController,
-                                  customers: _customers,
-                                  onSearch: _onMobileSearch,
-                                  onPicked: _onCustomerPicked,
-                                )),
-                                SpanField(LabeledInput('TEL',
-                                    controller: controller.telController,
-                                    keyboardType: TextInputType.phone)),
-                              ],
-                            ),
-                          ),
-
-                          // ---- Dates & times ----
-                          SectionCard(
-                            child: ResponsiveGrid(
-                              orderBase: 300,
-                              children: [
-                                SpanField(LabeledDatePicker('DATE')),
-                                SpanField(LabeledTimePicker('TIME')),
-                                // Everything below describes the return leg, so
-                                // ONE WAY drops the lot.
-                                ..._ifReturn(
-                                    SpanField(LabeledDatePicker('R/DATE'))),
-                                ..._ifReturn(
-                                    SpanField(LabeledTimePicker('R/TIME'))),
-                                ..._ifReturn(SpanField(
-                                    LabeledAddressField(
-                                      'R/PICK',
-                                      controller: _rPick,
-                                      addresses: _addresses,
-                                      dotColor: Colors.green,
-                                      onSwap: () => _swap(_rPick, _rDrop),
-                                      onSearch: _onReturnPickupSearch,
-                                      onPicked: (a) =>
-                                          _selectedReturnPickup = _modelFor(a),
-                                    ),
-                                    span: 2)),
-                                ..._ifReturn(SpanField(LabeledZoneDropdown(
-                                  'R/PICK ZONE',
-                                  items: _zones,
-                                  value: _locationController.RNzoneValue,
-                                  onChanged: (v) => setState(
-                                      () => _locationController.RNzoneValue = v),
-                                ))),
-                                ..._ifReturn(SpanField(
-                                    LabeledInput('R/PICK NOTES',
-                                        uppercase: true))),
-                                ..._ifReturn(SpanField(
-                                    LabeledAddressField(
-                                      'R/DROP',
-                                      controller: _rDrop,
-                                      addresses: _addresses,
-                                      dotColor: Colors.red,
-                                      onSwap: () => _swap(_rPick, _rDrop),
-                                      onSearch: _onReturnDropSearch,
-                                      onPicked: (a) =>
-                                          _selectedReturnDrop = _modelFor(a),
-                                    ),
-                                    span: 2)),
-                                ..._ifReturn(SpanField(LabeledZoneDropdown(
-                                  'R/DROP ZONE',
-                                  items: _zones,
-                                  value: _locationController.RN1zoneValue,
-                                  onChanged: (v) => setState(
-                                      () => _locationController.RN1zoneValue = v),
-                                ))),
-                                ..._ifReturn(SpanField(
-                                    LabeledInput('R/DROP NOTES',
-                                        uppercase: true))),
-                              ],
-                            ),
-                          ),
-
-                          // ---- Journey details ----
-                          SectionCard(
-                            child: ResponsiveGrid(
-                              orderBase: 400,
-                              children: [
-                                SpanField(LabeledInput('LEAD (MINS)',
-                                    keyboardType: TextInputType.number)),
-                                SpanField(LabeledDropdown('JOUR',
-                                    items: _journeyTypes,
-                                    onChanged: _onJourneyChanged)),
-                                SpanField(
-                                    LabeledDropdown('VEH', items: vehicles)),
-                                ..._ifReturn(SpanField(
-                                    LabeledDropdown('R/VEH',
-                                        items: vehicles))),
-                                SpanField(LabeledDropdown('ACC', items: [
-                                  'SELECT ACCOUNT',
-                                  'Account 1',
-                                  'Account 2'
-                                ])),
-                                SpanField(LabeledInput('PASS',
-                                    keyboardType: TextInputType.number)),
-                                SpanField(LabeledInput('LUGG',
-                                    keyboardType: TextInputType.number)),
-                                SpanField(LabeledInput('SLGG',
-                                    keyboardType: TextInputType.number)),
-                              ],
-                            ),
-                          ),
-
-                          // ---- Payment + options ----
-                          SectionCard(
-                            child: ResponsiveGrid(
-                              orderBase: 500,
-                              children: [
-                                SpanField(LabeledDropdown('PAY', items: [
-                                  'CASH',
-                                  'CARD',
-                                  'ACCOUNT',
-                                  'INVOICE'
-                                ])),
-                                ..._ifReturn(SpanField(
-                                    LabeledInput('R/LEAD (MINS)',
-                                        keyboardType: TextInputType.number))),
-                                SpanField(LabeledCheckbox('QUOTATION'),widths: 110),
-                                SpanField(LabeledCheckbox('SMS', value: true),widths: 80),
-                                SpanField(LabeledCheckbox('EMAIL'),widths: 80),
-                                // Three keyboard-reachable shortcuts into the
-                                // booking's extra detail dialogs. They come
-                                // last in this section, so Tab reaches them
-                                // after the checkboxes and before the fares.
-                                SpanField(
-                                  LabeledIconActions([
-                                    IconAction(
-                                      icon: Icons.person,
-                                      tooltip: 'EXTRA INFO',
-                                      onTap: () => showDialog(context: context, builder: (_) => RestrictDriversAlert()),
-                                    ),
-                                    IconAction(
-                                      icon: Icons.attach_money,
-                                      tooltip: 'EXTRA FARES',
-                                      onTap: () => showDialog(
-                                        context: context,
-                                        builder: (_) => ChildSeatsAlert(),
+                            // ---- Pick / Drop + contact ----
+                            SectionCard(
+                              child: ResponsiveGrid(
+                                orderBase: 200,
+                                children: [
+                                  SpanField(
+                                      LabeledAddressField(
+                                        'PICK',
+                                        controller: controller.pickupTwoWayController,
+                                        addresses: _addresses,
+                                        dotColor: Colors.green,
+                                        onSwap: () => _swap(controller.pickupTwoWayController, controller.dropOffController),
+                                        onSearch: _onPickupSearch,
+                                        onPicked: (a) =>
+                                            _selectedPickup = _modelFor(a),
                                       ),
-                                    ),
-                                    IconAction(
-                                      icon: Icons.note_add,
-                                      tooltip: 'CHILD SEATS',
-                                      onTap: () => showDialog(
-                                        context: context,
-                                        barrierDismissible: false,
-                                        builder: (_) => ExtraFaresAlert(),
+                                      span: 2),
+                                  SpanField(LabeledZoneDropdown(
+                                    'PICK ZONE',
+                                    items: _zones,
+                                    value: controller.dashboardZoneValue,
+                                    onChanged: (v) =>
+                                        setState(() => controller.dashboardZoneValue = v),
+                                  )),
+                                  SpanField(
+                                      LabeledInput('PICKUP NOTES',
+                                          uppercase: true)),
+                                  SpanField(
+                                      LabeledAddressField(
+                                        'DROP',
+                                        controller: controller.dropOffController,
+                                        addresses: _addresses,
+                                        dotColor: Colors.red,
+                                        onSwap: () => _swap(controller.pickupTwoWayController, controller.dropOffController),
+                                        onSearch: _onDropSearch,
+                                        onPicked: (a) =>
+                                            _selectedDrop = _modelFor(a),
                                       ),
-                                    ),
-                                  ]),
-                                  widths: LabeledIconActions.width(3),
-                                ),
-                                // SpanField(LabeledCheckbox('ADD RETURN FARE')),
-                              ],
+                                      span: 2),
+                                  SpanField(LabeledZoneDropdown(
+                                    'DROP ZONE',
+                                    items: _zones,
+                                    value: controller.dashboardDZoneValue,
+                                    onChanged: (v) =>
+                                        setState(() => controller.dashboardDZoneValue = v),
+                                  )),
+                                  SpanField(
+                                      LabeledInput('DROPOFF NOTES',
+                                          uppercase: true)),
+                                  SpanField(
+                                      LabeledInput('NAME', controller: controller.nameController)),
+                                  SpanField(LabeledInput('EMAIL',
+                                      controller: controller.emailController,
+                                      keyboardType: TextInputType.emailAddress)),
+                                  SpanField(LabeledMobileField(
+                                    'MOBILE',
+                                    controller: controller.mobileController,
+                                    customers: _customers,
+                                    onSearch: _onMobileSearch,
+                                    onPicked: _onCustomerPicked,
+                                  )),
+                                  SpanField(LabeledInput('TEL',
+                                      controller: controller.telController,
+                                      keyboardType: TextInputType.phone)),
+                                ],
+                              ),
                             ),
-                          ),
 
-                          // ---- Fares row ----
-                          SectionCard(
-                            child: Column(
-                              children: [
-                                StatStrip(),
-                                SizedBox(height: Density.gridSpacing),
-                                ResponsiveGrid(
-                                  orderBase: 600,
-                                  children: [
-                                    SpanField(LabeledInput('FARE (£)',
-                                        keyboardType: TextInputType.number)),
-                                    ..._ifReturn(SpanField(
-                                        LabeledInput('R/FARE (£)',
-                                            keyboardType:
-                                                TextInputType.number))),
-                                    SpanField(LabeledDropdown('DRV', items: [
-                                      'SELECT DRIVER',
-                                      'Driver 1',
-                                      'Driver 2'
-                                    ])),
-                                    ..._ifReturn(
-                                        SpanField(LabeledDropdown('R/DRV',
-                                            items: [
-                                          'SELECT DRIVER',
-                                          'Driver 1',
-                                          'Driver 2'
-                                        ]))),
-                                  ],
-                                ),
-                              ],
+                            // ---- Dates & times ----
+                            SectionCard(
+                              child: ResponsiveGrid(
+                                orderBase: 300,
+                                children: [
+                                  SpanField(LabeledDatePicker('DATE')),
+                                  SpanField(LabeledTimePicker('TIME')),
+                                  // Everything below describes the return leg, so
+                                  // ONE WAY drops the lot.
+                                  ..._ifReturn(
+                                      SpanField(LabeledDatePicker('R/DATE'))),
+                                  ..._ifReturn(
+                                      SpanField(LabeledTimePicker('R/TIME'))),
+                                  ..._ifReturn(SpanField(
+                                      LabeledAddressField(
+                                        'R/PICK',
+                                        controller: _rPick,
+                                        addresses: _addresses,
+                                        dotColor: Colors.green,
+                                        onSwap: () => _swap(_rPick, _rDrop),
+                                        onSearch: _onReturnPickupSearch,
+                                        onPicked: (a) =>
+                                            _selectedReturnPickup = _modelFor(a),
+                                      ),
+                                      span: 2)),
+                                  ..._ifReturn(SpanField(LabeledZoneDropdown(
+                                    'R/PICK ZONE',
+                                    items: _zones,
+                                    value: _locationController.RNzoneValue,
+                                    onChanged: (v) => setState(
+                                        () => _locationController.RNzoneValue = v),
+                                  ))),
+                                  ..._ifReturn(SpanField(
+                                      LabeledInput('R/PICK NOTES',
+                                          uppercase: true))),
+                                  ..._ifReturn(SpanField(
+                                      LabeledAddressField(
+                                        'R/DROP',
+                                        controller: _rDrop,
+                                        addresses: _addresses,
+                                        dotColor: Colors.red,
+                                        onSwap: () => _swap(_rPick, _rDrop),
+                                        onSearch: _onReturnDropSearch,
+                                        onPicked: (a) =>
+                                            _selectedReturnDrop = _modelFor(a),
+                                      ),
+                                      span: 2)),
+                                  ..._ifReturn(SpanField(LabeledZoneDropdown(
+                                    'R/DROP ZONE',
+                                    items: _zones,
+                                    value: _locationController.RN1zoneValue,
+                                    onChanged: (v) => setState(
+                                        () => _locationController.RN1zoneValue = v),
+                                  ))),
+                                  ..._ifReturn(SpanField(
+                                      LabeledInput('R/DROP NOTES',
+                                          uppercase: true))),
+                                ],
+                              ),
                             ),
-                          ),
 
-                          // ---- Action buttons ----
-                          const ActionButtons(),
-                        ],
-                      ),
-                      ),
+                            // ---- Journey details ----
+                            SectionCard(
+                              child: ResponsiveGrid(
+                                orderBase: 400,
+                                children: [
+                                  SpanField(LabeledInput('LEAD (MINS)',
+                                      keyboardType: TextInputType.number)),
+                                  SpanField(LabeledDropdown('JOUR',
+                                      items: _journeyTypes,
+                                      onChanged: _onJourneyChanged)),
+                                  SpanField(
+                                      LabeledDropdown('VEH', items: vehicles)),
+                                  ..._ifReturn(SpanField(
+                                      LabeledDropdown('R/VEH',
+                                          items: vehicles))),
+                                  SpanField(LabeledDropdown('ACC', items: [
+                                    'SELECT ACCOUNT',
+                                    'Account 1',
+                                    'Account 2'
+                                  ])),
+                                  SpanField(LabeledInput('PASS',
+                                      keyboardType: TextInputType.number)),
+                                  SpanField(LabeledInput('LUGG',
+                                      keyboardType: TextInputType.number)),
+                                  SpanField(LabeledInput('SLGG',
+                                      keyboardType: TextInputType.number)),
+                                ],
+                              ),
+                            ),
+
+                            // ---- Payment + options ----
+                            SectionCard(
+                              child: ResponsiveGrid(
+                                orderBase: 500,
+                                children: [
+                                  SpanField(LabeledDropdown('PAY', items: [
+                                    'CASH',
+                                    'CARD',
+                                    'ACCOUNT',
+                                    'INVOICE'
+                                  ])),
+                                  ..._ifReturn(SpanField(
+                                      LabeledInput('R/LEAD (MINS)',
+                                          keyboardType: TextInputType.number))),
+                                  SpanField(LabeledCheckbox('QUOTATION'),widths: 110),
+                                  SpanField(LabeledCheckbox('SMS', value: true),widths: 80),
+                                  SpanField(LabeledCheckbox('EMAIL'),widths: 80),
+                                  // Three keyboard-reachable shortcuts into the
+                                  // booking's extra detail dialogs. They come
+                                  // last in this section, so Tab reaches them
+                                  // after the checkboxes and before the fares.
+                                  SpanField(
+                                    LabeledIconActions([
+                                      IconAction(
+                                        icon: Icons.person,
+                                        tooltip: 'EXTRA INFO',
+                                        onTap: () => showDialog(context: context, builder: (_) => RestrictDriversAlert()),
+                                      ),
+                                      IconAction(
+                                        icon: Icons.attach_money,
+                                        tooltip: 'EXTRA FARES',
+                                        onTap: () => showDialog(
+                                          context: context,
+                                          builder: (_) => ChildSeatsAlert(),
+                                        ),
+                                      ),
+                                      IconAction(
+                                        icon: Icons.note_add,
+                                        tooltip: 'CHILD SEATS',
+                                        onTap: () => showDialog(
+                                          context: context,
+                                          barrierDismissible: false,
+                                          builder: (_) => ExtraFaresAlert(),
+                                        ),
+                                      ),
+                                    ]),
+                                    widths: LabeledIconActions.width(3),
+                                  ),
+                                  // SpanField(LabeledCheckbox('ADD RETURN FARE')),
+                                ],
+                              ),
+                            ),
+
+                            // ---- Fares row ----
+                            SectionCard(
+                              child: Column(
+                                children: [
+                                  StatStrip(),
+                                  SizedBox(height: Density.gridSpacing),
+                                  ResponsiveGrid(
+                                    orderBase: 600,
+                                    children: [
+                                      SpanField(LabeledInput('FARE (£)',
+                                          keyboardType: TextInputType.number)),
+                                      ..._ifReturn(SpanField(
+                                          LabeledInput('R/FARE (£)',
+                                              keyboardType:
+                                                  TextInputType.number))),
+                                      SpanField(LabeledDropdown('DRV', items: [
+                                        'SELECT DRIVER',
+                                        'Driver 1',
+                                        'Driver 2'
+                                      ])),
+                                      ..._ifReturn(
+                                          SpanField(LabeledDropdown('R/DRV',
+                                              items: [
+                                            'SELECT DRIVER',
+                                            'Driver 1',
+                                            'Driver 2'
+                                          ]))),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // ---- Action buttons ----
+                            const ActionButtons(),
+                          ],
+                        ),
+                        ),
+                        ),
                       ),
                     ),
                   ),
