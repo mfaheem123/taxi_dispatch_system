@@ -1340,6 +1340,7 @@ class _CenterAreaState extends State<_CenterArea> {
                         await _controller.dashBoardDataBinding(
                           id: selectedBooking!.id,
                           jobData: selectedBooking,
+                          cliHit: true
                         );
                         if (!mounted) return;
                         Get.back();

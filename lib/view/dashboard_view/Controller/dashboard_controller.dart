@@ -3044,7 +3044,7 @@ class DashboardController extends GetxController {
   BookingObjectData? jobDetails;
 
   dashBoardDataBinding(
-      {BookingObjectData? jobData, id, bool hitAddBooking = false}) async {
+      {BookingObjectData? jobData, id, bool hitAddBooking = false, cliHit = false}) async {
     var response = await Api().get("bookings/getbyid/$id");
     // var response = await Api().get("bookings/getbyid/$id");
     if (response.statusCode == 200) {
@@ -3116,7 +3116,11 @@ class DashboardController extends GetxController {
       if (jobData.telephone != null) {
         telController.text = jobData.telephone!;
       }
-      pickUpTimeController.text = jobData.pickupTime!;
+      if(cliHit == true){
+        pickUpTimeController.text = DateFormat('HH:mm').format(DateTime.now());
+      }else{
+        pickUpTimeController.text = jobData.pickupTime!;
+      }
       // A time carried over from an existing job is a real choice — don't let
       // refreshUntouchedDateTimeFields() overwrite it with "now" on post.
       pickUpTimePicked = true;
