@@ -3056,8 +3056,6 @@ class DashboardController extends GetxController {
       BookingObjectData jobData = BookingObjectData.fromJson(response.data['booking']);
       jobDetails = jobData;
       polyLineMarkerInfo.clear();
-      pickUpDate=pickUpDate;
-      pickUpTimeController.text=currentTimeStr.toString();
       viaPoints.clear();
       polylinePoints.clear();
       pickupController.text = jobData.pickup.toString().toUpperCase();
