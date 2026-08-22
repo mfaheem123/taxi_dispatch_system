@@ -43,7 +43,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
   /// controllers (see DashboardController.resetMultiReservationFields).
   Widget _timeField(TextEditingController controller) {
     return SizedBox(
-      height: 30,
+      height: 45,
       child: TimePickerField(
         controller: controller,
         accent: DynamicColors.primaryClr,
@@ -52,7 +52,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
         onChanged: (_) => setState(() {}),
         decoration: InputDecoration(
           isDense: true,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 13),
           // Blue outline at radius 4, matching the FROM / TO KeyboardDatePickers
           // sitting next to it in this row.
           border: _timeFieldBorder(),
@@ -120,7 +120,20 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                     Text("Multi Reversation",
                                         style: titleDesign()),
                                     Spacer(),
-                                    IconButton(
+                                    Focus(
+                                      onKeyEvent: (node, event) {
+                                        return KeyEventResult.ignored;
+                                        },
+                                      child: Builder(
+                                        builder: (context) {
+                                          final bool isFocused = Focus.of(context).hasFocus;
+                                          return Container(
+                                            decoration: BoxDecoration(
+                                              color: isFocused ? Colors.grey.withOpacity(0.4) : Colors.transparent,
+                                              // borderRadius: BorderRadius.circular(4),
+                                              // border: isFocused ? Border.all(color: Colors.blue, width: 1.5) : null,
+                                              ),
+                                            child: IconButton(
                                         onPressed: () {
                                          controller.multiReservationFromDate = DateTime.now();
                                          controller.multiReservationToDate = DateTime.now();
@@ -138,7 +151,11 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                           Get.back();
                                         },
                                         icon: Icon(
-                                            Icons.cancel_presentation_sharp))
+                                            Icons.cancel_presentation_sharp)),
+                                          );
+                                          },
+                                      ),
+                                    )
                                   ],
                                 )),
                           )),

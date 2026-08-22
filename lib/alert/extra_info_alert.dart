@@ -22,7 +22,9 @@ class ExtraInfoAlert extends StatefulWidget {
 
 class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
 
+  int? editingIndex;
   final dashBoardCntrl = Get.find<DashboardController>();
+  final FocusNode closeButtonFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -43,7 +45,7 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
       child: GetBuilder<DashboardController>(
         builder: (controller) {
           return Container(
-            height: 475,
+            height: 500,
             width: 650,
             padding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
             child: SingleChildScrollView(
@@ -53,20 +55,34 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(AppText.extraFears,
+                      Text("ADDITIONAL BOOKING INFO",
                         style: mozillaTextSemiBoldText(
                           fontWeight: FontWeight.w700,
                           fontSize: 11,
                         ),
                       ),
-                      GestureDetector(
-                        onTap: (){
-                          Get.back();
+                      AnimatedBuilder(
+                        animation: closeButtonFocusNode,
+                        builder: (context, child) {
+                          final isFocused = closeButtonFocusNode.hasFocus;
+                          return Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
+                                width: 2,
+                              ),
+                              color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
+                            ),
+                            child: IconButton(
+                              focusNode: closeButtonFocusNode,
+                              onPressed: () => Get.back(),
+                              icon: const Icon(Icons.close, size: 22, color: Colors.grey),
+                              splashRadius: 20,
+                            ),
+                          );
                         },
-                        child: Icon(Icons.close,
-                          color: DynamicColors.textClr,
-                        ),
-                      )
+                      ),
                     ],
                   ),
                   Divider(),
@@ -153,55 +169,69 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                       SizedBox(
                         width: controller.jourValue == 'W/R'? 295: 600.0,
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 6.0),
+                              child: Text(AppText.controllerNotes,
+                                style: mozillaTextSemiBoldText(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ),
                             Row(
                               children: [
-                                Text(AppText.controllerNotes,
-                                  style: mozillaTextSemiBoldText(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 11,
+                                Expanded(
+                                  child: CustomTextField(
+                                    contentPadding: EdgeInsets.only(left: 12.0),
+                                    hintText: "ENTER YOUR NOTE HERE",
+                                    controller: controller.controllerNoteController,
+                                    hintStyle: mozillaTextRegularText(fontSize: 10),
+                                    borderRadius: 4,
                                   ),
                                 ),
-                                Spacer(),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8.0, bottom: 6),
-                                  child: CustomButton(
-                                    width: 30,
-                                    height: 30,
-                                    onTap: (){
-                                      if(controller.controllerNoteController.text.isNotEmpty){
+                                const SizedBox(width: 6),
+                                CustomButton(
+                                  width: 35,
+                                  height: 35,
+                                  // onTap: (){
+                                  //   if(controller.controllerNoteController.text.isNotEmpty){
+                                  //     controller.controllerAlert.add(
+                                  //       NoteClass(
+                                  //           note: controller.controllerNoteController.text,
+                                  //           title: 'controller note'
+                                  //       ),
+                                  //     );
+                                  //     controller.controllerNoteController.clear();
+                                  //     controller.update();
+                                  //   }
+                                  // },
+                                  onTap: (){
+                                    if(controller.controllerNoteController.text.isNotEmpty){
+                                      if (editingIndex != null) {
+                                        controller.controllerAlert[editingIndex!] = NoteClass(
+                                          note: controller.controllerNoteController.text,
+                                          title: 'controller note',
+                                        );
+                                        editingIndex = null;
+                                      } else {
                                         controller.controllerAlert.add(
                                           NoteClass(
-                                              note: controller.controllerNoteController.text,
-                                              title: 'controller note'
+                                            note: controller.controllerNoteController.text,
+                                            title: 'controller note',
                                           ),
                                         );
-                                        controller.controllerNoteController.clear();
-                                        controller.update();
                                       }
-                                    },
-                                    verticalPadding: 0.0,
-                                    borderRadius: 6,
-                                    style: mozillaTextSemiBoldText(
-                                        fontSize: 13,
-                                        color: DynamicColors.whiteClr),
-                                    widget: Icon(Icons.add,
-                                      size: 20,
-                                      color: DynamicColors.whiteClr,
-                                    ),
-                                  ),
+                                      controller.controllerNoteController.clear();
+                                      controller.update();
+                                    }
+                                  },
+                                  verticalPadding: 0.0,
+                                  borderRadius: 4,
+                                  widget: Icon(Icons.add, size: 18, color: DynamicColors.whiteClr),
                                 ),
                               ],
-                            ),
-                            CustomTextField(
-                              contentPadding: EdgeInsets.only(left: 12.0),
-                              width: controller.jourValue == 'W/R'? 290: 600.0,
-                              hintText: "ENTER YOUR NOTE HERE",
-                              controller: controller.controllerNoteController,
-                              hintStyle: mozillaTextRegularText(
-                                  fontSize: 10
-                              ),
-                              borderRadius: 4,
                             ),
                           ],
                         ),
@@ -209,56 +239,50 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                       Visibility(
                         visible: controller.jourValue == 'W/R' ? true : false,
                         child: SizedBox(
-                          width: controller.jourValue == 'W/R'? 295: 600.0,
+                          width: 295,
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 6.0),
+                                child: Text('CONTROLLER RETURN NOTES',
+                                  style: mozillaTextSemiBoldText(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ),
                               Row(
                                 children: [
-                                  Text('CONTROLLER RETURN NOTES',
-                                    style: mozillaTextSemiBoldText(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 11,
+                                  Expanded(
+                                    child: CustomTextField(
+                                      contentPadding: EdgeInsets.only(left: 12),
+                                      hintText: "ENTER YOUR RETURN NOTES HERE",
+                                      controller: controller.controllerNoteReturnController,
+                                      hintStyle: mozillaTextRegularText(fontSize: 10),
+                                      borderRadius: 4,
                                     ),
                                   ),
-                                  Spacer(),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 8.0, bottom: 6),
-                                    child: CustomButton(
-                                      width: 30,
-                                      height: 30,
-                                      btnColor: DynamicColors.greenClr,
-                                      onTap: (){
-                                        if(controller.controllerNoteReturnController.text.isNotEmpty){
-                                          controller.controllerAlert.add(NoteClass(
+                                  const SizedBox(width: 6),
+                                  CustomButton(
+                                    width: 35,
+                                    height: 35,
+                                    btnColor: DynamicColors.greenClr,
+                                    onTap: (){
+                                      if(controller.controllerNoteReturnController.text.isNotEmpty){
+                                        controller.controllerAlert.add(NoteClass(
                                             note: controller.controllerNoteReturnController.text,
                                             title: 'controller return note'
-                                          ));
-                                          controller.controllerNoteReturnController.clear();
-                                          controller.update();
-                                        }
-                                      },
-                                      verticalPadding: 0.0,
-                                      borderRadius: 6,
-                                      style: mozillaTextSemiBoldText(
-                                          fontSize: 13,
-                                          color: DynamicColors.whiteClr),
-                                      widget: Icon(Icons.add,
-                                        size: 20,
-                                        color: DynamicColors.whiteClr,
-                                      ),
-                                    ),
+                                        ));
+                                        controller.controllerNoteReturnController.clear();
+                                        controller.update();
+                                      }
+                                    },
+                                    verticalPadding: 0.0,
+                                    borderRadius: 4,
+                                    widget: Icon(Icons.add, size: 18, color: DynamicColors.whiteClr),
                                   ),
                                 ],
-                              ),
-                              CustomTextField(
-                                width: 290,
-                                contentPadding: EdgeInsets.only(left: 12),
-                                hintText: "ENTER YOUR RETURN NOTES HERE",
-                                controller: controller.controllerNoteReturnController,
-                                hintStyle: mozillaTextRegularText(
-                                    fontSize: 10
-                                ),
-                                borderRadius: 4,
                               ),
                             ],
                           ),
@@ -290,8 +314,15 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                                   Padding(
                                     padding: const EdgeInsets.only(left: 8.0),
                                     child: CustomButton(
+                                      // onTap: (){
+                                      //   controller.controllerNoteController.text = controller.controllerAlert[index].note!;
+                                      //   controller.update();
+                                      // },
                                       onTap: (){
                                         controller.controllerNoteController.text = controller.controllerAlert[index].note!;
+                                        setState(() {
+                                          editingIndex = index;
+                                        });
                                         controller.update();
                                       },
                                       width: 30,

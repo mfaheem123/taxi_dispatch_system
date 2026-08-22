@@ -24,6 +24,7 @@ class ExtraFaresAlert extends StatefulWidget {
 class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
 
   final dashBoardCntrl = Get.find<DashboardController>();
+  final FocusNode closeButtonFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -62,14 +63,28 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                         fontSize: 13,
                       ),
                     ),
-                    GestureDetector(
-                      onTap: (){
-                        Get.back();
+                    AnimatedBuilder(
+                      animation: closeButtonFocusNode,
+                      builder: (context, child) {
+                        final isFocused = closeButtonFocusNode.hasFocus;
+                        return Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
+                              width: 2,
+                            ),
+                            color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
+                          ),
+                          child: IconButton(
+                            focusNode: closeButtonFocusNode,
+                            onPressed: () => Get.back(),
+                            icon: const Icon(Icons.close, size: 22, color: Colors.grey),
+                            splashRadius: 20,
+                          ),
+                        );
                       },
-                      child: Icon(Icons.close,
-                        color: DynamicColors.textClr,
-                      ),
-                    )
+                    ),
                   ],
                 ),
 

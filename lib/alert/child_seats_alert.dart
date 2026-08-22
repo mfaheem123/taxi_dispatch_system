@@ -26,6 +26,7 @@ class _ChildSeatsAlertState extends State<ChildSeatsAlert> {
 
 
   final dashBoardCntrl = Get.find<DashboardController>();
+  final FocusNode closeButtonFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -46,7 +47,7 @@ class _ChildSeatsAlertState extends State<ChildSeatsAlert> {
       child: GetBuilder<DashboardController>(
         builder: (controller) {
           return Container(
-            height: 350,
+            height: 390,
             width: 650,
             padding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
             child: Column(
@@ -61,14 +62,28 @@ class _ChildSeatsAlertState extends State<ChildSeatsAlert> {
                         fontSize: 13,
                       ),
                     ),
-                    GestureDetector(
-                      onTap: (){
-                        Get.back();
+                    AnimatedBuilder(
+                      animation: closeButtonFocusNode,
+                      builder: (context, child) {
+                        final isFocused = closeButtonFocusNode.hasFocus;
+                        return Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
+                              width: 2,
+                            ),
+                            color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
+                          ),
+                          child: IconButton(
+                            focusNode: closeButtonFocusNode,
+                            onPressed: () => Get.back(),
+                            icon: const Icon(Icons.close, size: 22, color: Colors.grey),
+                            splashRadius: 20,
+                          ),
+                        );
                       },
-                      child: Icon(Icons.close,
-                        color: DynamicColors.textClr,
-                      ),
-                    )
+                    ),
                   ],
                 ),
                 Divider(),

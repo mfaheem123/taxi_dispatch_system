@@ -17,7 +17,7 @@ class DashboardF9Alert {
       // key has to be bound inside the dialog itself.
       EscapeDismissible(
         child: Dialog(
-        insetPadding: const EdgeInsets.only(top: 40, left: 60, right: 60),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 50, vertical: 24),
         backgroundColor: Colors.transparent,
         child: Align(
           alignment: Alignment.topCenter,
@@ -25,17 +25,20 @@ class DashboardF9Alert {
             builder: (context, setState) {
               return LayoutBuilder(builder: (context, constraints) {
                 final double maxWidth = constraints.maxWidth;
-                final bool isMobile = maxWidth < 600;
-                final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
-                // Instead of fixed width, we calculate flexible field widths
-                final double fieldWidth = isMobile
-                    ? maxWidth // full width
-                    : isTablet
-                    ? maxWidth / 2
-                    : maxWidth / 4;
+                final double dialogWidth = maxWidth > 700 ? 500 : maxWidth * 0.75;
+                // final bool isMobile = maxWidth < 600;
+                // final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+                // // Instead of fixed width, we calculate flexible field widths
+                // final double fieldWidth = isMobile
+                //     ? maxWidth // full width
+                //     : isTablet
+                //     ? maxWidth / 2
+                //     : maxWidth / 4;
                   return Container(
-                    width: fieldWidth*1.5,
-                    padding: const EdgeInsets.all(14),
+                    width: dialogWidth,
+                    constraints: const BoxConstraints(
+                      maxHeight: 650,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(8),
