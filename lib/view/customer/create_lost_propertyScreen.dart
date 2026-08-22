@@ -1799,6 +1799,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -2068,664 +2069,423 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
             .first
             .devicePixelRatio;
 
-    return GetBuilder<CustomerController>(
-      builder: (controller) {
-        final selectedBooking =
-            controller.selectedBookingForLostProperty;
+    return PageScrollWrapper(
+      child: GetBuilder<CustomerController>(
+        builder: (controller) {
+          final selectedBooking =
+              controller.selectedBookingForLostProperty;
 
-        // ========================================================
-        // DATE
-        // ========================================================
+          // ========================================================
+          // DATE
+          // ========================================================
 
-        String formattedDate = "-";
+          String formattedDate = "-";
 
-        if (selectedBooking?.pickupDate != null &&
-            selectedBooking!.pickupDate
-                .toString()
-                .isNotEmpty) {
-          try {
-            DateTime parsedDate =
-            DateFormat("yyyy-M-d").parse(
-              selectedBooking.pickupDate.toString(),
-            );
+          if (selectedBooking?.pickupDate != null &&
+              selectedBooking!.pickupDate
+                  .toString()
+                  .isNotEmpty) {
+            try {
+              DateTime parsedDate =
+              DateFormat("yyyy-M-d").parse(
+                selectedBooking.pickupDate.toString(),
+              );
 
-            formattedDate =
-                DateFormat("yyyy-MM-dd").format(parsedDate);
-          } catch (_) {
-            formattedDate =
-                selectedBooking.pickupDate.toString();
-          }
-        }
-
-        // ========================================================
-        // TIME
-        // ========================================================
-
-        String formattedTime = "-";
-
-        if (selectedBooking?.pickupTime != null &&
-            selectedBooking!.pickupTime
-                .toString()
-                .isNotEmpty) {
-          try {
-            formattedTime = selectedBooking.pickupTime
-                .toString()
-                .split('.')[0]
-                .substring(0, 5);
-          } catch (_) {
-            formattedTime =
-                selectedBooking.pickupTime.toString();
-          }
-        }
-
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            final double maxWidth = constraints.maxWidth;
-
-            final bool isMobile = maxWidth < 600;
-            final bool isTablet =
-                maxWidth >= 600 && maxWidth < 1024;
-            final bool isLaptop =
-                maxWidth >= 1024 && maxWidth < 1400;
-
-            double mainContainerWidth;
-            double fieldWidth;
-
-            if (isMobile) {
-              mainContainerWidth = maxWidth;
-              fieldWidth = maxWidth;
-            } else if (isTablet) {
-              mainContainerWidth = (maxWidth - 20) / 2;
-              fieldWidth =
-                  (mainContainerWidth - 40) / 2;
-            } else if (isLaptop) {
-              mainContainerWidth = (maxWidth - 25) / 2;
-              fieldWidth =
-                  (mainContainerWidth - 50) / 2;
-            } else {
-              mainContainerWidth = (maxWidth - 30) / 2;
-              fieldWidth =
-                  (mainContainerWidth - 60) / 2;
+              formattedDate =
+                  DateFormat("yyyy-MM-dd").format(parsedDate);
+            } catch (_) {
+              formattedDate =
+                  selectedBooking.pickupDate.toString();
             }
+          }
 
-            return Stack(
-              children: [
-                // ==================================================
-                // MAIN CONTENT
-                // ==================================================
+          // ========================================================
+          // TIME
+          // ========================================================
 
-                SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      // ==================================================
-                      // TOP CONTAINERS
-                      // ==================================================
+          String formattedTime = "-";
 
-                      Wrap(
-                        spacing: 20,
-                        runSpacing: 20,
-                        children: [
-                          // ==================================================
-                          // LOST PROPERTY
-                          // ==================================================
+          if (selectedBooking?.pickupTime != null &&
+              selectedBooking!.pickupTime
+                  .toString()
+                  .isNotEmpty) {
+            try {
+              formattedTime = selectedBooking.pickupTime
+                  .toString()
+                  .split('.')[0]
+                  .substring(0, 5);
+            } catch (_) {
+              formattedTime =
+                  selectedBooking.pickupTime.toString();
+            }
+          }
 
-                          Container(
-                            width: mainContainerWidth,
-                            constraints:
-                            const BoxConstraints(
-                              minHeight: 200,
-                            ),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: DynamicColors.gryClr,
-                                width: 1.2,
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final double maxWidth = constraints.maxWidth;
+
+              final bool isMobile = maxWidth < 600;
+              final bool isTablet =
+                  maxWidth >= 600 && maxWidth < 1024;
+              final bool isLaptop =
+                  maxWidth >= 1024 && maxWidth < 1400;
+
+              double mainContainerWidth;
+              double fieldWidth;
+
+              if (isMobile) {
+                mainContainerWidth = maxWidth;
+                fieldWidth = maxWidth;
+              } else if (isTablet) {
+                mainContainerWidth = (maxWidth - 20) / 2;
+                fieldWidth =
+                    (mainContainerWidth - 40) / 2;
+              } else if (isLaptop) {
+                mainContainerWidth = (maxWidth - 25) / 2;
+                fieldWidth =
+                    (mainContainerWidth - 50) / 2;
+              } else {
+                mainContainerWidth = (maxWidth - 30) / 2;
+                fieldWidth =
+                    (mainContainerWidth - 60) / 2;
+              }
+
+              return Stack(
+                children: [
+                  // ==================================================
+                  // MAIN CONTENT
+                  // ==================================================
+
+                  SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        // ==================================================
+                        // TOP CONTAINERS
+                        // ==================================================
+
+                        Wrap(
+                          spacing: 20,
+                          runSpacing: 20,
+                          children: [
+                            // ==================================================
+                            // LOST PROPERTY
+                            // ==================================================
+
+                            Container(
+                              width: mainContainerWidth,
+                              constraints:
+                              const BoxConstraints(
+                                minHeight: 200,
                               ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: double.infinity,
-                                  color:
-                                  DynamicColors.secondaryClr,
-                                  padding:
-                                  const EdgeInsets.all(12),
-                                  child: Center(
-                                    child: Text(
-                                      AppText.lostProperty,
-                                      style:
-                                      mozillaTextSemiBoldText(
-                                        fontWeight:
-                                        FontWeight.w900,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: DynamicColors.gryClr,
+                                  width: 1.2,
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    color:
+                                    DynamicColors.secondaryClr,
+                                    padding:
+                                    const EdgeInsets.all(12),
+                                    child: Center(
+                                      child: Text(
+                                        AppText.lostProperty,
+                                        style:
+                                        mozillaTextSemiBoldText(
+                                          fontWeight:
+                                          FontWeight.w900,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
 
-                                Padding(
-                                  padding:
-                                  const EdgeInsets.all(15.0),
-                                  child: Wrap(
-                                    runSpacing: 20,
-                                    spacing: 15,
-                                    alignment:
-                                    WrapAlignment.start,
-                                    children: [
-                                      // ==================================================
-                                      // REPORT DATE
-                                      // ==================================================
+                                  Padding(
+                                    padding:
+                                    const EdgeInsets.all(15.0),
+                                    child: Wrap(
+                                      runSpacing: 20,
+                                      spacing: 15,
+                                      alignment:
+                                      WrapAlignment.start,
+                                      children: [
+                                        // ==================================================
+                                        // REPORT DATE
+                                        // ==================================================
 
-                                      labeledField(
-                                        context: context,
-                                        isMobile: isMobile,
-                                        label:
-                                        AppText.reportDate,
-                                        width: fieldWidth,
-                                        column: true,
-                                        child: SizedBox(
-                                          height: 32,
-                                          child:
-                                          KeyboardDatePicker(
-                                            initialDate: controller
-                                                .reportDateController !=
-                                                ""
-                                                ? DateTime.tryParse(
-                                                controller
-                                                    .reportDateController) ??
-                                                DateTime.now()
-                                                : DateTime.now(),
-                                            onChanged: (date) {
-                                              controller
-                                                  .reportDateController =
-                                                  date
-                                                      .toIso8601String()
-                                                      .split("T")
-                                                      .first;
-                                            },
-                                            onSubmitted: (date) {
-                                              controller
-                                                  .reportDateController =
-                                                  date
-                                                      .toIso8601String()
-                                                      .split("T")
-                                                      .first;
-                                            },
-                                          ),
-                                        ),
-                                      ),
-
-                                      // ==================================================
-                                      // FOUND DATE
-                                      // ==================================================
-
-                                      labeledField(
-                                        context: context,
-                                        isMobile: isMobile,
-                                        label:
-                                        AppText.foundDate,
-                                        width: fieldWidth,
-                                        column: true,
-                                        child: SizedBox(
-                                          height: 32,
-                                          child:
-                                          KeyboardDatePicker(
-                                            initialDate: () {
-                                              final bookingDate =
-                                                  controller
-                                                      .selectedBookingForLostProperty
-                                                      ?.pickupDate;
-
-                                              if (bookingDate != null &&
-                                                  bookingDate
-                                                      .isNotEmpty) {
-                                                try {
-                                                  return DateTime
-                                                      .parse(
-                                                    bookingDate,
-                                                  );
-                                                } catch (e) {}
-                                              }
-
-                                              return controller
-                                                  .lostDateController !=
+                                        labeledField(
+                                          context: context,
+                                          isMobile: isMobile,
+                                          label:
+                                          AppText.reportDate,
+                                          width: fieldWidth,
+                                          column: true,
+                                          child: SizedBox(
+                                            height: 32,
+                                            child:
+                                            KeyboardDatePicker(
+                                              initialDate: controller
+                                                  .reportDateController !=
                                                   ""
                                                   ? DateTime.tryParse(
                                                   controller
-                                                      .lostDateController) ??
+                                                      .reportDateController) ??
                                                   DateTime.now()
-                                                  : DateTime.now();
-                                            }(),
-                                            onChanged: (date) {
-                                              controller
-                                                  .lostDateController =
-                                                  date
-                                                      .toIso8601String()
-                                                      .split("T")
-                                                      .first;
-                                            },
-                                            onSubmitted: (date) {
-                                              controller
-                                                  .lostDateController =
-                                                  date
-                                                      .toIso8601String()
-                                                      .split("T")
-                                                      .first;
-                                            },
+                                                  : DateTime.now(),
+                                              onChanged: (date) {
+                                                controller
+                                                    .reportDateController =
+                                                    date
+                                                        .toIso8601String()
+                                                        .split("T")
+                                                        .first;
+                                              },
+                                              onSubmitted: (date) {
+                                                controller
+                                                    .reportDateController =
+                                                    date
+                                                        .toIso8601String()
+                                                        .split("T")
+                                                        .first;
+                                              },
+                                            ),
                                           ),
                                         ),
-                                      ),
 
-                                      // ==================================================
-                                      // DETAIL OF PROPERTY
-                                      // ==================================================
+                                        // ==================================================
+                                        // FOUND DATE
+                                        // ==================================================
 
-                                      CustomTextField(
-                                        borderRadius: 4,
-                                        controller: controller
-                                            .detailOfPropertyController,
-                                        width: fieldWidth,
-                                        hintText:
-                                        AppText.detailOfProperty,
-                                        columnText: true,
-                                        contentPadding:
-                                        const EdgeInsets.only(
-                                          left: 10,
-                                          top: 20,
+                                        labeledField(
+                                          context: context,
+                                          isMobile: isMobile,
+                                          label:
+                                          AppText.foundDate,
+                                          width: fieldWidth,
+                                          column: true,
+                                          child: SizedBox(
+                                            height: 32,
+                                            child:
+                                            KeyboardDatePicker(
+                                              initialDate: () {
+                                                final bookingDate =
+                                                    controller
+                                                        .selectedBookingForLostProperty
+                                                        ?.pickupDate;
+
+                                                if (bookingDate != null &&
+                                                    bookingDate
+                                                        .isNotEmpty) {
+                                                  try {
+                                                    return DateTime
+                                                        .parse(
+                                                      bookingDate,
+                                                    );
+                                                  } catch (e) {}
+                                                }
+
+                                                return controller
+                                                    .lostDateController !=
+                                                    ""
+                                                    ? DateTime.tryParse(
+                                                    controller
+                                                        .lostDateController) ??
+                                                    DateTime.now()
+                                                    : DateTime.now();
+                                              }(),
+                                              onChanged: (date) {
+                                                controller
+                                                    .lostDateController =
+                                                    date
+                                                        .toIso8601String()
+                                                        .split("T")
+                                                        .first;
+                                              },
+                                              onSubmitted: (date) {
+                                                controller
+                                                    .lostDateController =
+                                                    date
+                                                        .toIso8601String()
+                                                        .split("T")
+                                                        .first;
+                                              },
+                                            ),
+                                          ),
                                         ),
-                                        maxLines: 6,
-                                        height: 100,
-                                        inputFormatters: [
-                                          UpperCaseTextFormatter(),
-                                        ],
-                                      ),
 
-                                      // ==================================================
-                                      // METHOD OF DISPOSITION
-                                      // ==================================================
+                                        // ==================================================
+                                        // DETAIL OF PROPERTY
+                                        // ==================================================
 
-                                      CustomTextField(
-                                        borderRadius: 4,
-                                        controller: controller
-                                            .methodOfDespositionController,
-                                        width: fieldWidth,
-                                        hintText:
-                                        AppText.methodOfDesposition,
-                                        columnText: true,
-                                        contentPadding:
-                                        const EdgeInsets.only(
-                                          left: 10,
-                                          top: 20,
+                                        CustomTextField(
+                                          borderRadius: 4,
+                                          controller: controller
+                                              .detailOfPropertyController,
+                                          width: fieldWidth,
+                                          hintText:
+                                          AppText.detailOfProperty,
+                                          columnText: true,
+                                          contentPadding:
+                                          const EdgeInsets.only(
+                                            left: 10,
+                                            top: 20,
+                                          ),
+                                          maxLines: 6,
+                                          height: 100,
+                                          inputFormatters: [
+                                            UpperCaseTextFormatter(),
+                                          ],
                                         ),
-                                        maxLines: 6,
-                                        height: 100,
-                                        inputFormatters: [
-                                          UpperCaseTextFormatter(),
-                                        ],
-                                      ),
-                                    ],
+
+                                        // ==================================================
+                                        // METHOD OF DISPOSITION
+                                        // ==================================================
+
+                                        CustomTextField(
+                                          borderRadius: 4,
+                                          controller: controller
+                                              .methodOfDespositionController,
+                                          width: fieldWidth,
+                                          hintText:
+                                          AppText.methodOfDesposition,
+                                          columnText: true,
+                                          contentPadding:
+                                          const EdgeInsets.only(
+                                            left: 10,
+                                            top: 20,
+                                          ),
+                                          maxLines: 6,
+                                          height: 100,
+                                          inputFormatters: [
+                                            UpperCaseTextFormatter(),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // ==================================================
-                          // CUSTOMER
-                          // ==================================================
-
-                          Container(
-                            width: mainContainerWidth,
-                            constraints:
-                            const BoxConstraints(
-                              minHeight: 280,
-                            ),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: DynamicColors.gryClr,
+                                ],
                               ),
                             ),
-                            child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              children: [
-                                // ==================================================
-                                // CUSTOMER HEADER
-                                // ==================================================
 
-                                Container(
-                                  width: double.infinity,
-                                  color:
-                                  DynamicColors.secondaryClr,
-                                  padding:
-                                  const EdgeInsets.all(12),
-                                  child: Center(
-                                    child: Text(
-                                      AppText.customer,
-                                      style:
-                                      mozillaTextSemiBoldText(
-                                        fontWeight:
-                                        FontWeight.w900,
+                            // ==================================================
+                            // CUSTOMER
+                            // ==================================================
+
+                            Container(
+                              width: mainContainerWidth,
+                              constraints:
+                              const BoxConstraints(
+                                minHeight: 280,
+                              ),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: DynamicColors.gryClr,
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                                children: [
+                                  // ==================================================
+                                  // CUSTOMER HEADER
+                                  // ==================================================
+
+                                  Container(
+                                    width: double.infinity,
+                                    color:
+                                    DynamicColors.secondaryClr,
+                                    padding:
+                                    const EdgeInsets.all(12),
+                                    child: Center(
+                                      child: Text(
+                                        AppText.customer,
+                                        style:
+                                        mozillaTextSemiBoldText(
+                                          fontWeight:
+                                          FontWeight.w900,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
 
-                                // ==================================================
-                                // CUSTOMER FIELDS
-                                // ==================================================
+                                  // ==================================================
+                                  // CUSTOMER FIELDS
+                                  // ==================================================
 
-                                Padding(
-                                  padding:
-                                  const EdgeInsets.all(15.0),
-                                  child: Wrap(
-                                    runSpacing: 20,
-                                    spacing: 15,
-                                    children: [
-                                      // ==================================================
-                                      // NAME FIELD
-                                      //
-                                      // ENTER = SEARCH
-                                      // ICON = SEARCH
-                                      // ==================================================
+                                  Padding(
+                                    padding:
+                                    const EdgeInsets.all(15.0),
+                                    child: Wrap(
+                                      runSpacing: 20,
+                                      spacing: 15,
+                                      children: [
+                                        // ==================================================
+                                        // NAME FIELD
+                                        //
+                                        // ENTER = SEARCH
+                                        // ICON = SEARCH
+                                        // ==================================================
 
-                                      Focus(
-                                        focusNode: nameFocusNode,
-                                        onKeyEvent:
-                                            (node, event) {
-                                          if (event
-                                          is KeyDownEvent) {
-                                            if (event.logicalKey ==
-                                                LogicalKeyboardKey
-                                                    .enter ||
-                                                event.logicalKey ==
-                                                    LogicalKeyboardKey
-                                                        .numpadEnter) {
-                                              searchLostProperty(
-                                                byName: true,
-                                              );
-
-                                              return KeyEventResult
-                                                  .handled;
-                                            }
-                                          }
-
-                                          return KeyEventResult
-                                              .ignored;
-                                        },
-                                        child:
-                                        CustomTextField(
-                                          borderRadius: 4,
-                                          controller: controller
-                                              .propertyNameController,
-                                          width: fieldWidth,
-                                          hintText:
-                                          AppText.name,
-                                          columnText: true,
-                                          inputFormatters: [
-                                            FilteringTextInputFormatter
-                                                .allow(
-                                              RegExp(
-                                                r'[a-zA-Z\s]',
-                                              ),
-                                            ),
-                                            UpperCaseTextFormatter(),
-                                          ],
-                                          suffixIcon:
-                                          (controller
-                                              .lostPropertyUpdateId
-                                              .value ==
-                                              null ||
-                                              controller
-                                                  .lostPropertyUpdateId
-                                                  .value ==
-                                                  0)
-                                              ? GestureDetector(
-                                            onTap: () {
-                                              searchLostProperty(
-                                                byName: true,
-                                              );
-                                            },
-                                            child:
-                                            Container(
-                                              decoration:
-                                              BoxDecoration(
-                                                color: Colors
-                                                    .grey
-                                                    .shade300,
-                                                border:
-                                                Border.all(
-                                                  color: DynamicColors
-                                                      .gryClr,
-                                                ),
-                                                borderRadius:
-                                                BorderRadius
-                                                    .circular(
-                                                  4,
-                                                ),
-                                              ),
-                                              child:
-                                              const Icon(
-                                                Icons.search,
-                                                size: 25,
-                                                color: Colors
-                                                    .black,
-                                              ),
-                                            ),
-                                          )
-                                              : const SizedBox
-                                              .shrink(),
-                                        ),
-                                      ),
-
-                                      // ==================================================
-                                      // MOBILE FIELD
-                                      //
-                                      // TAB = NORMAL FOCUS TRAVERSAL
-                                      // ENTER = SEARCH
-                                      // ==================================================
-
-                                      Focus(
-                                        focusNode:
-                                        mobileFocusNode,
-                                        onKeyEvent:
-                                            (node, event) {
-                                          if (event
-                                          is KeyDownEvent) {
-                                            // ENTER
-                                            if (event.logicalKey ==
-                                                LogicalKeyboardKey
-                                                    .enter ||
-                                                event.logicalKey ==
-                                                    LogicalKeyboardKey
-                                                        .numpadEnter) {
-                                              // Autocomplete selected
-                                              if (controller
-                                                  .getPhoneNumbersModel
-                                                  ?.customer !=
-                                                  null &&
-                                                  controller
-                                                      .getPhoneNumbersModel!
-                                                      .customer!
-                                                      .isNotEmpty &&
-                                                  controller
-                                                      .selectedIndex !=
-                                                      -1) {
-                                                final selectedUser =
-                                                controller
-                                                    .getPhoneNumbersModel!
-                                                    .customer![controller
-                                                    .selectedIndex];
-
-                                                selectCustomer(
-                                                  selectedUser,
-                                                );
-                                              } else {
-                                                searchLostProperty(
-                                                  byName: false,
-                                                );
-                                              }
-
-                                              return KeyEventResult
-                                                  .handled;
-                                            }
-
-                                            // ARROW DOWN
-                                            if (event.logicalKey ==
-                                                LogicalKeyboardKey
-                                                    .arrowDown) {
-                                              if (controller
-                                                  .getPhoneNumbersModel
-                                                  ?.customer !=
-                                                  null &&
-                                                  controller
-                                                      .getPhoneNumbersModel!
-                                                      .customer!
-                                                      .isNotEmpty) {
-                                                final int
-                                                listLength =
-                                                    controller
-                                                        .getPhoneNumbersModel!
-                                                        .customer!
-                                                        .length;
-
-                                                controller
-                                                    .selectedIndex =
-                                                    (controller
-                                                        .selectedIndex +
-                                                        1) %
-                                                        listLength;
-
-                                                controller
-                                                    .scrollToIndex(
-                                                  controller
-                                                      .selectedIndex,
-                                                );
-
-                                                controller.update();
-                                              }
-
-                                              return KeyEventResult
-                                                  .handled;
-                                            }
-
-                                            // ARROW UP
-                                            if (event.logicalKey ==
-                                                LogicalKeyboardKey
-                                                    .arrowUp) {
-                                              if (controller
-                                                  .getPhoneNumbersModel
-                                                  ?.customer !=
-                                                  null &&
-                                                  controller
-                                                      .getPhoneNumbersModel!
-                                                      .customer!
-                                                      .isNotEmpty) {
-                                                final int
-                                                listLength =
-                                                    controller
-                                                        .getPhoneNumbersModel!
-                                                        .customer!
-                                                        .length;
-
-                                                controller
-                                                    .selectedIndex =
-                                                    (controller
-                                                        .selectedIndex -
-                                                        1 +
-                                                        listLength) %
-                                                        listLength;
-
-                                                controller
-                                                    .scrollToIndex(
-                                                  controller
-                                                      .selectedIndex,
-                                                );
-
-                                                controller.update();
-                                              }
-
-                                              return KeyEventResult
-                                                  .handled;
-                                            }
-                                          }
-
-                                          // IMPORTANT:
-                                          // TAB yahan handle nahi karna.
-                                          // Flutter naturally next focusable
-                                          // widget par jayega.
-
-                                          return KeyEventResult
-                                              .ignored;
-                                        },
-                                        child:
-                                        CustomTextField(
-                                          borderRadius: 4,
-                                          controller: controller
-                                              .propertyMobileController,
-                                          width: fieldWidth,
-                                          hintText:
-                                          AppText.mobileNo,
-                                          columnText: true,
-                                          inputFormatters: [
-                                            FilteringTextInputFormatter
-                                                .digitsOnly,
-                                          ],
-                                          onChanged: (val) {
-                                            controller
-                                                .selectedIndex = -1;
-
-                                            if (val.isNotEmpty) {
-                                              controller
-                                                  .getCustomerNumbers(
-                                                val,
-                                              );
-                                            } else {
-                                              controller
-                                                  .getPhoneNumbersModel =
-                                              null;
-
-                                              controller.update();
-                                            }
-                                          },
-
-                                          // ==================================================
-                                          // MOBILE SEARCH ICON
-                                          // ==================================================
-
-                                          suffixIcon:
-                                          Focus(
-                                            focusNode:
-                                            mobileSearchButtonFocusNode,
-                                            canRequestFocus: true,
-
-                                            onKeyEvent:
-                                                (node, event) {
-                                              if (event
-                                              is KeyDownEvent &&
-                                                  (event.logicalKey ==
+                                        Focus(
+                                          focusNode: nameFocusNode,
+                                          onKeyEvent:
+                                              (node, event) {
+                                            if (event
+                                            is KeyDownEvent) {
+                                              if (event.logicalKey ==
+                                                  LogicalKeyboardKey
+                                                      .enter ||
+                                                  event.logicalKey ==
                                                       LogicalKeyboardKey
-                                                          .enter ||
-                                                      event.logicalKey ==
-                                                          LogicalKeyboardKey
-                                                              .numpadEnter)) {
+                                                          .numpadEnter) {
                                                 searchLostProperty(
-                                                  byName: false,
+                                                  byName: true,
                                                 );
 
                                                 return KeyEventResult
                                                     .handled;
                                               }
+                                            }
 
-                                              return KeyEventResult
-                                                  .ignored;
-                                            },
-
-                                            child:
-                                            InkWell(
+                                            return KeyEventResult
+                                                .ignored;
+                                          },
+                                          child:
+                                          CustomTextField(
+                                            borderRadius: 4,
+                                            controller: controller
+                                                .propertyNameController,
+                                            width: fieldWidth,
+                                            hintText:
+                                            AppText.name,
+                                            columnText: true,
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter
+                                                  .allow(
+                                                RegExp(
+                                                  r'[a-zA-Z\s]',
+                                                ),
+                                              ),
+                                              UpperCaseTextFormatter(),
+                                            ],
+                                            suffixIcon:
+                                            (controller
+                                                .lostPropertyUpdateId
+                                                .value ==
+                                                null ||
+                                                controller
+                                                    .lostPropertyUpdateId
+                                                    .value ==
+                                                    0)
+                                                ? GestureDetector(
                                               onTap: () {
                                                 searchLostProperty(
-                                                  byName: false,
+                                                  byName: true,
                                                 );
                                               },
                                               child:
@@ -2733,11 +2493,11 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                                 decoration:
                                                 BoxDecoration(
                                                   color: Colors
-                                                      .grey.shade300,
+                                                      .grey
+                                                      .shade300,
                                                   border:
                                                   Border.all(
-                                                    color:
-                                                    DynamicColors
+                                                    color: DynamicColors
                                                         .gryClr,
                                                   ),
                                                   borderRadius:
@@ -2750,372 +2510,615 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                                 const Icon(
                                                   Icons.search,
                                                   size: 25,
-                                                  color:
-                                                  Colors.black,
+                                                  color: Colors
+                                                      .black,
+                                                ),
+                                              ),
+                                            )
+                                                : const SizedBox
+                                                .shrink(),
+                                          ),
+                                        ),
+
+                                        // ==================================================
+                                        // MOBILE FIELD
+                                        //
+                                        // TAB = NORMAL FOCUS TRAVERSAL
+                                        // ENTER = SEARCH
+                                        // ==================================================
+
+                                        Focus(
+                                          focusNode:
+                                          mobileFocusNode,
+                                          onKeyEvent:
+                                              (node, event) {
+                                            if (event
+                                            is KeyDownEvent) {
+                                              // ENTER
+                                              if (event.logicalKey ==
+                                                  LogicalKeyboardKey
+                                                      .enter ||
+                                                  event.logicalKey ==
+                                                      LogicalKeyboardKey
+                                                          .numpadEnter) {
+                                                // Autocomplete selected
+                                                if (controller
+                                                    .getPhoneNumbersModel
+                                                    ?.customer !=
+                                                    null &&
+                                                    controller
+                                                        .getPhoneNumbersModel!
+                                                        .customer!
+                                                        .isNotEmpty &&
+                                                    controller
+                                                        .selectedIndex !=
+                                                        -1) {
+                                                  final selectedUser =
+                                                  controller
+                                                      .getPhoneNumbersModel!
+                                                      .customer![controller
+                                                      .selectedIndex];
+
+                                                  selectCustomer(
+                                                    selectedUser,
+                                                  );
+                                                } else {
+                                                  searchLostProperty(
+                                                    byName: false,
+                                                  );
+                                                }
+
+                                                return KeyEventResult
+                                                    .handled;
+                                              }
+
+                                              // ARROW DOWN
+                                              if (event.logicalKey ==
+                                                  LogicalKeyboardKey
+                                                      .arrowDown) {
+                                                if (controller
+                                                    .getPhoneNumbersModel
+                                                    ?.customer !=
+                                                    null &&
+                                                    controller
+                                                        .getPhoneNumbersModel!
+                                                        .customer!
+                                                        .isNotEmpty) {
+                                                  final int
+                                                  listLength =
+                                                      controller
+                                                          .getPhoneNumbersModel!
+                                                          .customer!
+                                                          .length;
+
+                                                  controller
+                                                      .selectedIndex =
+                                                      (controller
+                                                          .selectedIndex +
+                                                          1) %
+                                                          listLength;
+
+                                                  controller
+                                                      .scrollToIndex(
+                                                    controller
+                                                        .selectedIndex,
+                                                  );
+
+                                                  controller.update();
+                                                }
+
+                                                return KeyEventResult
+                                                    .handled;
+                                              }
+
+                                              // ARROW UP
+                                              if (event.logicalKey ==
+                                                  LogicalKeyboardKey
+                                                      .arrowUp) {
+                                                if (controller
+                                                    .getPhoneNumbersModel
+                                                    ?.customer !=
+                                                    null &&
+                                                    controller
+                                                        .getPhoneNumbersModel!
+                                                        .customer!
+                                                        .isNotEmpty) {
+                                                  final int
+                                                  listLength =
+                                                      controller
+                                                          .getPhoneNumbersModel!
+                                                          .customer!
+                                                          .length;
+
+                                                  controller
+                                                      .selectedIndex =
+                                                      (controller
+                                                          .selectedIndex -
+                                                          1 +
+                                                          listLength) %
+                                                          listLength;
+
+                                                  controller
+                                                      .scrollToIndex(
+                                                    controller
+                                                        .selectedIndex,
+                                                  );
+
+                                                  controller.update();
+                                                }
+
+                                                return KeyEventResult
+                                                    .handled;
+                                              }
+                                            }
+
+                                            // IMPORTANT:
+                                            // TAB yahan handle nahi karna.
+                                            // Flutter naturally next focusable
+                                            // widget par jayega.
+
+                                            return KeyEventResult
+                                                .ignored;
+                                          },
+                                          child:
+                                          CustomTextField(
+                                            borderRadius: 4,
+                                            controller: controller
+                                                .propertyMobileController,
+                                            width: fieldWidth,
+                                            hintText:
+                                            AppText.mobileNo,
+                                            columnText: true,
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter
+                                                  .digitsOnly,
+                                            ],
+                                            onChanged: (val) {
+                                              controller
+                                                  .selectedIndex = -1;
+
+                                              if (val.isNotEmpty) {
+                                                controller
+                                                    .getCustomerNumbers(
+                                                  val,
+                                                );
+                                              } else {
+                                                controller
+                                                    .getPhoneNumbersModel =
+                                                null;
+
+                                                controller.update();
+                                              }
+                                            },
+
+                                            // ==================================================
+                                            // MOBILE SEARCH ICON
+                                            // ==================================================
+
+                                            suffixIcon:
+                                            Focus(
+                                              focusNode:
+                                              mobileSearchButtonFocusNode,
+                                              canRequestFocus: true,
+
+                                              onKeyEvent:
+                                                  (node, event) {
+                                                if (event
+                                                is KeyDownEvent &&
+                                                    (event.logicalKey ==
+                                                        LogicalKeyboardKey
+                                                            .enter ||
+                                                        event.logicalKey ==
+                                                            LogicalKeyboardKey
+                                                                .numpadEnter)) {
+                                                  searchLostProperty(
+                                                    byName: false,
+                                                  );
+
+                                                  return KeyEventResult
+                                                      .handled;
+                                                }
+
+                                                return KeyEventResult
+                                                    .ignored;
+                                              },
+
+                                              child:
+                                              InkWell(
+                                                onTap: () {
+                                                  searchLostProperty(
+                                                    byName: false,
+                                                  );
+                                                },
+                                                child:
+                                                Container(
+                                                  decoration:
+                                                  BoxDecoration(
+                                                    color: Colors
+                                                        .grey.shade300,
+                                                    border:
+                                                    Border.all(
+                                                      color:
+                                                      DynamicColors
+                                                          .gryClr,
+                                                    ),
+                                                    borderRadius:
+                                                    BorderRadius
+                                                        .circular(
+                                                      4,
+                                                    ),
+                                                  ),
+                                                  child:
+                                                  const Icon(
+                                                    Icons.search,
+                                                    size: 25,
+                                                    color:
+                                                    Colors.black,
+                                                  ),
                                                 ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
 
-                                      // ==================================================
-                                      // ADDRESS
-                                      // ==================================================
+                                        // ==================================================
+                                        // ADDRESS
+                                        // ==================================================
 
-                                      CustomTextField(
-                                        borderRadius: 4,
-                                        controller: controller
-                                            .propertyAddressController,
-                                        width: fieldWidth,
-                                        hintText:
-                                        AppText.address,
-                                        columnText: true,
-                                        contentPadding:
-                                        const EdgeInsets.only(
-                                          left: 10,
-                                          top: 20,
+                                        CustomTextField(
+                                          borderRadius: 4,
+                                          controller: controller
+                                              .propertyAddressController,
+                                          width: fieldWidth,
+                                          hintText:
+                                          AppText.address,
+                                          columnText: true,
+                                          contentPadding:
+                                          const EdgeInsets.only(
+                                            left: 10,
+                                            top: 20,
+                                          ),
+                                          maxLines: 6,
+                                          height: 100,
+                                          inputFormatters: [
+                                            UpperCaseTextFormatter(),
+                                          ],
                                         ),
-                                        maxLines: 6,
-                                        height: 100,
-                                        inputFormatters: [
-                                          UpperCaseTextFormatter(),
-                                        ],
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        // ==================================================
+                        // DATA TABLE
+                        // ==================================================
+
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: SizedBox(
+                            width:
+                            MediaQuery.of(context).size.width,
+                            child: DatatableWidget(
+                              columns: [
+                                buildHeaderWithSearch(
+                                  title: "REF #",
+                                  removeSearching: true,
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "DATETIME",
+                                  removeSearching: true,
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "VEHICLE",
+                                  removeSearching: true,
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "PICKUP",
+                                  removeSearching: true,
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "DROPOFF",
+                                  removeSearching: true,
+                                ),
+                              ],
+                              rows: controller
+                                  .selectedBookingForLostProperty ==
+                                  null
+                                  ? []
+                                  : [
+                                DataRow(
+                                  cells: [
+                                    DataCell(
+                                      Center(
+                                        child: Text(
+                                          (controller
+                                              .selectedBookingForLostProperty
+                                              .referenceNumber ??
+                                              "-")
+                                              .toUpperCase(),
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      Center(
+                                        child: Text(
+                                          "$formattedDate $formattedTime"
+                                              .toUpperCase(),
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      Center(
+                                        child: Text(
+                                          (controller
+                                              .selectedBookingForLostProperty
+                                              .vehicleType
+                                              ?.name ??
+                                              "-")
+                                              .toUpperCase(),
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      Center(
+                                        child: Text(
+                                          (controller
+                                              .selectedBookingForLostProperty
+                                              .pickup ??
+                                              "-")
+                                              .toUpperCase(),
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      Center(
+                                        child: Text(
+                                          (controller
+                                              .selectedBookingForLostProperty
+                                              .dropoff ??
+                                              "-")
+                                              .toUpperCase(),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
 
-                      const SizedBox(height: 10),
+                        const SizedBox(height: 30),
 
-                      // ==================================================
-                      // DATA TABLE
-                      // ==================================================
+                        // ==================================================
+                        // ENQUIRY HEADER
+                        // ==================================================
 
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: SizedBox(
-                          width:
-                          MediaQuery.of(context).size.width,
-                          child: DatatableWidget(
-                            columns: [
-                              buildHeaderWithSearch(
-                                title: "REF #",
-                                removeSearching: true,
+                        Container(
+                          color: DynamicColors.secondaryClr,
+                          padding: const EdgeInsets.all(12),
+                          child: Center(
+                            child: Text(
+                              AppText.enquiry,
+                              style: mozillaTextSemiBoldText(
+                                fontWeight: FontWeight.w900,
                               ),
-                              buildHeaderWithSearch(
-                                title: "DATETIME",
-                                removeSearching: true,
+                            ),
+                          ),
+                        ),
+
+                        // ==================================================
+                        // ENQUIRY
+                        // ==================================================
+
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: DynamicColors.gryClr,
+                              width: 1.2,
+                            ),
+                          ),
+                          child: Wrap(
+                            spacing: 30,
+                            runSpacing: 20,
+                            alignment: WrapAlignment.center,
+                            crossAxisAlignment:
+                            WrapCrossAlignment.start,
+                            children: [
+                              Column(
+                                children: [
+                                  CustomTextField(
+                                    borderRadius: 4,
+                                    controller:
+                                    controller.checkedByController,
+                                    width: fieldWidth,
+                                    hintText:
+                                    AppText.checkedBy,
+                                    columnText: true,
+                                    inputFormatters: [
+                                      UpperCaseTextFormatter(),
+                                    ],
+                                  ),
+
+                                  const SizedBox(height: 25),
+
+                                  CustomTextField(
+                                    borderRadius: 4,
+                                    controller:
+                                    controller.enquiryController,
+                                    width: fieldWidth,
+                                    hintText: AppText.enquiry,
+                                    columnText: true,
+                                    contentPadding:
+                                    const EdgeInsets.only(
+                                      left: 10,
+                                      top: 20,
+                                    ),
+                                    maxLines: 6,
+                                    height: 100,
+                                    inputFormatters: [
+                                      UpperCaseTextFormatter(),
+                                    ],
+                                  ),
+                                ],
                               ),
-                              buildHeaderWithSearch(
-                                title: "VEHICLE",
-                                removeSearching: true,
-                              ),
-                              buildHeaderWithSearch(
-                                title: "PICKUP",
-                                removeSearching: true,
-                              ),
-                              buildHeaderWithSearch(
-                                title: "DROPOFF",
-                                removeSearching: true,
-                              ),
-                            ],
-                            rows: controller
-                                .selectedBookingForLostProperty ==
-                                null
-                                ? []
-                                : [
-                              DataRow(
-                                cells: [
-                                  DataCell(
-                                    Center(
-                                      child: Text(
-                                        (controller
-                                            .selectedBookingForLostProperty
-                                            .referenceNumber ??
-                                            "-")
-                                            .toUpperCase(),
-                                      ),
-                                    ),
-                                  ),
-                                  DataCell(
-                                    Center(
-                                      child: Text(
-                                        "$formattedDate $formattedTime"
-                                            .toUpperCase(),
-                                      ),
-                                    ),
-                                  ),
-                                  DataCell(
-                                    Center(
-                                      child: Text(
-                                        (controller
-                                            .selectedBookingForLostProperty
-                                            .vehicleType
-                                            ?.name ??
-                                            "-")
-                                            .toUpperCase(),
-                                      ),
-                                    ),
-                                  ),
-                                  DataCell(
-                                    Center(
-                                      child: Text(
-                                        (controller
-                                            .selectedBookingForLostProperty
-                                            .pickup ??
-                                            "-")
-                                            .toUpperCase(),
-                                      ),
-                                    ),
-                                  ),
-                                  DataCell(
-                                    Center(
-                                      child: Text(
-                                        (controller
-                                            .selectedBookingForLostProperty
-                                            .dropoff ??
-                                            "-")
-                                            .toUpperCase(),
-                                      ),
-                                    ),
-                                  ),
+
+                              CustomTextField(
+                                borderRadius: 4,
+                                controller:
+                                controller.resultController,
+                                width: fieldWidth,
+                                hintText: AppText.result,
+                                columnText: true,
+                                contentPadding:
+                                const EdgeInsets.only(
+                                  left: 10,
+                                  top: 20,
+                                ),
+                                maxLines: 12,
+                                height: 170,
+                                inputFormatters: [
+                                  UpperCaseTextFormatter(),
                                 ],
                               ),
                             ],
                           ),
                         ),
-                      ),
 
-                      const SizedBox(height: 30),
+                        const SizedBox(height: 10),
 
-                      // ==================================================
-                      // ENQUIRY HEADER
-                      // ==================================================
+                        // ==================================================
+                        // SAVE / UPDATE
+                        // ==================================================
 
-                      Container(
-                        color: DynamicColors.secondaryClr,
-                        padding: const EdgeInsets.all(12),
-                        child: Center(
-                          child: Text(
-                            AppText.enquiry,
-                            style: mozillaTextSemiBoldText(
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      // ==================================================
-                      // ENQUIRY
-                      // ==================================================
-
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: DynamicColors.gryClr,
-                            width: 1.2,
-                          ),
-                        ),
-                        child: Wrap(
-                          spacing: 30,
-                          runSpacing: 20,
-                          alignment: WrapAlignment.center,
-                          crossAxisAlignment:
-                          WrapCrossAlignment.start,
-                          children: [
-                            Column(
-                              children: [
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller:
-                                  controller.checkedByController,
-                                  width: fieldWidth,
-                                  hintText:
-                                  AppText.checkedBy,
-                                  columnText: true,
-                                  inputFormatters: [
-                                    UpperCaseTextFormatter(),
-                                  ],
-                                ),
-
-                                const SizedBox(height: 25),
-
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller:
-                                  controller.enquiryController,
-                                  width: fieldWidth,
-                                  hintText: AppText.enquiry,
-                                  columnText: true,
-                                  contentPadding:
-                                  const EdgeInsets.only(
-                                    left: 10,
-                                    top: 20,
-                                  ),
-                                  maxLines: 6,
-                                  height: 100,
-                                  inputFormatters: [
-                                    UpperCaseTextFormatter(),
-                                  ],
-                                ),
-                              ],
-                            ),
-
-                            CustomTextField(
-                              borderRadius: 4,
-                              controller:
-                              controller.resultController,
-                              width: fieldWidth,
-                              hintText: AppText.result,
-                              columnText: true,
-                              contentPadding:
-                              const EdgeInsets.only(
-                                left: 10,
-                                top: 20,
-                              ),
-                              maxLines: 12,
-                              height: 170,
-                              inputFormatters: [
-                                UpperCaseTextFormatter(),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      // ==================================================
-                      // SAVE / UPDATE
-                      // ==================================================
-
-                      CustomButton(
-                        onTap: () {
-                          controller.saveLostProperty();
-                        },
-                        borderRadius: 4,
-                        verticalPadding: 0.0,
-                        fontSize: 17,
-                        height: 30,
-                        width: fieldWidth * 0.9,
-                        btnText:
-                        (controller.lostPropertyValue.value ||
-                            controller
-                                .lostPropertyUpdateId
-                                .value !=
-                                0)
-                            ? "UPDATE"
-                            : AppText.save,
-                      ),
-
-                      const SizedBox(height: 10),
-                    ],
-                  ),
-                ),
-
-                // ==========================================================
-                // CUSTOMER AUTOCOMPLETE
-                // ==========================================================
-
-                if (controller.getPhoneNumbersModel?.customer !=
-                    null &&
-                    controller
-                        .getPhoneNumbersModel!.customer!.isNotEmpty &&
-                    controller
-                        .propertyMobileController.text
-                        .isNotEmpty)
-                  Positioned(
-                    top: isMobile
-                        ? 250
-                        : (isTablet ? 400 : 120),
-                    left: isMobile
-                        ? 15
-                        : isTablet
-                        ? (mainContainerWidth + 30)
-                        : (mainContainerWidth +
-                        fieldWidth +
-                        50),
-                    child: Material(
-                      elevation: 15,
-                      borderRadius:
-                      BorderRadius.circular(8),
-                      color: Colors.grey.shade200,
-                      child: Container(
-                        width: fieldWidth,
-                        constraints:
-                        const BoxConstraints(
-                          maxHeight: 300,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius:
-                          BorderRadius.circular(8),
-                          border: Border.all(
-                            color: Colors.blue.shade200,
-                            width: 2,
-                          ),
-                        ),
-                        child: ListView.builder(
-                          controller:
-                          controller.listScrollController,
-                          shrinkWrap: true,
-                          padding: EdgeInsets.zero,
-                          itemCount: controller
-                              .getPhoneNumbersModel!
-                              .customer!
-                              .length,
-                          itemBuilder:
-                              (context, index) {
-                            final user = controller
-                                .getPhoneNumbersModel!
-                                .customer![index];
-
-                            final bool isSelected =
-                                controller.selectedIndex ==
-                                    index;
-
-                            return InkWell(
-                              onTap: () {
-                                selectCustomer(user);
-                              },
-                              child: Container(
-                                padding:
-                                const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 12,
-                                ),
-                                color: isSelected
-                                    ? Colors.blue
-                                    .withOpacity(0.15)
-                                    : Colors.transparent,
-                                child: Text(
-                                  "${user.name?.toUpperCase() ?? ""}  ${user.mobile ?? ""}",
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: isSelected
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                  ),
-                                ),
-                              ),
-                            );
+                        CustomButton(
+                          onTap: () {
+                            controller.saveLostProperty();
                           },
+                          borderRadius: 4,
+                          verticalPadding: 0.0,
+                          fontSize: 17,
+                          height: 30,
+                          width: fieldWidth * 0.9,
+                          btnText:
+                          (controller.lostPropertyValue.value ||
+                              controller
+                                  .lostPropertyUpdateId
+                                  .value !=
+                                  0)
+                              ? "UPDATE"
+                              : AppText.save,
+                        ),
+
+                        const SizedBox(height: 10),
+                      ],
+                    ),
+                  ),
+
+                  // ==========================================================
+                  // CUSTOMER AUTOCOMPLETE
+                  // ==========================================================
+
+                  if (controller.getPhoneNumbersModel?.customer !=
+                      null &&
+                      controller
+                          .getPhoneNumbersModel!.customer!.isNotEmpty &&
+                      controller
+                          .propertyMobileController.text
+                          .isNotEmpty)
+                    Positioned(
+                      top: isMobile
+                          ? 250
+                          : (isTablet ? 400 : 120),
+                      left: isMobile
+                          ? 15
+                          : isTablet
+                          ? (mainContainerWidth + 30)
+                          : (mainContainerWidth +
+                          fieldWidth +
+                          50),
+                      child: Material(
+                        elevation: 15,
+                        borderRadius:
+                        BorderRadius.circular(8),
+                        color: Colors.grey.shade200,
+                        child: Container(
+                          width: fieldWidth,
+                          constraints:
+                          const BoxConstraints(
+                            maxHeight: 300,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius:
+                            BorderRadius.circular(8),
+                            border: Border.all(
+                              color: Colors.blue.shade200,
+                              width: 2,
+                            ),
+                          ),
+                          child: ListView.builder(
+                            controller:
+                            controller.listScrollController,
+                            shrinkWrap: true,
+                            padding: EdgeInsets.zero,
+                            itemCount: controller
+                                .getPhoneNumbersModel!
+                                .customer!
+                                .length,
+                            itemBuilder:
+                                (context, index) {
+                              final user = controller
+                                  .getPhoneNumbersModel!
+                                  .customer![index];
+
+                              final bool isSelected =
+                                  controller.selectedIndex ==
+                                      index;
+
+                              return InkWell(
+                                onTap: () {
+                                  selectCustomer(user);
+                                },
+                                child: Container(
+                                  padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 12,
+                                  ),
+                                  color: isSelected
+                                      ? Colors.blue
+                                      .withOpacity(0.15)
+                                      : Colors.transparent,
+                                  child: Text(
+                                    "${user.name?.toUpperCase() ?? ""}  ${user.mobile ?? ""}",
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: isSelected
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
-                  ),
-              ],
-            );
-          },
-        );
-      },
+                ],
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
