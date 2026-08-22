@@ -27,6 +27,105 @@ import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
 import '../locations_view/controller/locations_controller.dart';
 
 
+// ════════════════════════════════════════════════════════════════════
+// Typography
+// ════════════════════════════════════════════════════════════════════
+/// Declared in pubspec.yaml against assets/font-family/MozillaText-Regular.ttf.
+const _kFontFamily = 'MozillaText-Regular';
+
+/// What the user typed or picked: bold, tracked, pure black — so a filled
+/// field reads apart from an empty one at a glance.
+const _kValueTextStyle = TextStyle(
+  fontSize: 12,
+  fontWeight: FontWeight.w700,
+  letterSpacing: 0.5,
+  color: Colors.black,
+);
+
+/// Placeholder text, unchanged from before [_kValueTextStyle] went bold.
+///
+/// The weight and the tracking have to be spelled out even though they are the
+/// old values: InputDecorator derives the hint from `titleMedium` merged with
+/// the field's own `style`, and the Material 2 defaults this app runs on
+/// contribute only a colour — so without this the bold and the tracking of the
+/// value style would bleed into every empty field. `color` is deliberately
+/// left null so the theme's hint colour still comes through the merge.
+const _kHintTextStyle = TextStyle(
+  fontSize: 12,
+  fontWeight: FontWeight.w400,
+  letterSpacing: 0.15,
+);
+
+/// Floating field labels — pinned for the same reason as [_kHintTextStyle].
+const _kLabelTextStyle = TextStyle(
+  fontSize: 11,
+  fontWeight: FontWeight.w400,
+  letterSpacing: 0.15,
+  color: Colors.black,
+);
+
+/// The chrome every field on this form wears — border, focus tint, floating
+/// label. Lives at top level so the dropdowns can be decorated from the same
+/// place as the text fields instead of drawing a look-alike box of their own.
+InputDecoration _kFieldDecoration() => InputDecoration(
+  isDense: true,
+  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
+  // Focused fields tint their background. InputDecorator resolves fillColor
+  // against its own state set (which carries WidgetState.focused), so this
+  // covers every field, dropdown, the date field and the time field in one
+  // place. The unfocused value is white — the same as the card behind it —
+  // so nothing looks different until focus actually arrives.
+  filled: true,
+  fillColor: WidgetStateColor.resolveWith((states) =>
+      states.contains(WidgetState.focused) ? _kFocusFill : Colors.white),
+  hintStyle: _kHintTextStyle,
+  labelStyle: _kLabelTextStyle,
+  border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(6),
+      borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
+  enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(6),
+      borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
+  disabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(6),
+      borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
+  focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(6),
+      borderSide: const BorderSide(color: _kPurple, width: 2)),
+);
+
+const _kPurple = Color(0xFF312E81);
+
+/// Background of the focused field. #EEF2FF is too close to white to register
+/// as "selected" on this dense form; indigo-100 reads clearly while keeping
+/// black 12px text well above contrast minimums.
+const _kFocusFill = Color(0xFFE0E7FF);
+
+/// Applies [_kFontFamily] to a whole subtree instead of to every TextStyle.
+///
+/// Two layers, because Flutter resolves text in two different ways: the
+/// [Theme] override reaches widgets that build their style from the theme
+/// (TextField, dropdown menus, buttons) and also re-flows into any [Material]
+/// below it, while [DefaultTextStyle] reaches plain [Text] widgets, whose
+/// explicit styles here set only size / weight / colour and inherit the rest.
+///
+/// Needed a second time inside every suggestion panel: those are hand-rolled
+/// [OverlayEntry]s, so they hang off the Overlay — not off the field that
+/// opened them — and inherit nothing from the screen.
+Widget _withFormFont(BuildContext context, Widget child) {
+  final base = Theme.of(context);
+  return Theme(
+    data: base.copyWith(
+      textTheme: base.textTheme.apply(fontFamily: _kFontFamily),
+      primaryTextTheme: base.primaryTextTheme.apply(fontFamily: _kFontFamily),
+    ),
+    child: DefaultTextStyle.merge(
+      style: const TextStyle(fontFamily: _kFontFamily),
+      child: child,
+    ),
+  );
+}
+
 class BookingFormScreen extends StatefulWidget {
   const BookingFormScreen({super.key});
   @override
@@ -37,10 +136,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   static const _purple = Color(0xFF312E81);
   static const _purpleDark = Color(0xFF312E81);
   static const _purpleSoft = Color(0xFFEEF2FF);
-  // Background of the focused field. _purpleSoft (#EEF2FF) is too close to
-  // white to register as "selected" on this dense form; indigo-100 reads
-  // clearly while keeping black 12px text well above contrast minimums.
-  static const _focusFill = Color(0xFFE0E7FF);
   static const _border = Colors.black;
   static const _surface = Color(0xFFF5F6FA);
   static const _red = Color(0xFFEF4444);
@@ -176,7 +271,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     // wrapped around the whole dashboard screen, so the same keys also work
     // from the booking table, the drivers panel, the map and every other
     // widget on the screen.
-    return Focus(
+    return _withFormFont(
+      context,
+      Focus(
         // No autofocus: DashboardShortcuts owns the initial focus for the
         // screen, and two autofocus nodes in one scope is ambiguous.
         focusNode: _shortcutFocusNode,
@@ -496,6 +593,18 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                 _grid(cols, [
                                   WebDateField('Date',
                                       tab: 12,
+                                      textStyle: _kValueTextStyle,
+                                      // fieldTextColor is what the package
+                                      // paints the value with while the field
+                                      // is at rest (black87 by default); the
+                                      // focused/open value stays the accent.
+                                      style: WebDatePickerStyle.of(context)
+                                          .copyWith(fieldTextColor: Colors.black),
+                                      // Unfocused / disabled border comes from
+                                      // the form's own decoration (grey 0.7) —
+                                      // the package default leaves it to the
+                                      // theme. Focused stays the purple accent.
+                                      decoration: _inputDecoration(),
                                       value: controller.pickUpDate,
                                       onChanged: (d) => setState(() {
                                             controller.pickUpDate = d;
@@ -536,8 +645,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                           } else if (type == "r/n") {
                                             controller.jourValue = "R/N";
                                           } else if (type == "w/r") {
-                                            controller.changeJourneyFtn();
                                             controller.jourValue = "W/R";
+                                            controller.changeJourneyFtn();
                                           } else {
                                             controller.jourValue = null;
                                             print("⚠️ NO MATCH FOUND for type: '$type' — jourValue set to null");
@@ -654,6 +763,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             );
           },
         ),
+      ),
     );
   }
   // ────────── RETURN JOURNEY SECTION
@@ -884,6 +994,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         _grid(cols, [
           WebDateField('R/Date',
               tab: 28,
+              textStyle: _kValueTextStyle,
+              style: WebDatePickerStyle.of(context)
+                  .copyWith(fieldTextColor: Colors.black),
+              decoration: _inputDecoration(),
               value: controller.pickUpDateReturn,
               onChanged: (d) => setState(() {
                     controller.pickUpDateReturn = d;
@@ -1267,12 +1381,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           inputFormatters: [
             UpperCaseTextFormatter(),
           ],
-          style: const TextStyle(fontSize: _fsField),
+          style: _kValueTextStyle,
           textInputAction: TextInputAction.next,
           decoration: _inputDecoration().copyWith(
             hintText: noteHint,
-            hintStyle:
-            const TextStyle(fontSize: _fsField, color: Colors.black45),
+            hintStyle: _kHintTextStyle.copyWith(color: Colors.black45),
           ),
         ),
       ),
@@ -1342,7 +1455,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               child: GlowFocus(
                 child: TextField(
                   controller: controller,
-                  style: const TextStyle(fontSize: _fsField),
+                  style: _kValueTextStyle,
                   keyboardType:
                   const TextInputType.numberWithOptions(decimal: false),
                   inputFormatters: [
@@ -1350,10 +1463,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                     LengthLimitingTextInputFormatter(2),
                   ],
                   decoration: _inputDecoration().copyWith(
-                    label:
-                    Text(label,
-                        style:
-                        const TextStyle(fontSize: _fsLabel, color: Colors.black)),
+                    label: Text(label, style: _kLabelTextStyle),
                     prefixIconConstraints:
                     const BoxConstraints(minWidth: 26, minHeight: 0),
                     prefixIcon: Padding(
@@ -1699,7 +1809,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           onChanged: onChanged,
           decoration: _inputDecoration().copyWith(
             label: Text(label.toUpperCase(),),
-            labelStyle: TextStyle(fontSize: _fsLabel, color: Colors.black),
+            labelStyle: _kLabelTextStyle,
             prefixIconConstraints:
             const BoxConstraints(minWidth: 28, minHeight: 0),
             prefixIcon: prefix != null
@@ -1730,9 +1840,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           child: TimePickerField(
             controller: controller,
             onChanged: onPicked == null ? null : (_) => onPicked(),
+            textStyle: _kValueTextStyle,
             decoration: _inputDecoration().copyWith(
-              label: Text(label.toUpperCase(),
-                  style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
+              label: Text(label.toUpperCase(), style: _kLabelTextStyle),
             ),
           ),
         ),
@@ -1774,12 +1884,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 [
                   UpperCaseTextFormatter(),
                 ],
-            style: const TextStyle(fontSize: _fsField),
+            style: _kValueTextStyle,
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => onPrefixTap?.call(),
             decoration: _inputDecoration().copyWith(
               label: Text(label.toUpperCase(),),
-              labelStyle: TextStyle(fontSize: _fsLabel, color: Colors.black),
+              labelStyle: _kLabelTextStyle,
               prefixIconConstraints:
               const BoxConstraints(minWidth: 28, minHeight: 0),
               prefixIcon: prefixWidget,
@@ -1816,7 +1926,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               items: items,
               onChanged: onChanged,
               isExpanded: isExpanded,
-              hintText: (hint ?? label ?? '').toUpperCase(),
+              labelText: (hint ?? label ?? '').toUpperCase(),
               itemLabel: itemLabel,
               allowUnselect: allowUnselect,
             ),
@@ -1860,29 +1970,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ]),
     ]);
   }
-  InputDecoration _inputDecoration() => InputDecoration(
-
-    isDense: true,
-    contentPadding:
-    const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
-    // Focused fields tint their background. InputDecorator resolves fillColor
-    // against its own state set (which carries WidgetState.focused), so this
-    // covers every field, dropdown, the date field and the time field in one
-    // place. The unfocused value is white — the same as the card behind it —
-    // so nothing looks different until focus actually arrives.
-    filled: true,
-    fillColor: WidgetStateColor.resolveWith((states) =>
-    states.contains(WidgetState.focused) ? _focusFill : Colors.white),
-    border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(6),
-        /*borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))*/),
-    enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(6),
-        /*borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))*/),
-    focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(6),
-        borderSide: const BorderSide(color: _purple, width: 2)),
-  );
+  InputDecoration _inputDecoration() => _kFieldDecoration();
 }
 // ════════════════════════════════════════════════════════════════════
 // Focus-aware dropdown with unselect support (matches f3_alert.dart pattern)
@@ -1893,7 +1981,7 @@ class _DropdownField<T> extends StatefulWidget {
     required this.value,
     required this.items,
     required this.onChanged,
-    required this.hintText,
+    required this.labelText,
     this.itemLabel,
     this.isExpanded = true,
     this.allowUnselect = true,
@@ -1902,7 +1990,7 @@ class _DropdownField<T> extends StatefulWidget {
   final T? value;
   final List<T> items;
   final ValueChanged<T?> onChanged;
-  final String hintText;
+  final String labelText;
   final String Function(T item)? itemLabel;
   final bool isExpanded;
   final bool allowUnselect;
@@ -1912,9 +2000,6 @@ class _DropdownField<T> extends StatefulWidget {
 }
 
 class _DropdownFieldState<T> extends State<_DropdownField<T>> {
-  static const _purple = Color(0xFF312E81);
-  static const _focusFill = Color(0xFFE0E7FF);
-  static const _border = Colors.black;
   static const _fsField = 12.0;
 
   final FocusNode _dropdownFocusNode = FocusNode();
@@ -1934,51 +2019,74 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
       animation: _dropdownFocusNode,
       builder: (context, child) {
         final isFocused = _dropdownFocusNode.hasFocus;
-        return Container(
-          height: 31,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          decoration: BoxDecoration(
-            color: isFocused ? _focusFill : Colors.white,
-            border: Border.all(
-              color: isFocused ? _purple : Colors.black,
-              width: isFocused ? 2 : 1,
-            ),
-            borderRadius: BorderRadius.circular(6),
-            boxShadow: isFocused
-                ? [BoxShadow(
-                    color: _purple.withOpacity(0.25),
-                    blurRadius: 6,
-                    spreadRadius: 1,
-                  )]
-                : [],
+        // The border, the focus tint and the label all come from the same
+        // decoration the TextFields use, so a dropdown is indistinguishable
+        // from the field beside it until it is opened.
+        return InputDecorator(
+          isFocused: isFocused,
+          // Drives the label: parked inside the box while nothing is picked,
+          // floated up onto the top edge once there is a value — exactly the
+          // two states a TextField label has.
+          isEmpty: widget.value == null,
+          decoration: _kFieldDecoration().copyWith(
+            label: Text(widget.labelText),
+            labelStyle: _kLabelTextStyle,
+            // A dense DropdownButton is 24px tall against a 12px field's ~16,
+            // so the vertical padding drops by the difference to keep the two
+            // controls the same overall height.
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<T?>(
               focusNode: _dropdownFocusNode,
               focusColor: Colors.transparent,
+              isDense: true,
               value: widget.value,
-              hint: Text(
-                widget.hintText,
-                style: TextStyle(
-                  fontSize: _fsField,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade700,
-                ),
-              ),
+              // No hint: the label already owns the empty state, and a hint
+              // would print the same words on top of it.
+              hint: const SizedBox.shrink(),
               isExpanded: widget.isExpanded,
               icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
+              // Ambient style for the open menu. The closed field is styled
+              // separately below.
               style: const TextStyle(
                 fontSize: _fsField,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
               ),
+              // The closed field and the open menu are otherwise rendered from
+              // the same DropdownMenuItem children, so bolding the picked value
+              // through `style` would bold the whole list with it. This builder
+              // is the only seam between the two: same order and length as
+              // `items` (DropdownButton asserts it), value style on the real
+              // entries, and nothing at all for the placeholder — that slot is
+              // the empty state, which the floating label draws.
+              // The Aligns are not decoration: DropdownButton wraps these in
+              // a fixed-height SizedBox, and the DropdownMenuItems they stand
+              // in for carry a centerStart Align of their own — without it the
+              // closed value rides the top of the row instead of its middle.
+              selectedItemBuilder: (context) => [
+                if (widget.allowUnselect) const SizedBox.shrink(),
+                ...widget.items.map((e) => Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Text(
+                    _labelOf(e).toUpperCase(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: _kValueTextStyle,
+                  ),
+                )),
+              ],
               items: [
-                // Placeholder item: allows the user to unselect / reset
+                // Placeholder item: allows the user to unselect / reset. It
+                // keeps the label text so the menu says what clearing gives
+                // you back.
                 if (widget.allowUnselect)
                   DropdownMenuItem<T?>(
                     value: null,
                     child: Text(
-                      widget.hintText,
+                      widget.labelText,
                       style: TextStyle(
                         fontSize: _fsField,
                         fontWeight: FontWeight.w600,
@@ -2248,7 +2356,10 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     }
     return KeyEventResult.ignored;
   }
-  Widget _buildPanel(BuildContext context) {
+  Widget _buildPanel(BuildContext context) =>
+      _withFormFont(context, _buildPanelContent(context));
+
+  Widget _buildPanelContent(BuildContext context) {
     final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     final width = box?.size.width ?? 280;
     final height = box?.size.height ?? 48;
@@ -2356,7 +2467,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
             onChanged: widget.onChanged,
             controller: widget.controller,
             focusNode: _focusNode,
-            style: const TextStyle(fontSize: 12),
+            style: _kValueTextStyle,
             decoration: widget.decoration,
           ),
         ),
@@ -2482,7 +2593,10 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
     }
     return KeyEventResult.ignored;
   }
-  Widget _buildPanel(BuildContext context) {
+  Widget _buildPanel(BuildContext context) =>
+      _withFormFont(context, _buildPanelContent(context));
+
+  Widget _buildPanelContent(BuildContext context) {
     final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     final width = box?.size.width ?? 280;
     final height = box?.size.height ?? 48;
@@ -2587,7 +2701,7 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
             onChanged: widget.onChanged,
             controller: widget.controller,
             focusNode: _focusNode,
-            style: const TextStyle(fontSize: 12),
+            style: _kValueTextStyle,
             decoration: widget.decoration,
           ),
         ),
@@ -2795,7 +2909,10 @@ class _CustomerModelAutocompleteState
     }
     return KeyEventResult.ignored;
   }
-  Widget _buildPanel(BuildContext context) {
+  Widget _buildPanel(BuildContext context) =>
+      _withFormFont(context, _buildPanelContent(context));
+
+  Widget _buildPanelContent(BuildContext context) {
     final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     final width = box?.size.width ?? 280;
     final height = box?.size.height ?? 48;
@@ -2926,7 +3043,7 @@ class _CustomerModelAutocompleteState
             onChanged: widget.onChanged,
             controller: widget.controller,
             focusNode: _focusNode,
-            style: const TextStyle(fontSize: 12),
+            style: _kValueTextStyle,
             keyboardType: TextInputType.phone,
             decoration: widget.decoration,
           ),

@@ -1322,7 +1322,7 @@ class _CenterAreaState extends State<_CenterArea> {
                           return;
                         }
 
-                           await _controller.cliDataBinding(
+                        await _controller.cliDataBinding(
                           pickup: pickupController.text,
                           dropoff: dropoffController.text,
                           pickupLatitude: pickupPoints!.latitude.toString(),
@@ -1333,7 +1333,7 @@ class _CenterAreaState extends State<_CenterArea> {
                           mobile: mobileNumber,
                           email: email,
                           phoneNumber: telNumber,
-                             pickupTime: DateFormat('HH:mm').format(DateTime.now()),
+
                         );
                         if (!mounted) return;
                       } else {
@@ -1357,7 +1357,7 @@ class _CenterAreaState extends State<_CenterArea> {
                       _isLoading = false;
                     }
                   },
-                  child: actionValue == false ? Text("New Booking"):Text("SAVE"),
+                  child: const Text("New Booking"),
                 ),
               ],
             ),

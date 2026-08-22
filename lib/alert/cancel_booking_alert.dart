@@ -21,6 +21,7 @@ class CancelBookingRequest extends StatefulWidget {
 
 class _CancelBookingRequestState extends State<CancelBookingRequest> {
   final controller = Get.put(FobController());
+  final FocusNode closeButtonFocusNode = FocusNode();
   final TextEditingController reasonController = TextEditingController();
 
   final List<String> reasons = [
@@ -71,9 +72,27 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
                         ),
                       ),
                     ),
-                    IconButton(
-                      onPressed: () => Get.back(),
-                      icon: const Icon(Icons.close, size: 24, color: Colors.grey),
+                    AnimatedBuilder(
+                      animation: closeButtonFocusNode,
+                      builder: (context, child) {
+                        final isFocused = closeButtonFocusNode.hasFocus;
+                        return Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
+                              width: 2,
+                            ),
+                            color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
+                          ),
+                          child: IconButton(
+                            focusNode: closeButtonFocusNode,
+                            onPressed: () => Get.back(),
+                            icon: const Icon(Icons.close, size: 22, color: Colors.grey),
+                            splashRadius: 20,
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
