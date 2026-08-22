@@ -5,6 +5,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 
+import '../component/color.dart';
 import '../component/textStyle.dart';
 import '../controller/fob_controller.dart';
 
@@ -20,6 +21,8 @@ class EditBookingFare extends StatefulWidget {
 class _EditBookingFareState extends State<EditBookingFare> {
   final TextEditingController fareController = TextEditingController();
   final controller = Get.put(FobController());
+  final FocusNode closeButtonFocusNode = FocusNode();
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -47,9 +50,27 @@ class _EditBookingFareState extends State<EditBookingFare> {
                     ),
                   ),
                   const Spacer(),
-                  InkWell(
-                    onTap: () => Get.back(),
-                    child: const Icon(Icons.close, size: 22, color: Colors.grey),
+                  AnimatedBuilder(
+                    animation: closeButtonFocusNode,
+                    builder: (context, child) {
+                      final isFocused = closeButtonFocusNode.hasFocus;
+                      return Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
+                            width: 2,
+                          ),
+                          color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
+                        ),
+                        child: IconButton(
+                          focusNode: closeButtonFocusNode,
+                          onPressed: () => Get.back(),
+                          icon: const Icon(Icons.close, size: 22, color: Colors.grey),
+                          splashRadius: 20,
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

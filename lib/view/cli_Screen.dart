@@ -84,6 +84,7 @@ class _ResponsivePassengerScreenState extends State<ResponsivePassengerScreen> {
                   BoxShadow(blurRadius: 20, color: Color(0x14000000))
                 ],
               ),
+
               clipBehavior: Clip.antiAlias,
               child: isMobile
                   ? _MobileLayout(
@@ -170,10 +171,10 @@ class _LeftSidebar extends StatelessWidget {
           // Top brand row
           Row(
             children: [
-              Icon(Icons.local_taxi, color: Colors.yellow, size: 28),
+              Icon(Icons.local_taxi, color: DynamicColors.primaryClr, size: 28),
               SizedBox(width: 8),
               Text(
-                "SEA CARZ",
+                "CABFLOW",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
@@ -181,7 +182,7 @@ class _LeftSidebar extends StatelessWidget {
                     ),
               ),
               Spacer(),
-              Icon(Icons.close, color: Colors.white70),
+              // Icon(Icons.close, color: Colors.white70),
             ],
           ),
 
@@ -202,10 +203,10 @@ class _LeftSidebar extends StatelessWidget {
                 //   backgroundColor: Colors.white,
                 //   child: Icon(Icons.person, size: 36, color: Color(0xFF5C7EA6)),
                 // ),
-                Image(image: AssetImage('assets/logo.jpeg'),width: 70,height: 70,),
+                Image(image: AssetImage('assets/cabflow_logo.jpeg'),width: 70,height: 70,),
                 SizedBox(height: 12),
                 Text(
-                  "Nexus Tech Groups",
+                  "CABFLOW",
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: Colors.white, fontWeight: FontWeight.w600),
                 ),
@@ -1326,6 +1327,7 @@ class _CenterAreaState extends State<_CenterArea> {
                           mobile: mobileNumber,
                           email: email,
                           phoneNumber: telNumber,
+
                         );
                         if (!mounted) return;
                       } else {

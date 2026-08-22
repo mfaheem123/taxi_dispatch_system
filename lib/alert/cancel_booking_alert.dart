@@ -21,6 +21,7 @@ class CancelBookingRequest extends StatefulWidget {
 
 class _CancelBookingRequestState extends State<CancelBookingRequest> {
   final controller = Get.put(FobController());
+  final FocusNode closeButtonFocusNode = FocusNode();
   final TextEditingController reasonController = TextEditingController();
 
   final List<String> reasons = [
@@ -30,6 +31,8 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
     "NOT NEEDED ANYMORE",
     "GUEST STAYING AT HOME"
   ];
+
+  String? focusedReason;
 
   void onReasonSelected(String reason) {
     setState(() {
@@ -69,9 +72,27 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
                         ),
                       ),
                     ),
-                    IconButton(
-                      onPressed: () => Get.back(),
-                      icon: const Icon(Icons.close, size: 24, color: Colors.grey),
+                    AnimatedBuilder(
+                      animation: closeButtonFocusNode,
+                      builder: (context, child) {
+                        final isFocused = closeButtonFocusNode.hasFocus;
+                        return Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
+                              width: 2,
+                            ),
+                            color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
+                          ),
+                          child: IconButton(
+                            focusNode: closeButtonFocusNode,
+                            onPressed: () => Get.back(),
+                            icon: const Icon(Icons.close, size: 22, color: Colors.grey),
+                            splashRadius: 20,
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -98,20 +119,36 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
                       spacing: 10,
                       runSpacing: 10,
                       children: reasons.map((reason) {
+                        final bool isSelected = reasonController.text == reason;
+                        final bool isFocused = focusedReason == reason;
+
+                        final bool isActive = isSelected || isFocused;
+
                         return InkWell(
                           onTap: () => onReasonSelected(reason),
+                          onFocusChange: (hasFocus) {
+                            setState(() {
+                              if (hasFocus) {
+                                focusedReason = reason;
+                              } else if (focusedReason == reason) {
+                                focusedReason = null;
+                              }
+                            });
+                          },
                           borderRadius: BorderRadius.circular(6),
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(6),
                               border: Border.all(color: DynamicColors.primaryClr),
-                              color: Colors.transparent,
+                              color: isActive ? DynamicColors.primaryClr : Colors.transparent
+                              // color: Colors.transparent,
                             ),
                             child: Text(
                               reason,
                               style: TextStyle(
-                                color: DynamicColors.primaryClr,
+                                color: isActive ? Colors.white : DynamicColors.primaryClr,
+                                // color: DynamicColors.primaryClr,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 12,
                               ),

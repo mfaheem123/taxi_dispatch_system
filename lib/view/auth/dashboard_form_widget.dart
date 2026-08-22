@@ -64,6 +64,43 @@ const _kLabelTextStyle = TextStyle(
   color: Colors.black,
 );
 
+/// The chrome every field on this form wears — border, focus tint, floating
+/// label. Lives at top level so the dropdowns can be decorated from the same
+/// place as the text fields instead of drawing a look-alike box of their own.
+InputDecoration _kFieldDecoration() => InputDecoration(
+  isDense: true,
+  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
+  // Focused fields tint their background. InputDecorator resolves fillColor
+  // against its own state set (which carries WidgetState.focused), so this
+  // covers every field, dropdown, the date field and the time field in one
+  // place. The unfocused value is white — the same as the card behind it —
+  // so nothing looks different until focus actually arrives.
+  filled: true,
+  fillColor: WidgetStateColor.resolveWith((states) =>
+      states.contains(WidgetState.focused) ? _kFocusFill : Colors.white),
+  hintStyle: _kHintTextStyle,
+  labelStyle: _kLabelTextStyle,
+  border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(6),
+      borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
+  enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(6),
+      borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
+  disabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(6),
+      borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
+  focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(6),
+      borderSide: const BorderSide(color: _kPurple, width: 2)),
+);
+
+const _kPurple = Color(0xFF312E81);
+
+/// Background of the focused field. #EEF2FF is too close to white to register
+/// as "selected" on this dense form; indigo-100 reads clearly while keeping
+/// black 12px text well above contrast minimums.
+const _kFocusFill = Color(0xFFE0E7FF);
+
 /// Applies [_kFontFamily] to a whole subtree instead of to every TextStyle.
 ///
 /// Two layers, because Flutter resolves text in two different ways: the
@@ -99,10 +136,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   static const _purple = Color(0xFF312E81);
   static const _purpleDark = Color(0xFF312E81);
   static const _purpleSoft = Color(0xFFEEF2FF);
-  // Background of the focused field. _purpleSoft (#EEF2FF) is too close to
-  // white to register as "selected" on this dense form; indigo-100 reads
-  // clearly while keeping black 12px text well above contrast minimums.
-  static const _focusFill = Color(0xFFE0E7FF);
   static const _border = Colors.black;
   static const _surface = Color(0xFFF5F6FA);
   static const _red = Color(0xFFEF4444);
@@ -612,8 +645,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                           } else if (type == "r/n") {
                                             controller.jourValue = "R/N";
                                           } else if (type == "w/r") {
-                                            controller.changeJourneyFtn();
                                             controller.jourValue = "W/R";
+                                            controller.changeJourneyFtn();
                                           } else {
                                             controller.jourValue = null;
                                             print("⚠️ NO MATCH FOUND for type: '$type' — jourValue set to null");
@@ -1893,7 +1926,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               items: items,
               onChanged: onChanged,
               isExpanded: isExpanded,
-              hintText: (hint ?? label ?? '').toUpperCase(),
+              labelText: (hint ?? label ?? '').toUpperCase(),
               itemLabel: itemLabel,
               allowUnselect: allowUnselect,
             ),
@@ -1937,34 +1970,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ]),
     ]);
   }
-  InputDecoration _inputDecoration() => InputDecoration(
-
-    isDense: true,
-    contentPadding:
-    const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
-    // Focused fields tint their background. InputDecorator resolves fillColor
-    // against its own state set (which carries WidgetState.focused), so this
-    // covers every field, dropdown, the date field and the time field in one
-    // place. The unfocused value is white — the same as the card behind it —
-    // so nothing looks different until focus actually arrives.
-    filled: true,
-    fillColor: WidgetStateColor.resolveWith((states) =>
-    states.contains(WidgetState.focused) ? _focusFill : Colors.white),
-    hintStyle: _kHintTextStyle,
-    labelStyle: _kLabelTextStyle,
-    border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(6),
-        borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
-    enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(6),
-        borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
-    disabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(6),
-        borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
-    focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(6),
-        borderSide: const BorderSide(color: _purple, width: 2)),
-  );
+  InputDecoration _inputDecoration() => _kFieldDecoration();
 }
 // ════════════════════════════════════════════════════════════════════
 // Focus-aware dropdown with unselect support (matches f3_alert.dart pattern)
@@ -1975,7 +1981,7 @@ class _DropdownField<T> extends StatefulWidget {
     required this.value,
     required this.items,
     required this.onChanged,
-    required this.hintText,
+    required this.labelText,
     this.itemLabel,
     this.isExpanded = true,
     this.allowUnselect = true,
@@ -1984,7 +1990,7 @@ class _DropdownField<T> extends StatefulWidget {
   final T? value;
   final List<T> items;
   final ValueChanged<T?> onChanged;
-  final String hintText;
+  final String labelText;
   final String Function(T item)? itemLabel;
   final bool isExpanded;
   final bool allowUnselect;
@@ -1994,9 +2000,6 @@ class _DropdownField<T> extends StatefulWidget {
 }
 
 class _DropdownFieldState<T> extends State<_DropdownField<T>> {
-  static const _purple = Color(0xFF312E81);
-  static const _focusFill = Color(0xFFE0E7FF);
-  static const _border = Colors.black;
   static const _fsField = 12.0;
 
   final FocusNode _dropdownFocusNode = FocusNode();
@@ -2016,41 +2019,37 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
       animation: _dropdownFocusNode,
       builder: (context, child) {
         final isFocused = _dropdownFocusNode.hasFocus;
-        return Container(
-          height: 31,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          decoration: BoxDecoration(
-            color: isFocused ? _focusFill : Colors.white,
-            border: Border.all(
-              color: isFocused ? _purple : Colors.grey.withOpacity(0.7),
-              width: isFocused ? 2 : 1,
-            ),
-            borderRadius: BorderRadius.circular(6),
-            boxShadow: isFocused
-                ? [BoxShadow(
-                    color: _purple.withOpacity(0.25),
-                    blurRadius: 6,
-                    spreadRadius: 1,
-                  )]
-                : [],
+        // The border, the focus tint and the label all come from the same
+        // decoration the TextFields use, so a dropdown is indistinguishable
+        // from the field beside it until it is opened.
+        return InputDecorator(
+          isFocused: isFocused,
+          // Drives the label: parked inside the box while nothing is picked,
+          // floated up onto the top edge once there is a value — exactly the
+          // two states a TextField label has.
+          isEmpty: widget.value == null,
+          decoration: _kFieldDecoration().copyWith(
+            label: Text(widget.labelText),
+            labelStyle: _kLabelTextStyle,
+            // A dense DropdownButton is 24px tall against a 12px field's ~16,
+            // so the vertical padding drops by the difference to keep the two
+            // controls the same overall height.
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<T?>(
               focusNode: _dropdownFocusNode,
               focusColor: Colors.transparent,
+              isDense: true,
               value: widget.value,
-              hint: Text(
-                widget.hintText,
-                style: TextStyle(
-                  fontSize: _fsField,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade700,
-                ),
-              ),
+              // No hint: the label already owns the empty state, and a hint
+              // would print the same words on top of it.
+              hint: const SizedBox.shrink(),
               isExpanded: widget.isExpanded,
               icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
-              // Ambient style for the open menu and the hint. The closed field
-              // is styled separately below.
+              // Ambient style for the open menu. The closed field is styled
+              // separately below.
               style: const TextStyle(
                 fontSize: _fsField,
                 fontWeight: FontWeight.w600,
@@ -2061,24 +2060,14 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
               // through `style` would bold the whole list with it. This builder
               // is the only seam between the two: same order and length as
               // `items` (DropdownButton asserts it), value style on the real
-              // entries, and the hint left in its lighter grey.
+              // entries, and nothing at all for the placeholder — that slot is
+              // the empty state, which the floating label draws.
               // The Aligns are not decoration: DropdownButton wraps these in
               // a fixed-height SizedBox, and the DropdownMenuItems they stand
               // in for carry a centerStart Align of their own — without it the
               // closed value rides the top of the row instead of its middle.
               selectedItemBuilder: (context) => [
-                if (widget.allowUnselect)
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: Text(
-                      widget.hintText,
-                      style: TextStyle(
-                        fontSize: _fsField,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey.shade700,
-                      ),
-                    ),
-                  ),
+                if (widget.allowUnselect) const SizedBox.shrink(),
                 ...widget.items.map((e) => Align(
                   alignment: AlignmentDirectional.centerStart,
                   child: Text(
@@ -2090,12 +2079,14 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
                 )),
               ],
               items: [
-                // Placeholder item: allows the user to unselect / reset
+                // Placeholder item: allows the user to unselect / reset. It
+                // keeps the label text so the menu says what clearing gives
+                // you back.
                 if (widget.allowUnselect)
                   DropdownMenuItem<T?>(
                     value: null,
                     child: Text(
-                      widget.hintText,
+                      widget.labelText,
                       style: TextStyle(
                         fontSize: _fsField,
                         fontWeight: FontWeight.w600,

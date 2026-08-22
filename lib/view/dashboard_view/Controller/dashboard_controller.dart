@@ -1775,6 +1775,17 @@ class DashboardController extends GetxController {
     dropOffTwoWayController.clear();
     tempStoreReturnMils = null;
     FocusScope.of(Get.context!).requestFocus(pickupTwoTextFieldFocusNode);
+    polyLineMarkerInfo.removeWhere((item) =>
+    item.markerType == "PICKUP TWO WAY LOCATION" ||
+        item.markerType == "DROP TWO WAY LOCATION"
+    );
+
+    // 2. تمام Return map markers صاف کریں
+    markers.removeWhere((marker) =>
+    marker.type == "pickup two way" ||
+        marker.type == "dropOff two way" ||
+        marker.type == "via with return"
+    );
     final pickupPolylineIndex = polyLineMarkerInfo
         .indexWhere((e) => e.markerType == "PICKUP TWO WAY LOCATION");
 
@@ -1791,6 +1802,7 @@ class DashboardController extends GetxController {
     selectAirportControllerReturn.clear();
     arrivalReturnTimeController.clear();
     isAirportResponseReturn.value = false;
+
     polyLineMarkerInfo.removeWhere((item) => item.markerType == "PICKUP TWO WAY LOCATION");
     if (markers is List<CustomMarker>) {
       markers.removeWhere((marker) => marker.type == "PICKUP TWO WAY LOCATION");
@@ -3273,6 +3285,7 @@ class DashboardController extends GetxController {
     name,
     mobile,
     phoneNumber,
+
   }) async {
     polyLineMarkerInfo.clear();
     viaPoints.clear();
