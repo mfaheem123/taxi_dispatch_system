@@ -4,6 +4,7 @@ import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/pagination.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -75,197 +76,199 @@ class _LocationListScreenState extends State<LocationListScreen> {
       autofocus: true,
       focusNode: FocusNode(),
       onKey: _handleKey,
-      child: GetBuilder<LocationController>(
-          initState: (v) {
-        controller.getLocationList();
-      }, builder: (controller) {
-        return
+      child: PageScrollWrapper(
+        child: GetBuilder<LocationController>(
+            initState: (v) {
+          controller.getLocationList();
+        }, builder: (controller) {
+          return
 
-          controller.getLocationLoader.value
-              ? CircularProgressIndicator()
-              :
-          SingleChildScrollView(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          "LOCATIONS" + "(${controller.locationListModel?.count})",
-                          style: mozillaTextSemiBoldText(
-                              fontWeight: FontWeight.w800, fontSize: 17),
-                        ),
-                        Checkbox(
-                            value: controller.blackList.value,
-                          onChanged: (v) {
-                            controller.blackList.value = v ?? false;
-                            controller.locationCurrentPage.value = 1;
-                            controller.getLocationList();
-                          },),
-                        Text(
-                          AppText.blackList,
-                          style: mozillaTextRegularText(
-                              color: DynamicColors.redClr),
-                        ),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Spacer(),
-                        CustomButton(
-                          onTap: () {
-                            controller.getLocationList();
+            controller.getLocationLoader.value
+                ? CircularProgressIndicator()
+                :
+            SingleChildScrollView(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            "LOCATIONS" + "(${controller.locationListModel?.count})",
+                            style: mozillaTextSemiBoldText(
+                                fontWeight: FontWeight.w800, fontSize: 17),
+                          ),
+                          Checkbox(
+                              value: controller.blackList.value,
+                            onChanged: (v) {
+                              controller.blackList.value = v ?? false;
+                              controller.locationCurrentPage.value = 1;
+                              controller.getLocationList();
+                            },),
+                          Text(
+                            AppText.blackList,
+                            style: mozillaTextRegularText(
+                                color: DynamicColors.redClr),
+                          ),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Spacer(),
+                          CustomButton(
+                            onTap: () {
+                              controller.getLocationList();
 
-                          },
-                          height: 40,
-                          width: 80,
-                          verticalPadding: 0.0,
-                          borderRadius: 4,
-                          widget: Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 15, vertical: 0.0),
-                            child: Icon(
-                              Icons.refresh,
-                              color: DynamicColors.whiteClr,
-                              size: 25,
+                            },
+                            height: 40,
+                            width: 80,
+                            verticalPadding: 0.0,
+                            borderRadius: 4,
+                            widget: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 15, vertical: 0.0),
+                              child: Icon(
+                                Icons.refresh,
+                                color: DynamicColors.whiteClr,
+                                size: 25,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        child: DatatableWidget(
-                          columns: [
-                            buildHeaderWithSearch(
-                              title: "Name",
-                              onChanged: (v) {
-                                controller.searchLocationName.value = v;
-                                controller.SearchLocation();
-                              },
-                            ),
-                            buildHeaderWithSearch(
-                              title: "PostCode",
-                              onChanged: (v) {
-                                controller.searchPostCode.value = v;
-                                controller.SearchLocation();
-                              },
-                            ),
-                            buildHeaderWithSearch(
-                              title: "ShortCuts",
-                              onChanged: (v) {
-                                controller.searchShortCuts.value = v;
-                                controller.SearchLocation();
-                              },
-                            ),
-                            buildHeaderWithSearch(
-                              title: "Address",
-                              onChanged: (v) {
-                                controller.searchAddress.value = v;
-                                controller.SearchLocation();
-                              },
-                            ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          child: DatatableWidget(
+                            columns: [
+                              buildHeaderWithSearch(
+                                title: "Name",
+                                onChanged: (v) {
+                                  controller.searchLocationName.value = v;
+                                  controller.SearchLocation();
+                                },
+                              ),
+                              buildHeaderWithSearch(
+                                title: "PostCode",
+                                onChanged: (v) {
+                                  controller.searchPostCode.value = v;
+                                  controller.SearchLocation();
+                                },
+                              ),
+                              buildHeaderWithSearch(
+                                title: "ShortCuts",
+                                onChanged: (v) {
+                                  controller.searchShortCuts.value = v;
+                                  controller.SearchLocation();
+                                },
+                              ),
+                              buildHeaderWithSearch(
+                                title: "Address",
+                                onChanged: (v) {
+                                  controller.searchAddress.value = v;
+                                  controller.SearchLocation();
+                                },
+                              ),
 
-                            buildHeaderWithSearch(
-                              title: "Location Type",
-                              onChanged: (v) {
-                                controller.searchLocationType.value = v;
-                                controller.SearchLocation();
-                              },
-                            ),
+                              buildHeaderWithSearch(
+                                title: "Location Type",
+                                onChanged: (v) {
+                                  controller.searchLocationType.value = v;
+                                  controller.SearchLocation();
+                                },
+                              ),
 
-                            buildHeaderWithSearch(
-                              title: "Zone",
-                              onChanged: (v) {
-                                controller.searchZone.value = v;
-                                controller.SearchLocation();
-                              },
-                            ),
+                              buildHeaderWithSearch(
+                                title: "Zone",
+                                onChanged: (v) {
+                                  controller.searchZone.value = v;
+                                  controller.SearchLocation();
+                                },
+                              ),
 
-                            buildHeaderWithSearch(
-                                title: "ACTIONS", removeSearching: true),
-                          ],
-                          totalRow: listToShow.length,
-                          rows: listToShow.map((item) {
-                            return DataRow(
-                              cells: [
-                                DataCell(Center(child: Text((item.name ?? '—').toUpperCase()))),
-                                DataCell(Center(child: Text((item.postcode ?? '—').toUpperCase()))),
-                                DataCell(Center(child: Text((item.shortcut ?? '—').toUpperCase()))),
-                                DataCell(Center(child: Text((item.address ?? '—').toUpperCase()))),
-                                DataCell(Center(child: Text((item.locationType?.name ?? 'N/A').toUpperCase()))),
-                                DataCell(Center(child: Text((item.zone ?? 'N/A').toUpperCase()))),
-                                DataCell(
-                                  Center(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        if(permissions.contains('update_location')) OutlinedButton(
-                                          style: OutlinedButton.styleFrom(side: BorderSide(color: Colors.transparent),),
-                                          onPressed: () {
+                              buildHeaderWithSearch(
+                                  title: "ACTIONS", removeSearching: true),
+                            ],
+                            totalRow: listToShow.length,
+                            rows: listToShow.map((item) {
+                              return DataRow(
+                                cells: [
+                                  DataCell(Center(child: Text((item.name ?? '—').toUpperCase()))),
+                                  DataCell(Center(child: Text((item.postcode ?? '—').toUpperCase()))),
+                                  DataCell(Center(child: Text((item.shortcut ?? '—').toUpperCase()))),
+                                  DataCell(Center(child: Text((item.address ?? '—').toUpperCase()))),
+                                  DataCell(Center(child: Text((item.locationType?.name ?? 'N/A').toUpperCase()))),
+                                  DataCell(Center(child: Text((item.zone ?? 'N/A').toUpperCase()))),
+                                  DataCell(
+                                    Center(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          if(permissions.contains('update_location')) OutlinedButton(
+                                            style: OutlinedButton.styleFrom(side: BorderSide(color: Colors.transparent),),
+                                            onPressed: () {
 
-                                            controller
-                                                .bindLocationUpdateLocation(locationUpdate: item);
+                                              controller
+                                                  .bindLocationUpdateLocation(locationUpdate: item);
 
-                                            int index = _controller
-                                                .selectedMenuItems
-                                                .indexWhere((element) =>
-                                                    element.title == "UPDATE LOCATION");
-                                            if (index != -1) {
-                                              _controller
-                                                  .selectedMenuItems[index]
-                                                  .selectedItem = true;
-                                              _controller.currentPage.value =
-                                                  LocationForm();
-                                            } else {
-                                              _controller.currentPage.value =
-                                                  LocationForm();
-                                              _controller.menuBarRefresh(
-                                                  title: "UPDATE LOCATION",
-                                                  pageName: LocationForm());
-                                            }
+                                              int index = _controller
+                                                  .selectedMenuItems
+                                                  .indexWhere((element) =>
+                                                      element.title == "UPDATE LOCATION");
+                                              if (index != -1) {
+                                                _controller
+                                                    .selectedMenuItems[index]
+                                                    .selectedItem = true;
+                                                _controller.currentPage.value =
+                                                    LocationForm();
+                                              } else {
+                                                _controller.currentPage.value =
+                                                    LocationForm();
+                                                _controller.menuBarRefresh(
+                                                    title: "UPDATE LOCATION",
+                                                    pageName: LocationForm());
+                                              }
 
-                                            controller.update();
+                                              controller.update();
 
-                                          },
-                                          child: Icon(Icons.edit_calendar,
-                                              size: 28),
-                                        ),
-                                        Text("|"),
-                                        if(permissions.contains('delete_location')) OutlinedButton(
-                                          style: OutlinedButton.styleFrom(
-                                            side: BorderSide(color: Colors.transparent),
+                                            },
+                                            child: Icon(Icons.edit_calendar,
+                                                size: 28),
                                           ),
-                                          onPressed: () {
-                                            controller.deleteLocation(
-                                                item.id!);
+                                          Text("|"),
+                                          if(permissions.contains('delete_location')) OutlinedButton(
+                                            style: OutlinedButton.styleFrom(
+                                              side: BorderSide(color: Colors.transparent),
+                                            ),
+                                            onPressed: () {
+                                              controller.deleteLocation(
+                                                  item.id!);
 
-                                          },
-                                          child: Icon(Icons.delete_forever,
-                                              size: 28),
-                                        ),
-                                      ],
+                                            },
+                                            child: Icon(Icons.delete_forever,
+                                                size: 28),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            );
-                          }).toList(),
+                                ],
+                              );
+                            }).toList(),
+                          ),
                         ),
                       ),
-                    ),
-                    PaginationWidget(
-                        currentPage: controller.locationCurrentPage.value,
-                        totalPages: controller.locationTotalPages.value,
-                        onPageChange: controller.PageLocation),
-                  ],
-                ),
-              );
-      }),
+                      PaginationWidget(
+                          currentPage: controller.locationCurrentPage.value,
+                          totalPages: controller.locationTotalPages.value,
+                          onPageChange: controller.PageLocation),
+                    ],
+                  ),
+                );
+        }),
+      ),
     );
   }
 }

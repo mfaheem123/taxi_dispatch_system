@@ -6,6 +6,7 @@ import 'package:dashboard_new1/component/text_field.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/administration/controller/administration_controller.dart';
 import 'package:dashboard_new1/view/administration/model/get_role.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -47,42 +48,44 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return GetBuilder<AdministrationController>(
-        initState: (v) {
-          permissions = Api().sp.read('all_permissions') ?? [];
-          controller.listSubsDiary();
-          print(permissions);
-        },
-        builder: (controller) {
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              bool isMobile = constraints.maxWidth < 800;
-              return SingleChildScrollView(
-                padding: EdgeInsets.all(16),
-                child: isMobile
-                    ? Column(
-                  children: [
-                    _buildImageBox(isMobile, controller: controller),
-                    SizedBox(height: 20),
-                    _buildFormBox(screenHeight, screenWidth, controller),
-                  ],
-                )
-                    : Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Flexible(
-                        flex: 1,
-                        child: _buildImageBox(isMobile, controller: controller)),
-                    SizedBox(width: 20),
-                    Flexible(
-                        flex: 3,
-                        child: _buildFormBox(screenHeight, screenWidth, controller)),
-                  ],
-                ),
-              );
-            },
-          );
-        });
+    return PageScrollWrapper(
+      child: GetBuilder<AdministrationController>(
+          initState: (v) {
+            permissions = Api().sp.read('all_permissions') ?? [];
+            controller.listSubsDiary();
+            print(permissions);
+          },
+          builder: (controller) {
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                bool isMobile = constraints.maxWidth < 800;
+                return SingleChildScrollView(
+                  padding: EdgeInsets.all(16),
+                  child: isMobile
+                      ? Column(
+                    children: [
+                      _buildImageBox(isMobile, controller: controller),
+                      SizedBox(height: 20),
+                      _buildFormBox(screenHeight, screenWidth, controller),
+                    ],
+                  )
+                      : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Flexible(
+                          flex: 1,
+                          child: _buildImageBox(isMobile, controller: controller)),
+                      SizedBox(width: 20),
+                      Flexible(
+                          flex: 3,
+                          child: _buildFormBox(screenHeight, screenWidth, controller)),
+                    ],
+                  ),
+                );
+              },
+            );
+          }),
+    );
   }
 
   Widget _buildImageBox(bool isMobile, {required dynamic controller}) {

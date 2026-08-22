@@ -1175,6 +1175,9 @@ class _CenterAreaState extends State<_CenterArea> {
                                             pickupController.clear();
                                             dropoffController.clear();
                                             actionValue = false;
+                                            // cliBookingData.pickupTime=null;
+                                            // cliBookingData.pickupDate=null;
+
                                           } else {
                                             selectedIndex.value = index;
                                             selectedBooking = cliBookingData;
@@ -1183,6 +1186,7 @@ class _CenterAreaState extends State<_CenterArea> {
                                                 cliBookingData.pickup ?? "";
                                             dropoffController.text =
                                                 cliBookingData.dropoff ?? "";
+
                                           }
                                           setState(() {});
                                         },
@@ -1302,6 +1306,7 @@ class _CenterAreaState extends State<_CenterArea> {
                     backgroundColor: Colors.grey,
                   ),
                   onPressed: () async {
+
                     if (_isLoading) return;
                     try {
                       _isLoading = true;
@@ -1316,6 +1321,7 @@ class _CenterAreaState extends State<_CenterArea> {
                           BotToast.showText(text: "Location data missing");
                           return;
                         }
+
                         await _controller.cliDataBinding(
                           pickup: pickupController.text,
                           dropoff: dropoffController.text,

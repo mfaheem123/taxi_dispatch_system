@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/alert/restricted_driver.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -45,278 +46,280 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<CustomerController>(initState: (state) {
+    return PageScrollWrapper(
+      child: GetBuilder<CustomerController>(initState: (state) {
 
-    },
-        builder: (controller) {
-      return LayoutBuilder(builder: (context, constraints) {
-        final double maxWidth = constraints.maxWidth;
-        final bool isMobile = maxWidth < 600;
-        final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+      },
+          builder: (controller) {
+        return LayoutBuilder(builder: (context, constraints) {
+          final double maxWidth = constraints.maxWidth;
+          final bool isMobile = maxWidth < 600;
+          final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-        final bool isLaptop = maxWidth >= 1024 && maxWidth < 1400;
-        final bool isLargeDesktop = maxWidth >= 1400;
+          final bool isLaptop = maxWidth >= 1024 && maxWidth < 1400;
+          final bool isLargeDesktop = maxWidth >= 1400;
 
-        // 125% scale checker
-        final bool isHighScale =
-            MediaQuery.of(context).devicePixelRatio >= 1.25;
+          // 125% scale checker
+          final bool isHighScale =
+              MediaQuery.of(context).devicePixelRatio >= 1.25;
 
-        double fieldWidth;
+          double fieldWidth;
 
-        if (isMobile) {
-          fieldWidth = maxWidth;
-        } else if (isTablet) {
-          fieldWidth = isHighScale ? maxWidth / 1.8 : maxWidth / 2;
-        } else if (isLaptop) {
-          fieldWidth = isHighScale ? maxWidth / 3 : maxWidth / 3.4;
-        } else {
-          fieldWidth = isHighScale ? maxWidth / 3.8 : maxWidth / 4;
-        }
+          if (isMobile) {
+            fieldWidth = maxWidth;
+          } else if (isTablet) {
+            fieldWidth = isHighScale ? maxWidth / 1.8 : maxWidth / 2;
+          } else if (isLaptop) {
+            fieldWidth = isHighScale ? maxWidth / 3 : maxWidth / 3.4;
+          } else {
+            fieldWidth = isHighScale ? maxWidth / 3.8 : maxWidth / 4;
+          }
 
-        return Container(
-          color: Colors.grey[200],
-          alignment: Alignment.center,
-          child: SingleChildScrollView(
-            child: Container(
-              constraints: const BoxConstraints(maxWidth: 1100),
-              margin: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: DynamicColors.whiteClr,
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              child: Column(
-                // crossAxisAlignment: CrossAxisAlignment.stretch,
+          return Container(
+            color: Colors.grey[200],
+            alignment: Alignment.center,
+            child: SingleChildScrollView(
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 1100),
+                margin: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: DynamicColors.whiteClr,
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Column(
+                  // crossAxisAlignment: CrossAxisAlignment.stretch,
 
-                children: [
-                  Container(
-                    color: DynamicColors.secondaryClr,
-                    padding: const EdgeInsets.all(12),
-                    child: Center(
-                        child: Text(AppText.customer, style: titleDesign())),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        bool isWide = constraints.maxWidth > 600;
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Checkbox(
-                                    value: controller.enableSms.value,
-                                    onChanged: (v) {
-                                      controller.enableSms.value = v!;
-                                      controller.update();
-                                    }),
-                                Text(AppText.enableSms),
-                                const Spacer(),
-                                GestureDetector(
-                                  onTap: () async {
-                                    await controller
-                                        .getRestricDriver(); // load API data
-                                    showDialog(
-                                      context: context,
-                                      builder: (_) => RestrictedDriversDialog(
-                                        drivers: controller.apiDriversList
-                                            .map((e) => {
-                                                  'id': e['id'].toString(),
-                                                  'username': e['username']
-                                                      .toString()
-                                                      .toUpperCase(),
-                                                  'name': e['name']
-                                                      .toString()
-                                                      .toUpperCase(),
-                                                })
-                                            .toList(),
-                                      ),
-                                    );
-                                  },
-                                  child: CustomButton(
-                                    height: 30,
-                                    width: 160,
-                                    verticalPadding: 0.0,
-                                    btnText: AppText.restrictionDrivers,
-                                    borderRadius: 4,
-                                    fontSize: 11,
-                                  ),
-                                )
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            Wrap(
-                              spacing:
-                                  MediaQuery.of(context).devicePixelRatio >=
-                                          1.25
-                                      ? fieldWidth / 2
-                                      : fieldWidth / 5.5,
-                              runSpacing: 16,
-                              children: [
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller: controller.nameController,
-                                  width: fieldWidth,
-                                  hintText: AppText.name,
-                                  columnText: true,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp(r'[a-zA-Z\s]')),
-                                    UpperCaseTextFormatter(),
-                                  ],
-                                ),
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller: controller.emailController,
-                                  width: fieldWidth,
-                                  hintText: AppText.email,
-                                  columnText: true,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.deny(
-                                        RegExp(r'\s')),
-                                    UpperCaseTextFormatter(),
-                                  ],
-                                ),
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller: controller.mobileController,
-                                  width: fieldWidth,
-                                  hintText: "MOBILE",
-                                  columnText: true,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
-                                  ],
-                                ),
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller: controller.telController,
-                                  width: fieldWidth,
-                                  hintText: "TELEPHONE",
-                                  columnText: true,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
-                                  ],
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 15),
-                            //         ],
-                            //       );
-                            //     },
-                            //   ),
-                            // ),
-                            Container(
-                              color: DynamicColors.secondaryClr,
-                              padding: const EdgeInsets.all(12),
-                              child: Center(
-                                  child: Text(AppText.other,
-                                      style: titleDesign())),
-                            ),
-                            Wrap(
-                              spacing:
-                                  MediaQuery.of(context).devicePixelRatio >=
-                                          1.25
-                                      ? fieldWidth / 2
-                                      : fieldWidth / 5.5,
-                              runSpacing: 16,
-                              children: [
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller: controller.doorController,
-                                  width: fieldWidth,
-                                  hintText: AppText.door,
-                                  columnText: true,
-                                  inputFormatters: [
-                                    UpperCaseTextFormatter(),
-                                  ],
-                                ),
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller: controller.noteController,
-                                  width: fieldWidth,
-                                  hintText: AppText.note,
-                                  columnText: true,
-                                  inputFormatters: [
-                                    UpperCaseTextFormatter(),
-                                  ],
-                                ),
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller: controller.address1Controller,
-                                  width: fieldWidth,
-                                  hintText: AppText.address1,
-                                  columnText: true,
-                                  height: 80,
-                                  maxLines: 5,
-                                  contentPadding:
-                                      EdgeInsets.only(top: 15, left: 6),
-                                  inputFormatters: [
-                                    UpperCaseTextFormatter(),
-                                  ],
-                                ),
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller: controller.address2Controller,
-                                  width: fieldWidth,
-                                  hintText: AppText.address2,
-                                  columnText: true,
-                                  height: 80,
-                                  maxLines: 5,
-                                  contentPadding:
-                                      EdgeInsets.only(top: 15, left: 6),
-                                  inputFormatters: [
-                                    UpperCaseTextFormatter(),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
-                        );
-                      },
+                  children: [
+                    Container(
+                      color: DynamicColors.secondaryClr,
+                      padding: const EdgeInsets.all(12),
+                      child: Center(
+                          child: Text(AppText.customer, style: titleDesign())),
                     ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  CustomButton(
-                    onTap: () {
-                      String email = controller.emailController.text.trim();
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          bool isWide = constraints.maxWidth > 600;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Checkbox(
+                                      value: controller.enableSms.value,
+                                      onChanged: (v) {
+                                        controller.enableSms.value = v!;
+                                        controller.update();
+                                      }),
+                                  Text(AppText.enableSms),
+                                  const Spacer(),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      await controller
+                                          .getRestricDriver(); // load API data
+                                      showDialog(
+                                        context: context,
+                                        builder: (_) => RestrictedDriversDialog(
+                                          drivers: controller.apiDriversList
+                                              .map((e) => {
+                                                    'id': e['id'].toString(),
+                                                    'username': e['username']
+                                                        .toString()
+                                                        .toUpperCase(),
+                                                    'name': e['name']
+                                                        .toString()
+                                                        .toUpperCase(),
+                                                  })
+                                              .toList(),
+                                        ),
+                                      );
+                                    },
+                                    child: CustomButton(
+                                      height: 30,
+                                      width: 160,
+                                      verticalPadding: 0.0,
+                                      btnText: AppText.restrictionDrivers,
+                                      borderRadius: 4,
+                                      fontSize: 11,
+                                    ),
+                                  )
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Wrap(
+                                spacing:
+                                    MediaQuery.of(context).devicePixelRatio >=
+                                            1.25
+                                        ? fieldWidth / 2
+                                        : fieldWidth / 5.5,
+                                runSpacing: 16,
+                                children: [
+                                  CustomTextField(
+                                    borderRadius: 4,
+                                    controller: controller.nameController,
+                                    width: fieldWidth,
+                                    hintText: AppText.name,
+                                    columnText: true,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp(r'[a-zA-Z\s]')),
+                                      UpperCaseTextFormatter(),
+                                    ],
+                                  ),
+                                  CustomTextField(
+                                    borderRadius: 4,
+                                    controller: controller.emailController,
+                                    width: fieldWidth,
+                                    hintText: AppText.email,
+                                    columnText: true,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.deny(
+                                          RegExp(r'\s')),
+                                      UpperCaseTextFormatter(),
+                                    ],
+                                  ),
+                                  CustomTextField(
+                                    borderRadius: 4,
+                                    controller: controller.mobileController,
+                                    width: fieldWidth,
+                                    hintText: "MOBILE",
+                                    columnText: true,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly,
+                                    ],
+                                  ),
+                                  CustomTextField(
+                                    borderRadius: 4,
+                                    controller: controller.telController,
+                                    width: fieldWidth,
+                                    hintText: "TELEPHONE",
+                                    columnText: true,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly,
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 15),
+                              //         ],
+                              //       );
+                              //     },
+                              //   ),
+                              // ),
+                              Container(
+                                color: DynamicColors.secondaryClr,
+                                padding: const EdgeInsets.all(12),
+                                child: Center(
+                                    child: Text(AppText.other,
+                                        style: titleDesign())),
+                              ),
+                              Wrap(
+                                spacing:
+                                    MediaQuery.of(context).devicePixelRatio >=
+                                            1.25
+                                        ? fieldWidth / 2
+                                        : fieldWidth / 5.5,
+                                runSpacing: 16,
+                                children: [
+                                  CustomTextField(
+                                    borderRadius: 4,
+                                    controller: controller.doorController,
+                                    width: fieldWidth,
+                                    hintText: AppText.door,
+                                    columnText: true,
+                                    inputFormatters: [
+                                      UpperCaseTextFormatter(),
+                                    ],
+                                  ),
+                                  CustomTextField(
+                                    borderRadius: 4,
+                                    controller: controller.noteController,
+                                    width: fieldWidth,
+                                    hintText: AppText.note,
+                                    columnText: true,
+                                    inputFormatters: [
+                                      UpperCaseTextFormatter(),
+                                    ],
+                                  ),
+                                  CustomTextField(
+                                    borderRadius: 4,
+                                    controller: controller.address1Controller,
+                                    width: fieldWidth,
+                                    hintText: AppText.address1,
+                                    columnText: true,
+                                    height: 80,
+                                    maxLines: 5,
+                                    contentPadding:
+                                        EdgeInsets.only(top: 15, left: 6),
+                                    inputFormatters: [
+                                      UpperCaseTextFormatter(),
+                                    ],
+                                  ),
+                                  CustomTextField(
+                                    borderRadius: 4,
+                                    controller: controller.address2Controller,
+                                    width: fieldWidth,
+                                    hintText: AppText.address2,
+                                    columnText: true,
+                                    height: 80,
+                                    maxLines: 5,
+                                    contentPadding:
+                                        EdgeInsets.only(top: 15, left: 6),
+                                    inputFormatters: [
+                                      UpperCaseTextFormatter(),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    CustomButton(
+                      onTap: () {
+                        String email = controller.emailController.text.trim();
 
-                      bool isEmailExists = controller.customerListAll.any(
-                            (customer) => customer.email?.toLowerCase() == email.toLowerCase(),
-                      );
-                      if (email.isEmpty) {
-                        BotToast.showText(text: "EMAIL IS REQUIRED");
-                      } else if (!email.contains('@')) {
-                        BotToast.showText(text: "INVALID EMAIL FORMAT");
-                      } else if (isEmailExists) {
-                        BotToast.showText(text: "EMAIL ALREADY EXISTS");
-                      }
+                        bool isEmailExists = controller.customerListAll.any(
+                              (customer) => customer.email?.toLowerCase() == email.toLowerCase(),
+                        );
+                        if (email.isEmpty) {
+                          BotToast.showText(text: "EMAIL IS REQUIRED");
+                        } else if (!email.contains('@')) {
+                          BotToast.showText(text: "INVALID EMAIL FORMAT");
+                        } else if (isEmailExists) {
+                          BotToast.showText(text: "EMAIL ALREADY EXISTS");
+                        }
 
-                      else {
-                        controller.postCustomer();
-                      }
-                    },
-                    height: 35,
-                    fontSize: 12,
-                    borderRadius: 4,
-                    width: MediaQuery.of(context).devicePixelRatio >= 1.25
-                        ? fieldWidth * 1.1
-                        : fieldWidth * 1.5,
-                    btnText: controller.updateCustomerValue.value == false
-                        ? AppText.save
-                        : "UPDATE",
-                    verticalPadding: 0.0,
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                ],
+                        else {
+                          controller.postCustomer();
+                        }
+                      },
+                      height: 35,
+                      fontSize: 12,
+                      borderRadius: 4,
+                      width: MediaQuery.of(context).devicePixelRatio >= 1.25
+                          ? fieldWidth * 1.1
+                          : fieldWidth * 1.5,
+                      btnText: controller.updateCustomerValue.value == false
+                          ? AppText.save
+                          : "UPDATE",
+                      verticalPadding: 0.0,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      });
-    });
+          );
+        });
+      }),
+    );
   }
 }

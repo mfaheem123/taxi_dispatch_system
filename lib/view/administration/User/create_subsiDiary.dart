@@ -5,6 +5,7 @@ import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_field.dart';
 import 'package:dashboard_new1/view/administration/controller/administration_controller.dart';
 import 'package:dashboard_new1/view/dashboard_view/Controller/dashboard_controller.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
@@ -49,348 +50,350 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
     final screenHeight = MediaQuery.of(context).size.height;
     double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<AdministrationController>(builder: (controller) {
-      return LayoutBuilder(builder: (context, constraints) {
-        final double maxWidth = constraints.maxWidth;
-        final bool isMobile = maxWidth < 600;
-        final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+    return PageScrollWrapper(
+      child: GetBuilder<AdministrationController>(builder: (controller) {
+        return LayoutBuilder(builder: (context, constraints) {
+          final double maxWidth = constraints.maxWidth;
+          final bool isMobile = maxWidth < 600;
+          final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-        // Instead of fixed width, we calculate flexible field widths
-        final double fieldWidth = isMobile
-            ? maxWidth // full width
-            : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
+          // Instead of fixed width, we calculate flexible field widths
+          final double fieldWidth = isMobile
+              ? maxWidth // full width
+              : isTablet
+                  ? maxWidth / 2
+                  : maxWidth / 4;
 
-        return SingleChildScrollView(
-              child: Column(
-          children: [
-            SizedBox(
-              height: 10,
-            ),
-            Wrap(
-              runSpacing: 16,
-              spacing: 10,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    // Agar koi image nahi hai (na local na network), tabhi picker khule
-                    if (controller.subsidiaryImg == null &&
-                        controller.subsidiaryToUpdate?.logo == null) {
-                      controller.pickImage();
-                    }
-                  },
-                  child: Container(
-                    height: isMobile ? 200 : 400,
-                    width: fieldWidth,
-                    margin: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Colors.grey),
-                      image: controller.subsidiaryImg != null
-                          ? DecorationImage(
-                              image:
-                                  MemoryImage(controller.subsidiaryImg!.bytes),
-                              fit: BoxFit.fill,
-                            )
-                          : (controller.subsidiaryToUpdate?.logo != null
-                              ? DecorationImage(
-                                  // Agar image URL full nahi hai to yahan baseUrl add kar lena
-                                  image: NetworkImage(
-                                      controller.subsidiaryToUpdate!.logo!),
-                                  fit: BoxFit.fill,
-                                )
-                              : null),
-                    ),
-                    // Check: Agar koi bhi image maujood hai to close button dikhao, warna text dikhao
-                    child: (controller.subsidiaryImg != null ||
-                            controller.subsidiaryToUpdate?.logo != null)
-                        ? Align(
-                            alignment: Alignment.topRight,
-                            child: GestureDetector(
-                              onTap: () {
-                                controller.subsidiaryImg = null;
-                                if (controller.subsidiaryToUpdate != null) {
-                                  controller.subsidiaryToUpdate!.logo =
-                                      null; // UI se purani image hatane ke liye
-                                }
-                                controller.update();
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(4),
-                                margin: EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.7),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.close_rounded,
-                                  color: DynamicColors.redClr,
-                                ),
-                              ),
-                            ),
-                          )
-                        : Center(
-                            child: Text(
-                              "UPLOAD IMAGE",
-                              style: TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                  ),
-                ),
-
-                Padding(
-                  padding: EdgeInsets.only(top: 10),
-                  child: SizedBox(
-                  width: fieldWidth * 2.7,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    child: Column(
-                      // crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        // height: screenHeight / 20,
-                        width: Get.width,
-                        color: DynamicColors.gryClr,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 18.0, vertical: 12),
-                          child: Row(
-                            children: [
-                              Text(
-                                AppText.subsidiary,
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              Spacer(),
-                              Row(
-                                children: [
-                                  // Icon(Icons.other_houses_outlined),
-                                  CustomButton(
-                                    onTap: () {
-                                      BankDetailsAlert.show();
-                                    },
-                                    verticalPadding: 0.0,
-                                    width: screenWidth / 15,
-                                    height: 40,
-                                    borderRadius: 4,
-                                    btnText: AppText.bankDetails,
-                                    style: mozillaTextRegularText(
-                                        fontSize: 10,
-                                        color: DynamicColors.whiteClr),
+          return SingleChildScrollView(
+                child: Column(
+            children: [
+              SizedBox(
+                height: 10,
+              ),
+              Wrap(
+                runSpacing: 16,
+                spacing: 10,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      // Agar koi image nahi hai (na local na network), tabhi picker khule
+                      if (controller.subsidiaryImg == null &&
+                          controller.subsidiaryToUpdate?.logo == null) {
+                        controller.pickImage();
+                      }
+                    },
+                    child: Container(
+                      height: isMobile ? 200 : 400,
+                      width: fieldWidth,
+                      margin: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.grey),
+                        image: controller.subsidiaryImg != null
+                            ? DecorationImage(
+                                image:
+                                    MemoryImage(controller.subsidiaryImg!.bytes),
+                                fit: BoxFit.fill,
+                              )
+                            : (controller.subsidiaryToUpdate?.logo != null
+                                ? DecorationImage(
+                                    // Agar image URL full nahi hai to yahan baseUrl add kar lena
+                                    image: NetworkImage(
+                                        controller.subsidiaryToUpdate!.logo!),
+                                    fit: BoxFit.fill,
+                                  )
+                                : null),
+                      ),
+                      // Check: Agar koi bhi image maujood hai to close button dikhao, warna text dikhao
+                      child: (controller.subsidiaryImg != null ||
+                              controller.subsidiaryToUpdate?.logo != null)
+                          ? Align(
+                              alignment: Alignment.topRight,
+                              child: GestureDetector(
+                                onTap: () {
+                                  controller.subsidiaryImg = null;
+                                  if (controller.subsidiaryToUpdate != null) {
+                                    controller.subsidiaryToUpdate!.logo =
+                                        null; // UI se purani image hatane ke liye
+                                  }
+                                  controller.update();
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(4),
+                                  margin: EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.7),
+                                    shape: BoxShape.circle,
                                   ),
-                                ],
+                                  child: Icon(
+                                    Icons.close_rounded,
+                                    color: DynamicColors.redClr,
+                                  ),
+                                ),
                               ),
-                            ],
+                            )
+                          : Center(
+                              child: Text(
+                                "UPLOAD IMAGE",
+                                style: TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                    ),
+                  ),
+
+                  Padding(
+                    padding: EdgeInsets.only(top: 10),
+                    child: SizedBox(
+                    width: fieldWidth * 2.7,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      child: Column(
+                        // crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          // height: screenHeight / 20,
+                          width: Get.width,
+                          color: DynamicColors.gryClr,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 18.0, vertical: 12),
+                            child: Row(
+                              children: [
+                                Text(
+                                  AppText.subsidiary,
+                                  style: TextStyle(
+                                      fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                                Spacer(),
+                                Row(
+                                  children: [
+                                    // Icon(Icons.other_houses_outlined),
+                                    CustomButton(
+                                      onTap: () {
+                                        BankDetailsAlert.show();
+                                      },
+                                      verticalPadding: 0.0,
+                                      width: screenWidth / 15,
+                                      height: 40,
+                                      borderRadius: 4,
+                                      btnText: AppText.bankDetails,
+                                      style: mozillaTextRegularText(
+                                          fontSize: 10,
+                                          color: DynamicColors.whiteClr),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Wrap(
-                        runSpacing: 16,
-                        spacing: 10,
-                        children: [
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.nameController,
-                            width: fieldWidth / 2,
-                            hintText: AppText.name,
-                            columnText: true,
-                            height: 35,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'[a-zA-Z\s0-9]')),
-                              UpperCaseTextFormatter(),
-                            ],
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.emailController,
-                            width: fieldWidth / 2,
-                            hintText: AppText.email,
-                            columnText: true,
-                            height: 35,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                              UpperCaseTextFormatter(),
-                            ],
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.faxController,
-                            width: fieldWidth / 2,
-                            hintText: AppText.fax,
-                            columnText: true,
-                            height: 35,
-                            inputFormatters: [UpperCaseTextFormatter()],
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.websiteController,
-                            width: fieldWidth / 2,
-                            hintText: AppText.website,
-                            columnText: true,
-                            height: 35,
-                            inputFormatters: [UpperCaseTextFormatter()],
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.telephoneController,
-                            width: fieldWidth / 2,
-                            hintText: AppText.tel,
-                            columnText: true,
-                            height: 35,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.emergencyContactController,
-                            width: fieldWidth / 2,
-                            hintText: AppText.emergencyContactHash,
-                            columnText: true,
-                            height: 35,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(AppText.backgroundClr,
-                                  style: mozillaTextSemiBoldText(
-                                      context: context, fontSize: 13)),
-                              ColorPickerWidget(
-                                width: fieldWidth / 2,
-                                pickerColor: controller.subsiDiarypickerColor,
-                                onColorChanged: (color) {
-                                  setState(() {
-                                    controller.subsiDiarypickerColor =
-                                        color; // live preview
-                                  });
-                                },
-                                onColorSelected: (color) {
-                                  setState(() {
-                                    controller.subsiDiarypickerColor =
-                                        color; // final selected
-                                  });
-                                },
-                                borderColor: DynamicColors.gryClr,
-                              ),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(AppText.foregroundClr,
-                                  style: mozillaTextSemiBoldText(
-                                      context: context, fontSize: 13)),
-                              ColorPickerWidget(
-                                width: fieldWidth / 2,
-                                pickerColor:
-                                    controller.subsiDiaryforegroundColor,
-                                onColorChanged: (color) {
-                                  setState(() {
-                                    controller.subsiDiaryforegroundColor =
-                                        color; // live preview
-                                  });
-                                },
-                                onColorSelected: (color) {
-                                  setState(() {
-                                    controller.subsiDiaryforegroundColor =
-                                        color; // final selected
-                                  });
-                                },
-                                borderColor: DynamicColors.gryClr,
-                              ),
-                            ],
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.companyController,
-                            width: fieldWidth / 2,
-                            hintText: AppText.company,
-                            columnText: true,
-                            height: 35,
-                            inputFormatters: [UpperCaseTextFormatter()],
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.currencyController,
-                            width: fieldWidth / 2,
-                            hintText: AppText.currency,
-                            columnText: true,
-                            height: 35,
-                            inputFormatters: [UpperCaseTextFormatter()],
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.addressController,
-                            width: fieldWidth / 2,
-                            hintText: AppText.address,
-                            columnText: true,
-                            height: 35,
-                            inputFormatters: [UpperCaseTextFormatter()],
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.balanceController,
-                            width: fieldWidth / 2,
-                            hintText: AppText.balance,
-                            columnText: true,
-                            height: 35,
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      Container(
-                          width: double.infinity,
-                          color: DynamicColors.gryClr,
-                          padding: EdgeInsets.symmetric(horizontal: 120, vertical: 14),
-                          child: Center(
-                              child: CustomButton(
-                                onTap: () {
-                          String email = controller.emailController.text.trim();
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Wrap(
+                          runSpacing: 16,
+                          spacing: 10,
+                          children: [
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.nameController,
+                              width: fieldWidth / 2,
+                              hintText: AppText.name,
+                              columnText: true,
+                              height: 35,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'[a-zA-Z\s0-9]')),
+                                UpperCaseTextFormatter(),
+                              ],
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.emailController,
+                              width: fieldWidth / 2,
+                              hintText: AppText.email,
+                              columnText: true,
+                              height: 35,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                                UpperCaseTextFormatter(),
+                              ],
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.faxController,
+                              width: fieldWidth / 2,
+                              hintText: AppText.fax,
+                              columnText: true,
+                              height: 35,
+                              inputFormatters: [UpperCaseTextFormatter()],
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.websiteController,
+                              width: fieldWidth / 2,
+                              hintText: AppText.website,
+                              columnText: true,
+                              height: 35,
+                              inputFormatters: [UpperCaseTextFormatter()],
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.telephoneController,
+                              width: fieldWidth / 2,
+                              hintText: AppText.tel,
+                              columnText: true,
+                              height: 35,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.emergencyContactController,
+                              width: fieldWidth / 2,
+                              hintText: AppText.emergencyContactHash,
+                              columnText: true,
+                              height: 35,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(AppText.backgroundClr,
+                                    style: mozillaTextSemiBoldText(
+                                        context: context, fontSize: 13)),
+                                ColorPickerWidget(
+                                  width: fieldWidth / 2,
+                                  pickerColor: controller.subsiDiarypickerColor,
+                                  onColorChanged: (color) {
+                                    setState(() {
+                                      controller.subsiDiarypickerColor =
+                                          color; // live preview
+                                    });
+                                  },
+                                  onColorSelected: (color) {
+                                    setState(() {
+                                      controller.subsiDiarypickerColor =
+                                          color; // final selected
+                                    });
+                                  },
+                                  borderColor: DynamicColors.gryClr,
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(AppText.foregroundClr,
+                                    style: mozillaTextSemiBoldText(
+                                        context: context, fontSize: 13)),
+                                ColorPickerWidget(
+                                  width: fieldWidth / 2,
+                                  pickerColor:
+                                      controller.subsiDiaryforegroundColor,
+                                  onColorChanged: (color) {
+                                    setState(() {
+                                      controller.subsiDiaryforegroundColor =
+                                          color; // live preview
+                                    });
+                                  },
+                                  onColorSelected: (color) {
+                                    setState(() {
+                                      controller.subsiDiaryforegroundColor =
+                                          color; // final selected
+                                    });
+                                  },
+                                  borderColor: DynamicColors.gryClr,
+                                ),
+                              ],
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.companyController,
+                              width: fieldWidth / 2,
+                              hintText: AppText.company,
+                              columnText: true,
+                              height: 35,
+                              inputFormatters: [UpperCaseTextFormatter()],
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.currencyController,
+                              width: fieldWidth / 2,
+                              hintText: AppText.currency,
+                              columnText: true,
+                              height: 35,
+                              inputFormatters: [UpperCaseTextFormatter()],
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.addressController,
+                              width: fieldWidth / 2,
+                              hintText: AppText.address,
+                              columnText: true,
+                              height: 35,
+                              inputFormatters: [UpperCaseTextFormatter()],
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.balanceController,
+                              width: fieldWidth / 2,
+                              hintText: AppText.balance,
+                              columnText: true,
+                              height: 35,
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        Container(
+                            width: double.infinity,
+                            color: DynamicColors.gryClr,
+                            padding: EdgeInsets.symmetric(horizontal: 120, vertical: 14),
+                            child: Center(
+                                child: CustomButton(
+                                  onTap: () {
+                            String email = controller.emailController.text.trim();
 
-                          if (email.isEmpty) {
-                            BotToast.showText(text: "EMAIL IS REQUIRED");
-                          } else if (!email.contains('@')) {
-                            BotToast.showText(text: "INVALID EMAIL FORMAT");
-                          } else {
-                            controller.createSubsiDiary();
-                          }
-                        },
-                        height: 30,
-                        width: fieldWidth,
-                        btnText: controller.isSubsiDiaryUpdating.value
-                            ? "UPDATE"
-                            : "SAVE",
-                        fontSize: 11,
-                        verticalPadding: 0.0,
-                        borderRadius: 4,
-                      ))),
-                    ],
+                            if (email.isEmpty) {
+                              BotToast.showText(text: "EMAIL IS REQUIRED");
+                            } else if (!email.contains('@')) {
+                              BotToast.showText(text: "INVALID EMAIL FORMAT");
+                            } else {
+                              controller.createSubsiDiary();
+                            }
+                          },
+                          height: 30,
+                          width: fieldWidth,
+                          btnText: controller.isSubsiDiaryUpdating.value
+                              ? "UPDATE"
+                              : "SAVE",
+                          fontSize: 11,
+                          verticalPadding: 0.0,
+                          borderRadius: 4,
+                        ))),
+                      ],
+                    ),
                   ),
-                ),
-                )
-                )],
-            ),
-          ],
-              ));
-      });
-    });
+                  )
+                  )],
+              ),
+            ],
+                ));
+        });
+      }),
+    );
   }
 }
 
