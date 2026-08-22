@@ -194,16 +194,22 @@ class _LeftSidebar extends StatelessWidget {
               color: const Color(0xFF6C8CB0),
               borderRadius: BorderRadius.circular(12),
             ),
-            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
             child: Column(
               children: [
+
                 // const CircleAvatar(
                 //   radius: 28,
                 //   // backgroundColor: Colors.transparent,
                 //   backgroundColor: Colors.white,
                 //   child: Icon(Icons.person, size: 36, color: Color(0xFF5C7EA6)),
                 // ),
-                Image(image: AssetImage('assets/cabflow_logo.jpeg'),width: 70,height: 70,),
+                Image(
+                  image: AssetImage('assets/cabflow_logo.png'),
+                  width: 300,
+                  height: 100,
+                  fit: BoxFit.fill,
+                ),
                 SizedBox(height: 12),
                 Text(
                   "CABFLOW",
@@ -1461,25 +1467,22 @@ class _RightSidebar extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Favorite Rides header
-          // Row(
-          //   children: [
-          //     const CircleAvatar(
-          //       radius: 20,
-          //       backgroundColor: Color(0xFFF4F6FA),
-          //       child: Icon(Icons.person, color: Color(0xFF6B7C8F)),
-          //     ),
-          //     const SizedBox(width: 12),
-          //     Text(
-          //       "Favorite Rides",
-          //       style: Theme.of(context)
-          //           .textTheme
-          //           .titleMedium
-          //           ?.copyWith(color: subtle, fontWeight: FontWeight.w700),
-          //     ),
-          //     const Spacer(),
-          //   ],
-          // ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: const Color(0xFFF4F6FA),
+                child: IconButton(
+                  color: const Color(0xFF6B7C8F),
+                  icon: const Icon(Icons.close),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 24),
 
           // Ride History section

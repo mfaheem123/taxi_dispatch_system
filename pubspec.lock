@@ -261,10 +261,10 @@ packages:
     dependency: "direct main"
     description:
       name: dropdown_flutter
-      sha256: "4158492038d8b8b2acaeda24b7a8cf132f4c1e7b0de84ad70d2fa10e2cce312a"
+      sha256: ed90734856477954536dd8ea16a423b1e6aa5e14ab1d5f666f452a0118d34050
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0"
+    version: "1.0.2"
   equatable:
     dependency: transitive
     description:

@@ -38,7 +38,7 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
   List<Postcode> postcodes = [];
   final Dio _dio = Dio();
   bool isLoading = false;
-  final String globalCompanyId = "3";
+  final String globalCompanyId = "2";
   List permissions = [];
 
   @override
