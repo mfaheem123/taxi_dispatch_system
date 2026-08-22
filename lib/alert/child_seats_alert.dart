@@ -24,7 +24,7 @@ class ChildSeatsAlert extends StatefulWidget {
 
 class _ChildSeatsAlertState extends State<ChildSeatsAlert> {
 
-
+  int? editingIndex;
   final dashBoardCntrl = Get.find<DashboardController>();
   final FocusNode closeButtonFocusNode = FocusNode();
 
@@ -154,14 +154,34 @@ class _ChildSeatsAlertState extends State<ChildSeatsAlert> {
                       child: CustomButton(
                         width: 60,
                         height: 30,
+                        // onTap: (){
+                        //   controller.childSeatAlert.add(ChildSeatClass(
+                        //     sets: controller.noOfChildren.text,
+                        //     age: controller.childAge.text,
+                        //   ));
+                        //   controller.noOfChildren.clear();
+                        //   controller.childAge.clear();
+                        //   controller.update();
+                        // },
                         onTap: (){
-                          controller.childSeatAlert.add(ChildSeatClass(
-                            sets: controller.noOfChildren.text,
-                            age: controller.childAge.text,
-                          ));
-                          controller.noOfChildren.clear();
-                          controller.childAge.clear();
-                          controller.update();
+                          if(controller.noOfChildren.text.isNotEmpty || controller.childAge.text.isNotEmpty){
+                            if (editingIndex != null) {
+                              controller.childSeatAlert[editingIndex!] = ChildSeatClass(
+                                sets: controller.noOfChildren.text,
+                                age: controller.childAge.text,
+                              );
+                              editingIndex = null;
+                            } else {
+
+                              controller.childSeatAlert.add(ChildSeatClass(
+                                sets: controller.noOfChildren.text,
+                                age: controller.childAge.text,
+                              ));
+                            }
+                            controller.noOfChildren.clear();
+                            controller.childAge.clear();
+                            controller.update();
+                          }
                         },
                         verticalPadding: 0.0,
                         borderRadius: 6,
@@ -208,6 +228,9 @@ class _ChildSeatsAlertState extends State<ChildSeatsAlert> {
                                     onTap: (){
                                       controller.noOfChildren.text = controller.childSeatAlert[index].sets.toString();
                                       controller.childAge.text = controller.childSeatAlert[index].age.toString();
+                                      setState(() {
+                                        editingIndex = index;
+                                      });
                                       controller.update();
                                     },
                                     verticalPadding: 0.0,

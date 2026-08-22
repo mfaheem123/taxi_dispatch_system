@@ -23,6 +23,7 @@ class RestrictDriversAlert extends StatefulWidget {
 class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
 
   final dashBoardCntrl = Get.find<DashboardController>();
+  final FocusNode closeButtonFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -48,7 +49,7 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
       child: GetBuilder<DashboardController>(
         builder: (controller) {
           return Container(
-              height: 350,
+              height: 390,
               width: 450,
             padding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
             child: controller.allDriverData == null?SizedBox.shrink(): Column(
@@ -64,14 +65,28 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                       fontSize: 13,
                     ),
                     ),
-                    GestureDetector(
-                      onTap: (){
-                         Get.back();
+                    AnimatedBuilder(
+                      animation: closeButtonFocusNode,
+                      builder: (context, child) {
+                        final isFocused = closeButtonFocusNode.hasFocus;
+                        return Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
+                              width: 2,
+                            ),
+                            color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
+                          ),
+                          child: IconButton(
+                            focusNode: closeButtonFocusNode,
+                            onPressed: () => Get.back(),
+                            icon: const Icon(Icons.close, size: 22, color: Colors.grey),
+                            splashRadius: 20,
+                          ),
+                        );
                       },
-                      child: Icon(Icons.close,
-                      color: DynamicColors.textClr,
-                      ),
-                    )
+                    ),
                   ],
                 ),
                 SizedBox(
@@ -107,28 +122,74 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                         controller.update();
                       },
                     ),
-                    GestureDetector(
-                      onTap: (){
-                        if(controller.selectDriverObject != null){
-                        controller.driversList
-                            .add(controller.selectDriverObject!);
-                        controller.selectDriverObject = null;
-                        controller.update();
-                      }
-                    },
-                      child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 10),
-                          decoration: BoxDecoration(
-                            border: const Border(
-                              top: BorderSide(color: Colors.grey),
-                              right: BorderSide(color: Colors.grey),
-                              bottom: BorderSide(color: Colors.grey),
-                              // 👉 right side intentionally remove kiya (no border)
+                    // GestureDetector(
+                    //   onTap: (){
+                    //     if(controller.selectDriverObject != null){
+                    //     controller.driversList
+                    //         .add(controller.selectDriverObject!);
+                    //     controller.selectDriverObject = null;
+                    //     controller.update();
+                    //   }
+                    // },
+                    //   child: Container(
+                    //       padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 10),
+                    //       decoration: BoxDecoration(
+                    //         border: const Border(
+                    //           top: BorderSide(color: Colors.grey),
+                    //           right: BorderSide(color: Colors.grey),
+                    //           bottom: BorderSide(color: Colors.grey),
+                    //           // 👉 right side intentionally remove kiya (no border)
+                    //         ),
+                    //       ),
+                    //       child: Center(child: Icon(Icons.remove_circle,
+                    //         color: DynamicColors.primaryClr,
+                    //       ))),
+                    // )
+                    Focus(
+                      onKeyEvent: (node, event) {
+                        if (event is KeyDownEvent &&
+                            (event.logicalKey == LogicalKeyboardKey.enter ||
+                                event.logicalKey == LogicalKeyboardKey.space)) {
+                          if (controller.selectDriverObject != null) {
+                            controller.driversList.add(controller.selectDriverObject!);
+                            controller.selectDriverObject = null;
+                            controller.update();
+                          }
+                          return KeyEventResult.handled;
+                        }
+                        return KeyEventResult.ignored;
+                      },
+                      child: Builder(
+                        builder: (context) {
+                          final isFocused = Focus.of(context).hasFocus;
+                          return GestureDetector(
+                            onTap: () {
+                              if (controller.selectDriverObject != null) {
+                                controller.driversList.add(controller.selectDriverObject!);
+                                controller.selectDriverObject = null;
+                                controller.update();
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                              decoration: BoxDecoration(
+                                color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
+                                border: Border(
+                                  top: BorderSide(color: isFocused ? DynamicColors.primaryClr : Colors.grey, width: isFocused ? 2 : 1),
+                                  right: BorderSide(color: isFocused ? DynamicColors.primaryClr : Colors.grey, width: isFocused ? 2 : 1),
+                                  bottom: BorderSide(color: isFocused ? DynamicColors.primaryClr : Colors.grey, width: isFocused ? 2 : 1),
+                                ),
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  Icons.remove_circle,
+                                  color: DynamicColors.primaryClr,
+                                ),
+                              ),
                             ),
-                          ),
-                          child: Center(child: Icon(Icons.remove_circle,
-                            color: DynamicColors.primaryClr,
-                          ))),
+                          );
+                        },
+                      ),
                     )
                   ],
                 ),
@@ -191,19 +252,46 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                              ],
                            ),
                          ),
-                          Container(
-                              padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 10),
-                              decoration: BoxDecoration(
-                                border: const Border(
-                                  top: BorderSide(color: Colors.grey),
-                                  right: BorderSide(color: Colors.grey),
-                                  bottom: BorderSide(color: Colors.grey),
-                                  // 👉 right side intentionally remove kiya (no border)
-                                ),
-                              ),
-                              child: Center(child: Icon(Icons.delete_forever,
-                                color: DynamicColors.primaryClr,
-                              )))
+                          Focus(
+                            onKeyEvent: (node, event) {
+                              if (event is KeyDownEvent &&
+                                  (event.logicalKey == LogicalKeyboardKey.enter ||
+                                      event.logicalKey == LogicalKeyboardKey.space)) {
+                                controller.driversList.removeAt(index);
+                                controller.update();
+                                return KeyEventResult.handled;
+                              }
+                              return KeyEventResult.ignored;
+                            },
+                            child: Builder(
+                              builder: (context) {
+                                final isFocused = Focus.of(context).hasFocus;
+                                return GestureDetector(
+                                  onTap: () {
+                                    controller.driversList.removeAt(index);
+                                    controller.update();
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                                    decoration: BoxDecoration(
+                                      color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
+                                      border: Border(
+                                        top: BorderSide(color: isFocused ? DynamicColors.primaryClr : Colors.grey, width: isFocused ? 2 : 1),
+                                        right: BorderSide(color: isFocused ? DynamicColors.primaryClr : Colors.grey, width: isFocused ? 2 : 1),
+                                        bottom: BorderSide(color: isFocused ? DynamicColors.primaryClr : Colors.grey, width: isFocused ? 2 : 1),
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.delete_forever,
+                                        color: DynamicColors.primaryClr,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          )
                         ],
                       ),
                     );
