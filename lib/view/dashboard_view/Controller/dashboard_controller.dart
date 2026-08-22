@@ -1440,6 +1440,7 @@ class DashboardController extends GetxController {
       miles: postMils,
       pickUpPlotId: dashboardDZoneValue != null ? dashboardDZoneValue!.id : null,
       dropoffPlotId: dashboardZoneValue != null ? dashboardZoneValue!.id : null,
+
       pickupDate: "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
       pickupTime: pickUpTimeController.text,
       // Null-safe, as in getFaresCalculation(): refreshPostAllFields() (F7)
@@ -2277,6 +2278,7 @@ class DashboardController extends GetxController {
       dropoffPlotId:
           dashboardDZoneValue != null ? dashboardDZoneValue!.id : null,
       pickUpPlotId: dashboardZoneValue != null ? dashboardZoneValue!.id : null,
+
       pickupDate: "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
       pickupTime: pickUpTimeController.text,
       vehicleTypeId: selectVehicleValue == null ? null : selectVehicleValue!.id,
@@ -3036,10 +3038,14 @@ class DashboardController extends GetxController {
     var response = await Api().get("bookings/getbyid/$id");
     // var response = await Api().get("bookings/getbyid/$id");
     if (response.statusCode == 200) {
-      BookingObjectData jobData =
-          BookingObjectData.fromJson(response.data['booking']);
+      DateTime now = DateTime.now();
+      String currentDateStr = DateFormat('yyyy-MM-dd').format(now);
+      String currentTimeStr = DateFormat('HH:mm').format(now);
+      BookingObjectData jobData = BookingObjectData.fromJson(response.data['booking']);
       jobDetails = jobData;
       polyLineMarkerInfo.clear();
+      pickUpDate=pickUpDate;
+      pickUpTimeController.text=currentTimeStr.toString();
       viaPoints.clear();
       polylinePoints.clear();
       pickupController.text = jobData.pickup.toString().toUpperCase();
