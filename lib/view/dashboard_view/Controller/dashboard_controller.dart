@@ -3125,14 +3125,21 @@ class DashboardController extends GetxController {
       }else{
         pickUpTimeController.text = jobData.pickupTime!;
       }
+
       // A time carried over from an existing job is a real choice — don't let
       // refreshUntouchedDateTimeFields() overwrite it with "now" on post.
       pickUpTimePicked = true;
       // Same for the date: the job's own pickup date, so the Date field shows
       // the booking date instead of today's.
       if (jobData.pickupDate != null) {
-        pickUpDate = jobData.pickupDate;
-        pickUpDatePicked = true;
+        if(cliHit == true){
+          pickUpDate = DateTime.now();
+          pickUpDatePicked = true;
+        }else{
+          pickUpDate = jobData.pickupDate;
+          pickUpDatePicked = true;
+        }
+
       }
       minController.text = jobData.leadTime ?? "";
 
