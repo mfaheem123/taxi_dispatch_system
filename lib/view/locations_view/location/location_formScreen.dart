@@ -1,6 +1,7 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/view/locations_view/Model/location_types_zoneModel.dart';
 import 'package:dashboard_new1/view/locations_view/controller/locations_controller.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -41,236 +42,238 @@ class _LocationFormState extends State<LocationForm> {
             ? (Get.width / 4.2)
             : (Get.width / 5);
 
-        return GetBuilder<LocationController>(
-            initState: (v) async{
-              permissions = Api().sp.read('all_permissions') ?? [];
+        return PageScrollWrapper(
+          child: GetBuilder<LocationController>(
+              initState: (v) async{
+                permissions = Api().sp.read('all_permissions') ?? [];
 
-              if (_controller.locationtypezoneModel == null) {
-                await _controller.getLocationTypeZone();
-              }
-                  permissions = Api().sp.read('all_permissions') ?? [];
-              if (_controller.updateLocationValue.value == false && _controller.locationtypezoneModel == null) {
-                _controller.getLocationTypeZone();
-              }
-            },
-            builder: (controller) {
-              return controller.getLocationTypeZoneLoader.value == true
-                  ? CircularProgressIndicator()
-                  : SingleChildScrollView(
-                child: Container(
-                  width: isMobile ? double.infinity : 800,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: Colors.grey.shade300),
-                  ),
+                if (_controller.locationtypezoneModel == null) {
+                  await _controller.getLocationTypeZone();
+                }
+                    permissions = Api().sp.read('all_permissions') ?? [];
+                if (_controller.updateLocationValue.value == false && _controller.locationtypezoneModel == null) {
+                  _controller.getLocationTypeZone();
+                }
+              },
+              builder: (controller) {
+                return controller.getLocationTypeZoneLoader.value == true
+                    ? CircularProgressIndicator()
+                    : SingleChildScrollView(
+                  child: Container(
+                    width: isMobile ? double.infinity : 800,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
 
-                  child: Column(
+                    child: Column(
 
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _header(),
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _header(),
 
-                      const SizedBox(height: 20),
+                        const SizedBox(height: 20),
 
-                      isMobile
-                          ? Column(
-                        children: [
-                          _buildField("LOCATION NAME",
-                              controller.locationNameCtrl,
-                              inputType: "both"),
-                          const SizedBox(height: 10),
-                          _buildField("LONGITUDE",
-                              controller.longitudeCtrl,
-                              inputType: "number"),
-                        ],
-                      )
-                          : Row(
-                        children: [
-                          Expanded(
-                              child: _buildField("LOCATION NAME",
-                                  controller.locationNameCtrl,
-                                  inputType: "both")),
-                          const SizedBox(width: 10),
-                          Expanded(
-                              child: _buildField("LONGITUDE",
-                                  controller.longitudeCtrl,
-                                  inputType: "number")),
-                        ],
-                      ),
+                        isMobile
+                            ? Column(
+                          children: [
+                            _buildField("LOCATION NAME",
+                                controller.locationNameCtrl,
+                                inputType: "both"),
+                            const SizedBox(height: 10),
+                            _buildField("LONGITUDE",
+                                controller.longitudeCtrl,
+                                inputType: "number"),
+                          ],
+                        )
+                            : Row(
+                          children: [
+                            Expanded(
+                                child: _buildField("LOCATION NAME",
+                                    controller.locationNameCtrl,
+                                    inputType: "both")),
+                            const SizedBox(width: 10),
+                            Expanded(
+                                child: _buildField("LONGITUDE",
+                                    controller.longitudeCtrl,
+                                    inputType: "number")),
+                          ],
+                        ),
 
-                       SizedBox(height: 15),
+                         SizedBox(height: 15),
 
-                      isMobile
-                          ? Column(
-                        children: [
-                          _buildField("POSTCODE",
-                              controller.postcodeCtrl,
-                              inputType: 'both' ),
-                          const SizedBox(height: 10),
-                          DropdownButtonFormField<ZoneObject>(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              isDense: true,
+                        isMobile
+                            ? Column(
+                          children: [
+                            _buildField("POSTCODE",
+                                controller.postcodeCtrl,
+                                inputType: 'both' ),
+                            const SizedBox(height: 10),
+                            DropdownButtonFormField<ZoneObject>(
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                isDense: true,
+                              ),
+                              value: controller.zoneValue,
+                              items: controller.locationtypezoneModel!
+                                  .zonesList!
+                                  .map((zone) =>
+                                  DropdownMenuItem<ZoneObject>(
+                                    value: zone,
+                                    child: Text(zone.name ?? "", style: mozillaTextRegularText(fontWeight: FontWeight.w900)),
+                                  ))
+                                  .toList(),
+                              onChanged: (v) {
+                                controller.zoneValue = v;
+                                controller.update();
+                              },
                             ),
-                            value: controller.zoneValue,
-                            items: controller.locationtypezoneModel!
-                                .zonesList!
-                                .map((zone) =>
-                                DropdownMenuItem<ZoneObject>(
-                                  value: zone,
-                                  child: Text(zone.name ?? "", style: mozillaTextRegularText(fontWeight: FontWeight.w900)),
-                                ))
-                                .toList(),
-                            onChanged: (v) {
-                              controller.zoneValue = v;
-                              controller.update();
-                            },
-                          ),
-                        ],
-                      )
-                          : Row(
-                        children: [
-                          Expanded(
-                              child: _buildField("POSTCODE",
-                                  controller.postcodeCtrl,
-                                  inputType: "both")),
+                          ],
+                        )
+                            : Row(
+                          children: [
+                            Expanded(
+                                child: _buildField("POSTCODE",
+                                    controller.postcodeCtrl,
+                                    inputType: "both")),
 
-                          const SizedBox(width: 10),
-                            CustomDropdownField<ZoneObject>(
-                              text: "SELECT ZONE",
-                              label: "SELECT ZONE",
+                            const SizedBox(width: 10),
+                              CustomDropdownField<ZoneObject>(
+                                text: "SELECT ZONE",
+                                label: "SELECT ZONE",
+                                width: dropdownWidth,
+                                height: 38,
+                                items: controller.locationtypezoneModel!
+                                    .zonesList!,
+
+                                value: controller.zoneValue,
+                                itemLabel: (templateList) =>
+                                templateList.name!.toUpperCase(),
+
+                                onChanged: (val) {
+                                  controller.zoneValue = val;
+                                  controller.update();
+                                },
+                              ),
+
+                          ],
+                        ),
+
+                        const SizedBox(height: 15),
+
+                        isMobile
+                            ? Column(
+                          children: [
+                            _buildField("SHORTCUT",
+                                controller.shortcutCtrl,
+                                inputType: "text"),
+                            const SizedBox(height: 10),
+                            _buildField("EXTRA CHARGES",
+                                controller.extraChargesCtrl,
+                                inputType: "number"),
+                          ],
+                        )
+                            : Row(
+                          children: [
+                            Expanded(
+                                child: _buildField("SHORTCUT",
+                                    controller.shortcutCtrl,
+                                    inputType: "text")),
+                            const SizedBox(width: 10),
+                            Expanded(
+                                child: _buildField("EXTRA CHARGES",
+                                    controller.extraChargesCtrl,
+                                    inputType: "number")),
+                          ],
+                        ),
+
+                        const SizedBox(height: 15),
+
+                        isMobile
+                            ? Column(
+                          children: [
+                            CustomDropdownField<LocationTypeObject>(
+                              text: "LOCATION TYPE",
+                              label: "LOCATION TYPE",
                               width: dropdownWidth,
                               height: 38,
-                              items: controller.locationtypezoneModel!
-                                  .zonesList!,
-
-                              value: controller.zoneValue,
+                              items: controller.locationtypezoneModel!.locationTypesList!,
+                              value: controller.locationTypeValue,
                               itemLabel: (templateList) =>
                               templateList.name!.toUpperCase(),
-
                               onChanged: (val) {
-                                controller.zoneValue = val;
+                                controller.locationTypeValue = val;
                                 controller.update();
                               },
                             ),
 
-                        ],
-                      ),
+                            const SizedBox(height: 10),
 
-                      const SizedBox(height: 15),
+                            _buildField("LATITUDE",
+                                controller.latitudeCtrl,
+                                inputType: "number"),
+                          ],
 
-                      isMobile
-                          ? Column(
-                        children: [
-                          _buildField("SHORTCUT",
-                              controller.shortcutCtrl,
-                              inputType: "text"),
-                          const SizedBox(height: 10),
-                          _buildField("EXTRA CHARGES",
-                              controller.extraChargesCtrl,
-                              inputType: "number"),
-                        ],
-                      )
-                          : Row(
-                        children: [
-                          Expanded(
-                              child: _buildField("SHORTCUT",
-                                  controller.shortcutCtrl,
-                                  inputType: "text")),
-                          const SizedBox(width: 10),
-                          Expanded(
-                              child: _buildField("EXTRA CHARGES",
-                                  controller.extraChargesCtrl,
-                                  inputType: "number")),
-                        ],
-                      ),
+                        )
+                            : Row(
+                          children: [
+                            CustomDropdownField<LocationTypeObject>(
+                              text: "LOCATION TYPE",
+                              label: "Location Type",
 
-                      const SizedBox(height: 15),
-
-                      isMobile
-                          ? Column(
-                        children: [
-                          CustomDropdownField<LocationTypeObject>(
-                            text: "LOCATION TYPE",
-                            label: "LOCATION TYPE",
-                            width: dropdownWidth,
-                            height: 38,
-                            items: controller.locationtypezoneModel!.locationTypesList!,
-                            value: controller.locationTypeValue,
-                            itemLabel: (templateList) =>
-                            templateList.name!.toUpperCase(),
-                            onChanged: (val) {
-                              controller.locationTypeValue = val;
-                              controller.update();
-                            },
-                          ),
-
-                          const SizedBox(height: 10),
-
-                          _buildField("LATITUDE",
-                              controller.latitudeCtrl,
-                              inputType: "number"),
-                        ],
-
-                      )
-                          : Row(
-                        children: [
-                          CustomDropdownField<LocationTypeObject>(
-                            text: "LOCATION TYPE",
-                            label: "Location Type",
-
-                            width: dropdownWidth,
-                            height: 38,
-                            items: controller.locationtypezoneModel!
-                                .locationTypesList!,
-                            value: controller.locationTypeValue,
-                            itemLabel: (templateList) =>
-                            templateList.name!.toUpperCase(),
-                            onChanged: (val) {
-                              controller.locationTypeValue = val;
-                              controller.update();
-                            },
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                              child: _buildField("LATITUDE",
-                                  controller.latitudeCtrl,
-                                  inputType: "number"),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 15),
-
-                      _buildMultiline("ADDRESS",
-                          controller.addressCtrl),
-
-                      const SizedBox(height: 20),
-
-                      ElevatedButton(
-                        onPressed: () async{
-                         await controller.postLocation();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                          DynamicColors.primaryClr,
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 14, horizontal: 14),
+                              width: dropdownWidth,
+                              height: 38,
+                              items: controller.locationtypezoneModel!
+                                  .locationTypesList!,
+                              value: controller.locationTypeValue,
+                              itemLabel: (templateList) =>
+                              templateList.name!.toUpperCase(),
+                              onChanged: (val) {
+                                controller.locationTypeValue = val;
+                                controller.update();
+                              },
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                                child: _buildField("LATITUDE",
+                                    controller.latitudeCtrl,
+                                    inputType: "number"),
+                            ),
+                          ],
                         ),
-                        child: Text(
-                          controller.updateLocationValue.value == true
-                              ? "UPDATE" // Agar update mode hai
-                              : "SAVE",
-                          style: const TextStyle(
-                              color: Colors.white),
+
+                        const SizedBox(height: 15),
+
+                        _buildMultiline("ADDRESS",
+                            controller.addressCtrl),
+
+                        const SizedBox(height: 20),
+
+                        ElevatedButton(
+                          onPressed: () async{
+                           await controller.postLocation();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                            DynamicColors.primaryClr,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 14, horizontal: 14),
+                          ),
+                          child: Text(
+                            controller.updateLocationValue.value == true
+                                ? "UPDATE" // Agar update mode hai
+                                : "SAVE",
+                            style: const TextStyle(
+                                color: Colors.white),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              );
-            });
+                );
+              }),
+        );
       },
     );
   }
