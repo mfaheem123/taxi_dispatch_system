@@ -593,6 +593,15 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                 _grid(cols, [
                                   WebDateField('Date',
                                       tab: 12,
+                                      // The calendar is an overlay off the
+                                      // root Overlay, so _withFormFont at the
+                                      // top of this screen never reaches it.
+                                      // baseTextStyle is merged under every
+                                      // string in the field AND the popup, so
+                                      // the family lands in one place instead
+                                      // of per slot.
+                                      baseTextStyle:
+                                          const TextStyle(fontFamily: _kFontFamily),
                                       textStyle: _kValueTextStyle,
                                       // fieldTextColor is what the package
                                       // paints the value with while the field
@@ -994,6 +1003,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         _grid(cols, [
           WebDateField('R/Date',
               tab: 28,
+              baseTextStyle: const TextStyle(fontFamily: _kFontFamily),
               textStyle: _kValueTextStyle,
               style: WebDatePickerStyle.of(context)
                   .copyWith(fieldTextColor: Colors.black),
@@ -2914,6 +2924,8 @@ class _CustomerModelAutocompleteState
 
   Widget _buildPanelContent(BuildContext context) {
     final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
+    // The panel is exactly as wide as the field it hangs off, like every other
+    // suggestion panel on this form.
     final width = box?.size.width ?? 280;
     final height = box?.size.height ?? 48;
     return Positioned(
@@ -2970,45 +2982,62 @@ class _CustomerModelAutocompleteState
                       child: Container(
                         width: double.infinity,
                         height: 48,
+                        // 8/6 instead of 12/8: the panel is only as wide as
+                        // the Mobile cell, so every pixel of chrome came
+                        // straight out of the text.
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
+                            horizontal: 8, vertical: 6),
                         color: active
                             ? const Color(0xFFEEF2FF)
                             : Colors.white,
                         alignment: Alignment.centerLeft,
                         child: Row(children: [
                           Icon(Icons.person_outline,
-                              size: 16,
+                              size: 14,
                               color: active
                                   ? const Color(0xFF4F46E5)
                                   : Colors.grey),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 6),
                           Expanded(
                             child: Column(
                               crossAxisAlignment:
                               CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(
-                                  c.mobile ?? '',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: active
-                                        ? FontWeight.w600
-                                        : FontWeight.w500,
-                                    color: Colors.black87,
+                                // FittedBox, not ellipsis: the number and the
+                                // name are what the user picks by, so a row
+                                // too narrow for them shrinks the text to fit
+                                // instead of cutting it off. maxLines/softWrap
+                                // keep each on one line; nothing can overflow
+                                // once it is scaled, so no ellipsis is needed.
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    c.mobile ?? '',
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: active
+                                          ? FontWeight.w600
+                                          : FontWeight.w500,
+                                      color: Colors.black87,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 2),
-                                Text(
-                                  c.name ?? '',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.black,
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    c.name ?? '',
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 ),
                               ],

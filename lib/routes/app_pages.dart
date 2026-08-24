@@ -19,7 +19,8 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const initial = Routes.loginScreen;
+  static const initial = Routes.myHomePage;
+  // static const initial = Routes.loginScreen;
   // static const initial = Routes.ResponsivePassengerScreen;
   // static const initial = Routes.createBooking;
 

@@ -550,23 +550,23 @@ class _MyHomePageState extends State<MyHomePage> {
                     size: 24,
                     color: DynamicColors.whiteClr,
                   ),
-                  SizedBox(
-                    width: 9,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      if (html.document.fullscreenElement == null) {
-                        html.document.documentElement?.requestFullscreen();
-                      } else {
-                        html.document.exitFullscreen();
-                      }
-                    },
-                    child: Icon(
-                      Icons.fullscreen,
-                      size: 26,
-                      color: DynamicColors.whiteClr,
-                    ),
-                  ),
+                  // SizedBox(
+                  //   width: 9,
+                  // ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     if (html.document.fullscreenElement == null) {
+                  //       html.document.documentElement?.requestFullscreen();
+                  //     } else {
+                  //       html.document.exitFullscreen();
+                  //     }
+                  //   },
+                  //   child: Icon(
+                  //     Icons.fullscreen,
+                  //     size: 26,
+                  //     color: DynamicColors.whiteClr,
+                  //   ),
+                  // ),
                   SizedBox(
                     width: 9,
                   ),
