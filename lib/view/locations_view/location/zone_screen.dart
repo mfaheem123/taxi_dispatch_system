@@ -1089,41 +1089,28 @@ class _ZoneScreenState extends State<ZoneScreen> {
                       ),
                     ),
                     SizedBox(height: 15),
-                    SizedBox(height: 15),
-                    Focus(
-                      focusNode: _zoneFocusNode,
-                      onKey: (node, event) {
-                        return KeyEventResult.handled;
+                    Obx(() => CustomDropdown(
+                      width: MediaQuery.of(context).size.width * 0.15,
+                      items: List<String>.from(controller.zoneItems).map((e) => e.toUpperCase()).toList(),
+                      selecteditem: controller.zoneValue.value.toUpperCase(),
+                      onchanged: (String? newValue) {
+                        setState(() {
+                          controller.zoneValue.value = newValue!.toUpperCase();
+                        });
                       },
-                      child: CustomDropdown(
-                        width: MediaQuery.of(context).size.width * 0.15,
-                        items: List<String>.from(controller.zoneItems).map((e) => e.toUpperCase()).toList(),
-                        selecteditem: controller.zoneValue.value.toUpperCase(),
-                        onchanged: (String? newValue) {
-                          setState(() {
-                            controller.zoneValue.value = newValue!.toUpperCase();
-                          });
-                        },
-                        isFocused: _zoneFocusNode.hasFocus,
-                      ),
-                    ),
+                      // isFocused: _zoneFocusNode.hasFocus,
+                    )),
                     SizedBox(height: 15),
-                    Obx(() => Focus(
-                      focusNode: _categoryFocusNode,
-                      onKey: (node, event) {
-                        return KeyEventResult.handled;
+                    Obx(() => CustomDropdown(
+                      width: MediaQuery.of(context).size.width * 0.15,
+                      items: List<String>.from(controller.categoryItems).map((e) => e.toUpperCase()).toList(),
+                      selecteditem: controller.categoryValue.value.toUpperCase(),
+                      onchanged: (String? newValue) {
+                        setState(() {
+                          controller.categoryValue.value = newValue!.toUpperCase();
+                        });
                       },
-                      child: CustomDropdown(
-                        width: MediaQuery.of(context).size.width * 0.15,
-                        items: List<String>.from(controller.categoryItems).map((e) => e.toUpperCase()).toList(),
-                        selecteditem: controller.categoryValue.value.toUpperCase(),
-                        onchanged: (String? newValue) {
-                          setState(() {
-                            controller.categoryValue.value = newValue!.toUpperCase();
-                          });
-                        },
-                        isFocused: _categoryFocusNode.hasFocus,
-                      ),
+                      // isFocused: _categoryFocusNode.hasFocus,
                     )),
                     SizedBox(height: 20),
                     Row(
