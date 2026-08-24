@@ -43,7 +43,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
   /// controllers (see DashboardController.resetMultiReservationFields).
   Widget _timeField(TextEditingController controller) {
     return SizedBox(
-      height: 45,
+      height: 30,
       child: TimePickerField(
         controller: controller,
         accent: DynamicColors.primaryClr,
@@ -117,7 +117,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                 alignment: Alignment.centerLeft,
                                 child: Row(
                                   children: [
-                                    Text("Multi Reversation",
+                                    Text("MULTI RESERVATION",
                                         style: titleDesign()),
                                     Spacer(),
                                     Focus(
@@ -165,7 +165,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                     child: Wrap(
                       spacing: isHighRes ? 30 : 10,
                       runSpacing: 12,
-                      crossAxisAlignment: WrapCrossAlignment.end,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         labeledField(
                           context: context,
@@ -175,6 +175,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           // width: fieldWidth/1.2,
                           // width: 155,
                           width: isHighRes ? 180 : 155,
+                          column: true,
                           child: SizedBox(
                               height: 30,
                               child: KeyboardDatePicker(
@@ -198,6 +199,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           // width: fieldWidth/1.2,
                           // width: 155,
                           width: isHighRes ? 180 : 155,
+                          column: true,
                           child: SizedBox(
                               height: 30,
                               child: KeyboardDatePicker(
@@ -218,6 +220,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           context: context,
                           isMobile: isMobile,
                           label: AppText.time,
+                          column: true,
                           // width: fieldWidth/2.3,
                           // width: fieldWidth / 2.0,
                           // width: 90,
@@ -225,12 +228,12 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           child: _timeField(
                               controller.multiReservationToTimeController),
                         ),
-                        Visibility(
-                          visible: controller.jourValue == 'W/R' ? true : false,
-                          child: labeledField(
+                        if( controller.jourValue == 'W/R' ? true : false)
+                          labeledField(
                             context: context,
                             isMobile: isMobile,
-                            label: AppText.time,
+                            label: AppText.rtime,
+                            column: true,
                             // width: fieldWidth/2.3,
                             // width: fieldWidth / 2.0,
                             // width: 90,
@@ -238,13 +241,15 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                             child: _timeField(controller
                                 .returnMultiReservationToTimeController),
                           ),
-                        ),
-                        CustomButton(
-                          height: 35,
+
+                        Padding(
+                          padding: const EdgeInsets.only(top: 18),
+                          child: CustomButton(
+                          height: 30,
                           // width: fieldWidth / 2,
                           // width: 140,
                           // width: 135,
-                          width: isHighRes ? 140 : 135,
+                          width: 70,
                           fontSize: 10,
                           borderRadius: 4,
                           verticalPadding: 0.0,
@@ -257,22 +262,26 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               returnTime: controller.jourValue == 'W/R'? controller.returnMultiReservationToTimeController.text:null
                             );
                           },
-                          btnText: AppText.createreservation,
+                          btnText: "ADD",
                         ),
-                        CustomButton(
-                          height: 35,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 18),
+                          child: CustomButton(
+                          height: 30,
                           onTap: (){
                             // Clear the lists
                             controller.resetMultiReservationFields();
                             controller.update();
                             // Get.back();
                           },
-                          width: 60,
+                          width: 70,
                           fontSize: 10,
                           borderRadius: 4,
                           verticalPadding: 0.0,
                           btnText: AppText.cancel,
                           btnColor: DynamicColors.redClr,
+                        ),
                         ),
                       ],
                     ),
@@ -450,7 +459,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                       // ),
 
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: SizedBox(
@@ -463,7 +472,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               buildHeaderWithSearch(title: "DAY"),
                               buildHeaderWithSearch(title: "DATE"),
                               buildHeaderWithSearch(title: "TIME"),
-                              // buildHeaderWithSearch(title: "RETURN TIME"),
+                              buildHeaderWithSearch(title: "RETURN TIME"),
 
                             ],
 
@@ -477,8 +486,86 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                     DataCell(Center(child: Text(object.exclude.toString().toUpperCase()))),
                                     DataCell(Center(child: Text(object.day??""))),
                                     DataCell(Center(child: Text(object.startDate??""))),
-                                    // DataCell(Text(object.time??"")),
-                                    DataCell(Center(child: Text(object.returnTime??""))),
+                                    // 1. TIME Cell
+                                    // DataCell(
+                                    //   Center(
+                                    //     child: SizedBox(
+                                    //       width: 70,
+                                    //       height: 25,
+                                    //       child: TextFormField(
+                                    //         initialValue: object.time ?? "",
+                                    //         style: const TextStyle(
+                                    //           fontSize: 12,
+                                    //           color: Colors.black,
+                                    //           fontWeight: FontWeight.bold
+                                    //         ),
+                                    //         textAlign: TextAlign.center,
+                                    //         decoration: const InputDecoration(
+                                    //           isDense: true,
+                                    //           contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                                    //           border: InputBorder.none,
+                                    //           enabledBorder: InputBorder.none,
+                                    //           focusedBorder: OutlineInputBorder(
+                                    //             borderSide: BorderSide(color: Colors.blue, width: 1),
+                                    //           ),
+                                    //         ),
+                                    //         onChanged: (val) {
+                                    //           object.time = val;
+                                    //         },
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    DataCell(
+                                      Center(
+                                        child: SizedBox(
+                                          width: 75,
+                                          height: 25,
+                                          child: TimePickerField(
+                                            controller: TextEditingController(text: object.time ?? ""),
+                                            accent: DynamicColors.primaryClr,
+                                            textStyle: const TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
+                                            onChanged: (val) {
+                                              object.time = val;
+                                            },
+                                            decoration: const InputDecoration(
+                                              isDense: true,
+                                              contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                                              border: InputBorder.none,
+                                              enabledBorder: InputBorder.none,
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.blue, width: 1),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      Center(
+                                        child: SizedBox(
+                                          width: 75,
+                                          height: 25,
+                                          child: TimePickerField(
+                                            controller: TextEditingController(text: object.returnTime ?? ""),
+                                            accent: DynamicColors.primaryClr,
+                                            textStyle: const TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
+                                            onChanged: (val) {
+                                              object.returnTime = val;
+                                            },
+                                            decoration: const InputDecoration(
+                                              isDense: true,
+                                              contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                                              border: InputBorder.none,
+                                              enabledBorder: InputBorder.none,
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.blue, width: 1),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 );
                               }).toList(),
