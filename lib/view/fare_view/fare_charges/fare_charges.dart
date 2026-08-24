@@ -280,7 +280,7 @@ class _FareChargesState extends State<FareCharges> {
                                     context: context,
                                     isMobile: isMobile,
                                     column: true,
-                                    label: "FROM",
+                                    label: "TO",
                                     width: fieldWidth/1.8,
                                     child: SizedBox(height: 30, child: CustomTimePicker(
                                       controller: controller.endTimeSurCharge, // optional

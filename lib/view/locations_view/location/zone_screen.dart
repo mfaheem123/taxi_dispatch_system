@@ -83,9 +83,12 @@ class _ZoneScreenState extends State<ZoneScreen> {
   //   }
   // }
 
+  FocusNode _zoneFocusNode = FocusNode();
+  FocusNode _categoryFocusNode = FocusNode();
+
   List permissions = [];
   @override
-  void initState() {
+  void initState()  {
     super.initState();
     permissions = Api().sp.read('all_permissions') ?? [];
     controller.refreshMapController();
@@ -151,6 +154,16 @@ class _ZoneScreenState extends State<ZoneScreen> {
   // final List<LatLng> _pointsDraft = [];
   // final Completer<GoogleMapController> _ctrl = Completer();
   // final GlobalKey _mapKey = GlobalKey();
+
+
+
+  @override
+  void dispose() {
+    // 👇 Dispose FocusNodes
+    _zoneFocusNode.dispose();
+    _categoryFocusNode.dispose();
+    super.dispose();
+  }
 
   String zoneID = "";
   static const _initialCamera = CameraPosition(
@@ -1026,11 +1039,14 @@ class _ZoneScreenState extends State<ZoneScreen> {
   }
 
 
+
+
   @override
   Widget build(BuildContext context) {
 
     final polygons = _buildPolygonsForRender();
     final markers = _buildMarkersForRender();
+
     return SizedBox(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
@@ -1073,35 +1089,42 @@ class _ZoneScreenState extends State<ZoneScreen> {
                       ),
                     ),
                     SizedBox(height: 15),
-                    Obx(() =>CustomDropdown(
-                      width: MediaQuery.of(context).size.width * 0.15,
-                      // items: controller.zoneItems,
-                      // selecteditem: controller.zoneValue.value,
-                      // onchanged: (String? newValue) {
-                      //   setState(() {
-                      //     controller.zoneValue.value = newValue!;
-                      items: List<String>.from(controller.zoneItems).map((e) => e.toUpperCase()).toList(),
-                      selecteditem: controller.zoneValue.value.toUpperCase(),
-                      onchanged: (String? newValue) {
-                        setState(() {
-                          controller.zoneValue.value = newValue!.toUpperCase();
-                        });
+                    SizedBox(height: 15),
+                    Focus(
+                      focusNode: _zoneFocusNode,
+                      onKey: (node, event) {
+                        return KeyEventResult.handled;
                       },
-                    )),
-                Obx(() =>CustomDropdown(
+                      child: CustomDropdown(
                         width: MediaQuery.of(context).size.width * 0.15,
-                        // items: controller.categoryItems,
-                        // selecteditem: controller.categoryValue.value,
-                        // onchanged: (String? newValue) {
-                        //   setState(() {
-                        //     controller.categoryValue.value = newValue!;
+                        items: List<String>.from(controller.zoneItems).map((e) => e.toUpperCase()).toList(),
+                        selecteditem: controller.zoneValue.value.toUpperCase(),
+                        onchanged: (String? newValue) {
+                          setState(() {
+                            controller.zoneValue.value = newValue!.toUpperCase();
+                          });
+                        },
+                        isFocused: _zoneFocusNode.hasFocus,
+                      ),
+                    ),
+                    SizedBox(height: 15),
+                    Obx(() => Focus(
+                      focusNode: _categoryFocusNode,
+                      onKey: (node, event) {
+                        return KeyEventResult.handled;
+                      },
+                      child: CustomDropdown(
+                        width: MediaQuery.of(context).size.width * 0.15,
                         items: List<String>.from(controller.categoryItems).map((e) => e.toUpperCase()).toList(),
                         selecteditem: controller.categoryValue.value.toUpperCase(),
                         onchanged: (String? newValue) {
                           setState(() {
                             controller.categoryValue.value = newValue!.toUpperCase();
                           });
-                        })),
+                        },
+                        isFocused: _categoryFocusNode.hasFocus,
+                      ),
+                    )),
                     SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
