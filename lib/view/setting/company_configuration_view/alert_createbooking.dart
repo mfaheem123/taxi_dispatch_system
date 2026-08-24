@@ -533,11 +533,11 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                           width: 75,
                                           height: 25,
                                           child: TimePickerField(
-                                            controller: TextEditingController(text: object.time ?? ""),
+                                            controller: TextEditingController(text: object.returnTime ?? ""),
                                             accent: DynamicColors.primaryClr,
                                             textStyle: const TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
                                             onChanged: (val) {
-                                              object.time = val;
+                                              object.returnTime = val;
                                             },
                                             decoration: const InputDecoration(
                                               isDense: true,
@@ -559,7 +559,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                           width: 75,
                                           height: 25,
                                           child: TimePickerField(
-                                            controller: TextEditingController(text: object.returnTime ?? ""),
+                                            controller: TextEditingController(text: object.endTime ?? ""),
                                             accent: DynamicColors.primaryClr,
                                             textStyle: const TextStyle(
                                               fontSize: 12,
@@ -567,7 +567,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                               fontWeight: FontWeight.bold,
                                             ),
                                             onChanged: (val) {
-                                              object.returnTime = val;
+                                              object.endTime = val;
                                             },
                                             decoration: const InputDecoration(
                                               isDense: true,
