@@ -228,7 +228,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           child: _timeField(
                               controller.multiReservationToTimeController),
                         ),
-                        if( controller.jourValue == 'W/R' ? true : false)
+                        if( controller.jourValue == 'R/N' ? true : false)
                           labeledField(
                             context: context,
                             isMobile: isMobile,
@@ -259,7 +259,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               startTime: controller.multiReservationFromDate,
                               time: controller.multiReservationToTimeController.text,
                               selectedDays: controller.multiReservationDaysList,
-                              returnTime: controller.jourValue == 'W/R'? controller.returnMultiReservationToTimeController.text:null
+                              returnTime: controller.jourValue == 'R/N'? controller.returnMultiReservationToTimeController.text:null
                             );
                           },
                           btnText: "ADD",
@@ -483,39 +483,50 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                   .map((object) {
                                 return DataRow(
                                   cells: [
-                                    DataCell(Center(child: Text(object.exclude.toString().toUpperCase()))),
-                                    DataCell(Center(child: Text(object.day??""))),
-                                    DataCell(Center(child: Text(object.startDate??""))),
-                                    // 1. TIME Cell
+                                    // DataCell(Center(child: Text(object.exclude.toString().toUpperCase()))),
                                     // DataCell(
                                     //   Center(
                                     //     child: SizedBox(
-                                    //       width: 70,
-                                    //       height: 25,
-                                    //       child: TextFormField(
-                                    //         initialValue: object.time ?? "",
-                                    //         style: const TextStyle(
-                                    //           fontSize: 12,
-                                    //           color: Colors.black,
-                                    //           fontWeight: FontWeight.bold
-                                    //         ),
-                                    //         textAlign: TextAlign.center,
-                                    //         decoration: const InputDecoration(
-                                    //           isDense: true,
-                                    //           contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                                    //           border: InputBorder.none,
-                                    //           enabledBorder: InputBorder.none,
-                                    //           focusedBorder: OutlineInputBorder(
-                                    //             borderSide: BorderSide(color: Colors.blue, width: 1),
-                                    //           ),
-                                    //         ),
-                                    //         onChanged: (val) {
-                                    //           object.time = val;
+                                    //       height: 24,
+                                    //       width: 24,
+                                    //       child: Checkbox(
+                                    //         value: object.exclude,
+                                    //         activeColor: DynamicColors.primaryClr,
+                                    //         onChanged: (bool? value) {
+                                    //           setState(() {
+                                    //             object.exclude = value ?? false;
+                                    //           });
                                     //         },
                                     //       ),
                                     //     ),
                                     //   ),
                                     // ),
+                                    DataCell(
+                                      Center(
+                                        child: InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              object.exclude = !object.exclude;
+                                            });
+                                          },
+                                          child: SizedBox(
+                                            height: 24,
+                                            width: 24,
+                                            child: Checkbox(
+                                              value: object.exclude,
+                                              activeColor: DynamicColors.primaryClr,
+                                              onChanged: (bool? value) {
+                                                setState(() {
+                                                  object.exclude = value ?? false;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(Center(child: Text(object.day??""))),
+                                    DataCell(Center(child: Text(object.startDate??""))),
                                     DataCell(
                                       Center(
                                         child: SizedBox(
@@ -543,13 +554,18 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                     ),
                                     DataCell(
                                       Center(
-                                        child: SizedBox(
+                                        child: controller.jourValue == 'R/N'
+                                            ? SizedBox(
                                           width: 75,
                                           height: 25,
                                           child: TimePickerField(
                                             controller: TextEditingController(text: object.returnTime ?? ""),
                                             accent: DynamicColors.primaryClr,
-                                            textStyle: const TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
+                                            textStyle: const TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                             onChanged: (val) {
                                               object.returnTime = val;
                                             },
@@ -563,7 +579,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                               ),
                                             ),
                                           ),
-                                        ),
+                                        )
+                                            : const Text("-", style: TextStyle(color: Colors.grey)),
                                       ),
                                     ),
                                   ],
