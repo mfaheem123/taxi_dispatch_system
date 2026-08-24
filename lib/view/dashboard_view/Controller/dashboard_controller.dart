@@ -2454,8 +2454,8 @@ class DashboardController extends GetxController {
             startDate: "${date.year}-${date.month}-${date.day}",
             day: selectedDays[dayIndex],
             exclude: false,
-            returnTime: time,
-            endTime: returnTime,
+            time: time,
+            returnTime: returnTime,
           ),
         );
       }
