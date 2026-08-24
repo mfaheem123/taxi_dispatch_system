@@ -754,6 +754,64 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   ),
                                   _quotationToggle(),
                                 ]),
+                                ///todo multi reservation
+                                // _grid(cols, [
+                                //   WebDateField('Date',
+                                //       tab: _isReturnJourney?36.1:21.1,
+                                //       // The calendar is an overlay off the
+                                //       // root Overlay, so _withFormFont at the
+                                //       // top of this screen never reaches it.
+                                //       // baseTextStyle is merged under every
+                                //       // string in the field AND the popup, so
+                                //       // the family lands in one place instead
+                                //       // of per slot.
+                                //       baseTextStyle:
+                                //       const TextStyle(fontFamily: _kFontFamily),
+                                //       textStyle: _kValueTextStyle,
+                                //       // fieldTextColor is what the package
+                                //       // paints the value with while the field
+                                //       // is at rest (black87 by default); the
+                                //       // focused/open value stays the accent.
+                                //       style: WebDatePickerStyle.of(context)
+                                //           .copyWith(fieldTextColor: Colors.black),
+                                //       // Unfocused / disabled border comes from
+                                //       // the form's own decoration (grey 0.7) —
+                                //       // the package default leaves it to the
+                                //       // theme. Focused stays the purple accent.
+                                //       decoration: _inputDecoration(),
+                                //       value: controller.pickUpDate,
+                                //       onChanged: (d) => setState(() {
+                                //         controller.pickUpDate = d;
+                                //         controller.pickUpDatePicked = true;
+                                //       })),
+                                //   _timeField('Time',
+                                //       tab: _isReturnJourney?36.2:21.2,
+                                //       controller:
+                                //       controller.pickUpTimeController,
+                                //       onPicked: () =>
+                                //       controller.pickUpTimePicked = true),
+                                //   WebDateField('Date',
+                                //       tab: _isReturnJourney?36.3:21.3,
+                                //       baseTextStyle:
+                                //       const TextStyle(fontFamily: _kFontFamily),
+                                //       textStyle: _kValueTextStyle,
+                                //       style: WebDatePickerStyle.of(context)
+                                //           .copyWith(fieldTextColor: Colors.black),
+                                //       decoration: _inputDecoration(),
+                                //       value: controller.pickUpDate,
+                                //       onChanged: (d) => setState(() {
+                                //         controller.pickUpDate = d;
+                                //         controller.pickUpDatePicked = true;
+                                //       })),
+                                //   _timeField('Time',
+                                //       tab: _isReturnJourney?36.4:21.4,
+                                //       controller:
+                                //       controller.pickUpTimeController,
+                                //       onPicked: () =>
+                                //       controller.pickUpTimePicked = true),
+                                // ]),
+                                ///todo multi reservation
+
                                 const SizedBox(height: 4),
                                 _commsAndLuggageRow(isMobile),
                                 const SizedBox(height: 4),

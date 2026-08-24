@@ -41,7 +41,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
   /// Replaces the old CustomTimePicker here, which was click-only and wrote
   /// `"HH:mm "` with a trailing space — unlike every other writer of these two
   /// controllers (see DashboardController.resetMultiReservationFields).
-  Widget _timeField(TextEditingController controller) {
+  Widget _timeField(TextEditingController controller, {ValueChanged<String>? onChanged}) {
     return SizedBox(
       height: 30,
       child: TimePickerField(
@@ -49,7 +49,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
         accent: DynamicColors.primaryClr,
         textStyle: const TextStyle(fontSize: 12, color: Colors.black87),
         // The field writes the value itself; this just refreshes the alert.
-        onChanged: (_) => setState(() {}),
+        onChanged: onChanged,
         decoration: InputDecoration(
           isDense: true,
           contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 13),
@@ -226,7 +226,12 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           // width: 90,
                           width: isHighRes ? 110 : 90,
                           child: _timeField(
-                              controller.multiReservationToTimeController),
+                              controller.multiReservationToTimeController,
+                              onChanged: (_) {
+                                controller.pickUpTimeController.text = controller.multiReservationToTimeController.text;
+                                setState(() {});
+                              }
+                          ),
                         ),
                         if( controller.jourValue == 'R/N' ? true : false)
                           labeledField(
@@ -239,7 +244,12 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                             // width: 90,
                             width: isHighRes ? 110 : 90,
                             child: _timeField(controller
-                                .returnMultiReservationToTimeController),
+                                .returnMultiReservationToTimeController,
+                                onChanged: (_) {
+                                  controller.pickUpTimeControllerReturn.text = controller.returnMultiReservationToTimeController.text;
+                                  setState(() {});
+                                }
+                            ),
                           ),
 
                         Padding(
@@ -259,7 +269,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               startTime: controller.multiReservationFromDate,
                               time: controller.multiReservationToTimeController.text,
                               selectedDays: controller.multiReservationDaysList,
-                              returnTime: controller.jourValue == 'R/N'? controller.returnMultiReservationToTimeController.text:null
+                              returnTime: controller.jourValue == 'R/N'? controller.returnMultiReservationToTimeController.text:null,
                             );
                           },
                           btnText: "ADD",
@@ -604,24 +614,26 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                 BotToast.showText(text: "Please select data first");
                                 return;
                               }
-                              final storedTemFare = await getFares(
-                                  journeyTypeId: controller.selectJourneyTypeValue!.id,
-                                  multiReservationList: controller.multiReservationList,
-                                  dropOff: controller.pickupController.text,
-                                  pickup: controller.dropOffController.text,
-                                  miles: controller.totalDistance.value,
-                                  dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
-                                  pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
-                                  pickupTime: controller.pickUpTimeController.text,
-                                  vehicleTypeId: controller.selectVehicleValue!.id,
-
-                              );
-                              var fareValue = jsonDecode(storedTemFare);
-                              controller.fixedFare.value = fareValue['total_fare'].toString();
-                              controller.returnFareValue = fareValue== null?"0": fareValue['return_fare'].toString();
-                              controller.slugControllerReturn.text = fareValue== null?"0": fareValue['return_fare'].toString();
-                              controller.slugController.text = fareValue['fare'].toString();
-                              controller.update();
+                              await controller.getFaresCalculation();
+                              // final storedTemFare = await getFares(
+                              //     journeyTypeId: controller.selectJourneyTypeValue!.id,
+                              //     multiReservationList: controller.multiReservationList,
+                              //     dropOff: controller.pickupController.text,
+                              //     pickup: controller.dropOffController.text,
+                              //     miles: controller.totalDistance.value,
+                              //     dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
+                              //     pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
+                              //     pickupTime: controller.pickUpTimeController.text,
+                              //     vehicleTypeId: controller.selectVehicleValue!.id,
+                              //     returnVehicleTypeId: controller.selectVehicleValueReturn == null ? null : controller.selectVehicleValueReturn!.id
+                              //
+                              // );
+                              // var fareValue = jsonDecode(storedTemFare);
+                              // controller.fixedFare.value = fareValue['total_fare'].toString();
+                              // controller.returnFareValue = fareValue== null?"0": fareValue['return_fare'].toString();
+                              // controller.slugControllerReturn.text = fareValue== null?"0": fareValue['return_fare'].toString();
+                              // controller.slugController.text = fareValue['fare'].toString();
+                              // controller.update();
                               Get.back();
                             },
                             height: 35,

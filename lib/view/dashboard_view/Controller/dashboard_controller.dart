@@ -1917,7 +1917,7 @@ class DashboardController extends GetxController {
       selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
       selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
       await getBookingCounts();
-      startBookingCountTimer();
+      // startBookingCountTimer();
       if (dashboardAllData!.vehicleTypes != null &&
           dashboardAllData!.vehicleTypes!.isNotEmpty) {
         try {
@@ -2046,7 +2046,7 @@ class DashboardController extends GetxController {
       _checkBookingsTimeAndPlaySound(dashboardTableModelData?.data ?? []);
       _timer?.cancel();
       _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-        getDashboardTableData(tableId: selectedTabId);
+        // getDashboardTableData(tableId: selectedTabId);
       });
       update();
     }
@@ -2783,11 +2783,11 @@ class DashboardController extends GetxController {
         "return_notes": jsonEncode(extraFaresReturnList),
       if (selectAirportController.text.isNotEmpty)
         "flight_number": selectAirportController.text,
-      if (arrivalTimeController.text.isNotEmpty)
+      if (arrivalTimeController.text.isNotEmpty && selectAirportController.text.isNotEmpty)
         "arriving_from": arrivalTimeController.text,
       if (selectAirportControllerReturn.text.isNotEmpty)
         "return_flight_number": selectAirportControllerReturn.text,
-      if (arrivalReturnTimeController.text.isNotEmpty)
+      if (arrivalReturnTimeController.text.isNotEmpty && selectAirportControllerReturn.text.isNotEmpty)
         "return_arriving_from": arrivalReturnTimeController.text,
       "total_charges": double.parse(fixedFare.value).toStringAsFixed(1)
 
