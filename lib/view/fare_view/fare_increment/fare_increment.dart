@@ -250,7 +250,7 @@ class _FareIncrementState extends State<FareIncrement> {
                                 borderRadius: 4,
                                 onTap: () {
                                  controller.incrementValueVehicleController.text.isEmpty || controller.operatorType == null  ?
-                                 BotToast.showText(text: "Select operater and enter value"):
+                                 BotToast.showText(text: "Required fields are missing"):
 
                                  controller.postFareIncrement();
                                 },

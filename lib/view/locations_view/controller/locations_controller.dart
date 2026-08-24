@@ -177,7 +177,7 @@ class LocationController extends GetxController {
 //   ///------------------------- Pagination
   var locationCurrentPage = 1.obs;
   var locationTotalPages = 1.obs;
-  final int locationLimit = 10;
+  final int locationLimit = 20;
   LocationListModel? locationListModel;
   RxBool getLocationLoader = false.obs;
   RxBool blackList = false.obs;
