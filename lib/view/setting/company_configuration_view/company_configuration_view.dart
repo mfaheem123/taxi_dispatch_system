@@ -1,13 +1,10 @@
-
-
-
-
 import 'package:dashboard_new1/view/setting/company_configuration_view/general_configuration_view.dart';
 import 'package:dashboard_new1/view/setting/company_configuration_view/payment_getways_view.dart';
 import 'package:dashboard_new1/view/setting/company_configuration_view/sms_configuration_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../component/color.dart';
 import '../../../component/dropdown_button.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_widget.dart';
@@ -47,21 +44,22 @@ class _CompanyConfigurationViewState extends State<CompanyConfigurationView> {
                   ? maxWidth / 2
                   : maxWidth / 4;
 
-              return Column(
+              return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+                  child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: 8,
-                  ),
+                  SizedBox(height: 10),
                   Wrap(
                      crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 20,
+                    runSpacing: 12,
                     children: [
-                      Text(AppText.companyConfigurations, style: titleDesign()),
-                      SizedBox(
-                        width: 50,
-                      ),
+                      Padding(padding: EdgeInsetsGeometry.only(left: 10.0),
+                        child: Text(AppText.companyConfigurations, style: titleDesign())),
+                      SizedBox(width: 50),
                       CustomDropdownField<String>(
-                        text: AppText.selectSubsidiary,
+                        text: AppText.subsidiary,
                         width: fieldWidth/1.5,
                         label: AppText.selectSubsidiary,
                         items:[
@@ -80,17 +78,19 @@ class _CompanyConfigurationViewState extends State<CompanyConfigurationView> {
                       ),
                     ],
                   ),
-                  SizedBox(
-                    height: 8,
-                  ),
+                  SizedBox(height: 16),
                   Container(
                     height: kToolbarHeight,
-                    color: Colors.blueGrey[50], // optional background
-                    child: const TabBar(
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(4), color: Colors.blueGrey[50]),
+                    child: TabBar(
+                      labelPadding: EdgeInsets.symmetric(horizontal: 70),
                       isScrollable: true,
-                      labelColor: Colors.blue,
+                      labelColor: DynamicColors.primaryClr,
                       unselectedLabelColor: Colors.black,
-                      indicatorColor: Colors.blue,
+                      indicatorColor: DynamicColors.primaryClr,
+                      labelStyle: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
                       tabs: [
                         Tab(text: "GENERAL CONFIGURATIONS"),
                         Tab(text: "EMAIL CONFIGURATIONS"),
@@ -119,7 +119,7 @@ class _CompanyConfigurationViewState extends State<CompanyConfigurationView> {
                   ),
 
               ],
-              );
+              ));
             }
           );
         }

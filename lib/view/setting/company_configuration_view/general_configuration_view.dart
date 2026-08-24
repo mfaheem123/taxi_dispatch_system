@@ -48,9 +48,7 @@ class _GeneralConfigurationViewState extends State<GeneralConfigurationView> {
         return SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(
-                height: 8,
-              ),
+              SizedBox(height: 8),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
@@ -66,13 +64,13 @@ class _GeneralConfigurationViewState extends State<GeneralConfigurationView> {
                           width: Get.width,
                           height: kToolbarHeight,
                           color: DynamicColors.secondaryClr,
-                          child: Align(
-                              alignment: Alignment.centerLeft,
+                          child: Padding(padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 15.0),
+                          // Align(
+                          //     alignment: Alignment.centerLeft,
                               child: Text(AppText.generalConfiguration,
                                   style: titleDesign()))),
                       Padding(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                         child: Column(
                           children: [
                             Wrap(
@@ -158,7 +156,7 @@ class _GeneralConfigurationViewState extends State<GeneralConfigurationView> {
                                   ],
                                   value: controller.typeAmount,
                                   itemLabel: (val) =>
-                                      val, // just show the string
+                                      val,
                                   onChanged: (val) {
                                     controller.typeAmount = val!;
                                     controller.update();
@@ -221,8 +219,6 @@ class _GeneralConfigurationViewState extends State<GeneralConfigurationView> {
                                   columnText: true,
                                 ),
                                 CustomDropdownField<String>(
-
-                                  
                                   text: AppText.service,
                                   width: fieldWidth / 1.5,
                                   label: AppText.deadMileageMethods,
@@ -235,7 +231,7 @@ class _GeneralConfigurationViewState extends State<GeneralConfigurationView> {
                                   ],
                                   value: controller.deadMileageMethods,
                                   itemLabel: (val) =>
-                                      val, // just show the string
+                                      val,
                                   onChanged: (val) {
                                     controller.deadMileageMethods = val!;
                                     controller.update();
