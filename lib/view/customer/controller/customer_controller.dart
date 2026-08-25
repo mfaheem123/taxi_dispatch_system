@@ -89,9 +89,9 @@ class CustomerController extends GetxController {
     print(formData);
     var response = await Api().post(
       formData,
-      customerUpdateId.value == 0
-          ? "customers/add"
-          : 'customers/edit/${customerUpdateId.value}',
+      customermodel2 == null
+           ? "customers/add"
+           : 'customers/edit/${customerUpdateId.value}',
       auth: true,
       sendCompanyId: true,
     );
@@ -103,7 +103,7 @@ class CustomerController extends GetxController {
 
       print("✅ Account Created Successfully=== $response" );
       enableSms.value = false;
-      nameController.clear();
+    nameController.clear();
       emailController.clear();
       mobileController.clear();
       telController.clear();
@@ -127,7 +127,7 @@ class CustomerController extends GetxController {
   RxBool customerLoader = false.obs;
   String? selectFilterType;
   RxBool blackList = false.obs;
-  Customer? customer;
+  Customer? customermodel2;
   ///--------------------- Pagination
   var currentPage = 1.obs;
   var totalPages = 1.obs;
