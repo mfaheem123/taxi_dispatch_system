@@ -189,7 +189,7 @@ class SettingController extends GetxController {
   String? timeFormate;
   String? zoneFormate;
   String? typeAmount;
-  String? deadMileageMethods;
+  // String? deadMileageMethods;
 
   /// text field controllers
   final userNameController = TextEditingController();
@@ -202,6 +202,7 @@ class SettingController extends GetxController {
   final smsPortController = TextEditingController();
   final smsUserNameController = TextEditingController();
   final smsPasswordController = TextEditingController();
+  final geoApifyApiKeyController = TextEditingController();
   final serviceApiKeyController = TextEditingController();
   final mapApiKeyController = TextEditingController();
   final distanceFactorController = TextEditingController();
@@ -223,6 +224,11 @@ class SettingController extends GetxController {
   final huntGroup = TextEditingController();
   final baseAddress = TextEditingController();
   final deadMileageMiles = TextEditingController();
+  final deadMileageMethods = TextEditingController();
+  final stripePublicKey = TextEditingController();
+  final stripeSecretKey = TextEditingController();
+  final endPointKey = TextEditingController();
+  final invoiceEndPointKey = TextEditingController();
 
   /// bool
   RxBool secureConnectionValue = false.obs;
@@ -243,6 +249,8 @@ class SettingController extends GetxController {
   final FocusNode peakFactorsNode = FocusNode();
   RxBool webBookerConfValue = false.obs;
   final FocusNode webBookerConfNode = FocusNode();
+  RxBool customerAppConfValue = false.obs;
+  final FocusNode customerAppConfNode = FocusNode();
   RxBool bookingDueNotiValue = false.obs;
   final FocusNode bookingDueNotiNode = FocusNode();
   RxBool enableCustomerValue = false.obs;
@@ -251,6 +259,8 @@ class SettingController extends GetxController {
   final FocusNode notificationNode = FocusNode();
   RxBool deadMileageValue = false.obs;
   final FocusNode deadMileageNode = FocusNode();
+  RxBool callFeaturesValue = false.obs;
+  final FocusNode callFeaturesNode = FocusNode();
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo company configuration functionality
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo document number functionality
