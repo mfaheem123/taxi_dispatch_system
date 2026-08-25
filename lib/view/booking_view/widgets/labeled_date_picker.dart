@@ -318,7 +318,12 @@ class _CalendarDropdownFieldState extends State<_CalendarDropdownField> {
             },
             child: InputDecorator(
               isFocused: highlight,
-              decoration: decoration,
+              // [InputDecorator] takes the decoration exactly as given — unlike
+              // [TextField] it does NOT merge the ambient theme. Without this,
+              // DATE falls back to Material's default border (a 1.0 underline)
+              // and stays there however bold denseInputTheme's outline gets.
+              decoration: decoration.applyDefaults(
+                  Theme.of(context).inputDecorationTheme),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 2),
                 decoration: highlight

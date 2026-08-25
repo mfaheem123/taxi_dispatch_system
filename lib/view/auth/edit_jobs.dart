@@ -469,7 +469,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                               _dashboard.pickupController,
                                           focusNode: _pickupFocus,
                                           addresses: _addresses,
-                                          dotColor: Colors.green,
+                                          dotColor: UpdateFormPalette.green,
                                           onSearch: (v) =>
                                               _onLocationSearch(_pickField, v),
                                           onPicked: _onLocationPicked,
@@ -593,7 +593,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                           focusNode: _dashboard
                                               .pickupTwoTextFieldFocusNode,
                                           addresses: _addresses,
-                                          dotColor: Colors.green,
+                                          dotColor: UpdateFormPalette.green,
                                           onSearch: (v) =>
                                               _onLocationSearch(_rPickField, v),
                                           onPicked: _onLocationPicked,

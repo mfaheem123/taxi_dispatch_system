@@ -2,7 +2,7 @@
 //
 // Chrome specific to the UPDATE BOOKING form (see edit_jobs.dart), built on
 // the same layout primitives as the create form:
-//   * UpdateFormPalette — the greens / reds this screen is styled in.
+//   * UpdateFormPalette — the indigos / reds this screen is styled in.
 //   * UpdateBookingHeader — the top bar: reference, who booked it and when,
 //     status, the associated booking, and the per-booking actions.
 //   * MetaChip / StatusPill — the read-only labelled values in that bar.
@@ -27,7 +27,8 @@ import 'booking_form_parts.dart' show BookingStat, StatStrip;
 /// bottom buttons and the solid icon actions cannot drift apart.
 class UpdateFormPalette {
   /// Confirmations and anything to do with the booking going ahead.
-  static const Color green = Color(0xFF1EA24C);
+  /// Named `green` for the role it plays, not the hue it now carries.
+  static const Color green = Color(0xFF312E81);
 
   /// Complaints — the one destructive-looking action in the header.
   static const Color red = Color(0xFFD9412B);
@@ -43,8 +44,8 @@ class UpdateFormPalette {
 
   /// Height of a control that has to line up with a form field —
   /// [LabeledActionButton] and the fare bar's recalculate button. Matches a
-  /// dense input's rendered height (roughly 20 + 2 * fieldPadY).
-  static const double fieldHeight = 20 + 2 * Density.fieldPadY;
+  /// dense input's rendered height.
+  static const double fieldHeight = Density.fieldHeight;
 }
 
 // ---------------------------------------------------------------------------
@@ -58,7 +59,7 @@ class MetaChip extends StatelessWidget {
   final String value;
 
   /// Colours the value only; the caption stays grey either way. STATUS uses it
-  /// to call out WAITING in green.
+  /// to call out WAITING in the accent.
   final Color valueColor;
 
   const MetaChip({
@@ -205,7 +206,7 @@ class _PillButtonState extends State<PillButton> {
               borderRadius: BorderRadius.circular(6),
               border: Border.all(
                 color: _focused ? ring : widget.color,
-                width: _focused ? fieldFocusWidth : 1,
+                width: _focused ? fieldFocusWidth : fieldBorderWidth,
               ),
             ),
             child: Row(
@@ -286,7 +287,7 @@ class _PillIconButtonState extends State<PillIconButton> {
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
                   color: _focused ? fieldFocusColor : widget.color,
-                  width: _focused ? fieldFocusWidth : 1,
+                  width: _focused ? fieldFocusWidth : fieldBorderWidth,
                 ),
               ),
               child: Icon(widget.icon, size: 15, color: widget.color),
@@ -508,7 +509,7 @@ class _LabeledActionButtonState extends State<LabeledActionButton> {
               borderRadius: BorderRadius.circular(4),
               border: Border.all(
                 color: _focused ? ring : UpdateFormPalette.border,
-                width: _focused ? fieldFocusWidth : 1,
+                width: _focused ? fieldFocusWidth : fieldBorderWidth,
               ),
             ),
             child: Row(
@@ -676,7 +677,7 @@ class _RecalculateButtonState extends State<_RecalculateButton> {
               borderRadius: BorderRadius.circular(4),
               border: Border.all(
                 color: _focused ? fieldFocusColor : UpdateFormPalette.border,
-                width: _focused ? fieldFocusWidth : 1,
+                width: _focused ? fieldFocusWidth : fieldBorderWidth,
               ),
             ),
             child: const Icon(Icons.calculate_outlined,
