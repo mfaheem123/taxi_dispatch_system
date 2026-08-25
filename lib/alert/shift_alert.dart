@@ -202,59 +202,66 @@ class ShiftAlert {
                           ),
 
                           // Table Body
-                          ...controller.shiftList.asMap().entries.map((entry) {
-                            int index = entry.key;
-                            var row = entry.value; // This is a ShiftAlertClass object
+                        // Table Body Row section in ShiftAlert
+                        ...controller.shiftList.asMap().entries.map((entry) {
+                      int index = entry.key;
+                      var row = entry.value;
+                      bool isSelected = editingIndex == index; // <-- Track active selection
 
-                            return Container(
-                              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(color: Colors.grey.shade200),
-                                ),
-                              ),
+                      return Container(
+                        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                        decoration: BoxDecoration(
+                          color: isSelected ? Colors.indigo.shade50 : Colors.transparent, // <-- Selected highlight color
+                          border: Border(
+                            bottom: BorderSide(
+                              color: isSelected ? DynamicColors.primaryClr : Colors.grey.shade200,
+                              width: isSelected ? 1.5 : 1.0,
+                            ),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(flex: 2, child: Text(row.shiftTitle)),
+                            Expanded(flex: 2, child: Text(row.startTime ?? "")),
+                            Expanded(flex: 2, child: Text(row.endTime ?? "")),
+                            Expanded(
+                              flex: 2,
                               child: Row(
                                 children: [
-                                  Expanded(flex: 2, child: Text(row.shiftTitle)),
-                                  Expanded(flex: 2, child: Text(row.startTime ?? "")),
-                                  Expanded(flex: 2, child: Text(row.endTime ?? "")),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Row(
-                                      children: [
-                                        IconButton(
-
-                                          icon: const Icon(Icons.edit,
-                                              size: 18, color: Color(0xFF43489A)),
-                                          onPressed: () {
-
-                                              setState(() {
-                                                editingIndex = index;
-                                                shiftCtrl.text = row.shiftTitle;
-                                                startTimeCtrl.text = row.startTime ?? "";
-                                                endTimeCtrl.text = row.endTime ?? "";
-
-                                              });
-
-
-                                          },
-                                        ),
-                                        if(permissions.contains('delete_driver_shift'))  IconButton(
-                                          icon: const Icon(Icons.delete,
-                                              size: 18, color: Colors.red),
-                                          onPressed: () {
-                                            setState(() {
-                                              controller.shiftList.removeAt(index);
-                                            });
-                                          },
-                                        ),
-                                      ],
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.edit,
+                                      size: 18,
+                                      color: isSelected ? Colors.orange : const Color(0xFF43489A), // <-- Highlight Icon Color
                                     ),
+                                    onPressed: () {
+                                      setState(() {
+                                        editingIndex = index;
+                                        shiftCtrl.text = row.shiftTitle;
+                                        startTimeCtrl.text = row.startTime ?? "";
+                                        endTimeCtrl.text = row.endTime ?? "";
+                                      });
+                                      controller.update();
+                                    },
                                   ),
+                                  if (permissions.contains('delete_driver_shift'))
+                                    IconButton(
+                                      icon: const Icon(Icons.delete, size: 18, color: Colors.red),
+                                      onPressed: () {
+                                        setState(() {
+                                          if (editingIndex == index) editingIndex = null;
+                                          controller.shiftList.removeAt(index);
+                                        });
+                                        controller.update();
+                                      },
+                                    ),
                                 ],
                               ),
-                            );
-                          }),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
 
                         ],
                       ),
