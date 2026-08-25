@@ -43,7 +43,7 @@ class _LabeledTimePickerState extends State<LabeledTimePicker> {
       label: widget.label,
       child: TimePickerField(
         controller: _controller,
-        accent: Theme.of(context).colorScheme.primary,
+        accent: fieldFocusColor,
         textStyle: const TextStyle(fontSize: Density.fieldFont),
         onChanged: widget.onChanged,
         decoration: const InputDecoration(

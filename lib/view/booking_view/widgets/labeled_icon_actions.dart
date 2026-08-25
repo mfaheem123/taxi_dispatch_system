@@ -23,10 +23,21 @@ class IconAction {
   final String tooltip;
   final VoidCallback onTap;
 
+  /// Filled variant. Null leaves the default outlined button — white with a
+  /// grey border — which is what the create form uses throughout. Set it for
+  /// the solid buttons on the update form's PAY row.
+  final Color? background;
+
+  /// Icon colour. Defaults to white on a filled button and grey on an
+  /// outlined one.
+  final Color? foreground;
+
   const IconAction({
     required this.icon,
     required this.tooltip,
     required this.onTap,
+    this.background,
+    this.foreground,
   });
 }
 
@@ -84,7 +95,22 @@ class _IconActionButtonState extends State<_IconActionButton> {
 
   @override
   Widget build(BuildContext context) {
-    final accent = Theme.of(context).colorScheme.primary;
+    final filled = widget.action.background != null;
+    // A filled button keeps its own colour on focus and shows the ring as a
+    // border only — tinting the fill would wash the icon out. The dark fills
+    // take a white ring, since indigo on near-black would not read.
+    final Color ring =
+        filled ? focusRingOn(widget.action.background!) : fieldFocusColor;
+    final Color fill = filled
+        ? widget.action.background!
+        : (_focused ? fieldFocusColor.withValues(alpha: 0.08) : Colors.white);
+    final Color border = filled
+        ? (_focused ? ring : widget.action.background!)
+        : (_focused ? ring : const Color(0xFFBDBDBD));
+    final Color glyph = widget.action.foreground ??
+        (filled
+            ? Colors.white
+            : (_focused ? fieldFocusColor : Colors.grey.shade700));
     return Tooltip(
       message: widget.action.tooltip,
       waitDuration: const Duration(milliseconds: 400),
@@ -109,18 +135,12 @@ class _IconActionButtonState extends State<_IconActionButton> {
             height: LabeledIconActions.buttonSide,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: _focused ? accent.withValues(alpha: 0.08) : Colors.white,
+              color: fill,
               borderRadius: BorderRadius.circular(6),
               border: Border.all(
-                color: _focused ? accent : const Color(0xFFBDBDBD),
-                width: _focused ? 1.4 : 1,
-              ),
+                  color: border, width: _focused ? fieldFocusWidth : 1),
             ),
-            child: Icon(
-              widget.action.icon,
-              size: 17,
-              color: _focused ? accent : Colors.grey.shade700,
-            ),
+            child: Icon(widget.action.icon, size: 17, color: glyph),
           ),
         ),
       ),

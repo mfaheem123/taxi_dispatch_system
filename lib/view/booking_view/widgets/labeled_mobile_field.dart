@@ -240,7 +240,9 @@ class _LabeledMobileFieldState extends State<LabeledMobileField> {
   }
 
   Widget _buildPanel(BuildContext context) {
-    final accent = Theme.of(context).colorScheme.primary;
+    // The same accent the focused field border uses, so the highlighted row in
+    // this panel matches the ring around the field it hangs off.
+    const accent = fieldFocusColor;
     final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     final width = box?.size.width ?? 280.0;
     final height = box?.size.height ?? 40.0;

@@ -37,7 +37,9 @@ class _LabeledDatePickerState extends State<LabeledDatePicker> {
 
   @override
   Widget build(BuildContext context) {
-    final accent = Theme.of(context).colorScheme.primary;
+    // The same indigo the focused field border uses, so the icon, the arrow
+    // and the calendar's own accents all match the ring around the field.
+    const accent = fieldFocusColor;
     return FieldShell(
       label: widget.label,
       child: _CalendarDropdownField(
