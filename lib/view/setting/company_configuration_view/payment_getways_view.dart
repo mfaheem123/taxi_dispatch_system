@@ -21,6 +21,9 @@ class PaymentConfigurationView extends StatefulWidget {
 }
 
 class _PaymentConfigurationViewState extends State<PaymentConfigurationView> {
+  SettingController controller = Get.isRegistered<SettingController>()
+      ? Get.find<SettingController>()
+      : Get.put(SettingController());
 
 
   List permissions = [];
@@ -28,112 +31,87 @@ class _PaymentConfigurationViewState extends State<PaymentConfigurationView> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<SettingController>(
-        initState: (v){
-          permissions = Api().sp.read('all_permissions') ?? [];
-        },
-        builder: (controller) {
+      initState: (v) {
+        permissions = Api().sp.read('all_permissions') ?? [];
+      },
+      builder: (controller) {
+        return LayoutBuilder(builder: (context, constraints) {
+          final double maxWidth = constraints.maxWidth;
+          final bool isMobile = maxWidth < 600;
+          final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-          return LayoutBuilder(builder: (context, constraints) {
-            final double maxWidth = constraints.maxWidth;
-            final bool isMobile = maxWidth < 600;
-            final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+          // Instead of fixed width, we calculate flexible field widths
+          final double fieldWidth = isMobile
+              ? maxWidth // full width
+              : isTablet
+              ? maxWidth / 2
+              : maxWidth / 4;
 
-            // Instead of fixed width, we calculate flexible field widths
-            final double fieldWidth = isMobile
-                ? maxWidth // full width
-                : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
-            return Column(
-              children: [
-                SizedBox(
-                  height: 8,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    width: Get.width,
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          color: DynamicColors.secondaryClr,
-                        )
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                            width: Get.width,
-                            height: kToolbarHeight,
-                            color: DynamicColors.secondaryClr,
-
-                            child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(AppText.paymentGateWays, style: titleDesign()))
-                        ),
-
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
-                          child: Wrap(
-                            runSpacing: 10,
-                            spacing: 10,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            children: [
-                              CustomTextField(
-                                borderRadius: 4,
-                                controller: controller.mapApiKeyController,
-                                width: fieldWidth/1.5,
-                                hintText: AppText.strippublickey,
-                                columnText: true,
-                              ),
-                              CustomTextField(
-                                borderRadius: 4,
-                                controller: controller.distanceFactorController,
-                                width: fieldWidth/1.5,
-                                hintText: AppText.stripSecretKey,
-                                columnText: true,
-                              ),
-                              CustomTextField(
-                                borderRadius: 4,
-                                controller: controller.timeFactorController,
-                                width: fieldWidth/1.5,
-                                hintText: AppText.endPointKey,
-                                columnText: true,
-                              ),
-
-                            ],
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              width: Get.width,
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    color: DynamicColors.secondaryClr,
+                  )
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                      width: Get.width,
+                      height: kToolbarHeight,
+                      color: DynamicColors.secondaryClr,
+                      child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12.0, vertical: 12.0),
+                          child: Text(AppText.paymentGateWays,
+                              style: titleDesign()))
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: isMobile
+                        ? buildLeftFields()
+                        : IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            flex: 7,
+                            child: buildLeftFields(),
                           ),
-                        ),
-
-                        SizedBox(
-                          height: 10,
-                        ),
-                        if(permissions.contains('read_company_configuration'))  Align(
-                          alignment: Alignment.center,
-                          child: CustomButton(
-                            height: 35,
-                            width: fieldWidth,
-                            fontSize: 14,
-                            borderRadius:4,
-                            verticalPadding: 0.0,
-                            btnText: AppText.save,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                      ],
-
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-              ],
-            );
-            }
+                ],
+              ),
+            ),
           );
-      }
+        },
+        );
+      },
+    );
+  }
+  Widget buildLeftFields() {
+    const double horizontalSpacing = 16.0;
+    const double runSpacing = 26.0;
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.stripePublicKey, hintText: AppText.strippublickey, columnText: true)),
+            const SizedBox(width: horizontalSpacing),
+            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.stripeSecretKey, hintText: AppText.stripSecretKey, columnText: true)),
+            const SizedBox(width: horizontalSpacing),
+            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.endPointKey, hintText: AppText.endPointKey, columnText: true)),
+            const SizedBox(width: horizontalSpacing),
+            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.invoiceEndPointKey, hintText: "INVOICE ENDPOINT KEY", columnText: true)),
+          ],
+        ),
+      ],
     );
   }
 }

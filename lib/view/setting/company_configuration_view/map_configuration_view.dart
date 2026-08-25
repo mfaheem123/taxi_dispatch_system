@@ -23,157 +23,156 @@ class MapConfigurationView extends StatefulWidget {
 }
 
 class _MapConfigurationViewState extends State<MapConfigurationView> {
-
+  SettingController controller = Get.isRegistered<SettingController>()
+      ? Get.find<SettingController>()
+      : Get.put(SettingController());
 
   List permissions = [];
 
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<SettingController>(
+    return GetBuilder<SettingController>(initState: (v) {
+      permissions = Api().sp.read('all_permissions') ?? [];
+    }, builder: (controller) {
+      return LayoutBuilder(builder: (context, constraints) {
+        final double maxWidth = constraints.maxWidth;
+        final bool isMobile = maxWidth < 600;
+        final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-        initState: (v){
-          permissions = Api().sp.read('all_permissions') ?? [];
-        },
+        // Instead of fixed width, we calculate flexible field widths
+        final double fieldWidth = isMobile
+            ? maxWidth // full width
+            : isTablet
+            ? maxWidth / 2
+            : maxWidth / 4;
 
-        builder: (controller) {
-
-          return LayoutBuilder(builder: (context, constraints) {
-            final double maxWidth = constraints.maxWidth;
-            final bool isMobile = maxWidth < 600;
-            final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
-
-            // Instead of fixed width, we calculate flexible field widths
-            final double fieldWidth = isMobile
-                ? maxWidth // full width
-                : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
-
-            return Column(
+        return Padding(padding: const EdgeInsets.all(8.0),
+          child: Container(
+            width: Get.width,
+            decoration: BoxDecoration(
+                border: Border.all(
+                  color: DynamicColors.secondaryClr,
+                )
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  height: 8,
+                Container(
+                    width: Get.width,
+                    height: kToolbarHeight,
+                    color: DynamicColors.secondaryClr,
+                    child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12.0, vertical: 12.0),
+                        child: Text(AppText.mapConfiguration,
+                            style: titleDesign()))
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    width: Get.width,
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          color: DynamicColors.secondaryClr,
-                        )
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                            width: Get.width,
-                            height: kToolbarHeight,
-                            color: DynamicColors.secondaryClr,
+                  padding: const EdgeInsets.all(15.0),
+                  child: isMobile
+                      ? Column(
+                    children: [
+                      buildLeftFields(),
+                      const Divider(height: 30, thickness: 1),
+                      buildRightCheckboxes(),
+                    ],
+                  )
 
-                            child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(AppText.mapConfiguration, style: titleDesign()))
+                      : IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          flex: 7,
+                          child: buildLeftFields(),
                         ),
 
                         Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
-                          child: Wrap(
-                            runSpacing: 10,
-                            spacing: 10,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            children: [
-                              CustomDropdownField<String>(
-                                text: AppText.service,
-                                width: fieldWidth/1.5,
-                                label: AppText.service,
-                                items:[
-                                  "Sevice 1",
-                                  "Sevice 2",
-                                  "Sevice 3",
-                                  "Sevice 4",
-                                  "Sevice 5",
-                                ],
-                                value: controller.serviceValue,
-                                itemLabel: (val) => val, // just show the string
-                                onChanged: (val) {
-                                  controller.serviceValue = val!;
-                                  controller.update();
-                                },
-                              ),
-                              CustomTextField(
-                                borderRadius: 4,
-                                controller: controller.serviceApiKeyController,
-                                width: fieldWidth/1.5,
-                                hintText: AppText.serviceApiKey,
-                                columnText: true,
-                              ),
-                              CustomTextField(
-                                borderRadius: 4,
-                                controller: controller.mapApiKeyController,
-                                width: fieldWidth/1.5,
-                                hintText: AppText.mapApiKey,
-                                columnText: true,
-                              ),
-                              CustomTextField(
-                                borderRadius: 4,
-                                controller: controller.distanceFactorController,
-                                width: fieldWidth/1.5,
-                                hintText: AppText.distanceFactor,
-                                columnText: true,
-                              ),
-                              CustomTextField(
-                                borderRadius: 4,
-                                controller: controller.timeFactorController,
-                                width: fieldWidth/1.5,
-                                hintText: AppText.timeFactor,
-                                columnText: true,
-                              ),
-                              KeyboardCheckbox(
-                                onChanged: (v){
-                                  controller.toggleMapControlsValue.value = v;
-                                  controller.update();
-                                },
-                                label: AppText.toggleMapControls,
-                                value: controller.toggleMapControlsValue.value,
-                                focusNode: controller.toggleMapControlsNode,
-                                width: 250,
-                              ),
-                            ],
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 25.0),
+                          child: VerticalDivider(
+                            width: 1,
+                            thickness: 1,
+                            color: Colors.grey.shade400,
                           ),
                         ),
 
-                        SizedBox(
-                          height: 10,
-                        ),
-                        if(permissions.contains('read_company_configuration'))  Align(
-                          alignment: Alignment.center,
-                          child: CustomButton(
-                            height: 35,
-                            width: fieldWidth,
-                            fontSize: 14,
-                            borderRadius:4,
-                            verticalPadding: 0.0,
-                            btnText: AppText.save,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
+                        Expanded(
+                          flex: 3,
+                          child: buildRightCheckboxes(),
                         ),
                       ],
-
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 8,
-                ),
               ],
-            );
-          }
+            ),
+          ),
         );
-      }
+      });
+    },
+    );
+  }
+  Widget buildLeftFields() {
+    const double horizontalSpacing = 16.0;
+    const double runSpacing = 26.0;
+
+    return Column(
+      children: [
+        // ROW 1
+        Row(
+          children: [
+            Expanded(
+              child: CustomDropdownField<String>(
+                text: AppText.service,
+                label: "SELECT MAP SERVICE",
+                items: const ["GOOGLE", "HEREWEGO", "MAPBOX", "OSM"],
+                value: controller.serviceValue,
+                itemLabel: (val) => val,
+                onChanged: (val) {
+                  controller.serviceValue = val!;
+                  controller.update();
+                },
+              ),
+            ),
+            const SizedBox(width: horizontalSpacing),
+            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.geoApifyApiKeyController, hintText: "GEOAPIFY API KEY", columnText: true)),
+            const SizedBox(width: horizontalSpacing),
+            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.serviceApiKeyController, hintText: AppText.serviceApiKey, columnText: true)),
+            const SizedBox(width: horizontalSpacing),
+            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.mapApiKeyController, hintText: AppText.mapApiKey, columnText: true)),
+          ],
+        ),
+        const SizedBox(height: runSpacing),
+
+        // ROW 2
+        Row(
+          children: [
+            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.distanceFactorController, hintText: AppText.distanceFactor, columnText: true)),
+            const SizedBox(width: horizontalSpacing),
+            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.timeFactorController, hintText: AppText.timeFactor, columnText: true)),
+          ],
+        ),
+      ],
+    );
+  }
+  Widget buildRightCheckboxes() {
+    const double checkboxSpacing = 26.0;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: checkboxSpacing),
+        KeyboardCheckbox(
+          onChanged: (v) { controller.toggleMapControlsValue.value = v; controller.update(); },
+          label: AppText.toggleMapControls,
+          value: controller.toggleMapControlsValue.value,
+          focusNode: controller.toggleMapControlsNode,
+          width: double.infinity,
+        ),
+      ],
     );
   }
 }
