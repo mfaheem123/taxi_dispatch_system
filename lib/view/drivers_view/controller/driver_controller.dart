@@ -1453,6 +1453,7 @@ class DriverController extends GetxController {
       "hide_pickup": hidePickUpValue.value,
       "hide_dropoff": hideDropOffValue.value,
       "fare_meter": fareMeterValue.value,
+      // "fare_meter": true,
       "disable_fare_meter_account_job": diableFareMeterValue.value,
       "fare_meter_waiting_charges": fareMeterWaitingValue.value,
       "pay_by_card": payByCardValue.value,

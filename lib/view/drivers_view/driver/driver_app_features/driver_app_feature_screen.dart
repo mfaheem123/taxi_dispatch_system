@@ -83,20 +83,20 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
                                   label: "SELECT DRIVERS",
                                   width: 320,
                                   height: 35,
-                                  items: controller.allDriverData!.drivers!,
+                                  items: controller.allDriverData!.drivers!.reversed.toList(),
                                   value: controller.allDriverData!.drivers!
                                           .contains(controller.selectDriverObject)
                                       ? controller.selectDriverObject
                                       : null,
                                   itemLabel: (driver) =>
                                       "${driver.username} ${driver.name}",
-                                  // driver.name!,
                                   onChanged: (val) {
                                     controller.selectDriverObject = val;
                                     controller.getDriversAppFuture(val!.id!);
                                     controller.update();
                                   },
                                 ),
+
                                 SizedBox(
                                   width: 15,
                                 ),

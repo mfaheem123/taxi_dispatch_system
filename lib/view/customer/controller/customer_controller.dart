@@ -89,9 +89,9 @@ class CustomerController extends GetxController {
     print(formData);
     var response = await Api().post(
       formData,
-      customermodel2 == null
-           ? "customers/add"
-           : 'customers/edit/${customerUpdateId.value}',
+      updateCustomerValue.value
+          ? 'customers/edit/${customerUpdateId.value}'
+          : "customers/add",
       auth: true,
       sendCompanyId: true,
     );

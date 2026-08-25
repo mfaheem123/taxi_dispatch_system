@@ -285,7 +285,9 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                         String email = controller.emailController.text.trim();
 
                         bool isEmailExists = controller.customerListAll.any(
-                              (customer) => customer.email?.toLowerCase() == email.toLowerCase(),
+                              (customer) =>
+                          customer.email?.toLowerCase() == email.toLowerCase() &&
+                              customer.id != controller.customerUpdateId.value,
                         );
                         if (email.isEmpty) {
                           BotToast.showText(text: "EMAIL IS REQUIRED");
@@ -293,9 +295,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                           BotToast.showText(text: "INVALID EMAIL FORMAT");
                         } else if (isEmailExists) {
                           BotToast.showText(text: "EMAIL ALREADY EXISTS");
-                        }
-
-                        else {
+                        } else {
                           controller.postCustomer();
                         }
                       },

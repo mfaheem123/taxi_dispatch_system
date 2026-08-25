@@ -1917,7 +1917,7 @@ class DashboardController extends GetxController {
       selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
       selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
       await getBookingCounts();
-      // startBookingCountTimer();
+      startBookingCountTimer();
       if (dashboardAllData!.vehicleTypes != null &&
           dashboardAllData!.vehicleTypes!.isNotEmpty) {
         try {
@@ -2046,7 +2046,7 @@ class DashboardController extends GetxController {
       _checkBookingsTimeAndPlaySound(dashboardTableModelData?.data ?? []);
       _timer?.cancel();
       _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-        // getDashboardTableData(tableId: selectedTabId);
+        getDashboardTableData(tableId: selectedTabId);
       });
       update();
     }
