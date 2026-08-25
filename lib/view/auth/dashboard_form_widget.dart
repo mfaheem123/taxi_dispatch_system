@@ -1155,27 +1155,29 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
 
                   print('tap 03');
                   controller.selectVehicleValueReturn = v;
-                  controller.dropDownShow.value = false;
+                  controller.getFaresCalculation();
 
-                  // Jab user khud badlega tab naye wale ki ID direct jayegi
-                  final fare = await getActiveFareForVehicle(
-                    controller.dashboardAllData!.fareConfigurations!,
-                    v.id!,
-                  );
-                  print('tap 04');
-                  if (fare != null) {
-                    print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}');
-                    controller.getFaresCalculation();
-                    print('tap 05');
-                    double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
-                    controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
-                    print('tap 06');
-                  } else {
-                    print('tap 07');
-                    print('No active fare found for this vehicle');
-                  }
-                  print('tap 08');
-                  controller.update();
+                  controller.dropDownShow.value = false;
+                //
+                //   // Jab user khud badlega tab naye wale ki ID direct jayegi
+                //   final fare = await getActiveFareForVehicle(
+                //     controller.dashboardAllData!.fareConfigurations!,
+                //     v.id!,
+                //   );
+                //   print('tap 04');
+                //   if (fare != null) {
+                //     print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}');
+                //     controller.getFaresCalculation();
+                //     print('tap 05');
+                //     double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+                //     controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+                //     print('tap 06');
+                //   } else {
+                //     print('tap 07');
+                //     print('No active fare found for this vehicle');
+                //   }
+                //   print('tap 08');
+                //   controller.update();
                 }
                 );
                 },
