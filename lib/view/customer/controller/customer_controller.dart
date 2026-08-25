@@ -89,7 +89,7 @@ class CustomerController extends GetxController {
     print(formData);
     var response = await Api().post(
       formData,
-      updateCustomerValue.value == false
+      customerUpdateId.value == 0
           ? "customers/add"
           : 'customers/edit/${customerUpdateId.value}',
       auth: true,
@@ -127,7 +127,7 @@ class CustomerController extends GetxController {
   RxBool customerLoader = false.obs;
   String? selectFilterType;
   RxBool blackList = false.obs;
-
+  Customer? customer;
   ///--------------------- Pagination
   var currentPage = 1.obs;
   var totalPages = 1.obs;

@@ -1771,7 +1771,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           },
           child: ElevatedButton.icon(
             onPressed: () {
-              if (controller.jourValue == 'W/R' &&
+              if (controller.jourValue == 'R/N' &&
                   controller.pickupTwoWayController.text.isEmpty &&
                   controller.dropOffTwoWayController.text.isEmpty) {
                 BotToast.showText(text: "Please chose waiting return");

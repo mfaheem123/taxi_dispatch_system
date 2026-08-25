@@ -119,7 +119,7 @@ class _DashboardShortcutsState extends State<DashboardShortcuts> {
   /// its waiting-return check.
   void _saveBooking() {
     if (!controller.hideDashBoard.value) return; // form not on screen
-    if (controller.jourValue == 'W/R' &&
+    if (controller.jourValue == 'R/N' &&
         controller.pickupTwoWayController.text.isEmpty &&
         controller.dropOffTwoWayController.text.isEmpty) {
       BotToast.showText(text: "Please chose waiting return");

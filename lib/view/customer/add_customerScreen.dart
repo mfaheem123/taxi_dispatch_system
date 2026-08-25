@@ -305,7 +305,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                       width: MediaQuery.of(context).devicePixelRatio >= 1.25
                           ? fieldWidth * 1.1
                           : fieldWidth * 1.5,
-                      btnText: controller.updateCustomerValue.value == false
+                      btnText: controller.customerUpdateId.value == 0
                           ? AppText.save
                           : "UPDATE",
                       verticalPadding: 0.0,
