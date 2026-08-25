@@ -47,9 +47,9 @@ class LabeledIconActions extends StatelessWidget {
   /// Gap between icons. Also what [width] below assumes.
   static const double gap = 6;
 
-  /// Square side of one icon button — matches a text field's rendered height
-  /// (roughly 20 + 2 * fieldPadY) so the row lines up with the inputs.
-  static const double buttonSide = 20 + 2 * Density.fieldPadY;
+  /// Square side of one icon button — a field's own height, so the row lines
+  /// up with the inputs.
+  static const double buttonSide = Density.fieldHeight;
 
   const LabeledIconActions(this.actions, {super.key});
 
@@ -138,7 +138,8 @@ class _IconActionButtonState extends State<_IconActionButton> {
               color: fill,
               borderRadius: BorderRadius.circular(6),
               border: Border.all(
-                  color: border, width: _focused ? fieldFocusWidth : 1),
+                  color: border,
+                  width: _focused ? fieldFocusWidth : fieldBorderWidth),
             ),
             child: Icon(widget.action.icon, size: 17, color: glyph),
           ),

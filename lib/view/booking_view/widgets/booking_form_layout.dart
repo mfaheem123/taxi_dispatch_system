@@ -30,8 +30,18 @@ const Color fieldFocusColor = Color(0xFF312E81);
 
 /// Border width of a focused control. Deliberately heavier than Material's
 /// own 2.0 focused outline — the cue has to carry the whole job of showing
-/// where Tab has landed.
-const double fieldFocusWidth = 2.5;
+/// where Tab has landed, and it has to win against [fieldBorderWidth] on the
+/// field beside it, not just against a hairline.
+const double fieldFocusWidth = 3.5;
+
+/// Border width of an IDLE control — every field, and every button shaped like
+/// one. Heavier than Material's own 1.0 hairline, which on a white fill all
+/// but disappears and left the fields reading as floating text.
+///
+/// Kept well clear of [fieldFocusWidth] on purpose: the two have to be told
+/// apart at a glance, so bolder here means the focus width has to stay ahead
+/// of it.
+const double fieldBorderWidth = 1.5;
 
 /// The focus border colour to draw on top of [background].
 ///
@@ -53,16 +63,20 @@ Color focusRingOn(Color background) =>
 /// theme — without `isDense` Material forces a 48px minimum on every input and
 /// the form roughly doubles in height.
 ///
-/// `focusedBorder` is set explicitly; every other state is left to Material's
-/// own defaults, so an idle field keeps its plain 1px outline. InputDecorator
-/// merges this theme in itself (`InputDecoration.applyDefaults`), which is why
-/// the date and time pickers pick the same focused border up without being
-/// told about it.
+/// The idle states are named as explicitly as the focused one, because leaving
+/// them to Material pins them at a 1.0 hairline
+/// (`InputDecorator._getDefaultBorder`) with no way to ask for more. The colour
+/// is the same `hintColor` grey that default resolved to — only the width
+/// changes. InputDecorator merges this theme in itself
+/// (`InputDecoration.applyDefaults`), which is why the date and time pickers
+/// pick all of it up without being told about it.
 const InputDecorationTheme denseInputTheme = InputDecorationTheme(
   isDense: true,
   contentPadding:
       EdgeInsets.symmetric(horizontal: 8, vertical: Density.fieldPadY),
-  border: OutlineInputBorder(),
+  border: _idleBorder,
+  enabledBorder: _idleBorder,
+  disabledBorder: _idleBorder,
   focusedBorder: OutlineInputBorder(
     borderSide: BorderSide(color: fieldFocusColor, width: fieldFocusWidth),
   ),
@@ -71,17 +85,33 @@ const InputDecorationTheme denseInputTheme = InputDecorationTheme(
   hintStyle: TextStyle(fontSize: Density.fieldFont),
 );
 
+/// The idle outline, shared by every non-focused state so that a disabled or
+/// read-only field is told apart by its fill, never by its border.
+const OutlineInputBorder _idleBorder = OutlineInputBorder(
+  borderSide: BorderSide(color: Colors.black38, width: fieldBorderWidth),
+);
+
 // ---------------------------------------------------------------------------
 // Vertical density — the single place to tune how tall the form gets.
 // Everything that contributes height reads from here.
 // ---------------------------------------------------------------------------
 class Density {
-  // Inner padding of every input. This is THE knob for field height:
-  // rendered height is roughly 20 + 2 * fieldPadY (so 8 -> ~36px).
-  static const double fieldPadY = 8;
-  // A dense DropdownButton has a hard-coded 24px inner height, taller than a
-  // 13px line of text, so it needs 2px less padding to match the text fields.
-  static const double dropPadY = fieldPadY - 2;
+  // THE knob for form density: the height every input renders at, and the
+  // height every control that has to line up with an input is sized from.
+  //
+  // The two paddings below are DERIVED from it, because a text field and a
+  // dropdown need different padding to reach the same height. The old pair
+  // (8 / 8-2) was set on the assumption that a line of text measures 20px,
+  // which is where the two drifted apart: at fieldFont a line is ~15.2, so
+  // the text fields came out ~5px shorter than the dropdowns beside them.
+  static const double fieldHeight = 40;
+
+  // A 13px line of text measures ~15.2 logical pixels, so this is the padding
+  // that gets a text field to [fieldHeight].
+  static const double fieldPadY = (fieldHeight - 15.2) / 2;
+  // A dense DropdownButton has a hard-coded 24px inner height, so it needs
+  // correspondingly less padding to land on that same [fieldHeight].
+  static const double dropPadY = (fieldHeight - 24) / 2;
   static const double fieldFont = 13; // text inside inputs
   static const double labelFont = 10; // the small caps labels
   static const double labelGap = 2; // label -> input, stacked mode
