@@ -1433,23 +1433,25 @@ class _UpdateBookingState extends State<UpdateBooking> {
                                                               .toList(),
                                                           onChanged: (v) async {
                                                             controller.selectVehicleValueReturn = v;
-
-                                                            final fare = await getActiveFareForVehicle(
-                                                              controller.dashboardAllData!.fareConfigurations!,
-                                                              controller.selectVehicleValue!.id!,
-                                                            );
-                                                            if (fare != null) {
-                                                              print(
-                                                                'Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}',
-                                                              );
-
-                                                              double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
-
-                                                              controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
-                                                            } else {
-                                                              print('No active fare found for this vehicle');
-                                                            }
-                                                            controller.update();
+                                                            controller.getFaresCalculation();
+                                                            // controller.selectVehicleValueReturn = v;
+                                                            //
+                                                            // final fare = await getActiveFareForVehicle(
+                                                            //   controller.dashboardAllData!.fareConfigurations!,
+                                                            //   controller.selectVehicleValue!.id!,
+                                                            // );
+                                                            // // if (fare != null) {
+                                                            //   print(
+                                                            //     'Vehicle: ${fare!.vehicleTypeName} → Fare: ${fare.minimumFares}',
+                                                            //   );
+                                                            //
+                                                            //   double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+                                                            //
+                                                            //   controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+                                                            // // } else {
+                                                            // //   print('No active fare found for this vehicle');
+                                                            // // }
+                                                            // controller.update();
                                                           },
                                                         ),
                                                       ),
