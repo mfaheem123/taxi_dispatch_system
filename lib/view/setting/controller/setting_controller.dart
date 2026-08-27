@@ -188,7 +188,7 @@ class SettingController extends GetxController {
   String? dateFormate;
   String? timeFormate;
   String? zoneFormate;
-  String? typeAmount;
+  String? typeAmount = "AMOUNT";
   // String? deadMileageMethods;
 
   /// text field controllers
@@ -261,6 +261,13 @@ class SettingController extends GetxController {
   final FocusNode deadMileageNode = FocusNode();
   RxBool callFeaturesValue = false.obs;
   final FocusNode callFeaturesNode = FocusNode();
+
+
+  void updateValue(TextEditingController textController, int change) {
+    int currentVal = int.tryParse(textController.text) ?? 0;
+    textController.text = (currentVal + change).toString();
+    update();
+  }
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo company configuration functionality
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo document number functionality
