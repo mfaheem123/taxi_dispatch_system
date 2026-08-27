@@ -248,7 +248,7 @@ class _ListOfAccountInvoiceScreenState
                               CustomButton(
                                 onTap: () {
                                   // Yahan explicit status state parameter bheja ja raha hai text query filtering ke liye
-                                  controller.listAccountInvoice(activeFilter: "status");
+                                  controller.listAccountInvoice(isFirstTime: true);
                                 },
                                 verticalPadding: 0.0,
                                 width: 60,

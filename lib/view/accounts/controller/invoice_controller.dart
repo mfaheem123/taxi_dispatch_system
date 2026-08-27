@@ -249,12 +249,13 @@ class InvoiceController extends GetxController {
   Set<String> selectedIds = {};
   // String? listInvoiceFromDate = "2000-01-01";
   // String? listInvoiceToDate = "2000-01-01";
-  String? status;
   DateTime? invoiceListFromDate = DateTime.now();
   DateTime? invoiceListToDate = DateTime.now();
 
   RxList<AccountInvoice> accountInvoiceListAll = <AccountInvoice>[].obs;
   RxList<AccountInvoice> filteredAccountInvoice = <AccountInvoice>[].obs;
+  String? status = "all";
+
   var currentPage = 1.obs;
   var totalPages = 1.obs;
   final int limit = 10;
@@ -300,7 +301,7 @@ class InvoiceController extends GetxController {
       "invoice_due_date": activeFilter == "duedate" ? searchDueDate.value : null,
 
       // Status direct send hoga jab query match karegi bina string validation check failure ke
-      "status": activeFilter == "status" ? statusParam : statusParam,
+      "status": statusParam,
       "from_date": fromDateStr,
       "to_date": toDateStr,
     }, sendCompanyId: true);
