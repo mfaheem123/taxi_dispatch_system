@@ -40,12 +40,14 @@ class UpdateFormPalette {
   static const Color valueText = Color(0xFF1F1F1F);
 
   /// Height every header control shares, so a row of them has one baseline.
-  static const double controlHeight = 26;
+  /// Covers the pills and the read-only chips alike — they must move together
+  /// or the header stops reading as one line.
+  static const double controlHeight = 22;
 
-  /// Height of a control that has to line up with a form field —
-  /// [LabeledActionButton] and the fare bar's recalculate button. Matches a
-  /// dense input's rendered height.
-  static const double fieldHeight = Density.fieldHeight;
+  /// Height of a button that sits in a field row — [LabeledActionButton] and
+  /// the fare bar's recalculate button. Follows [Density.buttonHeight], which
+  /// is shorter than an input on purpose; see the note there.
+  static const double fieldHeight = Density.buttonHeight;
 }
 
 // ---------------------------------------------------------------------------
@@ -279,7 +281,9 @@ class _PillIconButtonState extends State<PillIconButton> {
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 140),
               curve: Curves.easeOut,
-              width: 34,
+              // Kept a touch wider than tall so the glyph does not look
+              // pinched against the pills beside it.
+              width: 30,
               height: UpdateFormPalette.controlHeight,
               alignment: Alignment.center,
               decoration: BoxDecoration(

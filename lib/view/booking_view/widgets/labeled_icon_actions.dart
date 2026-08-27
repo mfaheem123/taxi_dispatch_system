@@ -47,9 +47,10 @@ class LabeledIconActions extends StatelessWidget {
   /// Gap between icons. Also what [width] below assumes.
   static const double gap = 6;
 
-  /// Square side of one icon button — a field's own height, so the row lines
-  /// up with the inputs.
-  static const double buttonSide = Density.fieldHeight;
+  /// Square side of one icon button. [Density.buttonHeight] rather than
+  /// [Density.fieldHeight]: the row still sits on the inputs' top edge, but a
+  /// glyph needs less box around it than a caret does.
+  static const double buttonSide = Density.buttonHeight;
 
   const LabeledIconActions(this.actions, {super.key});
 

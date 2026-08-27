@@ -171,8 +171,10 @@ class ActionButtons extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: bg,
             foregroundColor: fg,
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            minimumSize: const Size(0, 34),
+            // The height comes from minimumSize, not the padding — so the row
+            // follows the one button knob instead of drifting with the font.
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            minimumSize: const Size(0, Density.buttonHeight),
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),

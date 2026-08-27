@@ -47,7 +47,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:latlong2/latlong.dart';
 
+import '../../Model/via_point.dart';
 import '../../alert/child_seats_alert.dart';
 import '../../alert/extra_fares_alert.dart';
 import '../../alert/restrict_drivers_alert.dart';
@@ -63,6 +65,7 @@ import '../booking_view/widgets/labeled_mobile_field.dart';
 import '../booking_view/widgets/labeled_time_picker.dart';
 import '../booking_view/widgets/update_booking_parts.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
+import '../dashboard_view/dashboard/map_view_widget.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
 import '../locations_view/controller/locations_controller.dart';
 import '../page_scroller.dart';
@@ -74,6 +77,16 @@ import '../page_scroller.dart';
 /// actual booking; the defaults exist so it can be pushed with no arguments
 /// while the caller is still being wired up.
 class EditJobDetails {
+  /// The booking's id in the backend.
+  ///
+  /// Set it and the screen loads the real booking through
+  /// [DashboardController.dashBoardDataBinding] — the same call the old update
+  /// screen makes — which fills the shared fields and plots the route from what
+  /// the API returns. Left null, the screen falls back to the coordinates
+  /// below, which is what lets it be pushed with no arguments at all and still
+  /// draw something.
+  final int? id;
+
   final String reference;
   final String user;
   final String bookedAt;
@@ -98,7 +111,22 @@ class EditJobDetails {
   final String distance;
   final String totalFares;
 
+  // ---- Where those four addresses actually are ----------------------------
+  // The map draws points, not text, and nothing on this screen geocodes: a
+  // booking opened without an [id] has to arrive with its coordinates or the
+  // map has nothing to plot. Kept as plain doubles rather than LatLng so the
+  // whole model stays const-constructible.
+  final double? pickupLat;
+  final double? pickupLng;
+  final double? dropoffLat;
+  final double? dropoffLng;
+  final double? returnPickupLat;
+  final double? returnPickupLng;
+  final double? returnDropoffLat;
+  final double? returnDropoffLng;
+
   const EditJobDetails({
+    this.id,
     this.reference = 'DCB75789',
     this.user = 'NADEEM',
     this.bookedAt = '24-08-26 09:20',
@@ -117,7 +145,28 @@ class EditJobDetails {
     this.eta = '0 M',
     this.distance = '3.34 M',
     this.totalFares = '£ 21.80',
+    // Approximate positions for the two placeholder addresses above — enough
+    // to draw a believable route on the argument-less demo, not survey data.
+    // A real booking passes its own, or an [id] and lets the API supply them.
+    this.pickupLat = 51.5722,
+    this.pickupLng = -0.3194,
+    this.dropoffLat = 51.5413,
+    this.dropoffLng = -0.3477,
+    this.returnPickupLat = 51.5413,
+    this.returnPickupLng = -0.3477,
+    this.returnDropoffLat = 51.5722,
+    this.returnDropoffLng = -0.3194,
   });
+
+  /// The four legs as map points, in the order the route runs. A leg with no
+  /// coordinates comes back null and is simply not plotted.
+  LatLng? get pickupPoint => _point(pickupLat, pickupLng);
+  LatLng? get dropoffPoint => _point(dropoffLat, dropoffLng);
+  LatLng? get returnPickupPoint => _point(returnPickupLat, returnPickupLng);
+  LatLng? get returnDropoffPoint => _point(returnDropoffLat, returnDropoffLng);
+
+  static LatLng? _point(double? lat, double? lng) =>
+      (lat == null || lng == null) ? null : LatLng(lat, lng);
 }
 
 class EditJobsWidget extends StatefulWidget {
@@ -174,10 +223,81 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     // Load the booking into the shared location fields. Straight assignment
     // rather than tapSelect: there is no suggestion list to index into yet,
     // and the booking's route is whatever the backend already costed.
-    _dashboard.pickupController.text = widget.booking.pickup;
-    _dashboard.dropOffController.text = widget.booking.dropoff;
-    _dashboard.pickupTwoWayController.text = widget.booking.returnPickup;
-    _dashboard.dropOffTwoWayController.text = widget.booking.returnDropoff;
+    // _dashboard.pickupController.text = widget.booking.pickup;
+    // _dashboard.dropOffController.text = widget.booking.dropoff;
+    // _dashboard.pickupTwoWayController.text = widget.booking.returnPickup;
+    // _dashboard.dropOffTwoWayController.text = widget.booking.returnDropoff;
+
+    // After the first frame, not during initState: both paths below end in
+    // DashboardController.update(), and a GetBuilder cannot be rebuilt while it
+    // is still being built.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _seedMap();
+    });
+  }
+
+  // ---- Putting the booking on the map -------------------------------------
+
+  /// Draw this booking's route.
+  ///
+  /// [MapViewWidget] has no input of its own — it renders whatever
+  /// DashboardController is holding at the time — so a screen that opens with a
+  /// booking already filled in has to seed that state itself. The dashboard
+  /// form never needs this because it builds the same state a pick at a time
+  /// through `tapSelect`; here the addresses arrive already chosen, so nothing
+  /// has run and the map would come up on whatever the dashboard last plotted.
+  ///
+  /// Two ways in, matching where the booking came from:
+  ///   * with an [EditJobDetails.id], through the controller's own loader,
+  ///     which fetches the booking and plots it — what the old update screen
+  ///     does;
+  ///   * without one, straight from the coordinates on the booking.
+  void _seedMap() {
+    final b = widget.booking;
+    if (b.id != null) {
+      _dashboard.dashBoardDataBinding(id: b.id);
+      return;
+    }
+
+    // markerType is the contract fetchRouteFromOSRM dispatches on — the same
+    // four names the location fields register under, which is why they are the
+    // constants above rather than repeated strings.
+    final legs = <(String, LatLng?)>[
+      (_pickField, b.pickupPoint),
+      (_dropField, b.dropoffPoint),
+      if (_hasReturn) (_rPickField, b.returnPickupPoint),
+      if (_hasReturn) (_rDropField, b.returnDropoffPoint),
+    ];
+
+    final c = _dashboard;
+    // The same wipe dashBoardDataBinding opens with: this is a different
+    // booking than whatever the dashboard was last holding, so its points, its
+    // legs and its vias all go. markers and polylinePointsCoordinate are left
+    // alone — fetchRouteFromOSRM clears those itself.
+    c.polyLineMarkerInfo.clear();
+    c.polylinePoints.clear();
+    c.viaPoints.clear();
+    c.viaTextEditingController.clear();
+
+    for (final (field, point) in legs) {
+      if (point == null) continue;
+      c.polylinePoints.add(point);
+      c.polyLineMarkerInfo.add(ViaPoint(
+        address: '',
+        lat: point.latitude,
+        lng: point.longitude,
+        markerType: field,
+      ));
+    }
+
+    if (c.polyLineMarkerInfo.isEmpty) {
+      c.update();
+      return;
+    }
+    // Builds the markers, fetches the road route behind the straight line and
+    // frames the whole journey — and calls update(), which is what gets the
+    // map to repaint.
+    c.fetchRouteFromOSRM();
   }
 
   @override
@@ -379,6 +499,16 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   /// [field] when the booking has a return leg, nothing when it does not.
   List<SpanField> _ifReturn(SpanField field) => _hasReturn ? [field] : const [];
 
+  /// A map big enough to read a route on without pushing the form's own fields
+  /// out of reach. Measured off the real viewport rather than `Get.height` so a
+  /// resized or embedded window gets a map that still fits, and clamped rather
+  /// than left as a straight fraction: half of a laptop's height is a usable
+  /// map, half of a phone's is not.
+  static double _mapHeight(BoxConstraints constraints) {
+    if (!constraints.maxHeight.isFinite) return 420;
+    return (constraints.maxHeight * 0.55).clamp(280.0, 520.0).toDouble();
+  }
+
   // ---- Placeholder handlers ----------------------------------------------
   // The actions the design shows that have no endpoint yet, wired to a single
   // reporting stub so the screen is fully clickable. The location fields above
@@ -412,7 +542,10 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
               // Decided once, from the real screen width, for the whole form.
               inlineLabels: constraints.maxWidth >= Breakpoints.inlineLabel,
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(10),
+                // Horizontal breathing room only — the section cards carry
+                // their own padding, so a matching 10 top and bottom just
+                // pushed the header and the action row away from the edges.
+                padding: const EdgeInsets.fromLTRB(10, 4, 10, 4),
                 child: Center(
                   // Cap the width on very large screens so the form does not
                   // stretch into an unusable full-bleed layout.
@@ -815,6 +948,35 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                       ),
                                     ],
                                   ),
+                                ),
+                                // ---- The journey, drawn ----
+                                // Full form width, because it is a child of the
+                                // same Column every SectionCard above sits in,
+                                // and framed like one so it reads as part of
+                                // the form rather than something stuck under
+                                // it.
+                                //
+                                // The height matters more than it looks:
+                                // MapViewWidget is a Stack with no size of its
+                                // own, so an unbounded parent takes its inner
+                                // layout out with a "size: MISSING" — the same
+                                // reason the dashboard wraps it in a SizedBox.
+                                Container(
+                                  width: double.infinity,
+                                  height: _mapHeight(constraints),
+                                  margin: const EdgeInsets.only(
+                                      bottom: Density.cardGap),
+                                  clipBehavior: Clip.antiAlias,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                        color: const Color(0xFFE0E0E0)),
+                                  ),
+                                  // createBooking drops the MAPS / PLOT toggle
+                                  // and the distance readout it carries: both
+                                  // belong to the dashboard, and this screen
+                                  // already has the fares bar for the figures.
+                                  child: MapViewWidget(createBooking: true),
                                 ),
                               ],
                             ),

@@ -104,7 +104,12 @@ class Density {
   // (8 / 8-2) was set on the assumption that a line of text measures 20px,
   // which is where the two drifted apart: at fieldFont a line is ~15.2, so
   // the text fields came out ~5px shorter than the dropdowns beside them.
-  static const double fieldHeight = 40;
+  //
+  // 34 is the floor a dropdown can reach: Material's dense DropdownButton has
+  // a hard 24px inner height, so [dropPadY] below is down to 5 a side. Going
+  // lower would push that padding negative and the dropdowns would stop
+  // matching the text fields beside them.
+  static const double fieldHeight = 34;
 
   // A 13px line of text measures ~15.2 logical pixels, so this is the padding
   // that gets a text field to [fieldHeight].
@@ -117,6 +122,13 @@ class Density {
   static const double labelGap = 2; // label -> input, stacked mode
   static const double labelGapX = 6; // label -> input, inline mode
   static const double labelWidth = 86; // label column width, inline mode
+  /// Height of a BUTTON that sits in a field row — the icon actions, PICK
+  /// BOOKING, the fares bar's recalculate. Deliberately shorter than
+  /// [fieldHeight]: a button has no caret to sit around, so the extra height an
+  /// input needs only makes the row look loose. Kept as its own knob so button
+  /// density can move without dragging every input with it.
+  static const double buttonHeight = 30;
+
   static const double gridSpacing = 6; // between fields (x and y)
   static const double cardPad = 8; // inside a SectionCard
   static const double cardGap = 6; // between SectionCards

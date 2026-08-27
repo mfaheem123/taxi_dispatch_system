@@ -585,7 +585,6 @@ class DashboardController extends GetxController {
   }
 
   inItStateOFController() async {
-    mapController = MapController(); // ✅ Initialize here
     Future.delayed(Duration(seconds: 1), () {
       String myExtension = Employee.selectedEmployee?.extensionNumber ?? "200";
       print("Connecting to CLI with Extension: $myExtension");
@@ -944,7 +943,15 @@ class DashboardController extends GetxController {
 
 
   AllAddressesModel? selectedModel;
-  late final MapController mapController;
+  /// Built with the controller, not in [inItStateOFController].
+  ///
+  /// It used to be `late final`, assigned only when MainAppbar mounted — which
+  /// meant any screen reached without the app shell (the edit-job screen is
+  /// pushed straight from login) hit a LateInitializationError the moment its
+  /// map built. A MapController is inert until a FlutterMap attaches to it, so
+  /// there is nothing to defer; and being `late final` it would also have
+  /// thrown on a second init, which the appbar remounting can cause.
+  final MapController mapController = MapController();
   MapController? mapTrackingController;
   final List<ViaPoint> viaPoints = [];
   List<ViaTextEditingControllerClass> viaTextEditingController = [];
