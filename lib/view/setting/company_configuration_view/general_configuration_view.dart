@@ -1,5 +1,6 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../component/dropdown_button.dart';
@@ -119,13 +120,14 @@ class _GeneralConfigurationViewState extends State<GeneralConfigurationView> {
         // ROW 1
         Row(
           children: [
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.tabbookingInHouss, hintText: AppText.tabBooksinHours, columnText: true)),
+            // Expanded(child: CustomTextField(borderRadius: 4, controller: controller.tabbookingInHouss, hintText: AppText.tabBooksinHours, columnText: true)),
+            buildNumberField(controller.tabbookingInHouss, AppText.tabBooksinHours),
             const SizedBox(width: horizontalSpacing),
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.tabBooksinday, hintText: AppText.tabBooksinday, columnText: true)),
+            buildNumberField(controller.tabBooksinday, AppText.tabBooksinday),
             const SizedBox(width: horizontalSpacing),
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.tabrecentBooksinday, hintText: AppText.tabrecentBooksinday, columnText: true)),
+            buildNumberField(controller.tabrecentBooksinday, AppText.tabrecentBooksinday),
             const SizedBox(width: horizontalSpacing),
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.tabBooksAfterminuts, hintText: AppText.tabBooksAfterminuts, columnText: true)),
+            buildNumberField(controller.tabBooksAfterminuts, AppText.tabBooksAfterminuts),
           ],
         ),
         const SizedBox(height: runSpacing),
@@ -133,13 +135,13 @@ class _GeneralConfigurationViewState extends State<GeneralConfigurationView> {
         // ROW 2
         Row(
           children: [
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.bookingExpiryNoties, hintText: AppText.bookingExpiryNoties, columnText: true)),
+            buildNumberField(controller.bookingExpiryNoties, AppText.bookingExpiryNoties),
             const SizedBox(width: horizontalSpacing),
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.airportBookingExpiryNotice, hintText: AppText.airportBookingExpiryNotice, columnText: true)),
+            buildNumberField(controller.airportBookingExpiryNotice, AppText.airportBookingExpiryNotice),
             const SizedBox(width: horizontalSpacing),
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.accountBookingExpiry, hintText: AppText.accountBookingExpiry, columnText: true)),
+            buildNumberField(controller.accountBookingExpiry, AppText.accountBookingExpiry),
             const SizedBox(width: horizontalSpacing),
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.driverExpiryNotice, hintText: AppText.driverExpiryNotice, columnText: true)),
+            buildNumberField(controller.driverExpiryNotice, AppText.driverExpiryNotice),
           ],
         ),
         const SizedBox(height: runSpacing),
@@ -147,12 +149,12 @@ class _GeneralConfigurationViewState extends State<GeneralConfigurationView> {
         // ROW 3
         Row(
           children: [
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.flightTrackerAPI, hintText: AppText.flightTrackerAPI, columnText: true)),
+            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.flightTrackerAPI, hintText: AppText.flightTrackerAPI, columnText: true, obscureText: true,)),
             const SizedBox(width: horizontalSpacing),
             Expanded(
               child: CustomDropdownField<String>(
                 text: AppText.type,
-                label: AppText.amount,
+                label: "SELECT TYPE",
                 items: const ["AMOUNT", "PERCENTAGE"],
                 value: controller.typeAmount,
                 itemLabel: (val) => val,
@@ -163,9 +165,9 @@ class _GeneralConfigurationViewState extends State<GeneralConfigurationView> {
               ),
             ),
             const SizedBox(width: horizontalSpacing),
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.creditCardCharges, hintText: AppText.creditCardCharges, columnText: true)),
+            buildNumberField(controller.creditCardCharges, AppText.creditCardCharges),
             const SizedBox(width: horizontalSpacing),
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.roundOffFares, hintText: AppText.roundOffFares, columnText: true)),
+            buildNumberField(controller.roundOffFares, AppText.roundOffFares),
           ],
         ),
         const SizedBox(height: runSpacing),
@@ -185,13 +187,14 @@ class _GeneralConfigurationViewState extends State<GeneralConfigurationView> {
         // ROW 5
         Row(
           children: [
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.huntGroup, hintText: AppText.huntGroup, columnText: true)),
+            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.huntGroup, hintText: AppText.huntGroup, columnText: true,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],)),
             const SizedBox(width: horizontalSpacing),
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.baseAddress, hintText: AppText.baseAddress, columnText: true)),
+            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.baseAddress, hintText: AppText.baseAddress, columnText: true, readOnly: true)),
             const SizedBox(width: horizontalSpacing),
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.deadMileageMiles, hintText: AppText.deadMileageMiles, columnText: true)),
+            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.deadMileageMiles, hintText: AppText.deadMileageMiles, columnText: true, readOnly: true)),
             const SizedBox(width: horizontalSpacing),
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.deadMileageMethods, hintText: AppText.deadMileageMethods, columnText: true)),
+            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.deadMileageMethods, hintText: AppText.deadMileageMethods, columnText: true, readOnly: true)),
           ],
         ),
       ],
@@ -286,6 +289,27 @@ class _GeneralConfigurationViewState extends State<GeneralConfigurationView> {
           width: double.infinity,
         ),
       ],
+    );
+  }
+
+  Widget buildNumberField(TextEditingController textCtrl, String hintText) {
+    return Expanded(
+      child: CustomTextField(
+        borderRadius: 4,
+        controller: textCtrl,
+        hintText: hintText,
+        columnText: true,
+        keyboardType: const TextInputType.numberWithOptions(signed: true),
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*'))],
+        suffixIcon: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            InkWell(onTap: () => controller.updateValue(textCtrl, 1), child: const Icon(Icons.arrow_drop_up, size: 15)),
+            InkWell(onTap: () => controller.updateValue(textCtrl, -1), child: const Icon(Icons.arrow_drop_down, size: 15)),
+          ],
+        ),
+      ),
     );
   }
 }
