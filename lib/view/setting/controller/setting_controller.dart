@@ -14,6 +14,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart' as dio;
 import '../../administration/model/list_subsDiary.dart';
 import '../../drivers_view/model/driver_commission_payment_model.dart';
+import '../model/company_configuration_model.dart';
 import '../model/get_clear_booking_model.dart';
 import '../model/get_document_number_model.dart';
 import '../model/select_templete_type.dart';
@@ -184,7 +185,9 @@ class SettingController extends GetxController {
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo company configuration functionality
 
   String? selectSubsidiaryValue;
-  String? serviceValue;
+  String? emailServiceValue = "GMAIL";
+  String? smsServiceValue = "DINSTAR";
+  String? mapServiceValue = "GOOGLE";
   String? dateFormate;
   String? timeFormate;
   String? zoneFormate;
@@ -194,8 +197,8 @@ class SettingController extends GetxController {
   /// text field controllers
   final userNameController = TextEditingController();
   final passwordController = TextEditingController();
-  final hostController = TextEditingController();
-  final portController = TextEditingController();
+  final hostController = TextEditingController(text: "SMTP.GMAIL.COM");
+  final portController = TextEditingController(text: "465");
   final ccController = TextEditingController();
   final smsServiceIpController = TextEditingController();
   final smsHostController = TextEditingController();
@@ -269,6 +272,194 @@ class SettingController extends GetxController {
     update();
   }
 
+  ///ADD
+  bool isSavingConfig = false;
+
+  saveCompanyConfiguration() async {
+    isSavingConfig = true;
+    update();
+
+    var formData = {
+      "subsidiary_id": int.tryParse(selectSubsidiaryValue ?? "1") ?? 1,
+      "company_id": 1,
+      "email_username": userNameController.text,
+      "email_password": passwordController.text,
+      "email_service": emailServiceValue,
+      "email_host": hostController.text,
+      "email_port": int.tryParse(portController.text) ?? 465,
+      "email_cc": ccController.text,
+      "email_secure_connection": secureConnectionValue.value,
+      "toggle_accept_email": toggleAcceptEmailValue.value,
+      "toggle_decline_email": toggleDeclineEmailValue.value,
+      "map_service": mapServiceValue,
+      "map_api_key": mapApiKeyController.text,
+      "map_distance_factor": int.tryParse(distanceFactorController.text) ?? 1,
+      "map_time_factor": int.tryParse(timeFactorController.text) ?? 1,
+      "toggle_map_controls": toggleMapControlsValue.value,
+      "company_date_format": dateFormate,
+      "company_time_format": timeFormate,
+      "company_time_zone": zoneFormate,
+      "sms_host": smsHostController.text,
+      "sms_port": int.tryParse(smsPortController.text) ?? 0,
+      "tab_bookings": int.tryParse(tabbookingInHouss.text) ?? 0,
+      "tab_pre_bookings": int.tryParse(tabBooksinday.text) ?? 0,
+      "tab_recent_bookings": int.tryParse(tabrecentBooksinday.text) ?? 0,
+      "discount_oneway_booking": int.tryParse(discountOneWay.text) ?? 0,
+      "discount_return_booking": int.tryParse(discountReturn.text) ?? 0,
+      "discount_wait_and_return_booking": int.tryParse(discountWaitAndReturn.text) ?? 0,
+      "booking_expiry_notice": int.tryParse(bookingExpiryNoties.text) ?? 0,
+      "airport_booking_expiry_notice": int.tryParse(airportBookingExpiryNotice.text) ?? 0,
+      "account_booking_expiry_notice": int.tryParse(accountBookingExpiry.text) ?? 0,
+      "driver_expiry_notice": int.tryParse(driverExpiryNotice.text) ?? 0,
+      "credit_card_charges": int.tryParse(creditCardCharges.text) ?? 0,
+      "enable_booking_quotation": bookingQuotationSMSValue.value,
+      "web_booker_confirmation": webBookerConfValue.value,
+      "customer_app_confirmation": customerAppConfValue.value,
+      "enable_booking_text": enableBookingTextValue.value,
+      "booking_text_minutes": int.tryParse(tabBooksAfterminuts.text) ?? 0,
+      "enable_customer_text": enableCustomerValue.value,
+      "enable_notification": notificationValue.value,
+      "enable_booking_due_notification": bookingDueNotiValue.value,
+      "roundoff_fares": int.tryParse(roundOffFares.text) ?? 0,
+      "enable_peak_factors": peakFactorsValue.value,
+      "stripe_public_key": stripePublicKey.text,
+      "stripe_secret_key": stripeSecretKey.text,
+      "endpoint_key": endPointKey.text,
+      "invoice_endpoint_key": invoiceEndPointKey.text,
+      "sms_username": smsUserNameController.text,
+      "sms_password": smsPasswordController.text,
+      "sms_service": smsServiceValue,
+      "sms_service_ip": smsServiceIpController.text,
+      "amount_type": typeAmount,
+      "sms_incoming": enableIncomingMessagesValue.value,
+      "enable_dead_mileage": deadMileageValue.value,
+      "call_feature": callFeaturesValue.value,
+      "base_address": baseAddress.text,
+      "dead_mileage_miles": int.tryParse(deadMileageMiles.text) ?? 0,
+      "dead_mileage_methods": deadMileageMethods.text,
+      "flight_tracker_api": flightTrackerAPI.text,
+      "hunt_group": int.tryParse(huntGroup.text) ?? 0,
+      "service_api_key": serviceApiKeyController.text,
+      "main_api_key": geoApifyApiKeyController.text,
+    };
+
+    try {
+      var response = await Api().post(formData, "company-configuration/add");
+
+      print("📥 SAVE CONFIG RESPONSE STATUS: ${response.statusCode}");
+      print("📥 SAVE CONFIG RESPONSE DATA: ${response.data}");
+
+      if (response.statusCode == 200) {
+        BotToast.showText(text: "CONFIGURATION SAVED SUCCESSFULLY!");
+      } else {
+        String errorMessage = response.data?['message']?.toString() ?? "FAILED!";
+        BotToast.showText(text: errorMessage);
+        // BotToast.showText(text: "FAILED!");
+      }
+    } catch (e) {
+      print("❌ CATCH ERROR: $e");
+      BotToast.showText(text: "Error: $e");
+    } finally {
+      isSavingConfig = false;
+      update();
+    }
+  }
+
+  /// Get
+  CompanyConfigurationModel? companyConfigurationModel;
+  bool isConfigLoading = false;
+
+  getCompanyConfiguration(String subsidiaryId) async {
+    isConfigLoading = true;
+    update();
+
+    var response = await Api().get("company-configuration/subsidiary_id/$subsidiaryId",
+    // sendCompanyId: true,
+    );
+    print("📥 GET CONFIG RESPONSE: ${response.statusCode} -> ${response.data}");
+
+    if (response.statusCode == 200) {
+      companyConfigurationModel = CompanyConfigurationModel.fromJson(response.data);
+
+      var config = companyConfigurationModel?.companyConfiguration;
+
+      if (config != null) {
+        userNameController.text = config.emailUsername ?? '';
+        passwordController.text = config.emailPassword ?? '';
+        hostController.text = config.emailHost ?? 'SMTP.GMAIL.COM';
+        portController.text = config.emailPort ?? '465';
+        ccController.text = config.emailCc ?? '';
+
+        smsHostController.text = config.smsHost ?? '';
+        smsPortController.text = config.smsPort?.toString() ?? '';
+        smsUserNameController.text = config.smsUsername ?? '';
+        smsPasswordController.text = config.smsPassword ?? '';
+
+        mapApiKeyController.text = config.mapApiKey ?? '';
+        geoApifyApiKeyController.text = config.mainApiKey ?? '';
+        distanceFactorController.text = config.mapDistanceFactor ?? '';
+        timeFactorController.text = config.mapTimeFactor ?? '';
+
+        tabbookingInHouss.text = config.tabBookings?.toString() ?? '';
+        tabBooksinday.text = config.tabPreBookings?.toString() ?? '';
+        tabrecentBooksinday.text = config.tabRecentBookings?.toString() ?? '';
+        tabBooksAfterminuts.text = config.bookingTextMinutes?.toString() ?? '';
+
+        discountOneWay.text = config.discountOnewayBooking?.toString() ?? '';
+        discountReturn.text = config.discountReturnBooking?.toString() ?? '';
+        discountWaitAndReturn.text = config.discountWaitAndReturnBooking?.toString() ?? '';
+
+        bookingExpiryNoties.text = config.bookingExpiryNotice?.toString() ?? '';
+        airportBookingExpiryNotice.text = config.airportBookingExpiryNotice?.toString() ?? '';
+        accountBookingExpiry.text = config.accountBookingExpiryNotice?.toString() ?? '';
+        driverExpiryNotice.text = config.driverExpiryNotice?.toString() ?? '';
+
+        creditCardCharges.text = config.creditCardCharges?.toString() ?? '';
+        roundOffFares.text = config.roundoffFares?.toString() ?? '';
+        flightTrackerAPI.text = config.flightTrackerApi ?? '';
+
+        stripePublicKey.text = config.stripePublicKey ?? '';
+        stripeSecretKey.text = config.stripeSecretKey ?? '';
+        endPointKey.text = config.endpointKey ?? '';
+        invoiceEndPointKey.text = config.invoiceEndpointKey ?? '';
+
+        baseAddress.text = config.baseAddress ?? '';
+        deadMileageMiles.text = config.deadMileageMiles?.toString() ?? '';
+        deadMileageMethods.text = config.deadMileageMethods ?? '';
+        huntGroup.text = config.huntGroup?.toString() ?? '';
+        serviceApiKeyController.text = config.serviceApiKey ?? '';
+        smsServiceIpController.text = config.smsServiceIp ?? '';
+
+        // --- 2. Dropdowns / Values ---
+        emailServiceValue = config.emailService ?? 'GMAIL';
+        smsServiceValue = config.smsService ?? 'DINSTAR';
+        mapServiceValue = config.mapService ?? 'GOOGLE';
+        dateFormate = config.companyDateFormat;
+        timeFormate = config.companyTimeFormat;
+        zoneFormate = config.companyTimeZone;
+        typeAmount = config.amountType ?? 'AMOUNT';
+
+        // --- 3. Booleans Mapping ---
+        secureConnectionValue.value = config.emailSecureConnection ?? false;
+        toggleAcceptEmailValue.value = config.toggleAcceptEmail ?? false;
+        toggleDeclineEmailValue.value = config.toggleDeclineEmail ?? false;
+        toggleMapControlsValue.value = config.toggleMapControls ?? false;
+        bookingQuotationSMSValue.value = config.enableBookingQuotation ?? false;
+        webBookerConfValue.value = config.webBookerConfirmation ?? false;
+        customerAppConfValue.value = config.customerAppConfirmation ?? false;
+        enableBookingTextValue.value = config.enableBookingText ?? false;
+        enableCustomerValue.value = config.enableCustomerText ?? false;
+        notificationValue.value = config.enableNotification ?? false;
+        bookingDueNotiValue.value = config.enableBookingDueNotification ?? false;
+        peakFactorsValue.value = config.enablePeakFactors ?? false;
+        enableIncomingMessagesValue.value = config.smsIncoming ?? false;
+        deadMileageValue.value = config.enableDeadMileage ?? false;
+        callFeaturesValue.value = config.callFeature ?? false;
+      }
+    }
+    update();
+  }
+
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo company configuration functionality
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo document number functionality
   final TextEditingController prefixController = TextEditingController();
@@ -322,9 +513,15 @@ class SettingController extends GetxController {
     var response = await Api().get("subsidiaries/get", sendCompanyId: true);
     if (response.statusCode == 200) {
       subsDiaryModel = SubsDiaryModel.fromJson(response.data);
+      if (subsDiaryModel?.subsidiaries?.isNotEmpty ?? false) {
+        selectedSubsidiaryId = subsDiaryModel!.subsidiaries!.first.id.toString();
+        selectSubsidiaryValue = subsDiaryModel!.subsidiaries!.first.id.toString();
+
+        getCompanyConfiguration(selectSubsidiaryValue!);
+      }
+    }
       isSubsidiary = false;
       update();
-    }
   }
 
   /// list document number

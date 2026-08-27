@@ -24,7 +24,6 @@ class _EmailConfigurationViewState extends State<EmailConfigurationView> {
       : Get.put(SettingController());
   List permissions = [];
 
-
   @override
   Widget build(BuildContext context) {
     return GetBuilder<SettingController>(
@@ -41,16 +40,17 @@ class _EmailConfigurationViewState extends State<EmailConfigurationView> {
           final double fieldWidth = isMobile
               ? maxWidth // full width
               : isTablet
-              ? maxWidth / 2
-              : maxWidth / 4;
+                  ? maxWidth / 2
+                  : maxWidth / 4;
 
-          return Padding(padding: EdgeInsets.all(8.0),
+          return Padding(
+            padding: EdgeInsets.all(8.0),
             child: Container(
               width: Get.width,
               decoration: BoxDecoration(
                   border: Border.all(
-                    color: DynamicColors.secondaryClr,
-                  )),
+                color: DynamicColors.secondaryClr,
+              )),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,39 +70,36 @@ class _EmailConfigurationViewState extends State<EmailConfigurationView> {
                     padding: const EdgeInsets.all(15.0),
                     child: isMobile
                         ? Column(
-                      children: [
-                        buildLeftFields(),
-                        const Divider(height: 30, thickness: 1),
-                        buildRightCheckboxes(),
-                      ],
-                    )
-
+                            children: [
+                              buildLeftFields(),
+                              const Divider(height: 30, thickness: 1),
+                              buildRightCheckboxes(),
+                            ],
+                          )
                         : IntrinsicHeight(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            flex: 7,
-                            child: buildLeftFields(),
-                          ),
-
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 25.0),
-                            child: VerticalDivider(
-                              width: 1,
-                              thickness: 1,
-                              color: Colors.grey.shade400,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(
+                                  flex: 7,
+                                  child: buildLeftFields(),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 25.0),
+                                  child: VerticalDivider(
+                                    width: 1,
+                                    thickness: 1,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 3,
+                                  child: buildRightCheckboxes(),
+                                ),
+                              ],
                             ),
                           ),
-
-                          Expanded(
-                            flex: 3,
-                            child: buildRightCheckboxes(),
-                          ),
-                        ],
-                      ),
-                    ),
                   ),
                 ],
               ),
@@ -112,6 +109,7 @@ class _EmailConfigurationViewState extends State<EmailConfigurationView> {
       },
     );
   }
+
   Widget buildLeftFields() {
     const double horizontalSpacing = 16.0;
     const double runSpacing = 26.0;
@@ -121,19 +119,28 @@ class _EmailConfigurationViewState extends State<EmailConfigurationView> {
         // ROW 1
         Row(
           children: [
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.userNameController, hintText: "USERNAME", columnText: true)),
+            Expanded(child: CustomTextField(
+              borderRadius: 4,
+              controller: controller.userNameController,
+              hintText: "USERNAME",
+              columnText: true,
+              inputFormatters: [UpperCaseTextFormatter()],)),
             const SizedBox(width: horizontalSpacing),
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.passwordController, hintText: AppText.password, columnText: true)),
+            Expanded(child: CustomTextField(
+                    borderRadius: 4,
+                    controller: controller.passwordController,
+                    hintText: AppText.password,
+                    columnText: true, obscureText: true)),
             const SizedBox(width: horizontalSpacing),
             Expanded(
               child: CustomDropdownField<String>(
                 text: AppText.service,
                 label: "SELECT EMAIL SERVICE",
                 items: const ["GMAIL", "HOTMAIL", "OUTLOOK", "OTHER"],
-                value: controller.serviceValue,
+                value: controller.emailServiceValue,
                 itemLabel: (val) => val,
                 onChanged: (val) {
-                  controller.serviceValue = val!;
+                  controller.emailServiceValue = val!;
                   controller.update();
                 },
               ),
@@ -145,11 +152,25 @@ class _EmailConfigurationViewState extends State<EmailConfigurationView> {
         // ROW 2
         Row(
           children: [
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.hostController, hintText: AppText.host, columnText: true)),
+            Expanded(child: CustomTextField(
+              borderRadius: 4,
+              controller: controller.hostController,
+              hintText: AppText.host,
+              columnText: true, readOnly: true,
+              inputFormatters: [UpperCaseTextFormatter()],)),
             const SizedBox(width: horizontalSpacing),
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.portController, hintText: AppText.port, columnText: true)),
+            Expanded(child: CustomTextField(
+                    borderRadius: 4,
+                    controller: controller.portController,
+                    hintText: AppText.port,
+                    columnText: true, readOnly: true)),
             const SizedBox(width: horizontalSpacing),
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.ccController, hintText: AppText.cc, columnText: true)),
+            Expanded(child: CustomTextField(
+              borderRadius: 4,
+              controller: controller.ccController,
+              hintText: AppText.cc,
+              columnText: true,
+              inputFormatters: [UpperCaseTextFormatter()],)),
           ],
         ),
       ],
@@ -164,7 +185,10 @@ class _EmailConfigurationViewState extends State<EmailConfigurationView> {
       children: [
         const SizedBox(height: checkboxSpacing),
         KeyboardCheckbox(
-          onChanged: (v) { controller.secureConnectionValue.value = v; controller.update(); },
+          onChanged: (v) {
+            controller.secureConnectionValue.value = v;
+            controller.update();
+          },
           label: AppText.secureConnection,
           value: controller.secureConnectionValue.value,
           focusNode: controller.secureConnectionNode,
@@ -172,7 +196,10 @@ class _EmailConfigurationViewState extends State<EmailConfigurationView> {
         ),
         const SizedBox(height: checkboxSpacing),
         KeyboardCheckbox(
-          onChanged: (v) { controller.toggleAcceptEmailValue.value = v; controller.update(); },
+          onChanged: (v) {
+            controller.toggleAcceptEmailValue.value = v;
+            controller.update();
+          },
           label: AppText.toggleAcceptEmail,
           value: controller.toggleAcceptEmailValue.value,
           focusNode: controller.toggleAcceptEmailNode,
@@ -180,7 +207,10 @@ class _EmailConfigurationViewState extends State<EmailConfigurationView> {
         ),
         const SizedBox(height: checkboxSpacing),
         KeyboardCheckbox(
-          onChanged: (v) { controller.toggleDeclineEmailValue.value = v; controller.update(); },
+          onChanged: (v) {
+            controller.toggleDeclineEmailValue.value = v;
+            controller.update();
+          },
           label: AppText.toggleDeclineEmail,
           value: controller.toggleDeclineEmailValue.value,
           focusNode: controller.toggleDeclineEmailNode,

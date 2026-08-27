@@ -39,7 +39,13 @@ class _CompanyConfigurationViewState extends State<CompanyConfigurationView> {
       const PaymentConfigurationView(),
     ];
 
-    return GetBuilder<SettingController>(
+    return GetBuilder<SettingController>( initState: (state)  {
+      controller.getDocumentSubsidiary();
+
+      // if (controller.selectSubsidiaryValue != null) {
+      //   controller.getCompanyConfiguration(controller.selectSubsidiaryValue!);
+      // }
+    },
       builder: (controller) {
         return LayoutBuilder(builder: (context, constraints) {
           final double maxWidth = constraints.maxWidth;
@@ -69,24 +75,33 @@ class _CompanyConfigurationViewState extends State<CompanyConfigurationView> {
                         child: Text(AppText.companyConfigurations, style: titleDesign()),
                       ),
                       const SizedBox(width: 50),
-                      CustomDropdownField<String>(
-                        text: AppText.subsidiary,
+                      CustomDropdownField<dynamic>(
                         width: fieldWidth / 1.5,
+                        text: AppText.subsidiary,
                         label: AppText.selectSubsidiary,
-                        items: const [
-                          "SUBSIDIARY 1",
-                          "SUBSIDIARY 2",
-                          "SUBSIDIARY 3",
-                          "SUBSIDIARY 4",
-                          "SUBSIDIARY 5",
-                        ],
-                        value: controller.selectSubsidiaryValue,
-                        itemLabel: (val) => val,
+                        items: controller.subsDiaryModel?.subsidiaries ?? [],
+                        value: controller.subsDiaryModel?.subsidiaries?.firstWhereOrNull(
+                              (element) => element.id.toString() == controller.selectSubsidiaryValue.toString(),
+                        ),
+                        itemLabel: (item) => (item.name ?? "").toUpperCase(),
                         onChanged: (val) {
-                          controller.selectSubsidiaryValue = val!;
+                          controller.selectSubsidiaryValue = val?.id?.toString();
                           controller.update();
+                          // controller.getCompanyConfiguration(controller.selectSubsidiaryValue!);
                         },
                       ),
+                      // CustomDropdownField<String>(
+                      //   text: AppText.subsidiary,
+                      //   width: fieldWidth / 1.5,
+                      //   label: AppText.selectSubsidiary,
+                      //   items: controller.subsDiaryModel?.subsidiaries?.map((e) => e.id.toString()).toList() ?? [],
+                      //   value: controller.selectSubsidiaryValue,
+                      //   itemLabel: (val) => val,
+                      //   onChanged: (val) {
+                      //     controller.selectSubsidiaryValue = val!;
+                      //     controller.update();
+                      //   },
+                      // ),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -130,6 +145,14 @@ class _CompanyConfigurationViewState extends State<CompanyConfigurationView> {
                       borderRadius: 4,
                       verticalPadding: 0.0,
                       btnText: AppText.save,
+                      onTap: () {
+                        controller.saveCompanyConfiguration();
+
+                        // if (controller.selectSubsidiaryValue != null) {
+                        //   controller.getCompanyConfiguration(
+                        //       controller.selectSubsidiaryValue!);
+                        // }
+                      }
                     ),
                   ),
                 ],

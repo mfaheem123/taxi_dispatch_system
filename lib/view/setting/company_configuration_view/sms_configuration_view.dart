@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -27,7 +25,6 @@ class _SmsConfigurationViewState extends State<SmsConfigurationView> {
 
   List permissions = [];
 
-
   @override
   Widget build(BuildContext context) {
     return GetBuilder<SettingController>(
@@ -44,17 +41,17 @@ class _SmsConfigurationViewState extends State<SmsConfigurationView> {
           final double fieldWidth = isMobile
               ? maxWidth // full width
               : isTablet
-              ? maxWidth / 2
-              : maxWidth / 4;
+                  ? maxWidth / 2
+                  : maxWidth / 4;
 
-          return Padding(padding: const EdgeInsets.all(8.0),
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Container(
               width: Get.width,
               decoration: BoxDecoration(
                   border: Border.all(
-                    color: DynamicColors.secondaryClr,
-                  )
-              ),
+                color: DynamicColors.secondaryClr,
+              )),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,45 +64,41 @@ class _SmsConfigurationViewState extends State<SmsConfigurationView> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12.0, vertical: 12.0),
                           child: Text(AppText.smsConfigurations,
-                              style: titleDesign()))
-                  ),
+                              style: titleDesign()))),
                   Padding(
                     padding: const EdgeInsets.all(15.0),
                     child: isMobile
                         ? Column(
-                      children: [
-                        buildLeftFields(),
-                        const Divider(height: 30, thickness: 1),
-                        buildRightCheckboxes(),
-                      ],
-                    )
-
+                            children: [
+                              buildLeftFields(),
+                              const Divider(height: 30, thickness: 1),
+                              buildRightCheckboxes(),
+                            ],
+                          )
                         : IntrinsicHeight(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            flex: 7,
-                            child: buildLeftFields(),
-                          ),
-
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 25.0),
-                            child: VerticalDivider(
-                              width: 1,
-                              thickness: 1,
-                              color: Colors.grey.shade400,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(
+                                  flex: 7,
+                                  child: buildLeftFields(),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 25.0),
+                                  child: VerticalDivider(
+                                    width: 1,
+                                    thickness: 1,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 3,
+                                  child: buildRightCheckboxes(),
+                                ),
+                              ],
                             ),
                           ),
-
-                          Expanded(
-                            flex: 3,
-                            child: buildRightCheckboxes(),
-                          ),
-                        ],
-                      ),
-                    ),
                   ),
                 ],
               ),
@@ -115,6 +108,7 @@ class _SmsConfigurationViewState extends State<SmsConfigurationView> {
       },
     );
   }
+
   Widget buildLeftFields() {
     const double horizontalSpacing = 16.0;
     const double runSpacing = 26.0;
@@ -129,18 +123,29 @@ class _SmsConfigurationViewState extends State<SmsConfigurationView> {
                 text: AppText.service,
                 label: "SELECT SMS SERVICE",
                 items: const ["DINSTAR", "CUSTOM"],
-                value: controller.serviceValue,
+                value: controller.smsServiceValue,
                 itemLabel: (val) => val,
                 onChanged: (val) {
-                  controller.serviceValue = val!;
+                  controller.smsServiceValue = val!;
                   controller.update();
                 },
               ),
             ),
             const SizedBox(width: horizontalSpacing),
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.smsServiceIpController, hintText: AppText.smsServiceIp, columnText: true)),
+            Expanded(child: CustomTextField(
+               borderRadius: 4,
+               controller: controller.smsServiceIpController,
+               hintText: AppText.smsServiceIp,
+               columnText: true,
+               inputFormatters: [UpperCaseTextFormatter()])),
             const SizedBox(width: horizontalSpacing),
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.smsHostController, hintText: AppText.smsHost, columnText: true)),
+            Expanded(child: CustomTextField(
+                borderRadius: 4,
+                controller: controller.smsHostController,
+                hintText: AppText.smsHost,
+                columnText: true,
+                inputFormatters: [UpperCaseTextFormatter()]
+            )),
           ],
         ),
         const SizedBox(height: runSpacing),
@@ -148,11 +153,27 @@ class _SmsConfigurationViewState extends State<SmsConfigurationView> {
         // ROW 2
         Row(
           children: [
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.smsPortController, hintText: AppText.smsPort, columnText: true)),
+            Expanded(child: CustomTextField(
+                borderRadius: 4,
+                controller: controller.smsPortController,
+                hintText: AppText.smsPort,
+                columnText: true,
+                inputFormatters: [UpperCaseTextFormatter()]
+            )),
             const SizedBox(width: horizontalSpacing),
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.smsUserNameController, hintText: AppText.smsUserName, columnText: true)),
+            Expanded(child: CustomTextField(
+                borderRadius: 4,
+                controller: controller.smsUserNameController,
+                hintText: AppText.smsUserName,
+                columnText: true,
+                inputFormatters: [UpperCaseTextFormatter()]
+            )),
             const SizedBox(width: horizontalSpacing),
-            Expanded(child: CustomTextField(borderRadius: 4, controller: controller.smsPasswordController, hintText: AppText.smsPassword, columnText: true)),
+            Expanded(child: CustomTextField(
+                borderRadius: 4,
+                controller: controller.smsPasswordController,
+                hintText: AppText.smsPassword,
+                columnText: true, obscureText: true)),
           ],
         ),
       ],
@@ -167,7 +188,10 @@ class _SmsConfigurationViewState extends State<SmsConfigurationView> {
       children: [
         const SizedBox(height: checkboxSpacing),
         KeyboardCheckbox(
-          onChanged: (v) { controller.enableIncomingMessagesValue.value = v; controller.update(); },
+          onChanged: (v) {
+            controller.enableIncomingMessagesValue.value = v;
+            controller.update();
+          },
           label: AppText.enableIncomingMessages,
           value: controller.enableIncomingMessagesValue.value,
           focusNode: controller.enableIncomingMessagesNode,
