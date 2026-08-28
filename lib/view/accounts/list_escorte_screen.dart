@@ -108,7 +108,7 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
                       child: CircularProgressIndicator(),
                     )
                   : SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
+                      // scrollDirection: Axis.horizontal,
                       child: SizedBox(
                       width: isMobile || isTablet
                                     ? Get.width + 600
