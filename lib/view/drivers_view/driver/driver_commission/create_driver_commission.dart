@@ -349,14 +349,12 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
               ),
               controller.isFilterLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: ResponsiveDataTableWidget(
+                  : ResponsiveDataTableWidget(
                         totalWidth: totalAvailableWidth,
                           columnConfigs: [
                             TableColumnConfig(
                               title: "SELECT_ALL",
-                              sizeType: ColumnSizeType.small,
+                              sizeType: ColumnSizeType.fixed, fixedWidth: 40,
                                customHeader: Checkbox(
                                  value: controller.selectedIds.isNotEmpty &&
                                      controller.selectedIds.length == controller.filterData?.bookings?.length,
@@ -386,7 +384,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                             TableColumnConfig(title: "W/COMM", sizeType: ColumnSizeType.small),
                             TableColumnConfig(title: "COMM", sizeType: ColumnSizeType.small),
                             TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium),
-                            TableColumnConfig(title: "ACTIONS", sizeType: ColumnSizeType.fixed, fixedWidth: 65, removeSearching: true),
+                            TableColumnConfig(title: "ACTIONS", sizeType: ColumnSizeType.fixed, fixedWidth: 70, removeSearching: true),
                           ],
                           // ...
                           items: [
@@ -535,7 +533,6 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                               ),
                             ];
                           }),
-                    ),
               SizedBox(
                 height: 30,
               ),

@@ -654,7 +654,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                       columnConfigs: [
                         TableColumnConfig(
                             title: "CHECKBOX",
-                            sizeType: ColumnSizeType.small,
+                            sizeType: ColumnSizeType.fixed, fixedWidth: 40,
                             customHeader: Checkbox(
                               value: controller.selectedIds.isNotEmpty &&
                                   controller.selectedIds.length ==
@@ -703,7 +703,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                         TableColumnConfig(
                             title: "ACTIONS",
                             sizeType: ColumnSizeType.fixed,
-                            fixedWidth: 65,
+                            fixedWidth: 70,
                             removeSearching: true),
                       ],
                       items: [

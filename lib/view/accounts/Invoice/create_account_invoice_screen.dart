@@ -352,15 +352,13 @@ class _CreateAccountInvoiceScreenState
                           },
                       ),
                     ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: ResponsiveDataTableWidget(
+                     ResponsiveDataTableWidget(
                         totalWidth: totalAvailableWidth,
                         columnConfigs: [
                           TableColumnConfig(
                             title: "SELECT",
                             sizeType: ColumnSizeType.fixed,
-                            fixedWidth: 50,
+                            fixedWidth: 40,
                             removeSearching: true,
                             customHeader: Checkbox(
                               value: controller.isAllSelected,
@@ -384,12 +382,12 @@ class _CreateAccountInvoiceScreenState
                           TableColumnConfig(title: "VEH", sizeType: ColumnSizeType.small),
                           TableColumnConfig(title: "J/T", sizeType: ColumnSizeType.small),
                           TableColumnConfig(title: "P/T", sizeType: ColumnSizeType.small),
-                          TableColumnConfig(title: "FARE", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
-                          TableColumnConfig(title: "PC", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
-                          TableColumnConfig(title: "WC", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
-                          TableColumnConfig(title: "EDC", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
-                          TableColumnConfig(title: "M&G", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
-                          TableColumnConfig(title: "CC", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
+                          TableColumnConfig(title: "FARE", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "PC", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "WC", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "EDC", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "M&G", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "CC", sizeType: ColumnSizeType.small),
                           TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium),
                           TableColumnConfig(title: "ACTIONS", sizeType: ColumnSizeType.fixed, fixedWidth: 70, removeSearching: true),
                         ],
@@ -526,7 +524,6 @@ class _CreateAccountInvoiceScreenState
                           ];
                         },
                       ),
-                    ),
                   ],
                 );
         });
