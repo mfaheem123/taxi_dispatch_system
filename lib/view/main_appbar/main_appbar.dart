@@ -1908,7 +1908,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       title: "AUTHORIZATION", pageName: AuthorizationScreen());
                 });
               }else{
-                BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+                BotToast.showText(text: "Permission Denied");
               }
               }
             },
