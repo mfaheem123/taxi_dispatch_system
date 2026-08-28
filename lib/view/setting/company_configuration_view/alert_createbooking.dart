@@ -233,7 +233,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               }
                           ),
                         ),
-                        if( controller.jourValue == 'W/R' ? true : false)
+                        if( controller.jourValue == 'R/N' ? true : false)
                           labeledField(
                             context: context,
                             isMobile: isMobile,
@@ -269,7 +269,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               startTime: controller.multiReservationFromDate,
                               time: controller.multiReservationToTimeController.text,
                               selectedDays: controller.multiReservationDaysList,
-                              returnTime: controller.jourValue == 'W/R'? controller.returnMultiReservationToTimeController.text:null,
+                              returnTime: controller.jourValue == 'R/N'? controller.returnMultiReservationToTimeController.text:null,
                             );
                           },
                           btnText: "ADD",
@@ -564,7 +564,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                     ),
                                     DataCell(
                                       Center(
-                                        child: controller.jourValue == 'W/R'
+                                        child: controller.jourValue == 'R/N'
                                             ? SizedBox(
                                           width: 75,
                                           height: 25,

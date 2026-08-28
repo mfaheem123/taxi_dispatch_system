@@ -1979,17 +1979,19 @@ class _MyHomePageState extends State<MyHomePage> {
                   }),
               NestedMenuItem(
                   title: "STATISTICS",
-                  onTap: () {
-                    if(controller.selectedMenuItems.length <20){
-                    setState(() {
-                      controller.currentPage.value = StatisticsScreen();
-                      controller.menuBarRefresh(
-                          title: "STATISTICS", pageName: StatisticsScreen());
-                    });
-                    }else{
-                      BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
-                    }
-                  }),
+                  onTap: () => message(context, "DevOps")
+                  // onTap: () {
+                  //   if(controller.selectedMenuItems.length <20){
+                  //   setState(() {
+                  //     controller.currentPage.value = StatisticsScreen();
+                  //     controller.menuBarRefresh(
+                  //         title: "STATISTICS", pageName: StatisticsScreen());
+                  //   });
+                  //   }else{
+                  //     BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+                  //   }
+                  // }
+                  ),
             ]),
         NestedMenuItem(title: "BOOKINGS", children: [
           NestedMenuItem(
