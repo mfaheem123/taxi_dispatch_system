@@ -885,10 +885,17 @@ packages:
     dependency: transitive
     description:
       name: meta
+<<<<<<< HEAD
       sha256: "307249ce4ff29d58a18e97f6345f539382eb9c9c29ecda628900f31de0443dd9"
       url: "https://pub.dev"
     source: hosted
     version: "1.19.0"
+=======
+      sha256: "23f08335362185a5ea2ad3a4e597f1375e78bce8a040df5c600c8d3552ef2394"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.17.0"
+>>>>>>> 56ec0f16e78f9ee1ec395ae89e288d04ab6e5ad2
   mgrs_dart:
     dependency: transitive
     description:
@@ -1242,10 +1249,17 @@ packages:
     dependency: transitive
     description:
       name: test_api
+<<<<<<< HEAD
       sha256: "2a122cbe059f8b610d3a5415f42e255b6c17b1f21eee1d960f31080237fb4f11"
       url: "https://pub.dev"
     source: hosted
     version: "0.7.12"
+=======
+      sha256: "8161c84903fd860b26bfdefb7963b3f0b68fee7adea0f59ef805ecca346f0c7a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.10"
+>>>>>>> 56ec0f16e78f9ee1ec395ae89e288d04ab6e5ad2
   timepickerfield:
     dependency: "direct main"
     description:
@@ -1432,5 +1446,9 @@ packages:
     source: hosted
     version: "6.6.1"
 sdks:
+<<<<<<< HEAD
   dart: ">=3.11.0-0 <4.0.0"
+=======
+  dart: ">=3.9.0 <4.0.0"
+>>>>>>> 56ec0f16e78f9ee1ec395ae89e288d04ab6e5ad2
   flutter: ">=3.35.1"

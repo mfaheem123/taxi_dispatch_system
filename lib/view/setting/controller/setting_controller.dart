@@ -286,32 +286,32 @@ class SettingController extends GetxController {
       "email_password": passwordController.text,
       "email_service": emailServiceValue,
       "email_host": hostController.text,
-      "email_port": int.tryParse(portController.text) ?? 465,
+      "email_port": portController.text,
       "email_cc": ccController.text,
       "email_secure_connection": secureConnectionValue.value,
       "toggle_accept_email": toggleAcceptEmailValue.value,
       "toggle_decline_email": toggleDeclineEmailValue.value,
       "map_service": mapServiceValue,
       "map_api_key": mapApiKeyController.text,
-      "map_distance_factor": int.tryParse(distanceFactorController.text) ?? 1,
-      "map_time_factor": int.tryParse(timeFactorController.text) ?? 1,
+      "map_distance_factor": distanceFactorController.text,
+      "map_time_factor": timeFactorController.text,
       "toggle_map_controls": toggleMapControlsValue.value,
       "company_date_format": dateFormate,
       "company_time_format": timeFormate,
       "company_time_zone": zoneFormate,
       "sms_host": smsHostController.text,
-      "sms_port": int.tryParse(smsPortController.text) ?? 0,
+      "sms_port": smsPortController.text,
       "tab_bookings": int.tryParse(tabbookingInHouss.text) ?? 0,
       "tab_pre_bookings": int.tryParse(tabBooksinday.text) ?? 0,
       "tab_recent_bookings": int.tryParse(tabrecentBooksinday.text) ?? 0,
-      "discount_oneway_booking": int.tryParse(discountOneWay.text) ?? 0,
-      "discount_return_booking": int.tryParse(discountReturn.text) ?? 0,
-      "discount_wait_and_return_booking": int.tryParse(discountWaitAndReturn.text) ?? 0,
+      "discount_oneway_booking": discountOneWay.text,
+      "discount_return_booking": discountReturn.text,
+      "discount_wait_and_return_booking": discountWaitAndReturn.text,
       "booking_expiry_notice": int.tryParse(bookingExpiryNoties.text) ?? 0,
       "airport_booking_expiry_notice": int.tryParse(airportBookingExpiryNotice.text) ?? 0,
       "account_booking_expiry_notice": int.tryParse(accountBookingExpiry.text) ?? 0,
       "driver_expiry_notice": int.tryParse(driverExpiryNotice.text) ?? 0,
-      "credit_card_charges": int.tryParse(creditCardCharges.text) ?? 0,
+      "credit_card_charges": creditCardCharges.text,
       "enable_booking_quotation": bookingQuotationSMSValue.value,
       "web_booker_confirmation": webBookerConfValue.value,
       "customer_app_confirmation": customerAppConfValue.value,
@@ -335,7 +335,7 @@ class SettingController extends GetxController {
       "enable_dead_mileage": deadMileageValue.value,
       "call_feature": callFeaturesValue.value,
       "base_address": baseAddress.text,
-      "dead_mileage_miles": int.tryParse(deadMileageMiles.text) ?? 0,
+      "dead_mileage_miles": deadMileageMiles.text,
       "dead_mileage_methods": deadMileageMethods.text,
       "flight_tracker_api": flightTrackerAPI.text,
       "hunt_group": int.tryParse(huntGroup.text) ?? 0,
@@ -391,7 +391,7 @@ class SettingController extends GetxController {
         ccController.text = config.emailCc ?? '';
 
         smsHostController.text = config.smsHost ?? '';
-        smsPortController.text = config.smsPort?.toString() ?? '';
+        smsPortController.text = config.smsPort ?? '';
         smsUserNameController.text = config.smsUsername ?? '';
         smsPasswordController.text = config.smsPassword ?? '';
 
@@ -405,16 +405,16 @@ class SettingController extends GetxController {
         tabrecentBooksinday.text = config.tabRecentBookings?.toString() ?? '';
         tabBooksAfterminuts.text = config.bookingTextMinutes?.toString() ?? '';
 
-        discountOneWay.text = config.discountOnewayBooking?.toString() ?? '';
-        discountReturn.text = config.discountReturnBooking?.toString() ?? '';
-        discountWaitAndReturn.text = config.discountWaitAndReturnBooking?.toString() ?? '';
+        discountOneWay.text = config.discountOnewayBooking ?? '';
+        discountReturn.text = config.discountReturnBooking ?? '';
+        discountWaitAndReturn.text = config.discountWaitAndReturnBooking ?? '';
 
         bookingExpiryNoties.text = config.bookingExpiryNotice?.toString() ?? '';
         airportBookingExpiryNotice.text = config.airportBookingExpiryNotice?.toString() ?? '';
         accountBookingExpiry.text = config.accountBookingExpiryNotice?.toString() ?? '';
         driverExpiryNotice.text = config.driverExpiryNotice?.toString() ?? '';
 
-        creditCardCharges.text = config.creditCardCharges?.toString() ?? '';
+        creditCardCharges.text = config.creditCardCharges ?? '';
         roundOffFares.text = config.roundoffFares?.toString() ?? '';
         flightTrackerAPI.text = config.flightTrackerApi ?? '';
 
@@ -424,13 +424,13 @@ class SettingController extends GetxController {
         invoiceEndPointKey.text = config.invoiceEndpointKey ?? '';
 
         baseAddress.text = config.baseAddress ?? '';
-        deadMileageMiles.text = config.deadMileageMiles?.toString() ?? '';
+        deadMileageMiles.text = config.deadMileageMiles ?? '';
         deadMileageMethods.text = config.deadMileageMethods ?? '';
         huntGroup.text = config.huntGroup?.toString() ?? '';
         serviceApiKeyController.text = config.serviceApiKey ?? '';
         smsServiceIpController.text = config.smsServiceIp ?? '';
 
-        // --- 2. Dropdowns / Values ---
+        //  Dropdowns / Values
         emailServiceValue = config.emailService ?? 'GMAIL';
         smsServiceValue = config.smsService ?? 'DINSTAR';
         mapServiceValue = config.mapService ?? 'GOOGLE';
@@ -439,7 +439,7 @@ class SettingController extends GetxController {
         zoneFormate = config.companyTimeZone;
         typeAmount = config.amountType ?? 'AMOUNT';
 
-        // --- 3. Booleans Mapping ---
+        // Booleans Mapping
         secureConnectionValue.value = config.emailSecureConnection ?? false;
         toggleAcceptEmailValue.value = config.toggleAcceptEmail ?? false;
         toggleDeclineEmailValue.value = config.toggleDeclineEmail ?? false;

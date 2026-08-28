@@ -70,69 +70,113 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                 runSpacing: 16,
                 spacing: 10,
                 children: [
-                  GestureDetector(
-                    onTap: () {
-                      // Agar koi image nahi hai (na local na network), tabhi picker khule
-                      if (controller.profileImg == null && controller.singleVehicle?.image == null) {
-                        controller.pickImage();
+                  Focus(
+                    onKeyEvent: (node, event) {
+                      if (event is KeyDownEvent &&
+                          (event.logicalKey == LogicalKeyboardKey.enter ||
+                           event.logicalKey == LogicalKeyboardKey.space)) {
+                        if (controller.profileImg != null ||
+                            controller.singleVehicle?.image != null) {
+                          // Image maujood hai — remove karo
+                          controller.profileImg = null;
+                          if (controller.singleVehicle != null) {
+                            controller.singleVehicle!.image = null;
+                          }
+                          controller.update();
+                        } else {
+                          // Image nahi — picker kholo
+                          controller.pickImage();
+                        }
+                        return KeyEventResult.handled;
                       }
+                      return KeyEventResult.ignored;
                     },
-                    child: Container(
-                      height: isMobile ? 200 : 400,
-                      width: fieldWidth,
-                      margin: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.grey),
-                        image: controller.profileImg != null
-                            ? DecorationImage(
-                          image: MemoryImage(controller.profileImg!.bytes),
-                          fit: BoxFit.fill,
-                        )
-                            : (controller.singleVehicle?.image != null
-                            ? DecorationImage(
-                          // Agar server se sirf path aata hai to base URL lazmi lagayein
-                          image: NetworkImage(controller.singleVehicle!.image!),
-                          fit: BoxFit.fill,
-                        )
-                            : null),
-                      ),
-                      // Check: Agar koi bhi image maujood hai to close button dikhao, warna text dikhao
-                      child: (controller.profileImg != null || controller.singleVehicle?.image != null)
-                          ? Align(
-                        alignment: Alignment.topRight,
-                        child: GestureDetector(
-                          onTap: () {
-                            controller.profileImg = null;
-                            if (controller.singleVehicle != null) {
-                              controller.singleVehicle!.image = null; // Purani image hide karne ke liye
-                            }
-                            controller.update();
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(4),
-                            margin: EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.7),
-                              shape: BoxShape.circle,
+                    child: Builder(
+                      builder: (context) {
+                        final focused = Focus.of(context).hasFocus;
+                        return Stack(
+                          alignment: Alignment.topRight,
+                          children: [
+                            InkWell(
+                              focusColor: Colors.transparent,
+                              onTap: () {
+                                if (controller.profileImg == null &&
+                                    controller.singleVehicle?.image == null) {
+                                  controller.pickImage();
+                                }
+                              },
+                              child: Container(
+                                height: isMobile ? 200 : 400,
+                                width: fieldWidth,
+                                margin: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                    color: focused ? DynamicColors.primaryClr : Colors.grey,
+                                    width: focused ? 2.5 : 1,
+                                  ),
+                                  image: controller.profileImg != null
+                                      ? DecorationImage(
+                                          image: MemoryImage(controller.profileImg!.bytes),
+                                          fit: BoxFit.fill,
+                                        )
+                                      : (controller.singleVehicle?.image != null
+                                          ? DecorationImage(
+                                              image: NetworkImage(controller.singleVehicle!.image!),
+                                              fit: BoxFit.fill,
+                                            )
+                                          : null),
+                                ),
+                                child: (controller.profileImg == null &&
+                                        controller.singleVehicle?.image == null)
+                                    ? Center(
+                                        child: Text(
+                                          "UPLOAD IMAGE",
+                                          style: TextStyle(
+                                            fontSize: 30,
+                                            fontWeight: FontWeight.bold,
+                                            color: focused
+                                                ? DynamicColors.primaryClr
+                                                : Colors.black,
+                                          ),
+                                        ),
+                                      )
+                                    : null,
+                              ),
                             ),
-                            child: Icon(
-                              Icons.close_rounded,
-                              color: DynamicColors.redClr,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Center(
-                        child: Text(
-                          "UPLOAD IMAGE",
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
+                            // X button — InkWell ke bahar
+                            if (controller.profileImg != null ||
+                                controller.singleVehicle?.image != null)
+                              Positioned(
+                                top: 8,
+                                right: 8,
+                                child: GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: () {
+                                    controller.profileImg = null;
+                                    if (controller.singleVehicle != null) {
+                                      controller.singleVehicle!.image = null;
+                                    }
+                                    controller.update();
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(4),
+                                    margin: EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.7),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      Icons.close_rounded,
+                                      color: DynamicColors.redClr,
+                                      size: 24,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
                     ),
                   ),
                   SizedBox(
