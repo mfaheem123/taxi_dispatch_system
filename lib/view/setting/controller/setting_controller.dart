@@ -14,6 +14,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart' as dio;
 import '../../administration/model/list_subsDiary.dart';
 import '../../drivers_view/model/driver_commission_payment_model.dart';
+import '../model/call_recording_model.dart';
 import '../model/company_configuration_model.dart';
 import '../model/get_clear_booking_model.dart';
 import '../model/get_document_number_model.dart';
@@ -871,8 +872,52 @@ class SettingController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo sms tracking Work
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo call recordings Work
+  Rx<DateTime> callFromDate = DateTime.now().obs;
+  Rx<DateTime> callToDate = DateTime.now().obs;
+  final TextEditingController callStartTimeController = TextEditingController(text: "00:00");
+  final TextEditingController callEndTimeController = TextEditingController(text: "23:59");
+  final TextEditingController callMobileController = TextEditingController();
 
-  final mobileController = TextEditingController();
+  CallRecordingModel? callRecordingModel;
+  bool isCallLoading = false;
+  bool isDateSelected = false;
+
+  getCallRecordings() async{
+    isCallLoading = true;
+    update();
+
+    String fromDateStr = "${callFromDate.value.year}-${callFromDate.value.month.toString().padLeft(2, '0')}-${callFromDate.value.day.toString().padLeft(2, '0')}";
+    String toDateStr = "${callToDate.value.year}-${callToDate.value.month.toString().padLeft(2, '0')}-${callToDate.value.day.toString().padLeft(2, '0')}";
+    
+    var response = await Api().get("call-recordings/recordings", sendCompanyId: true,
+      queryParameters: {
+        if (isDateSelected) "from_date": fromDateStr,
+        if (isDateSelected) "to_date": toDateStr,
+        "start_time": callStartTimeController.text,
+        "end_time": callEndTimeController.text,
+        if (callMobileController.text.isNotEmpty)
+          "mobile": callMobileController.text,
+      }
+    );
+
+    if (response.statusCode == 200) {
+      callRecordingModel = CallRecordingModel.fromJson(response.data);
+    }
+    isCallLoading = false;
+    update();
+  }
+
+  void clearCallFilters() {
+    callFromDate.value = DateTime.now();
+    callToDate.value = DateTime.now();
+    isDateSelected = false;
+    callStartTimeController.text = "00:00";
+    callEndTimeController.text = "23:59";
+    callMobileController.clear();
+    callRecordingModel = null;
+    getCallRecordings();
+  }
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo call recordings Work
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Chat screen
