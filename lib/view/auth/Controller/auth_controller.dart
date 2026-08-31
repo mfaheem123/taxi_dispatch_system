@@ -28,7 +28,7 @@ class AuthController extends GetxController {
         update();
 
         // SOCKET CONNECT (Auto Login / Session Restore)
-        SubscriptionSocketService.initSocket();
+        // SubscriptionSocketService.initSocket();
       }
     }
   }
@@ -66,7 +66,7 @@ class AuthController extends GetxController {
         if (employeeData['company_id'] != null) {
           sp.write('company_id', employeeData['company_id'].toString());
         }
-        SubscriptionSocketService.initSocket();
+        // SubscriptionSocketService.initSocket();
 
         await getRole(id: employeeData['role_id']);
         Employee.selectedEmployee = Employee.fromJson(employeeData);
@@ -132,7 +132,7 @@ class AuthController extends GetxController {
       print("Logout API Error: $e");
     } finally {
       // --- SOCKET CLOSE ---
-      SubscriptionSocketService.closeSocket();
+      // SubscriptionSocketService.closeSocket();
 
       sp.remove('token');
       sp.remove('userData');
