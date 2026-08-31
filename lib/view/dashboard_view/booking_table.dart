@@ -25,6 +25,7 @@ import '../../component/networks/api.dart';
 import '../../component/pagination.dart';
 import '../../component/text_field.dart';
 import '../../routes/app_pages.dart';
+import '../auth/edit_jobs.dart';
 import '../booking_view/update_booking.dart';
 import 'Controller/dashboard_controller.dart';
 import 'dashboard/F3_alert.dart';
@@ -951,7 +952,15 @@ class _BookingTableState extends State<BookingTable> {
                                         child: IconButton(
                                           icon:  Icon(Icons.more_horiz, color: Colors.green),
                                           onPressed: () async {
-                                            controller.dashBoardDataBinding(id: item.id!);
+                                            // Static for now: the edit screen is still being
+                                            // wired up, so every row opens booking 1667 instead
+                                            // of item.id. EditJobsWidget loads it through
+                                            // DashboardController.dashBoardDataBinding itself,
+                                            // which is what fills the shared fields.
+                                            Get.to(() => EditJobsWidget(
+                                                  booking: EditJobDetails(id: 1667),
+                                                ));
+                                            // controller.dashBoardDataBinding(id: item.id!);
                                             // Get.to(UpdateBooking(data: item.id,));
 
                                             //   final newTabUrl =
