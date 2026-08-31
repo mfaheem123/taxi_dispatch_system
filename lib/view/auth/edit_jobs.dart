@@ -532,63 +532,63 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                     controller.swapeToChangeLocation();
                                   },
                                 ),
-                                Visibility(
-                                  visible: controller.isAirportResponse.value,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(top: 4),
-                                    child: isMobile
-                                        ? Column(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                      children: [
-                                        _field('FL',
-                                            tab: 3.3,
-                                            controller: controller
-                                                .selectAirportController),
-                                        const SizedBox(height: 4),
-                                        _timeField('ARP',
-                                            tab: 3.6,
-                                            controller: controller
-                                                .arrivalTimeController,
-                                            onPicked: () => controller
-                                                .arrivalTimePicked = true),
-                                      ],
-                                    )
-                                        :
-                                    Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        SizedBox(width: 80, child:  Row(mainAxisSize: MainAxisSize.min, children: [
-                                          Icon(Icons.circle, size: 9, color: _purple),
-                                          const SizedBox(width: 6),
-                                          Text("FL",
-                                              style:
-                                              const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsLabel)),
-                                        ])),
-                                        const SizedBox(width: 2),
-                                        Expanded(
-                                          flex: 3,
-                                          // Caption blank: the dotted FL tag
-                                          // to the left already names it.
-                                          child: _field('',
-                                              tab: 3.3,
-                                              controller: controller
-                                                  .selectAirportController),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          flex: 1,
-                                          child: _timeField('ARP',
-                                              tab: 3.6,
-                                              controller: controller
-                                                  .arrivalTimeController,
-                                              onPicked: () => controller
-                                                  .arrivalTimePicked = true),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                                // Visibility(
+                                //   visible: controller.isAirportResponse.value,
+                                //   child: Padding(
+                                //     padding: const EdgeInsets.only(top: 4),
+                                //     child: isMobile
+                                //         ? Column(
+                                //       crossAxisAlignment:
+                                //       CrossAxisAlignment.stretch,
+                                //       children: [
+                                //         _field('FL',
+                                //             tab: 3.3,
+                                //             controller: controller
+                                //                 .selectAirportController),
+                                //         const SizedBox(height: 4),
+                                //         _timeField('ARP',
+                                //             tab: 3.6,
+                                //             controller: controller
+                                //                 .arrivalTimeController,
+                                //             onPicked: () => controller
+                                //                 .arrivalTimePicked = true),
+                                //       ],
+                                //     )
+                                //         :
+                                //     Row(
+                                //       crossAxisAlignment: CrossAxisAlignment.center,
+                                //       children: [
+                                //         SizedBox(width: 80, child:  Row(mainAxisSize: MainAxisSize.min, children: [
+                                //           Icon(Icons.circle, size: 9, color: _purple),
+                                //           const SizedBox(width: 6),
+                                //           Text("FL",
+                                //               style:
+                                //               const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsLabel)),
+                                //         ])),
+                                //         const SizedBox(width: 2),
+                                //         Expanded(
+                                //           flex: 3,
+                                //           // Caption blank: the dotted FL tag
+                                //           // to the left already names it.
+                                //           child: _field('',
+                                //               tab: 3.3,
+                                //               controller: controller
+                                //                   .selectAirportController),
+                                //         ),
+                                //         const SizedBox(width: 12),
+                                //         Expanded(
+                                //           flex: 1,
+                                //           child: _timeField('ARP',
+                                //               tab: 3.6,
+                                //               controller: controller
+                                //                   .arrivalTimeController,
+                                //               onPicked: () => controller
+                                //                   .arrivalTimePicked = true),
+                                //         ),
+                                //       ],
+                                //     ),
+                                //   ),
+                                // ),
                                 const SizedBox(height: 4),
                                 _locationRow<ZoneObject>(
                                   'DROP   ',
@@ -895,8 +895,8 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                   _commsAndActionsRow(isMobile),
                                 ]),
                                 // Row 10 — R/LEAD, on its own.
-                                if (_isReturnJourney)
-                                  _grid(isMobile ? 1 : (isTablet ? 2 : 4), [_rLeadField()]),
+                                // if (_isReturnJourney)
+                                  // _grid(isMobile ? 1 : (isTablet ? 2 : 4), [_rLeadField()]),
                                 ///todo multi reservation
                                 // _grid(cols, [
                                 //   WebDateField('Date',
