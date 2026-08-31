@@ -35,8 +35,8 @@ String get socketUrl => "wss://www.nexustechnologys.com/websocket";
 class ProductionConfig implements BaseConfig {
   @override
   // String get baseUrl => "http://192.168.110.5:5000/api/";
-  String get baseUrl => "https://www.nexustechnologys.com/api/";
-  // String get baseUrl => "http://158.220.92.206:5000/api/";
+  // String get baseUrl => "https://www.nexustechnologys.com/api/";
+  String get baseUrl => "http://158.220.92.206:5000/api/";
 
   @override
   String get imageUrl => "http://apis.bloodlines.info/public";
