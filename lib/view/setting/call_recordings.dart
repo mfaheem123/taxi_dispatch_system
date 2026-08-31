@@ -9,6 +9,7 @@ import '../../component/text_field.dart';
 import '../dashboard_view/booking_table.dart';
 import '../dashboard_view/widgets/time_picker_widget.dart';
 import '../dashboard_view/widgets/user_info_widget.dart';
+import '../page_scroller.dart';
 import 'audio_player_alert.dart';
 import 'controller/extension_controller.dart';
 import 'controller/setting_controller.dart';
@@ -36,7 +37,8 @@ class _CallRecordingScreenState extends State<CallRecordingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<SettingController>(
+    return PageScrollWrapper(
+      child: GetBuilder<SettingController>(
         initState: (state) {
           controller.getCallRecordings();
         },
@@ -86,7 +88,8 @@ class _CallRecordingScreenState extends State<CallRecordingScreen> {
                                 child: SizedBox(
                                   height: 30,
                                   child: KeyboardDatePicker(
-                                    key: ValueKey(controller.callFromDate.value.toString()),
+                                      key: ValueKey("from_date_${controller.datePickerKey}"),
+                                    // key: ValueKey(controller.callFromDate.value.toString()),
                                     initialDate: controller.callFromDate.value,
                                       onChanged: (date) {
                                         controller.callFromDate.value = date;
@@ -117,7 +120,7 @@ class _CallRecordingScreenState extends State<CallRecordingScreen> {
                                 child: SizedBox(
                                   height: 30,
                                   child: KeyboardDatePicker(
-                                    key: ValueKey(controller.callToDate.value.toString()),
+                                      key: ValueKey("to_date_${controller.datePickerKey}"),
                                     initialDate: controller.callToDate.value,
                                       onChanged: (date) {
                                         controller.callToDate.value = date;
@@ -211,6 +214,8 @@ class _CallRecordingScreenState extends State<CallRecordingScreen> {
                               DataCell(
                                 Center(
                                   child: IconButton(
+                                    visualDensity: VisualDensity.compact,
+                                    splashRadius: 15,
                                     icon: const Icon(Icons.play_arrow_rounded,
                                         color: Colors.green, size: 28),
                                     onPressed: () {
@@ -232,6 +237,6 @@ class _CallRecordingScreenState extends State<CallRecordingScreen> {
                   ]),
             );
           });
-        });
+        }));
   }
 }

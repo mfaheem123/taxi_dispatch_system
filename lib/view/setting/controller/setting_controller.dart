@@ -907,6 +907,8 @@ class SettingController extends GetxController {
     update();
   }
 
+
+  var datePickerKey = 0;
   void clearCallFilters() {
     callFromDate.value = DateTime.now();
     callToDate.value = DateTime.now();
@@ -915,6 +917,7 @@ class SettingController extends GetxController {
     callEndTimeController.text = "23:59";
     callMobileController.clear();
     callRecordingModel = null;
+    datePickerKey++;
     getCallRecordings();
   }
 

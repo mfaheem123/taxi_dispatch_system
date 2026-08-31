@@ -996,7 +996,7 @@ class _BookingTableState extends State<BookingTable> {
 
                                             /// todo edit binding
 
-                                            
+
                                             // Get.toNamed(Routes.editJobs,
                                             //     parameters: {'id': "${item.id}"});
                                             controller.dashBoardDataBinding(id: item.id!);
