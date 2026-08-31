@@ -27,8 +27,8 @@ class AuthController extends GetxController {
         Employee.selectedEmployee = Employee.fromJson(storedUser);
         update();
 
-        // --- SOCKET CONNECT (Auto Login / Session Restore) ---
-        // SubscriptionSocketService.initSocket();
+        // SOCKET CONNECT (Auto Login / Session Restore)
+        SubscriptionSocketService.initSocket();
       }
     }
   }
@@ -40,14 +40,13 @@ class AuthController extends GetxController {
   postLoginDetails() async {
     PostAuthLoader(true);
     try {
-      // 1. FCM Token fetch karein
+      //  FCM Token
       String? fcmToken = await FirebaseMessaging.instance.getToken();
       print("FCM Token: $fcmToken");
 
       var formData = {
         "username": usernameController.text,
         "password": passwordController.text,
-        // 2. web_device_id mein fcmToken pass karein
         "web_device_id": fcmToken ?? "",
       };
 
@@ -67,7 +66,7 @@ class AuthController extends GetxController {
         if (employeeData['company_id'] != null) {
           sp.write('company_id', employeeData['company_id'].toString());
         }
-        // SubscriptionSocketService.initSocket();
+        SubscriptionSocketService.initSocket();
 
         await getRole(id: employeeData['role_id']);
         Employee.selectedEmployee = Employee.fromJson(employeeData);
@@ -133,7 +132,7 @@ class AuthController extends GetxController {
       print("Logout API Error: $e");
     } finally {
       // --- SOCKET CLOSE ---
-      // SubscriptionSocketService.closeSocket();
+      SubscriptionSocketService.closeSocket();
 
       sp.remove('token');
       sp.remove('userData');

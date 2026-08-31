@@ -65,55 +65,122 @@ class SubscriptionSocketService {
     }
   }
 
-  ///  (Cancel / OK )
+
+  ///  Warning Dialog
   static void _showWarningDialog(String title, String message) {
     if (getx.Get.context != null) {
       showDialog(
         context: getx.Get.context!,
-        builder: (context) => AlertDialog(
-          title: Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("OK"),
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          elevation: 8,
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 400), // Dialog size Control
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade50,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.warning_rounded, size: 40, color: Colors.red.shade800),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 17, color: Colors.black, height: 1.4),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red.shade800,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 0,
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("OK", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       );
     }
   }
 
-  /// 3: Force Logout
+  ///   Force Logout Dialog
   static void _showForceLogoutDialog(String title, String message) {
     if (getx.Get.context != null) {
       showDialog(
         context: getx.Get.context!,
         barrierDismissible: false,
-        builder: (context) => WillPopScope(
-          onWillPop: () async => false,
-          child: AlertDialog(
-            title: Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
-            ),
-            content: Text(message),
-            actions: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                  _performLogout(); // OK click hone par logout call karen
-                },
-                child: const Text("OK"),
+        builder: (context) => PopScope(
+          canPop: false, // Prevents back button dismiss
+          child: Dialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            elevation: 10,
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 400),
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade50,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.logout_rounded, size: 40, color: Colors.red.shade600),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.red),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    message,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 17, color: Colors.grey.shade700, height: 1.4),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red.shade600,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        elevation: 0,
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _performLogout();
+                      },
+                      child: const Text("Log Out", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       );
