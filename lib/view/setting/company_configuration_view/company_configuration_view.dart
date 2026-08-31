@@ -168,6 +168,13 @@ class _CompanyConfigurationViewState extends State<CompanyConfigurationView> {
     bool isSelected = selectedTabIndex == index;
     final bool isSmallScreen = Get.width < 1024;
 
+    return Focus(
+    onKeyEvent: (node, event) {
+      return KeyEventResult.ignored;
+      },
+       child: Builder(builder: (context) {
+     final bool isFocused = Focus.of(context).hasFocus;
+
     return InkWell(
       onTap: () {
         setState(() {
@@ -180,9 +187,10 @@ class _CompanyConfigurationViewState extends State<CompanyConfigurationView> {
           vertical: 14.0,
         ),
         decoration: BoxDecoration(
+         color: isFocused ? Colors.blueGrey[100] : Colors.transparent,
           border: Border(
             bottom: BorderSide(
-              color: isSelected ? DynamicColors.primaryClr : Colors.transparent,
+              color: (isSelected || isFocused) ? DynamicColors.primaryClr : Colors.transparent,
               width: 3.0,
             ),
           ),
@@ -191,11 +199,15 @@ class _CompanyConfigurationViewState extends State<CompanyConfigurationView> {
           title,
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: isSelected ? DynamicColors.primaryClr : Colors.black,
+            color: (isSelected || isFocused) ? DynamicColors.primaryClr : Colors.black,
             fontSize: Get.width < 1200 ? 11 : 13,
           ),
         ),
       ),
+    );
+       },
+
+       ),
     );
   }
 }

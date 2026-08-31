@@ -82,8 +82,10 @@ class _MapConfigurationViewState extends State<MapConfigurationView> {
                               children: [
                                 Expanded(
                                   flex: 7,
+                              child: FocusTraversalGroup(
+                                policy: OrderedTraversalPolicy(),
                                   child: buildLeftFields(),
-                                ),
+                                )),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 25.0),
@@ -95,8 +97,10 @@ class _MapConfigurationViewState extends State<MapConfigurationView> {
                                 ),
                                 Expanded(
                                   flex: 3,
+                                  child: FocusTraversalGroup(
+                                    policy: OrderedTraversalPolicy(),
                                   child: buildRightCheckboxes(),
-                                ),
+                                )),
                               ],
                             ),
                           ),
@@ -196,22 +200,45 @@ class _MapConfigurationViewState extends State<MapConfigurationView> {
   }
   Widget buildNumberField(TextEditingController textCtrl, String hintText) {
     return Expanded(
-      child: CustomTextField(
-        borderRadius: 4,
-        controller: textCtrl,
-        hintText: hintText,
-        columnText: true,
-        keyboardType: const TextInputType.numberWithOptions(signed: true),
-        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*\.?[0-9]*'))],
-        suffixIcon: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            InkWell(onTap: () => controller.updateValue(textCtrl, 1),
-                child: const Icon(Icons.arrow_drop_up, size: 15)),
-            InkWell(onTap: () => controller.updateValue(textCtrl, -1),
-                child: const Icon(Icons.arrow_drop_down, size: 15)),
-          ],
+      child: Focus(
+        onKeyEvent: (node, event) {
+          // Check key press event 'KeyDownEvent' or 'KeyRepeatEvent'
+          if (event is KeyDownEvent || event is KeyRepeatEvent) {
+            if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+              controller.updateValue(textCtrl, 1);
+              return KeyEventResult.handled;
+            } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+              controller.updateValue(textCtrl, -1);
+              return KeyEventResult.handled;
+            }
+          }
+          return KeyEventResult.ignored;
+        },
+        child: CustomTextField(
+          borderRadius: 4,
+          controller: textCtrl,
+          hintText: hintText,
+          columnText: true,
+          keyboardType: const TextInputType.numberWithOptions(signed: true),
+          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^-?[0-9]*\.?[0-9]*'))],
+          suffixIcon: FocusScope(
+            canRequestFocus: false,
+            skipTraversal: true,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                InkWell(
+                    focusNode: FocusNode(canRequestFocus: false),
+                    onTap: () => controller.updateValue(textCtrl, 1),
+                    child: const Icon(Icons.arrow_drop_up, size: 15)),
+                InkWell(
+                    focusNode: FocusNode(canRequestFocus: false),
+                    onTap: () => controller.updateValue(textCtrl, -1),
+                    child: const Icon(Icons.arrow_drop_down, size: 15)),
+              ],
+            ),
+          ),
         ),
       ),
     );

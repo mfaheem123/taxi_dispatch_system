@@ -82,8 +82,10 @@ class _EmailConfigurationViewState extends State<EmailConfigurationView> {
                               children: [
                                 Expanded(
                                   flex: 7,
+                              child: FocusTraversalGroup(
+                                policy: OrderedTraversalPolicy(),
                                   child: buildLeftFields(),
-                                ),
+                                )),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 25.0),
@@ -95,8 +97,10 @@ class _EmailConfigurationViewState extends State<EmailConfigurationView> {
                                 ),
                                 Expanded(
                                   flex: 3,
+                                  child: FocusTraversalGroup(
+                                    policy: OrderedTraversalPolicy(),
                                   child: buildRightCheckboxes(),
-                                ),
+                                )),
                               ],
                             ),
                           ),

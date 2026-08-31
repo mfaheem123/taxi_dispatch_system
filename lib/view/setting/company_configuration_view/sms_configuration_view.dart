@@ -81,8 +81,10 @@ class _SmsConfigurationViewState extends State<SmsConfigurationView> {
                               children: [
                                 Expanded(
                                   flex: 7,
-                                  child: buildLeftFields(),
-                                ),
+                                    child: FocusTraversalGroup(
+                                      policy: OrderedTraversalPolicy(),
+                                      child: buildLeftFields(),
+                                    )),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 25.0),
@@ -94,8 +96,10 @@ class _SmsConfigurationViewState extends State<SmsConfigurationView> {
                                 ),
                                 Expanded(
                                   flex: 3,
+                                  child: FocusTraversalGroup(
+                                    policy: OrderedTraversalPolicy(),
                                   child: buildRightCheckboxes(),
-                                ),
+                                )),
                               ],
                             ),
                           ),
