@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../view/auth/login_screen.dart';
+import '../view/auth/edit_jobs.dart';
 import '../view/auth/new_login_screen.dart';
 import '../view/booking_view/complete_bookingview.dart';
 import '../view/booking_view/update_booking.dart';
@@ -23,6 +24,20 @@ class AppPages {
   static const initial = Routes.loginScreen;
   // static const initial = Routes.ResponsivePassengerScreen;
   // static const initial = Routes.createBooking;
+
+  /// Where an unmatched route name lands.
+  ///
+  /// GetX force-unwraps the matched page (`PageRedirect.page()`), so a name
+  /// that matches nothing in [routes] throws "Unexpected null value" instead
+  /// of showing anything. Under `PathUrlStrategy` that is a real path: Flutter
+  /// prefers the browser's current path over [GetMaterialApp.initialRoute]
+  /// whenever it is not '/', so a hot restart, a manual refresh or a pasted
+  /// link on a path this table doesn't list would crash the app at startup.
+  /// Falling back to the same screen a cold start shows keeps that survivable.
+  static final unknownRoute = GetPage(
+    name: '/NotFound',
+    page: () => NewLoginScreen(),
+  );
 
   static final routes = [
     GetPage(
@@ -64,6 +79,18 @@ class AppPages {
     GetPage(
       name: _Paths.updateBooking,
       page: () => UpdateBooking(),
+      binding: DashBoardBindings(),
+    ),
+    GetPage(
+      name: _Paths.editJobs,
+      // The booking id rides in the route ("/EditJobs?id=1667") rather than in
+      // a constructor argument, so the screen can be rebuilt from its name
+      // alone. That is what lets a hot restart or a browser reload come back
+      // to the booking that was open instead of dropping to the login screen —
+      // a `Get.to(EditJobsWidget(...))` page has no name to come back to.
+      page: () => EditJobsWidget(
+        booking: EditJobDetails(id: int.tryParse(Get.parameters['id'] ?? '')),
+      ),
       binding: DashBoardBindings(),
     ),
     GetPage(

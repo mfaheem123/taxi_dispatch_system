@@ -254,11 +254,11 @@ class InvoiceController extends GetxController {
 
   RxList<AccountInvoice> accountInvoiceListAll = <AccountInvoice>[].obs;
   RxList<AccountInvoice> filteredAccountInvoice = <AccountInvoice>[].obs;
-  String? status = "all";
+  String? status = "ALL";
 
   var currentPage = 1.obs;
   var totalPages = 1.obs;
-  final int limit = 10;
+  final int limit = 20;
   RxString invoiceNumber = ''.obs;
   RxString searchAccount = ''.obs;
   RxString searchDepartment = ''.obs;
@@ -285,11 +285,12 @@ class InvoiceController extends GetxController {
 
     // Status payload value process logic
     String? statusParam;
-    if (status != null && status != "all" && status!.isNotEmpty) {
-      statusParam = status!.toLowerCase();
+    if (status != null && status != "ALL" && status!.isNotEmpty) {
+      statusParam = status!.toUpperCase();
     }
 
     var response = await Api().get("account_invoice/get", queryParameters: {
+      "page": currentPage,
       "limit": limit,
       "invoice_number": activeFilter == "invoice" ? invoiceNumber.value.toLowerCase() : null,
       "account_name": activeFilter == "account" ? searchAccount.value.toLowerCase() : null,
@@ -299,8 +300,6 @@ class InvoiceController extends GetxController {
       "subsidiary_name": activeFilter == "subsidiary" ? searchSubsidiary.value.toLowerCase() : null,
       "invoice_date": activeFilter == "invoicedate" ? searchDate.value : null,
       "invoice_due_date": activeFilter == "duedate" ? searchDueDate.value : null,
-
-      // Status direct send hoga jab query match karegi bina string validation check failure ke
       "status": statusParam,
       "from_date": fromDateStr,
       "to_date": toDateStr,

@@ -206,17 +206,14 @@ class _ListOfAccountInvoiceScreenState
                               CustomDropdownField<String>(
                                 width: fieldWidth / 4,
                                 label: "STATUS",
-                                // Model database options uppercase me show karne ke liye
                                 items: ["ALL", "PAID", "UNPAID"],
-                                // Controller value ko check karte waqt fallback logic taake exact match ho
                                 value: (controller.status == null || controller.status!.isEmpty)
                                     ? "ALL"
                                     : controller.status!.toUpperCase(),
                                 itemLabel: (val) => val,
                                 onChanged: (val) {
                                   if (val != null) {
-                                    // API validation lowerCase accept karti hai isliye controller me lowercase save hoga
-                                    controller.status = val.toLowerCase();
+                                    controller.status = val;
                                     controller.update();
                                   }
                                 },
@@ -232,7 +229,7 @@ class _ListOfAccountInvoiceScreenState
                                 onTap: () {
                                   controller.invoiceNumber.value = "";
                                   controller.searchAccount.value = "";
-                                  controller.status = "all";
+                                  controller.status = "ALL";
                                   controller.invoiceListFromDate = DateTime.now();
                                   controller.invoiceListToDate = DateTime.now();
                                   controller.listAccountInvoice();
@@ -371,7 +368,7 @@ class _ListOfAccountInvoiceScreenState
                                 //   ),
                                 // ),
                                 // 1. Invoice Number
-                                DataCell(Center(child: Text(item.invoiceNumber ?? "-"))),
+                                DataCell(Center(child: Text((item.invoiceNumber ?? "-").toUpperCase()))),
                                 DataCell(Center(child: Text((item.account?.name ?? "-").toUpperCase()))),
                                 DataCell(Center(child: Text((
                                     item.department is Map

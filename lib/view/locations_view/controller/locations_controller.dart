@@ -9,6 +9,7 @@ import 'package:dashboard_new1/view/locations_view/Model/zoneListModel.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import '../../dashboard_view/Controller/dashboard_controller.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../Model/zoneListModel.dart' hide Zone;
@@ -415,6 +416,11 @@ void zonePageChange(int page) {
     var response = await Api().delete("zones/delete/$id");
     if (response.statusCode == 200) {
       getZoneList();
+      // The map overlay caches its copy of the zones; a deleted one would keep
+      // being drawn until the next full reload without this.
+      if (Get.isRegistered<DashboardController>()) {
+        Get.find<DashboardController>().invalidateZonesOnMap();
+      }
       BotToast.showText(text: 'ZONE DELETED SUCCESSFULLY');
       update();
     }

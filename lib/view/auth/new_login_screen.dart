@@ -197,7 +197,7 @@ import '../../component/color.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
 import 'Controller/auth_controller.dart';
-import 'edit_jobs.dart';
+import '../../routes/app_pages.dart';
 
 class NewLoginScreen extends StatefulWidget {
   const NewLoginScreen({super.key});
@@ -390,7 +390,7 @@ class _NewLoginScreenState extends State<NewLoginScreen> {
                                       height: 45,
                                       child: ElevatedButton(
                                         onPressed: (){
-                                          Get.to(EditJobsWidget());
+                                          Get.toNamed(Routes.editJobs);
                                         },
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: DynamicColors.primaryClr,

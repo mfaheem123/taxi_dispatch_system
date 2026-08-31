@@ -352,15 +352,13 @@ class _CreateAccountInvoiceScreenState
                           },
                       ),
                     ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: ResponsiveDataTableWidget(
+                     ResponsiveDataTableWidget(
                         totalWidth: totalAvailableWidth,
                         columnConfigs: [
                           TableColumnConfig(
                             title: "SELECT",
                             sizeType: ColumnSizeType.fixed,
-                            fixedWidth: 50,
+                            fixedWidth: 35,
                             removeSearching: true,
                             customHeader: Checkbox(
                               value: controller.isAllSelected,
@@ -376,20 +374,20 @@ class _CreateAccountInvoiceScreenState
                               },
                             ),
                           ),
-                          TableColumnConfig(title: "REF #", sizeType: ColumnSizeType.medium),
+                          TableColumnConfig(title: "REF #", sizeType: ColumnSizeType.small),
                           TableColumnConfig(title: "DATETIME", sizeType: ColumnSizeType.medium),
                           TableColumnConfig(title: "PICKUP", sizeType: ColumnSizeType.large),
                           TableColumnConfig(title: "DROPOFF", sizeType: ColumnSizeType.large),
-                          TableColumnConfig(title: "CUST", sizeType: ColumnSizeType.medium),
+                          TableColumnConfig(title: "CUST", sizeType: ColumnSizeType.small),
                           TableColumnConfig(title: "VEH", sizeType: ColumnSizeType.small),
                           TableColumnConfig(title: "J/T", sizeType: ColumnSizeType.small),
                           TableColumnConfig(title: "P/T", sizeType: ColumnSizeType.small),
-                          TableColumnConfig(title: "FARE", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
-                          TableColumnConfig(title: "PC", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
-                          TableColumnConfig(title: "WC", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
-                          TableColumnConfig(title: "EDC", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
-                          TableColumnConfig(title: "M&G", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
-                          TableColumnConfig(title: "CC", sizeType: ColumnSizeType.fixed, fixedWidth: 80),
+                          TableColumnConfig(title: "FARE", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "PC", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "WC", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "EDC", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "M&G", sizeType: ColumnSizeType.small),
+                          TableColumnConfig(title: "CC", sizeType: ColumnSizeType.small),
                           TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium),
                           TableColumnConfig(title: "ACTIONS", sizeType: ColumnSizeType.fixed, fixedWidth: 70, removeSearching: true),
                         ],
@@ -406,14 +404,14 @@ class _CreateAccountInvoiceScreenState
                             final totalData = item['data'];
                             return [
                               "", "", "", "", "", "", "", "",
-                              Text("TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold)),
-                              Text("£${totalData.fareTotal ?? "0.00"}", style: mozillaTextSemiBoldText()),
-                              Text("£${totalData.parkingChargesTotal ?? "0.00"}", style: mozillaTextSemiBoldText()),
-                              Text("£${totalData.waitingChargesTotal ?? "0.00"}", style: mozillaTextSemiBoldText()),
-                              Text("£${totalData.extraDropChargesTotal ?? "0.00"}", style: mozillaTextSemiBoldText()),
-                              Text("£${totalData.meetAndGreetTotal ?? "0.00"}", style: mozillaTextSemiBoldText()),
-                              Text("£${totalData.congestionChargesTotal ?? "0.00"}", style: mozillaTextSemiBoldText()),
-                              Text("£${totalData.total ?? "0.00"}", style: mozillaTextSemiBoldText(color: Colors.blue)),
+                              Center(child: Text("TOTAL", style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12))),
+                              Center(child: Text("£${totalData.fareTotal ?? "0.00"}")),
+                              Center(child: Text("£${totalData.parkingChargesTotal ?? "0.00"}")),
+                              Center(child: Text("£${totalData.waitingChargesTotal ?? "0.00"}")),
+                              Center(child: Text("£${totalData.extraDropChargesTotal ?? "0.00"}")),
+                              Center(child: Text("£${totalData.meetAndGreetTotal ?? "0.00"}")),
+                              Center(child:Text("£${totalData.congestionChargesTotal ?? "0.00"}")),
+                              Center(child: Text("£${totalData.total ?? "0.00"}", style: mozillaTextRegularText(color: Colors.blue, fontSize: 12))),
                               "",
                             ];
                           }
@@ -422,9 +420,9 @@ class _CreateAccountInvoiceScreenState
                             final totalData = item['data'];
                             return [
                               "", "", "", "", "", "", "", "",
-                              Text("GRAND TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold)),
+                              Center(child: Text("GRAND\nTOTAL", style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12))),
                               "", "", "", "", "", "",
-                              Text("£${totalData.grandTotal ?? "0.00"}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold)),
+                              Center(child: Text("£${totalData.grandTotal ?? "0.00"}", style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12))),
                               "",
                             ];
                           }
@@ -503,15 +501,15 @@ class _CreateAccountInvoiceScreenState
                             Center(
                               child: Text(
                                 "£${booking.totalCharges ?? '0.0'}",
-                                style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold),
+                                style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12),
                               ),
                             ),
 
                             Center(
                               child: CustomButton(
                                 verticalPadding: 0.0,
-                                width: 45,
-                                height: 28,
+                                width: 50,
+                                height: 26,
                                 borderRadius: 4,
                                 btnText: "SAVE",
                                 style: mozillaTextRegularText(fontSize: 9, color: DynamicColors.whiteClr),
@@ -526,7 +524,6 @@ class _CreateAccountInvoiceScreenState
                           ];
                         },
                       ),
-                    ),
                   ],
                 );
         });

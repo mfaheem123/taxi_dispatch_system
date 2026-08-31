@@ -1010,16 +1010,56 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
   }
 }
 
+/// Where the last visited page is remembered between runs.
+const _kLastRouteKey = 'lastRoute';
+
+/// Whether [name] names a page in [AppPages.routes].
+///
+/// Matches on the path only: a route carrying parameters arrives as
+/// "/EditJobs?id=1667", and the query is what identifies *which* booking to
+/// reopen, so it has to survive the check rather than fail it.
+bool _isRegisteredRoute(String name) {
+  final path = Uri.tryParse(name)?.path ?? name;
+  return AppPages.routes.any((page) => page.name == path);
+}
+
+/// Records the page the app is on so [_getInitialRoute] can come back to it.
+///
+/// GetMaterialApp is not the Router-based one, so navigation never touches the
+/// browser URL — without this there is nothing on disk saying where the session
+/// was, and every hot restart or refresh drops back to [AppPages.initial].
+void _saveRoute(Routing? routing) {
+  if (routing == null) return;
+  // Dialogs and bottom sheets are pushed as routes too. Restoring into one
+  // would open an overlay with no page behind it.
+  if (routing.isDialog == true || routing.isBottomSheet == true) return;
+  final name = routing.current;
+  // The login screen is where a signed-out session starts anyway, and storing
+  // it would strand a user who signs in right after seeing it.
+  if (name.isEmpty || name == Routes.loginScreen) return;
+  if (!_isRegisteredRoute(name)) return;
+  // Stored whole, query string included — Get.parameters is rebuilt from it on
+  // the way back in, so the restored screen opens the same record.
+  GetStorage().write(_kLastRouteKey, name);
+}
+
 String _getInitialRoute() {
-  final fragment = Uri.base.fragment; // everything after '#'
-  if (fragment.isNotEmpty) {
-    // Check if this hash matches any registered GetX route
-    final isValidRoute = AppPages.routes.any((page) => page.name == fragment);
-    if (isValidRoute) {
-      return fragment;
-    }
+  // main() sets PathUrlStrategy, so an explicit deep link arrives in the path,
+  // not the fragment — reading only `fragment` meant this never matched. A
+  // non-'/' path also outranks initialRoute inside WidgetsApp, so honouring it
+  // first just keeps the two in agreement instead of fighting.
+  for (final candidate in [Uri.base.path, Uri.base.fragment]) {
+    if (candidate.isEmpty || candidate == '/') continue;
+    if (_isRegisteredRoute(candidate)) return candidate;
   }
-  return AppPages.initial;
+
+  // No session: the login screen, whatever was stored before.
+  if (GetStorage().read('token') == null) return AppPages.initial;
+
+  final last = GetStorage().read(_kLastRouteKey);
+  if (last is String && _isRegisteredRoute(last)) return last;
+  // Signed in but nothing recorded — the same place a fresh login lands.
+  return Routes.myHomePage;
 }
 
 class MyApp extends StatefulWidget {
@@ -1070,6 +1110,10 @@ class _MyAppState extends State<MyApp> {
       },
       navigatorObservers: [BotToastNavigatorObserver()],
       getPages: AppPages.routes,
+      // Without this GetX has nothing to fall back to when the startup route
+      // name matches no page, and crashes instead. See AppPages.unknownRoute.
+      unknownRoute: AppPages.unknownRoute,
+      routingCallback: _saveRoute,
     );
   }
 }

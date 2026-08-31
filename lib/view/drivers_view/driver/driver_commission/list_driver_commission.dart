@@ -120,7 +120,7 @@ class _DriverCommissionState extends State<DriverCommission> {
                 height: 12,
               ),
               SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
+                // scrollDirection: Axis.horizontal,
                 child: SizedBox(
                   width: Get.width,
                   child:

@@ -12,6 +12,7 @@ import 'package:dashboard_new1/view/locations_view/Model/locationListModel.dart'
 import 'package:dashboard_new1/view/locations_view/Model/zoneListModel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../dashboard_view/Controller/dashboard_controller.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 
@@ -286,6 +287,11 @@ class ZoneController extends GetxController {
     );
 
     if (response.statusCode == 200) {
+      // The map overlay caches its copy of the zones, so a new or reshaped one
+      // would not be drawn until the next full reload without this.
+      if (Get.isRegistered<DashboardController>()) {
+        Get.find<DashboardController>().invalidateZonesOnMap();
+      }
       update();
       clearZoneForm();
       BotToast.showText(text: 'SAVED SUCCESSFULLY');

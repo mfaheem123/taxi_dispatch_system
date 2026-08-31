@@ -134,6 +134,39 @@ class _ReportFeedbackState extends State<ReportFeedback> {
                             fontSize: 12, color: DynamicColors.whiteClr),
                         onTap: () {},
                       ),
+                      // Driver Dropdown aur Filter Button ke baad yeh Row/Wrap add karein:
+
+                      const SizedBox(height: 12),
+
+// 4 Summary Metric Boxes (Tab Navigation Highlight Supported)
+                      Wrap(
+                        spacing: 12,
+                        runSpacing: 10,
+                        children: [
+                          SummaryStatCard(
+                            label: "TOTAL ENTRIES",
+                            value: controller.allDriverData?.drivers?.length.toString() ?? "0",
+                            width: 220,
+                          ),
+                          const SummaryStatCard(
+                            label: "DRIVING SKILL",
+                            value: "-",
+                            width: 220,
+                          ),
+                          const SummaryStatCard(
+                            label: "CUSTOMER BEHAVIOUR",
+                            value: "-",
+                            width: 220,
+                          ),
+                          const SummaryStatCard(
+                            label: "VEHICLE CONDITION",
+                            value: "-",
+                            width: 220,
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 16),
                     ],
                   ),
                   SizedBox(
@@ -171,6 +204,86 @@ class _ReportFeedbackState extends State<ReportFeedback> {
         }
         );
       }
+      ),
+    );
+  }
+}
+
+class SummaryStatCard extends StatefulWidget {
+  final String label;
+  final String value;
+  final double width;
+
+  const SummaryStatCard({
+    super.key,
+    required this.label,
+    required this.value,
+    this.width = 220,
+  });
+
+  @override
+  State<SummaryStatCard> createState() => _SummaryStatCardState();
+}
+
+class _SummaryStatCardState extends State<SummaryStatCard> {
+  final FocusNode _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      setState(() {
+        _isFocused = _focusNode.hasFocus;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Focus(
+      focusNode: _focusNode,
+      child: Container(
+        width: widget.width,
+        height: 55,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: const Color(0xFFA5E6D0).withOpacity(0.12),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: _isFocused ? Colors.blue : const Color(0xFFBBE5D8),
+            width: _isFocused ? 2.0 : 1.0,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              widget.label.toUpperCase(),
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueGrey,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              widget.value,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

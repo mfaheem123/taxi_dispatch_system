@@ -341,13 +341,27 @@ class DashboardController extends GetxController {
     }
   }
 
+  /// Drops the cached zone overlay so the next [seeZoneOnMapp] refetches it.
+  void invalidateZonesOnMap() => seeZoneOnMapModel = null;
+
   ///===========================================================>See Zone On Map
 
   SeeZoneOnMapModel? seeZoneOnMapModel;
 
   RxBool seeZoneOnMappLoader = false.obs;
 
-  seeZoneOnMapp() async {
+  /// Zone polygons for the map overlay.
+  ///
+  /// Cached. Seven widgets call this from their GetBuilder initState, so every
+  /// mount — and a menu-bar tab switch remounts the whole page — used to cost a
+  /// zones/get round trip plus the full update() its response fires. Zones
+  /// change rarely; map_view_widget.dart was already skipping the call when the
+  /// model was loaded, and the check belongs here so every call site gets it.
+  ///
+  /// Pass `force: true` where the cached copy is known to be stale — see
+  /// [invalidateZonesOnMap], which the zone editor calls after a write.
+  seeZoneOnMapp({bool force = false}) async {
+    if (!force && seeZoneOnMapModel != null) return;
     seeZoneOnMappLoader(true);
 
     var response = await Api().get("zones/get", sendCompanyId: true);
@@ -2925,6 +2939,312 @@ class DashboardController extends GetxController {
       }
     }
     update();
+  }
+
+  /// Everything the booking form shows, copied out so a second form can borrow
+  /// this controller without the first one losing what was typed into it.
+  ///
+  /// The dashboard's form (dashboard_form_widget.dart) and the edit screen
+  /// (edit_jobs.dart) both resolve this one permanent controller, so they share
+  /// every TextEditingController and every selected value. Loading a booking
+  /// into the edit screen therefore overwrote whatever the operator had part
+  /// typed on the dashboard. The edit screen captures the form on the way in
+  /// and restores it on the way out, which keeps the two independent.
+  ///
+  /// Field for field the same set [refreshPostAllFields] resets — keep the two
+  /// in step when a field is added to the form.
+  Map<String, dynamic> captureFormState() {
+    final loc = Get.isRegistered<LocationController>()
+        ? Get.find<LocationController>()
+        : Get.put(LocationController());
+    return <String, dynamic>{
+      'arrivalReturnTimeController': arrivalReturnTimeController.text,
+      'arrivalTimeController': arrivalTimeController.text,
+      'companyPriceController': companyPriceController.text,
+      'congestionChargesController': congestionChargesController.text,
+      'controllerNoteController': controllerNoteController.text,
+      'controllerNoteReturnController': controllerNoteReturnController.text,
+      'creditCardChargesController': creditCardChargesController.text,
+      'dropOffController': dropOffController.text,
+      'dropOffTwoWayController': dropOffTwoWayController.text,
+      'dropUpNoteController': dropUpNoteController.text,
+      'emailController': emailController.text,
+      'extraDropChargesController': extraDropChargesController.text,
+      'luggController': luggController.text,
+      'meetGreetController': meetGreetController.text,
+      'minController': minController.text,
+      'minControllerReturn': minControllerReturn.text,
+      'mobileController': mobileController.text,
+      'multiReservationToTimeController': multiReservationToTimeController.text,
+      'nameController': nameController.text,
+      'parkingChargesController': parkingChargesController.text,
+      'passController': passController.text,
+      'pickUpNoteController': pickUpNoteController.text,
+      'pickUpTimeController': pickUpTimeController.text,
+      'pickUpTimeControllerReturn': pickUpTimeControllerReturn.text,
+      'pickupController': pickupController.text,
+      'pickupTwoWayController': pickupTwoWayController.text,
+      'returnCompanyPriceController': returnCompanyPriceController.text,
+      'returnDropUpNoteController': returnDropUpNoteController.text,
+      'returnPickUpNoteController': returnPickUpNoteController.text,
+      'selectAirportController': selectAirportController.text,
+      'slugController': slugController.text,
+      'slugControllerReturn': slugControllerReturn.text,
+      'sluggController': sluggController.text,
+      'specialRequirementsController': specialRequirementsController.text,
+      'specialRequirementsReturnController': specialRequirementsReturnController.text,
+      'telController': telController.text,
+      'waitingChargesController': waitingChargesController.text,
+      'emailCheckbox': emailCheckbox.value,
+      'smsCheckbox': smsCheckbox.value,
+      'isAirportResponse': isAirportResponse.value,
+      'returnTrip': returnTrip.value,
+      'addReturnFare': addReturnFare.value,
+      'dropDownShow': dropDownShow.value,
+      'fixedFare': fixedFare.value,
+      'totalDistance': totalDistance.value,
+      'totalTimeDuration': totalTimeDuration.value,
+      'arrivalReturnTimePicked': arrivalReturnTimePicked,
+      'arrivalTimePicked': arrivalTimePicked,
+      'pickUpDatePicked': pickUpDatePicked,
+      'pickUpTimePicked': pickUpTimePicked,
+      'pickUpDateReturnPicked': pickUpDateReturnPicked,
+      'pickUpTimeReturnPicked': pickUpTimeReturnPicked,
+      'cliJobHit': cliJobHit,
+      'dashboardZoneValue': dashboardZoneValue,
+      'dashboardDZoneValue': dashboardDZoneValue,
+      'dashboardRNZoneValue': dashboardRNZoneValue,
+      'dashboardRN1ZoneValue': dashboardRN1ZoneValue,
+      'jobDetails': jobDetails,
+      'jourValue': jourValue,
+      'pickUpDate': pickUpDate,
+      'pickUpDateReturn': pickUpDateReturn,
+      'returnFareValue': returnFareValue,
+      'tempStoreMils': tempStoreMils,
+      'tempStoreViaMils': tempStoreViaMils,
+      'selectAccountValue': selectAccountValue,
+      'selectDepartmentData': selectDepartmentData,
+      'selectDriverValue': selectDriverValue,
+      'selectDriverValueReturn': selectDriverValueReturn,
+      'selectJourneyTypeValue': selectJourneyTypeValue,
+      'selectPaymentTypeValue': selectPaymentTypeValue,
+      'selectSubsidiariesValue': selectSubsidiariesValue,
+      'selectVehicleValue': selectVehicleValue,
+      'selectVehicleValueReturn': selectVehicleValueReturn,
+      'selectedAccountType': selectedAccountType,
+      'selectedDriver': selectedDriver,
+      'selectedJourneyType': selectedJourneyType,
+      'selectedPaymentMethod': selectedPaymentMethod,
+      'selectedVehicleType': selectedVehicleType,
+      'childSeatAlert': List<dynamic>.of(childSeatAlert),
+      'childSeatList': List<dynamic>.of(childSeatList),
+      'controllerAlert': List<dynamic>.of(controllerAlert),
+      'driversList': List<dynamic>.of(driversList),
+      'extraFaresList': List<dynamic>.of(extraFaresList),
+      'extraFaresReturnList': List<dynamic>.of(extraFaresReturnList),
+      'markers': List<dynamic>.of(markers),
+      'multiReservationDaysList': List<dynamic>.of(multiReservationDaysList),
+      'multiReservationList': List<dynamic>.of(multiReservationList),
+      'multiReservationTemp': List<dynamic>.of(multiReservationTemp),
+      'multiVehicleList': List<dynamic>.of(multiVehicleList),
+      'multiVehicleTempList': List<dynamic>.of(multiVehicleTempList),
+      'polyLineMarkerInfo': List<dynamic>.of(polyLineMarkerInfo),
+      'polylinePoints': List<dynamic>.of(polylinePoints),
+      'polylinePointsCoordinate': List<dynamic>.of(polylinePointsCoordinate),
+      'polylines': List<dynamic>.of(polylines),
+      'restrictedDrivers': List<dynamic>.of(restrictedDrivers),
+      'viaPoints': List<dynamic>.of(viaPoints),
+      'viaPostList': List<dynamic>.of(viaPostList),
+      'viaReturnPostList': List<dynamic>.of(viaReturnPostList),
+      'viaTextEditingController': List<dynamic>.of(viaTextEditingController),
+      'switchController': switchController.value,
+      'loc.zoneValue': loc.zoneValue,
+      'loc.zoneDValue': loc.zoneDValue,
+      'loc.RNzoneValue': loc.RNzoneValue,
+      'loc.RN1zoneValue': loc.RN1zoneValue,
+    };
+  }
+
+  /// Blanks every text field on the booking form, leaving dropdowns, dates and
+  /// checkboxes alone.
+  ///
+  /// The edit screen calls this after [captureFormState] so it starts from an
+  /// empty form, from a post-frame callback for the reason [restoreFormState]
+  /// spells out. dashBoardDataBinding assigns a good number of fields only when
+  /// the booking actually carries one (`if (jobData.passengers != null)` and
+  /// friends), so without this the operator's half-typed PASS / LUGG / notes
+  /// from the dashboard form would still be sitting there under a loaded
+  /// booking. Selections are deliberately not cleared: nulling them would drop
+  /// the O/W journey type and the other sensible defaults the form opens with.
+  void clearFormTextFields() {
+    arrivalReturnTimeController.text = nowHHmm;
+    arrivalTimeController.text = nowHHmm;
+    companyPriceController.clear();
+    congestionChargesController.clear();
+    controllerNoteController.clear();
+    controllerNoteReturnController.clear();
+    creditCardChargesController.clear();
+    dropOffController.clear();
+    dropOffTwoWayController.clear();
+    dropUpNoteController.clear();
+    emailController.clear();
+    extraDropChargesController.clear();
+    luggController.clear();
+    meetGreetController.clear();
+    minController.clear();
+    minControllerReturn.clear();
+    mobileController.clear();
+    multiReservationToTimeController.clear();
+    nameController.clear();
+    parkingChargesController.clear();
+    passController.clear();
+    pickUpNoteController.clear();
+    pickUpTimeController.text = nowHHmm;
+    pickUpTimeControllerReturn.text = nowHHmm;
+    pickupController.clear();
+    pickupTwoWayController.clear();
+    returnCompanyPriceController.clear();
+    returnDropUpNoteController.clear();
+    returnPickUpNoteController.clear();
+    selectAirportController.clear();
+    slugController.clear();
+    slugControllerReturn.clear();
+    sluggController.clear();
+    specialRequirementsController.clear();
+    specialRequirementsReturnController.clear();
+    telController.clear();
+    waitingChargesController.clear();
+  }
+
+  /// Refills [target] in place from a snapshot entry.
+  ///
+  /// In place rather than reassigned: viaPoints and polylinePoints are `final`,
+  /// and widgets hold the same list instances. The element type comes from
+  /// [target], so the dynamic copy taken at capture time is cast back here.
+  void _restoreList<T>(List<T> target, dynamic saved) {
+    target
+      ..clear()
+      ..addAll((saved as List).cast<T>());
+  }
+
+  /// Puts a [captureFormState] snapshot back.
+  ///
+  /// Call this from a post-frame callback, never straight out of initState or
+  /// dispose: it assigns to TextEditingControllers and Rx values that mounted
+  /// widgets listen to, and those listeners call setState. During a tab switch
+  /// the tree is locked, and that throws "setState() or markNeedsBuild()
+  /// called when widget tree was locked" once per changed field.
+  ///
+  /// Does not call update() itself — the caller is already on the far side of
+  /// the frame and can decide when to rebuild.
+  void restoreFormState(Map<String, dynamic> s) {
+    final loc = Get.isRegistered<LocationController>()
+        ? Get.find<LocationController>()
+        : Get.put(LocationController());
+    arrivalReturnTimeController.text = s['arrivalReturnTimeController'] as String;
+    arrivalTimeController.text = s['arrivalTimeController'] as String;
+    companyPriceController.text = s['companyPriceController'] as String;
+    congestionChargesController.text = s['congestionChargesController'] as String;
+    controllerNoteController.text = s['controllerNoteController'] as String;
+    controllerNoteReturnController.text = s['controllerNoteReturnController'] as String;
+    creditCardChargesController.text = s['creditCardChargesController'] as String;
+    dropOffController.text = s['dropOffController'] as String;
+    dropOffTwoWayController.text = s['dropOffTwoWayController'] as String;
+    dropUpNoteController.text = s['dropUpNoteController'] as String;
+    emailController.text = s['emailController'] as String;
+    extraDropChargesController.text = s['extraDropChargesController'] as String;
+    luggController.text = s['luggController'] as String;
+    meetGreetController.text = s['meetGreetController'] as String;
+    minController.text = s['minController'] as String;
+    minControllerReturn.text = s['minControllerReturn'] as String;
+    mobileController.text = s['mobileController'] as String;
+    multiReservationToTimeController.text = s['multiReservationToTimeController'] as String;
+    nameController.text = s['nameController'] as String;
+    parkingChargesController.text = s['parkingChargesController'] as String;
+    passController.text = s['passController'] as String;
+    pickUpNoteController.text = s['pickUpNoteController'] as String;
+    pickUpTimeController.text = s['pickUpTimeController'] as String;
+    pickUpTimeControllerReturn.text = s['pickUpTimeControllerReturn'] as String;
+    pickupController.text = s['pickupController'] as String;
+    pickupTwoWayController.text = s['pickupTwoWayController'] as String;
+    returnCompanyPriceController.text = s['returnCompanyPriceController'] as String;
+    returnDropUpNoteController.text = s['returnDropUpNoteController'] as String;
+    returnPickUpNoteController.text = s['returnPickUpNoteController'] as String;
+    selectAirportController.text = s['selectAirportController'] as String;
+    slugController.text = s['slugController'] as String;
+    slugControllerReturn.text = s['slugControllerReturn'] as String;
+    sluggController.text = s['sluggController'] as String;
+    specialRequirementsController.text = s['specialRequirementsController'] as String;
+    specialRequirementsReturnController.text = s['specialRequirementsReturnController'] as String;
+    telController.text = s['telController'] as String;
+    waitingChargesController.text = s['waitingChargesController'] as String;
+    emailCheckbox.value = s['emailCheckbox'];
+    smsCheckbox.value = s['smsCheckbox'];
+    isAirportResponse.value = s['isAirportResponse'];
+    returnTrip.value = s['returnTrip'];
+    addReturnFare.value = s['addReturnFare'];
+    dropDownShow.value = s['dropDownShow'];
+    fixedFare.value = s['fixedFare'];
+    totalDistance.value = s['totalDistance'];
+    totalTimeDuration.value = s['totalTimeDuration'];
+    arrivalReturnTimePicked = s['arrivalReturnTimePicked'];
+    arrivalTimePicked = s['arrivalTimePicked'];
+    pickUpDatePicked = s['pickUpDatePicked'];
+    pickUpTimePicked = s['pickUpTimePicked'];
+    pickUpDateReturnPicked = s['pickUpDateReturnPicked'];
+    pickUpTimeReturnPicked = s['pickUpTimeReturnPicked'];
+    cliJobHit = s['cliJobHit'];
+    dashboardZoneValue = s['dashboardZoneValue'];
+    dashboardDZoneValue = s['dashboardDZoneValue'];
+    dashboardRNZoneValue = s['dashboardRNZoneValue'];
+    dashboardRN1ZoneValue = s['dashboardRN1ZoneValue'];
+    jobDetails = s['jobDetails'];
+    jourValue = s['jourValue'];
+    pickUpDate = s['pickUpDate'];
+    pickUpDateReturn = s['pickUpDateReturn'];
+    returnFareValue = s['returnFareValue'];
+    tempStoreMils = s['tempStoreMils'];
+    tempStoreViaMils = s['tempStoreViaMils'];
+    selectAccountValue = s['selectAccountValue'];
+    selectDepartmentData = s['selectDepartmentData'];
+    selectDriverValue = s['selectDriverValue'];
+    selectDriverValueReturn = s['selectDriverValueReturn'];
+    selectJourneyTypeValue = s['selectJourneyTypeValue'];
+    selectPaymentTypeValue = s['selectPaymentTypeValue'];
+    selectSubsidiariesValue = s['selectSubsidiariesValue'];
+    selectVehicleValue = s['selectVehicleValue'];
+    selectVehicleValueReturn = s['selectVehicleValueReturn'];
+    selectedAccountType = s['selectedAccountType'];
+    selectedDriver = s['selectedDriver'];
+    selectedJourneyType = s['selectedJourneyType'];
+    selectedPaymentMethod = s['selectedPaymentMethod'];
+    selectedVehicleType = s['selectedVehicleType'];
+    _restoreList(childSeatAlert, s['childSeatAlert']);
+    _restoreList(childSeatList, s['childSeatList']);
+    _restoreList(controllerAlert, s['controllerAlert']);
+    _restoreList(driversList, s['driversList']);
+    _restoreList(extraFaresList, s['extraFaresList']);
+    _restoreList(extraFaresReturnList, s['extraFaresReturnList']);
+    _restoreList(markers, s['markers']);
+    _restoreList(multiReservationDaysList, s['multiReservationDaysList']);
+    _restoreList(multiReservationList, s['multiReservationList']);
+    _restoreList(multiReservationTemp, s['multiReservationTemp']);
+    _restoreList(multiVehicleList, s['multiVehicleList']);
+    _restoreList(multiVehicleTempList, s['multiVehicleTempList']);
+    _restoreList(polyLineMarkerInfo, s['polyLineMarkerInfo']);
+    _restoreList(polylinePoints, s['polylinePoints']);
+    _restoreList(polylinePointsCoordinate, s['polylinePointsCoordinate']);
+    _restoreList(polylines, s['polylines']);
+    _restoreList(restrictedDrivers, s['restrictedDrivers']);
+    _restoreList(viaPoints, s['viaPoints']);
+    _restoreList(viaPostList, s['viaPostList']);
+    _restoreList(viaReturnPostList, s['viaReturnPostList']);
+    _restoreList(viaTextEditingController, s['viaTextEditingController']);
+    switchController.value = s['switchController'] as bool;
+    loc.zoneValue = s['loc.zoneValue'];
+    loc.zoneDValue = s['loc.zoneDValue'];
+    loc.RNzoneValue = s['loc.RNzoneValue'];
+    loc.RN1zoneValue = s['loc.RN1zoneValue'];
   }
 
   refreshPostAllFields() async {

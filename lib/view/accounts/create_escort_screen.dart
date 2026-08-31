@@ -77,71 +77,111 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                     runSpacing: 16,
                     spacing: 10,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          // Sirf tab pick kare jab dono images null hon
-                          if (controller.profileImg == null &&
-                              controller.selectedEscort?.image == null) {
-                            controller.pickImage();
+                      Focus(
+                        onKeyEvent: (node, event) {
+                          if (event is KeyDownEvent &&
+                              (event.logicalKey == LogicalKeyboardKey.enter ||
+                               event.logicalKey == LogicalKeyboardKey.space)) {
+                            if (controller.profileImg != null ||
+                                controller.selectedEscort?.image != null) {
+                              // Image maujood hai — remove karo (X button jaisa)
+                              controller.profileImg = null;
+                              if (controller.selectedEscort != null) {
+                                controller.selectedEscort!.image = null;
+                              }
+                              controller.update();
+                            } else {
+                              // Image nahi — picker kholo
+                              controller.pickImage();
+                            }
+                            return KeyEventResult.handled;
                           }
+                          return KeyEventResult.ignored;
                         },
-                        child: Container(
-                          height: isMobile ? 200 : 400,
-                          width: fieldWidth,
-                          margin: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.grey),
-                            image: controller.profileImg != null
-                                ? DecorationImage(
-                                    image:
-                                        MemoryImage(controller.profileImg!.bytes),
-                                    fit: BoxFit.fill,
-                                  )
-                                : (controller.selectedEscort?.image != null
-                                    ? DecorationImage(
-                                        image: NetworkImage(
-                                            controller.selectedEscort!.image!),
-                                        fit: BoxFit.fill,
-                                      )
-                                    : null),
-                          ),
-                          // Check karein ke kya koi bhi image (Local ya Network) maujood hai?
-                          child: (controller.profileImg != null ||
-                                  controller.selectedEscort?.image != null)
-                              ? Align(
-                                  alignment: Alignment.topRight,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      // Image remove karne ki logic
-                                      controller.profileImg = null;
-                                      if (controller.selectedEscort != null) {
-                                        controller.selectedEscort!.image =
-                                            null; // Purani image hide karne ke liye
-                                      }
-                                      controller.update();
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.all(4),
-                                      color: Colors.white.withOpacity(
-                                          0.7), // Icon nazar aaye isliye background
-                                      child: Icon(
-                                        Icons.close_rounded,
-                                        color: DynamicColors.redClr,
+                        child: Builder(
+                          builder: (context) {
+                            final focused = Focus.of(context).hasFocus;
+                            return Stack(
+                              alignment: Alignment.topRight,
+                              children: [
+                                InkWell(
+                                  focusColor: Colors.transparent,
+                                  onTap: () {
+                                    if (controller.profileImg == null &&
+                                        controller.selectedEscort?.image == null) {
+                                      controller.pickImage();
+                                    }
+                                  },
+                                  child: Container(
+                                    height: isMobile ? 200 : 400,
+                                    width: fieldWidth,
+                                    margin: EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      border: Border.all(
+                                        color: focused
+                                            ? DynamicColors.primaryClr
+                                            : Colors.grey,
+                                        width: focused ? 2.5 : 1,
+                                      ),
+                                      image: controller.profileImg != null
+                                          ? DecorationImage(
+                                              image: MemoryImage(controller.profileImg!.bytes),
+                                              fit: BoxFit.fill,
+                                            )
+                                          : (controller.selectedEscort?.image != null
+                                              ? DecorationImage(
+                                                  image: NetworkImage(controller.selectedEscort!.image!),
+                                                  fit: BoxFit.fill,
+                                                )
+                                              : null),
+                                    ),
+                                    child: (controller.profileImg == null &&
+                                            controller.selectedEscort?.image == null)
+                                        ? Center(
+                                            child: Text(
+                                              "UPLOAD IMAGE",
+                                              style: TextStyle(
+                                                fontSize: 30,
+                                                fontWeight: FontWeight.bold,
+                                                color: focused
+                                                    ? DynamicColors.primaryClr
+                                                    : Colors.black,
+                                              ),
+                                            ),
+                                          )
+                                        : null,
+                                  ),
+                                ),
+                                // X button — Stack ke bahar, InkWell ke oopar
+                                if (controller.profileImg != null ||
+                                    controller.selectedEscort?.image != null)
+                                  Positioned(
+                                    top: 8,
+                                    right: 8,
+                                    child: GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
+                                      onTap: () {
+                                        controller.profileImg = null;
+                                        if (controller.selectedEscort != null) {
+                                          controller.selectedEscort!.image = null;
+                                        }
+                                        controller.update();
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.all(4),
+                                        color: Colors.white.withOpacity(0.7),
+                                        child: Icon(
+                                          Icons.close_rounded,
+                                          color: DynamicColors.redClr,
+                                          size: 24,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                )
-                              : Center(
-                                  child: Text(
-                                    "UPLOAD IMAGE",
-                                    style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ),
+                              ],
+                            );
+                          },
                         ),
                       ),
                       SizedBox(
@@ -377,91 +417,117 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                           AppText.safeguardingDocument,
                           style: mozillaTextRegularText(fontSize: 11),
                         ),
-                        Stack(
-                          alignment: Alignment.topRight,
-                          children: [
-                            Container(
-                              height: isMobile ? 100 : 200,
-                              width: fieldWidth / 1.5,
-                              margin: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(color: Colors.grey),
-                                image: controller.safeguardingDocPic != null
-                                    ? DecorationImage(
-                                        image: MemoryImage(
-                                            controller.safeguardingDocPic!),
-                                        fit: BoxFit.fill,
-                                      )
-                                    : (controller.selectedEscort
-                                                ?.safeguardingDocument !=
-                                            null
-                                        ? DecorationImage(
-                                            image: NetworkImage(controller
-                                                .selectedEscort!
-                                                .safeguardingDocument!),
-                                            fit: BoxFit.fill,
-                                          )
-                                        : null),
-                              ),
-                              // Agar bytes hain YA server ka image path hai, to text hide kar do
-                              child: (controller.safeguardingDocPic != null ||
-                                      controller.selectedEscort
-                                              ?.safeguardingDocument !=
-                                          null)
-                                  ? SizedBox.shrink()
-                                  : Center(
-                                      child: Text(
-                                        AppText.safeguarding,
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                            ),
-                            GestureDetector(
-                              onTap: () async {
-                                // Agar koi bhi image (Local ya Network) maujood hai, to usay remove karo
+                        Focus(
+                          onKeyEvent: (node, event) {
+                            if (event is KeyDownEvent &&
+                                (event.logicalKey == LogicalKeyboardKey.enter ||
+                                 event.logicalKey == LogicalKeyboardKey.space)) {
+                              () async {
                                 if (controller.safeguardingDocPic != null ||
-                                    controller.selectedEscort
-                                            ?.safeguardingDocument !=
-                                        null) {
+                                    controller.selectedEscort?.safeguardingDocument != null) {
                                   controller.safeguardingDocPic = null;
                                   if (controller.selectedEscort != null) {
-                                    controller.selectedEscort!
-                                        .safeguardingDocument = null;
+                                    controller.selectedEscort!.safeguardingDocument = null;
                                   }
                                 } else {
-                                  // Warna nayi image pick karo
-                                  final image =
-                                      await ImagePickerHelper.pickImage();
+                                  final image = await ImagePickerHelper.pickImage();
                                   if (image != null) {
                                     controller.safeguardingDocPic = image.bytes;
                                   }
                                 }
                                 controller.update();
-                              },
-                              child: Icon(
-                                // Icon change logic based on both conditions
-                                (controller.safeguardingDocPic != null ||
-                                        controller.selectedEscort
-                                                ?.safeguardingDocument !=
-                                            null)
-                                    ? Icons.remove_circle
-                                    : Icons.add_circle_outlined,
-                                size: 30,
-                                color: (controller.safeguardingDocPic != null ||
-                                        controller.selectedEscort
-                                                ?.safeguardingDocument !=
-                                            null)
-                                    ? DynamicColors
-                                        .redClr // Remove ke liye red color behtar hai
-                                    : DynamicColors.primaryClr,
-                              ),
-                            )
-                          ],
+                              }();
+                              return KeyEventResult.handled;
+                            }
+                            return KeyEventResult.ignored;
+                          },
+                          child: Builder(
+                            builder: (context) {
+                              final focused = Focus.of(context).hasFocus;
+                              return Stack(
+                                alignment: Alignment.topRight,
+                                children: [
+                                  InkWell(
+                                    focusColor: Colors.transparent,
+                                    onTap: () async {
+                                      if (controller.safeguardingDocPic == null &&
+                                          controller.selectedEscort?.safeguardingDocument == null) {
+                                        final image = await ImagePickerHelper.pickImage();
+                                        if (image != null) {
+                                          controller.safeguardingDocPic = image.bytes;
+                                          controller.update();
+                                        }
+                                      }
+                                    },
+                                    child: Container(
+                                      height: isMobile ? 100 : 200,
+                                      width: fieldWidth / 1.5,
+                                      margin: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border.all(
+                                          color: focused ? DynamicColors.primaryClr : Colors.grey,
+                                          width: focused ? 2.5 : 1,
+                                        ),
+                                        image: controller.safeguardingDocPic != null
+                                            ? DecorationImage(
+                                                image: MemoryImage(controller.safeguardingDocPic!),
+                                                fit: BoxFit.fill,
+                                              )
+                                            : (controller.selectedEscort?.safeguardingDocument != null
+                                                ? DecorationImage(
+                                                    image: NetworkImage(controller.selectedEscort!.safeguardingDocument!),
+                                                    fit: BoxFit.fill,
+                                                  )
+                                                : null),
+                                      ),
+                                      child: (controller.safeguardingDocPic != null ||
+                                              controller.selectedEscort?.safeguardingDocument != null)
+                                          ? SizedBox.shrink()
+                                          : Center(
+                                              child: Text(
+                                                AppText.safeguarding,
+                                                style: TextStyle(
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: focused ? DynamicColors.primaryClr : Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      if (controller.safeguardingDocPic != null ||
+                                          controller.selectedEscort?.safeguardingDocument != null) {
+                                        controller.safeguardingDocPic = null;
+                                        if (controller.selectedEscort != null) {
+                                          controller.selectedEscort!.safeguardingDocument = null;
+                                        }
+                                      } else {
+                                        final image = await ImagePickerHelper.pickImage();
+                                        if (image != null) {
+                                          controller.safeguardingDocPic = image.bytes;
+                                        }
+                                      }
+                                      controller.update();
+                                    },
+                                    child: Icon(
+                                      (controller.safeguardingDocPic != null ||
+                                              controller.selectedEscort?.safeguardingDocument != null)
+                                          ? Icons.remove_circle
+                                          : Icons.add_circle_outlined,
+                                      size: 30,
+                                      color: (controller.safeguardingDocPic != null ||
+                                              controller.selectedEscort?.safeguardingDocument != null)
+                                          ? DynamicColors.redClr
+                                          : DynamicColors.primaryClr,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -472,82 +538,117 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                           AppText.patDocument,
                           style: mozillaTextRegularText(fontSize: 11),
                         ),
-                        Stack(
-                          alignment: Alignment.topRight,
-                          children: [
-                            Container(
-                              height: isMobile ? 100 : 200,
-                              width: fieldWidth / 1.5,
-                              margin: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(color: Colors.grey),
-                                image: controller.patDocPic != null
-                                    ? DecorationImage(
-                                        image: MemoryImage(controller.patDocPic!),
-                                        fit: BoxFit.fill,
-                                      )
-                                    : (controller.selectedEscort?.patDocument !=
-                                            null
-                                        ? DecorationImage(
-                                            image: NetworkImage(controller
-                                                .selectedEscort!.patDocument!),
-                                            fit: BoxFit.fill,
-                                          )
-                                        : null),
-                              ),
-                              // Agar image (Local ya Network) mil gayi to text hide kar do
-                              child: (controller.patDocPic != null ||
-                                      controller.selectedEscort?.patDocument !=
-                                          null)
-                                  ? SizedBox.shrink()
-                                  : Center(
-                                      child: Text(
-                                        AppText.patPic,
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                            ),
-                            GestureDetector(
-                              onTap: () async {
-                                // Agar pehle se koi image hai to usay remove karo
+                        Focus(
+                          onKeyEvent: (node, event) {
+                            if (event is KeyDownEvent &&
+                                (event.logicalKey == LogicalKeyboardKey.enter ||
+                                 event.logicalKey == LogicalKeyboardKey.space)) {
+                              () async {
                                 if (controller.patDocPic != null ||
-                                    controller.selectedEscort?.patDocument !=
-                                        null) {
+                                    controller.selectedEscort?.patDocument != null) {
                                   controller.patDocPic = null;
                                   if (controller.selectedEscort != null) {
-                                    controller.selectedEscort!.patDocument =
-                                        null; // Model se path clear karein
+                                    controller.selectedEscort!.patDocument = null;
                                   }
                                 } else {
-                                  // Warna nayi image pick karo
-                                  final image =
-                                      await ImagePickerHelper.pickImage();
+                                  final image = await ImagePickerHelper.pickImage();
                                   if (image != null) {
                                     controller.patDocPic = image.bytes;
                                   }
                                 }
                                 controller.update();
-                              },
-                              child: Icon(
-                                (controller.patDocPic != null ||
-                                        controller.selectedEscort?.patDocument !=
-                                            null)
-                                    ? Icons.remove_circle
-                                    : Icons.add_circle_outlined,
-                                size: 30,
-                                color: (controller.patDocPic != null ||
-                                        controller.selectedEscort?.patDocument !=
-                                            null)
-                                    ? DynamicColors.redClr
-                                    : DynamicColors.primaryClr,
-                              ),
-                            )
-                          ],
+                              }();
+                              return KeyEventResult.handled;
+                            }
+                            return KeyEventResult.ignored;
+                          },
+                          child: Builder(
+                            builder: (context) {
+                              final focused = Focus.of(context).hasFocus;
+                              return Stack(
+                                alignment: Alignment.topRight,
+                                children: [
+                                  InkWell(
+                                    focusColor: Colors.transparent,
+                                    onTap: () async {
+                                      if (controller.patDocPic == null &&
+                                          controller.selectedEscort?.patDocument == null) {
+                                        final image = await ImagePickerHelper.pickImage();
+                                        if (image != null) {
+                                          controller.patDocPic = image.bytes;
+                                          controller.update();
+                                        }
+                                      }
+                                    },
+                                    child: Container(
+                                      height: isMobile ? 100 : 200,
+                                      width: fieldWidth / 1.5,
+                                      margin: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border.all(
+                                          color: focused ? DynamicColors.primaryClr : Colors.grey,
+                                          width: focused ? 2.5 : 1,
+                                        ),
+                                        image: controller.patDocPic != null
+                                            ? DecorationImage(
+                                                image: MemoryImage(controller.patDocPic!),
+                                                fit: BoxFit.fill,
+                                              )
+                                            : (controller.selectedEscort?.patDocument != null
+                                                ? DecorationImage(
+                                                    image: NetworkImage(controller.selectedEscort!.patDocument!),
+                                                    fit: BoxFit.fill,
+                                                  )
+                                                : null),
+                                      ),
+                                      child: (controller.patDocPic != null ||
+                                              controller.selectedEscort?.patDocument != null)
+                                          ? SizedBox.shrink()
+                                          : Center(
+                                              child: Text(
+                                                AppText.patPic,
+                                                style: TextStyle(
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: focused ? DynamicColors.primaryClr : Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      if (controller.patDocPic != null ||
+                                          controller.selectedEscort?.patDocument != null) {
+                                        controller.patDocPic = null;
+                                        if (controller.selectedEscort != null) {
+                                          controller.selectedEscort!.patDocument = null;
+                                        }
+                                      } else {
+                                        final image = await ImagePickerHelper.pickImage();
+                                        if (image != null) {
+                                          controller.patDocPic = image.bytes;
+                                        }
+                                      }
+                                      controller.update();
+                                    },
+                                    child: Icon(
+                                      (controller.patDocPic != null ||
+                                              controller.selectedEscort?.patDocument != null)
+                                          ? Icons.remove_circle
+                                          : Icons.add_circle_outlined,
+                                      size: 30,
+                                      color: (controller.patDocPic != null ||
+                                              controller.selectedEscort?.patDocument != null)
+                                          ? DynamicColors.redClr
+                                          : DynamicColors.primaryClr,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -558,88 +659,117 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                           AppText.firstAidDocument,
                           style: mozillaTextRegularText(fontSize: 11),
                         ),
-                        Stack(
-                          alignment: Alignment.topRight,
-                          children: [
-                            Container(
-                              height: isMobile ? 100 : 200,
-                              width: fieldWidth / 1.5,
-                              margin: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(color: Colors.grey),
-                                image: controller.firstAidDocPic != null
-                                    ? DecorationImage(
-                                        image: MemoryImage(
-                                            controller.firstAidDocPic!),
-                                        fit: BoxFit.fill,
-                                      )
-                                    : (controller.selectedEscort
-                                                ?.firstaidDocument !=
-                                            null
-                                        ? DecorationImage(
-                                            image: NetworkImage(controller
-                                                .selectedEscort!
-                                                .firstaidDocument!),
-                                            fit: BoxFit.fill,
-                                          )
-                                        : null),
-                              ),
-                              // Check for both Local and Network image to hide text
-                              child: (controller.firstAidDocPic != null ||
-                                      controller
-                                              .selectedEscort?.firstaidDocument !=
-                                          null)
-                                  ? SizedBox.shrink()
-                                  : Center(
-                                      child: Text(
-                                        AppText.firstAid,
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                            ),
-                            GestureDetector(
-                              onTap: () async {
-                                // Agar koi bhi image exist karti hai to pehle clear karo
+                        Focus(
+                          onKeyEvent: (node, event) {
+                            if (event is KeyDownEvent &&
+                                (event.logicalKey == LogicalKeyboardKey.enter ||
+                                 event.logicalKey == LogicalKeyboardKey.space)) {
+                              () async {
                                 if (controller.firstAidDocPic != null ||
-                                    controller.selectedEscort?.firstaidDocument !=
-                                        null) {
+                                    controller.selectedEscort?.firstaidDocument != null) {
                                   controller.firstAidDocPic = null;
                                   if (controller.selectedEscort != null) {
-                                    controller.selectedEscort!.firstaidDocument =
-                                        null; // UI se purani image hatane ke liye
+                                    controller.selectedEscort!.firstaidDocument = null;
                                   }
                                 } else {
-                                  // Warna nayi image pick karo
-                                  final image =
-                                      await ImagePickerHelper.pickImage();
+                                  final image = await ImagePickerHelper.pickImage();
                                   if (image != null) {
                                     controller.firstAidDocPic = image.bytes;
                                   }
                                 }
                                 controller.update();
-                              },
-                              child: Icon(
-                                (controller.firstAidDocPic != null ||
-                                        controller.selectedEscort
-                                                ?.firstaidDocument !=
-                                            null)
-                                    ? Icons.remove_circle
-                                    : Icons.add_circle_outlined,
-                                size: 30,
-                                color: (controller.firstAidDocPic != null ||
-                                        controller.selectedEscort
-                                                ?.firstaidDocument !=
-                                            null)
-                                    ? DynamicColors.redClr
-                                    : DynamicColors.primaryClr,
-                              ),
-                            )
-                          ],
+                              }();
+                              return KeyEventResult.handled;
+                            }
+                            return KeyEventResult.ignored;
+                          },
+                          child: Builder(
+                            builder: (context) {
+                              final focused = Focus.of(context).hasFocus;
+                              return Stack(
+                                alignment: Alignment.topRight,
+                                children: [
+                                  InkWell(
+                                    focusColor: Colors.transparent,
+                                    onTap: () async {
+                                      if (controller.firstAidDocPic == null &&
+                                          controller.selectedEscort?.firstaidDocument == null) {
+                                        final image = await ImagePickerHelper.pickImage();
+                                        if (image != null) {
+                                          controller.firstAidDocPic = image.bytes;
+                                          controller.update();
+                                        }
+                                      }
+                                    },
+                                    child: Container(
+                                      height: isMobile ? 100 : 200,
+                                      width: fieldWidth / 1.5,
+                                      margin: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border.all(
+                                          color: focused ? DynamicColors.primaryClr : Colors.grey,
+                                          width: focused ? 2.5 : 1,
+                                        ),
+                                        image: controller.firstAidDocPic != null
+                                            ? DecorationImage(
+                                                image: MemoryImage(controller.firstAidDocPic!),
+                                                fit: BoxFit.fill,
+                                              )
+                                            : (controller.selectedEscort?.firstaidDocument != null
+                                                ? DecorationImage(
+                                                    image: NetworkImage(controller.selectedEscort!.firstaidDocument!),
+                                                    fit: BoxFit.fill,
+                                                  )
+                                                : null),
+                                      ),
+                                      child: (controller.firstAidDocPic != null ||
+                                              controller.selectedEscort?.firstaidDocument != null)
+                                          ? SizedBox.shrink()
+                                          : Center(
+                                              child: Text(
+                                                AppText.firstAid,
+                                                style: TextStyle(
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: focused ? DynamicColors.primaryClr : Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      if (controller.firstAidDocPic != null ||
+                                          controller.selectedEscort?.firstaidDocument != null) {
+                                        controller.firstAidDocPic = null;
+                                        if (controller.selectedEscort != null) {
+                                          controller.selectedEscort!.firstaidDocument = null;
+                                        }
+                                      } else {
+                                        final image = await ImagePickerHelper.pickImage();
+                                        if (image != null) {
+                                          controller.firstAidDocPic = image.bytes;
+                                        }
+                                      }
+                                      controller.update();
+                                    },
+                                    child: Icon(
+                                      (controller.firstAidDocPic != null ||
+                                              controller.selectedEscort?.firstaidDocument != null)
+                                          ? Icons.remove_circle
+                                          : Icons.add_circle_outlined,
+                                      size: 30,
+                                      color: (controller.firstAidDocPic != null ||
+                                              controller.selectedEscort?.firstaidDocument != null)
+                                          ? DynamicColors.redClr
+                                          : DynamicColors.primaryClr,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -650,82 +780,94 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                           AppText.dbsDocument,
                           style: mozillaTextRegularText(fontSize: 11),
                         ),
-                        Stack(
-                          alignment: Alignment.topRight,
-                          children: [
-                            Container(
-                              height: isMobile ? 100 : 200,
-                              width: fieldWidth / 1.5,
-                              margin: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(color: Colors.grey),
-                                image: controller.dbsDocPic != null
-                                    ? DecorationImage(
-                                        image: MemoryImage(controller.dbsDocPic!),
-                                        fit: BoxFit.fill,
-                                      )
-                                    : (controller.selectedEscort?.dbsDocument !=
-                                            null
-                                        ? DecorationImage(
-                                            image: NetworkImage(controller
-                                                .selectedEscort!.dbsDocument!),
-                                            fit: BoxFit.fill,
-                                          )
-                                        : null),
-                              ),
-                              // Dono conditions check karein taake placeholder text hide ho jaye
-                              child: (controller.dbsDocPic != null ||
-                                      controller.selectedEscort?.dbsDocument !=
-                                          null)
-                                  ? SizedBox.shrink()
-                                  : Center(
-                                      child: Text(
-                                        AppText.dbs,
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
+                        Focus(
+                          child: Builder(
+                            builder: (context) {
+                              final focused = Focus.of(context).hasFocus;
+                              return Stack(
+                                alignment: Alignment.topRight,
+                                children: [
+                                  InkWell(
+                                    focusColor: Colors.transparent,
+                                    onTap: () async {
+                                      if (controller.dbsDocPic == null &&
+                                          controller.selectedEscort?.dbsDocument == null) {
+                                        final image = await ImagePickerHelper.pickImage();
+                                        if (image != null) {
+                                          controller.dbsDocPic = image.bytes;
+                                          controller.update();
+                                        }
+                                      }
+                                    },
+                                    child: Container(
+                                      height: isMobile ? 100 : 200,
+                                      width: fieldWidth / 1.5,
+                                      margin: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border.all(
+                                          color: focused ? DynamicColors.primaryClr : Colors.grey,
+                                          width: focused ? 2.5 : 1,
                                         ),
+                                        image: controller.dbsDocPic != null
+                                            ? DecorationImage(
+                                                image: MemoryImage(controller.dbsDocPic!),
+                                                fit: BoxFit.fill,
+                                              )
+                                            : (controller.selectedEscort?.dbsDocument != null
+                                                ? DecorationImage(
+                                                    image: NetworkImage(controller.selectedEscort!.dbsDocument!),
+                                                    fit: BoxFit.fill,
+                                                  )
+                                                : null),
                                       ),
+                                      child: (controller.dbsDocPic != null ||
+                                              controller.selectedEscort?.dbsDocument != null)
+                                          ? SizedBox.shrink()
+                                          : Center(
+                                              child: Text(
+                                                AppText.dbs,
+                                                style: TextStyle(
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: focused ? DynamicColors.primaryClr : Colors.black,
+                                                ),
+                                              ),
+                                            ),
                                     ),
-                            ),
-                            GestureDetector(
-                              onTap: () async {
-                                // Agar koi image hai (Local ya Network) to usay remove karein
-                                if (controller.dbsDocPic != null ||
-                                    controller.selectedEscort?.dbsDocument !=
-                                        null) {
-                                  controller.dbsDocPic = null;
-                                  if (controller.selectedEscort != null) {
-                                    controller.selectedEscort!.dbsDocument =
-                                        null; // Purani image path clear karein
-                                  }
-                                } else {
-                                  // Warna nayi image pick karein
-                                  final image =
-                                      await ImagePickerHelper.pickImage();
-                                  if (image != null) {
-                                    controller.dbsDocPic = image.bytes;
-                                  }
-                                }
-                                controller.update();
-                              },
-                              child: Icon(
-                                (controller.dbsDocPic != null ||
-                                        controller.selectedEscort?.dbsDocument !=
-                                            null)
-                                    ? Icons.remove_circle
-                                    : Icons.add_circle_outlined,
-                                size: 30,
-                                color: (controller.dbsDocPic != null ||
-                                        controller.selectedEscort?.dbsDocument !=
-                                            null)
-                                    ? DynamicColors.redClr
-                                    : DynamicColors.primaryClr,
-                              ),
-                            )
-                          ],
+                                  ),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      if (controller.dbsDocPic != null ||
+                                          controller.selectedEscort?.dbsDocument != null) {
+                                        controller.dbsDocPic = null;
+                                        if (controller.selectedEscort != null) {
+                                          controller.selectedEscort!.dbsDocument = null;
+                                        }
+                                      } else {
+                                        final image = await ImagePickerHelper.pickImage();
+                                        if (image != null) {
+                                          controller.dbsDocPic = image.bytes;
+                                        }
+                                      }
+                                      controller.update();
+                                    },
+                                    child: Icon(
+                                      (controller.dbsDocPic != null ||
+                                              controller.selectedEscort?.dbsDocument != null)
+                                          ? Icons.remove_circle
+                                          : Icons.add_circle_outlined,
+                                      size: 30,
+                                      color: (controller.dbsDocPic != null ||
+                                              controller.selectedEscort?.dbsDocument != null)
+                                          ? DynamicColors.redClr
+                                          : DynamicColors.primaryClr,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
                         ),
                       ],
                     ),

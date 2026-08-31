@@ -304,30 +304,68 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   //   super.dispose();
   // }
 
+  /// The dashboard form's contents, held for the lifetime of this screen.
+  ///
+  /// This screen and the dashboard's booking form resolve the same permanent
+  /// DashboardController, so they write to the same TextEditingControllers and
+  /// the same selected values. Loading a booking here therefore used to show up
+  /// on the dashboard form once this screen was closed. Taking a copy on the
+  /// way in and putting it back on the way out gives the two forms independent
+  /// contents while leaving the shared controller alone.
+  Map<String, dynamic>? _dashboardFormState;
+
   @override
   void initState() {
     super.initState();
     // The dropdowns read their items off dashboardAllData, so the form cannot
-    // build until it is there.
+    // build until it is there. Safe from initState: it is an API call, and
+    // nothing it touches has listeners attached to it.
     if (controller.dashboardAllData == null) {
       controller.dashboardData();
     }
-    // Load the booking. After the first frame, not during initState:
-    // dashBoardDataBinding ends in DashboardController.update(), and a
-    // GetBuilder cannot be rebuilt while it is still being built.
+    // Everything that WRITES to the shared controller waits for the first
+    // frame. All three steps below assign to TextEditingControllers and Rx
+    // values that widgets are listening to, and this screen is mounted during
+    // a tab switch — the outgoing tab is still being taken down, so the tree is
+    // locked and a listener calling setState throws
+    // "setState() or markNeedsBuild() called when widget tree was locked".
+    // (dashBoardDataBinding has always been deferred for the same family of
+    // reason: it ends in update(), which cannot run mid-build.)
+    //
+    // Order matters: capture before anything overwrites the outgoing form,
+    // clear so the booking loads into empty fields, then load.
     //
     // Unlike the dashboard form, this screen does NOT claim
-    // controller.focusBookingFormFirstField — the dashboard form stays mounted
-    // under this route and would be left without the F2 hook once this screen
-    // pops.
+    // controller.focusBookingFormFirstField — that hook belongs to whichever
+    // form is on the dashboard tab.
     final id = widget.booking.id;
-    if (id == null) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) controller.dashBoardDataBinding(id: id);
+      if (!mounted) return;
+      _dashboardFormState = controller.captureFormState();
+      // dashBoardDataBinding only assigns many fields when the booking carries
+      // a value, so without this the dashboard form's half-typed PASS / LUGG /
+      // notes would sit under the loaded booking.
+      controller.clearFormTextFields();
+      if (id != null) controller.dashBoardDataBinding(id: id);
     });
   }
   @override
   void dispose() {
+    // Hand the dashboard form back exactly what it had — after the frame, for
+    // the same reason initState defers its writes. dispose() runs with the
+    // tree locked, and restoreFormState assigns to controllers that mounted
+    // widgets listen to.
+    //
+    // `controller` is the permanent DashboardController, so it long outlives
+    // this State; only the snapshot needs holding onto.
+    final saved = _dashboardFormState;
+    final ctrl = controller;
+    if (saved != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ctrl.restoreFormState(saved);
+        ctrl.update();
+      });
+    }
     _shortcutFocusNode.dispose();
     _pickupFieldFocusNode.dispose();
     super.dispose();
@@ -358,9 +396,17 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     // DashboardShortcuts, which wraps the dashboard screen, and this route sits
     // above it. Only the arrow-key page scrolling below, which is this form's
     // own, still applies.
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: _withFormFont(
+    // Material, not Scaffold. booking_table opens this screen as a chip in the
+    // menu bar's page strip, and that strip renders inside a
+    // SingleChildScrollView (main_appbar.dart) — so the page is laid out with
+    // an unbounded height. A Scaffold expands to fill its box and its canvas
+    // Material is a RenderPhysicalModel, which is what "was given an infinite
+    // size during layout" was reporting. Material takes its child's height
+    // instead, and still supplies the Material ancestor the fields need on the
+    // /EditJobs route, where there is no Scaffold above it.
+    return Material(
+      color: Colors.white,
+      child: _withFormFont(
       context,
       Focus(
         // No autofocus: the fields own the initial focus, and an invisible
@@ -383,6 +429,16 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
             }
           },
           builder: (controller) {
+            // Every dropdown below reads its items off dashboardAllData with a
+            // null assertion. initState starts the fetch, but the first frame
+            // lands before it returns — and this route can be entered with no
+            // dashboard behind it (a restart straight into the booking), so
+            // there is no earlier screen that already loaded it. The dashboard
+            // gates the identical form the same way in
+            // defult_dashboard_view.dart, which is why that copy can assert.
+            if (controller.dashboardAllData == null) {
+              return const Center(child: CircularProgressIndicator());
+            }
             return  SafeArea(
               // Top-aligned rather than Center so a short form stays put at
               // the top of the page instead of floating mid-screen.
@@ -437,7 +493,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                   },
                                       (addr) =>
                                       setState(() => _selectedPickup = addr),
-                                  1,
+                                  0,
                                   zoneLabel: (z) => z.name!,
                                   onPickIndex: (index) {
                                     controller.tapSelect(index);
@@ -486,12 +542,12 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                       CrossAxisAlignment.stretch,
                                       children: [
                                         _field('FL',
-                                            tab: 4.3,
+                                            tab: 3.3,
                                             controller: controller
                                                 .selectAirportController),
                                         const SizedBox(height: 4),
                                         _timeField('ARP',
-                                            tab: 4.6,
+                                            tab: 3.6,
                                             controller: controller
                                                 .arrivalTimeController,
                                             onPicked: () => controller
@@ -515,7 +571,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                           // Caption blank: the dotted FL tag
                                           // to the left already names it.
                                           child: _field('',
-                                              tab: 4.3,
+                                              tab: 3.3,
                                               controller: controller
                                                   .selectAirportController),
                                         ),
@@ -523,7 +579,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                         Expanded(
                                           flex: 1,
                                           child: _timeField('ARP',
-                                              tab: 4.6,
+                                              tab: 3.6,
                                               controller: controller
                                                   .arrivalTimeController,
                                               onPicked: () => controller
@@ -562,7 +618,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                   },
                                       (addr) =>
                                       setState(() => _selectedDrop = addr),
-                                  4,
+                                  3,
                                   zoneLabel: (z) => z.name!,
                                   onPickIndex: (index) =>
                                       controller.tapSelect(index),
@@ -611,14 +667,14 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                 const SizedBox(height: 4),
                                 _grid(isMobile ? 1 : (isTablet ? 3 : 5), [
                                   _field('Name',
-                                      tab: 8,
+                                      tab: 7,
                                       controller: controller.nameController),
                                   _field('Email',
-                                      tab: 9,
+                                      tab: 8,
                                       controller: controller.emailController),
                                   _customerAutocompleteField(
                                     'Mobile',
-                                    tab: 10,
+                                    tab: 9,
                                     controller: controller.mobileController,
                                     customers: controller.customerPhoneNumber
                                         ?.customerInfo ??
@@ -644,10 +700,10 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                     },
                                   ),
                                   _field('Tel.',
-                                      tab: 11,
+                                      tab: 10,
                                       controller: controller.telController),
                                   FocusTraversalOrder(
-                                    order: const NumericFocusOrder(11.5),
+                                    order: const NumericFocusOrder(10.5),
                                     child: SizedBox(
                                       height: 32,
                                       width: double.infinity,
@@ -682,20 +738,39 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                     ),
                                   ),
                                 ]),
+                                // Row 4 — DATE / TIME beside their return twins. R/DATE and R/TIME
+                                // used to sit in the RETURN JOURNEY block further down; the form
+                                // pairs each return field with the outbound one it mirrors.
                                 _grid(cols, [
                                   _dateField('Date',
-                                      tab: 12,
+                                      tab: 11,
                                       value: controller.pickUpDate,
                                       onChanged: (d) => setState(() {
                                             controller.pickUpDate = d;
                                             controller.pickUpDatePicked = true;
                                           })),
                                   _timeField('Time',
-                                      tab: 13,
+                                      tab: 12,
                                       controller:
                                       controller.pickUpTimeController,
                                       onPicked: () =>
                                           controller.pickUpTimePicked = true),
+                                  if (_isReturnJourney) _rDateField(),
+                                  if (_isReturnJourney) _rTimeField(),
+                                ]),
+                                // Rows 5-6 — the two return address rows, the only part of the
+                                // return journey with no outbound field to sit beside.
+                                if (_isReturnJourney)
+                                  _returnJourneySection(isMobile, controller),
+                                const Divider(height: 10),
+                                _sectionHeader(
+                                    Icons.directions_car, 'VEHICLE & PAYMENT'),
+                                const SizedBox(height: 4),
+                                // Row 7 — LEAD / JOUR / VEH / R/VEH.
+                                _grid(isMobile ? 1 : (isTablet ? 2 : 4), [
+                                  _field('Lead Time',
+                                      tab: 21,
+                                      controller: controller.minController),
                                   _dropdown<JourneyTypeObject>(
                                     'Journey Type'.toUpperCase(),
                                     controller.selectJourneyTypeValue,
@@ -742,27 +817,26 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                         BotToast.showText(text: "Please select pickup and drop location first");
                                       }
                                     },
-                                    14,
+                                    22,
                                     itemLabel: (p) => p.journeyType!,
                                     allowUnselect: false
                                   ),
-                                  _field('Lead Time',
-                                      tab: 15,
-                                      controller: controller.minController),
+                                  _dropdown<DashboardVehicleTypeObject>(
+                                    'Vehicle Type',
+                                    controller.selectVehicleValue,
+                                    controller.dashboardAllData!.vehicleTypes!,
+                                        (v) => setState(() {
+                                      controller.selectVehicleValue = v;
+                                      controller.getFaresCalculation();
+                                    }),
+                                    23,
+                                    itemLabel: (p) => p.name!,
+                                    allowUnselect: false,
+                                  ),
+                                  if (_isReturnJourney) _rVehicleDropdown(),
                                 ]),
-                                _grid(isMobile ? 1 : 3, [
-                                  _field('No. of Passengers',
-                                      tab: 16,
-                                      prefix: Icons.person_outline,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly,
-                                        LengthLimitingTextInputFormatter(2),
-                                      ],
-                                      controller: controller.passController),
-                                  _field('FARE',
-                                      tab: 17,
-                                      prefix: Icons.currency_pound,
-                                      controller: controller.slugController),
+                                // Row 8 — ACC / QUOTATION / PASS / LUGG / SLGG.
+                                _grid(isMobile ? 1 : (isTablet ? 3 : 5), [
                                   _dropdown<DashboardAccountObject>(
                                     'SELECT ACCOUNT',
                                     controller.selectAccountValue,
@@ -774,16 +848,22 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                         controller.selectDepartmentData = null;
                                       });
                                     },
-                                    18,
+                                    25,
                                     itemLabel: (p) => p.name!,
                                   ),
+                                  _quotationToggle(),
+                                  _field('No. of Passengers',
+                                      tab: 27,
+                                      prefix: Icons.person_outline,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                        LengthLimitingTextInputFormatter(2),
+                                      ],
+                                      controller: controller.passController),
+                                  ..._luggageFields(),
                                 ]),
-                                if (_isReturnJourney)
-                                  _returnJourneySection(isMobile, cols,controller),
-                                const Divider(height: 10),
-                                _sectionHeader(
-                                    Icons.directions_car, 'VEHICLE & PAYMENT'),
-                                const SizedBox(height: 4),
+                                // Row 9 — PAY / ADD RETURN FARE / DEPARTMENT, then the SMS and
+                                // EMAIL pair and the four dialog buttons.
                                 _grid(isMobile ? 1 : (isTablet ? 2 : 4), [
                                   _dropdown<PaymentTypeObject>(
                                     'Pay By',
@@ -792,22 +872,11 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                         const [],
                                         (v) => setState(() =>
                                     controller.selectPaymentTypeValue = v),
-                                    _isReturnJourney?34:19,
+                                    30,
                                     itemLabel: (p) => p.name!,
                                       allowUnselect: false
                                   ),
-                                  _dropdown<DashboardVehicleTypeObject>(
-                                    'Vehicle Type',
-                                    controller.selectVehicleValue,
-                                    controller.dashboardAllData!.vehicleTypes!,
-                                        (v) => setState(() {
-                                      controller.selectVehicleValue = v;
-                                      controller.getFaresCalculation();
-                                    }),
-                                    _isReturnJourney?35:20,
-                                    itemLabel: (p) => p.name!,
-                                    allowUnselect: false,
-                                  ),
+                                  if (_isReturnJourney) _addReturnFareCheckbox(),
                                   _dropdown<DepartmentObject>(
                                     'Select Department',
                                     controller.selectDepartmentData,
@@ -820,11 +889,14 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                       controller.update();
                                     }),
 
-                                    _isReturnJourney?36:21,
+                                    32,
                                     itemLabel: (p) => p.name ?? "",
                                   ),
-                                  _quotationToggle(),
+                                  _commsAndActionsRow(isMobile),
                                 ]),
+                                // Row 10 — R/LEAD, on its own.
+                                if (_isReturnJourney)
+                                  _grid(isMobile ? 1 : (isTablet ? 2 : 4), [_rLeadField()]),
                                 ///todo multi reservation
                                 // _grid(cols, [
                                 //   WebDateField('Date',
@@ -883,10 +955,18 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                 // ]),
                                 ///todo multi reservation
 
-                                const SizedBox(height: 4),
-                                _commsAndLuggageRow(isMobile),
+
                                 const SizedBox(height: 4),
                                 _statusCards(isMobile),
+                                const SizedBox(height: 4),
+                                // The fares bar's editable pair: FARE and, on a return, R/FARE.
+                                _grid(isMobile ? 1 : (isTablet ? 2 : 4), [
+                                  _field('FARE',
+                                      tab: 40,
+                                      prefix: Icons.currency_pound,
+                                      controller: controller.slugController),
+                                  if (_isReturnJourney) _rFareField(),
+                                ]),
                                 const SizedBox(height: 4),
                                 _driverRow(isMobile),
                               ],
@@ -951,6 +1031,10 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   /// which is the point. The form is capped at (window - [_kMinMapHeight]) and
   /// clips past that instead of overflowing, so an unusually short window
   /// costs the bottom of the form rather than the map or a layout error.
+  ///
+  /// Opened as a menu-bar tab: the strip hands the page an unbounded height and
+  /// scrolls it itself, so neither of the above applies and both parts are laid
+  /// out at their natural size.
   Widget _pageBody({
     required bool canScroll,
     required bool isMobile,
@@ -961,17 +1045,40 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       horizontal: isMobile ? 0 : 12,
       vertical: isMobile ? 0 : 12,
     );
-    if (canScroll) {
-      return SingleChildScrollView(
-        padding: padding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [form, map],
-        ),
-      );
-    }
     return LayoutBuilder(
       builder: (context, constraints) {
+        // Unbounded host first, because it rules out both branches below. The
+        // menu-bar tab strip renders the page inside a SingleChildScrollView
+        // (main_appbar.dart), so there is no height to hand out: Expanded and
+        // a maxHeight computed from infinity would throw, and a scroll view of
+        // our own would be a viewport with unbounded height. The page lays out
+        // at its natural size and the strip scrolls it.
+        if (!constraints.hasBoundedHeight) {
+          return Padding(
+            padding: padding,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                form,
+                // The map already carries a height whenever canScroll is set;
+                // on desktop it normally takes what the form leaves over, and
+                // there is nothing left over here.
+                canScroll
+                    ? map
+                    : SizedBox(height: _mapHeight(context), child: map),
+              ],
+            ),
+          );
+        }
+        if (canScroll) {
+          return SingleChildScrollView(
+            padding: padding,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [form, map],
+            ),
+          );
+        }
         final formMax = (constraints.maxHeight -
                 padding.vertical -
                 _kMinMapHeight)
@@ -1043,7 +1150,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     ctrl.update();
   }
 
-  Widget _returnJourneySection(bool isMobile, int cols, DashboardController controller) {
+  Widget _returnJourneySection(bool isMobile, DashboardController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -1070,7 +1177,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
               (addr) {
             setState(() => _selectedDrop = addr);
           },
-          19,
+          14,
           zoneLabel: (z) => z.name!,
           onPickIndex: (index) => controller.tapSelect(index),
           onPressed: () {
@@ -1125,12 +1232,12 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
               CrossAxisAlignment.stretch,
               children: [
                 _field('FL',
-                    tab: 22.3,
+                    tab: 17.3,
                     controller: controller
                         .selectAirportControllerReturn),
                 const SizedBox(height: 4),
                 _timeField('ARP',
-                    tab: 22.6,
+                    tab: 17.6,
                     controller: controller
                         .arrivalReturnTimeController,
                     onPicked: () =>
@@ -1153,7 +1260,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                   flex: 3,
                   // Caption blank: the dotted FL tag to the left names it.
                   child: _field('',
-                      tab: 22.3,
+                      tab: 17.3,
                       controller: controller
                           .selectAirportControllerReturn),
                 ),
@@ -1161,7 +1268,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                 Expanded(
                   flex: 1,
                   child: _timeField('ARP',
-                      tab: 22.6,
+                      tab: 17.6,
                       controller: controller
                           .arrivalReturnTimeController,
                       onPicked: () => controller.arrivalTimePicked = true),
@@ -1189,7 +1296,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
               (addr) {
             setState(() => _selectedDrop = addr);
           },
-          23,
+          17,
           zoneLabel: (z) => z.name!,
           onPickIndex: (index) => controller.tapSelect(index),
           onPressed: () {
@@ -1233,153 +1340,76 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
             controller.swapeToChangeReturnLocation();
           },
         ),
-        const SizedBox(height: 8),
-        _grid(cols, [
-          _dateField('R/Date',
-              tab: 28,
-              value: controller.pickUpDateReturn,
-              onChanged: (d) => setState(() {
-                    controller.pickUpDateReturn = d;
-                    controller.pickUpDateReturnPicked = true;
-                  })),
-          _timeField('R/Time',
-              tab: 29,
-              controller: controller.pickUpTimeControllerReturn,
-              onPicked: () => controller.pickUpTimeReturnPicked = true),
-          _field('R/Lead', tab: 30, controller: controller.minControllerReturn),
-          _field('R/Fare',
-              tab: 31,
-              prefix: Icons.currency_pound,
-              controller: controller.slugControllerReturn),
-        ]),
-        const SizedBox(height: 6),
-        isMobile
-            ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          _addReturnFareCheckbox(),
-          const SizedBox(height: 8),
-          _dropdown<DashboardVehicleTypeObject>(
-            'Select R/VEH',
-            controller.selectVehicleValueReturn,
-            controller.dashboardAllData!.vehicleTypes!,
-                (v) {
-              print('tap 01');
-              setState(() async{
-
-                print('tap 02');
-                // controller.selectVehicleValueReturn = v;
-                if (v == null) return;
-
-                print('tap 03');
-                controller.selectVehicleValueReturn = v;
-                controller.dropDownShow.value = false;
-                controller.getFaresCalculation();
-
-                // // Jab user khud badlega tab naye wale ki ID direct jayegi
-                // final fare = await getActiveFareForVehicle(
-                //   controller.dashboardAllData!.fareConfigurations!,
-                //   v.id!,
-                // );
-                // print('tap 04');
-                // if (fare != null) {
-                //   print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}');
-                //   controller.getFaresCalculation();
-                //   print('tap 05');
-                //   double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
-                //   controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
-                //   print('tap 06');
-                // } else {
-                //   print('tap 07');
-                //   print('No active fare found for this vehicle');
-                // }
-                print('tap 08');
-                controller.update();
-              }
-              );},
-            32,
-            itemLabel: (p) => p.name!,
-            allowUnselect: false,
-          ),
-          const SizedBox(height: 8),
-          _dropdown<DashboardDriverObject>(
-            'Select R/DRV',
-            controller.selectDriverValueReturn,
-            controller.dashboardAllData!.drivers ?? const [],
-                (v) => setState(() => controller.selectDriverValueReturn = v),
-            33,
-            itemLabel: (p) => p.name ?? '',
-          ),
-        ])
-            : Row(children: [
-          _addReturnFareCheckbox(),
-          const SizedBox(width: 16),
-          Expanded(
-            child: _dropdown<DashboardVehicleTypeObject>(
-              'Select R/VEH',
-              controller.selectVehicleValueReturn,
-              controller.dashboardAllData!.vehicleTypes!,
-                  (v) {
-                print('tap 01');
-                setState(() async{
-
-                  print('tap 02');
-                  // controller.selectVehicleValueReturn = v;
-                  if (v == null) return;
-
-                  print('tap 03');
-                  controller.selectVehicleValueReturn = v;
-                  controller.getFaresCalculation();
-
-                  controller.dropDownShow.value = false;
-                //
-                //   // Jab user khud badlega tab naye wale ki ID direct jayegi
-                //   final fare = await getActiveFareForVehicle(
-                //     controller.dashboardAllData!.fareConfigurations!,
-                //     v.id!,
-                //   );
-                //   print('tap 04');
-                //   if (fare != null) {
-                //     print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}');
-                //     controller.getFaresCalculation();
-                //     print('tap 05');
-                //     double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
-                //     controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
-                //     print('tap 06');
-                //   } else {
-                //     print('tap 07');
-                //     print('No active fare found for this vehicle');
-                //   }
-                //   print('tap 08');
-                //   controller.update();
-                }
-                );
-                },
-              32,
-              itemLabel: (p) => p.name!,
-              allowUnselect: false,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _dropdown<DashboardDriverObject>(
-              'Select R/DRV',
-              controller.selectDriverValueReturn,
-              controller.dashboardAllData!.drivers ?? const [],
-                  (v) => setState(() => controller.selectDriverValueReturn = v),
-              33,
-              itemLabel: (p) => p.name ?? '',
-            ),
-          ),
-        ]),
       ],
     );
   }
 
+  // ────────── return-journey fields, built one by one
+  //
+  // These used to sit together in a RETURN JOURNEY block below the outbound
+  // fields. The form now pairs each with the field it mirrors — R/DATE beside
+  // DATE, R/VEH beside VEH, R/FARE beside FARE — so each is built here and
+  // placed by the main column. _returnJourneySection keeps only the two
+  // address rows, which have no outbound twin to sit beside.
+  Widget _rDateField() => _dateField('R/Date',
+      tab: 13,
+      value: controller.pickUpDateReturn,
+      onChanged: (d) => setState(() {
+            controller.pickUpDateReturn = d;
+            controller.pickUpDateReturnPicked = true;
+          }));
+
+  Widget _rTimeField() => _timeField('R/Time',
+      tab: 14,
+      controller: controller.pickUpTimeControllerReturn,
+      onPicked: () => controller.pickUpTimeReturnPicked = true);
+
+  Widget _rLeadField() =>
+      _field('R/Lead', tab: 39, controller: controller.minControllerReturn);
+
+  Widget _rFareField() => _field('R/Fare',
+      tab: 41,
+      prefix: Icons.currency_pound,
+      controller: controller.slugControllerReturn);
+
+  // One builder where the mobile and desktop branches previously carried two
+  // copies of this dropdown. The bodies differed only in the order of two
+  // statements that both ran either way; this is the desktop copy.
+  Widget _rVehicleDropdown() => _dropdown<DashboardVehicleTypeObject>(
+        'Select R/VEH',
+        controller.selectVehicleValueReturn,
+        controller.dashboardAllData!.vehicleTypes!,
+        (v) {
+          if (v == null) return;
+          // The old copies passed `() async {}` to setState. Nothing in the
+          // body is awaited, and Flutter asserts when a setState callback
+          // returns a Future, so the marker is dropped here.
+          setState(() {
+            controller.selectVehicleValueReturn = v;
+            controller.getFaresCalculation();
+            controller.dropDownShow.value = false;
+          });
+        },
+        24,
+        itemLabel: (p) => p.name!,
+        allowUnselect: false,
+      );
+
+  Widget _rDriverDropdown() => _dropdown<DashboardDriverObject>(
+        'Select R/DRV',
+        controller.selectDriverValueReturn,
+        controller.dashboardAllData!.drivers ?? const [],
+        (v) => setState(() => controller.selectDriverValueReturn = v),
+        43,
+        itemLabel: (p) => p.name ?? '',
+      );
+
   Widget _addReturnFareCheckbox() =>
       Row(mainAxisSize: MainAxisSize.min, children: [
-        // Between R/Fare (31) and Select R/VEH (32). Orderless before this, so
-        // Tab reached it only after the whole form had been traversed.
+        // Sits in the PAY row, right after Pay By (30). Orderless before the
+        // form was numbered, so Tab reached it only after everything else.
         FocusTraversalOrder(
-          order: const NumericFocusOrder(31.5),
+          order: const NumericFocusOrder(31),
           child: GlowFocus(
             radius: 4,
             child: SizedBox(
@@ -1744,9 +1774,12 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       ],
     );
   }
-  // ────────── comms + luggage (PASS=22, LUGG=23, SLUGG=24)
-  Widget _commsAndLuggageRow(bool isMobile) {
-    Widget checkbox(String label, bool value, ValueChanged<bool?> onChanged, {required num tab}) =>
+  // ────────── comms, luggage and the row action buttons
+  // These three used to be closures inside _commsAndLuggageRow. The luggage
+  // fields now sit in the ACCOUNT row and the checkboxes and action buttons in
+  // the PAY row, so the builders have to be reachable from both.
+  Widget _commsCheckbox(String label, bool value, ValueChanged<bool?> onChanged,
+          {required num tab}) =>
         FocusTraversalOrder(
           order: NumericFocusOrder(tab.toDouble()),
           child: GlowFocus(
@@ -1768,12 +1801,12 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
             ]),
           ),
         );
-    Widget luggageField(String label, IconData icon,
-        TextEditingController controller, int tab) =>
-        SizedBox(
-          // 150 was the bare box; the caption beside it needs its own column.
-          width: 210,
-          child: _labelled(
+  // No fixed width any more: these were sized by hand (210) to sit in a Wrap
+  // beside the checkboxes. They are grid cells in the ACCOUNT row now, so they
+  // take the column width the row gives them, like every other field.
+  Widget _luggageField(String label, IconData icon,
+          TextEditingController controller, int tab) =>
+        _labelled(
             label,
             FocusTraversalOrder(
               order: NumericFocusOrder(tab.toDouble()),
@@ -1798,10 +1831,10 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                 ),
               ),
             ),
-          ),
         );
 
-    Widget iconBtn(IconData icon, {VoidCallback? onPressed, required int tab}) =>
+  Widget _actionIconBtn(IconData icon,
+          {VoidCallback? onPressed, required int tab}) =>
         FocusTraversalOrder(
           order: NumericFocusOrder(tab.toDouble()),
           child: GlowFocus(
@@ -1841,42 +1874,49 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
             ),
           ),
         );
+  /// LUGG and SLGG — the two cells the ACCOUNT row ends with.
+  List<Widget> _luggageFields() => [
+        // _luggageField('Passenger'.toUpperCase(), Icons.work,
+        //     controller.passController, 27),
+        _luggageField(
+            'luggage'.toUpperCase(), Icons.luggage, controller.luggController, 28),
+        _luggageField('small luggage'.toUpperCase(), Icons.luggage,
+            controller.sluggController, 29),
+      ];
+
+  /// SMS / EMAIL and the four dialog buttons — the tail of the PAY row.
+  Widget _commsAndActionsRow(bool isMobile) {
     final left = Wrap(
       spacing: 12,
       runSpacing: 8,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        // 21.2 / 21.4 (36.2 / 36.4 in return mode): these previously reused 20
-        // and 21, which are the Vehicle Type and Department dropdowns in the
-        // row above — a duplicate order leaves the relative position of the
-        // colliding pair up to a geometry tie-break instead of to us.
-        checkbox('SMS', controller.smsCheckbox.value,
-                (v) => setState(() => controller.smsCheckbox.value = v ?? false), tab: _isReturnJourney ? 36.2 : 21.2),
-        checkbox('EMAIL', controller.emailCheckbox.value,
-                (v) => setState(() => controller.emailCheckbox.value = v ?? false), tab: _isReturnJourney ? 36.4 : 21.4),
-        // luggageField('Passenger'.toUpperCase(), Icons.work, controller.passController, _isReturnJourney?37:22,),
-        luggageField('luggage'.toUpperCase(), Icons.luggage, controller.luggController,  _isReturnJourney?37:22,),
-        luggageField('small luggage'.toUpperCase(), Icons.luggage, controller.sluggController,  _isReturnJourney?38:23,),
+        _commsCheckbox('SMS', controller.smsCheckbox.value,
+            (v) => setState(() => controller.smsCheckbox.value = v ?? false),
+            tab: 33),
+        _commsCheckbox('EMAIL', controller.emailCheckbox.value,
+            (v) => setState(() => controller.emailCheckbox.value = v ?? false),
+            tab: 34),
       ],
     );
     final right = Row(mainAxisSize: MainAxisSize.min, children: [
-      iconBtn(Icons.person, tab: _isReturnJourney ? 39 : 24, onPressed: () {
+      _actionIconBtn(Icons.person, tab: 35, onPressed: () {
         showDialog(context: context, builder: (_) => RestrictDriversAlert());
       }),
-      iconBtn(Icons.attach_money, tab: _isReturnJourney ? 40 : 25, onPressed: () {
+      _actionIconBtn(Icons.attach_money, tab: 36, onPressed: () {
         showDialog(
           context: context,
           builder: (_) => ChildSeatsAlert(),
         );
       }),
-      iconBtn(Icons.note_add, tab: _isReturnJourney ? 41 : 26, onPressed: () {
+      _actionIconBtn(Icons.note_add, tab: 37, onPressed: () {
         showDialog(
           context: context,
           barrierDismissible: false,
           builder: (_) => ExtraFaresAlert(),
         );
       }),
-      iconBtn(Icons.calculate, tab: _isReturnJourney ? 42 : 27, onPressed: () {
+      _actionIconBtn(Icons.calculate, tab: 38, onPressed: () {
         showDialog(
           context: context,
           builder: (_) => ExtraInfoAlert(),
@@ -1973,12 +2013,12 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       controller.selectDriverValue,
       controller.dashboardAllData!.drivers ?? const [],
           (v) => setState(() => controller.selectDriverValue = v),
-      _isReturnJourney ? 43 : 28,
+      42,
       itemLabel: (p) => p.name ?? '',
       hint: 'Select Driver',
     );
     final clear = FocusTraversalOrder(
-      order: NumericFocusOrder((_isReturnJourney ? 44 : 29).toDouble()),
+      order: const NumericFocusOrder(44),
       child: GlowFocus(
         child: ElevatedButton(
           onPressed: () {
@@ -1997,7 +2037,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       ),
     );
     final home = FocusTraversalOrder(
-      order: NumericFocusOrder((_isReturnJourney ? 45 : 30).toDouble()),
+      order: const NumericFocusOrder(45),
       child: GlowFocus(
         child: Focus(
           // Intercept Tab so focus jumps from the Home button directly to the
@@ -2054,12 +2094,18 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
         ),
       ),
     );
+    // R/DRV sits beside DRV here rather than at the end of a return block of
+    // its own, the same pairing the rest of the form now uses.
     if (isMobile) {
       return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         const Text('Driver',
             style: TextStyle(fontSize: _fsLabel, color: Colors.black)),
         const SizedBox(height: 4),
         dd,
+        if (_isReturnJourney) ...[
+          const SizedBox(height: 8),
+          _rDriverDropdown(),
+        ],
         const SizedBox(height: 10),
         Row(children: [
           Expanded(child: clear),
@@ -2075,6 +2121,10 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
             style: TextStyle(fontSize: _fsField, fontWeight: FontWeight.w600)),
       ),
       Expanded(child: dd),
+      if (_isReturnJourney) ...[
+        const SizedBox(width: 12),
+        Expanded(child: _rDriverDropdown()),
+      ],
       const SizedBox(width: 10),
       clear,
       const SizedBox(width: 8),
@@ -2321,7 +2371,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
         // after Department (21, or 36 in return mode). Previously orderless,
         // which parked it behind every numbered field.
         FocusTraversalOrder(
-          order: NumericFocusOrder(_isReturnJourney ? 36.1 : 21.1),
+          order: const NumericFocusOrder(26),
           child: CallbackShortcuts(
             bindings: {
               const SingleActivator(LogicalKeyboardKey.enter): () {
@@ -2397,6 +2447,22 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
   String _labelOf(T item) =>
       widget.itemLabel?.call(item) ?? item.toString();
 
+  /// Placeholder drawn in the closed box while nothing is picked. Same
+  /// centreStart Align the value entries use, so it sits on the field's
+  /// middle line rather than on its baseline. Fields that carry their caption
+  /// beside them pass no hint and get nothing.
+  Widget get _hintChild => widget.hintText.isEmpty
+      ? const SizedBox.shrink()
+      : Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: Text(
+            widget.hintText,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: _kHintTextStyle.copyWith(color: Colors.grey.shade600),
+          ),
+        );
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -2408,11 +2474,14 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
         // from the field beside it until it is opened.
         return InputDecorator(
           isFocused: isFocused,
-          // Drives the hint: shown inside the box while nothing is picked,
-          // gone the moment there is a value — exactly like a TextField's.
           isEmpty: widget.value == null,
           decoration: _kFieldDecoration().copyWith(
-            hintText: widget.hintText,
+            // No hintText here: InputDecorator baseline-aligns its hint to the
+            // input's baseline, and the closed dropdown's empty slot is a
+            // zero-height box — so the placeholder sat on the bottom edge of
+            // the field. The hint is drawn inside the button instead (see
+            // `_hintChild`), where it centres exactly like a picked value.
+            //
             // A dense DropdownButton is 24px tall against a 12px field's ~16,
             // so the vertical padding drops by the difference to keep the two
             // controls the same overall height.
@@ -2425,9 +2494,9 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
               focusColor: Colors.transparent,
               isDense: true,
               value: widget.value,
-              // Empty: the decoration's hintText owns the empty state, and
-              // a hint here would print a second string over it.
-              hint: const SizedBox.shrink(),
+              // Only reached when nothing in `items` matches the value —
+              // i.e. the allowUnselect: false fields with no selection.
+              hint: _hintChild,
               isExpanded: widget.isExpanded,
               icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
               // Ambient style for the open menu. The closed field is styled
@@ -2442,14 +2511,16 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
               // through `style` would bold the whole list with it. This builder
               // is the only seam between the two: same order and length as
               // `items` (DropdownButton asserts it), value style on the real
-              // entries, and nothing at all for the placeholder — that slot is
-              // the empty state, which the hint draws.
+              // entries, and the hint for the placeholder slot.
               // The Aligns are not decoration: DropdownButton wraps these in
               // a fixed-height SizedBox, and the DropdownMenuItems they stand
               // in for carry a centerStart Align of their own — without it the
               // closed value rides the top of the row instead of its middle.
               selectedItemBuilder: (context) => [
-                if (widget.allowUnselect) const SizedBox.shrink(),
+                // The unselect entry is what a null value resolves to, so this
+                // slot — not DropdownButton.hint — is the empty state whenever
+                // allowUnselect is on.
+                if (widget.allowUnselect) _hintChild,
                 ...widget.items.map((e) => Align(
                   alignment: AlignmentDirectional.centerStart,
                   child: Text(

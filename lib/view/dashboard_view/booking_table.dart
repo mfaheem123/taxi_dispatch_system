@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'dart:ui' as html show window;
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
@@ -951,16 +952,54 @@ class _BookingTableState extends State<BookingTable> {
                                       if(permissions.contains('update_booking')) Expanded(
                                         child: IconButton(
                                           icon:  Icon(Icons.more_horiz, color: Colors.green),
-                                          onPressed: () async {
-                                            // Static for now: the edit screen is still being
-                                            // wired up, so every row opens booking 1667 instead
-                                            // of item.id. EditJobsWidget loads it through
-                                            // DashboardController.dashBoardDataBinding itself,
-                                            // which is what fills the shared fields.
-                                            Get.to(() => EditJobsWidget(
-                                                  booking: EditJobDetails(id: 1667),
-                                                ));
-                                            // controller.dashBoardDataBinding(id: item.id!);
+                                          onPressed: () {
+                                            // openMenuPage keys the chip strip by TITLE, so the
+                                            // title has to name this booking. "COMPLETE BOOKINGS"
+                                            // is the completed-bookings list's own title, so
+                                            // passing it here re-pointed that tab at the edit form
+                                            // and left every row sharing the one tab.
+
+
+                                            ///todo edit binding
+
+                                            // final ref = item.referenceNumber?.trim();
+                                            // final title = 'BOOKING '
+                                            //     '${ref == null || ref.isEmpty ? (item.id ?? '-') : ref}';
+                                            // // The cap is on OPENING a tab. A booking already in
+                                            // // the strip just gets selected, which has to keep
+                                            // // working once 20 are open.
+                                            // final alreadyOpen = controller.selectedMenuItems
+                                            //     .any((tab) => tab.title == title);
+                                            // if (!alreadyOpen &&
+                                            //     controller.selectedMenuItems.length >= 20) {
+                                            //   BotToast.showText(
+                                            //       text: "You can keep at most 20 pages open at once. "
+                                            //           "Close one and try again.");
+                                            //   return;
+                                            // }
+                                            // // One instance for both: menuBarRefresh only assigns
+                                            // // currentPage when the tab already existed, so the
+                                            // // caller sets it for the freshly-added-chip path.
+                                            // // Building it twice handed the strip a different
+                                            // // widget from the one on screen.
+                                            // final page = EditJobsWidget(
+                                            //   // id is a String on this model; tryParse on a null
+                                            //   // id used to go through "null" and come back null
+                                            //   // anyway, just less directly.
+                                            //   booking: EditJobDetails(id: int.tryParse(item.id ?? '')),
+                                            // );
+                                            // setState(() {
+                                            //   controller.currentPage.value = page;
+                                            //   controller.menuBarRefresh(
+                                            //       title: title, pageName: page);
+                                            // });
+
+                                            /// todo edit binding
+
+                                            
+                                            // Get.toNamed(Routes.editJobs,
+                                            //     parameters: {'id': "${item.id}"});
+                                            controller.dashBoardDataBinding(id: item.id!);
                                             // Get.to(UpdateBooking(data: item.id,));
 
                                             //   final newTabUrl =
