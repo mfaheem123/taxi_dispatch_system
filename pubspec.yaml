@@ -153,3 +153,6 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+dependency_overrides:
+  html: 0.15.0
+  csslib: 0.17.3
