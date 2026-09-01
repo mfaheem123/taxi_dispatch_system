@@ -183,91 +183,124 @@ class _CreateAccountInvoiceScreenState
                         controller.getAccountData(subsidiariesId: val!.id);
                       },
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("ACCOUNT",
-                            style: mozillaTextSemiBoldText(
-                              context: context,
-                              fontSize: 13,
-                            )),
-                        SizedBox(
-                          height: 35,
-                          width: fieldWidth / 1.5,
-                          child: DropdownButtonFormField<DashboardAccountObject>(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              isDense: true,
-                            ),
-                            value: (controller.dashboardAccountData?.accounts?.contains(controller.selectAccountValue) ?? false)
-                                ? controller.selectAccountValue
-                                : null,
-                            items: controller.dashboardAccountData == null
-                                ? []
-                                : controller.dashboardAccountData!.accounts!
-                                    .map((account) =>
-                                        DropdownMenuItem<DashboardAccountObject>(
-                                          value: account,
-                                          child: Text(
-                                            account.name ?? "",
-                                            style: mozillaTextRegularText(
-                                              fontSize: 12,
-                                              color: DynamicColors.textClr,
-                                            ),
-                                          ),
-                                        ))
-                                    .toList(),
-                            onChanged: (v) {
-                              controller.selectAccountValue = v;
-                              controller.selectDepartmentData = null;
-                              controller.update();
-                            },
-                          ),
-                        ),
-                      ],
+                    CustomDropdownField<DashboardAccountObject>(
+                      height: 35,
+                      text: "ACCOUNT",
+                      width: fieldWidth / 1.5,
+                      label: "ACCOUNT",
+                      items: controller.dashboardAccountData?.accounts ?? [],
+                      value: (controller.dashboardAccountData?.accounts?.contains(controller.selectAccountValue) ?? false)
+                          ? controller.selectAccountValue
+                          : null,
+                      itemLabel: (item) => item.name ?? "",
+                      onChanged: (val) {
+                        controller.selectAccountValue = val;
+                        controller.selectDepartmentData = null;
+                        controller.update();
+                      },
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("DEPARTMENT",
-                            style: mozillaTextSemiBoldText(
-                              context: context,
-                              fontSize: 13,
-                            )),
-                        SizedBox(
-                          height: 35,
-                          width: fieldWidth / 1.5,
-                          child: DropdownButtonFormField<DepartmentObject>(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              isDense: true,
-                            ),
-                            value: (controller.selectAccountValue?.departments?.contains(controller.selectDepartmentData) ?? false)
-                                ? controller.selectDepartmentData
-                                : null,
-                            items: controller.selectAccountValue == null
-                                ? []
-                                : controller.selectAccountValue!.departments!
-                                    .map((department) =>
-                                        DropdownMenuItem<DepartmentObject>(
-                                          value: department,
-                                          child: Text(
-                                            department.name ?? "",
-                                            style: mozillaTextRegularText(
-                                              fontSize: 12,
-                                              color: DynamicColors.textClr,
-                                            ),
-                                          ),
-                                        ))
-                                    .toList(),
-                            onChanged: (v) {
-                              controller.selectDepartmentData = v;
-                              controller.update();
-                            },
-                          ),
-                        ),
-                      ],
+                    CustomDropdownField<DepartmentObject>(
+                      height: 35,
+                      text: "DEPARTMENT",
+                      width: fieldWidth / 1.5,
+                      label: "DEPARTMENT",
+                      items: controller.selectAccountValue?.departments ?? [],
+                      value: (controller.selectAccountValue?.departments?.contains(controller.selectDepartmentData) ?? false)
+                          ? controller.selectDepartmentData
+                          : null,
+                      itemLabel: (item) => item.name ?? "",
+                      onChanged: (val) {
+                        controller.selectDepartmentData = val;
+                        controller.update();
+                      },
                     ),
+
+
+                    // Column(
+                    //   crossAxisAlignment: CrossAxisAlignment.start,
+                    //   children: [
+                    //     Text("ACCOUNT",
+                    //         style: mozillaTextSemiBoldText(
+                    //           context: context,
+                    //           fontSize: 13,
+                    //         )),
+                    //     SizedBox(
+                    //       height: 35,
+                    //       width: fieldWidth / 1.5,
+                    //       child: DropdownButtonFormField<DashboardAccountObject>(
+                    //         decoration: const InputDecoration(
+                    //           border: OutlineInputBorder(),
+                    //           isDense: true,
+                    //         ),
+                    //         value: (controller.dashboardAccountData?.accounts?.contains(controller.selectAccountValue) ?? false)
+                    //             ? controller.selectAccountValue
+                    //             : null,
+                    //         items: controller.dashboardAccountData == null
+                    //             ? []
+                    //             : controller.dashboardAccountData!.accounts!
+                    //                 .map((account) =>
+                    //                     DropdownMenuItem<DashboardAccountObject>(
+                    //                       value: account,
+                    //                       child: Text(
+                    //                         account.name ?? "",
+                    //                         style: mozillaTextRegularText(
+                    //                           fontSize: 12,
+                    //                           color: DynamicColors.textClr,
+                    //                         ),
+                    //                       ),
+                    //                     ))
+                    //                 .toList(),
+                    //         onChanged: (v) {
+                    //           controller.selectAccountValue = v;
+                    //           controller.selectDepartmentData = null;
+                    //           controller.update();
+                    //         },
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+                    // Column(
+                    //   crossAxisAlignment: CrossAxisAlignment.start,
+                    //   children: [
+                    //     Text("DEPARTMENT",
+                    //         style: mozillaTextSemiBoldText(
+                    //           context: context,
+                    //           fontSize: 13,
+                    //         )),
+                    //     SizedBox(
+                    //       height: 35,
+                    //       width: fieldWidth / 1.5,
+                    //       child: DropdownButtonFormField<DepartmentObject>(
+                    //         decoration: const InputDecoration(
+                    //           border: OutlineInputBorder(),
+                    //           isDense: true,
+                    //         ),
+                    //         value: (controller.selectAccountValue?.departments?.contains(controller.selectDepartmentData) ?? false)
+                    //             ? controller.selectDepartmentData
+                    //             : null,
+                    //         items: controller.selectAccountValue == null
+                    //             ? []
+                    //             : controller.selectAccountValue!.departments!
+                    //                 .map((department) =>
+                    //                     DropdownMenuItem<DepartmentObject>(
+                    //                       value: department,
+                    //                       child: Text(
+                    //                         department.name ?? "",
+                    //                         style: mozillaTextRegularText(
+                    //                           fontSize: 12,
+                    //                           color: DynamicColors.textClr,
+                    //                         ),
+                    //                       ),
+                    //                     ))
+                    //                 .toList(),
+                    //         onChanged: (v) {
+                    //           controller.selectDepartmentData = v;
+                    //           controller.update();
+                    //         },
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                     Padding(padding: EdgeInsetsGeometry.only(left: 10),
                     child: CustomTextField(
                       borderRadius: 4,
