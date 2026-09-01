@@ -68,7 +68,12 @@ class SettingController extends GetxController {
     var response = await Api().get("templates/template_types", sendCompanyId: true,);
     if (response.statusCode == 200) {
       selectTempleteType = TempTypeModel.fromJson(response.data);
-      selectedTemplateType = selectTempleteType!.templateTypes![1];
+      // selectedTemplateType = selectTempleteType!.templateTypes![1];
+      final types = selectTempleteType?.templateTypes;
+      if (types != null && types.isNotEmpty) {
+        selectedTemplateType = types.length > 1 ? types[1] : types[0];
+        getTemplateByTypes(selectedTempId: selectedTemplateType!.id);
+      }
       templateTypeLoad = false;
       update();
     }
