@@ -895,8 +895,8 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                   _commsAndActionsRow(isMobile),
                                 ]),
                                 // Row 10 — R/LEAD, on its own.
-                                // if (_isReturnJourney)
-                                  // _grid(isMobile ? 1 : (isTablet ? 2 : 4), [_rLeadField()]),
+                                if (_isReturnJourney)
+                                  _grid(isMobile ? 1 : (isTablet ? 2 : 4), [_rLeadField()]),
                                 ///todo multi reservation
                                 // _grid(cols, [
                                 //   WebDateField('Date',
@@ -965,10 +965,10 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                       tab: 40,
                                       prefix: Icons.currency_pound,
                                       controller: controller.slugController),
-                                  // if (_isReturnJourney) _rFareField(),
+                                  if (_isReturnJourney) _rFareField(),
                                 ]),
                                 const SizedBox(height: 4),
-                                // _driverRow(isMobile),
+                                _driverRow(isMobile),
                               ],
                             ),
                           ),
