@@ -913,6 +913,10 @@ class SettingController extends GetxController {
   bool isCallLoading = false;
   bool isDateSelected = false;
 
+  var currentPage = 1.obs;
+  var totalPages = 1.obs;
+  final int limit = 20;
+
   getCallRecordings() async{
     isCallLoading = true;
     update();
@@ -922,6 +926,8 @@ class SettingController extends GetxController {
     
     var response = await Api().get("call-recordings/recordings", sendCompanyId: true,
       queryParameters: {
+        "page": currentPage.value,
+        "limit": limit,
         if (isDateSelected) "from_date": fromDateStr,
         if (isDateSelected) "to_date": toDateStr,
         "start_time": callStartTimeController.text,
@@ -933,9 +939,15 @@ class SettingController extends GetxController {
 
     if (response.statusCode == 200) {
       callRecordingModel = CallRecordingModel.fromJson(response.data);
+      totalPages.value = callRecordingModel?.pagination?.totalPages ?? 1;
     }
     isCallLoading = false;
     update();
+  }
+
+  void onPageChange(int page) {
+    currentPage.value = page;
+    getCallRecordings();
   }
 
 
