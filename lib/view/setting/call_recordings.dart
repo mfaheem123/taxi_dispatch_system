@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../component/color.dart';
 import '../../component/customButton.dart';
 import '../../component/datatable_widget.dart';
+import '../../component/pagination.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
 import '../dashboard_view/booking_table.dart';
@@ -233,6 +234,11 @@ class _CallRecordingScreenState extends State<CallRecordingScreen> {
                           }).toList(),
                         ),
                       ),
+                    ),
+                    PaginationWidget(
+                      currentPage: controller.currentPage.value,
+                      totalPages: controller.totalPages.value,
+                      onPageChange: controller.onPageChange,
                     ),
                   ]),
             );

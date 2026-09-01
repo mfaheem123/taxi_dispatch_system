@@ -10,25 +10,65 @@ String callRecordingModelToJson(CallRecordingModel data) => json.encode(data.toJ
 
 class CallRecordingModel {
   bool? status;
-  int? count;
+  Pagination? pagination;
   List<Recording>? recordings;
 
   CallRecordingModel({
     this.status,
-    this.count,
+    this.pagination,
     this.recordings,
   });
 
   factory CallRecordingModel.fromJson(Map<String, dynamic> json) => CallRecordingModel(
     status: json["status"],
-    count: json["count"],
+    pagination: json["pagination"] == null ? null : Pagination.fromJson(json["pagination"]),
     recordings: json["recordings"] == null ? [] : List<Recording>.from(json["recordings"]!.map((x) => Recording.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
     "status": status,
-    "count": count,
+    "pagination": pagination?.toJson(),
     "recordings": recordings == null ? [] : List<dynamic>.from(recordings!.map((x) => x.toJson())),
+  };
+}
+
+class Pagination {
+  int? totalItems;
+  int? currentPage;
+  int? totalPages;
+  int? limit;
+  int? offset;
+  bool? hasNextPage;
+  bool? hasPrevPage;
+
+  Pagination({
+    this.totalItems,
+    this.currentPage,
+    this.totalPages,
+    this.limit,
+    this.offset,
+    this.hasNextPage,
+    this.hasPrevPage,
+  });
+
+  factory Pagination.fromJson(Map<String, dynamic> json) => Pagination(
+    totalItems: json["totalItems"],
+    currentPage: json["currentPage"],
+    totalPages: json["totalPages"],
+    limit: json["limit"],
+    offset: json["offset"],
+    hasNextPage: json["hasNextPage"],
+    hasPrevPage: json["hasPrevPage"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "totalItems": totalItems,
+    "currentPage": currentPage,
+    "totalPages": totalPages,
+    "limit": limit,
+    "offset": offset,
+    "hasNextPage": hasNextPage,
+    "hasPrevPage": hasPrevPage,
   };
 }
 
