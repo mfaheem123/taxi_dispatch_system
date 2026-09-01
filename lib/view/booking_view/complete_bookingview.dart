@@ -101,9 +101,7 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                       Padding(
                         padding: const EdgeInsets.only(top: 12),
                         child: CustomButton(
-                          onTap: () {
-                            DriverExpiryDocumentsAlert.show(context);
-                          },
+
                           height: 40,
                           width: 80,
                           verticalPadding: 0.0,

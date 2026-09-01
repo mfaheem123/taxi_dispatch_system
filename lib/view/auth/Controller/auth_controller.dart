@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../alert/cli_extention_alert.dart';
+import '../../../alert/driver_login_alert.dart';
 import '../../administration/model/user_model.dart';
 
 import '../reminder_payment_alert.dart';
@@ -28,7 +29,7 @@ class AuthController extends GetxController {
         update();
 
         // SOCKET CONNECT (Auto Login / Session Restore)
-        // SubscriptionSocketService.initSocket();
+        SubscriptionSocketService.initSocket();
       }
     }
   }
@@ -66,7 +67,7 @@ class AuthController extends GetxController {
         if (employeeData['company_id'] != null) {
           sp.write('company_id', employeeData['company_id'].toString());
         }
-        // SubscriptionSocketService.initSocket();
+        SubscriptionSocketService.initSocket();
 
         await getRole(id: employeeData['role_id']);
         Employee.selectedEmployee = Employee.fromJson(employeeData);
@@ -88,6 +89,7 @@ class AuthController extends GetxController {
           PostAuthLoader(false);
           update();
         }
+        await checkExpiryDocumentsOnLogin();
       } else {
         PostAuthLoader(false);
         // Error handling behtar karne ke liye response message bhi dikha sakte hain
@@ -132,7 +134,7 @@ class AuthController extends GetxController {
       print("Logout API Error: $e");
     } finally {
       // --- SOCKET CLOSE ---
-      // SubscriptionSocketService.closeSocket();
+      SubscriptionSocketService.closeSocket();
 
       sp.remove('token');
       sp.remove('userData');
@@ -142,5 +144,29 @@ class AuthController extends GetxController {
       Get.offAllNamed(Routes.loginScreen);
     }
   }
+
+
+
+  DriverExpiryResponse? driverExpiryResponse;
+
+  checkExpiryDocumentsOnLogin() async {
+
+    var response = await Api().get("drivers/driver-expiry-documents"
+      // sendCompanyId: true,
+    );
+    if (response.statusCode == 200 ) {
+      final expiryData = DriverExpiryResponse.fromJson(response.data);
+
+      // Condition: Agar Drivers list me items hon to alert show karo
+      if (expiryData.status && expiryData.drivers.isNotEmpty) {
+        DriverExpiryDocumentsAlert.show(Get.context!, expiryData.drivers);
+      }
+
+    }else{
+      print("Expiry API Error: $response");
+
+    }
+  }
+
 
 }
