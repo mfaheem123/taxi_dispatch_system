@@ -353,18 +353,19 @@ class SettingController extends GetxController {
     try {
       var response = await Api().post(formData, "company-configuration/add");
 
-      print("📥 SAVE CONFIG RESPONSE STATUS: ${response.statusCode}");
-      print("📥 SAVE CONFIG RESPONSE DATA: ${response.data}");
+      print(" SAVE CONFIG RESPONSE STATUS: ${response.statusCode}");
+      print(" SAVE CONFIG RESPONSE DATA: ${response.data}");
 
       if (response.statusCode == 200) {
         BotToast.showText(text: "CONFIGURATION SAVED SUCCESSFULLY!");
-      } else {
-        String errorMessage = response.data?['message']?.toString() ?? "FAILED!";
-        BotToast.showText(text: errorMessage);
-        // BotToast.showText(text: "FAILED!");
       }
+      // else {
+      //   String errorMessage = response.data?['message']?.toString() ?? "FAILED!";
+      //   BotToast.showText(text: errorMessage);
+      //   // BotToast.showText(text: "FAILED!");
+      // }
     } catch (e) {
-      print("❌ CATCH ERROR: $e");
+      print(" CATCH ERROR: $e");
       BotToast.showText(text: "Error: $e");
     } finally {
       isSavingConfig = false;
@@ -383,7 +384,7 @@ class SettingController extends GetxController {
     var response = await Api().get("company-configuration/subsidiary_id/$subsidiaryId",
     // sendCompanyId: true,
     );
-    print("📥 GET CONFIG RESPONSE: ${response.statusCode} -> ${response.data}");
+    print(" GET CONFIG RESPONSE: ${response.statusCode} -> ${response.data}");
 
     if (response.statusCode == 200) {
       companyConfigurationModel = CompanyConfigurationModel.fromJson(response.data);
@@ -573,7 +574,7 @@ class SettingController extends GetxController {
               : "document/document_numbers/update/${documentUpdateId.value}"
       );
 
-      print("🔴 SERVER RESPONSE: ${response.statusCode} -> ${response.data}");
+      print("SERVER RESPONSE: ${response.statusCode} -> ${response.data}");
 
       if (response.statusCode == 200) {
         BotToast.showText(text: updateDocumentNumber.value == true
@@ -588,7 +589,7 @@ class SettingController extends GetxController {
         BotToast.showText(text: "Failed to add document number");
       }
     } catch (e) {
-      print("❌ CRITICAL API ERROR: $e");
+      print("CRITICAL API ERROR: $e");
       BotToast.showText(text: "Error: $e");
     } finally {
       isAddNumber = false;
@@ -965,6 +966,8 @@ class SettingController extends GetxController {
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo call recordings Work
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo voip setting
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Chat screen
 

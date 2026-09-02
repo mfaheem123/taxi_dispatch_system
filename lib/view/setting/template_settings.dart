@@ -28,12 +28,9 @@ class TemplateSettings extends StatefulWidget {
 }
 
 class _TemplateSettingsState extends State<TemplateSettings> {
-
-
   SettingController controller = Get.isRegistered<SettingController>()
       ? Get.find<SettingController>()
       : Get.put(SettingController());
-
 
   List permissions = [];
   @override
@@ -44,7 +41,6 @@ class _TemplateSettingsState extends State<TemplateSettings> {
     shortCutKeyValue.value = "templateSettings";
     controller.getTemplateTypes();
   }
-
 
 //
 //   /// Editable Invoice HTML Template
@@ -205,7 +201,6 @@ class _TemplateSettingsState extends State<TemplateSettings> {
 //
 // """;
 
-
   DropdownModel? selectedTag;
 
   List<DropdownModel> templateList = [
@@ -253,277 +248,159 @@ class _TemplateSettingsState extends State<TemplateSettings> {
     DropdownModel(id: 4, name: "COMPANY ADDRESS"),
     DropdownModel(id: 4, name: "FLIGHT NUMBER"),
     DropdownModel(id: 4, name: "ARRIVING FROM"),
-
-
   ];
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
-    final screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
-    double width = WidgetsBinding.instance.platformDispatcher.views.first
-        .physicalSize.width /
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    double width = WidgetsBinding
+        .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
     return GetBuilder<SettingController>(
-        builder: (controller) {
-          return LayoutBuilder(builder: (context, constraints) {
-            final double maxWidth = constraints.maxWidth;
-            final bool isMobile = maxWidth < 600;
-            final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
-            // Instead of fixed width, we calculate flexible field widths
-            final double fieldWidth = isMobile
-                ? maxWidth // full width
-                : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
+      builder: (controller) {
+        return LayoutBuilder(builder: (context, constraints) {
+          final double maxWidth = constraints.maxWidth;
+          final bool isMobile = maxWidth < 600;
+          final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+          // Instead of fixed width, we calculate flexible field widths
+          final double fieldWidth = isMobile
+              ? maxWidth // full width
+              : isTablet
+              ? maxWidth / 2
+              : maxWidth / 4;
 
-            return
-              controller.templateTypeLoad == true ?
-              Center(
-                child: CircularProgressIndicator(),
-              )
-                  : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 50,
-                  ),
-                  Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                          AppText.templateSettings, style: titleDesign())),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(6.0),
-                    child: Wrap(
-                      spacing: 10,
-                      runSpacing: 16,
-                      children: [
-                        Container(
-                          // width: fieldWidth*2.5,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              border: Border.all(color: DynamicColors.textClr)
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 6.0),
-                            child: Wrap(
-                              spacing: 10,
-                              runSpacing: 16,
-                              children: [
-                                Container(
-                                  width: Get.width,
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 12),
-                                  color: DynamicColors.gryClr.withOpacity(0.5),
-                                  child: Text(AppText.templateSelection,
-                                      style: titleDesign()),
-                                ),
-
-                                if(permissions.contains('read_template_type')) CustomDropdownField<TemplateType>(
-                                  text: "SELECT TEMPLATE TYPE",
-                                  label: "SELECT TEMPLATE TYPE",
-                                  items: controller.selectTempleteType!
-                                      .templateTypes!,
-                                  value: controller.selectedTemplateType,
-                                  itemLabel: (val) => val.name ?? "",
-                                  onChanged: (val) {
-                                    controller.selectedTemplateType = val;
-                                    controller.getTemplateByTypes(
-                                        selectedTempId: val!.id);
-                                  },
-                                ),
-
-                                CustomDropdownField<Template>(
-                                  text: "Select User",
-                                  label: "Select User",
-                                  items: controller.templeteByTypeMOdel
-                                      ?.templates ?? [],
-                                  value: controller.templeteByTypeMOdel
-                                      ?.templates
-                                      ?.contains(controller.template) == true
-                                      ? controller.template
-                                      : null,
-                                  itemLabel: (val) => val.name ?? "",
-                                  onChanged: (val) {
-                                    controller.template = val;
-                                    controller.getTemplateHtmlText(
-                                        selectedTempId: val!.id);
-                                  },
-                                ),
-
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 20),
-                                  child: CustomTextField(
-                                    borderRadius: 4,
-                                    controller: controller.emailController,
-                                    width: fieldWidth / 1.5,
-                                    hintText: AppText.email,
-                                    // columnText: true,
-                                    height: 30,
-                                  ),
-                                ),
-
-                                /*CustomDropdownField<String>(
-                                width: fieldWidth/1.5,
-                                label: "SELECT TEMPLATE", items:[
-                                "DRIVER DISPATCH",
-                                "CUSTOMER DISPATCH",
-                                "AIRPORT ARRIVAL",
-                                "BOOKING CONFIRMATION SMS",
-                                "BOOKING CANCEL SMS",
-                                "BOOKING COMPLETE SMS",],
-                                value: controller.selectedTemplate,
-                                itemLabel: (val) => val, // just show the string
-                                onChanged: (val) {
-                                  controller.selectedTemplate = val;
-                                  controller.update();
-                                },
-                              ),*/
-                                // Padding(
-                                //   padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20),
-                                //   child: CustomButton(
-                                //     width: fieldWidth/2.5,
-                                //     height: 30,
-                                //     borderRadius: 4,
-                                //     verticalPadding: 0.0,
-                                //     fontSize: 11,
-                                //     btnText: AppText.save,
-                                //   ),
-                                // ),
-
-
-                                if(permissions.contains('update_template')) Padding(
-                                  padding: const EdgeInsets.only(top: 20.0),
-                                  child: CustomButton(
-                                    onTap: () {
-                                      controller.updateTemplateHtml(
-                                          templateId: controller
-                                              .templeteHtmlModel!.templates!
-                                              .id!);
-                                      print(controller.getTemplateHtmlText(
-                                          selectedTempId: controller
-                                              .templeteHtmlModel!.templates!.id)
-                                      );
-
-                                      /// use for download that time is comment
-                                      /// controller.showDownloadButtons.value = true;
-                                    },
-                                    verticalPadding: 0.0,
-                                    width: fieldWidth / 2.5,
-                                    height: 30,
-                                    borderRadius: 4,
-                                    btnText: AppText.save,
-                                    style: mozillaTextRegularText(
-                                        fontSize: 10,
-                                        color: DynamicColors.whiteClr),
-                                  ),
-                                ),
-
-                                /// Download PDF BUTTON
-                                //   Obx(() => controller.showDownloadButtons.value
-                                //       ? CustomButton(
-                                //     onTap: () {
-                                //       print("DOWNLOAD PDF");
-                                //       controller.downloadPdfWebDynamic();
-                                //     },
-                                //     verticalPadding: 0.0,
-                                //     width: 110,
-                                //     height: 35,
-                                //     borderRadius: 4,
-                                //     btnText: "DOWNLOAD PDF",
-                                //     style: mozillaTextRegularText(
-                                //       fontSize: 10,
-                                //       color: DynamicColors.whiteClr,
-                                //     ),
-                                //   )
-                                //       : const SizedBox(),
-                                //   ),
-                                //
-
-                                /// Download  EXCEL BUTTON
-                                // Obx(() => controller.showDownloadButtons.value
-                                //     ? CustomButton(
-                                //   onTap: () {
-                                //     print("DOWNLOAD EXCEL");
-                                //   },
-                                //   verticalPadding: 0.0,
-                                //   width: 120,
-                                //   height: 35,
-                                //   borderRadius: 4,
-                                //   btnText: "DOWNLOAD EXCEL",
-                                //   style: mozillaTextRegularText(
-                                //     fontSize: 10,
-                                //     color: DynamicColors.whiteClr,
-                                //   ),
-                                // )       : const SizedBox()),
-
-                                /// UPDATE Button
-                                // Padding(
-                                //   padding: const EdgeInsets.only(top: 20),
-                                //   child: CustomButton(
-                                //     width: fieldWidth/2.5,
-                                //     height: 30,
-                                //     borderRadius: 4,
-                                //     verticalPadding: 0.0,
-                                //     fontSize: 11,
-                                //     btnText: AppText.update,
-                                //   ),
-                                // ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                        Container(
-                            width: fieldWidth * 2.4,
+          return controller.templateTypeLoad == true
+              ? Center(child: CircularProgressIndicator())
+              : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 50),
+              Align(
+                  alignment: Alignment.center,
+                  child: Text(AppText.templateSettings,
+                      style: titleDesign())),
+              SizedBox(height: 15),
+              Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // LEFT SECTION
+                    Expanded(
+                      child: Column(
+                        children: [
+                          // 1. Template Selection Container
+                          Container(
+                            width: double.infinity,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: DynamicColors.textClr)
+                                border: Border.all(
+                                    color: DynamicColors.textClr)),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 6.0),
+                              child: Wrap(
+                                spacing: 10,
+                                runSpacing: 16,
+                                crossAxisAlignment:
+                                WrapCrossAlignment.center,
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10, horizontal: 12),
+                                    color: DynamicColors.gryClr
+                                        .withOpacity(0.5),
+                                    child: Text(AppText.templateSelection,
+                                        style: titleDesign()),
+                                  ),
+                                  if (permissions
+                                      .contains('read_template_type'))
+                                    CustomDropdownField<TemplateType>(
+                                      text: "SELECT TEMPLATE TYPE",
+                                      label: "SELECT TEMPLATE TYPE",
+                                      items: controller.selectTempleteType!.templateTypes!,
+                                      value: controller.selectedTemplateType,
+                                      itemLabel: (val) => val.name ?? "",
+                                      onChanged: (val) {
+                                        controller.selectedTemplateType = val;
+                                        controller.getTemplateByTypes(selectedTempId: val!.id);
+                                      },
+                                    ),
+                                  CustomDropdownField<Template>(
+                                    text: "Select User",
+                                    label: "Select User",
+                                    items: controller.templeteByTypeMOdel?.templates ?? [],
+                                    value: controller.templeteByTypeMOdel?.templates?.contains(controller.template) == true ? controller.template : null,
+                                    itemLabel: (val) => val.name ?? "",
+                                    onChanged: (val) {
+                                      controller.template = val;
+                                      controller.getTemplateHtmlText(
+                                          selectedTempId: val!.id);
+                                    },
+                                  ),
+                                  Padding(
+                                    padding:
+                                    const EdgeInsets.only(top: 20),
+                                    child: CustomTextField(
+                                      borderRadius: 4,
+                                      controller:
+                                      controller.emailController,
+                                      width: fieldWidth / 1.5,
+                                      hintText: AppText.email,
+                                      height: 30,
+                                    ),
+                                  ),
+                                  if (permissions
+                                      .contains('update_template'))
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 20.0),
+                                      child: CustomButton(
+                                        onTap: () {
+                                          controller.updateTemplateHtml(
+                                              templateId: controller
+                                                  .templeteHtmlModel!
+                                                  .templates!
+                                                  .id!);
+                                        },
+                                        verticalPadding: 0.0,
+                                        width: fieldWidth / 2.5,
+                                        height: 30,
+                                        borderRadius: 4,
+                                        btnText: AppText.save,
+                                        style: mozillaTextRegularText(
+                                            fontSize: 10,
+                                            color:
+                                            DynamicColors.whiteClr),
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
+                          ),
+
+                          const SizedBox(height: 15),
+
+                          // 2. HTML Editor Container
+                          Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(
+                                    color: DynamicColors.textClr)),
                             height: 500,
                             child: HtmlEditor(
-                              controller: controller.templateTitleController,
-                              htmlEditorOptions: HtmlEditorOptions(
+                              controller:
+                              controller.templateTitleController,
+                              htmlEditorOptions: const HtmlEditorOptions(
                                 hint: 'Write text here...',
                                 shouldEnsureVisible: true,
-
-                                //initialText: "<p>text content initial, if any</p>",
                               ),
                               htmlToolbarOptions: HtmlToolbarOptions(
-                                toolbarPosition: ToolbarPosition.aboveEditor,
-                                //by default
+                                toolbarPosition:
+                                ToolbarPosition.aboveEditor,
                                 toolbarType: ToolbarType.nativeScrollable,
-                                //by default
-                                onButtonPressed:
-                                    (ButtonType type, bool? status,
-                                    Function? updateStatus) {
-                                  print(
-                                      "button '${type
-                                          .name}' pressed, the current selected status is $status");
-                                  return true;
-                                },
-                                onDropdownChanged: (DropdownType type,
-                                    dynamic changed,
-                                    Function(dynamic)? updateSelectedItem) {
-                                  print(
-                                      "dropdown '${type
-                                          .name}' changed to $changed");
-                                  return true;
-                                },
-                                mediaLinkInsertInterceptor:
-                                    (String url, InsertFileType type) {
-                                  print(url);
-                                  return true;
-                                },
                                 defaultToolbarButtons: [
                                   StyleButtons(style: false),
                                   FontButtons(
@@ -534,9 +411,11 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                     strikethrough: false,
                                     superscript: false,
                                   ),
-                                  ColorButtons(highlightColor: true,
+                                  ColorButtons(
+                                      highlightColor: true,
                                       foregroundColor: false),
-                                  FontSettingButtons(fontName: false,
+                                  FontSettingButtons(
+                                      fontName: false,
                                       fontSize: false,
                                       fontSizeUnit: false),
                                   ParagraphButtons(
@@ -550,184 +429,97 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                     lineHeight: false,
                                     textDirection: false,
                                   ),
-                                  StyleButtons(style: false),
-                                  FontSettingButtons(
-                                    fontSize: false,
-                                    fontName: false,
-                                    fontSizeUnit: false,
-                                  ),
-                                  ListButtons(listStyles: false),
-                                  InsertButtons(
-                                    audio: false,
-                                    video: false,
-                                    table: false,
-                                    hr: false,
-                                    link: false,
-                                    otherFile: false,
-                                    picture: false,
-                                  ),
-                                  OtherButtons(
-                                    codeview: false,
-                                    help: false,
-                                    copy: false,
-                                    paste: false,
-                                    fullscreen: false,
-                                    redo: false,
-                                    undo: false,
-                                  ),
                                 ],
-
                               ),
-                              otherOptions: OtherOptions(height: 500),
-                              callbacks: Callbacks(
-                                  onBeforeCommand: (String? currentHtml) {
-                                    print('html before change is $currentHtml');
-                                  },
-                                  onChangeContent: (String? changed) {
-                                    print('content changed to $changed');
-                                  },
-                                  onChangeCodeview: (String? changed) {
-                                    print('code changed to $changed');
-                                  },
-                                  onChangeSelection: (EditorSettings settings) {
-                                    print('parent element is ${settings
-                                        .parentElement}');
-                                    print('font name is ${settings.fontName}');
-                                  },
-                                  onDialogShown: () {
-                                    print('dialog shown');
-                                  },
-                                  onEnter: () {
-                                    print('enter/return pressed');
-                                  },
-                                  onFocus: () {
-                                    print('editor focused');
-                                  },
-                                  onBlur: () {
-                                    print('editor unfocused');
-                                  },
-                                  onBlurCodeview: () {
-                                    print(
-                                        'codeview either focused or unfocused');
-                                  },
-                                  onInit: () {
-                                    print('init');
-                                  },
-                                  onImageUploadError: (FileUpload? file,
-                                      String? base64Str,
-                                      UploadError error) {
-                                    print(error.name);
-                                    print(base64Str ?? '');
-                                    if (file != null) {
-                                      print(file.name);
-                                      print(file.size);
-                                      print(file.type);
-                                    }
-                                  },
-                                  onKeyDown: (int? keyCode) {
-                                    print('$keyCode key downed');
-                                  },
-                                  onKeyUp: (int? keyCode) {
-                                    print('$keyCode key released');
-                                  },
-                                  onMouseDown: () {
-                                    print('mouse downed');
-                                  },
-                                  onMouseUp: () {
-                                    print('mouse released');
-                                  },
-                                  onNavigationRequestMobile: (String url) {
-                                    print(url);
-                                    return NavigationActionPolicy.ALLOW;
-                                  },
-                                  onPaste: () {
-                                    print('pasted into editor');
-                                  },
-                                  onScroll: () {
-                                    print('editor scrolled');
-                                  }),
-                              plugins: [
-                                SummernoteAtMention(
-                                    getSuggestionsMobile: (String value) {
-                                      var mentions = <String>[
-                                        'test1',
-                                        'test2',
-                                        'test3'
-                                      ];
-                                      return mentions
-                                          .where((element) =>
-                                          element.contains(value))
-                                          .toList();
-                                    },
-                                    mentionsWeb: ['test1', 'test2', 'test3'],
-                                    onSelect: (String value) {
-                                      print(value);
-                                    }),
-                              ],
-                            )
-                        ),
-                        Container(
-                          width: fieldWidth,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              border: Border.all(color: DynamicColors.textClr)
+                              otherOptions:
+                              const OtherOptions(height: 500),
+                            ),
                           ),
-                          child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 6.0),
-                              child: Column(
-                                children: [
-
-                                  Container(
-                                    width: Get.width,
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 12),
-                                    color: DynamicColors.gryClr.withOpacity(
-                                        0.5),
-                                    child: Text(
-                                        AppText.tags, style: titleDesign()),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 12.0, vertical: 8),
-                                    child: CustomDropdownField<DropdownModel>(
-                                      label: "Select User",
-                                      items: templateList,
-                                      value: selectedTag,
-                                      itemLabel: (templateList) =>
-                                      templateList.name!,
-                                      // show name
-                                      onChanged: (val) {
-                                        selectedTag = val;
-                                        controller.insertTagValue(
-                                            value: val?.name);
-                                        print("Selected User ID: ${val?.id}");
-                                      },
-                                    ),
-                                  ),
-                                  /*       CustomButton(
-                                width: fieldWidth/2.5,
-                                height: 30,
-                                borderRadius: 4,
-                                verticalPadding: 0.0,
-                                fontSize: 11,
-                                btnText: AppText.tags,
-                              )*/
-                                ],
-                              )
-                          ),
-                        ),
-
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              );
-          }
+
+                    const SizedBox(
+                        width:
+                        15),
+
+                    // RIGHT SECTION
+                    SizedBox(width: 280,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          border:
+                          Border.all(color: DynamicColors.textClr),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 12),
+                              color:
+                              DynamicColors.gryClr.withOpacity(0.5),
+                              child: Text(AppText.tags,
+                                  style: titleDesign()),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: SizedBox(
+                                height:
+                                580,
+                                child: SingleChildScrollView(
+                                  child: Wrap(
+                                    spacing: 6,
+                                    runSpacing: 6,
+                                    children: templateList.map((tag) {
+                                      return InkWell(
+                                        onTap: () {
+                                          controller.insertTagValue(
+                                              value: tag.name);
+                                        },
+                                        child: Container(
+                                          padding:
+                                          const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 5),
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.shade100,
+                                            borderRadius:
+                                            BorderRadius.circular(3),
+                                            border: Border.all(
+                                                color:
+                                                Colors.grey.shade300),
+                                          ),
+                                          child: Text(
+                                            tag.name ?? '',
+                                            style: const TextStyle(
+                                                fontSize: 10,
+                                                fontWeight:
+                                                FontWeight.w600,
+                                                color: Colors.black87),
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           );
-        }
+        });
+      },
     );
   }
+}
 //
 // DropdownModel? selectedTemplateValue;
 //
@@ -743,7 +535,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
 //   DropdownModel(id:6, name: "BOOKING QUOTATION SMS", templateValue: "DO NOT REPLYBOOKING QUOTATIONThank you for your inquiry about booking information with {{company_name}}Journey details; {{reference_number}}Pickup {{date}} {{time}}From: {{pickup}}To:{{dropoff}}fare: {{total_fares}}\"Please call us at {{company_telephone}} for confirmation or to make any amendments.\"* reply to these messages are not monitored"),
 // ];
 
-}
+
 
 
 
