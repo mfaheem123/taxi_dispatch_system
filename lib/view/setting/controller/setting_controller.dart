@@ -191,6 +191,10 @@ class SettingController extends GetxController {
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo company configuration functionality
 
+  String voipServiceValue = "YESTECH";
+  String voipStatusValue = "RINGING";
+
+
   String? selectSubsidiaryValue;
   String? emailServiceValue = "GMAIL";
   String? smsServiceValue = "DINSTAR";
@@ -300,8 +304,10 @@ class SettingController extends GetxController {
       "toggle_decline_email": toggleDeclineEmailValue.value,
       "map_service": mapServiceValue,
       "map_api_key": mapApiKeyController.text,
-      "map_distance_factor": distanceFactorController.text,
-      "map_time_factor": timeFactorController.text,
+      // "map_distance_factor": distanceFactorController.text,
+      // "map_time_factor": timeFactorController.text,
+      "map_distance_factor": distanceFactorController.text.isEmpty ? "0" : distanceFactorController.text,
+      "map_time_factor": timeFactorController.text.isEmpty ? "0" : timeFactorController.text,
       "toggle_map_controls": toggleMapControlsValue.value,
       "company_date_format": dateFormate,
       "company_time_format": timeFormate,
@@ -348,6 +354,8 @@ class SettingController extends GetxController {
       "hunt_group": int.tryParse(huntGroup.text) ?? 0,
       "service_api_key": serviceApiKeyController.text,
       "main_api_key": geoApifyApiKeyController.text,
+      "voip_service": voipServiceValue,
+      "voip_status": voipStatusValue,
     };
 
     try {
@@ -355,6 +363,8 @@ class SettingController extends GetxController {
 
       print(" SAVE CONFIG RESPONSE STATUS: ${response.statusCode}");
       print(" SAVE CONFIG RESPONSE DATA: ${response.data}");
+
+      print("================================");
 
       if (response.statusCode == 200) {
         BotToast.showText(text: "CONFIGURATION SAVED SUCCESSFULLY!");
@@ -437,6 +447,17 @@ class SettingController extends GetxController {
         huntGroup.text = config.huntGroup?.toString() ?? '';
         serviceApiKeyController.text = config.serviceApiKey ?? '';
         smsServiceIpController.text = config.smsServiceIp ?? '';
+
+        voipServiceValue = (config.voipService?.toUpperCase() == "V4VOIP") ? "V4VOIP" : "YESTECH";
+
+        String apiStatus = config.voipStatus?.toUpperCase() ?? "IDLE";
+        if (["IDLE", "RINGING", "IN USE"].contains(apiStatus)) {
+          voipStatusValue = apiStatus;
+        } else {
+          voipStatusValue = "IDLE";
+        }
+        // voipServiceValue = config.voipService ?? 'YESTECH';
+        // voipStatusValue = config.voipStatus ?? 'RINGING';
 
         //  Dropdowns / Values
         emailServiceValue = config.emailService ?? 'GMAIL';
@@ -966,6 +987,11 @@ class SettingController extends GetxController {
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo call recordings Work
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo voip setting
+
+
+
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo voip setting
 
 
