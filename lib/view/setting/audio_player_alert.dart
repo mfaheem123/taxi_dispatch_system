@@ -59,7 +59,9 @@ class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
+    return FocusScope(
+        autofocus: true,
+      child: AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       titlePadding: const EdgeInsets.all(16),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -78,9 +80,11 @@ class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
             Row(
               children: [
                 IconButton(
+                  visualDensity: VisualDensity.compact,
+                  splashRadius: 15,
                   icon: Icon(
-                    isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
-                    size: 36,
+                    isPlaying ? Icons.pause : Icons.play_arrow,
+                    size: 28,
                     color: Colors.green,
                   ),
                   onPressed: () async {
@@ -93,6 +97,12 @@ class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
                 ),
                 // Timeline Slider
                 Expanded(
+                  child: SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      trackHeight: 3.0,
+                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6.0),
+                      overlayShape: const RoundSliderOverlayShape(overlayRadius: 12.0),
+                    ),
                   child: Slider(
                     min: 0,
                     max: duration.inSeconds.toDouble(),
@@ -103,25 +113,39 @@ class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
                     },
                     activeColor: Colors.green,
                     inactiveColor: Colors.grey.shade300,
-                  ),
+                  )),
                 ),
 
                 const Icon(Icons.volume_up, color: Colors.grey),
 
                 // Dots Vertical Playback Speed Option
-                PopupMenuButton<double>(
-                  icon: const Icon(Icons.more_vert, color: Colors.grey),
-                  onSelected: (double speed) async {
-                    setState(() {
-                      currentSpeed = speed;
-                    });
-                    await _audioPlayer.setPlaybackRate(speed);
-                  },
-                  itemBuilder: (BuildContext context) => <PopupMenuEntry<double>>[
-                    const PopupMenuItem<double>(value: 1.0, child: Text('1.0x Normal')),
-                    const PopupMenuItem<double>(value: 1.5, child: Text('1.5x Speed')),
-                    const PopupMenuItem<double>(value: 2.0, child: Text('2.0x Speed')),
-                  ],
+                SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: PopupMenuButton<double>(
+                    constraints: const BoxConstraints(
+                      maxHeight: 180,
+                      maxWidth: 100,
+                    ),
+                    padding: EdgeInsets.zero,
+                    splashRadius: 15,
+                    icon: const Icon(Icons.more_vert, color: Colors.grey, size: 20),
+                    onSelected: (double speed) async {
+                      setState(() {
+                        currentSpeed = speed;
+                      });
+                      await _audioPlayer.setPlaybackRate(speed);
+                    },
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry<double>>[
+                      const PopupMenuItem<double>(height: 32, value: 0.5, child: Text('0.5x', style: TextStyle(fontSize: 13))),
+                      const PopupMenuItem<double>(height: 32, value: 0.75, child: Text('0.75x', style: TextStyle(fontSize: 13))),
+                      const PopupMenuItem<double>(height: 32, value: 1.0, child: Text('NORMAL', style: TextStyle(fontSize: 13))),
+                      const PopupMenuItem<double>(height: 32, value: 1.25, child: Text('1.25x', style: TextStyle(fontSize: 13))),
+                      const PopupMenuItem<double>(height: 32, value: 1.5, child: Text('1.5x', style: TextStyle(fontSize: 13))),
+                      const PopupMenuItem<double>(height: 32, value: 1.75, child: Text('1.75x', style: TextStyle(fontSize: 13))),
+                      const PopupMenuItem<double>(height: 32, value: 2.0, child: Text('2.0x', style: TextStyle(fontSize: 13))),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -132,14 +156,14 @@ class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text("${formatTime(position)} / ${formatTime(duration)}", style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text("${currentSpeed}x", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                  )
+                  // Container(
+                  //   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  //   decoration: BoxDecoration(
+                  //     color: Colors.grey.shade200,
+                  //     borderRadius: BorderRadius.circular(4),
+                  //   ),
+                  //   // child: Text("${currentSpeed}x", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                  // )
                 ],
               ),
             ),
@@ -161,6 +185,6 @@ class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
           },
         ),
       ],
-    );
+    ));
   }
 }

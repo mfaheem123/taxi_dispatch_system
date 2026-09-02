@@ -27,7 +27,7 @@ class AuthController extends GetxController {
         Employee.selectedEmployee = Employee.fromJson(storedUser);
         update();
 
-        // --- SOCKET CONNECT (Auto Login / Session Restore) ---
+        // SOCKET CONNECT (Auto Login / Session Restore)
         // SubscriptionSocketService.initSocket();
       }
     }
@@ -40,14 +40,13 @@ class AuthController extends GetxController {
   postLoginDetails() async {
     PostAuthLoader(true);
     try {
-      // 1. FCM Token fetch karein
+      //  FCM Token
       String? fcmToken = await FirebaseMessaging.instance.getToken();
       print("FCM Token: $fcmToken");
 
       var formData = {
         "username": usernameController.text,
         "password": passwordController.text,
-        // 2. web_device_id mein fcmToken pass karein
         "web_device_id": fcmToken ?? "",
       };
 

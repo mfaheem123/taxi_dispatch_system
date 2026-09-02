@@ -14,7 +14,17 @@ import '../component/color.dart';
 import '../component/keyboard_dropdown_widget.dart';
 
 class RestrictDriversAlert extends StatefulWidget {
-  RestrictDriversAlert({super.key});
+  RestrictDriversAlert({super.key, this.formController});
+
+  /// Which booking form opened this dialog.
+  ///
+  /// Left null on the dashboard, where the bare `Get.find` below resolves the
+  /// permanent controller exactly as it always did. The edit screen passes its
+  /// own tagged instance in: a dialog is pushed on a route of its own, so it
+  /// sits outside the [BookingFormScope] the rest of that screen is wrapped in
+  /// and cannot look the controller up from context.
+  final DashboardController? formController;
+
 
   @override
   State<RestrictDriversAlert> createState() => _RestrictDriversAlertState();
@@ -22,7 +32,10 @@ class RestrictDriversAlert extends StatefulWidget {
 
 class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
 
-  final dashBoardCntrl = Get.find<DashboardController>();
+  /// The form that opened this dialog — the edit screen's private instance
+  /// when it passed one, the dashboard's permanent controller otherwise.
+  late final DashboardController dashBoardCntrl =
+      widget.formController ?? Get.find<DashboardController>();
   final FocusNode closeButtonFocusNode = FocusNode();
 
   @override
@@ -47,6 +60,8 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: GetBuilder<DashboardController>(
+        // Follows whichever form opened the dialog.
+        tag: dashBoardCntrl.formTag,
         builder: (controller) {
           return Container(
               height: 390,
