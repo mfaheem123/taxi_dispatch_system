@@ -282,7 +282,8 @@ class _AccountViewState extends State<AccountView> {
                                                           AppText.information,
                                                           leftFieldWidth,
                                                           82,
-                                                          [],
+                                                          [UpperCaseTextFormatter()
+                                                          ],
                                                           maxLines: 6),
                                                       Column(
                                                         spacing: 12,
@@ -306,11 +307,13 @@ class _AccountViewState extends State<AccountView> {
                                                         spacing: 12,
                                                         children: [
                                                           _buildTextField(
+
                                                               controller.accountContactNameController,
                                                               AppText.contactName,
                                                               leftFieldWidth,
                                                               fieldHeight,
-                                                              []),
+                                                              [UpperCaseTextFormatter()
+                                                              ]),
                                                         ],
                                                       ),
                                                       Column(
@@ -596,7 +599,10 @@ class _AccountViewState extends State<AccountView> {
                                                       AppText.agentCommission,
                                                       rightFieldWidth * 1.5,
                                                       fieldHeight,
-                                                      [FilteringTextInputFormatter.digitsOnly]),
+                                                      [
+                                                        FilteringTextInputFormatter.digitsOnly,
+                                                        LengthLimitingTextInputFormatter(6),
+                                                      ]),
                                                 ],
                                               ),
                                             ),

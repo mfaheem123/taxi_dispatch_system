@@ -12,6 +12,7 @@ import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:pdf/pdf.dart';
 import 'dart:convert';
 import 'package:dio/dio.dart' as dio;
+import '../../administration/controller/administration_controller.dart';
 import '../../administration/model/list_subsDiary.dart';
 import '../../drivers_view/model/driver_commission_payment_model.dart';
 import '../model/call_recording_model.dart';
@@ -68,7 +69,12 @@ class SettingController extends GetxController {
     var response = await Api().get("templates/template_types", sendCompanyId: true,);
     if (response.statusCode == 200) {
       selectTempleteType = TempTypeModel.fromJson(response.data);
-      selectedTemplateType = selectTempleteType!.templateTypes![1];
+      // selectedTemplateType = selectTempleteType!.templateTypes![1];
+      final types = selectTempleteType?.templateTypes;
+      if (types != null && types.isNotEmpty) {
+        selectedTemplateType = types.length > 1 ? types[1] : types[0];
+        getTemplateByTypes(selectedTempId: selectedTemplateType!.id);
+      }
       templateTypeLoad = false;
       update();
     }
@@ -375,7 +381,7 @@ class SettingController extends GetxController {
     update();
 
     var response = await Api().get("company-configuration/subsidiary_id/$subsidiaryId",
-    // sendCompanyId: true,
+      // sendCompanyId: true,
     );
     print("📥 GET CONFIG RESPONSE: ${response.statusCode} -> ${response.data}");
 
@@ -521,8 +527,8 @@ class SettingController extends GetxController {
         getCompanyConfiguration(selectSubsidiaryValue!);
       }
     }
-      isSubsidiary = false;
-      update();
+    isSubsidiary = false;
+    update();
   }
 
   /// list document number
@@ -830,12 +836,7 @@ class SettingController extends GetxController {
     update();
   }
   String? networkLogoUrl;
-  final bankController = TextEditingController();
-  final accountTitleController = TextEditingController();
-  final accountController = TextEditingController();
-  final ibanController = TextEditingController();
-  final sortCodeController = TextEditingController();
-  final vatController = TextEditingController();
+
   final nameController = TextEditingController();
   final emailCompanyController = TextEditingController();
   final faxController = TextEditingController();
@@ -849,6 +850,36 @@ class SettingController extends GetxController {
   final addressController = TextEditingController();
   final balanceController = TextEditingController();
   final abbreviationController = TextEditingController();
+
+  saveCompanyInformation() async {
+    final adminCtrl = Get.find<AdministrationController>();
+
+    if (adminCtrl.subsiDiaryAll.isNotEmpty) {
+      adminCtrl.subsidiaryToUpdate = adminCtrl.subsiDiaryAll.first;
+      adminCtrl.isSubsiDiaryUpdating.value = true;
+    } else {
+      adminCtrl.isSubsiDiaryUpdating.value = false;
+    }
+
+    adminCtrl.nameController.text = nameController.text;
+    adminCtrl.emailController.text = emailCompanyController.text;
+    adminCtrl.faxController.text = faxController.text;
+    adminCtrl.websiteController.text = websiteController.text;
+    adminCtrl.telephoneController.text = telephoneController.text;
+    adminCtrl.emergencyContactController.text = emergencyContactController.text;
+    adminCtrl.companyController.text = companyController.text;
+    adminCtrl.currencyController.text = currencyController.text;
+    adminCtrl.addressController.text = addressController.text;
+    adminCtrl.balanceController.text = balanceController.text;
+
+    adminCtrl.subsidiaryImg = profileImg;
+    adminCtrl.subsiDiarypickerColor = pickerColor;
+    adminCtrl.subsiDiaryforegroundColor = foregroundColor;
+
+    await adminCtrl.createSubsiDiary();
+
+    update();
+  }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Company Information
 
@@ -882,29 +913,41 @@ class SettingController extends GetxController {
   bool isCallLoading = false;
   bool isDateSelected = false;
 
+  var currentPage = 1.obs;
+  var totalPages = 1.obs;
+  final int limit = 20;
+
   getCallRecordings() async{
     isCallLoading = true;
     update();
 
     String fromDateStr = "${callFromDate.value.year}-${callFromDate.value.month.toString().padLeft(2, '0')}-${callFromDate.value.day.toString().padLeft(2, '0')}";
     String toDateStr = "${callToDate.value.year}-${callToDate.value.month.toString().padLeft(2, '0')}-${callToDate.value.day.toString().padLeft(2, '0')}";
-    
+
     var response = await Api().get("call-recordings/recordings", sendCompanyId: true,
-      queryParameters: {
-        if (isDateSelected) "from_date": fromDateStr,
-        if (isDateSelected) "to_date": toDateStr,
-        "start_time": callStartTimeController.text,
-        "end_time": callEndTimeController.text,
-        if (callMobileController.text.isNotEmpty)
-          "mobile": callMobileController.text,
-      }
+        queryParameters: {
+          "page": currentPage.value,
+          "limit": limit,
+          if (isDateSelected) "from_date": fromDateStr,
+          if (isDateSelected) "to_date": toDateStr,
+          "start_time": callStartTimeController.text,
+          "end_time": callEndTimeController.text,
+          if (callMobileController.text.isNotEmpty)
+            "mobile": callMobileController.text,
+        }
     );
 
     if (response.statusCode == 200) {
       callRecordingModel = CallRecordingModel.fromJson(response.data);
+      totalPages.value = callRecordingModel?.pagination?.totalPages ?? 1;
     }
     isCallLoading = false;
     update();
+  }
+
+  void onPageChange(int page) {
+    currentPage.value = page;
+    getCallRecordings();
   }
 
 

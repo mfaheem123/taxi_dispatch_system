@@ -172,31 +172,28 @@ class _ReportFeedbackState extends State<ReportFeedback> {
                   SizedBox(
                     height: 8,
                   ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      child: DatatableWidget(
-                        columns: [
-                          buildHeaderWithSearch(title: "DATE"),
-                          buildHeaderWithSearch(title: "DRIVER"),
-                          buildHeaderWithSearch(title: "DRIVING SKILL"),
-                          buildHeaderWithSearch(title: "ROUTE KNOWLEDGE"),
-                          buildHeaderWithSearch(title: "CUSTOMER BEHAVIOUR"),
-                          buildHeaderWithSearch(title: "VEHICLE CONDITION"),
-                          buildHeaderWithSearch(title: "COMMENTS"),
-                        ],
-                        totalRow: totalRows,
-                        cells: [
-                          const DataCell(Center(child: Text("driver"))),
-                          const DataCell(Center(child: Text("bookings"))),
-                          const DataCell(Center(child: Text("loginDate"))),
-                          const DataCell(Center(child: Text("loginTime"))),
-                          const DataCell(Center(child: Text("logoutDate"))),
-                          const DataCell(Center(child: Text("logoutTime"))),
-                          const DataCell(Center(child: Text("logoutTime"))),
-                        ],
-                      ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: DatatableWidget(
+                      columns: [
+                        buildHeaderWithSearch(title: "DATE"),
+                        buildHeaderWithSearch(title: "DRIVER"),
+                        buildHeaderWithSearch(title: "DRIVING SKILL"),
+                        buildHeaderWithSearch(title: "ROUTE KNOWLEDGE"),
+                        buildHeaderWithSearch(title: "CUSTOMER BEHAVIOUR"),
+                        buildHeaderWithSearch(title: "VEHICLE CONDITION"),
+                        buildHeaderWithSearch(title: "COMMENTS"),
+                      ],
+                      totalRow: totalRows,
+                      cells: [
+                        const DataCell(Center(child: Text("driver"))),
+                        const DataCell(Center(child: Text("bookings"))),
+                        const DataCell(Center(child: Text("loginDate"))),
+                        const DataCell(Center(child: Text("loginTime"))),
+                        const DataCell(Center(child: Text("logoutDate"))),
+                        const DataCell(Center(child: Text("logoutTime"))),
+                        const DataCell(Center(child: Text("logoutTime"))),
+                      ],
                     ),
                   ),
                 ],

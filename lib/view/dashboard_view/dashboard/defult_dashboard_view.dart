@@ -21,6 +21,7 @@ import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
 import '../../../component/time_duration_method.dart';
+import '../../auth/Controller/auth_controller.dart';
 import '../../auth/dashboard_form_widget.dart';
 import '../../cli_Screen.dart';
 import '../../locations_view/Model/location_types_zoneModel.dart';
@@ -68,6 +69,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
       ? Get.find<LocationController>()
       : Get.put(LocationController());
   DashboardController controller = Get.find();
+  AuthController authController = Get.find();
 
   SuggestionController suggestion_controller =
   Get.isRegistered<SuggestionController>()
@@ -83,6 +85,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
     super.initState();
     if (controller.dashboardAllData == null) {
       controller.dashboardData();
+      authController.checkExpiryDocumentsOnLogin();
+
     }
   }
 
