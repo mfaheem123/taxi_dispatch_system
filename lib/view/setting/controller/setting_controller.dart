@@ -191,6 +191,10 @@ class SettingController extends GetxController {
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo company configuration functionality
 
+  String voipServiceValue = "YESTECH";
+  String voipStatusValue = "RINGING";
+
+
   String? selectSubsidiaryValue;
   String? emailServiceValue = "GMAIL";
   String? smsServiceValue = "DINSTAR";
@@ -300,8 +304,10 @@ class SettingController extends GetxController {
       "toggle_decline_email": toggleDeclineEmailValue.value,
       "map_service": mapServiceValue,
       "map_api_key": mapApiKeyController.text,
-      "map_distance_factor": distanceFactorController.text,
-      "map_time_factor": timeFactorController.text,
+      // "map_distance_factor": distanceFactorController.text,
+      // "map_time_factor": timeFactorController.text,
+      "map_distance_factor": distanceFactorController.text.isEmpty ? "0" : distanceFactorController.text,
+      "map_time_factor": timeFactorController.text.isEmpty ? "0" : timeFactorController.text,
       "toggle_map_controls": toggleMapControlsValue.value,
       "company_date_format": dateFormate,
       "company_time_format": timeFormate,
@@ -348,23 +354,28 @@ class SettingController extends GetxController {
       "hunt_group": int.tryParse(huntGroup.text) ?? 0,
       "service_api_key": serviceApiKeyController.text,
       "main_api_key": geoApifyApiKeyController.text,
+      "voip_service": voipServiceValue,
+      "voip_status": voipStatusValue,
     };
 
     try {
       var response = await Api().post(formData, "company-configuration/add");
 
-      print("📥 SAVE CONFIG RESPONSE STATUS: ${response.statusCode}");
-      print("📥 SAVE CONFIG RESPONSE DATA: ${response.data}");
+      print(" SAVE CONFIG RESPONSE STATUS: ${response.statusCode}");
+      print(" SAVE CONFIG RESPONSE DATA: ${response.data}");
+
+      print("================================");
 
       if (response.statusCode == 200) {
         BotToast.showText(text: "CONFIGURATION SAVED SUCCESSFULLY!");
-      } else {
-        String errorMessage = response.data?['message']?.toString() ?? "FAILED!";
-        BotToast.showText(text: errorMessage);
-        // BotToast.showText(text: "FAILED!");
       }
+      // else {
+      //   String errorMessage = response.data?['message']?.toString() ?? "FAILED!";
+      //   BotToast.showText(text: errorMessage);
+      //   // BotToast.showText(text: "FAILED!");
+      // }
     } catch (e) {
-      print("❌ CATCH ERROR: $e");
+      print(" CATCH ERROR: $e");
       BotToast.showText(text: "Error: $e");
     } finally {
       isSavingConfig = false;
@@ -383,7 +394,7 @@ class SettingController extends GetxController {
     var response = await Api().get("company-configuration/subsidiary_id/$subsidiaryId",
       // sendCompanyId: true,
     );
-    print("📥 GET CONFIG RESPONSE: ${response.statusCode} -> ${response.data}");
+    print(" GET CONFIG RESPONSE: ${response.statusCode} -> ${response.data}");
 
     if (response.statusCode == 200) {
       companyConfigurationModel = CompanyConfigurationModel.fromJson(response.data);
@@ -436,6 +447,17 @@ class SettingController extends GetxController {
         huntGroup.text = config.huntGroup?.toString() ?? '';
         serviceApiKeyController.text = config.serviceApiKey ?? '';
         smsServiceIpController.text = config.smsServiceIp ?? '';
+
+        voipServiceValue = (config.voipService?.toUpperCase() == "V4VOIP") ? "V4VOIP" : "YESTECH";
+
+        String apiStatus = config.voipStatus?.toUpperCase() ?? "IDLE";
+        if (["IDLE", "RINGING", "IN USE"].contains(apiStatus)) {
+          voipStatusValue = apiStatus;
+        } else {
+          voipStatusValue = "IDLE";
+        }
+        // voipServiceValue = config.voipService ?? 'YESTECH';
+        // voipStatusValue = config.voipStatus ?? 'RINGING';
 
         //  Dropdowns / Values
         emailServiceValue = config.emailService ?? 'GMAIL';
@@ -573,7 +595,7 @@ class SettingController extends GetxController {
               : "document/document_numbers/update/${documentUpdateId.value}"
       );
 
-      print("🔴 SERVER RESPONSE: ${response.statusCode} -> ${response.data}");
+      print("SERVER RESPONSE: ${response.statusCode} -> ${response.data}");
 
       if (response.statusCode == 200) {
         BotToast.showText(text: updateDocumentNumber.value == true
@@ -588,7 +610,7 @@ class SettingController extends GetxController {
         BotToast.showText(text: "Failed to add document number");
       }
     } catch (e) {
-      print("❌ CRITICAL API ERROR: $e");
+      print("CRITICAL API ERROR: $e");
       BotToast.showText(text: "Error: $e");
     } finally {
       isAddNumber = false;
@@ -965,6 +987,13 @@ class SettingController extends GetxController {
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo call recordings Work
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo voip setting
+
+
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo voip setting
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Chat screen
 
