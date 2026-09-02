@@ -15,6 +15,7 @@ import '../view/booking_view/craate_booking.dart';
 import '../view/dashboard_view/dashboard.dart';
 import '../view/dashboard_view/widgets/view_drivers_map.dart';
 import '../view/main_appbar/main_appbar.dart';
+import '../view/new_cli_screen.dart' hide ResponsivePassengerScreen;
 part 'app_routes.dart';
 
 class AppPages {
@@ -58,6 +59,11 @@ class AppPages {
     // GetPage(
     //   name: _Paths.ResponsivePassengerScreen,
     //   page: () => ResponsivePassengerScreen(),
+    //   // binding: DashBoardBindings(),
+    // ),
+    // GetPage(
+    //   name: _Paths.ResponsivePassengerScreen,
+    //   page: () => ResponsivePassengerScreen(extensionNumber: '200',),
     //   // binding: DashBoardBindings(),
     // ),
     GetPage(

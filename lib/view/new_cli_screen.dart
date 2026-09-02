@@ -1398,14 +1398,98 @@ class _CenterAreaState extends State<_CenterArea> {
                           borderRadius: BorderRadius.circular(8),
                           child: SingleChildScrollView(
                             // scrollDirection: Axis.horizontal,
-                            child: DatatableWidget(
+                            child:
+                            // DatatableWidget(
+                            //   columns: [
+                            //     buildHeaderWithSearch(
+                            //         title: "PICKUP", removeSearching: true),
+                            //     buildHeaderWithSearch(
+                            //         title: "DROPOFF", removeSearching: true),
+                            //     buildHeaderWithSearch(
+                            //         title: "DATETIME", removeSearching: true),
+                            //     buildHeaderWithSearch(
+                            //         title: "FARE", removeSearching: true),
+                            //     buildHeaderWithSearch(
+                            //         title: "ACTION", removeSearching: true),
+                            //   ],
+                            //   totalRow: controller.bookings.length,
+                            //   rows: List.generate(controller.bookings.length,
+                            //           (index) {
+                            //         BookingObjectData cliBookingData =
+                            //         BookingObjectData.fromJson(
+                            //             controller.bookings[index]);
+                            //
+                            //         return DataRow(
+                            //           cells: [
+                            //             DataCell(SizedBox(
+                            //               width: Get.width / 6,
+                            //               child: rightClickTextCell(
+                            //                 item: cliBookingData,
+                            //                 clickValue: 'pickUpClick',
+                            //                 onRightClick: () {},
+                            //                 child: Text(cliBookingData.pickup ?? "",
+                            //                     overflow: TextOverflow.ellipsis),
+                            //               ),
+                            //             )),
+                            //             DataCell(SizedBox(
+                            //               width: Get.width / 6,
+                            //               child: rightClickTextCell(
+                            //                 item: cliBookingData,
+                            //                 clickValue: 'dropoffClick',
+                            //                 onRightClick: () {},
+                            //                 child: Text(
+                            //                     cliBookingData.dropoff ?? "",
+                            //                     overflow: TextOverflow.ellipsis),
+                            //               ),
+                            //             )),
+                            //             DataCell(Center(child:Text(cliBookingData.pickupDate !=
+                            //                 null
+                            //                 ? "${cliBookingData.pickupDate!.year}-${cliBookingData.pickupDate!.month}-${cliBookingData.pickupDate!.day}"
+                            //                 : ""))),
+                            //             DataCell(
+                            //                 Text("£${cliBookingData.fares ?? 0}")),
+                            //             DataCell(Center(child:
+                            //             Obx(() => Checkbox(
+                            //               value: selectedIndex.value == index,
+                            //               onChanged: (value) {
+                            //                 if (selectedIndex.value ==
+                            //                     index) {
+                            //                   selectedIndex.value = -1;
+                            //                   selectedBooking = null;
+                            //                   pickupController.clear();
+                            //                   dropoffController.clear();
+                            //                   actionValue = false;
+                            //                   // cliBookingData.pickupTime=null;
+                            //                   // cliBookingData.pickupDate=null;
+                            //                 } else {
+                            //                   selectedIndex.value = index;
+                            //                   selectedBooking =
+                            //                       cliBookingData;
+                            //                   actionValue = true;
+                            //                   pickupController.text =
+                            //                       cliBookingData.pickup ?? "";
+                            //                   dropoffController.text =
+                            //                       cliBookingData.dropoff ??
+                            //                           "";
+                            //                 }
+                            //                 setState(() {});
+                            //               },
+                            //             )),
+                            //             )),
+                            //           ],
+                            //         );
+                            //       }),
+                            // ),
+                            DatatableWidget(
                               columns: [
                                 buildHeaderWithSearch(
                                     title: "PICKUP", removeSearching: true),
                                 buildHeaderWithSearch(
                                     title: "DROPOFF", removeSearching: true),
                                 buildHeaderWithSearch(
-                                    title: "DATETIME", removeSearching: true),
+                                    title: "DATE & TIME", removeSearching: true),
+                                buildHeaderWithSearch(
+                                    title: "TIME", removeSearching: true), // Header updated
                                 buildHeaderWithSearch(
                                     title: "FARE", removeSearching: true),
                                 buildHeaderWithSearch(
@@ -1417,6 +1501,16 @@ class _CenterAreaState extends State<_CenterArea> {
                                     BookingObjectData cliBookingData =
                                     BookingObjectData.fromJson(
                                         controller.bookings[index]);
+
+                                    // Date aur Time ko merge karke string format banana
+                                    String formattedDate = cliBookingData.pickupDate != null
+                                        ? "${cliBookingData.pickupDate!.year}-${cliBookingData.pickupDate!.month.toString().padLeft(2, '0')}-${cliBookingData.pickupDate!.day.toString().padLeft(2, '0')}"
+                                        : "";
+
+                                    String formattedTime = cliBookingData.pickupTime ?? "";
+
+                                    // Date aur Time dono ko ek saath combine karna
+                                    String dateTimeDisplay = "$formattedDate $formattedTime".trim();
 
                                     return DataRow(
                                       cells: [
@@ -1441,10 +1535,19 @@ class _CenterAreaState extends State<_CenterArea> {
                                                 overflow: TextOverflow.ellipsis),
                                           ),
                                         )),
-                                        DataCell(Center(child:Text(cliBookingData.pickupDate !=
-                                            null
-                                            ? "${cliBookingData.pickupDate!.year}-${cliBookingData.pickupDate!.month}-${cliBookingData.pickupDate!.day}"
-                                            : ""))),
+                                        // ✅ Date & Time cell with Time included
+                                        DataCell(Center(
+                                          child: Text(
+                                            dateTimeDisplay.isNotEmpty ? dateTimeDisplay : "-",
+                                            style: const TextStyle(fontWeight: FontWeight.w500),
+                                          ),
+                                        )),
+                                        DataCell(Center(
+                                          child: Text(
+                                            formattedTime.isNotEmpty ? dateTimeDisplay : "-",
+                                            style: const TextStyle(fontWeight: FontWeight.w500),
+                                          ),
+                                        )),
                                         DataCell(
                                             Text("£${cliBookingData.fares ?? 0}")),
                                         DataCell(Center(child:
@@ -1458,8 +1561,6 @@ class _CenterAreaState extends State<_CenterArea> {
                                               pickupController.clear();
                                               dropoffController.clear();
                                               actionValue = false;
-                                              // cliBookingData.pickupTime=null;
-                                              // cliBookingData.pickupDate=null;
                                             } else {
                                               selectedIndex.value = index;
                                               selectedBooking =

@@ -3170,6 +3170,27 @@ class DashboardController extends GetxController {
     var response = await Api().get("bookings/getbyid/$id");
     // var response = await Api().get("bookings/getbyid/$id");
     if (response.statusCode == 200) {
+
+
+      // // ==========================================
+      // // 💥 FIX HERE: List aur Map dono ko handle karein
+      // // ==========================================
+      // dynamic bookingRawData = response.data['booking'];
+      //
+      // // Agar backend se array/list aa rahi ho toh pehla item [0] pick kar lein
+      // if (bookingRawData is List) {
+      //   if (bookingRawData.isEmpty) {
+      //     BotToast.showText(text: "Booking data not found");
+      //     return;
+      //   }
+      //   bookingRawData = bookingRawData.first;
+      // }
+      //
+      // // Ab safai se BookingObjectData ban jayega bina kisi error ke
+      // BookingObjectData jobData = BookingObjectData.fromJson(bookingRawData);
+      // jobDetails = jobData;
+
+
       DateTime now = DateTime.now();
       String currentDateStr = DateFormat('yyyy-MM-dd').format(now);
       String currentTimeStr = DateFormat('HH:mm').format(now);
