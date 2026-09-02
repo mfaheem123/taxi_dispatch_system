@@ -28,7 +28,6 @@ class AuthController extends GetxController {
         Employee.selectedEmployee = Employee.fromJson(storedUser);
         update();
 
-        // SOCKET CONNECT (Auto Login / Session Restore)
         SubscriptionSocketService.initSocket();
       }
     }

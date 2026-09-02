@@ -952,7 +952,10 @@ class _BookingTableState extends State<BookingTable> {
                                       if(permissions.contains('update_booking')) Expanded(
                                         child: IconButton(
                                           icon:  Icon(Icons.more_horiz, color: Colors.green),
-                                          onPressed: () {
+                                         onPressed: (){
+                                           controller.dashBoardDataBinding(id: item.id!);
+                                         },
+                                         /* onPressed: () {
                                             // openMenuPage keys the chip strip by TITLE, so the
                                             // title has to name this booking. "COMPLETE BOOKINGS"
                                             // is the completed-bookings list's own title, so
@@ -960,46 +963,48 @@ class _BookingTableState extends State<BookingTable> {
                                             // and left every row sharing the one tab.
 
 
-                                            ///todo edit binding
-
-                                            // final ref = item.referenceNumber?.trim();
-                                            // final title = 'BOOKING '
-                                            //     '${ref == null || ref.isEmpty ? (item.id ?? '-') : ref}';
-                                            // // The cap is on OPENING a tab. A booking already in
-                                            // // the strip just gets selected, which has to keep
-                                            // // working once 20 are open.
-                                            // final alreadyOpen = controller.selectedMenuItems
-                                            //     .any((tab) => tab.title == title);
-                                            // if (!alreadyOpen &&
-                                            //     controller.selectedMenuItems.length >= 20) {
-                                            //   BotToast.showText(
-                                            //       text: "You can keep at most 20 pages open at once. "
-                                            //           "Close one and try again.");
-                                            //   return;
-                                            // }
-                                            // // One instance for both: menuBarRefresh only assigns
-                                            // // currentPage when the tab already existed, so the
-                                            // // caller sets it for the freshly-added-chip path.
-                                            // // Building it twice handed the strip a different
-                                            // // widget from the one on screen.
-                                            // final page = EditJobsWidget(
-                                            //   // id is a String on this model; tryParse on a null
-                                            //   // id used to go through "null" and come back null
-                                            //   // anyway, just less directly.
-                                            //   booking: EditJobDetails(id: int.tryParse(item.id ?? '')),
-                                            // );
-                                            // setState(() {
-                                            //   controller.currentPage.value = page;
-                                            //   controller.menuBarRefresh(
-                                            //       title: title, pageName: page);
-                                            // });
-
-                                            /// todo edit binding
-
-
-                                            // Get.toNamed(Routes.editJobs,
-                                            //     parameters: {'id': "${item.id}"});
-                                            controller.dashBoardDataBinding(id: item.id!);
+                                            // Opens the booking in the EDIT screen instead of
+                                            // binding it into the dashboard's form.
+                                            //
+                                            // dashBoardDataBinding(id:) used to be called right
+                                            // here, on the permanent controller — which is the
+                                            // controller the dashboard's NEW BOOKING form is bound
+                                            // to. Editing a job therefore typed it straight into
+                                            // whatever the operator had half written there, and
+                                            // over the new booking's route and markers with it.
+                                            // EditJobsWidget runs on a DashboardController of its
+                                            // own, so the two forms no longer share a field.
+                                            final ref = item.referenceNumber?.trim();
+                                            final title = 'EDIT BOOKING'
+                                                *//*'${ref == null || ref.isEmpty ? (item.id ?? '-') : ref}'*//*;
+                                            // The cap is on OPENING a tab. A booking already in
+                                            // the strip just gets selected, which has to keep
+                                            // working once 20 are open.
+                                            final alreadyOpen = controller.selectedMenuItems
+                                                .any((tab) => tab.title == title);
+                                            if (!alreadyOpen &&
+                                                controller.selectedMenuItems.length >= 20) {
+                                              BotToast.showText(
+                                                  text: "You can keep at most 20 pages open at once. "
+                                                      "Close one and try again.");
+                                              return;
+                                            }
+                                            // One instance for both: menuBarRefresh only assigns
+                                            // currentPage when the tab already existed, so the
+                                            // caller sets it for the freshly-added-chip path.
+                                            // Building it twice handed the strip a different
+                                            // widget from the one on screen.
+                                            final page = EditJobsWidget(
+                                              // id is a String on this model; tryParse on a null
+                                              // id used to go through "null" and come back null
+                                              // anyway, just less directly.
+                                              booking: EditJobDetails(id: int.tryParse(item.id ?? '')),
+                                            );
+                                            setState(() {
+                                              controller.currentPage.value = page;
+                                              controller.menuBarRefresh(
+                                                  title: title, pageName: page);
+                                            });
                                             // Get.to(UpdateBooking(data: item.id,));
 
                                             //   final newTabUrl =
@@ -1021,7 +1026,7 @@ class _BookingTableState extends State<BookingTable> {
                                             //   Routes.updateBooking,
                                             //   arguments: item.id,
                                             // );
-                                          },
+                                          },*/
                                         ),
                                       ),
                                     ],

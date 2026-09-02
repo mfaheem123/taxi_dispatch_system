@@ -746,6 +746,23 @@ packages:
     source: hosted
     version: "1.0.5"
   hooks:
+<<<<<<< HEAD
+    dependency: transitive
+    description:
+      name: hooks
+      sha256: eaac480a35ec0814146c2c48d96aaa829e0e44a7662c88ae84c9edf4bc35651f
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.0"
+  html:
+    dependency: transitive
+    description:
+      name: html
+      sha256: "43b67b8f43321ab066817dfac5619596c98bb1b61624e77203bb4351785f9699"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.15.7"
+=======
     dependency: transitive
     description:
       name: hooks
@@ -761,6 +778,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.15.0"
+>>>>>>> 730660e9506c448e941426c074ba6f81eed103fe
   html_editor_enhanced:
     dependency: "direct main"
     description:

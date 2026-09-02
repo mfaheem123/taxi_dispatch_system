@@ -43,6 +43,7 @@ import '../../alert/extra_info_alert.dart';
 import '../../alert/search_booking.dart';
 import '../../component/marker_class.dart';
 import '../../component/text_field.dart';
+import '../dashboard_view/booking_form_scope.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/dashboard/map_view_widget.dart';
 import '../dashboard_view/models/account_darshboard_model.dart';
@@ -268,9 +269,32 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       builder: (ctx) => const SearchBookingAlert(),
     );
   }
-  final DashboardController controller = Get.isRegistered<DashboardController>()
-      ? Get.find<DashboardController>()
-      : Get.put(DashboardController());
+  /// Tag this screen's private DashboardController is registered under.
+  /// Unique per screen instance, so two edit tabs on the same booking still
+  /// get a form each.
+  late final String _formTag;
+
+  /// This screen's OWN booking form.
+  ///
+  /// A SECOND DashboardController, not the dashboard's permanent one. That is
+  /// the whole point of it: both screens are the same form bound to the same
+  /// controller, so an edit used to be typed straight into the operator's
+  /// half-written new booking — every TextEditingController, the polyline, the
+  /// markers and the via points were literally the same objects. A separate
+  /// instance gives this screen its own of each, and the dashboard's NEW
+  /// BOOKING form is never touched.
+  ///
+  /// Cheap to create: onInit() is empty, and every socket, timer and driver
+  /// poll lives in inItStateOFController(), which only the app shell calls on
+  /// the permanent instance. What this instance would otherwise have to fetch
+  /// for itself — the dropdown lists and the zone overlay — is borrowed from
+  /// the dashboard's copy in [_bootstrap] instead.
+  late final DashboardController controller;
+
+  /// Shared on purpose: [LocationController] is consulted for the zone LIST,
+  /// which is reference data. The zone SELECTIONS moved onto
+  /// [DashboardController.dashboardRNZoneValue] and its drop twin so they
+  /// isolate with the rest of the form.
   final LocationController _controller = Get.isRegistered<LocationController>()
       ? Get.find<LocationController>()
       : Get.put(LocationController());
@@ -304,68 +328,105 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   //   super.dispose();
   // }
 
-  /// The dashboard form's contents, held for the lifetime of this screen.
-  ///
-  /// This screen and the dashboard's booking form resolve the same permanent
-  /// DashboardController, so they write to the same TextEditingControllers and
-  /// the same selected values. Loading a booking here therefore used to show up
-  /// on the dashboard form once this screen was closed. Taking a copy on the
-  /// way in and putting it back on the way out gives the two forms independent
-  /// contents while leaving the shared controller alone.
-  Map<String, dynamic>? _dashboardFormState;
-
   @override
   void initState() {
     super.initState();
-    // The dropdowns read their items off dashboardAllData, so the form cannot
-    // build until it is there. Safe from initState: it is an API call, and
-    // nothing it touches has listeners attached to it.
-    if (controller.dashboardAllData == null) {
-      controller.dashboardData();
-    }
-    // Everything that WRITES to the shared controller waits for the first
-    // frame. All three steps below assign to TextEditingControllers and Rx
-    // values that widgets are listening to, and this screen is mounted during
-    // a tab switch — the outgoing tab is still being taken down, so the tree is
-    // locked and a listener calling setState throws
-    // "setState() or markNeedsBuild() called when widget tree was locked".
-    // (dashBoardDataBinding has always been deferred for the same family of
-    // reason: it ends in update(), which cannot run mid-build.)
+    // The screen's own form, registered under a tag of its own so the widgets
+    // below — and the map, and the dialogs — can find THIS instance rather
+    // than the dashboard's. Created here and deleted in dispose(), so a closed
+    // edit screen leaves nothing behind.
+    _formTag = DashboardController.newEditFormTag(widget.booking.id);
+    controller = Get.put(
+      DashboardController(formTag: _formTag),
+      tag: _formTag,
+    );
+    // Writes wait for the first frame. Loading a booking assigns to
+    // TextEditingControllers and Rx values that widgets are listening to, and
+    // this screen is mounted during a tab switch — the outgoing tab is still
+    // being taken down, so the tree is locked and a listener calling setState
+    // throws "setState() or markNeedsBuild() called when widget tree was
+    // locked". dashBoardDataBinding has always been deferred for the same
+    // family of reason: it ends in update(), which cannot run mid-build.
     //
-    // Order matters: capture before anything overwrites the outgoing form,
-    // clear so the booking loads into empty fields, then load.
+    // Nothing is captured or cleared any longer: a fresh instance starts empty
+    // and the dashboard's form is a different object, so there is nothing left
+    // to protect it from.
     //
     // Unlike the dashboard form, this screen does NOT claim
     // controller.focusBookingFormFirstField — that hook belongs to whichever
     // form is on the dashboard tab.
-    final id = widget.booking.id;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      _dashboardFormState = controller.captureFormState();
-      // dashBoardDataBinding only assigns many fields when the booking carries
-      // a value, so without this the dashboard form's half-typed PASS / LUGG /
-      // notes would sit under the loaded booking.
-      controller.clearFormTextFields();
-      if (id != null) controller.dashBoardDataBinding(id: id);
+      _bootstrap();
     });
   }
+
+  /// Fills the new instance in, then loads the booking into it.
+  ///
+  /// The dropdowns read their items off dashboardAllData and the selections
+  /// dashBoardDataBinding restores are looked up in dashboardAccountData, so
+  /// both have to be present BEFORE the booking is bound — hence the await
+  /// rather than a fire-and-forget fetch. Normally there is nothing to wait
+  /// for: the dashboard has already loaded all three and this instance simply
+  /// borrows them. The fetch is the cold path — a browser reload straight onto
+  /// /EditJobs, with no dashboard behind it.
+  Future<void> _bootstrap() async {
+    final dashboard = Get.isRegistered<DashboardController>()
+        ? Get.find<DashboardController>()
+        : null;
+
+    if (dashboard != null) {
+      // The cold path — a browser reload straight onto this screen, with no
+      // dashboard behind it — fetches through the DASHBOARD's instance, not
+      // this one. dashboardData() does more than fill the dropdowns: it starts
+      // the five-second booking-count poll and pulls the booking table. Both
+      // belong to the dashboard, and running them on a throwaway instance
+      // would be a second poll and a table nothing on this screen displays.
+      if (dashboard.dashboardAllData == null) {
+        await dashboard.dashboardData();
+      }
+      controller.seedReferenceDataFrom(dashboard);
+      // Paint the form NOW. The builder below gates on dashboardAllData, so a
+      // fresh instance shows a spinner until this lands — and waiting for the
+      // booking fetch instead would leave that spinner up for a round trip,
+      // or for good if the fetch comes back non-200.
+      if (mounted) controller.update();
+    } else if (controller.dashboardAllData == null) {
+      // No dashboard registered at all. Shouldn't happen — main.dart puts one
+      // in permanently — but the form cannot build without this data.
+      await controller.dashboardData();
+    }
+    if (!mounted) return;
+
+    final id = widget.booking.id;
+    if (id != null) {
+      // Restores the selections off the booking, and fetches the accounts for
+      // its subsidiary itself.
+      await controller.dashBoardDataBinding(id: id);
+      return;
+    }
+
+    // No booking to load. dashboardData() kicks the accounts off without
+    // awaiting it, so a cold start can leave the seed with nothing in the
+    // ACCOUNT dropdown; fetch it here rather than leave the field dead.
+    if (controller.dashboardAccountData == null &&
+        controller.selectSubsidiariesValue != null) {
+      await controller.getAccountData(
+          subsidiariesId: controller.selectSubsidiariesValue!.id);
+    }
+    if (mounted) controller.update();
+  }
+
   @override
   void dispose() {
-    // Hand the dashboard form back exactly what it had — after the frame, for
-    // the same reason initState defers its writes. dispose() runs with the
-    // tree locked, and restoreFormState assigns to controllers that mounted
-    // widgets listen to.
+    // Deleting the tagged instance runs its onClose, which disposes the text
+    // controllers this screen created. Safe here: Flutter takes children down
+    // before the parent State, so nothing is still listening to them.
     //
-    // `controller` is the permanent DashboardController, so it long outlives
-    // this State; only the snapshot needs holding onto.
-    final saved = _dashboardFormState;
-    final ctrl = controller;
-    if (saved != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ctrl.restoreFormState(saved);
-        ctrl.update();
-      });
-    }
+    // The dashboard's permanent instance is a different object and is not
+    // touched — which is the entire reason the snapshot/restore this used to
+    // do could be dropped.
+    Get.delete<DashboardController>(tag: _formTag);
     _shortcutFocusNode.dispose();
     _pickupFieldFocusNode.dispose();
     super.dispose();
@@ -404,7 +465,12 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     // size during layout" was reporting. Material takes its child's height
     // instead, and still supplies the Material ancestor the fields need on the
     // /EditJobs route, where there is no Scaffold above it.
-    return Material(
+    return BookingFormScope(
+      // Everything below — the map above all — resolves the form from here
+      // instead of with a bare Get.find, so it follows THIS booking rather
+      // than the dashboard's.
+      controller: controller,
+      child: Material(
       color: Colors.white,
       child: _withFormFont(
       context,
@@ -422,8 +488,13 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
         // without re-animating.
         onKeyEvent: (node, event) => handlePageArrowScroll(context, event),
         child: GetBuilder<DashboardController>(
+          // This screen's instance, not the dashboard's.
+          tag: _formTag,
           initState: (_) {
-            controller.seeZoneOnMapp();
+            // Only when the seed did not already bring the overlay across.
+            if (controller.seeZoneOnMapModel == null) {
+              controller.seeZoneOnMapp();
+            }
             if (_controller.locationtypezoneModel == null) {
               _controller.getLocationTypeZone();
             }
@@ -895,8 +966,8 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                   _commsAndActionsRow(isMobile),
                                 ]),
                                 // Row 10 — R/LEAD, on its own.
-                                // if (_isReturnJourney)
-                                  // _grid(isMobile ? 1 : (isTablet ? 2 : 4), [_rLeadField()]),
+                                if (_isReturnJourney)
+                                  _grid(isMobile ? 1 : (isTablet ? 2 : 4), [_rLeadField()]),
                                 ///todo multi reservation
                                 // _grid(cols, [
                                 //   WebDateField('Date',
@@ -965,10 +1036,10 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                       tab: 40,
                                       prefix: Icons.currency_pound,
                                       controller: controller.slugController),
-                                  // if (_isReturnJourney) _rFareField(),
+                                  if (_isReturnJourney) _rFareField(),
                                 ]),
                                 const SizedBox(height: 4),
-                                // _driverRow(isMobile),
+                                _driverRow(isMobile),
                               ],
                             ),
                           ),
@@ -1009,6 +1080,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
           },
         ),
       ),
+    ),
     ),
     );
   }
@@ -1162,11 +1234,19 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
           _purple,
           controller.pickupTwoWayController,
           controller.allAddressesData,
-          _controller.RNzoneValue,
-          _controller.updateLocationValue.value == true
+          // Was LocationController.RNzoneValue — a singleton the dashboard
+          // form writes to as well, so the two screens shared one return zone.
+          // dashboardRNZoneValue lives on this screen's own instance and
+          // isolates with the rest of the form.
+          controller.dashboardRNZoneValue,
+          // Same guard the outbound rows use: locationtypezoneModel is null
+          // until getLocationTypeZone() lands, and a return journey rendered
+          // before then used to bring the screen down on the null assertion.
+          _controller.updateLocationValue.value == true ||
+                  _controller.locationtypezoneModel == null
               ? []
               : _controller.locationtypezoneModel!.zonesList!,
-              (v) => setState(() => _controller.RNzoneValue = v),
+              (v) => setState(() => controller.dashboardRNZoneValue = v),
           isMobile,
               (value) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1283,11 +1363,12 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
           _red,
           controller.dropOffTwoWayController,
           controller.allAddressesData,
-          _controller.RN1zoneValue,
-          _controller.updateLocationValue.value == true
+          controller.dashboardRN1ZoneValue,
+          _controller.updateLocationValue.value == true ||
+                  _controller.locationtypezoneModel == null
               ? []
               : _controller.locationtypezoneModel!.zonesList!,
-              (v) => setState(() => _controller.RN1zoneValue = v),
+              (v) => setState(() => controller.dashboardRN1ZoneValue = v),
           isMobile,
               (value) {
             controller.onChangeHandler(
@@ -1901,25 +1982,27 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     );
     final right = Row(mainAxisSize: MainAxisSize.min, children: [
       _actionIconBtn(Icons.person, tab: 35, onPressed: () {
-        showDialog(context: context, builder: (_) => RestrictDriversAlert());
+        showDialog(
+            context: context,
+            builder: (_) => RestrictDriversAlert(formController: controller));
       }),
       _actionIconBtn(Icons.attach_money, tab: 36, onPressed: () {
         showDialog(
           context: context,
-          builder: (_) => ChildSeatsAlert(),
+          builder: (_) => ChildSeatsAlert(formController: controller),
         );
       }),
       _actionIconBtn(Icons.note_add, tab: 37, onPressed: () {
         showDialog(
           context: context,
           barrierDismissible: false,
-          builder: (_) => ExtraFaresAlert(),
+          builder: (_) => ExtraFaresAlert(formController: controller),
         );
       }),
       _actionIconBtn(Icons.calculate, tab: 38, onPressed: () {
         showDialog(
           context: context,
-          builder: (_) => ExtraInfoAlert(),
+          builder: (_) => ExtraInfoAlert(formController: controller),
         );
       }),
     ]);

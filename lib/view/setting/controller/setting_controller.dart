@@ -382,7 +382,7 @@ class SettingController extends GetxController {
     update();
 
     var response = await Api().get("company-configuration/subsidiary_id/$subsidiaryId",
-    // sendCompanyId: true,
+      // sendCompanyId: true,
     );
     print(" GET CONFIG RESPONSE: ${response.statusCode} -> ${response.data}");
 
@@ -528,8 +528,8 @@ class SettingController extends GetxController {
         getCompanyConfiguration(selectSubsidiaryValue!);
       }
     }
-      isSubsidiary = false;
-      update();
+    isSubsidiary = false;
+    update();
   }
 
   /// list document number
@@ -852,7 +852,7 @@ class SettingController extends GetxController {
   final balanceController = TextEditingController();
   final abbreviationController = TextEditingController();
 
-   saveCompanyInformation() async {
+  saveCompanyInformation() async {
     final adminCtrl = Get.find<AdministrationController>();
 
     if (adminCtrl.subsiDiaryAll.isNotEmpty) {
@@ -924,18 +924,18 @@ class SettingController extends GetxController {
 
     String fromDateStr = "${callFromDate.value.year}-${callFromDate.value.month.toString().padLeft(2, '0')}-${callFromDate.value.day.toString().padLeft(2, '0')}";
     String toDateStr = "${callToDate.value.year}-${callToDate.value.month.toString().padLeft(2, '0')}-${callToDate.value.day.toString().padLeft(2, '0')}";
-    
+
     var response = await Api().get("call-recordings/recordings", sendCompanyId: true,
-      queryParameters: {
-        "page": currentPage.value,
-        "limit": limit,
-        if (isDateSelected) "from_date": fromDateStr,
-        if (isDateSelected) "to_date": toDateStr,
-        "start_time": callStartTimeController.text,
-        "end_time": callEndTimeController.text,
-        if (callMobileController.text.isNotEmpty)
-          "mobile": callMobileController.text,
-      }
+        queryParameters: {
+          "page": currentPage.value,
+          "limit": limit,
+          if (isDateSelected) "from_date": fromDateStr,
+          if (isDateSelected) "to_date": toDateStr,
+          "start_time": callStartTimeController.text,
+          "end_time": callEndTimeController.text,
+          if (callMobileController.text.isNotEmpty)
+            "mobile": callMobileController.text,
+        }
     );
 
     if (response.statusCode == 200) {

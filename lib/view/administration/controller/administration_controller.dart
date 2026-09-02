@@ -17,6 +17,13 @@ class AdministrationController extends GetxController {
   RxBool subsDiarySelection = false.obs;
   RxBool subsDiaryAllSelection = false.obs;
 
+  final bankController = TextEditingController();
+  final accountTitleController = TextEditingController();
+  final accountController = TextEditingController();
+  final ibanController = TextEditingController();
+  final sortCodeController = TextEditingController();
+  final vatController = TextEditingController();
+
 //// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Get  List subsDiary api
   RxSet<int> selectedSubsDiaryIds = <int>{}.obs;
   SubsDiaryModel? subsDiaryModel;
@@ -33,38 +40,39 @@ class AdministrationController extends GetxController {
   RxString searchSibsiDiaryFax = ''.obs;
   Subsidiaries? selectedSubsidiary;
 
- listSubsDiary() async {
+  listSubsDiary() async {
 
-      subsDiaryLoading.value = true;
-      final response = await Api().get('subsidiaries/get',
-          sendCompanyId: true,
-          queryParameters: {
-        "page" : subsiCurrentPage.value,
-        '&limit' : subsiiLimit,
-        "name" :searchSubsiDiaryName.value.toLowerCase(),
-        "email" : searchSubsiDiaryEmail.value.toLowerCase(),
-        "telephone_number" : searchSubsiDiaryTelephone.value.toLowerCase(),
-        "address" : searchSubsiDiaryAddress.value.toLowerCase(),
-        "fax" : searchSibsiDiaryFax.value.toLowerCase(),
-      }
-      );
-      if (response.statusCode == 200) {
-        subsDiaryModel = SubsDiaryModel.fromJson(response.data);
-        subsiTotalPages.value = subsDiaryModel?.totalPages ?? 1;
-        subsiDiaryAll.value = subsDiaryModel?.subsidiaries ?? [];
-        filteredSubsiDiary.value = subsiDiaryAll;
-
-        if (filteredSubsiDiary.isNotEmpty) {
-          syncFirstSubsidiaryToCompanyInfo();
+    subsDiaryLoading.value = true;
+    final response = await Api().get('subsidiaries/get',
+        sendCompanyId: true,
+        queryParameters: {
+          "page" : subsiCurrentPage.value,
+          '&limit' : subsiiLimit,
+          "name" :searchSubsiDiaryName.value.toLowerCase(),
+          "email" : searchSubsiDiaryEmail.value.toLowerCase(),
+          "telephone_number" : searchSubsiDiaryTelephone.value.toLowerCase(),
+          "address" : searchSubsiDiaryAddress.value.toLowerCase(),
+          "fax" : searchSibsiDiaryFax.value.toLowerCase(),
         }
+    );
+    if (response.statusCode == 200) {
+      subsDiaryModel = SubsDiaryModel.fromJson(response.data);
+      subsiTotalPages.value = subsDiaryModel?.totalPages ?? 1;
+      subsiDiaryAll.value = subsDiaryModel?.subsidiaries ?? [];
+      filteredSubsiDiary.value = subsiDiaryAll;
 
-        print('SubsiDiary ${SubsDiaryModel}');
-        subsDiaryLoading.value = false;
-        print(response.data);
-        update();
-
+      if (filteredSubsiDiary.isNotEmpty) {
+        syncFirstSubsidiaryToCompanyInfo();
       }
+
+      print('SubsiDiary ${SubsDiaryModel}');
+      subsDiaryLoading.value = false;
+      print(response.data);
+      update();
+
+    }
   }
+
   // -----------Search changes function
   void subsiDiarySearchChanged() {
     subsiCurrentPage.value = 1;
