@@ -8,6 +8,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import '../../setting/controller/setting_controller.dart';
 import '../User/create_subsiDiary.dart';
 import '../model/get_role.dart';
 
@@ -15,6 +16,13 @@ class AdministrationController extends GetxController {
   /// RxBool variable
   RxBool subsDiarySelection = false.obs;
   RxBool subsDiaryAllSelection = false.obs;
+
+  final bankController = TextEditingController();
+  final accountTitleController = TextEditingController();
+  final accountController = TextEditingController();
+  final ibanController = TextEditingController();
+  final sortCodeController = TextEditingController();
+  final vatController = TextEditingController();
 
 //// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Get  List subsDiary api
   RxSet<int> selectedSubsDiaryIds = <int>{}.obs;
@@ -32,33 +40,39 @@ class AdministrationController extends GetxController {
   RxString searchSibsiDiaryFax = ''.obs;
   Subsidiaries? selectedSubsidiary;
 
- listSubsDiary() async {
+  listSubsDiary() async {
 
-      subsDiaryLoading.value = true;
-      final response = await Api().get('subsidiaries/get',
-          sendCompanyId: true,
-          queryParameters: {
-        "page" : subsiCurrentPage.value,
-        '&limit' : subsiiLimit,
-        "name" :searchSubsiDiaryName.value.toLowerCase(),
-        "email" : searchSubsiDiaryEmail.value.toLowerCase(),
-        "telephone_number" : searchSubsiDiaryTelephone.value.toLowerCase(),
-        "address" : searchSubsiDiaryAddress.value.toLowerCase(),
-        "fax" : searchSibsiDiaryFax.value.toLowerCase(),
-      }
-      );
-      if (response.statusCode == 200) {
-        subsDiaryModel = SubsDiaryModel.fromJson(response.data);
-        subsiTotalPages.value = subsDiaryModel?.totalPages ?? 1;
-        subsiDiaryAll.value = subsDiaryModel?.subsidiaries ?? [];
-        filteredSubsiDiary.value = subsiDiaryAll;
-        print('SubsiDiary ${SubsDiaryModel}');
-        subsDiaryLoading.value = false;
-        print(response.data);
-        update();
+    subsDiaryLoading.value = true;
+    final response = await Api().get('subsidiaries/get',
+        sendCompanyId: true,
+        queryParameters: {
+          "page" : subsiCurrentPage.value,
+          '&limit' : subsiiLimit,
+          "name" :searchSubsiDiaryName.value.toLowerCase(),
+          "email" : searchSubsiDiaryEmail.value.toLowerCase(),
+          "telephone_number" : searchSubsiDiaryTelephone.value.toLowerCase(),
+          "address" : searchSubsiDiaryAddress.value.toLowerCase(),
+          "fax" : searchSibsiDiaryFax.value.toLowerCase(),
+        }
+    );
+    if (response.statusCode == 200) {
+      subsDiaryModel = SubsDiaryModel.fromJson(response.data);
+      subsiTotalPages.value = subsDiaryModel?.totalPages ?? 1;
+      subsiDiaryAll.value = subsDiaryModel?.subsidiaries ?? [];
+      filteredSubsiDiary.value = subsiDiaryAll;
 
+      if (filteredSubsiDiary.isNotEmpty) {
+        syncFirstSubsidiaryToCompanyInfo();
       }
+
+      print('SubsiDiary ${SubsDiaryModel}');
+      subsDiaryLoading.value = false;
+      print(response.data);
+      update();
+
+    }
   }
+
   // -----------Search changes function
   void subsiDiarySearchChanged() {
     subsiCurrentPage.value = 1;
@@ -89,6 +103,22 @@ class AdministrationController extends GetxController {
     currencyController.text = (data.currency ?? "").toUpperCase();
     addressController.text = (data.address ?? "").toUpperCase();
     balanceController.text = data.balance?.toString() ?? "";
+
+
+    bankDetailList.clear();
+
+    if (data.bank != null && data.bank!.isNotEmpty) {
+      bankDetailList.add(
+        BankDetailsAlertClass(
+          bank: data.bank ?? '',
+          accountTitle: data.accountTitle ?? '',
+          account: data.accountNumber ?? '',
+          iban: data.iban ?? '',
+          sortCode: data.sortCode ?? '',
+          vat: data.vatNumber ?? '',
+        ),
+      );
+    }
     // --- 2. Color Binding (Hex to Color) ---
     if (data.backgroundColor != null && data.backgroundColor!.isNotEmpty) {
       // Remove '#' and parse
@@ -276,13 +306,13 @@ class AdministrationController extends GetxController {
       'fax': faxController.text,
       'website': websiteController.text,
       'address': addressController.text,
-      'sort_code': '12-34-56',
-      'account_number': '12345678',
-      'account_title': 'Demo Company Ltd',
-      'bank': 'Demo Bank',
+      'sort_code': bankDetailList.isNotEmpty ? bankDetailList.first.sortCode : '',
+      'account_number': bankDetailList.isNotEmpty ? bankDetailList.first.account : '',
+      'account_title': bankDetailList.isNotEmpty ? bankDetailList.first.accountTitle : '',
+      'bank': bankDetailList.isNotEmpty ? bankDetailList.first.bank : '',
       'company_number': companyController.text,
-      'vat_number': 'GB123456789',
-      'iban': 'GB29NWBK60161331926819',
+      'vat_number': bankDetailList.isNotEmpty ? bankDetailList.first.vat : '',
+      'iban': bankDetailList.isNotEmpty ? bankDetailList.first.iban : '',
       'balance': balanceController.text,
       'currency': currencyController.text,
       'web_access_token': 'web-token-demo-123',
@@ -550,4 +580,62 @@ class AdministrationController extends GetxController {
   //     isLoadUser(false);
   //   }
   // }
+
+  void syncFirstSubsidiaryToCompanyInfo() {
+    if (subsiDiaryAll.isEmpty) return;
+
+
+    var firstRecord = subsiDiaryAll.first;
+    subsidiaryToUpdate = firstRecord;
+    isSubsiDiaryUpdating.value = true;
+
+    final SettingController settingController = Get.isRegistered<SettingController>()
+        ? Get.find<SettingController>()
+        : Get.put(SettingController());
+
+    settingController.nameController.text = firstRecord.name ?? '';
+    settingController.emailCompanyController.text = firstRecord.email ?? '';
+    settingController.faxController.text = firstRecord.fax ?? '';
+    settingController.telephoneController.text = firstRecord.telephoneNumber ?? '';
+    settingController.addressController.text = firstRecord.address ?? '';
+    settingController.companyController.text = firstRecord.companyNumber ?? '';
+    settingController.currencyController.text = firstRecord.currency ?? '';
+    settingController.emergencyContactController.text = firstRecord.emergencyContactNumber ?? '';
+    settingController.balanceController.text = firstRecord.balance ?? '';
+    settingController.websiteController.text = firstRecord.website ?? '';
+
+    bankDetailList.clear();
+    if (firstRecord.bank != null && firstRecord.bank!.isNotEmpty) {
+      bankDetailList.add(
+        BankDetailsAlertClass(
+          bank: firstRecord.bank ?? '',
+          accountTitle: firstRecord.accountTitle ?? '',
+          account: firstRecord.accountNumber ?? '',
+          iban: firstRecord.iban ?? '',
+          sortCode: firstRecord.sortCode ?? '',
+          vat: firstRecord.vatNumber ?? '',
+        ),
+      );
+    }
+
+    Color parseHexColor(String? hex) {
+      if (hex == null || hex.isEmpty) return Colors.white;
+      final buffer = StringBuffer();
+      if (hex.length == 6 || hex.length == 7) buffer.write('ff');
+      buffer.write(hex.replaceFirst('#', ''));
+      return Color(int.parse(buffer.toString(), radix: 16));
+    }
+
+    settingController.pickerColor = parseHexColor(firstRecord.backgroundColor);
+    settingController.foregroundColor = parseHexColor(firstRecord.foregroundColor);
+
+    if (firstRecord.logo != null && firstRecord.logo!.isNotEmpty) {
+      settingController.networkLogoUrl = firstRecord.logo;
+    } else {
+      settingController.networkLogoUrl = null;
+    }
+
+    settingController.update();
+    update();
+  }
 }

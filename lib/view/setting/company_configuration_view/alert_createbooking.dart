@@ -41,15 +41,15 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
   /// Replaces the old CustomTimePicker here, which was click-only and wrote
   /// `"HH:mm "` with a trailing space — unlike every other writer of these two
   /// controllers (see DashboardController.resetMultiReservationFields).
-  Widget _timeField(TextEditingController controller) {
+  Widget _timeField(TextEditingController controller, {ValueChanged<String>? onChanged}) {
     return SizedBox(
-      height: 45,
+      height: 30,
       child: TimePickerField(
         controller: controller,
         accent: DynamicColors.primaryClr,
         textStyle: const TextStyle(fontSize: 12, color: Colors.black87),
         // The field writes the value itself; this just refreshes the alert.
-        onChanged: (_) => setState(() {}),
+        onChanged: onChanged,
         decoration: InputDecoration(
           isDense: true,
           contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 13),
@@ -117,7 +117,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                 alignment: Alignment.centerLeft,
                                 child: Row(
                                   children: [
-                                    Text("Multi Reversation",
+                                    Text("MULTI RESERVATION",
                                         style: titleDesign()),
                                     Spacer(),
                                     Focus(
@@ -165,7 +165,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                     child: Wrap(
                       spacing: isHighRes ? 30 : 10,
                       runSpacing: 12,
-                      crossAxisAlignment: WrapCrossAlignment.end,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         labeledField(
                           context: context,
@@ -175,6 +175,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           // width: fieldWidth/1.2,
                           // width: 155,
                           width: isHighRes ? 180 : 155,
+                          column: true,
                           child: SizedBox(
                               height: 30,
                               child: KeyboardDatePicker(
@@ -198,6 +199,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           // width: fieldWidth/1.2,
                           // width: 155,
                           width: isHighRes ? 180 : 155,
+                          column: true,
                           child: SizedBox(
                               height: 30,
                               child: KeyboardDatePicker(
@@ -218,33 +220,46 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           context: context,
                           isMobile: isMobile,
                           label: AppText.time,
+                          column: true,
                           // width: fieldWidth/2.3,
                           // width: fieldWidth / 2.0,
                           // width: 90,
                           width: isHighRes ? 110 : 90,
                           child: _timeField(
-                              controller.multiReservationToTimeController),
+                              controller.multiReservationToTimeController,
+                              onChanged: (_) {
+                                controller.pickUpTimeController.text = controller.multiReservationToTimeController.text;
+                                setState(() {});
+                              }
+                          ),
                         ),
-                        Visibility(
-                          visible: controller.jourValue == 'W/R' ? true : false,
-                          child: labeledField(
+                        if( controller.jourValue == 'R/N' ? true : false)
+                          labeledField(
                             context: context,
                             isMobile: isMobile,
-                            label: AppText.time,
+                            label: AppText.rtime,
+                            column: true,
                             // width: fieldWidth/2.3,
                             // width: fieldWidth / 2.0,
                             // width: 90,
                             width: isHighRes ? 110 : 90,
                             child: _timeField(controller
-                                .returnMultiReservationToTimeController),
+                                .returnMultiReservationToTimeController,
+                                onChanged: (_) {
+                                  controller.pickUpTimeControllerReturn.text = controller.returnMultiReservationToTimeController.text;
+                                  setState(() {});
+                                }
+                            ),
                           ),
-                        ),
-                        CustomButton(
-                          height: 35,
+
+                        Padding(
+                          padding: const EdgeInsets.only(top: 18),
+                          child: CustomButton(
+                          height: 30,
                           // width: fieldWidth / 2,
                           // width: 140,
                           // width: 135,
-                          width: isHighRes ? 140 : 135,
+                          width: 70,
                           fontSize: 10,
                           borderRadius: 4,
                           verticalPadding: 0.0,
@@ -254,25 +269,29 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               startTime: controller.multiReservationFromDate,
                               time: controller.multiReservationToTimeController.text,
                               selectedDays: controller.multiReservationDaysList,
-                              returnTime: controller.jourValue == 'W/R'? controller.returnMultiReservationToTimeController.text:null
+                              returnTime: controller.jourValue == 'R/N'? controller.returnMultiReservationToTimeController.text:null,
                             );
                           },
-                          btnText: AppText.createreservation,
+                          btnText: "ADD",
                         ),
-                        CustomButton(
-                          height: 35,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 18),
+                          child: CustomButton(
+                          height: 30,
                           onTap: (){
                             // Clear the lists
                             controller.resetMultiReservationFields();
                             controller.update();
                             // Get.back();
                           },
-                          width: 60,
+                          width: 70,
                           fontSize: 10,
                           borderRadius: 4,
                           verticalPadding: 0.0,
                           btnText: AppText.cancel,
                           btnColor: DynamicColors.redClr,
+                        ),
                         ),
                       ],
                     ),
@@ -450,7 +469,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                       // ),
 
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: SizedBox(
@@ -463,7 +482,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               buildHeaderWithSearch(title: "DAY"),
                               buildHeaderWithSearch(title: "DATE"),
                               buildHeaderWithSearch(title: "TIME"),
-                              // buildHeaderWithSearch(title: "RETURN TIME"),
+                              buildHeaderWithSearch(title: "RETURN TIME"),
 
                             ],
 
@@ -474,11 +493,106 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                   .map((object) {
                                 return DataRow(
                                   cells: [
-                                    DataCell(Center(child: Text(object.exclude.toString().toUpperCase()))),
+                                    // DataCell(Center(child: Text(object.exclude.toString().toUpperCase()))),
+                                    // DataCell(
+                                    //   Center(
+                                    //     child: SizedBox(
+                                    //       height: 24,
+                                    //       width: 24,
+                                    //       child: Checkbox(
+                                    //         value: object.exclude,
+                                    //         activeColor: DynamicColors.primaryClr,
+                                    //         onChanged: (bool? value) {
+                                    //           setState(() {
+                                    //             object.exclude = value ?? false;
+                                    //           });
+                                    //         },
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    DataCell(
+                                      Center(
+                                        child: InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              object.exclude = !object.exclude;
+                                            });
+                                          },
+                                          child: SizedBox(
+                                            height: 24,
+                                            width: 24,
+                                            child: Checkbox(
+                                              value: object.exclude,
+                                              activeColor: DynamicColors.primaryClr,
+                                              onChanged: (bool? value) {
+                                                setState(() {
+                                                  object.exclude = value ?? false;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                     DataCell(Center(child: Text(object.day??""))),
                                     DataCell(Center(child: Text(object.startDate??""))),
-                                    // DataCell(Text(object.time??"")),
-                                    DataCell(Center(child: Text(object.returnTime??""))),
+                                    DataCell(
+                                      Center(
+                                        child: SizedBox(
+                                          width: 75,
+                                          height: 25,
+                                          child: TimePickerField(
+                                            controller: TextEditingController(text: object.returnTime ?? ""),
+                                            accent: DynamicColors.primaryClr,
+                                            textStyle: const TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
+                                            onChanged: (val) {
+                                              object.returnTime = val;
+                                            },
+                                            decoration: const InputDecoration(
+                                              isDense: true,
+                                              contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                                              border: InputBorder.none,
+                                              enabledBorder: InputBorder.none,
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.blue, width: 1),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      Center(
+                                        child: controller.jourValue == 'R/N'
+                                            ? SizedBox(
+                                          width: 75,
+                                          height: 25,
+                                          child: TimePickerField(
+                                            controller: TextEditingController(text: object.endTime ?? ""),
+                                            accent: DynamicColors.primaryClr,
+                                            textStyle: const TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            onChanged: (val) {
+                                              object.endTime = val;
+                                            },
+                                            decoration: const InputDecoration(
+                                              isDense: true,
+                                              contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                                              border: InputBorder.none,
+                                              enabledBorder: InputBorder.none,
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.blue, width: 1),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                            : const Text("-", style: TextStyle(color: Colors.grey)),
+                                      ),
+                                    ),
                                   ],
                                 );
                               }).toList(),
@@ -500,24 +614,26 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                 BotToast.showText(text: "Please select data first");
                                 return;
                               }
-                              final storedTemFare = await getFares(
-                                  journeyTypeId: controller.selectJourneyTypeValue!.id,
-                                  multiReservationList: controller.multiReservationList,
-                                  dropOff: controller.pickupController.text,
-                                  pickup: controller.dropOffController.text,
-                                  miles: controller.totalDistance.value,
-                                  dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
-                                  pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
-                                  pickupTime: controller.pickUpTimeController.text,
-                                  vehicleTypeId: controller.selectVehicleValue!.id,
-
-                              );
-                              var fareValue = jsonDecode(storedTemFare);
-                              controller.fixedFare.value = fareValue['total_fare'].toString();
-                              controller.returnFareValue = fareValue== null?"0": fareValue['return_fare'].toString();
-                              controller.slugControllerReturn.text = fareValue== null?"0": fareValue['return_fare'].toString();
-                              controller.slugController.text = fareValue['fare'].toString();
-                              controller.update();
+                              await controller.getFaresCalculation();
+                              // final storedTemFare = await getFares(
+                              //     journeyTypeId: controller.selectJourneyTypeValue!.id,
+                              //     multiReservationList: controller.multiReservationList,
+                              //     dropOff: controller.pickupController.text,
+                              //     pickup: controller.dropOffController.text,
+                              //     miles: controller.totalDistance.value,
+                              //     dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
+                              //     pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
+                              //     pickupTime: controller.pickUpTimeController.text,
+                              //     vehicleTypeId: controller.selectVehicleValue!.id,
+                              //     returnVehicleTypeId: controller.selectVehicleValueReturn == null ? null : controller.selectVehicleValueReturn!.id
+                              //
+                              // );
+                              // var fareValue = jsonDecode(storedTemFare);
+                              // controller.fixedFare.value = fareValue['total_fare'].toString();
+                              // controller.returnFareValue = fareValue== null?"0": fareValue['return_fare'].toString();
+                              // controller.slugControllerReturn.text = fareValue== null?"0": fareValue['return_fare'].toString();
+                              // controller.slugController.text = fareValue['fare'].toString();
+                              // controller.update();
                               Get.back();
                             },
                             height: 35,

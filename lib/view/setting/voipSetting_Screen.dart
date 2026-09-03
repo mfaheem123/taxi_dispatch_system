@@ -9,6 +9,9 @@ import 'package:dashboard_new1/view/setting/controller/extension_controller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../component/dropdown_button.dart';
+import 'controller/setting_controller.dart';
+
 class VoipSettingsScreen extends StatefulWidget {
   const VoipSettingsScreen({super.key});
 
@@ -19,7 +22,28 @@ class VoipSettingsScreen extends StatefulWidget {
 class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
   // Temporary new rows for adding extension
   List<Map<String, dynamic>> newExtensions = [];
+
+  int? editingExtensionId;
+  final TextEditingController editExtensionController = TextEditingController();
+  dynamic editSelectedEmployee;
+
   ExtensionController controller = Get.put(ExtensionController());
+  final SettingController _controller = Get.isRegistered<SettingController>()
+      ? Get.find<SettingController>()
+      : Get.put(SettingController());
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller.getDocumentSubsidiary();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_controller.selectSubsidiaryValue != null) {
+        _controller.getCompanyConfiguration(_controller.selectSubsidiaryValue!);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +65,9 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
             .map((e) => e.employee!.username ?? "-")
             .toList();
 
-        return SingleChildScrollView(
+        return GetBuilder<SettingController>(
+          builder: (settingController) {
+          return SingleChildScrollView(
             child: Container(
               width: w,
               height: h,
@@ -110,23 +136,17 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                                                   fontSize: 14)),
                                           SizedBox(width: 15),
                                           Expanded(
-                                            child: DropdownButtonFormField<String>(
-                                              value: "YESTECH",
-                                              items: const [
-                                                DropdownMenuItem(
-                                                    value: "YESTECH",
-                                                    child: Text("YESTECH")),
-                                                DropdownMenuItem(
-                                                    value: "OTHER",
-                                                    child: Text("OTHER")),
-                                              ],
-                                              onChanged: (v) {},
-                                              decoration: const InputDecoration(
-                                                border: OutlineInputBorder(),
-                                                contentPadding:
-                                                EdgeInsets.symmetric(
-                                                    horizontal: 10),
-                                              ),
+                                            child: CustomDropdownField<String>(
+                                              label: "VOIP STATUS",
+                                              items: const ["YESTECH", "V4VOIP"],
+                                              value: ["YESTECH", "V4VOIP"].contains(settingController.voipServiceValue)
+                                                  ? settingController.voipServiceValue
+                                                  : "YESTECH",
+                                              itemLabel: (item) => item,
+                                              onChanged: (val) {
+                                                settingController.voipServiceValue = val ?? "YESTECH";
+                                                settingController.update();
+                                              },
                                             ),
                                           ),
                                         ],
@@ -145,23 +165,17 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                                                   fontSize: 14)),
                                           SizedBox(width: 15),
                                           Expanded(
-                                            child: DropdownButtonFormField<String>(
-                                              value: "RINGING",
-                                              items: const [
-                                                DropdownMenuItem(
-                                                    value: "RINGING",
-                                                    child: Text("RINGING")),
-                                                DropdownMenuItem(
-                                                    value: "ACTIVE",
-                                                    child: Text("ACTIVE")),
-                                              ],
-                                              onChanged: (v) {},
-                                              decoration: const InputDecoration(
-                                                border: OutlineInputBorder(),
-                                                contentPadding:
-                                                EdgeInsets.symmetric(
-                                                    horizontal: 10),
-                                              ),
+                                            child: CustomDropdownField<String>(
+                                              label: "VOIP STATUS",
+                                              items: const ["IDLE", "RINGING", "IN USE"],
+                                              value: ["IDLE", "RINGING", "IN USE"].contains(settingController.voipStatusValue)
+                                                  ? settingController.voipStatusValue
+                                                  : "IDLE",
+                                              itemLabel: (item) => item,
+                                              onChanged: (val) {
+                                                settingController.voipStatusValue = val ?? "IDLE";
+                                                settingController.update();
+                                              },
                                             ),
                                           ),
                                         ],
@@ -176,21 +190,30 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                                 Center(
                                   child: CustomButton(
                                     height: 35,
-                                    width: 170,
+                                    width: 250,
                                     verticalPadding: 0.0,
                                     borderRadius: 4,
                                     widget: Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 15, vertical: 0.0),
-                                      child: Text(
+                                      child: settingController.isSavingConfig
+                                          ? const SizedBox(
+                                        height: 16,
+                                        width: 16,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                          : Text(
                                         AppText.save,
                                         style: mozillaTextRegularText(
                                             fontSize: 12,
                                             color: DynamicColors.whiteClr),
                                       ),
                                     ),
-                                    onTap: () {
-                                      print("VOIP settings saved");
+                                    onTap: () async {
+                                      await settingController.saveCompanyConfiguration();
                                     },
                                   ),
                                 ),
@@ -198,8 +221,8 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                             ),
                           ),
                         ],
-                      )),
-
+                      ),
+                  ),
                   SizedBox(height: 20),
 
                   // ---------- MANAGE EXTENSIONS + BUTTON ----------
@@ -219,21 +242,15 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                           width: 50,
                           verticalPadding: 0.0,
                           borderRadius: 4,
-                          widget: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(Icons.add, size: 16, color: Colors.white),
-                                SizedBox(width: 5),
-                              ],
-                            ),
+                          widget: const Center(
+                            child: Icon(Icons.add, size: 16, color: Colors.white),
                           ),
                           onTap: () {
-                            // Add new row
                             setState(() {
-                              newExtensions
-                                  .add({"employee": null, "extension": ""});
+                              newExtensions.add({
+                                "employeeObj": null,
+                                "extension": ""
+                              });
                             });
                           },
                         ),
@@ -243,7 +260,6 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
 
                   const SizedBox(height: 10),
 
-                  // ---------- TABLE ----------
                   Container(
                     width: w * 0.7,
                     decoration: BoxDecoration(
@@ -252,55 +268,100 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                     ),
                     child: DatatableWidget(
                       columns: [
-                        buildHeaderWithSearch(
-                            title: "EMPLOYEE", removeSearching: true),
-                        buildHeaderWithSearch(
-                            title: "EXTENSION", removeSearching: true),
-                        buildHeaderWithSearch(
-                            title: "ACTIONS", removeSearching: true),
+                        buildHeaderWithSearch(title: "EMPLOYEE", removeSearching: true),
+                        buildHeaderWithSearch(title: "EXTENSION", removeSearching: true),
+                        buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
                       ],
                       rows: [
-                        // Existing extensions
-                        ...controller.getManageExtentionModel!.employeeExtensions!
-                            .map((ext) {
+                        // Existing Extensions List
+                        ...controller.getManageExtentionModel!.employeeExtensions!.map((ext) {
+                          bool isEditing = editingExtensionId == ext.id;
+
                           return DataRow(
                             cells: [
+
                               DataCell(
                                 Container(
                                   alignment: Alignment.center,
-                                  padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                                  child: Text(ext.employee!.username ?? "-"),
+                                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                                  child: Text((ext.employee?.username ?? "-").toUpperCase()),
                                 ),
                               ),
+
                               DataCell(
                                 Container(
                                   alignment: Alignment.center,
-                                  padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                                  child: Text(ext.extensionNumber ?? "-"),
+                                  child: isEditing
+                                      ? SizedBox(
+                                    width: 130,
+                                    height: 38,
+                                    child: TextField(
+                                      controller: editExtensionController,
+                                      textAlign: TextAlign.center,
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.symmetric(vertical: 8),
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                  )
+                                      : Text(ext.extensionNumber ?? "-"),
                                 ),
                               ),
+
                               DataCell(
                                 Container(
                                   alignment: Alignment.center,
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
+                                      // Edit/Save Toggle Icon
                                       IconButton(
-                                        onPressed: () {
-                                          print("Edit clicked");
+                                        onPressed: () async {
+                                          if (isEditing) {
+                                            // Update API Call
+                                            controller.selectedEmployee = ext.employee;
+                                            controller.extensionNumberController.text = editExtensionController.text.trim();
+                                            controller.isUpdateExtension(true);
+                                            controller.extensionUpdateId(ext.id!);
+
+                                            await controller.saveExtension();
+
+                                            setState(() {
+                                              editingExtensionId = null;
+                                            });
+                                          } else {
+                                            // Toggle to Edit State
+                                            setState(() {
+                                              editingExtensionId = ext.id;
+                                              editExtensionController.text = ext.extensionNumber ?? "";
+                                            });
+                                          }
                                         },
-                                        icon: Icon(Icons.edit,
-                                            color: DynamicColors.primaryClr,
-                                            size: 20),
+                                        icon: Icon(
+                                          isEditing ? Icons.check : Icons.edit,
+                                          color: isEditing ? Colors.green : DynamicColors.primaryClr,
+                                          size: 20,
+                                        ),
                                       ),
+
+                                      // Delete or Cancel Editing Icon
                                       IconButton(
-                                        onPressed: () {
-                                          print("Delete clicked");
+                                        onPressed: () async {
+                                          if (isEditing) {
+                                            setState(() {
+                                              editingExtensionId = null;
+                                            });
+                                          } else {
+                                            await controller.deleteExtension(ext.id!);
+                                          }
                                         },
-                                        icon: const Icon(Icons.delete,
-                                            color: Colors.red, size: 20),
+                                        icon: Icon(
+                                          isEditing ? Icons.close : Icons.delete,
+                                          color: Colors.red,
+                                          size: 20,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -309,58 +370,54 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                             ],
                           );
                         }).toList(),
-                        // New temporary rows
+
+                        // New Temporary Rows (Adding Mode)
                         ...newExtensions.map((row) {
                           int index = newExtensions.indexOf(row);
                           return DataRow(
                             cells: [
-                              // Employee dropdown
                               DataCell(
                                 Container(
                                   alignment: Alignment.center,
-                                  child: DropdownButton<String>(
-                                    value: row["employee"],
-                                    hint: const Text("Select Employee"),
+                                  child: DropdownButton<dynamic>(
+                                    value: row["employeeObj"],
+                                    hint: const Text("SELECT EMPLOYEE"),
                                     alignment: Alignment.center,
-                                    items: employeeList
-                                        .map((e) => DropdownMenuItem(
-                                        value: e, child: Text(e)))
-                                        .toList(),
+                                    items: controller.getManageExtentionModel!.employeeExtensions!.map((e) {
+                                      return DropdownMenuItem(
+                                        value: e.employee,
+                                        child: Text((e.employee?.username ?? "-").toUpperCase()),
+                                      );
+                                    }).toList(),
                                     onChanged: (val) {
                                       setState(() {
-                                        newExtensions[index]["employee"] = val;
+                                        newExtensions[index]["employeeObj"] = val;
                                       });
                                     },
                                   ),
                                 ),
                               ),
-                              // Extension TextField
-                              DataCell(Container(
-                                alignment: Alignment.center,
-                                child: SizedBox(
+                              DataCell(
+                                Container(
+                                  alignment: Alignment.center,
+                                  child: SizedBox(
                                     width: 150,
                                     height: 38,
                                     child: TextField(
                                       textAlign: TextAlign.center,
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                                       decoration: const InputDecoration(
                                         border: OutlineInputBorder(),
-                                        hintText: "Enter Extension",
+                                        hintText: "ENTER EXTENSION",
                                       ),
-
-                                      keyboardType:
-                                      TextInputType.number, // Numeric keyboard
-
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter
-                                            .digitsOnly, // Sirf numbers allow
-                                      ],
-
                                       onChanged: (val) {
                                         newExtensions[index]["extension"] = val;
                                       },
-                                    )),
-                              )),
-                              // Actions: Save / Cancel
+                                    ),
+                                  ),
+                                ),
+                              ),
                               DataCell(
                                 Container(
                                   alignment: Alignment.center,
@@ -369,16 +426,17 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       IconButton(
-                                        onPressed: () {
-                                          print(
-                                              "Save new extension: ${row["employee"]} - ${row["extension"]}");
-                                          // Yahan controller ke addExtension method call kar sakte ho
+                                        onPressed: () async {
+                                          controller.selectedEmployee = row["employeeObj"];
+                                          controller.extensionNumberController.text = row["extension"] ?? "";
+
+                                          await controller.saveExtension();
+
                                           setState(() {
                                             newExtensions.removeAt(index);
                                           });
                                         },
-                                        icon: const Icon(Icons.check,
-                                            color: Colors.green),
+                                        icon: const Icon(Icons.check, color: Colors.green),
                                       ),
                                       IconButton(
                                         onPressed: () {
@@ -386,8 +444,7 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                                             newExtensions.removeAt(index);
                                           });
                                         },
-                                        icon: const Icon(Icons.close,
-                                            color: Colors.red),
+                                        icon: const Icon(Icons.close, color: Colors.red),
                                       ),
                                     ],
                                   ),
@@ -401,7 +458,10 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                   ),
                 ],
               ),
-            ));
+            ),
+          );
+          },
+        );
       },
     );
   }

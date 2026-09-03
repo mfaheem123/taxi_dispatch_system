@@ -261,6 +261,7 @@ import 'package:latlong2/latlong.dart';
 import 'dart:html' as html;
 import '../../../component/marker_class.dart';
 import '../../../routes/app_pages.dart';
+import '../booking_form_scope.dart';
 import '../Controller/dashboard_controller.dart';
 import '../widgets/view_drivers_map.dart';
 import 'defult_dashboard_view.dart';
@@ -276,12 +277,27 @@ class MapViewWidget extends StatefulWidget {
 }
 
 class _MapViewWidgetState extends State<MapViewWidget> {
-  final controller = Get.find<DashboardController>();
+  /// The form this map belongs to.
+  ///
+  /// Resolved from [BookingFormScope] rather than with a bare
+  /// `Get.find<DashboardController>()`: the edit screen runs on its own tagged
+  /// instance, and a map that went on reading the dashboard's would plot the
+  /// dashboard's route under the edit screen's addresses. Off the edit screen
+  /// there is no scope and the fallback returns exactly the instance this used
+  /// to find, so every other call site is unchanged.
+  ///
+  /// didChangeDependencies, not initState: the lookup needs an InheritedWidget
+  /// ancestor, and initState runs before the element can depend on one.
+  late final DashboardController controller;
+  bool _controllerResolved = false;
   final List<Polygon> zonePolygons = [];
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_controllerResolved) return;
+    _controllerResolved = true;
+    controller = BookingFormScope.of(context);
     poligonFun();
     if (controller.seeZoneOnMapModel == null) {
       methodHit();
@@ -317,6 +333,9 @@ class _MapViewWidgetState extends State<MapViewWidget> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<DashboardController>(
+      // The same instance the field above resolved: null on the dashboard (the
+      // permanent controller), the edit screen's own tag underneath it.
+      tag: controller.formTag,
       builder: (controller) {
         final List<LatLng> polylinePoints =  controller.polylinePoints.isNotEmpty
             ? controller.polylinePointsCoordinate
@@ -363,9 +382,22 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                     ),
                     children: [
                       TileLayer(
+                        // No {s}: OSM has deprecated the a/b/c subdomains, and
+                        // flutter_map prints a warning about them on every
+                        // build. One host is what their tile policy asks for.
                         urlTemplate:
-                        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        subdomains: const ['a', 'b', 'c'],
+                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        // Identifies the app to the tile server. Unset,
+                        // flutter_map sends "flutter_map (unknown)", which OSM
+                        // is entitled to block outright.
+                        userAgentPackageName: 'com.example.dashboard_new1',
+                        // A tile that fails to load just leaves flutter_map's
+                        // grey background behind and says nothing — which looks
+                        // exactly like a map that never tried. Say what
+                        // happened instead.
+                        errorTileCallback: (tile, error, _) => debugPrint(
+                          'TILE FAILED ${tile.coordinates}: $error',
+                        ),
                       ),
                       if (polylinePoints.length > 1)
                         PolylineLayer(

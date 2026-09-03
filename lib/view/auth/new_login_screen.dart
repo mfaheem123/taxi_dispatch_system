@@ -197,6 +197,7 @@ import '../../component/color.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
 import 'Controller/auth_controller.dart';
+import '../../routes/app_pages.dart';
 
 class NewLoginScreen extends StatefulWidget {
   const NewLoginScreen({super.key});
@@ -383,6 +384,26 @@ class _NewLoginScreenState extends State<NewLoginScreen> {
                                         ),
                                       ),
                                     )),
+                                    const SizedBox(height: 30),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      height: 45,
+                                      child: ElevatedButton(
+                                        onPressed: (){
+                                          Get.toNamed(Routes.editJobs);
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: DynamicColors.primaryClr,
+                                          disabledBackgroundColor: DynamicColors.primaryClr,
+                                          elevation: 5,
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                        ),
+                                        child: Text('LOGIN',
+                                          style: headingText(fontWeight: FontWeight.w700, fontSize: 14, color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                     const SizedBox(height: 30),
                                     Text('© NEXUS 2026. ALL RIGHTS RESERVED.',
                                       style: headingText(fontWeight: FontWeight.w600, fontSize: 10, color: Colors.grey.shade700,

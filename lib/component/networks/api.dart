@@ -34,7 +34,7 @@ class Api {
   Api._internal();
 
 // Company ID
-  final String globalCompanyId = "2";
+  final String globalCompanyId = "3";
 
   var sp = GetStorage();
   Future<dynamic> interceptorGet(String url,

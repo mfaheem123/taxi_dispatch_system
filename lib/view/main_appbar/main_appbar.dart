@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
@@ -117,6 +118,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late final List<NestedMenuItem> hoverMenu;
+  Timer? _timer;
 
 
   // AuthController ko yahan register karein taake error na aaye
@@ -169,10 +171,17 @@ class _MyHomePageState extends State<MyHomePage> {
     FocusManager.instance.addListener(_handleFocusChanged);
     hoverMenu = _makeMenus(context);
     controller.inItStateOFController();
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   @override
   void dispose() {
+    _timer?.cancel();
     RawKeyboard.instance.removeListener(_handleKey);
     FocusManager.instance.removeListener(_handleFocusChanged);
     _bodyScrollController.dispose();
@@ -550,23 +559,23 @@ class _MyHomePageState extends State<MyHomePage> {
                     size: 24,
                     color: DynamicColors.whiteClr,
                   ),
-                  SizedBox(
-                    width: 9,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      if (html.document.fullscreenElement == null) {
-                        html.document.documentElement?.requestFullscreen();
-                      } else {
-                        html.document.exitFullscreen();
-                      }
-                    },
-                    child: Icon(
-                      Icons.fullscreen,
-                      size: 26,
-                      color: DynamicColors.whiteClr,
-                    ),
-                  ),
+                  // SizedBox(
+                  //   width: 9,
+                  // ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     if (html.document.fullscreenElement == null) {
+                  //       html.document.documentElement?.requestFullscreen();
+                  //     } else {
+                  //       html.document.exitFullscreen();
+                  //     }
+                  //   },
+                  //   child: Icon(
+                  //     Icons.fullscreen,
+                  //     size: 26,
+                  //     color: DynamicColors.whiteClr,
+                  //   ),
+                  // ),
                   SizedBox(
                     width: 9,
                   ),
@@ -1908,7 +1917,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       title: "AUTHORIZATION", pageName: AuthorizationScreen());
                 });
               }else{
-                BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+                BotToast.showText(text: "Permission Denied");
               }
               }
             },
@@ -1977,19 +1986,21 @@ class _MyHomePageState extends State<MyHomePage> {
                       BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
                     }
                   }),
-              NestedMenuItem(
-                  title: "STATISTICS",
-                  onTap: () {
-                    if(controller.selectedMenuItems.length <20){
-                    setState(() {
-                      controller.currentPage.value = StatisticsScreen();
-                      controller.menuBarRefresh(
-                          title: "STATISTICS", pageName: StatisticsScreen());
-                    });
-                    }else{
-                      BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
-                    }
-                  }),
+              // NestedMenuItem(
+              //     title: "STATISTICS",
+              //     onTap: () => message(context, "DevOps")
+              //     // onTap: () {
+              //     //   if(controller.selectedMenuItems.length <20){
+              //     //   setState(() {
+              //     //     controller.currentPage.value = StatisticsScreen();
+              //     //     controller.menuBarRefresh(
+              //     //         title: "STATISTICS", pageName: StatisticsScreen());
+              //     //   });
+              //     //   }else{
+              //     //     BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
+              //     //   }
+              //     // }
+              //     ),
             ]),
         NestedMenuItem(title: "BOOKINGS", children: [
           NestedMenuItem(

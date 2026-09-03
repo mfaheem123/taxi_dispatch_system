@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'booking_form_layout.dart';
+import 'labeled_icon_actions.dart' show IconAction;
 import 'labeled_input.dart' show UpperCaseTextFormatter;
 
 /// One address the PICK / DROP fields can suggest.
@@ -59,6 +60,21 @@ class LabeledAddressField extends StatefulWidget implements LabelledField {
   /// Swaps this location with its counterpart. Null hides the swap button.
   final VoidCallback? onSwap;
 
+  /// One more button beside × / swap — the update form's via-point picker on
+  /// DROP and R/DROP. Only [IconAction.icon], [IconAction.tooltip] and
+  /// [IconAction.onTap] are read; the colours are ignored, since a button
+  /// inside a field takes the field's own greys.
+  final IconAction? extraAction;
+
+  /// Focus node to drive this field with, when something outside it needs to
+  /// put the caret here — the update form's clear buttons hand focus back to
+  /// the field they emptied, using the node DashboardController already keeps
+  /// per location field. Left null, the field owns a private node.
+  ///
+  /// A node supplied here is NOT disposed with the field: whoever created it
+  /// owns it.
+  final FocusNode? focusNode;
+
   const LabeledAddressField(
     this.label, {
     super.key,
@@ -69,6 +85,8 @@ class LabeledAddressField extends StatefulWidget implements LabelledField {
     this.onPicked,
     this.onCleared,
     this.onSwap,
+    this.extraAction,
+    this.focusNode,
   });
 
   @override
@@ -80,7 +98,12 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
   static const double _panelHeight = 260;
 
   final _layerLink = LayerLink();
-  final _focusNode = FocusNode();
+
+  /// Null unless this field had to make its own — see [_focusNode].
+  FocusNode? _ownedFocusNode;
+  FocusNode get _focusNode =>
+      widget.focusNode ?? (_ownedFocusNode ??= FocusNode());
+
   final _fieldKey = GlobalKey();
   final _scrollController = ScrollController();
   OverlayEntry? _entry;
@@ -108,6 +131,11 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
         // Late backend results arriving while the user navigates with the
         // arrow keys must NOT snap the highlight back to the top.
         _filter(widget.controller.text, preserveHighlight: true);
+        // This is the path that OPENS the panel for a live backend list.
+        // DashboardController debounces its lookup by 800ms, so when the user
+        // typed there was nothing to show yet and _onText left the panel shut;
+        // the results land here instead.
+        _syncPanel();
       });
     }
   }
@@ -117,7 +145,8 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
     _hide();
     _focusNode.removeListener(_onFocus);
     widget.controller.removeListener(_onText);
-    _focusNode.dispose();
+    // Only a node this field made is a node this field may dispose.
+    _ownedFocusNode?.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -128,18 +157,32 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
 
   void _onText() {
     if (_suppressPanel || !_focusNode.hasFocus) return;
-    final text = widget.controller.text.trim();
-    // No candidates at all (this screen hits no API) means no panel — not even
-    // an empty "No data" one. Once a real list is supplied, a search that
-    // simply misses still reports "No data", as on the dashboard.
-    if (text.isEmpty || widget.addresses.isEmpty) {
+    if (widget.controller.text.trim().isEmpty) {
       _userTyped = false;
       _hide();
       return;
     }
+    // Flagged as typed even when there is nothing to show yet. The candidate
+    // list is fed by a debounced backend call, so on the first search it is
+    // still empty at this point — and _userTyped is what lets didUpdateWidget
+    // open the panel once the results actually arrive.
     _userTyped = true;
     _filter(widget.controller.text);
-    _show();
+    _syncPanel();
+  }
+
+  /// Opens the panel when there is something to put in it, closes it otherwise.
+  ///
+  /// "Something" includes a genuine miss — the panel reports 'No data' for that,
+  /// as the dashboard does — but NOT the gap before the first results land.
+  /// Showing an empty panel then would flash 'No data' under every first
+  /// keystroke, while the lookup for it is still in flight.
+  void _syncPanel() {
+    if (_filtered.isNotEmpty || widget.addresses.isNotEmpty) {
+      _show();
+    } else {
+      _hide();
+    }
   }
 
   void _filter(String q, {bool preserveHighlight = false}) {
@@ -188,10 +231,14 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
     _suppressPanel = true;
     widget.controller.text = text;
     widget.controller.selection = TextSelection.collapsed(offset: text.length);
-    _suppressPanel = false;
     _userTyped = false;
     _hide();
+    // Still suppressed across the callback, because onPicked may write this
+    // field again: the update form routes it through
+    // DashboardController.tapSelect, which sets the text itself. That second
+    // write must not re-open the panel this just closed.
     widget.onPicked?.call(a);
+    _suppressPanel = false;
     // Focus is deliberately kept: Tab then carries straight on to the zone
     // dropdown instead of restarting traversal at the top of the form.
     setState(() {});
@@ -267,7 +314,9 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
   }
 
   Widget _buildPanel(BuildContext context) {
-    final accent = Theme.of(context).colorScheme.primary;
+    // The same accent the focused field border uses, so the highlighted row in
+    // this panel matches the ring around the field it hangs off.
+    const accent = fieldFocusColor;
     final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     final width = box?.size.width ?? 280.0;
     final height = box?.size.height ?? 40.0;
@@ -368,11 +417,12 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
   /// left focusable they would cost one or two extra Tab presses per location
   /// field, which is exactly what this form's ordered traversal avoids.
   Widget _suffixIcons() {
-    Widget iconBtn(IconData icon, String tooltip, VoidCallback onTap) =>
+    Widget iconBtn(IconData icon, String tooltip, VoidCallback onTap,
+            {Color color = Colors.grey}) =>
         IconButton(
           tooltip: tooltip,
           onPressed: onTap,
-          icon: Icon(icon, size: 14, color: Colors.grey),
+          icon: Icon(icon, size: 14, color: color),
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
           splashRadius: 14,
@@ -385,9 +435,16 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            if (value.text.isNotEmpty) iconBtn(Icons.close, 'Clear', _clear),
+            // Red because it throws the address away — the one destructive
+            // button in the row.
+            if (value.text.isNotEmpty)
+              iconBtn(Icons.cancel, 'Clear', _clear,
+                  color: const Color(0xFFD9412B)),
             if (widget.onSwap != null)
               iconBtn(Icons.swap_vert, 'Swap pickup and drop', widget.onSwap!),
+            if (widget.extraAction != null)
+              iconBtn(widget.extraAction!.icon, widget.extraAction!.tooltip,
+                  widget.extraAction!.onTap),
             const SizedBox(width: 2),
           ],
         ),

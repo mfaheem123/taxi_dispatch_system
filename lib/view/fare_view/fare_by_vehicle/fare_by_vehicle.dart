@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/view/fare_view/fare_by_vehicle/model/fare_by_vehicle_model.dart'
     as prefix0;
 import 'package:flutter/material.dart';
@@ -163,6 +164,24 @@ class _FareByVehicleState extends State<FareByVehicle> {
                         children: [
                           CustomButton(
                             onTap: () {
+
+
+                              String? validationMessage;
+
+                              if (  controller.createByVehicleTypes == null ) {
+                                validationMessage = "Please select vehicle type.";
+                              } else if ( controller.fareByVehicleOperater!.isEmpty ) {
+                                validationMessage = "Please select operater.";
+                              }else if ( controller.fareValueVehicleController.text.isEmpty ) {
+                                validationMessage = "Please enter a valid fare value.";
+                              }
+
+                              if (validationMessage != null) {
+                                BotToast.showText(text:  validationMessage);
+
+                                return;
+                              }
+
                               controller.postFareByVehicleSetting();
 
                               controller.getFareByVehicleSetting();
@@ -181,6 +200,8 @@ class _FareByVehicleState extends State<FareByVehicle> {
                           ),
                           CustomButton(
                             onTap: () {
+
+
                               controller.clearAllFields();
                             },
                             height: 30,

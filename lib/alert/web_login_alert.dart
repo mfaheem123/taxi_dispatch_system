@@ -1,10 +1,13 @@
+import 'package:dashboard_new1/component/action_icon_button.dart';
+import 'package:dashboard_new1/component/alert_close_button.dart';
+import 'package:dashboard_new1/component/text_field.dart';
+
 import 'package:dashboard_new1/view/accounts/controller/account_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../component/networks/api.dart';
-import '../component/text_field.dart';
 
 class WebLoginAlert {
   static void show() {
@@ -34,8 +37,6 @@ class WebLoginAlert {
                     controller.webLogintelephoneCtrl.text.isEmpty) return;
 
                 setState(() {
-                  // if (editingIndex == null) {
-                  //   controller.webLoginDataList.add(WebLoginClass(
                   WebLoginClass entry = WebLoginClass(
                       account: controller.webLoginaccountCtrl.text,
                       userName: controller.webLoginusernameCtrl.text,
@@ -49,32 +50,7 @@ class WebLoginAlert {
                     controller.webLoginDataList[editingIndex!] = entry;
                     editingIndex = null;
                   }
-                  //   rows.add({
-                  //     "account": controller.webLoginaccountCtrl.text,
-                  //     "username": controller.webLoginusernameCtrl.text,
-                  //     "password": controller.webLoginpasswordCtrl.text,
-                  //     "mobile": controller.webLoginmobileCtrl.text,
-                  //     "telephone": controller.webLogintelephoneCtrl.text,
-                  //   });
-                  // } else {
-                  //   controller.webLoginDataList.add(WebLoginClass(
-                  //     account: controller.webLoginaccountCtrl.text,
-                  //     userName: controller.webLoginusernameCtrl.text,
-                  //     password: controller.webLoginpasswordCtrl.text,
-                  //     mobile: controller.webLoginmobileCtrl.text,
-                  //     telphone: controller.webLogintelephoneCtrl.text,
-                  //   ));
-                  //   rows[editingIndex!] = {
-                  //     "account": controller.webLoginaccountCtrl.text,
-                  //     "username": controller.webLoginusernameCtrl.text,
-                  //     "password": controller.webLoginpasswordCtrl.text,
-                  //     "mobile": controller.webLoginmobileCtrl.text,
-                  //     "telephone": controller.webLogintelephoneCtrl.text,
-                  //   };
-                  //   editingIndex = null;
-                  // }
 
-                  // Clear fields
                   controller.webLoginaccountCtrl.clear();
                   controller.webLoginusernameCtrl.clear();
                   controller.webLoginpasswordCtrl.clear();
@@ -83,88 +59,89 @@ class WebLoginAlert {
                 });
               }
 
-              return Container(
-                width: Get.width * 0.6,
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey.shade300),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
+              return FocusTraversalGroup(
+                policy: OrderedTraversalPolicy(),
+                child: Container(
+                  width: Get.width * 0.6,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey.shade300),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
 
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "WEB LOGINS",
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-
-                        InkWell(
-                          onTap: () => Get.back(),
-                          child: const Icon(
-                            Icons.close,
-                            size: 20,
-                            color: Colors.black54,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                     SizedBox(height: 10),
-
-                    // Input Fields Row
-                    Row(
-                      children: [
-                        _buildField("ACCOUNT #", controller.webLoginaccountCtrl),
-                        const SizedBox(width: 8),
-                        _buildField("USERNAME", controller.webLoginusernameCtrl),
-                        const SizedBox(width: 8),
-                        _buildField("PASSWORD", controller.webLoginpasswordCtrl),
-                        const SizedBox(width: 8),
-                        _buildField("MOBILE", controller.webLoginmobileCtrl, isNumber: true),
-                        const SizedBox(width: 8),
-                        _buildField("TELEPHONE", controller.webLogintelephoneCtrl, isNumber: true),
-                        const SizedBox(width: 8),
-                        if(permissions.contains('create_account_web_login')) SizedBox(
-                          width: 100,
-                          height: 34,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: editingIndex == null
-                                  ? const Color(0xFF43489A)
-                                  : Colors.orange,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                            ),
-                            onPressed: saveRow,
-                            child: Text(
-                              editingIndex == null ? "SAVE" : "UPDATE",
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: Colors.white,
-                              ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "WEB LOGINS",
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
+
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(999),
+                            child: const AlertCloseButton(),
+                          ),
+                        ],
+                      ),
+
+                       SizedBox(height: 10),
+
+                      // Input Fields Row
+                      Row(
+                        children: [
+                          _buildField("ACCOUNT #", controller.webLoginaccountCtrl, autofocus: true, order: 1),
+                          const SizedBox(width: 8),
+                          _buildField("USERNAME", controller.webLoginusernameCtrl, order: 2),
+                          const SizedBox(width: 8),
+                          _buildField("PASSWORD", controller.webLoginpasswordCtrl, order: 3),
+                          const SizedBox(width: 8),
+                          _buildField("MOBILE", controller.webLoginmobileCtrl, isNumber: true, order: 4),
+                          const SizedBox(width: 8),
+                          _buildField("TELEPHONE", controller.webLogintelephoneCtrl, isNumber: true, order: 5),
+                          const SizedBox(width: 8),
+                          if(permissions.contains('create_account_web_login')) FocusTraversalOrder(
+                            order: const NumericFocusOrder(6),
+                            child: SizedBox(
+                              width: 100,
+                              height: 34,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: editingIndex == null
+                                      ? const Color(0xFF43489A)
+                                      : Colors.orange,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                ),
+                                onPressed: saveRow,
+                                child: Text(
+                                  editingIndex == null ? "SAVE" : "UPDATE",
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
 
 
                     const SizedBox(height: 12),
@@ -264,12 +241,10 @@ class WebLoginAlert {
                             Expanded(
                               child: Row(
                                 children: [
-                                  if(permissions.contains('update_account_web_login')) IconButton(
-                                    icon: const Icon(
-                                      Icons.edit,
-                                      size: 18,
-                                      color: Color(0xFF43489A),
-                                    ),
+                                  if(permissions.contains('update_account_web_login')) ActionIconButton(
+                                    icon: Icons.edit,
+                                    color: const Color(0xFF43489A),
+                                    order: 10.0 + index * 2.0,
                                     onPressed: () {
                                       setState(() {
                                         editingIndex = index;
@@ -286,15 +261,13 @@ class WebLoginAlert {
                                       });
                                     },
                                   ),
-                                  if(permissions.contains('delete_account_web_login')) IconButton(
-                                    icon: const Icon(
-                                      Icons.delete,
-                                      size: 18,
-                                      color: Colors.red,
-                                    ),
+                                  const SizedBox(width: 4),
+                                  if(permissions.contains('delete_account_web_login')) ActionIconButton(
+                                    icon: Icons.delete,
+                                    color: Colors.red,
+                                    order: 10.0 + index * 2.0 + 1.0,
                                     onPressed: () {
                                       setState(() {
-                                        // rows.removeAt(index);
                                         controller.webLoginDataList.removeAt(index);
                                         if (editingIndex == index) {
                                           editingIndex = null;
@@ -316,7 +289,7 @@ class WebLoginAlert {
                     }),
                   ],
                 ),
-              );
+              )  );
             },
           ),
         ),
@@ -325,38 +298,46 @@ class WebLoginAlert {
     );
   }
 
-  static Widget _buildField(String label, TextEditingController controller, {bool isNumber = false}) {
-    return Expanded(
-      child: SizedBox(
-        height: 32,
-        child: TextField(
-          controller: controller,
-          keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-          onChanged: (value) {
-            if (!isNumber) {
-              controller.value = controller.value.copyWith(
-                text: value.toUpperCase(),
-                selection: TextSelection.collapsed(offset: value.length),
-              );
-            }
-          },
-          inputFormatters: [
-            if (isNumber) FilteringTextInputFormatter.digitsOnly,
-          ],
-          style: const TextStyle(fontSize: 12),
-          decoration: InputDecoration(
-            labelText: label,
-            labelStyle: const TextStyle(fontSize: 11),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(6),
-            ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 6,
-              vertical: 4,
-            ),
+  static Widget _buildField(String label, TextEditingController controller, {bool isNumber = false, bool autofocus = false, double? order}) {
+    Widget field = SizedBox(
+      height: 32,
+      child: TextField(
+        autofocus: autofocus,
+        controller: controller,
+        keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+        onChanged: (value) {
+          if (!isNumber) {
+            controller.value = controller.value.copyWith(
+              text: value.toUpperCase(),
+              selection: TextSelection.collapsed(offset: value.length),
+            );
+          }
+        },
+        inputFormatters: [
+          if (isNumber) FilteringTextInputFormatter.digitsOnly,
+        ],
+        style: const TextStyle(fontSize: 12),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: const TextStyle(fontSize: 11),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(6),
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 6,
+            vertical: 4,
           ),
         ),
       ),
     );
+
+    if (order != null) {
+      field = FocusTraversalOrder(
+        order: NumericFocusOrder(order),
+        child: field,
+      );
+    }
+
+    return Expanded(child: field);
   }
 }

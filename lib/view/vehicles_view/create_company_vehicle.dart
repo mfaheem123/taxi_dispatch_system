@@ -121,25 +121,42 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                                     AppText.vehicleType,
                                     style: mozillaTextSemiBoldText(context: context, fontSize: 13),
                                   ),
-
-                                  Obx(() {
-                                    return CustomDropdownField<VehicleType>(
-                                      label: "Select Vehicle Type",
-                                      width: fieldWidth / 1.5,
-                                      height: 30,
-                                      items: controller.allVehicleTypes,
-                                      value: controller.selectVehicleValue == null
-                                          ? null
-                                          : controller.allVehicleTypes.firstWhereOrNull(
-                                            (element) => element.id == controller.selectVehicleValue!.id,
-                                      ),
-                                      itemLabel: (vehicle) => (vehicle.name ?? "").toUpperCase(),
-                                      onChanged: (VehicleType? v) {
-                                        controller.selectVehicleValue = v;
-                                        controller.update();
-                                      },
-                                    );
-                                  }),
+                                  //
+                                  // Obx(() {
+                                  //   return CustomDropdownField<VehicleType>(
+                                  //     label: "Select Vehicle Type",
+                                  //     width: fieldWidth / 1.5,
+                                  //     height: 30,
+                                  //     items: controller.allVehicleTypes,
+                                  //     value: controller.selectVehicleValue == null
+                                  //         ? null
+                                  //         : controller.allVehicleTypes.firstWhereOrNull(
+                                  //           (element) => element.id == controller.selectVehicleValue!.id,
+                                  //     ),
+                                  //     itemLabel: (vehicle) => (vehicle.name ?? "").toUpperCase(),
+                                  //     onChanged: (VehicleType? v) {
+                                  //       controller.selectVehicleValue = v;
+                                  //       controller.update();
+                                  //     },
+                                  //   );
+                                  // }
+                                  // ),
+                          CustomDropdownField<VehicleType>(
+                            label: "Select Vehicle Type",
+                            width: fieldWidth / 1.5,
+                            height: 30,
+                            items: controller.allVehicleTypes,
+                            value: controller.selectVehicleValue == null
+                                ? null
+                                : controller.allVehicleTypes.firstWhereOrNull(
+                                  (element) => element.id == controller.selectVehicleValue!.id,
+                            ),
+                            itemLabel: (vehicle) => (vehicle.name ?? "").toUpperCase(),
+                            onChanged: (VehicleType? v) {
+                              controller.selectVehicleValue = v;
+                              controller.update();
+                            },
+                          )
                                 ],
                               ),
 

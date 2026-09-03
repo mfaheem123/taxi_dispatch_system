@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 
 import '../component/color.dart';
 import '../component/customButton.dart';
+import '../component/dropdown_button.dart';
 import '../component/textStyle.dart';
 import '../component/text_field.dart';
 import '../component/text_widget.dart';
@@ -21,6 +22,7 @@ class SendEmailAlert extends StatefulWidget {
 
 class _SendEmailAlertState extends State<SendEmailAlert> {
   final dashBoardCntrl = Get.find<DashboardController>();
+  final FocusNode closeButtonFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -35,6 +37,8 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
     "ACCOUNT",
   ];
 
+  String? selectedRole;
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -42,7 +46,7 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
-        height: 350,
+        height: 390,
         width: 650,
         padding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
         child: Column(
@@ -57,14 +61,28 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                     fontSize: 13,
                   ),
                 ),
-                GestureDetector(
-                  onTap: (){
-                    Get.back();
+                AnimatedBuilder(
+                  animation: closeButtonFocusNode,
+                  builder: (context, child) {
+                    final isFocused = closeButtonFocusNode.hasFocus;
+                    return Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
+                          width: 2,
+                        ),
+                        color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
+                      ),
+                      child: IconButton(
+                        focusNode: closeButtonFocusNode,
+                        onPressed: () => Get.back(),
+                        icon: const Icon(Icons.close, size: 22, color: Colors.grey),
+                        splashRadius: 20,
+                      ),
+                    );
                   },
-                  child: Icon(Icons.close,
-                    color: DynamicColors.textClr,
-                  ),
-                )
+                ),
               ],
             ),
 
@@ -101,14 +119,27 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                   ),
                 ),
 
-                SizedBox(
+                CustomDropdownField<String>(
+                  label: "SELECT",
                   width: 100,
-                  height: 30,
-                  child: RestrictedDrivers(
-                    width: 100,
-                    driversList: sendEmailRoleList,
-                  ),
+                  height: 35,
+                  items: sendEmailRoleList,
+                  value: selectedRole,
+                  itemLabel: (role) => role,
+                  onChanged: (val) {
+                    setState(() {
+                      selectedRole = val;
+                    });
+                  },
                 ),
+                // SizedBox(
+                //   width: 100,
+                //   height: 30,
+                //   child: RestrictedDrivers(
+                //     width: 100,
+                //     driversList: sendEmailRoleList,
+                //   ),
+                // ),
 
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
@@ -150,7 +181,7 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
             Padding(
               padding: const EdgeInsets.only(left: 8.0),
               child: CustomButton(
-                // width: 80,
+                width: 140,
                 height: 30,
                 verticalPadding: 0.0,
                 borderRadius: 6,
@@ -178,6 +209,7 @@ class SendMessageAlert extends StatefulWidget {
 
 class _SendMessageAlertState extends State<SendMessageAlert> {
   final dashBoardCntrl = Get.find<DashboardController>();
+  final FocusNode closeButtonFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -192,6 +224,8 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
     "ACCOUNT",
   ];
 
+ String? selectedRole;
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -199,7 +233,7 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
-        height: 350,
+        height: 390,
         width: 650,
         padding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
         child: Column(
@@ -215,14 +249,28 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
                   ),
                 ),
 
-                GestureDetector(
-                  onTap: (){
-                    Get.back();
+                AnimatedBuilder(
+                  animation: closeButtonFocusNode,
+                  builder: (context, child) {
+                    final isFocused = closeButtonFocusNode.hasFocus;
+                    return Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
+                          width: 2,
+                        ),
+                        color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
+                      ),
+                      child: IconButton(
+                        focusNode: closeButtonFocusNode,
+                        onPressed: () => Get.back(),
+                        icon: const Icon(Icons.close, size: 22, color: Colors.grey),
+                        splashRadius: 20,
+                      ),
+                    );
                   },
-                  child: Icon(Icons.close,
-                    color: DynamicColors.textClr,
-                  ),
-                )
+                ),
               ],
             ),
 
@@ -243,13 +291,26 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
                 ),
                 Flexible(
                   flex: 2,
-                  child: SizedBox(
-                    height: 30,
-                    child: RestrictedDrivers(
-                      width: 100,
-                      driversList: sendEmailRoleList,
-                    ),
+                  child:  CustomDropdownField<String>(
+                    label: "SELECT",
+                    width: 100,
+                    height: 35,
+                    items: sendEmailRoleList,
+                    value: selectedRole,
+                    itemLabel: (role) => role,
+                    onChanged: (val) {
+                      setState(() {
+                        selectedRole = val;
+                      });
+                    },
                   ),
+                  // SizedBox(
+                  //   height: 30,
+                  //   child: RestrictedDrivers(
+                  //     width: 100,
+                  //     driversList: sendEmailRoleList,
+                  //   ),
+                  // ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
@@ -291,7 +352,7 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
             Padding(
               padding: const EdgeInsets.only(left: 8.0),
               child: CustomButton(
-                // width: 80,
+                width: 140,
                 height: 30,
                 verticalPadding: 0.0,
                 borderRadius: 6,

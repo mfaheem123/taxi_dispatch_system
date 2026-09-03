@@ -1,26 +1,67 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import '../../component/customButton.dart';
 import '../../component/textStyle.dart';
-import '../../component/color.dart';
-import '../../component/text_widget.dart';
 
 class AudioPlayerDialog extends StatefulWidget {
+final String audioUrl;
 
-
-  const AudioPlayerDialog({super.key});
+  const AudioPlayerDialog({super.key, required this.audioUrl});
 
   @override
   State<AudioPlayerDialog> createState() => _AudioPlayerDialogState();
 }
 
 class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
-  double currentSpeed = 1.0;
+  late AudioPlayer _audioPlayer;
   bool isPlaying = false;
-  double sliderValue = 0.3;
+  double currentSpeed = 1.0;
+  Duration duration = Duration.zero;
+  Duration position = Duration.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    _audioPlayer = AudioPlayer();
+
+    // Listen to duration changes
+    _audioPlayer.onDurationChanged.listen((newDuration) {
+      setState(() => duration = newDuration);
+    });
+
+    // Listen to position changes (slider movement)
+    _audioPlayer.onPositionChanged.listen((newPosition) {
+      setState(() => position = newPosition);
+    });
+
+    // Listen when audio completes
+    _audioPlayer.onPlayerStateChanged.listen((state) {
+      setState(() {
+        isPlaying = state == PlayerState.playing;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+
+  String formatTime(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$minutes:$seconds";
+  }
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
+    return FocusScope(
+        autofocus: true,
+      child: AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       titlePadding: const EdgeInsets.all(16),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -39,46 +80,72 @@ class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
             Row(
               children: [
                 IconButton(
+                  visualDensity: VisualDensity.compact,
+                  splashRadius: 15,
                   icon: Icon(
-                    isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
-                    size: 36,
+                    isPlaying ? Icons.pause : Icons.play_arrow,
+                    size: 28,
                     color: Colors.green,
                   ),
-                  onPressed: () {
-                    setState(() {
-                      isPlaying = !isPlaying;
-                    });
+                  onPressed: () async {
+                    if (isPlaying) {
+                      await _audioPlayer.pause();
+                    } else {
+                      await _audioPlayer.play(UrlSource(widget.audioUrl));
+                    }
                   },
                 ),
-                // Voice Line (Timeline Slider)
+                // Timeline Slider
                 Expanded(
+                  child: SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      trackHeight: 3.0,
+                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6.0),
+                      overlayShape: const RoundSliderOverlayShape(overlayRadius: 12.0),
+                    ),
                   child: Slider(
-                    value: sliderValue,
-                    onChanged: (val) {
-                      setState(() {
-                        sliderValue = val;
-                      });
+                    min: 0,
+                    max: duration.inSeconds.toDouble(),
+                    value: position.inSeconds.toDouble().clamp(0.0, duration.inSeconds.toDouble()),
+                    onChanged: (val) async {
+                      final position = Duration(seconds: val.toInt());
+                      await _audioPlayer.seek(position);
                     },
                     activeColor: Colors.green,
                     inactiveColor: Colors.grey.shade300,
-                  ),
+                  )),
                 ),
 
                 const Icon(Icons.volume_up, color: Colors.grey),
 
                 // Dots Vertical Playback Speed Option
-                PopupMenuButton<double>(
-                  icon: const Icon(Icons.more_vert, color: Colors.grey),
-                  onSelected: (double speed) {
-                    setState(() {
-                      currentSpeed = speed;
-                    });
-                  },
-                  itemBuilder: (BuildContext context) => <PopupMenuEntry<double>>[
-                    const PopupMenuItem<double>(value: 1.0, child: Text('1.0x Normal')),
-                    const PopupMenuItem<double>(value: 1.5, child: Text('1.5x Speed')),
-                    const PopupMenuItem<double>(value: 2.0, child: Text('2.0x Speed')),
-                  ],
+                SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: PopupMenuButton<double>(
+                    constraints: const BoxConstraints(
+                      maxHeight: 180,
+                      maxWidth: 100,
+                    ),
+                    padding: EdgeInsets.zero,
+                    splashRadius: 15,
+                    icon: const Icon(Icons.more_vert, color: Colors.grey, size: 20),
+                    onSelected: (double speed) async {
+                      setState(() {
+                        currentSpeed = speed;
+                      });
+                      await _audioPlayer.setPlaybackRate(speed);
+                    },
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry<double>>[
+                      const PopupMenuItem<double>(height: 32, value: 0.5, child: Text('0.5x', style: TextStyle(fontSize: 13))),
+                      const PopupMenuItem<double>(height: 32, value: 0.75, child: Text('0.75x', style: TextStyle(fontSize: 13))),
+                      const PopupMenuItem<double>(height: 32, value: 1.0, child: Text('NORMAL', style: TextStyle(fontSize: 13))),
+                      const PopupMenuItem<double>(height: 32, value: 1.25, child: Text('1.25x', style: TextStyle(fontSize: 13))),
+                      const PopupMenuItem<double>(height: 32, value: 1.5, child: Text('1.5x', style: TextStyle(fontSize: 13))),
+                      const PopupMenuItem<double>(height: 32, value: 1.75, child: Text('1.75x', style: TextStyle(fontSize: 13))),
+                      const PopupMenuItem<double>(height: 32, value: 2.0, child: Text('2.0x', style: TextStyle(fontSize: 13))),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -88,15 +155,15 @@ class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text("0:45 / 2:30", style: TextStyle(fontSize: 12, color: Colors.grey)),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text("${currentSpeed}x", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                  )
+                  Text("${formatTime(position)} / ${formatTime(duration)}", style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                  // Container(
+                  //   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  //   decoration: BoxDecoration(
+                  //     color: Colors.grey.shade200,
+                  //     borderRadius: BorderRadius.circular(4),
+                  //   ),
+                  //   // child: Text("${currentSpeed}x", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                  // )
                 ],
               ),
             ),
@@ -106,22 +173,18 @@ class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
       ),
       actions: [
         CustomButton(
-          height: 40,
+          height: 35,
           width: 80,
           verticalPadding: 0.0,
           borderRadius: 4,
           btnText: "CLOSE",
           fontSize: 14,
-          onTap: () {},
+          onTap: () {
+            _audioPlayer.stop();
+            Get.back();
+          },
         ),
-        // TextButton(
-        //   onPressed: () => Navigator.pop(context),
-        //   child: Text(
-        //     "CLOSE",
-        //     style: TextStyle(color: DynamicColors.primaryClr, fontWeight: FontWeight.bold),
-        //   ),
-        // ),
       ],
-    );
+    ));
   }
 }

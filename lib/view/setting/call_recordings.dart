@@ -4,11 +4,13 @@ import 'package:get/get.dart';
 import '../../component/color.dart';
 import '../../component/customButton.dart';
 import '../../component/datatable_widget.dart';
+import '../../component/pagination.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
 import '../dashboard_view/booking_table.dart';
 import '../dashboard_view/widgets/time_picker_widget.dart';
 import '../dashboard_view/widgets/user_info_widget.dart';
+import '../page_scroller.dart';
 import 'audio_player_alert.dart';
 import 'controller/extension_controller.dart';
 import 'controller/setting_controller.dart';
@@ -25,10 +27,22 @@ class _CallRecordingScreenState extends State<CallRecordingScreen> {
       ? Get.find<SettingController>()
       : Get.put(SettingController());
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     controller.getCallRecordings();
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<SettingController>(
-        initState: (v) {},
+    return PageScrollWrapper(
+      child: GetBuilder<SettingController>(
+        initState: (state) {
+          controller.getCallRecordings();
+        },
         builder: (controller) {
           return LayoutBuilder(builder: (context, constraints) {
             final double maxWidth = constraints.maxWidth;
@@ -75,10 +89,15 @@ class _CallRecordingScreenState extends State<CallRecordingScreen> {
                                 child: SizedBox(
                                   height: 30,
                                   child: KeyboardDatePicker(
-                                      // initialDate: controller.loginFromDate.value,
-                                      // onChanged: (date) =>
-                                      //     setState(() => controller.loginFromDate.value = date),
-                                      ),
+                                      key: ValueKey("from_date_${controller.datePickerKey}"),
+                                    // key: ValueKey(controller.callFromDate.value.toString()),
+                                    initialDate: controller.callFromDate.value,
+                                      onChanged: (date) {
+                                        controller.callFromDate.value = date;
+                                        controller.isDateSelected = true;
+                                        setState(() => {});
+                                      }
+                                  ),
                                 ),
                               ),
                               labeledField(
@@ -88,10 +107,11 @@ class _CallRecordingScreenState extends State<CallRecordingScreen> {
                                 column: false,
                                 width: 150,
                                 child: CustomTimePicker(
-                                    // controller: controller.loginStartTimeController,
-                                    // onTimeSelected: (time) => setState(() {}),
-                                    ),
+                                  controller: controller.callStartTimeController,
+                                  onTimeSelected: (time) => setState(() {}),
+                                ),
                               ),
+                              SizedBox(width: 10),
                               labeledField(
                                 context: context,
                                 isMobile: isMobile,
@@ -101,10 +121,14 @@ class _CallRecordingScreenState extends State<CallRecordingScreen> {
                                 child: SizedBox(
                                   height: 30,
                                   child: KeyboardDatePicker(
-                                      // initialDate: controller.loginToDate.value,
-                                      // onChanged: (date) =>
-                                      //     setState(() => controller.loginToDate.value = date),
-                                      ),
+                                      key: ValueKey("to_date_${controller.datePickerKey}"),
+                                    initialDate: controller.callToDate.value,
+                                      onChanged: (date) {
+                                        controller.callToDate.value = date;
+                                        controller.isDateSelected = true;
+                                        setState(() => {});
+                                      }
+                                  ),
                                 ),
                               ),
 
@@ -116,14 +140,14 @@ class _CallRecordingScreenState extends State<CallRecordingScreen> {
                                 column: false,
                                 width: 150,
                                 child: CustomTimePicker(
-                                    // controller: controller.loginEndTimeController,
-                                    // onTimeSelected: (time) => setState(() {}),
-                                    ),
+                                  controller: controller.callEndTimeController,
+                                  onTimeSelected: (time) => setState(() {}),
+                                ),
                               ),
                               SizedBox(width: 10),
                               CustomTextField(
                                 borderRadius: 4,
-                                controller: controller.mobileController,
+                                controller: controller.callMobileController,
                                 width: fieldWidth / 2.2,
                                 hintText: "MOBILE",
                               ),
@@ -131,24 +155,28 @@ class _CallRecordingScreenState extends State<CallRecordingScreen> {
                               const Spacer(),
 
                               CustomButton(
-                                height: 40,
+                                height: 35,
                                 width: 80,
                                 verticalPadding: 0.0,
                                 borderRadius: 4,
                                 btnText: AppText.clear,
                                 fontSize: 14,
-                                onTap: () {},
+                                onTap: () {
+                                  controller.clearCallFilters();
+                                },
                               ),
                               const SizedBox(width: 10),
 
                               CustomButton(
-                                height: 40,
+                                height: 35,
                                 width: 80,
                                 verticalPadding: 0.0,
                                 borderRadius: 4,
                                 btnText: AppText.search,
                                 fontSize: 14,
-                                onTap: () {},
+                                onTap: () {
+                                  controller.getCallRecordings();
+                                },
                               ),
                             ],
                           )
@@ -157,51 +185,64 @@ class _CallRecordingScreenState extends State<CallRecordingScreen> {
                     ),
                     SizedBox(height: 15),
 
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: SizedBox(
-                        width: Get.width,
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: controller.isCallLoading
+                          ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                          : SingleChildScrollView(
                         child: DatatableWidget(
                           columns: [
-                            buildHeaderWithSearch(title: "DATE & TIME"),
-                            buildHeaderWithSearch(title: "DURATION"),
-                            buildHeaderWithSearch(title: "CUSTOMER"),
-                            buildHeaderWithSearch(title: "MOBILE"),
-                            buildHeaderWithSearch(title: "RECORDING"),
+                            buildHeaderWithSearch(title: "DATEIME", removeSearching: true),
+                            buildHeaderWithSearch(title: "DURATION", removeSearching: true),
+                            buildHeaderWithSearch(title: "CUSTOMER", removeSearching: true),
+                            buildHeaderWithSearch(title: "MOBILE", removeSearching: true),
+                            buildHeaderWithSearch(title: "RECORDING", removeSearching: true),
                           ],
-                          totalRow: 1,
-                          rows: [
-                            DataRow(cells: [
-                              const DataCell(
-                                  Center(child: Text('2026-07-13 11:20 AM'))),
-                              const DataCell(Center(child: Text('02:30 mins'))),
-                              const DataCell(Center(child: Text('John Doe'))),
-                              const DataCell(
-                                  Center(child: Text('+1987654321'))),
+                          totalRow: controller.callRecordingModel?.recordings?.length ?? 0,
+                          rows: (controller.callRecordingModel?.recordings ?? []).map((recording) {
+                            return DataRow(cells: [
+                              // DataCell(Center(child: Text(recording.datetime ?? ''))),
+                              DataCell(Center(child: Text(
+                                  recording.datetime != null
+                                      ? recording.datetime!.split('.').first.replaceFirst('T', ' ').substring(0, 16)
+                                      : ''
+                              ))),
+                              DataCell(Center(child: Text('${recording.duration ?? 0}'))),
+                              DataCell(Center(child: Text(recording.customer ?? ''))),
+                              DataCell(Center(child: Text(recording.source ?? ''))),
                               DataCell(
                                 Center(
                                   child: IconButton(
+                                    visualDensity: VisualDensity.compact,
+                                    splashRadius: 15,
                                     icon: const Icon(Icons.play_arrow_rounded,
                                         color: Colors.green, size: 28),
                                     onPressed: () {
                                       showDialog(
                                         context: context,
-                                        builder: (context) =>
-                                            const AudioPlayerDialog(
+                                        builder: (context) => AudioPlayerDialog(
+                                          audioUrl: recording.filePath ?? '',
                                         ),
                                       );
                                     },
                                   ),
                                 ),
                               ),
-                            ]),
-                          ],
+                            ]);
+                          }).toList(),
                         ),
                       ),
+                    ),
+                    PaginationWidget(
+                      currentPage: controller.currentPage.value,
+                      totalPages: controller.totalPages.value,
+                      onPageChange: controller.onPageChange,
                     ),
                   ]),
             );
           });
-        });
+        }));
   }
 }

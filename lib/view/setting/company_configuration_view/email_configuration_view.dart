@@ -24,168 +24,203 @@ class _EmailConfigurationViewState extends State<EmailConfigurationView> {
       : Get.put(SettingController());
   List permissions = [];
 
-
-
   @override
   Widget build(BuildContext context) {
     return GetBuilder<SettingController>(
-        initState: (v){
-          permissions = Api().sp.read('all_permissions') ?? [];
-        },
-        builder: (controller) {
-      return LayoutBuilder(builder: (context, constraints) {
-        final double maxWidth = constraints.maxWidth;
-        final bool isMobile = maxWidth < 600;
-        final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+      initState: (v) {
+        permissions = Api().sp.read('all_permissions') ?? [];
+      },
+      builder: (controller) {
+        return LayoutBuilder(builder: (context, constraints) {
+          final double maxWidth = constraints.maxWidth;
+          final bool isMobile = maxWidth < 600;
+          final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-        // Instead of fixed width, we calculate flexible field widths
-        final double fieldWidth = isMobile
-            ? maxWidth // full width
-            : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
-        return Column(
-          children: [
-            SizedBox(
-              height: 8,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                width: Get.width,
-                decoration: BoxDecoration(
-                    border: Border.all(
-                  color: DynamicColors.secondaryClr,
-                )),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                        width: Get.width,
-                        height: kToolbarHeight,
-                        color: DynamicColors.secondaryClr,
-                        child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(AppText.emailConfigurations,
-                                style: titleDesign()))),
-                      Padding(
-                        padding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                      child: Wrap(
-                        runSpacing: 10,
-                        spacing: 10,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.userNameController,
-                            width: fieldWidth / 1.5,
-                            hintText: AppText.username,
-                            columnText: true,
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.passwordController,
-                            width: fieldWidth / 1.5,
-                            hintText: AppText.password,
-                            columnText: true,
-                          ),
-                          CustomDropdownField<String>(
-                            text: AppText.service,
-                            width: fieldWidth / 1.5,
-                            label: AppText.service,
-                            items: [
-                              "Sevice 1",
-                              "Sevice 2",
-                              "Sevice 3",
-                              "Sevice 4",
-                              "Sevice 5",
+          // Instead of fixed width, we calculate flexible field widths
+          final double fieldWidth = isMobile
+              ? maxWidth // full width
+              : isTablet
+                  ? maxWidth / 2
+                  : maxWidth / 4;
+
+          return Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Container(
+              width: Get.width,
+              decoration: BoxDecoration(
+                  border: Border.all(
+                color: DynamicColors.secondaryClr,
+              )),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  //HEADER
+                  Container(
+                      width: Get.width,
+                      height: kToolbarHeight,
+                      color: DynamicColors.secondaryClr,
+                      child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12.0, vertical: 12.0),
+                          child: Text(AppText.emailConfigurations,
+                              style: titleDesign()))),
+
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: isMobile
+                        ? Column(
+                            children: [
+                              buildLeftFields(),
+                              const Divider(height: 30, thickness: 1),
+                              buildRightCheckboxes(),
                             ],
-                            value: controller.serviceValue,
-                            itemLabel: (val) => val, // just show the string
-                            onChanged: (val) {
-                              controller.serviceValue = val!;
-                              controller.update();
-                            },
+                          )
+                        : IntrinsicHeight(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(
+                                  flex: 7,
+                              child: FocusTraversalGroup(
+                                policy: OrderedTraversalPolicy(),
+                                  child: buildLeftFields(),
+                                )),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 25.0),
+                                  child: VerticalDivider(
+                                    width: 1,
+                                    thickness: 1,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 3,
+                                  child: FocusTraversalGroup(
+                                    policy: OrderedTraversalPolicy(),
+                                  child: buildRightCheckboxes(),
+                                )),
+                              ],
+                            ),
                           ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.hostController,
-                            width: fieldWidth / 1.5,
-                            hintText: AppText.host,
-                            columnText: true,
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.portController,
-                            width: fieldWidth / 1.5,
-                            hintText: AppText.port,
-                            columnText: true,
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.ccController,
-                            width: fieldWidth / 1.5,
-                            hintText: AppText.cc,
-                            columnText: true,
-                          ),
-                          KeyboardCheckbox(
-                            onChanged: (v) {
-                              controller.secureConnectionValue.value = v;
-                              controller.update();
-                            },
-                            label: AppText.secureConnection,
-                            value: controller.secureConnectionValue.value,
-                            focusNode: controller.secureConnectionNode,
-                            width: 200,
-                          ),
-                          KeyboardCheckbox(
-                            onChanged: (v) {
-                              controller.toggleAcceptEmailValue.value = v;
-                              controller.update();
-                            },
-                            label: AppText.secureConnection,
-                            value: controller.toggleAcceptEmailValue.value,
-                            focusNode: controller.toggleAcceptEmailNode,
-                            width: 200,
-                          ),
-                          KeyboardCheckbox(
-                            onChanged: (v) {
-                              controller.toggleDeclineEmailValue.value = v;
-                              controller.update();
-                            },
-                            label: AppText.toggleDeclineEmail,
-                            value: controller.toggleDeclineEmailValue.value,
-                            focusNode: controller.toggleDeclineEmailNode,
-                            width: 200,
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    if(permissions.contains('read_company_configuration'))  Align(
-                      alignment: Alignment.center,
-                      child: CustomButton(
-                        height: 35,
-                        width: fieldWidth,
-                        fontSize: 14,
-                        borderRadius: 4,
-                        verticalPadding: 0.0,
-                        btnText: AppText.save,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+      },
+    );
+  }
+
+  Widget buildLeftFields() {
+    const double horizontalSpacing = 16.0;
+    const double runSpacing = 26.0;
+
+    return Column(
+      children: [
+        // ROW 1
+        Row(
+          children: [
+            Expanded(child: CustomTextField(
+              borderRadius: 4,
+              controller: controller.userNameController,
+              hintText: "USERNAME",
+              columnText: true,
+              inputFormatters: [UpperCaseTextFormatter()],)),
+            const SizedBox(width: horizontalSpacing),
+            Expanded(child: CustomTextField(
+                    borderRadius: 4,
+                    controller: controller.passwordController,
+                    hintText: AppText.password,
+                    columnText: true, obscureText: true)),
+            const SizedBox(width: horizontalSpacing),
+            Expanded(
+              child: CustomDropdownField<String>(
+                text: AppText.service,
+                label: "SELECT EMAIL SERVICE",
+                items: const ["GMAIL", "HOTMAIL", "OUTLOOK", "OTHER"],
+                value: controller.emailServiceValue,
+                itemLabel: (val) => val,
+                onChanged: (val) {
+                  controller.emailServiceValue = val!;
+                  controller.update();
+                },
               ),
             ),
           ],
-        );
-      });
-    });
+        ),
+        const SizedBox(height: runSpacing),
+
+        // ROW 2
+        Row(
+          children: [
+            Expanded(child: CustomTextField(
+              borderRadius: 4,
+              controller: controller.hostController,
+              hintText: AppText.host,
+              columnText: true, readOnly: true,
+              inputFormatters: [UpperCaseTextFormatter()],)),
+            const SizedBox(width: horizontalSpacing),
+            Expanded(child: CustomTextField(
+                    borderRadius: 4,
+                    controller: controller.portController,
+                    hintText: AppText.port,
+                    columnText: true, readOnly: true)),
+            const SizedBox(width: horizontalSpacing),
+            Expanded(child: CustomTextField(
+              borderRadius: 4,
+              controller: controller.ccController,
+              hintText: AppText.cc,
+              columnText: true,
+              inputFormatters: [UpperCaseTextFormatter()],)),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget buildRightCheckboxes() {
+    const double checkboxSpacing = 16.0;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: checkboxSpacing),
+        KeyboardCheckbox(
+          onChanged: (v) {
+            controller.secureConnectionValue.value = v;
+            controller.update();
+          },
+          label: AppText.secureConnection,
+          value: controller.secureConnectionValue.value,
+          focusNode: controller.secureConnectionNode,
+          width: double.infinity,
+        ),
+        const SizedBox(height: checkboxSpacing),
+        KeyboardCheckbox(
+          onChanged: (v) {
+            controller.toggleAcceptEmailValue.value = v;
+            controller.update();
+          },
+          label: AppText.toggleAcceptEmail,
+          value: controller.toggleAcceptEmailValue.value,
+          focusNode: controller.toggleAcceptEmailNode,
+          width: double.infinity,
+        ),
+        const SizedBox(height: checkboxSpacing),
+        KeyboardCheckbox(
+          onChanged: (v) {
+            controller.toggleDeclineEmailValue.value = v;
+            controller.update();
+          },
+          label: AppText.toggleDeclineEmail,
+          value: controller.toggleDeclineEmailValue.value,
+          focusNode: controller.toggleDeclineEmailNode,
+          width: double.infinity,
+        ),
+      ],
+    );
   }
 }

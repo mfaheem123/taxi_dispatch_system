@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/view/fare_view/model/fixedFareVehicleLocationTypeModel.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
@@ -500,6 +501,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                   borderRadius: 4,
                                   controller:
                                       controller.fareDescriptionController,
+                                  readOnly: true,
                                   width: fieldWidth,
                                   hintText: "",
                                   columnText: true,
@@ -512,6 +514,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                   controller:
                                       controller.fareDescription2ndController,
                                   width: fieldWidth,
+                                  readOnly: true,
                                   hintText: "",
                                   columnText: true,
                                   maxLines: 5,
@@ -543,6 +546,24 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                       fontSize: 13,
                                       color: DynamicColors.whiteClr),
                                   onTap: () {
+                                    String? validationMessage;
+
+                                    if (  controller.vehicleTypesFixedvalue == null) {
+                                      validationMessage = "Please select vehicle type.";
+                                    } else if (controller.addressController.text.isEmpty ) {
+                                      validationMessage = "Please add from location.";
+                                    } else if (controller.addressController1.text.isEmpty) {
+                                      validationMessage = "Please add to location.";
+                                    }else if (controller.fareController.text.isEmpty) {
+                                      validationMessage = "Please enter a valid fare value.";
+                                    }
+                                    if (validationMessage != null) {
+                                      BotToast.showText(text:  validationMessage);
+
+                                      return;
+                                    }
+
+
                                     controller.postFixedFare();
                                   },
                                 ),

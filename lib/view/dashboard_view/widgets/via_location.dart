@@ -255,12 +255,12 @@ class _ViaLocationState extends State<ViaLocation> {
                                     // --- LEFT COLUMN (O/W) ---
                                     SizedBox(
                                       // CHANGE INFO: Width ko slightly modify kiya (600->580, 280->265) taake newly embedded right scrollbar layout ko overlap na kare aur padding balanced rhey.
-                                      width: controller.jourValue != 'W/R'? 580 : 265,
+                                      width: controller.jourValue != 'R/N'? 580 : 265,
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Visibility(
-                                            visible: controller.jourValue != 'W/R'?false:true,
+                                            visible: controller.jourValue != 'R/N'?false:true,
                                             child: Row(
                                               children: [
                                                 Text("O/W"),
@@ -396,8 +396,9 @@ class _ViaLocationState extends State<ViaLocation> {
 
                                     // --- RIGHT COLUMN (R/N) ---
                                     Visibility(
-                                      visible: controller.pickupTwoWayController.text.isNotEmpty &&
-                                          controller.jourValue == 'W/R'  ?true:false,
+                                      visible:
+                                      controller.pickupTwoWayController.text.isNotEmpty &&
+                                          controller.jourValue == 'R/N'  ?true:false,
                                       child: SizedBox(
                                         // CHANGE INFO: Width adjust ki taake space management dynamic rhey.
                                         width: 265,

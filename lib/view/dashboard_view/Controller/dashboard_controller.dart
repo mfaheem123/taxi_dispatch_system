@@ -44,6 +44,96 @@ import 'driver_activity_model.dart';
 RxString shortCutKeyValue = 'shortCutKey'.obs;
 
 class DashboardController extends GetxController {
+  // ══════════════════════════════════════════════════════════════════
+  // Which form this instance belongs to
+  // ══════════════════════════════════════════════════════════════════
+  /// `null` on the dashboard's own permanent instance — the one every bare
+  /// `Get.find<DashboardController>()` in the app resolves, and the one the
+  /// NEW BOOKING form on the dashboard is bound to.
+  ///
+  /// The edit screen (edit_jobs.dart) registers a SECOND instance under a tag
+  /// of its own, so opening a booking for editing gets brand new
+  /// TextEditingControllers, its own polylines / markers / via points and its
+  /// own selections. Before this the two screens shared one instance, so
+  /// loading a job wrote it straight into whatever the operator had half typed
+  /// into the new-booking form.
+  ///
+  /// Widgets that must follow whichever form they are sitting inside pass this
+  /// to `GetBuilder<DashboardController>(tag: ...)` and resolve the instance
+  /// through [BookingFormScope]; see booking_form_scope.dart.
+  final String? formTag;
+
+  DashboardController({this.formTag});
+
+  /// True on the edit screen's private instance, false on the dashboard's.
+  bool get isDetachedForm => formTag != null;
+
+  static int _formTagSeq = 0;
+
+  /// A tag no other form is using. Two edit tabs on the same booking still get
+  /// an instance each, so neither can overwrite the other.
+  static String newEditFormTag(int? bookingId) =>
+      'editJob:${bookingId ?? 'new'}:${_formTagSeq++}';
+
+  /// Borrows the reference data a form needs in order to BUILD — the dropdown
+  /// lists and the zone overlay — off the dashboard's instance.
+  ///
+  /// These three are read-only lookups the whole app shares, so a detached
+  /// form takes a reference to them rather than refiring three endpoints every
+  /// time a booking is opened. Everything the operator can change (fields,
+  /// route, markers, selections) stays the detached instance's own.
+  ///
+  /// `??=` rather than a straight assign: a detached form that has already
+  /// fetched its own copy keeps it.
+  void seedReferenceDataFrom(DashboardController source) {
+    dashboardAllData ??= source.dashboardAllData;
+    dashboardAccountData ??= source.dashboardAccountData;
+    seeZoneOnMapModel ??= source.seeZoneOnMapModel;
+    applyOpeningSelections();
+  }
+
+  /// The selections [dashboardData] leaves a freshly loaded form sitting on.
+  ///
+  /// A detached form borrows the reference data instead of calling
+  /// [dashboardData], so it never ran the half of that method that picks the
+  /// openers — and one of them is not optional: [dashBoardApiValidation]
+  /// refuses to save without [selectSubsidiariesValue], and there is no
+  /// subsidiary dropdown on the form for the operator to fix that with.
+  ///
+  /// Derived from [dashboardAllData] rather than copied off the dashboard's
+  /// instance on purpose: copying would carry the operator's own in-progress
+  /// picks into the edit form, which is the leak this whole split exists to
+  /// close. `??=` throughout, so a booking already bound over these keeps its
+  /// own values.
+  void applyOpeningSelections() {
+    final data = dashboardAllData;
+    if (data == null) return;
+
+    final subsidiaries = data.subsidiaries;
+    if (subsidiaries != null && subsidiaries.isNotEmpty) {
+      selectSubsidiariesValue ??= subsidiaries.first;
+    }
+    final paymentTypes = data.paymentTypes;
+    if (paymentTypes != null && paymentTypes.isNotEmpty) {
+      selectPaymentTypeValue ??= paymentTypes.first;
+    }
+    final journeyTypes = data.journeyTypes;
+    if (journeyTypes != null && journeyTypes.isNotEmpty) {
+      selectJourneyTypeValue ??= journeyTypes.first;
+    }
+    final vehicleTypes = data.vehicleTypes;
+    if (vehicleTypes != null && vehicleTypes.isNotEmpty) {
+      selectVehicleValue ??= vehicleTypes.first;
+      // Return leg opens on Saloon where there is one — same as
+      // [dashboardData]. The outbound leg does NOT: that method computes the
+      // Saloon pick for both and then overwrites the outbound one with
+      // vehicleTypes[0] on the next line, and the two forms have to agree.
+      selectVehicleValueReturn ??= vehicleTypes.firstWhereOrNull(
+              (v) => v.name?.toLowerCase().trim() == 'saloon') ??
+          vehicleTypes.first;
+    }
+  }
+
   WebSocketChannel? _channel;
   bool isConnected = false;
   Timer? _bookingCountTimer;
@@ -341,13 +431,27 @@ class DashboardController extends GetxController {
     }
   }
 
+  /// Drops the cached zone overlay so the next [seeZoneOnMapp] refetches it.
+  void invalidateZonesOnMap() => seeZoneOnMapModel = null;
+
   ///===========================================================>See Zone On Map
 
   SeeZoneOnMapModel? seeZoneOnMapModel;
 
   RxBool seeZoneOnMappLoader = false.obs;
 
-  seeZoneOnMapp() async {
+  /// Zone polygons for the map overlay.
+  ///
+  /// Cached. Seven widgets call this from their GetBuilder initState, so every
+  /// mount — and a menu-bar tab switch remounts the whole page — used to cost a
+  /// zones/get round trip plus the full update() its response fires. Zones
+  /// change rarely; map_view_widget.dart was already skipping the call when the
+  /// model was loaded, and the check belongs here so every call site gets it.
+  ///
+  /// Pass `force: true` where the cached copy is known to be stale — see
+  /// [invalidateZonesOnMap], which the zone editor calls after a write.
+  seeZoneOnMapp({bool force = false}) async {
+    if (!force && seeZoneOnMapModel != null) return;
     seeZoneOnMappLoader(true);
 
     var response = await Api().get("zones/get", sendCompanyId: true);
@@ -585,7 +689,6 @@ class DashboardController extends GetxController {
   }
 
   inItStateOFController() async {
-    mapController = MapController(); // ✅ Initialize here
     Future.delayed(Duration(seconds: 1), () {
       String myExtension = Employee.selectedEmployee?.extensionNumber ?? "200";
       print("Connecting to CLI with Extension: $myExtension");
@@ -944,7 +1047,15 @@ class DashboardController extends GetxController {
 
 
   AllAddressesModel? selectedModel;
-  late final MapController mapController;
+  /// Built with the controller, not in [inItStateOFController].
+  ///
+  /// It used to be `late final`, assigned only when MainAppbar mounted — which
+  /// meant any screen reached without the app shell (the edit-job screen is
+  /// pushed straight from login) hit a LateInitializationError the moment its
+  /// map built. A MapController is inert until a FlutterMap attaches to it, so
+  /// there is nothing to defer; and being `late final` it would also have
+  /// thrown on a second init, which the appbar remounting can cause.
+  final MapController mapController = MapController();
   MapController? mapTrackingController;
   final List<ViaPoint> viaPoints = [];
   List<ViaTextEditingControllerClass> viaTextEditingController = [];
@@ -1877,7 +1988,7 @@ class DashboardController extends GetxController {
   void startBookingCountTimer() {
     _bookingCountTimer?.cancel();
     _bookingCountTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
-      await getBookingCounts();
+      // await getBookingCounts();
     });
   }
 
@@ -2046,7 +2157,7 @@ class DashboardController extends GetxController {
       _checkBookingsTimeAndPlaySound(dashboardTableModelData?.data ?? []);
       _timer?.cancel();
       _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-        getDashboardTableData(tableId: selectedTabId);
+        // getDashboardTableData(tableId: selectedTabId);
       });
       update();
     }
@@ -2454,6 +2565,8 @@ class DashboardController extends GetxController {
             startDate: "${date.year}-${date.month}-${date.day}",
             day: selectedDays[dayIndex],
             exclude: false,
+            // time: time,
+            // returnTime: returnTime,
             returnTime: time,
             endTime: returnTime,
           ),
@@ -2781,11 +2894,11 @@ class DashboardController extends GetxController {
         "return_notes": jsonEncode(extraFaresReturnList),
       if (selectAirportController.text.isNotEmpty)
         "flight_number": selectAirportController.text,
-      if (arrivalTimeController.text.isNotEmpty)
+      if (arrivalTimeController.text.isNotEmpty && selectAirportController.text.isNotEmpty)
         "arriving_from": arrivalTimeController.text,
       if (selectAirportControllerReturn.text.isNotEmpty)
         "return_flight_number": selectAirportControllerReturn.text,
-      if (arrivalReturnTimeController.text.isNotEmpty)
+      if (arrivalReturnTimeController.text.isNotEmpty && selectAirportControllerReturn.text.isNotEmpty)
         "return_arriving_from": arrivalReturnTimeController.text,
       "total_charges": double.parse(fixedFare.value).toStringAsFixed(1)
 
@@ -2917,6 +3030,13 @@ class DashboardController extends GetxController {
     }
     update();
   }
+
+  // captureFormState / clearFormTextFields / restoreFormState used to live
+  // here. They existed only because the dashboard form and the edit screen
+  // shared this one controller: the edit screen took a copy of the form on
+  // the way in and put it back on the way out so the dashboard did not lose
+  // what was typed into it. The edit screen now runs on a DashboardController
+  // of its own ([formTag]), so there is nothing left to snapshot.
 
   refreshPostAllFields() async {
     final LocationController _controller =
@@ -3050,6 +3170,27 @@ class DashboardController extends GetxController {
     var response = await Api().get("bookings/getbyid/$id");
     // var response = await Api().get("bookings/getbyid/$id");
     if (response.statusCode == 200) {
+
+
+      // // ==========================================
+      // // 💥 FIX HERE: List aur Map dono ko handle karein
+      // // ==========================================
+      // dynamic bookingRawData = response.data['booking'];
+      //
+      // // Agar backend se array/list aa rahi ho toh pehla item [0] pick kar lein
+      // if (bookingRawData is List) {
+      //   if (bookingRawData.isEmpty) {
+      //     BotToast.showText(text: "Booking data not found");
+      //     return;
+      //   }
+      //   bookingRawData = bookingRawData.first;
+      // }
+      //
+      // // Ab safai se BookingObjectData ban jayega bina kisi error ke
+      // BookingObjectData jobData = BookingObjectData.fromJson(bookingRawData);
+      // jobDetails = jobData;
+
+
       DateTime now = DateTime.now();
       String currentDateStr = DateFormat('yyyy-MM-dd').format(now);
       String currentTimeStr = DateFormat('HH:mm').format(now);
@@ -3417,7 +3558,61 @@ class DashboardController extends GetxController {
     referenceNumberController.dispose();
     dateController.dispose();
     phoneKeyboardFocusNode.dispose();
+    // Only the edit screen's throwaway instances. The permanent dashboard one
+    // is torn down with the app, and widening what it disposes would buy
+    // nothing while risking a use-after-dispose on the way out.
+    if (isDetachedForm) _disposeDetachedFormControllers();
     super.onClose();
+  }
+
+  /// Frees the text controllers a detached form owns.
+  ///
+  /// Called from [onClose], i.e. from `Get.delete<DashboardController>(tag:)`
+  /// in the edit screen's dispose(), by which point every widget that was
+  /// listening to them has already been unmounted. The four the block above
+  /// already disposes are deliberately absent — disposing twice throws.
+  void _disposeDetachedFormControllers() {
+    for (final c in <TextEditingController>[
+      arrivalReturnTimeController,
+      arrivalTimeController,
+      companyPriceController,
+      congestionChargesController,
+      controllerNoteController,
+      controllerNoteReturnController,
+      creditCardChargesController,
+      dropOffTwoWayController,
+      dropUpNoteController,
+      emailController,
+      extraDropChargesController,
+      luggController,
+      meetGreetController,
+      minController,
+      minControllerReturn,
+      mobileController,
+      multiReservationToTimeController,
+      nameController,
+      parkingChargesController,
+      passController,
+      pickUpNoteController,
+      pickUpTimeController,
+      pickUpTimeControllerReturn,
+      pickupTwoWayController,
+      returnCompanyPriceController,
+      returnDropUpNoteController,
+      returnMultiReservationToTimeController,
+      returnPickUpNoteController,
+      selectAirportController,
+      selectAirportControllerReturn,
+      slugController,
+      slugControllerReturn,
+      sluggController,
+      specialRequirementsController,
+      specialRequirementsReturnController,
+      telController,
+      waitingChargesController,
+    ]) {
+      c.dispose();
+    }
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Alert Multi Booking

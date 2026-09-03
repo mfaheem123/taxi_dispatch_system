@@ -12,6 +12,7 @@ abstract class Routes {
   static const completeBookingsScreen = _Paths.completeBookingsScreen;
   static const CustomerFormScreen = _Paths.CustomerFormScreen;
   static const updateBooking = _Paths.updateBooking;
+  static const editJobs = _Paths.editJobs;
 }
 
 abstract class _Paths {
@@ -20,6 +21,7 @@ abstract class _Paths {
   static const dashBoarScreen = '/DashBoarScreen';
   static const createBooking = '/CreateBooking';
   static const updateBooking = '/UpdateBooking';
+  static const editJobs = '/EditJobs';
   static const viewDriversMap = '/ViewDriversMap';
   static const createVehicle = '/ViewDriversMap';
   static const ResponsivePassengerScreen = '/ResponsivePassengerScreen';

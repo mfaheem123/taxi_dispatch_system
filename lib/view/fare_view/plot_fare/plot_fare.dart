@@ -351,6 +351,7 @@ class _PlotFareState extends State<PlotFare> {
                         contentPadding:
                             EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                         controller: controller.ploteFareDescriptionController,
+                        readOnly: true,
                         width: fieldWidth,
                         hintText: "",
                         columnText: true,
@@ -363,6 +364,7 @@ class _PlotFareState extends State<PlotFare> {
                             EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                         controller: controller.ploteFareDescription2ndController,
                         width: fieldWidth,
+                        readOnly: true,
                         hintText: "",
                         columnText: true,
                         maxLines: 5,
@@ -379,11 +381,22 @@ class _PlotFareState extends State<PlotFare> {
                     children: [
                       CustomButton(
                         onTap: () {
-                          controller.ploteFareDescription2ndController == null ||
-                                  controller.ploteFareDescriptionController ==
-                                      null
-                              ? BotToast.showText(text: "ADD PLOT")
-                              : controller.postPlotFare();
+
+                          String? validationMessage;
+
+                          if (  controller.ploteFareDescription2ndController.text.isEmpty) {
+                            validationMessage = "Please add to plot.";
+                          } else if (controller.ploteFareDescriptionController.text.isEmpty ) {
+                            validationMessage = "Please add from plot.";
+                          } else if (controller.fareController.text.isEmpty) {
+                            validationMessage = "Please enter a valid fare value.";
+                          }
+                          if (validationMessage != null) {
+                            BotToast.showText(text:  validationMessage);
+
+                            return;
+                          }
+                            controller.postPlotFare();
                         },
                         height: 35,
                         width: fieldWidth,

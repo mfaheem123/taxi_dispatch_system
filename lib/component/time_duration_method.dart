@@ -212,6 +212,8 @@ Future<String> getFares({
   print("tempMiles-- ${tempMiles}");
   print("returnMiles-- ${returnMiles}");
   print("isWaitAndReturn-- ${isWaitAndReturn}");
+  print("vehicle type id-- ${vehicleTypeId}");
+  print("return vehicle type id-- ${returnVehicleTypeId}");
 
   try {
 

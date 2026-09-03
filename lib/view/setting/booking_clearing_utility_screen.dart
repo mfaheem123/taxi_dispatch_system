@@ -109,7 +109,7 @@ class _BookingClearingUtilityScreenState
               ),
             ),
             SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
+              // scrollDirection: Axis.horizontal,
               child: SizedBox(
                 width: Get.width,
                 child: DatatableWidget(
@@ -134,8 +134,6 @@ class _BookingClearingUtilityScreenState
                     buildHeaderWithSearch(title: "DROPOFF"),
                     buildHeaderWithSearch(title: "DRIVER"),
                     buildHeaderWithSearch(title: "STATUS"),
-                    buildHeaderWithSearch(
-                        title: "ACTIONS", removeSearching: true),
                   ],
                   rows: bookings.map((booking) {
                     final bookingId = booking.id.toString();
@@ -159,23 +157,7 @@ class _BookingClearingUtilityScreenState
                         DataCell(Center(child: Text((booking.dropoff ?? "").toUpperCase()))),
                         DataCell(Center(child: Text((booking.driver?.name ?? "N/A").toUpperCase()))),
                         DataCell(Center(child: Text((booking.bookingStatus?.bookingStatus ?? "").toUpperCase()))),
-                        DataCell(Center(child:
-                          Row(
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.edit_calendar,
-                                    color: DynamicColors.primaryClr),
-                                onPressed: () {},
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.delete_forever,
-                                    color: DynamicColors.redClr),
-                                onPressed: () {},
-                              ),
-                            ],
-                          ),
-                        ),
-                        )],
+                        ],
                     );
                   }).toList(),
                 ),

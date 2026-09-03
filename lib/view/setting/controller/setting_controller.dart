@@ -12,8 +12,11 @@ import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:pdf/pdf.dart';
 import 'dart:convert';
 import 'package:dio/dio.dart' as dio;
+import '../../administration/controller/administration_controller.dart';
 import '../../administration/model/list_subsDiary.dart';
 import '../../drivers_view/model/driver_commission_payment_model.dart';
+import '../model/call_recording_model.dart';
+import '../model/company_configuration_model.dart';
 import '../model/get_clear_booking_model.dart';
 import '../model/get_document_number_model.dart';
 import '../model/select_templete_type.dart';
@@ -66,7 +69,12 @@ class SettingController extends GetxController {
     var response = await Api().get("templates/template_types", sendCompanyId: true,);
     if (response.statusCode == 200) {
       selectTempleteType = TempTypeModel.fromJson(response.data);
-      selectedTemplateType = selectTempleteType!.templateTypes![1];
+      // selectedTemplateType = selectTempleteType!.templateTypes![1];
+      final types = selectTempleteType?.templateTypes;
+      if (types != null && types.isNotEmpty) {
+        selectedTemplateType = types.length > 1 ? types[1] : types[0];
+        getTemplateByTypes(selectedTempId: selectedTemplateType!.id);
+      }
       templateTypeLoad = false;
       update();
     }
@@ -183,25 +191,32 @@ class SettingController extends GetxController {
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo company configuration functionality
 
+  String voipServiceValue = "YESTECH";
+  String voipStatusValue = "RINGING";
+
+
   String? selectSubsidiaryValue;
-  String? serviceValue;
+  String? emailServiceValue = "GMAIL";
+  String? smsServiceValue = "DINSTAR";
+  String? mapServiceValue = "GOOGLE";
   String? dateFormate;
   String? timeFormate;
   String? zoneFormate;
-  String? typeAmount;
-  String? deadMileageMethods;
+  String? typeAmount = "AMOUNT";
+  // String? deadMileageMethods;
 
   /// text field controllers
   final userNameController = TextEditingController();
   final passwordController = TextEditingController();
-  final hostController = TextEditingController();
-  final portController = TextEditingController();
+  final hostController = TextEditingController(text: "SMTP.GMAIL.COM");
+  final portController = TextEditingController(text: "465");
   final ccController = TextEditingController();
   final smsServiceIpController = TextEditingController();
   final smsHostController = TextEditingController();
   final smsPortController = TextEditingController();
   final smsUserNameController = TextEditingController();
   final smsPasswordController = TextEditingController();
+  final geoApifyApiKeyController = TextEditingController();
   final serviceApiKeyController = TextEditingController();
   final mapApiKeyController = TextEditingController();
   final distanceFactorController = TextEditingController();
@@ -223,6 +238,11 @@ class SettingController extends GetxController {
   final huntGroup = TextEditingController();
   final baseAddress = TextEditingController();
   final deadMileageMiles = TextEditingController();
+  final deadMileageMethods = TextEditingController();
+  final stripePublicKey = TextEditingController();
+  final stripeSecretKey = TextEditingController();
+  final endPointKey = TextEditingController();
+  final invoiceEndPointKey = TextEditingController();
 
   /// bool
   RxBool secureConnectionValue = false.obs;
@@ -243,6 +263,8 @@ class SettingController extends GetxController {
   final FocusNode peakFactorsNode = FocusNode();
   RxBool webBookerConfValue = false.obs;
   final FocusNode webBookerConfNode = FocusNode();
+  RxBool customerAppConfValue = false.obs;
+  final FocusNode customerAppConfNode = FocusNode();
   RxBool bookingDueNotiValue = false.obs;
   final FocusNode bookingDueNotiNode = FocusNode();
   RxBool enableCustomerValue = false.obs;
@@ -251,6 +273,221 @@ class SettingController extends GetxController {
   final FocusNode notificationNode = FocusNode();
   RxBool deadMileageValue = false.obs;
   final FocusNode deadMileageNode = FocusNode();
+  RxBool callFeaturesValue = false.obs;
+  final FocusNode callFeaturesNode = FocusNode();
+
+
+  void updateValue(TextEditingController textController, int change) {
+    int currentVal = int.tryParse(textController.text) ?? 0;
+    textController.text = (currentVal + change).toString();
+    update();
+  }
+
+  ///ADD
+  bool isSavingConfig = false;
+
+  saveCompanyConfiguration() async {
+    isSavingConfig = true;
+    update();
+
+    var formData = {
+      "subsidiary_id": int.tryParse(selectSubsidiaryValue ?? "1") ?? 1,
+      "company_id": 1,
+      "email_username": userNameController.text,
+      "email_password": passwordController.text,
+      "email_service": emailServiceValue,
+      "email_host": hostController.text,
+      "email_port": portController.text,
+      "email_cc": ccController.text,
+      "email_secure_connection": secureConnectionValue.value,
+      "toggle_accept_email": toggleAcceptEmailValue.value,
+      "toggle_decline_email": toggleDeclineEmailValue.value,
+      "map_service": mapServiceValue,
+      "map_api_key": mapApiKeyController.text,
+      // "map_distance_factor": distanceFactorController.text,
+      // "map_time_factor": timeFactorController.text,
+      "map_distance_factor": distanceFactorController.text.isEmpty ? "0" : distanceFactorController.text,
+      "map_time_factor": timeFactorController.text.isEmpty ? "0" : timeFactorController.text,
+      "toggle_map_controls": toggleMapControlsValue.value,
+      "company_date_format": dateFormate,
+      "company_time_format": timeFormate,
+      "company_time_zone": zoneFormate,
+      "sms_host": smsHostController.text,
+      "sms_port": smsPortController.text,
+      "tab_bookings": int.tryParse(tabbookingInHouss.text) ?? 0,
+      "tab_pre_bookings": int.tryParse(tabBooksinday.text) ?? 0,
+      "tab_recent_bookings": int.tryParse(tabrecentBooksinday.text) ?? 0,
+      "discount_oneway_booking": discountOneWay.text,
+      "discount_return_booking": discountReturn.text,
+      "discount_wait_and_return_booking": discountWaitAndReturn.text,
+      "booking_expiry_notice": int.tryParse(bookingExpiryNoties.text) ?? 0,
+      "airport_booking_expiry_notice": int.tryParse(airportBookingExpiryNotice.text) ?? 0,
+      "account_booking_expiry_notice": int.tryParse(accountBookingExpiry.text) ?? 0,
+      "driver_expiry_notice": int.tryParse(driverExpiryNotice.text) ?? 0,
+      "credit_card_charges": creditCardCharges.text,
+      "enable_booking_quotation": bookingQuotationSMSValue.value,
+      "web_booker_confirmation": webBookerConfValue.value,
+      "customer_app_confirmation": customerAppConfValue.value,
+      "enable_booking_text": enableBookingTextValue.value,
+      "booking_text_minutes": int.tryParse(tabBooksAfterminuts.text) ?? 0,
+      "enable_customer_text": enableCustomerValue.value,
+      "enable_notification": notificationValue.value,
+      "enable_booking_due_notification": bookingDueNotiValue.value,
+      "roundoff_fares": int.tryParse(roundOffFares.text) ?? 0,
+      "enable_peak_factors": peakFactorsValue.value,
+      "stripe_public_key": stripePublicKey.text,
+      "stripe_secret_key": stripeSecretKey.text,
+      "endpoint_key": endPointKey.text,
+      "invoice_endpoint_key": invoiceEndPointKey.text,
+      "sms_username": smsUserNameController.text,
+      "sms_password": smsPasswordController.text,
+      "sms_service": smsServiceValue,
+      "sms_service_ip": smsServiceIpController.text,
+      "amount_type": typeAmount,
+      "sms_incoming": enableIncomingMessagesValue.value,
+      "enable_dead_mileage": deadMileageValue.value,
+      "call_feature": callFeaturesValue.value,
+      "base_address": baseAddress.text,
+      "dead_mileage_miles": deadMileageMiles.text,
+      "dead_mileage_methods": deadMileageMethods.text,
+      "flight_tracker_api": flightTrackerAPI.text,
+      "hunt_group": int.tryParse(huntGroup.text) ?? 0,
+      "service_api_key": serviceApiKeyController.text,
+      "main_api_key": geoApifyApiKeyController.text,
+      "voip_service": voipServiceValue,
+      "voip_status": voipStatusValue,
+    };
+
+    try {
+      var response = await Api().post(formData, "company-configuration/add");
+
+      print(" SAVE CONFIG RESPONSE STATUS: ${response.statusCode}");
+      print(" SAVE CONFIG RESPONSE DATA: ${response.data}");
+
+      print("================================");
+
+      if (response.statusCode == 200) {
+        BotToast.showText(text: "CONFIGURATION SAVED SUCCESSFULLY!");
+      }
+      // else {
+      //   String errorMessage = response.data?['message']?.toString() ?? "FAILED!";
+      //   BotToast.showText(text: errorMessage);
+      //   // BotToast.showText(text: "FAILED!");
+      // }
+    } catch (e) {
+      print(" CATCH ERROR: $e");
+      BotToast.showText(text: "Error: $e");
+    } finally {
+      isSavingConfig = false;
+      update();
+    }
+  }
+
+  /// Get
+  CompanyConfigurationModel? companyConfigurationModel;
+  bool isConfigLoading = false;
+
+  getCompanyConfiguration(String subsidiaryId) async {
+    isConfigLoading = true;
+    update();
+
+    var response = await Api().get("company-configuration/subsidiary_id/$subsidiaryId",
+      // sendCompanyId: true,
+    );
+    print(" GET CONFIG RESPONSE: ${response.statusCode} -> ${response.data}");
+
+    if (response.statusCode == 200) {
+      companyConfigurationModel = CompanyConfigurationModel.fromJson(response.data);
+
+      var config = companyConfigurationModel?.companyConfiguration;
+
+      if (config != null) {
+        userNameController.text = config.emailUsername ?? '';
+        passwordController.text = config.emailPassword ?? '';
+        hostController.text = config.emailHost ?? 'SMTP.GMAIL.COM';
+        portController.text = config.emailPort ?? '465';
+        ccController.text = config.emailCc ?? '';
+
+        smsHostController.text = config.smsHost ?? '';
+        smsPortController.text = config.smsPort ?? '';
+        smsUserNameController.text = config.smsUsername ?? '';
+        smsPasswordController.text = config.smsPassword ?? '';
+
+        mapApiKeyController.text = config.mapApiKey ?? '';
+        geoApifyApiKeyController.text = config.mainApiKey ?? '';
+        distanceFactorController.text = config.mapDistanceFactor ?? '';
+        timeFactorController.text = config.mapTimeFactor ?? '';
+
+        tabbookingInHouss.text = config.tabBookings?.toString() ?? '';
+        tabBooksinday.text = config.tabPreBookings?.toString() ?? '';
+        tabrecentBooksinday.text = config.tabRecentBookings?.toString() ?? '';
+        tabBooksAfterminuts.text = config.bookingTextMinutes?.toString() ?? '';
+
+        discountOneWay.text = config.discountOnewayBooking ?? '';
+        discountReturn.text = config.discountReturnBooking ?? '';
+        discountWaitAndReturn.text = config.discountWaitAndReturnBooking ?? '';
+
+        bookingExpiryNoties.text = config.bookingExpiryNotice?.toString() ?? '';
+        airportBookingExpiryNotice.text = config.airportBookingExpiryNotice?.toString() ?? '';
+        accountBookingExpiry.text = config.accountBookingExpiryNotice?.toString() ?? '';
+        driverExpiryNotice.text = config.driverExpiryNotice?.toString() ?? '';
+
+        creditCardCharges.text = config.creditCardCharges ?? '';
+        roundOffFares.text = config.roundoffFares?.toString() ?? '';
+        flightTrackerAPI.text = config.flightTrackerApi ?? '';
+
+        stripePublicKey.text = config.stripePublicKey ?? '';
+        stripeSecretKey.text = config.stripeSecretKey ?? '';
+        endPointKey.text = config.endpointKey ?? '';
+        invoiceEndPointKey.text = config.invoiceEndpointKey ?? '';
+
+        baseAddress.text = config.baseAddress ?? '';
+        deadMileageMiles.text = config.deadMileageMiles ?? '';
+        deadMileageMethods.text = config.deadMileageMethods ?? '';
+        huntGroup.text = config.huntGroup?.toString() ?? '';
+        serviceApiKeyController.text = config.serviceApiKey ?? '';
+        smsServiceIpController.text = config.smsServiceIp ?? '';
+
+        voipServiceValue = (config.voipService?.toUpperCase() == "V4VOIP") ? "V4VOIP" : "YESTECH";
+
+        String apiStatus = config.voipStatus?.toUpperCase() ?? "IDLE";
+        if (["IDLE", "RINGING", "IN USE"].contains(apiStatus)) {
+          voipStatusValue = apiStatus;
+        } else {
+          voipStatusValue = "IDLE";
+        }
+        // voipServiceValue = config.voipService ?? 'YESTECH';
+        // voipStatusValue = config.voipStatus ?? 'RINGING';
+
+        //  Dropdowns / Values
+        emailServiceValue = config.emailService ?? 'GMAIL';
+        smsServiceValue = config.smsService ?? 'DINSTAR';
+        mapServiceValue = config.mapService ?? 'GOOGLE';
+        dateFormate = config.companyDateFormat;
+        timeFormate = config.companyTimeFormat;
+        zoneFormate = config.companyTimeZone;
+        typeAmount = config.amountType ?? 'AMOUNT';
+
+        // Booleans Mapping
+        secureConnectionValue.value = config.emailSecureConnection ?? false;
+        toggleAcceptEmailValue.value = config.toggleAcceptEmail ?? false;
+        toggleDeclineEmailValue.value = config.toggleDeclineEmail ?? false;
+        toggleMapControlsValue.value = config.toggleMapControls ?? false;
+        bookingQuotationSMSValue.value = config.enableBookingQuotation ?? false;
+        webBookerConfValue.value = config.webBookerConfirmation ?? false;
+        customerAppConfValue.value = config.customerAppConfirmation ?? false;
+        enableBookingTextValue.value = config.enableBookingText ?? false;
+        enableCustomerValue.value = config.enableCustomerText ?? false;
+        notificationValue.value = config.enableNotification ?? false;
+        bookingDueNotiValue.value = config.enableBookingDueNotification ?? false;
+        peakFactorsValue.value = config.enablePeakFactors ?? false;
+        enableIncomingMessagesValue.value = config.smsIncoming ?? false;
+        deadMileageValue.value = config.enableDeadMileage ?? false;
+        callFeaturesValue.value = config.callFeature ?? false;
+      }
+    }
+    update();
+  }
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo company configuration functionality
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo document number functionality
@@ -305,9 +542,15 @@ class SettingController extends GetxController {
     var response = await Api().get("subsidiaries/get", sendCompanyId: true);
     if (response.statusCode == 200) {
       subsDiaryModel = SubsDiaryModel.fromJson(response.data);
-      isSubsidiary = false;
-      update();
+      if (subsDiaryModel?.subsidiaries?.isNotEmpty ?? false) {
+        selectedSubsidiaryId = subsDiaryModel!.subsidiaries!.first.id.toString();
+        selectSubsidiaryValue = subsDiaryModel!.subsidiaries!.first.id.toString();
+
+        getCompanyConfiguration(selectSubsidiaryValue!);
+      }
     }
+    isSubsidiary = false;
+    update();
   }
 
   /// list document number
@@ -352,7 +595,7 @@ class SettingController extends GetxController {
               : "document/document_numbers/update/${documentUpdateId.value}"
       );
 
-      print("🔴 SERVER RESPONSE: ${response.statusCode} -> ${response.data}");
+      print("SERVER RESPONSE: ${response.statusCode} -> ${response.data}");
 
       if (response.statusCode == 200) {
         BotToast.showText(text: updateDocumentNumber.value == true
@@ -367,7 +610,7 @@ class SettingController extends GetxController {
         BotToast.showText(text: "Failed to add document number");
       }
     } catch (e) {
-      print("❌ CRITICAL API ERROR: $e");
+      print("CRITICAL API ERROR: $e");
       BotToast.showText(text: "Error: $e");
     } finally {
       isAddNumber = false;
@@ -615,12 +858,7 @@ class SettingController extends GetxController {
     update();
   }
   String? networkLogoUrl;
-  final bankController = TextEditingController();
-  final accountTitleController = TextEditingController();
-  final accountController = TextEditingController();
-  final ibanController = TextEditingController();
-  final sortCodeController = TextEditingController();
-  final vatController = TextEditingController();
+
   final nameController = TextEditingController();
   final emailCompanyController = TextEditingController();
   final faxController = TextEditingController();
@@ -634,6 +872,36 @@ class SettingController extends GetxController {
   final addressController = TextEditingController();
   final balanceController = TextEditingController();
   final abbreviationController = TextEditingController();
+
+  saveCompanyInformation() async {
+    final adminCtrl = Get.find<AdministrationController>();
+
+    if (adminCtrl.subsiDiaryAll.isNotEmpty) {
+      adminCtrl.subsidiaryToUpdate = adminCtrl.subsiDiaryAll.first;
+      adminCtrl.isSubsiDiaryUpdating.value = true;
+    } else {
+      adminCtrl.isSubsiDiaryUpdating.value = false;
+    }
+
+    adminCtrl.nameController.text = nameController.text;
+    adminCtrl.emailController.text = emailCompanyController.text;
+    adminCtrl.faxController.text = faxController.text;
+    adminCtrl.websiteController.text = websiteController.text;
+    adminCtrl.telephoneController.text = telephoneController.text;
+    adminCtrl.emergencyContactController.text = emergencyContactController.text;
+    adminCtrl.companyController.text = companyController.text;
+    adminCtrl.currencyController.text = currencyController.text;
+    adminCtrl.addressController.text = addressController.text;
+    adminCtrl.balanceController.text = balanceController.text;
+
+    adminCtrl.subsidiaryImg = profileImg;
+    adminCtrl.subsiDiarypickerColor = pickerColor;
+    adminCtrl.subsiDiaryforegroundColor = foregroundColor;
+
+    await adminCtrl.createSubsiDiary();
+
+    update();
+  }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Company Information
 
@@ -657,9 +925,75 @@ class SettingController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo sms tracking Work
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo call recordings Work
+  Rx<DateTime> callFromDate = DateTime.now().obs;
+  Rx<DateTime> callToDate = DateTime.now().obs;
+  final TextEditingController callStartTimeController = TextEditingController(text: "00:00");
+  final TextEditingController callEndTimeController = TextEditingController(text: "23:59");
+  final TextEditingController callMobileController = TextEditingController();
 
-  final mobileController = TextEditingController();
+  CallRecordingModel? callRecordingModel;
+  bool isCallLoading = false;
+  bool isDateSelected = false;
+
+  var currentPage = 1.obs;
+  var totalPages = 1.obs;
+  final int limit = 20;
+
+  getCallRecordings() async{
+    isCallLoading = true;
+    update();
+
+    String fromDateStr = "${callFromDate.value.year}-${callFromDate.value.month.toString().padLeft(2, '0')}-${callFromDate.value.day.toString().padLeft(2, '0')}";
+    String toDateStr = "${callToDate.value.year}-${callToDate.value.month.toString().padLeft(2, '0')}-${callToDate.value.day.toString().padLeft(2, '0')}";
+
+    var response = await Api().get("call-recordings/recordings", sendCompanyId: true,
+        queryParameters: {
+          "page": currentPage.value,
+          "limit": limit,
+          if (isDateSelected) "from_date": fromDateStr,
+          if (isDateSelected) "to_date": toDateStr,
+          "start_time": callStartTimeController.text,
+          "end_time": callEndTimeController.text,
+          if (callMobileController.text.isNotEmpty)
+            "mobile": callMobileController.text,
+        }
+    );
+
+    if (response.statusCode == 200) {
+      callRecordingModel = CallRecordingModel.fromJson(response.data);
+      totalPages.value = callRecordingModel?.pagination?.totalPages ?? 1;
+    }
+    isCallLoading = false;
+    update();
+  }
+
+  void onPageChange(int page) {
+    currentPage.value = page;
+    getCallRecordings();
+  }
+
+
+  var datePickerKey = 0;
+  void clearCallFilters() {
+    callFromDate.value = DateTime.now();
+    callToDate.value = DateTime.now();
+    isDateSelected = false;
+    callStartTimeController.text = "00:00";
+    callEndTimeController.text = "23:59";
+    callMobileController.clear();
+    callRecordingModel = null;
+    datePickerKey++;
+    getCallRecordings();
+  }
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo call recordings Work
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo voip setting
+
+
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo voip setting
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Chat screen
 

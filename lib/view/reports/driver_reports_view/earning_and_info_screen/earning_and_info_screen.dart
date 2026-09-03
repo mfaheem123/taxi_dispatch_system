@@ -34,6 +34,27 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
   List<DriverObject> selectedDriversList = [];
   DriverObject? activeRadioDriver;
 
+  // Focus nodes for Daily/Weekly/Monthly buttons
+  final FocusNode _dailyFocusNode = FocusNode();
+  final FocusNode _weeklyFocusNode = FocusNode();
+  final FocusNode _monthlyFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _dailyFocusNode.addListener(() => setState(() {}));
+    _weeklyFocusNode.addListener(() => setState(() {}));
+    _monthlyFocusNode.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _dailyFocusNode.dispose();
+    _weeklyFocusNode.dispose();
+    _monthlyFocusNode.dispose();
+    super.dispose();
+  }
+
   void handleView() {
     if (controller.selectDriverObject != null) {
       controller.getAllDriversEarnings();
@@ -163,6 +184,11 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                         Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
+                                            Builder(builder: (_) {
+                                              final bool anyFocused = _dailyFocusNode.hasFocus || _weeklyFocusNode.hasFocus || _monthlyFocusNode.hasFocus;
+                                              return Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
                                             CustomButton(
                                               verticalPadding: 0.0,
                                               width: 115,
@@ -170,7 +196,10 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                               borderRadius: 4,
                                               fontSize: 14,
                                               btnText: "DAILY",
-                                              btnColor: controller.reportViewType == "daily" ? DynamicColors.primaryClr : Colors.grey.shade500,
+                                              focusNode: _dailyFocusNode,
+                                              btnColor: anyFocused
+                                                  ? (_dailyFocusNode.hasFocus ? DynamicColors.primaryClr : Colors.grey.shade500)
+                                                  : (controller.reportViewType == "daily" ? DynamicColors.primaryClr : Colors.grey.shade500),
                                               onTap: () {
                                                 if (activeRadioDriver != null) {
                                                   updateDriverData(activeRadioDriver!, "daily");
@@ -188,7 +217,10 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                               borderRadius: 4,
                                               fontSize: 14,
                                               btnText: "WEEKLY",
-                                              btnColor: controller.reportViewType == "weekly" ? DynamicColors.primaryClr : Colors.grey.shade500,
+                                              focusNode: _weeklyFocusNode,
+                                              btnColor: anyFocused
+                                                  ? (_weeklyFocusNode.hasFocus ? DynamicColors.primaryClr : Colors.grey.shade500)
+                                                  : (controller.reportViewType == "weekly" ? DynamicColors.primaryClr : Colors.grey.shade500),
                                               onTap: () {
                                                 if (activeRadioDriver != null) {
                                                   updateDriverData(activeRadioDriver!, "weekly");
@@ -206,7 +238,10 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                               borderRadius: 4,
                                               fontSize: 14,
                                               btnText: "MONTHLY",
-                                              btnColor: controller.reportViewType == "monthly" ? DynamicColors.primaryClr : Colors.grey.shade500,
+                                              focusNode: _monthlyFocusNode,
+                                              btnColor: anyFocused
+                                                  ? (_monthlyFocusNode.hasFocus ? DynamicColors.primaryClr : Colors.grey.shade500)
+                                                  : (controller.reportViewType == "monthly" ? DynamicColors.primaryClr : Colors.grey.shade500),
                                               onTap: () {
                                                 if (activeRadioDriver != null) {
                                                   updateDriverData(activeRadioDriver!, "monthly");
@@ -216,6 +251,9 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                                 }
                                               },
                                             ),
+                                                ],
+                                              );
+                                            }),
                                           ],
                                         ),
                                       ],

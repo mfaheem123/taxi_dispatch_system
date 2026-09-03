@@ -157,7 +157,9 @@ class _AccountViewState extends State<AccountView> {
                                                   Row(
                                                     spacing: maxWidth < 1300 ? 2 : 8,
                                                     children: [
-                                                      _buildTextField(
+                                                      Focus(
+                                                        autofocus: true,
+                                                        child: _buildTextField(
                                                           controller.accountNameController,
                                                           AppText.name,
                                                           leftFieldWidth,
@@ -165,6 +167,7 @@ class _AccountViewState extends State<AccountView> {
                                                           [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
                                                             UpperCaseTextFormatter()
                                                           ]),
+                                                      ),
                                                       _buildTextField(
                                                           controller.accountCodeController,
                                                           AppText.code,
@@ -279,7 +282,8 @@ class _AccountViewState extends State<AccountView> {
                                                           AppText.information,
                                                           leftFieldWidth,
                                                           82,
-                                                          [],
+                                                          [UpperCaseTextFormatter()
+                                                          ],
                                                           maxLines: 6),
                                                       Column(
                                                         spacing: 12,
@@ -303,11 +307,13 @@ class _AccountViewState extends State<AccountView> {
                                                         spacing: 12,
                                                         children: [
                                                           _buildTextField(
+
                                                               controller.accountContactNameController,
                                                               AppText.contactName,
                                                               leftFieldWidth,
                                                               fieldHeight,
-                                                              []),
+                                                              [UpperCaseTextFormatter()
+                                                              ]),
                                                         ],
                                                       ),
                                                       Column(
@@ -318,25 +324,18 @@ class _AccountViewState extends State<AccountView> {
                                                             children: [
                                                               Text(AppText.backgroundClr,
                                                                   style: mozillaTextSemiBoldText(context: context, fontSize: 11)),
-                                                              SizedBox(
+                                                               SizedBox(
                                                                 width: leftFieldWidth,
                                                                 height: fieldHeight,
-                                                                child: Focus(
-                                                                  autofocus: true,
-                                                                  child: ColorPickerWidget(
+                                                                child: ColorPickerWidget(
                                                                     width: leftFieldWidth - 5,
                                                                     pickerColor: controller.pickerColor,
                                                                     onColorChanged: (Color newColor) {
-                                                                      // This produces your '0xFF2196F3' format
-                                                                      // String hexString =
-                                                                      //     '0x${newColor.value.toRadixString(16).toUpperCase()}';
-                                                                      // print(hexString);
                                                                       setState(() {
                                                                         controller.pickerColor = newColor;
                                                                       });
                                                                     },
                                                                   ),
-                                                                ),
                                                               )
                                                             ],
                                                           ),
@@ -600,7 +599,10 @@ class _AccountViewState extends State<AccountView> {
                                                       AppText.agentCommission,
                                                       rightFieldWidth * 1.5,
                                                       fieldHeight,
-                                                      [FilteringTextInputFormatter.digitsOnly]),
+                                                      [
+                                                        FilteringTextInputFormatter.digitsOnly,
+                                                        LengthLimitingTextInputFormatter(6),
+                                                      ]),
                                                 ],
                                               ),
                                             ),

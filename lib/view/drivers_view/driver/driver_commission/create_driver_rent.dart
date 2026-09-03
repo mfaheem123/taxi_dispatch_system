@@ -347,14 +347,12 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                 ),
                 controller.isRentFilterLoading
                     ? const Center(child: CircularProgressIndicator())
-                    : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: ResponsiveDataTableWidget(
+                        : ResponsiveDataTableWidget(
                         totalWidth: totalAvailableWidth,
                         columnConfigs: [
                           TableColumnConfig(
                               title: "SELECT_ALL",
-                              sizeType: ColumnSizeType.small,
+                              sizeType: ColumnSizeType.fixed, fixedWidth: 40,
                               customHeader: Checkbox(
                                   value: controller.selectedIds.length == controller.driverRentFilterModel?.bookings?.length,
                                   onChanged: (bool? val) {
@@ -382,7 +380,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                           TableColumnConfig(title: "EDC", sizeType: ColumnSizeType.small),
                           TableColumnConfig(title: "CC", sizeType: ColumnSizeType.small),
                           TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium),
-                          TableColumnConfig(title: "ACTIONS", sizeType: ColumnSizeType.fixed, fixedWidth: 65, removeSearching: true),
+                          TableColumnConfig(title: "ACTIONS", sizeType: ColumnSizeType.fixed, fixedWidth: 70, removeSearching: true),
                         ],
                         items: [
                           ...?(controller.driverRentFilterModel?.bookings),
@@ -505,7 +503,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                             ),
                           ];
                         }
-                    )),
+                ),
                 SizedBox(
                   height: 30,
                 ),

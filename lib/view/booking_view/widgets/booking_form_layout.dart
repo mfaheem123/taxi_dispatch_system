@@ -8,8 +8,7 @@
 //     down to every field from a single LayoutBuilder.
 //   * FieldShell / FieldLabel — the label + input wrapper every labelled
 //     field is built from.
-//   * smoothTraversalFocus / FocusRing — animated Tab traversal and the
-//     focus highlight that follows it.
+//   * smoothTraversalFocus — animated Tab traversal.
 //   * LabelledField / SpanField / ResponsiveGrid — the responsive grid every
 //     section of the form lays its fields out on.
 //   * SectionCard — the card chrome wrapping each logical section.
@@ -18,19 +17,78 @@
 
 import 'package:flutter/material.dart';
 
+// ---------------------------------------------------------------------------
+// The focus cue — the whole form's only one.
+//
+// Focus is shown by the focused control's own border and nothing else, so both
+// of these are read by every field and every button. Change them here and the
+// entire form follows.
+// ---------------------------------------------------------------------------
+
+/// Border colour of whichever control currently has focus.
+const Color fieldFocusColor = Color(0xFF312E81);
+
+/// Border width of a focused control. Deliberately heavier than Material's
+/// own 2.0 focused outline — the cue has to carry the whole job of showing
+/// where Tab has landed, and it has to win against [fieldBorderWidth] on the
+/// field beside it, not just against a hairline.
+const double fieldFocusWidth = 3.5;
+
+/// Border width of an IDLE control — every field, and every button shaped like
+/// one. Heavier than Material's own 1.0 hairline, which on a white fill all
+/// but disappears and left the fields reading as floating text.
+///
+/// Kept well clear of [fieldFocusWidth] on purpose: the two have to be told
+/// apart at a glance, so bolder here means the focus width has to stay ahead
+/// of it.
+const double fieldBorderWidth = 1.5;
+
+/// The focus border colour to draw on top of [background].
+///
+/// [fieldFocusColor] on anything light enough to show it. White on a dark
+/// fill, because an indigo ring around a near-black button — or around the
+/// indigo one that shares its colour exactly — reads as no ring at all.
+///
+/// The threshold splits the two groups this form actually uses, with room to
+/// spare on both sides. Measured luminances: the dark fills are the update
+/// form's near-black icon buttons (0.014) and the create form's indigo SAVE
+/// (0.042); the lightest thing that still wants an indigo ring is the create
+/// form's red CLEAR (0.161), then green (0.266), grey (0.509) and white.
+Color focusRingOn(Color background) =>
+    background.computeLuminance() < 0.10 ? Colors.white : fieldFocusColor;
+
 /// Dense, form-friendly input styling shared by every field.
 ///
 /// BookingFormScreen applies this itself rather than relying on the ambient
 /// theme — without `isDense` Material forces a 48px minimum on every input and
 /// the form roughly doubles in height.
+///
+/// The idle states are named as explicitly as the focused one, because leaving
+/// them to Material pins them at a 1.0 hairline
+/// (`InputDecorator._getDefaultBorder`) with no way to ask for more. The colour
+/// is the same `hintColor` grey that default resolved to — only the width
+/// changes. InputDecorator merges this theme in itself
+/// (`InputDecoration.applyDefaults`), which is why the date and time pickers
+/// pick all of it up without being told about it.
 const InputDecorationTheme denseInputTheme = InputDecorationTheme(
   isDense: true,
   contentPadding:
       EdgeInsets.symmetric(horizontal: 8, vertical: Density.fieldPadY),
-  border: OutlineInputBorder(),
+  border: _idleBorder,
+  enabledBorder: _idleBorder,
+  disabledBorder: _idleBorder,
+  focusedBorder: OutlineInputBorder(
+    borderSide: BorderSide(color: fieldFocusColor, width: fieldFocusWidth),
+  ),
   filled: true,
   fillColor: Colors.white,
   hintStyle: TextStyle(fontSize: Density.fieldFont),
+);
+
+/// The idle outline, shared by every non-focused state so that a disabled or
+/// read-only field is told apart by its fill, never by its border.
+const OutlineInputBorder _idleBorder = OutlineInputBorder(
+  borderSide: BorderSide(color: Colors.black38, width: fieldBorderWidth),
 );
 
 // ---------------------------------------------------------------------------
@@ -38,17 +96,39 @@ const InputDecorationTheme denseInputTheme = InputDecorationTheme(
 // Everything that contributes height reads from here.
 // ---------------------------------------------------------------------------
 class Density {
-  // Inner padding of every input. This is THE knob for field height:
-  // rendered height is roughly 20 + 2 * fieldPadY (so 8 -> ~36px).
-  static const double fieldPadY = 8;
-  // A dense DropdownButton has a hard-coded 24px inner height, taller than a
-  // 13px line of text, so it needs 2px less padding to match the text fields.
-  static const double dropPadY = fieldPadY - 2;
+  // THE knob for form density: the height every input renders at, and the
+  // height every control that has to line up with an input is sized from.
+  //
+  // The two paddings below are DERIVED from it, because a text field and a
+  // dropdown need different padding to reach the same height. The old pair
+  // (8 / 8-2) was set on the assumption that a line of text measures 20px,
+  // which is where the two drifted apart: at fieldFont a line is ~15.2, so
+  // the text fields came out ~5px shorter than the dropdowns beside them.
+  //
+  // 34 is the floor a dropdown can reach: Material's dense DropdownButton has
+  // a hard 24px inner height, so [dropPadY] below is down to 5 a side. Going
+  // lower would push that padding negative and the dropdowns would stop
+  // matching the text fields beside them.
+  static const double fieldHeight = 34;
+
+  // A 13px line of text measures ~15.2 logical pixels, so this is the padding
+  // that gets a text field to [fieldHeight].
+  static const double fieldPadY = (fieldHeight - 15.2) / 2;
+  // A dense DropdownButton has a hard-coded 24px inner height, so it needs
+  // correspondingly less padding to land on that same [fieldHeight].
+  static const double dropPadY = (fieldHeight - 24) / 2;
   static const double fieldFont = 13; // text inside inputs
   static const double labelFont = 10; // the small caps labels
   static const double labelGap = 2; // label -> input, stacked mode
   static const double labelGapX = 6; // label -> input, inline mode
   static const double labelWidth = 86; // label column width, inline mode
+  /// Height of a BUTTON that sits in a field row — the icon actions, PICK
+  /// BOOKING, the fares bar's recalculate. Deliberately shorter than
+  /// [fieldHeight]: a button has no caret to sit around, so the extra height an
+  /// input needs only makes the row look loose. Kept as its own knob so button
+  /// density can move without dragging every input with it.
+  static const double buttonHeight = 30;
+
   static const double gridSpacing = 6; // between fields (x and y)
   static const double cardPad = 8; // inside a SectionCard
   static const double cardGap = 6; // between SectionCards
@@ -111,6 +191,21 @@ class FieldShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // An empty label means "this cell continues the row before it" — the
+    // zone dropdowns and notes fields sitting to the right of PICK / DROP.
+    // Inline, it claims no label column at all so it butts straight up
+    // against the field it follows; stacked, it takes a spacer the height of
+    // the labels beside it so the row still lines up.
+    if (label.isEmpty) {
+      if (FormLayout.inlineOf(context)) return child;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: Density.labelFont + Density.labelGap),
+          child,
+        ],
+      );
+    }
     if (FormLayout.inlineOf(context)) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -164,10 +259,15 @@ class FieldLabel extends StatelessWidget {
 // Keyboard traversal.
 //
 // Tab walks the form in visual order: every field, then the action buttons.
-// Two things make it feel smooth rather than jumpy:
-//   * [smoothTraversalFocus] animates the scroll that brings the next field
-//     into view, instead of Flutter's default instant jump.
-//   * [FocusRing] fades a highlight in behind whichever field has focus.
+// [smoothTraversalFocus] animates the scroll that brings the next field into
+// view, instead of Flutter's default instant jump.
+//
+// Focus is shown by the focused control's OWN BORDER and nothing else — no
+// glow, no fill, no highlight behind the cell. Fields get it from
+// [denseInputTheme]'s `focusedBorder`; the custom controls — the icon buttons,
+// the pill buttons, the field-shaped buttons — draw their own from
+// [fieldFocusColor] / [fieldFocusWidth], or from [focusRingOn] when they have
+// a dark fill to sit on. Nothing should be added on top of that.
 // ---------------------------------------------------------------------------
 
 /// Same behaviour as Flutter's default traversal scroll — including only
@@ -189,54 +289,6 @@ void smoothTraversalFocus(
     duration: duration ?? const Duration(milliseconds: 200),
     curve: curve ?? Curves.easeOutCubic,
   );
-}
-
-/// Fades a soft highlight in behind [child] while it (or anything inside it)
-/// holds focus, so the eye can follow Tab from field to field.
-///
-/// Draws with a shadow only — no border, no padding — so adding it cannot
-/// change any field's height.
-class FocusRing extends StatefulWidget {
-  final Widget child;
-  const FocusRing({super.key, required this.child});
-
-  @override
-  State<FocusRing> createState() => _FocusRingState();
-}
-
-class _FocusRingState extends State<FocusRing> {
-  bool _focused = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final accent = Theme.of(context).colorScheme.primary;
-    return Focus(
-      // Not a tab stop itself — it only listens for focus landing on the
-      // real field inside it.
-      canRequestFocus: false,
-      skipTraversal: true,
-      onFocusChange: (has) {
-        if (has != _focused) setState(() => _focused = has);
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 160),
-        curve: Curves.easeOut,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4),
-          boxShadow: _focused
-              ? [
-                  BoxShadow(
-                    color: accent.withValues(alpha: 0.35),
-                    blurRadius: 6,
-                    spreadRadius: 2,
-                  ),
-                ]
-              : const [],
-        ),
-        child: widget.child,
-      ),
-    );
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -275,7 +327,12 @@ class SpanField {
     // Cast rather than promote: LabelledField is not a subtype of Widget, so
     // `is` alone leaves the static type as Widget.
     final field = child;
-    if (field is LabelledField) return ValueKey((field as LabelledField).label);
+    if (field is LabelledField) {
+      final label = (field as LabelledField).label;
+      // Unlabeled cells share the empty string, so keying by it would put
+      // duplicate keys in the same Wrap. Fall back to position for those.
+      if (label.isNotEmpty) return ValueKey(label);
+    }
     return null;
   }
 }
@@ -326,7 +383,7 @@ class ResponsiveGrid extends StatelessWidget {
                 width: f.widths ?? widthForSpan(f.span),
                 child: FocusTraversalOrder(
                   order: NumericFocusOrder((orderBase + i).toDouble()),
-                  child: FocusRing(child: f.child),
+                  child: f.child,
                 ),
               ),
           ],

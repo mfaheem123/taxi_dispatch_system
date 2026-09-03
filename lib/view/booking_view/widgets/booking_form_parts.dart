@@ -70,31 +70,57 @@ class TopTabs extends StatelessWidget {
   }
 }
 
+/// One read-only figure in a [StatStrip] — ETA, distance, total fares.
+class BookingStat {
+  final IconData icon;
+  final String label;
+
+  /// Rendered bold after [label], so the number reads ahead of its caption.
+  final String value;
+
+  const BookingStat(this.icon, this.label, this.value);
+}
+
+/// The row of derived figures above the fare fields.
+///
+/// Defaults to the create form's four empty stats; the update form passes the
+/// three the booking has actually been costed with.
 class StatStrip extends StatelessWidget {
-  const StatStrip({super.key});
+  final List<BookingStat> stats;
+
+  static const List<BookingStat> _empty = [
+    BookingStat(Icons.info_outline, 'ETA:', '0 M'),
+    BookingStat(Icons.timer_outlined, 'TIME:', '0 M'),
+    BookingStat(Icons.route, 'DISTANCE:', '0 M'),
+    BookingStat(Icons.payments_outlined, 'T/FARES:', '£ 0'),
+  ];
+
+  const StatStrip({super.key, this.stats = _empty});
+
   @override
   Widget build(BuildContext context) {
-    Widget stat(IconData icon, String label) => Padding(
+    Widget stat(BookingStat s) => Padding(
           padding: const EdgeInsets.only(right: 16, bottom: 2),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 15, color: Colors.grey.shade700),
+              Icon(s.icon, size: 15, color: Colors.grey.shade700),
               const SizedBox(width: 4),
-              Text(label, style: const TextStyle(fontSize: 12)),
+              Text(s.label,
+                  style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF444444))),
+              const SizedBox(width: 4),
+              Text(s.value,
+                  style: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.w700)),
             ],
           ),
         );
     return Align(
       alignment: Alignment.centerLeft,
-      child: Wrap(
-        children: [
-          stat(Icons.info_outline, 'ETA: 0 M'),
-          stat(Icons.timer_outlined, 'TIME: 0 M'),
-          stat(Icons.route, 'DISTANCE: 0 M'),
-          stat(Icons.payments_outlined, 'T/FARES: £ 0'),
-        ],
-      ),
+      child: Wrap(children: [for (final s in stats) stat(s)]),
     );
   }
 }
@@ -140,24 +166,35 @@ class ActionButtons extends StatelessWidget {
   Widget _btn(int order, String label, Color bg, Color fg) =>
       FocusTraversalOrder(
         order: NumericFocusOrder(order.toDouble()),
-        child: FocusRing(
-          child: ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: bg,
-              foregroundColor: fg,
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              minimumSize: const Size(0, 34),
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6)),
+        child: ElevatedButton(
+          onPressed: () {},
+          style: ElevatedButton.styleFrom(
+            backgroundColor: bg,
+            foregroundColor: fg,
+            // The height comes from minimumSize, not the padding — so the row
+            // follows the one button knob instead of drifting with the font.
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            minimumSize: const Size(0, Density.buttonHeight),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+          ).copyWith(
+            // Focus shows as a border here too, like every field above —
+            // resolved per state because styleFrom's `side` would draw on all
+            // of them. focusRingOn picks the colour: these buttons are solid,
+            // and SAVE is fieldFocusColor itself, so it takes a white ring
+            // where the lighter ones take the indigo.
+            side: WidgetStateProperty.resolveWith(
+              (states) => states.contains(WidgetState.focused)
+                  ? BorderSide(color: focusRingOn(bg), width: fieldFocusWidth)
+                  : null,
             ),
-            child: Text(label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
           ),
+          child: Text(label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
         ),
       );
 }

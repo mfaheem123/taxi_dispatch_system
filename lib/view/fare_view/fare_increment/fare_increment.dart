@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
@@ -248,7 +249,10 @@ class _FareIncrementState extends State<FareIncrement> {
                                 verticalPadding: 0.0,
                                 borderRadius: 4,
                                 onTap: () {
-                                  controller.postFareIncrement();
+                                 controller.incrementValueVehicleController.text.isEmpty || controller.operatorType == null  ?
+                                 BotToast.showText(text: "Required fields are missing"):
+
+                                 controller.postFareIncrement();
                                 },
                                 widget: Padding(
                                   padding: const EdgeInsets.symmetric(
