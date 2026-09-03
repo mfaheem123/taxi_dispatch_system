@@ -1979,7 +1979,7 @@ class _CenterAreaState extends State<_CenterArea> {
                       child: Text(
                         controller.customerName.value.isNotEmpty
                             ? controller.customerName.value[0].toUpperCase()
-                            : "S",
+                            : "Unknown",
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 24,
@@ -2106,10 +2106,23 @@ class _CenterAreaState extends State<_CenterArea> {
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(color: const Color(0xFFE5E7EB)),
                               ),
-                              child: const Icon(
-                                Icons.swap_horiz,
-                                color: Color(0xFF1E40AF),
-                                size: 20,
+                              child: InkWell(
+                                onTap: () {
+
+                                        setState(() {
+                                          isSwapped = !isSwapped;
+                                          final temp = pickupController.text;
+                                          pickupController.text = dropoffController.text;
+                                          dropoffController.text = temp;
+                                          submitBtnValue = true;
+                                        });
+
+                                },
+                                child: const Icon(
+                                  Icons.swap_horiz,
+                                  color: Color(0xFF1E40AF),
+                                  size: 20,
+                                ),
                               ),
                             ),
                           ),
@@ -2154,25 +2167,25 @@ class _CenterAreaState extends State<_CenterArea> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      Center(
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            setState(() {
-                              isSwapped = !isSwapped;
-                              final temp = pickupController.text;
-                              pickupController.text = dropoffController.text;
-                              dropoffController.text = temp;
-                              submitBtnValue = true;
-                            });
-                          },
-                          icon: const Icon(Icons.swap_horiz),
-                          label: const Text("Swap Pickup/Drop"),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1E40AF),
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                          ),
-                        ),
-                      ),
+                      // Center(
+                      //   child: ElevatedButton.icon(
+                      //     onPressed: () {
+                      //       setState(() {
+                      //         isSwapped = !isSwapped;
+                      //         final temp = pickupController.text;
+                      //         pickupController.text = dropoffController.text;
+                      //         dropoffController.text = temp;
+                      //         submitBtnValue = true;
+                      //       });
+                      //     },
+                      //     icon: const Icon(Icons.swap_horiz),
+                      //     label: const Text("Swap Pickup/Drop"),
+                      //     style: ElevatedButton.styleFrom(
+                      //       backgroundColor: const Color(0xFF1E40AF),
+                      //       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
@@ -2282,11 +2295,50 @@ class _CenterAreaState extends State<_CenterArea> {
                             )),
                             DataCell(SizedBox(
                               width: 150,
-                              child: Text(
-                                cliBookingData.dropoff ?? "",
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(color: Color(0xFF374151)),
+                              child: Row(
+                                children: [
+                                  // Agar viapoints ki list null nahi hai aur usme items hain tabhi 'via' tag show hoga
+                                  if (cliBookingData.viapoints != null && cliBookingData.viapoints!.isNotEmpty) ...[
+                                    const SizedBox(width: 4),
+                                    Tooltip(
+                                      // Tamam viapoints ko map karke join kar dega taake hover par saare stop points nazar aayein
+                                      message: cliBookingData.viapoints!
+                                          .map((v) => v.toString()) // Agar Viapoint class me specific field (e.g. v.address ya v.name) hai to v.toString() ki jagah wo use karein
+                                          .join("\n"),
+                                      decoration: BoxDecoration(
+                                        color: DynamicColors.primaryClr,
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                      textStyle: const TextStyle(color: Colors.white, fontSize: 12),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFE5E7EB),
+                                          borderRadius: BorderRadius.circular(4),
+                                          border: Border.all(color: const Color(0xFFD1D5DB)),
+                                        ),
+                                        child: const Text(
+                                          "via",
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xFF374151),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                  SizedBox(width: 10.0,),
+                                  Expanded(
+                                    child: Text(
+                                      cliBookingData.dropoff ?? "",
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(color: Color(0xFF374151)),
+                                    ),
+                                  ),
+
+                                ],
                               ),
                             )),
                             DataCell(Text(
