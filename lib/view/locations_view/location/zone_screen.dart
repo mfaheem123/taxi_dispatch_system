@@ -1722,6 +1722,24 @@ class _ZoneScreenState extends State<ZoneScreen> {
   }
 
   void _onPanStart(Offset global) async {
+
+    bool hasExistingZone = _polyPoints.isNotEmpty || controller.draft.isNotEmpty;
+
+    // if (hasExistingZone && (mode == DrawMode.points || mode == DrawMode.freehand || mode == DrawMode.rectangle)) {
+    //   BotToast.showText(
+    //     text: "You can only edit this existing zone, creating a new zone is not allowed.",
+    //   );
+    //   return;
+    // }
+    if (controller.updateZone.value &&
+        hasExistingZone &&
+        (mode == DrawMode.freehand || mode == DrawMode.rectangle)) {
+      BotToast.showText(
+        text: "You can only edit this existing zone, creating a new zone is not allowed.",
+      );
+      return;
+    }
+
     _isDragging = true;
     final p = await _screenToLatLng(global);
     if (p == null) return;
@@ -2367,6 +2385,16 @@ class _ZoneScreenState extends State<ZoneScreen> {
                           compassEnabled: false,
                           onTap: (latLng) async {
                             if (!controller.ctrl.isCompleted) return;
+
+                            bool hasExistingZone = _polyPoints.isNotEmpty || controller.draft.isNotEmpty;
+
+                            // if (hasExistingZone && mode == DrawMode.points) {
+                            if (controller.updateZone.value && hasExistingZone && mode == DrawMode.points) {
+                              BotToast.showText(
+                                text: "You can only edit this existing zone, creating a new zone is not allowed.",
+                              );
+                              return;
+                            }
 
                             try {
                               final ctrl = await controller.ctrl.future;
