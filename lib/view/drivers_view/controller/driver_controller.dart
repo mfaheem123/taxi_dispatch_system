@@ -1479,7 +1479,7 @@ class DriverController extends GetxController {
     print("Sending Data: $formData");
     var response = await Api().post(
       formData,
-      "drivers-app/app_features", // Yahan apna sahi update URL dalein
+      "drivers-app/app_features",
       auth: true,
     );
     if (response.statusCode == 200) {
