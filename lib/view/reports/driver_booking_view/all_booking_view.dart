@@ -161,16 +161,17 @@ class _AllBookingViewState extends State<AllBookingView> {
                           const SizedBox(
                             height: 8,
                           ),
-                          Wrap(
-                            spacing: 10,
-                            runSpacing: 16,
+                          // Row 1: FROM/TO dates, times, CUSTOMER, MOBILE, TEL
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              labeledField(
-                                context: context,
-                                isMobile: isMobile,
-                                label: "FROM:",
-                                column: false,
-                                width: fieldWidth / 2.2,
+                              Text(
+                                "FROM:",
+                                style: mozillaTextRegularText(fontSize: 12),
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                flex: 2,
                                 child: SizedBox(
                                   height: 30,
                                   child: KeyboardDatePicker(
@@ -182,24 +183,22 @@ class _AllBookingViewState extends State<AllBookingView> {
                                   ),
                                 ),
                               ),
-                              labeledField(
-                                context: context,
-                                isMobile: isMobile,
-                                label: "",
-                                column: false,
-                                width: fieldWidth / 2.9,
+                              const SizedBox(width: 8),
+                              Expanded(
+                                flex: 1,
                                 child: CustomTimePicker(
                                   controller: controller.bookingStartTimeController,
                                   onTimeSelected: (time) => setState(() {}),
                                 ),
                               ),
-                              // To Date
-                              labeledField(
-                                context: context,
-                                isMobile: isMobile,
-                                label: "TO:",
-                                column: false,
-                                width: fieldWidth / 2.2,
+                              const SizedBox(width: 8),
+                              Text(
+                                "TO:",
+                                style: mozillaTextRegularText(fontSize: 12),
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                flex: 2,
                                 child: SizedBox(
                                   height: 30,
                                   child: KeyboardDatePicker(
@@ -211,34 +210,28 @@ class _AllBookingViewState extends State<AllBookingView> {
                                   ),
                                 ),
                               ),
-
-                              // End Time
-                              labeledField(
-                                context: context,
-                                isMobile: isMobile,
-                                label: "",
-                                column: false,
-                                width: fieldWidth / 2.9,
+                              const SizedBox(width: 8),
+                              Expanded(
+                                flex: 1,
                                 child: CustomTimePicker(
                                   controller: controller.bookingEndTimeController,
                                   onTimeSelected: (time) => setState(() {}),
                                 ),
                               ),
-
-                              CustomTextField(
-                                borderRadius: 4,
-                                controller: controller.customerController,
-                                width: fieldWidth / 2.2,
-                                hintText: AppText.customer,
-                                inputFormatters: [UpperCaseTextFormatter()],
+                              const SizedBox(width: 8),
+                              Expanded(
+                                flex: 2,
+                                child: CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.customerController,
+                                  width: double.infinity,
+                                  hintText: AppText.customer,
+                                  inputFormatters: [UpperCaseTextFormatter()],
+                                ),
                               ),
-
-                              labeledField(
-                                context: context,
-                                isMobile: isMobile,
-                                label: "",
-                                column: false,
-                                width: fieldWidth / 2.2,
+                              const SizedBox(width: 8),
+                              Expanded(
+                                flex: 2,
                                 child: RawAutocomplete<SearchCustomer>(
                                   textEditingController: controller.mobileController,
                                   focusNode: _mobileFocusNode,
@@ -247,7 +240,6 @@ class _AllBookingViewState extends State<AllBookingView> {
                                     if (textEditingValue.text.trim().isEmpty) {
                                       return const Iterable<SearchCustomer>.empty();
                                     }
-
                                     await controller.getCustomer(textEditingValue.text);
                                     return controller.searchCustomerByMobile?.customer ?? [];
                                   },
@@ -265,22 +257,11 @@ class _AllBookingViewState extends State<AllBookingView> {
                                       borderRadius: 4,
                                       controller: textEditingController,
                                       focusNode: focusNode,
-                                      width: fieldWidth / 1.5,
+                                      width: double.infinity,
                                       hintText: "MOBILE",
                                       onSubmitted: (value) {
                                         onFieldSubmitted();
                                       },
-                                      // suffixIcon: GestureDetector(
-                                      //   onTap: () {},
-                                      //   child: Container(
-                                      //     decoration: BoxDecoration(
-                                      //       color: Colors.grey.shade300,
-                                      //       border: Border.all(color: DynamicColors.gryClr),
-                                      //       borderRadius: BorderRadius.circular(4),
-                                      //     ),
-                                      //     child: const Icon(Icons.search, size: 25, color: Colors.black),
-                                      //   ),
-                                      // ),
                                     );
                                   },
                                   optionsViewBuilder: (context, onSelected, options) {
@@ -331,8 +312,6 @@ class _AllBookingViewState extends State<AllBookingView> {
                                                   padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
                                                   child: Row(
                                                     children: [
-                                                      // Icon(Icons.person_outline, size: 20, color: Colors.grey.shade600),
-                                                      // const SizedBox(width: 10),
                                                       Expanded(
                                                         child: Column(
                                                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -368,41 +347,54 @@ class _AllBookingViewState extends State<AllBookingView> {
                                     );
                                   },
                                 ),
+                               ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                flex: 2,
+                                child: CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.phoneController,
+                                  width: double.infinity,
+                                  hintText: AppText.tel,
+                                ),
                               ),
-                              CustomTextField(
-                                borderRadius: 4,
-                                controller: controller.phoneController,
-                                width: fieldWidth / 2.2,
-                                hintText: AppText.tel,
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          // Row 2: SELECT DRIVERS, PICKUP, DROPOFF
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: CustomDropdownField<DriverObject>(
+                                  label: "SELECT DRIVERS",
+                                  width: double.infinity,
+                                  items: controller.allDriverData?.drivers ?? [],
+                                  value: controller.allDriverData?.drivers?.any((d) =>
+                                  d.id ==
+                                      controller.selectDriverObject?.id) ??
+                                      false
+                                      ? controller.allDriverData!.drivers!.firstWhere(
+                                          (d) =>
+                                      d.id ==
+                                          controller.selectDriverObject?.id)
+                                      : null,
+                                  itemLabel: (driver) => "${driver.username} ${driver.name}".toUpperCase(),
+                                  onChanged: (val) {
+                                    controller.selectDriverObject = val;
+                                    controller.update();
+                                  },
+                                ),
                               ),
-                              CustomDropdownField<DriverObject>(
-                                label: "SELECT DRIVERS",
-                                width: maxWidth < 1366 ? fieldWidth / 1.8 : fieldWidth / 2,
-                                // height: 35,
-                                items: controller.allDriverData?.drivers ?? [],
-                                value: controller.allDriverData?.drivers?.any((d) =>
-                                d.id ==
-                                    controller.selectDriverObject?.id) ??
-                                    false
-                                    ? controller.allDriverData!.drivers!.firstWhere(
-                                        (d) =>
-                                    d.id ==
-                                        controller.selectDriverObject?.id)
-                                    : null,
-                                itemLabel: (driver) => "${driver.username} ${driver.name}" .toUpperCase(),
-                                onChanged: (val) {
-                                  controller.selectDriverObject = val;
-                                  controller.update();
-                                },
-                              ),
-                              (() {
-                                final ScrollController pickupScrollController =
-                                ScrollController();
-
-                                return SizedBox(
-                                  width: fieldWidth / 0.75,
-                                  height: 30,
-                                  child: Autocomplete<String>(
+                              const SizedBox(width: 8),
+                              Expanded(
+                                flex: 2,
+                                child: (() {
+                                  final ScrollController pickupScrollController = ScrollController();
+                                  return SizedBox(
+                                    height: 30,
+                                    child: Autocomplete<String>(
                                     optionsBuilder:
                                         (TextEditingValue textEditingValue) async {
                                       if (textEditingValue.text.isEmpty) {
@@ -530,9 +522,12 @@ class _AllBookingViewState extends State<AllBookingView> {
                                           decoration: InputDecoration(
                                             hintText: "PICKUP",
                                             hintStyle: const TextStyle(fontSize: 12),
-                                            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-                                            border: OutlineInputBorder(borderRadius:
-                                            BorderRadius.circular(4)),
+                                            contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 12),
+                                            border: OutlineInputBorder(
+                                                borderRadius:
+                                                BorderRadius.circular(4)),
                                             suffixIcon: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
@@ -576,39 +571,13 @@ class _AllBookingViewState extends State<AllBookingView> {
                                                           child: Icon(
                                                             Icons.close,
                                                             size: 18,
-                                                            color: isFocused
-                                                                ? DynamicColors.primaryClr
-                                                                : Colors.grey.shade600,
+                                                            color: isFocused ? DynamicColors.primaryClr : Colors.grey.shade600,
                                                           ),
                                                         ),
                                                       );
                                                     },
                                                   ),
                                                 ),
-                                                // Focus(
-                                                //   child: Builder(
-                                                //     builder: (searchFocusContext) {
-                                                //       final isSearchFocused = Focus.of(searchFocusContext).hasFocus;
-                                                //       return InkWell(
-                                                //         canRequestFocus: false,
-                                                //         borderRadius: BorderRadius.circular(4),
-                                                //         focusColor: DynamicColors.primaryClr.withOpacity(0.2),
-                                                //         onTap: () { controller.pickUpController.text; },
-                                                //         child: Container(
-                                                //           decoration: BoxDecoration(
-                                                //             color: isSearchFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.grey.shade300,
-                                                //             border: Border.all(
-                                                //               color: isSearchFocused ? DynamicColors.primaryClr : DynamicColors.gryClr,
-                                                //               width: isSearchFocused ? 1.5 : 1.0,
-                                                //             ),
-                                                //             borderRadius: BorderRadius.circular(4),
-                                                //           ),
-                                                //           child: const Icon(Icons.search, size: 25, color: Colors.black),
-                                                //         ),
-                                                //       );
-                                                //     },
-                                                //   ),
-                                                // ),
                                               ],
                                             ),
                                           ),
@@ -623,365 +592,312 @@ class _AllBookingViewState extends State<AllBookingView> {
                                       );
                                     },
                                   ),
-                                );
-                              })(),
-                              (() {
-                                final ScrollController dropoffScrollController =
-                                ScrollController();
-
-                                return SizedBox(
-                                  width: fieldWidth / 0.75,
-                                  height: 30,
-                                  child: Autocomplete<String>(
-                                    optionsBuilder:
-                                        (TextEditingValue textEditingValue) async {
-                                      if (textEditingValue.text.isEmpty) {
-                                        return const Iterable<String>.empty();
-                                      }
-                                      return await controller.getSearchPostcodes(
-                                          textEditingValue.text);
-                                    },
-                                    onSelected: (String selection) {
-                                      controller.dropOffController.text = selection;
-                                      controller.update();
-                                      Future.delayed(const Duration(milliseconds: 50), () {
-                                        _dropoffFocusNode?.requestFocus();
-                                      });
-                                    },
-                                    optionsViewBuilder:
-                                        (context, onSelected, options) {
-                                      if (_hideDropoffOptions) {
-                                        return const SizedBox.shrink();
-                                      }
-                                      final int highlightedIndex =
-                                      AutocompleteHighlightedOption.of(context);
-
-                                      if (dropoffScrollController.hasClients &&
-                                          highlightedIndex >= 0) {
-                                        final double itemHeight = 32.0;
-                                        final double currentScroll =
-                                            dropoffScrollController.offset;
-                                        final double viewportHeight = 200.0;
-                                        final double targetOffset =
-                                            highlightedIndex * itemHeight;
-
-                                        if (targetOffset + itemHeight >
-                                            currentScroll + viewportHeight) {
-                                          dropoffScrollController.jumpTo(
-                                              targetOffset +
-                                                  itemHeight -
-                                                  viewportHeight);
-                                        } else if (targetOffset < currentScroll) {
-                                          dropoffScrollController
-                                              .jumpTo(targetOffset);
+                                  );
+                                })(),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                flex: 2,
+                                child: (() {
+                                  final ScrollController dropoffScrollController = ScrollController();
+                                  return SizedBox(
+                                    height: 30,
+                                    child: Autocomplete<String>(
+                                      optionsBuilder: (TextEditingValue textEditingValue) async {
+                                        if (textEditingValue.text.isEmpty) {
+                                          return const Iterable<String>.empty();
                                         }
-                                      }
-
-                                      return Align(
-                                        alignment: Alignment.topLeft,
-                                        child: Material(
-                                          elevation: 4.0,
-                                          borderRadius: BorderRadius.circular(4),
-                                          child: ConstrainedBox(
-                                            constraints: const BoxConstraints(
-                                                maxHeight: 200),
-                                            child: SizedBox(
-                                              width: fieldWidth / 0.75,
-                                              child: ListView.builder(
-                                                controller: dropoffScrollController,
-                                                padding: EdgeInsets.zero,
-                                                shrinkWrap: true,
-                                                itemCount: options.length,
-                                                itemBuilder: (BuildContext context,
-                                                    int index) {
-                                                  final String option =
-                                                  options.elementAt(index);
-                                                  final bool highlight =
-                                                      highlightedIndex == index;
-
-                                                  return InkWell(
-                                                    onTap: () => onSelected(option),
-                                                    child: Container(
-                                                      color: highlight
-                                                          ? Colors.blue
-                                                          .withOpacity(0.1)
-                                                          : null,
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 16.0,
-                                                          vertical: 8.0),
-                                                      child: Text(
-                                                        option,
-                                                        maxLines: 1,
-                                                        overflow:
-                                                        TextOverflow.ellipsis,
-                                                        style: const TextStyle(
-                                                            fontSize: 12),
+                                        return await controller.getSearchPostcodes(textEditingValue.text);
+                                      },
+                                      onSelected: (String selection) {
+                                        controller.dropOffController.text = selection;
+                                        controller.update();
+                                        Future.delayed(const Duration(milliseconds: 50), () {
+                                          _dropoffFocusNode?.requestFocus();
+                                        });
+                                      },
+                                      optionsViewBuilder: (context, onSelected, options) {
+                                        if (_hideDropoffOptions) return const SizedBox.shrink();
+                                        final int highlightedIndex = AutocompleteHighlightedOption.of(context);
+                                        if (dropoffScrollController.hasClients && highlightedIndex >= 0) {
+                                          final double itemHeight = 32.0;
+                                          final double currentScroll = dropoffScrollController.offset;
+                                          final double viewportHeight = 200.0;
+                                          final double targetOffset = highlightedIndex * itemHeight;
+                                          if (targetOffset + itemHeight > currentScroll + viewportHeight) {
+                                            dropoffScrollController.jumpTo(targetOffset + itemHeight - viewportHeight);
+                                          } else if (targetOffset < currentScroll) {
+                                            dropoffScrollController.jumpTo(targetOffset);
+                                          }
+                                        }
+                                        return Align(
+                                          alignment: Alignment.topLeft,
+                                          child: Material(
+                                            elevation: 4.0,
+                                            borderRadius: BorderRadius.circular(4),
+                                            child: ConstrainedBox(
+                                              constraints: const BoxConstraints(maxHeight: 200),
+                                              child: SizedBox(
+                                                width: fieldWidth / 0.75,
+                                                child: ListView.builder(
+                                                  controller: dropoffScrollController,
+                                                  padding: EdgeInsets.zero,
+                                                  shrinkWrap: true,
+                                                  itemCount: options.length,
+                                                  itemBuilder: (BuildContext context, int index) {
+                                                    final String option = options.elementAt(index);
+                                                    final bool highlight = highlightedIndex == index;
+                                                    return InkWell(
+                                                      onTap: () => onSelected(option),
+                                                      child: Container(
+                                                        color: highlight ? Colors.blue.withOpacity(0.1) : null,
+                                                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                                        child: Text(
+                                                          option,
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow.ellipsis,
+                                                          style: const TextStyle(fontSize: 12),
+                                                        ),
                                                       ),
-                                                    ),
-                                                  );
-                                                },
+                                                    );
+                                                  },
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      );
-                                    },
-                                    fieldViewBuilder: (context,
-                                        textEditingController,
-                                        focusNode,
-                                        onFieldSubmitted) {
-                                      if (textEditingController.text !=
-                                          controller.dropOffController.text) {
-                                        textEditingController.text =
-                                            controller.dropOffController.text;
-                                      }
-                                      _dropoffFocusNode = focusNode;
-                                      return Focus(
-                                        onKeyEvent: (node, event) {
-                                          if (event is KeyDownEvent &&
-                                              event.logicalKey == LogicalKeyboardKey.escape) {
-                                            if (!_hideDropoffOptions) {
-                                              setState(() {
-                                                _hideDropoffOptions = true;
-                                              });
-                                              focusNode.requestFocus();
-                                              return KeyEventResult.handled;
+                                        );
+                                      },
+                                      fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
+                                        if (textEditingController.text != controller.dropOffController.text) {
+                                          textEditingController.text = controller.dropOffController.text;
+                                        }
+                                        _dropoffFocusNode = focusNode;
+                                        return Focus(
+                                          onKeyEvent: (node, event) {
+                                            if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
+                                              if (!_hideDropoffOptions) {
+                                                setState(() { _hideDropoffOptions = true; });
+                                                focusNode.requestFocus();
+                                                return KeyEventResult.handled;
+                                              }
                                             }
-                                          }
-                                          return KeyEventResult.ignored;
-                                        },
-                                        child: TextField(
-                                          controller: textEditingController,
-                                          focusNode: focusNode,
-                                          onSubmitted: (String value) =>
-                                              onFieldSubmitted(),
-                                          style: const TextStyle(fontSize: 13),
-                                          decoration: InputDecoration(
-                                            hintText: "DROPOFF",
-                                            hintStyle: const TextStyle(fontSize: 12),
-                                            contentPadding:
-                                            const EdgeInsets.symmetric(
-                                                horizontal: 10, vertical: 12),
-                                            border: OutlineInputBorder(
-                                                borderRadius:
-                                                BorderRadius.circular(4)),
-                                            suffixIcon: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Focus(
-                                                  onKeyEvent: (node, event) {
-                                                    if (event is KeyDownEvent &&
-                                                        (event.logicalKey == LogicalKeyboardKey.enter ||
-                                                         event.logicalKey == LogicalKeyboardKey.numpadEnter ||
-                                                         event.logicalKey == LogicalKeyboardKey.space)) {
-                                                      controller.dropOffController.clear();
-                                                      textEditingController.clear();
-                                                      controller.update();
-                                                      return KeyEventResult.handled;
-                                                    }
-                                                    return KeyEventResult.ignored;
-                                                  },
-                                                  child: Builder(
-                                                    builder: (focusContext) {
-                                                      final isFocused = Focus.of(focusContext).hasFocus;
-                                                      return InkWell(
-                                                        canRequestFocus: false,
-                                                        borderRadius: BorderRadius.circular(4),
-                                                        focusColor: DynamicColors.primaryClr.withOpacity(0.2),
-                                                        onTap: () {
-                                                          controller.dropOffController.clear();
-                                                          textEditingController.clear();
-                                                          controller.update();
-                                                        },
-                                                        child: Container(
-                                                          margin: const EdgeInsets.only(right: 2),
-                                                          padding: const EdgeInsets.all(2),
-                                                          decoration: BoxDecoration(
-                                                            borderRadius: BorderRadius.circular(4),
-                                                            border: isFocused
-                                                                ? Border.all(color: DynamicColors.primaryClr, width: 1.5)
-                                                                : Border.all(color: Colors.transparent, width: 1.5),
-                                                            color: isFocused
-                                                                ? DynamicColors.primaryClr.withOpacity(0.15)
-                                                                : Colors.transparent,
-                                                          ),
-                                                          child: Icon(
-                                                            Icons.close,
-                                                            size: 18,
-                                                            color: isFocused
-                                                                ? DynamicColors.primaryClr
-                                                                : Colors.grey.shade600,
-                                                          ),
-                                                        ),
-                                                      );
-                                                    },
-                                                  ),
-                                                ),
-                                                // Focus(
-                                                //   child: Builder(
-                                                //     builder: (searchFocusContext) {
-                                                //       final isSearchFocused = Focus.of(searchFocusContext).hasFocus;
-                                                //       return InkWell(
-                                                //         canRequestFocus: false,
-                                                //         borderRadius: BorderRadius.circular(4),
-                                                //         focusColor: DynamicColors.primaryClr.withOpacity(0.2),
-                                                //         onTap: () { controller.dropOffController.text; },
-                                                //         child: Container(
-                                                //           decoration: BoxDecoration(
-                                                //             color: isSearchFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.grey.shade300,
-                                                //             border: Border.all(
-                                                //               color: isSearchFocused ? DynamicColors.primaryClr : DynamicColors.gryClr,
-                                                //               width: isSearchFocused ? 1.5 : 1.0,
-                                                //             ),
-                                                //             borderRadius: BorderRadius.circular(4),
-                                                //           ),
-                                                //           child: const Icon(Icons.search, size: 25, color: Colors.black),
-                                                //         ),
-                                                //       );
-                                                //     },
-                                                //   ),
-                                                // ),
-                                              ],
-                                            ),
-                                          ),
-                                          onChanged: (val) {
-                                            if (_hideDropoffOptions) {
-                                              _hideDropoffOptions = false;
-                                            }
-                                            controller.dropOffController.text = val;
-                                            setState(() {});
+                                            return KeyEventResult.ignored;
                                           },
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                );
-                              })(),
+                                          child: TextField(
+                                            controller: textEditingController,
+                                            focusNode: focusNode,
+                                            onSubmitted: (String value) => onFieldSubmitted(),
+                                            style: const TextStyle(fontSize: 13),
+                                            decoration: InputDecoration(
+                                              hintText: "DROPOFF",
+                                              hintStyle: const TextStyle(fontSize: 12),
+                                              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
+                                              suffixIcon: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Focus(
+                                                    onKeyEvent: (node, event) {
+                                                      if (event is KeyDownEvent &&
+                                                          (event.logicalKey == LogicalKeyboardKey.enter ||
+                                                           event.logicalKey == LogicalKeyboardKey.numpadEnter ||
+                                                           event.logicalKey == LogicalKeyboardKey.space)) {
+                                                        controller.dropOffController.clear();
+                                                        textEditingController.clear();
+                                                        controller.update();
+                                                        return KeyEventResult.handled;
+                                                      }
+                                                      return KeyEventResult.ignored;
+                                                    },
+                                                    child: Builder(
+                                                      builder: (focusContext) {
+                                                        final isFocused = Focus.of(focusContext).hasFocus;
+                                                        return InkWell(
+                                                          canRequestFocus: false,
+                                                          borderRadius: BorderRadius.circular(4),
+                                                          focusColor: DynamicColors.primaryClr.withOpacity(0.2),
+                                                          onTap: () {
+                                                            controller.dropOffController.clear();
+                                                            textEditingController.clear();
+                                                            controller.update();
+                                                          },
+                                                          child: Container(
+                                                            margin: const EdgeInsets.only(right: 2),
+                                                            padding: const EdgeInsets.all(2),
+                                                            decoration: BoxDecoration(
+                                                              borderRadius: BorderRadius.circular(4),
+                                                              border: isFocused
+                                                                  ? Border.all(color: DynamicColors.primaryClr, width: 1.5)
+                                                                  : Border.all(color: Colors.transparent, width: 1.5),
+                                                              color: isFocused
+                                                                  ? DynamicColors.primaryClr.withOpacity(0.15)
+                                                                  : Colors.transparent,
+                                                            ),
+                                                            child: Icon(
+                                                              Icons.close,
+                                                              size: 18,
+                                                              color: isFocused ? DynamicColors.primaryClr : Colors.grey.shade600,
+                                                            ),
+                                                          ),
+                                                        );
+                                                      },
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            onChanged: (val) {
+                                              if (_hideDropoffOptions) _hideDropoffOptions = false;
+                                              controller.dropOffController.text = val;
+                                              setState(() {});
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  );
+                                })(),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 10),
-                          Wrap(
-                            spacing: 10,
-                            runSpacing: 16,
+                          // Row 3: Subsidiary, Account, Department, Order, BookedBy, Employee
+                          Row(
                             children: [
-                              CustomDropdownField<dynamic>(
-                                width: maxWidth < 1400 ? fieldWidth / 1.7 : fieldWidth / 1.9,
-                                label: AppText.selectSubsidiary,
-                                items:
-                                controller.apiDashboardData?.subsidiaries ?? [],
-                                value: controller.apiSelectedSubsidiary,
-                                itemLabel: (val) => (val.name ?? "").toUpperCase(),
-                                onChanged: (val) {
-                                  controller.apiSelectedSubsidiary = val;
-                                  controller.apiSelectedAccount = null;
-                                  controller.apiSelectedDepartment = null;
-
-                                  if (val != null && val.id != null) {
-                                    controller.getAccountData(val.id);
-                                  }
-                                  controller.update();
-                                },
+                              Expanded(
+                                child: CustomDropdownField<dynamic>(
+                                  width: double.infinity,
+                                  label: AppText.selectSubsidiary,
+                                  items: controller.apiDashboardData?.subsidiaries ?? [],
+                                  value: controller.apiSelectedSubsidiary,
+                                  itemLabel: (val) => (val.name ?? "").toUpperCase(),
+                                  onChanged: (val) {
+                                    controller.apiSelectedSubsidiary = val;
+                                    controller.apiSelectedAccount = null;
+                                    controller.apiSelectedDepartment = null;
+                                    if (val != null && val.id != null) {
+                                      controller.getAccountData(val.id);
+                                    }
+                                    controller.update();
+                                  },
+                                ),
                               ),
-                              CustomDropdownField<dynamic>(
-                                width: maxWidth < 1400 ? fieldWidth / 1.7 : fieldWidth / 1.9,
-                                label: AppText.selectAccount,
-                                items: controller.dashboardAccountModel?.accounts ??
-                                    [],
-                                value: controller.apiSelectedAccount,
-                                itemLabel: (val) => (val.name ?? "").toUpperCase(),
-                                onChanged: (val) {
-                                  controller.apiSelectedAccount = val;
-
-                                  controller.apiSelectedDepartment = null;
-                                  controller.accountDepartmentsList.clear();
-
-                                  if (val != null && val.departments != null) {
-                                    controller.accountDepartmentsList
-                                        .addAll(val.departments);
-                                  }
-                                  controller.update();
-                                },
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: CustomDropdownField<dynamic>(
+                                  width: double.infinity,
+                                  label: AppText.selectAccount,
+                                  items: controller.dashboardAccountModel?.accounts ?? [],
+                                  value: controller.apiSelectedAccount,
+                                  itemLabel: (val) => (val.name ?? "").toUpperCase(),
+                                  onChanged: (val) {
+                                    controller.apiSelectedAccount = val;
+                                    controller.apiSelectedDepartment = null;
+                                    controller.accountDepartmentsList.clear();
+                                    if (val != null && val.departments != null) {
+                                      controller.accountDepartmentsList.addAll(val.departments);
+                                    }
+                                    controller.update();
+                                  },
+                                ),
                               ),
-                              CustomDropdownField<dynamic>(
-                                width: maxWidth < 1400 ? fieldWidth / 1.7 : fieldWidth / 1.9,
-                                label: AppText.selectDepartment,
-                                items: controller.accountDepartmentsList,
-                                value: controller.apiSelectedDepartment,
-                                itemLabel: (val) => (val.name ?? "").toUpperCase(),
-                                onChanged: (val) {
-                                  controller.apiSelectedDepartment = val;
-                                  controller.update();
-                                },
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: CustomDropdownField<dynamic>(
+                                  width: double.infinity,
+                                  label: AppText.selectDepartment,
+                                  items: controller.accountDepartmentsList,
+                                  value: controller.apiSelectedDepartment,
+                                  itemLabel: (val) => (val.name ?? "").toUpperCase(),
+                                  onChanged: (val) {
+                                    controller.apiSelectedDepartment = val;
+                                    controller.update();
+                                  },
+                                ),
                               ),
-                              CustomTextField(
-                                borderRadius: 4,
-                                controller: controller.orderNumberController,
-                                width: fieldWidth / 2,
-                                hintText: AppText.orderNumber,
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.orderNumberController,
+                                  width: double.infinity,
+                                  hintText: AppText.orderNumber,
+                                ),
                               ),
-                              CustomTextField(
-                                borderRadius: 4,
-                                controller: controller.bookedByController,
-                                width: fieldWidth / 2,
-                                hintText: AppText.bookedBy,
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.bookedByController,
+                                  width: double.infinity,
+                                  hintText: AppText.bookedBy,
+                                ),
                               ),
-                              CustomDropdownField<dynamic>(
-                                width: fieldWidth / 1.5,
-                                label: AppText.selectEmployee,
-                                items: controller.userModel?.employees ?? [],
-                                value: controller.apiSelectedEmployee,
-                                itemLabel: (val) =>
-                                    (val.username ?? "").toUpperCase(),
-                                onChanged: (val) {
-                                  controller.apiSelectedEmployee = val;
-                                  controller.update();
-                                },
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: CustomDropdownField<dynamic>(
+                                  width: double.infinity,
+                                  label: AppText.selectEmployee,
+                                  items: controller.userModel?.employees ?? [],
+                                  value: controller.apiSelectedEmployee,
+                                  itemLabel: (val) => (val.username ?? "").toUpperCase(),
+                                  onChanged: (val) {
+                                    controller.apiSelectedEmployee = val;
+                                    controller.update();
+                                  },
+                                ),
                               ),
-                              CustomDropdownField<String>(
-                                // text: AppText.selectRefNumber,
-                                width: fieldWidth / 1.5,
-                                label: AppText.selectRefNumber,
-                                items: [
-                                  "REFERENCE NUMBER",
-                                  "DATETIME",
-                                  "CUSTOMER",
-                                  "MOBILE",
-                                  "TELEPHONE",
-                                  "PICKUP",
-                                  "DROPOFF",
-                                  "FARE",
-                                  "ACCOUNT",
-                                  "ORDER NUMBER",
-                                  "PAYMENT TYPE",
-                                  "DRIVER",
-                                  "VEHICLE TYPE",
-                                  "STATUS",
-                                ],
-                                value: controller.selectRefNumber,
-                                itemLabel: (val) => val,
-                                onChanged: (val) {
-                                  controller.selectRefNumber = val!;
-                                  controller.update();
-                                },
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          // Row 4: Reference Number, Ascending, Filter, View, Statistics
+                          Row(
+                            children: [
+                              Expanded(
+                                child: CustomDropdownField<String>(
+                                  width: double.infinity,
+                                  label: AppText.selectRefNumber,
+                                  items: [
+                                    "REFERENCE NUMBER",
+                                    "DATETIME",
+                                    "CUSTOMER",
+                                    "MOBILE",
+                                    "TELEPHONE",
+                                    "PICKUP",
+                                    "DROPOFF",
+                                    "FARE",
+                                    "ACCOUNT",
+                                    "ORDER NUMBER",
+                                    "PAYMENT TYPE",
+                                    "DRIVER",
+                                    "VEHICLE TYPE",
+                                    "STATUS",
+                                  ],
+                                  value: controller.selectRefNumber,
+                                  itemLabel: (val) => val,
+                                  onChanged: (val) {
+                                    controller.selectRefNumber = val!;
+                                    controller.update();
+                                  },
+                                ),
                               ),
-                              CustomDropdownField<String>(
-                                // text: AppText.selectRefNumber,
-                                width: fieldWidth / 1.5,
-                                label: AppText.ascending,
-                                items: ["ASCENDING", "DESCENDING"],
-                                value: controller.selectAscending,
-                                itemLabel: (val) => val,
-                                onChanged: (val) {
-                                  controller.selectAscending = val!;
-                                  controller.update();
-                                },
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: CustomDropdownField<String>(
+                                  width: double.infinity,
+                                  label: AppText.ascending,
+                                  items: ["ASCENDING", "DESCENDING"],
+                                  value: controller.selectAscending,
+                                  itemLabel: (val) => val,
+                                  onChanged: (val) {
+                                    controller.selectAscending = val!;
+                                    controller.update();
+                                  },
+                                ),
                               ),
-                              SizedBox(
-                                width: 20,
-                              ),
+                              const SizedBox(width: 16),
                               CustomButton(
-                                width: 120,
+                                width: 110,
                                 height: 30,
                                 borderRadius: 4,
                                 verticalPadding: 0.0,
@@ -992,8 +908,9 @@ class _AllBookingViewState extends State<AllBookingView> {
                                   await controller.getBookingStatistics();
                                 },
                               ),
+                              const SizedBox(width: 8),
                               CustomButton(
-                                width: 120,
+                                width: 110,
                                 height: 30,
                                 borderRadius: 4,
                                 verticalPadding: 0.0,
@@ -1003,8 +920,9 @@ class _AllBookingViewState extends State<AllBookingView> {
                                   Get.dialog(AllBookingViewWindow());
                                 },
                               ),
+                              const SizedBox(width: 8),
                               CustomButton(
-                                width: 120,
+                                width: 110,
                                 height: 30,
                                 borderRadius: 4,
                                 verticalPadding: 0.0,
@@ -1016,8 +934,6 @@ class _AllBookingViewState extends State<AllBookingView> {
                                       ?.toString();
                                   controller.getBookingStatisticsGraph(
                                       statusId: statusId);
-
-                                  // Get.dialog(BookingStatisticsWindow());
                                   Get.dialog(BookingStatisticsWindow());
                                 },
                               ),
