@@ -117,13 +117,13 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
                 width: Get.width,
                 child: DatatableWidget(
                   columns: [
-                    buildHeaderWithSearch(title: "TABLE"),
-                    buildHeaderWithSearch(title: "COLUMN"),
-                    buildHeaderWithSearch(title: "SUBSIDIARY"),
-                    buildHeaderWithSearch(title: "PREFIX"),
-                    buildHeaderWithSearch(title: "START #"),
-                    buildHeaderWithSearch(title: "END #"),
-                    buildHeaderWithSearch(title: "INCREMENT"),
+                    buildHeaderWithSearch(title: "TABLE", removeSearching: true),
+                    buildHeaderWithSearch(title: "COLUMN", removeSearching: true),
+                    buildHeaderWithSearch(title: "SUBSIDIARY", removeSearching: true),
+                    buildHeaderWithSearch(title: "PREFIX", removeSearching: true),
+                    buildHeaderWithSearch(title: "START #", removeSearching: true),
+                    buildHeaderWithSearch(title: "END #", removeSearching: true),
+                    buildHeaderWithSearch(title: "INCREMENT", removeSearching: true),
                     buildHeaderWithSearch(
                         title: "ACTIONS", removeSearching: true),
                   ],

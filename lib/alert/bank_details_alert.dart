@@ -1,10 +1,13 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
+import 'package:dashboard_new1/component/text_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show FilteringTextInputFormatter;
+import 'package:flutter/services.dart' show FilteringTextInputFormatter, LengthLimitingTextInputFormatter;
 import 'package:get/get.dart';
 
+import '../component/action_icon_button.dart';
+import '../component/alert_close_button.dart';
 import '../view/administration/User/create_subsiDiary.dart';
 import '../view/administration/controller/administration_controller.dart';
 import '../view/dashboard_view/widgets/time_picker_widget.dart';
@@ -37,7 +40,9 @@ class BankDetailsAlert {
             builder: (context, setState) {
               return GetBuilder<AdministrationController>(
                   builder: (controller) {
-                    return Container(
+                    return FocusTraversalGroup(
+                        policy: OrderedTraversalPolicy(),
+                    child: Container(
                       width: Get.width * 0.7,
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
@@ -64,13 +69,9 @@ class BankDetailsAlert {
                                 style: TextStyle(
                                     fontSize: 15, fontWeight: FontWeight.bold),
                               ),
-                              InkWell(
-                                onTap: () {
-                                  print(controller.bankDetailList);
-                                  Get.back();
-                                },
-                                child: const Icon(Icons.close,
-                                    size: 20, color: Colors.black54),
+                              FocusTraversalOrder(
+                                order: const NumericFocusOrder(999),
+                                child: const AlertCloseButton(),
                               ),
                             ],
                           ),
@@ -79,40 +80,42 @@ class BankDetailsAlert {
                           Row(
                             children: [
                               Expanded(
-                                  flex: 2, child: _buildField("BANK", bank, TextInputType.text)),
+                                  flex: 2, child: _buildField("BANK", bank, TextInputType.text, autofocus: true, order: 1)),
                               const SizedBox(width: 8),
                               Expanded(
-                                  flex: 2, child: _buildField("ACCOUNT TITLE", accountTitle,TextInputType.text )),
+                                  flex: 2, child: _buildField("ACCOUNT TITLE", accountTitle,TextInputType.text, order: 2)),
                               const SizedBox(width: 8),
                               Expanded(
-                                  flex: 2, child: _buildField("ACCOUNT #", account,const TextInputType.numberWithOptions(decimal: true) )),
+                                  flex: 2, child: _buildField("ACCOUNT #", account,const TextInputType.numberWithOptions(decimal: true), order: 3 )),
                               const SizedBox(width: 8),
                               Expanded(
                                 flex: 2,
                                 // keyboardType ko badal kar TextInputType.text kar diya
-                                child: _buildField("IBAN", iban, TextInputType.text),
+                                child: _buildField("IBAN", iban, TextInputType.text, order: 4),
                               ),
                               // const SizedBox(width: 8), Expanded(
                               //     flex: 2, child: _buildField("IBAN", iban,const TextInputType.numberWithOptions(decimal: true))),
                               const SizedBox(width: 8), Expanded(
-                                  flex: 2, child: _buildField("SORT CODE", sortCode, const TextInputType.numberWithOptions(decimal: true))),
+                                  flex: 2, child: _buildField("SORT CODE", sortCode, const TextInputType.numberWithOptions(decimal: true), order: 5)),
                               const SizedBox(width: 8), Expanded(
-                                  flex: 2, child: _buildField("VAT #", vat, const TextInputType.numberWithOptions(decimal: true))),
+                                  flex: 2, child: _buildField("VAT #", vat, const TextInputType.numberWithOptions(decimal: true), order: 6)),
                               const SizedBox(width: 8),
 
-                              Expanded(
-                                flex: 2,
-                                child: SizedBox(
-                                  height: 34,
-                                  child: CustomButton(
-                                    width: 150,
-                                    height: 35,
-                                    verticalPadding: 0.0,
-                                    btnText: editingIndex == null ? "SAVE" : "UPDATE",
-                                    borderRadius: 4,
-                                    style: mozillaTextRegularText(
-                                        fontSize: 14, color: DynamicColors.whiteClr),
-                                    onTap: () {
+                              FocusTraversalOrder(
+                                  order: const NumericFocusOrder(6),
+                                  child: SizedBox(
+                                    width: 100,
+                                    height: 34,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: editingIndex == null
+                                            ? const Color(0xFF43489A)
+                                            : Colors.orange,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                      ),
+                                    onPressed: () {
                                       if (bank.text.isEmpty) {
                                         Get.snackbar("Error", "Bank name is required");
                                         return;
@@ -146,6 +149,13 @@ class BankDetailsAlert {
                                       controller.update();
                                       setState(() {});
                                     },
+                                      child: Text(
+                                        editingIndex == null ? "SAVE" : "UPDATE",
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.white,
+                                        ),
+                                      ),
                                   ),
 
                                 ),
@@ -233,9 +243,10 @@ class BankDetailsAlert {
                                     flex: 1,
                                     child: Row(
                                       children: [
-                                        IconButton(
-                                          icon: const Icon(Icons.edit,
-                                              size: 18, color: Color(0xFF43489A)),
+                                        ActionIconButton(
+                                          icon: Icons.edit,
+                                          color: const Color(0xFF43489A),
+                                          order: 10.0 + index * 2.0,
                                           onPressed: () {
                                             setState(() {
                                               editingIndex = index;
@@ -249,9 +260,10 @@ class BankDetailsAlert {
                                             });
                                           },
                                         ),
-                                        IconButton(
-                                          icon: const Icon(Icons.delete,
-                                              size: 18, color: Colors.red),
+                                        ActionIconButton(
+                                          icon: Icons.delete,
+                                          color: Colors.red,
+                                          order: 10.0 + index * 2.0 + 1.0,
                                           onPressed: () {
                                             setState(() {
                                               controller.bankDetailList.removeAt(index);
@@ -270,7 +282,7 @@ class BankDetailsAlert {
 
                         ],
                       ),
-                    );
+                    ));
                   }
               );
             },
@@ -280,14 +292,18 @@ class BankDetailsAlert {
       barrierDismissible: false,
     );
   }
-  static Widget _buildField(String label, TextEditingController controller, TextInputType keyboardType) {
-    return SizedBox(
+  static Widget _buildField(String label, TextEditingController controller, TextInputType keyboardType, { bool autofocus = false, double? order}) {
+    Widget field = SizedBox(
       height: 32,
       child: TextField(
         keyboardType: keyboardType,
         controller: controller,
-        inputFormatters: label == "IBAN"
-            ? [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]'))] // IBAN ke liye Letters + Numbers
+        inputFormatters: (label == "BANK" || label == "ACCOUNT TITLE")
+            ? [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')), UpperCaseTextFormatter()]
+            : label == "VAT #"
+            ? [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(2)]
+            : label == "IBAN"
+            ? [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')), UpperCaseTextFormatter()] // IBAN ke liye Letters + Numbers
             : (keyboardType == TextInputType.number || keyboardType == const TextInputType.numberWithOptions(decimal: true)
             ? [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))] // Normal numbers ke liye
             : []),
@@ -302,6 +318,14 @@ class BankDetailsAlert {
         ),
       ),
     );
+
+    if (order != null) {
+      field = FocusTraversalOrder(
+        order: NumericFocusOrder(order),
+        child: field,
+      );
+    }
+    return Expanded(child: field);
   }
   // static Widget _buildField(String label, TextEditingController controller, TextInputType keyboardType) {
   //   return SizedBox(
