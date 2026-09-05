@@ -1920,7 +1920,135 @@ class _CenterAreaState extends State<_CenterArea> {
   bool actionValue = false;
   bool submitBtnValue = false;
 
+
+
+
+
+
+
   DashboardController _controller = Get.find();
+
+
+
+  Widget rightClickTextCell({
+    required Widget child,
+    required BookingObjectData item,
+    required String clickValue,
+  }) {
+    return Listener(
+      behavior: HitTestBehavior.opaque,
+      onPointerDown: (event) {
+        if (event.kind == PointerDeviceKind.mouse &&
+            event.buttons == kSecondaryMouseButton) {
+          final RenderBox? overlay =
+          Overlay.of(context).context.findRenderObject() as RenderBox?;
+
+          if (overlay == null) return;
+
+          final RelativeRect position = RelativeRect.fromRect(
+            Rect.fromPoints(
+              event.position,
+              event.position,
+            ),
+            Offset.zero & overlay.size,
+          );
+
+          showRowContextMenu(
+            context: context,
+            position: position,
+            item: item,
+            clickValue: clickValue,
+          );
+        }
+      },
+      child: child,
+    );
+  }
+
+  void showRowContextMenu({
+    required BuildContext context,
+    required RelativeRect position,
+    required BookingObjectData item,
+    required String clickValue,
+  }) {
+    showMenu<String>(
+      context: context,
+      position: position,
+      items: const [
+        PopupMenuItem<String>(
+          value: 'pickup',
+          child: Row(
+            children: [
+              Icon(Icons.location_on, color: Color(0xFF059669), size: 18),
+              SizedBox(width: 8),
+              Text('Set as Pickup'),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'dropoff',
+          child: Row(
+            children: [
+              Icon(Icons.location_on, color: Color(0xFFDC2626), size: 18),
+              SizedBox(width: 8),
+              Text('Set as Dropoff'),
+            ],
+          ),
+        ),
+      ],
+    ).then((value) {
+      if (value == null) return;
+
+      LatLng? parseLatLng(dynamic lat, dynamic lng) {
+        if (lat == null || lng == null) return null;
+        double? parsedLat = double.tryParse(lat.toString());
+        double? parsedLng = double.tryParse(lng.toString());
+        if (parsedLat != null && parsedLng != null) {
+          return LatLng(parsedLat, parsedLng);
+        }
+        return null;
+      }
+
+      setState(() {
+        String selectedText = "";
+        LatLng? selectedPoints;
+
+        if (clickValue == "dropoffClick") {
+          selectedText = item.dropoff ?? "";
+          selectedPoints = parseLatLng(item.dropoffLatitude, item.dropoffLongitude);
+        } else {
+          selectedText = item.pickup ?? "";
+          selectedPoints = parseLatLng(item.pickupLatitude, item.pickupLongitude);
+        }
+
+        if (value == 'pickup') {
+          pickupController.text = selectedText;
+          pickupPoints = selectedPoints;
+        } else if (value == 'dropoff') {
+          dropoffController.text = selectedText;
+          dropoffPoints = selectedPoints;
+        }
+
+        name = item.name;
+        email = item.email;
+        mobileNumber = item.mobile?.toString();
+        telNumber = item.telephone;
+      });
+    });
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   @override
   void initState() {
@@ -2284,13 +2412,28 @@ class _CenterAreaState extends State<_CenterArea> {
                         String formattedTime = cliBookingData.pickupTime ?? "";
                         return DataRow(
                           cells: [
+                                        // DataCell(SizedBox(
+                                        //   width: Get.width / 6,
+                                        //   child: rightClickTextCell(
+                                        //     item: cliBookingData,
+                                        //     clickValue: 'pickUpClick',
+                                        //     onRightClick: () {},
+                                        //     child: Text(cliBookingData.pickup ?? "",
+                                        //         overflow: TextOverflow.ellipsis),
+                                        //   ),
+                                        // )),
                             DataCell(SizedBox(
                               width: 150,
-                              child: Text(
-                                cliBookingData.pickup ?? "",
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(color: Color(0xFF374151)),
+                              child: rightClickTextCell(
+                                    item: cliBookingData,
+                                    clickValue: 'pickUpClick',
+
+                                child: Text(
+                                  cliBookingData.pickup ?? "",
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(color: Color(0xFF374151)),
+                                ),
                               ),
                             )),
                             DataCell(SizedBox(
@@ -2330,11 +2473,16 @@ class _CenterAreaState extends State<_CenterArea> {
                                   ],
                                   SizedBox(width: 10.0,),
                                   Expanded(
-                                    child: Text(
-                                      cliBookingData.dropoff ?? "",
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(color: Color(0xFF374151)),
+                                    child: rightClickTextCell(
+                                                      item: cliBookingData,
+                                                      clickValue: 'dropoffClick',
+
+                                      child: Text(
+                                        cliBookingData.dropoff ?? "",
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(color: Color(0xFF374151)),
+                                      ),
                                     ),
                                   ),
 
@@ -2688,86 +2836,15 @@ class _CenterAreaState extends State<_CenterArea> {
     );
   }
 
-  Widget rightClickTextCell(
-      {required Widget child,
-        required VoidCallback onRightClick,
-        required dynamic item,
-        clickValue}) {
-    return Listener(
-      behavior: HitTestBehavior.opaque,
-      onPointerDown: (event) {
-        if (event.kind == PointerDeviceKind.mouse &&
-            event.buttons == kSecondaryMouseButton) {
-          final RenderBox overlay =
-          Overlay.of(context).context.findRenderObject() as RenderBox;
 
-          final RelativeRect position = RelativeRect.fromRect(
-            Rect.fromPoints(
-              event.position,
-              event.position,
-            ),
-            Offset.zero & overlay.size,
-          );
-          showRowContextMenu(
-              context: context,
-              position: position,
-              item: item,
-              clickValue: clickValue);
-        }
-      },
-      child: child,
-    );
-  }
 
-  void showRowContextMenu(
-      {required BuildContext context,
-        required RelativeRect position,
-        required dynamic item,
-        clickValue}) {
-    showMenu(
-      context: context,
-      position: position,
-      items: const [
-        PopupMenuItem(value: 'pickup', child: Text('pickup')),
-        PopupMenuItem(value: 'dropoff', child: Text('dropoff')),
-      ],
-    ).then((value) {
-      if (value == null) return;
-      switch (value) {
-        case 'pickup':
-          if (clickValue == "dropoffClick") {
-            pickupController.text = item.dropoff.toUpperCase();
-            pickupPoints = LatLng(double.parse(item.dropoffLatitude),
-                double.parse(item.dropoffLongitude));
-          } else {
-            pickupController.text = item.pickup.toUpperCase();
-            pickupPoints = LatLng(double.parse(item.pickupLatitude),
-                double.parse(item.pickupLongitude));
-          }
-          name = item.name;
-          email = item.email;
-          mobileNumber = item.mobile.toString();
-          telNumber = item.telephone;
-          break;
-        case 'dropoff':
-          if (clickValue == "dropoffClick") {
-            dropoffController.text = item.dropoff.toUpperCase();
-            dropoffPoints = LatLng(double.parse(item.dropoffLatitude),
-                double.parse(item.dropoffLongitude));
-          } else {
-            dropoffController.text = item.pickup;
-            dropoffPoints = LatLng(double.parse(item.pickupLatitude),
-                double.parse(item.pickupLongitude));
-          }
-          name = item.name;
-          email = item.email;
-          mobileNumber = item.mobile;
-          telNumber = item.telephone;
-          break;
-      }
-    });
-  }
+
+
 }
+
+
+
+
 
 /// --------- RIGHT SIDEBAR ----------
 class _RightSidebar extends StatelessWidget {
