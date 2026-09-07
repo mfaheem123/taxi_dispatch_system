@@ -1538,7 +1538,7 @@
 // }
 
 
-
+/// ---------------------------------------------- NEW CLI ------------------------------------------------------
 import 'dart:async';
 import 'dart:ui';
 
@@ -1563,6 +1563,10 @@ import 'dashboard_view/booking_table.dart';
 import 'dashboard_view/models/dashboard_model.dart';
 import 'dashboard_view/models/dashboard_table_model.dart';
 import 'dashboard_view/widgets/user_info_widget.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
+import 'package:latlong2/latlong.dart' hide LatLng;
+import 'package:latlong2/latlong.dart' as latlong;
+import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 
 String temMobileNumber = "";
 
@@ -1894,11 +1898,11 @@ class _CenterArea extends StatefulWidget {
   @override
   State<_CenterArea> createState() => _CenterAreaState();
 }
-
 class _CenterAreaState extends State<_CenterArea> {
   final CliController controller = Get.find<CliController>();
   DashboardController dashboard = Get.find();
-
+  latlong.LatLng? pickupPoints;
+  latlong.LatLng? dropoffPoints;
   final RxInt selectedIndex = (-1).obs;
 
   BookingObjectData? selectedBooking;
@@ -1909,27 +1913,17 @@ class _CenterAreaState extends State<_CenterArea> {
   bool isSwapped = false;
 
   final TextEditingController pickupController = TextEditingController();
-  LatLng? pickupPoints;
+  // LatLng? pickupPoints;
   String? name;
   String? email;
   String? mobileNumber;
   String? telNumber;
   final TextEditingController dropoffController = TextEditingController();
-  LatLng? dropoffPoints;
+  // LatLng? dropoffPoints;
   bool _isLoading = false;
   bool actionValue = false;
   bool submitBtnValue = false;
-
-
-
-
-
-
-
   DashboardController _controller = Get.find();
-
-
-
   Widget rightClickTextCell({
     required Widget child,
     required BookingObjectData item,
@@ -2023,10 +2017,10 @@ class _CenterAreaState extends State<_CenterArea> {
 
         if (value == 'pickup') {
           pickupController.text = selectedText;
-          pickupPoints = selectedPoints;
+          pickupPoints = selectedPoints as latlong.LatLng?;
         } else if (value == 'dropoff') {
           dropoffController.text = selectedText;
-          dropoffPoints = selectedPoints;
+          dropoffPoints = selectedPoints as latlong.LatLng?;
         }
 
         name = item.name;
@@ -2036,18 +2030,6 @@ class _CenterAreaState extends State<_CenterArea> {
       });
     });
   }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   @override
@@ -2234,24 +2216,52 @@ class _CenterAreaState extends State<_CenterArea> {
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(color: const Color(0xFFE5E7EB)),
                               ),
-                              child: InkWell(
-                                onTap: () {
+                                child: InkWell(
+        onTap: () {
+        setState(() {
+        isSwapped = !isSwapped;
 
-                                        setState(() {
-                                          isSwapped = !isSwapped;
-                                          final temp = pickupController.text;
-                                          pickupController.text = dropoffController.text;
-                                          dropoffController.text = temp;
-                                          submitBtnValue = true;
-                                        });
+        // 1. Text Controllers Swap
+        final tempText = pickupController.text;
+        pickupController.text = dropoffController.text;
+        dropoffController.text = tempText;
 
-                                },
-                                child: const Icon(
-                                  Icons.swap_horiz,
-                                  color: Color(0xFF1E40AF),
-                                  size: 20,
+        // 2. LatLng Points Swap
+        final tempPoints = pickupPoints;
+        pickupPoints = dropoffPoints;
+        dropoffPoints = tempPoints;
+
+        // 3. Selected Booking Object ko bhi in-memory Swap karein (Agar API call bad me hoti hai)
+        if (selectedBooking != null) {
+        final tempPickup = selectedBooking!.pickup;
+        final tempPickupLat = selectedBooking!.pickupLatitude;
+        final tempPickupLng = selectedBooking!.pickupLongitude;
+
+        selectedBooking!.pickup = selectedBooking!.dropoff;
+        selectedBooking!.pickupLatitude = selectedBooking!.dropoffLatitude;
+        selectedBooking!.pickupLongitude = selectedBooking!.dropoffLongitude;
+
+        selectedBooking!.dropoff = tempPickup;
+        selectedBooking!.dropoffLatitude = tempPickupLat;
+        selectedBooking!.dropoffLongitude = tempPickupLng;
+        }
+
+        // 4. Main Dashboard Controller Sync
+        _controller.pickupController.text = pickupController.text;
+        _controller.dropOffController.text = dropoffController.text;
+
+        submitBtnValue = true;
+        });
+
+        // 5. Naya Route Fetch Karein
+        _controller.fetchRouteFromOSRM();
+        },
+                                  child: const Icon(
+                                    Icons.swap_horiz,
+                                    color: Color(0xFF1E40AF),
+                                    size: 20,
+                                  ),
                                 ),
-                              ),
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -2412,21 +2422,21 @@ class _CenterAreaState extends State<_CenterArea> {
                         String formattedTime = cliBookingData.pickupTime ?? "";
                         return DataRow(
                           cells: [
-                                        // DataCell(SizedBox(
-                                        //   width: Get.width / 6,
-                                        //   child: rightClickTextCell(
-                                        //     item: cliBookingData,
-                                        //     clickValue: 'pickUpClick',
-                                        //     onRightClick: () {},
-                                        //     child: Text(cliBookingData.pickup ?? "",
-                                        //         overflow: TextOverflow.ellipsis),
-                                        //   ),
-                                        // )),
+                            // DataCell(SizedBox(
+                            //   width: Get.width / 6,
+                            //   child: rightClickTextCell(
+                            //     item: cliBookingData,
+                            //     clickValue: 'pickUpClick',
+                            //     onRightClick: () {},
+                            //     child: Text(cliBookingData.pickup ?? "",
+                            //         overflow: TextOverflow.ellipsis),
+                            //   ),
+                            // )),
                             DataCell(SizedBox(
                               width: 150,
                               child: rightClickTextCell(
-                                    item: cliBookingData,
-                                    clickValue: 'pickUpClick',
+                                item: cliBookingData,
+                                clickValue: 'pickUpClick',
 
                                 child: Text(
                                   cliBookingData.pickup ?? "",
@@ -2474,8 +2484,8 @@ class _CenterAreaState extends State<_CenterArea> {
                                   SizedBox(width: 10.0,),
                                   Expanded(
                                     child: rightClickTextCell(
-                                                      item: cliBookingData,
-                                                      clickValue: 'dropoffClick',
+                                      item: cliBookingData,
+                                      clickValue: 'dropoffClick',
 
                                       child: Text(
                                         cliBookingData.dropoff ?? "",
@@ -2763,23 +2773,87 @@ class _CenterAreaState extends State<_CenterArea> {
                       ),
                     if (actionValue == true && isSwapped == false)
                       const SizedBox(width: 12),
+                    // Expanded(
+                    //   child: ElevatedButton(
+                    //     style: ElevatedButton.styleFrom(
+                    //       backgroundColor: const Color(0xFF1E40AF),
+                    //       padding: const EdgeInsets.symmetric(vertical: 14),
+                    //     ),
+                    //     onPressed: () async {
+                    //       if (_isLoading) return;
+                    //       try {
+                    //         _isLoading = true;
+                    //         if (pickupController.text.isNotEmpty &&
+                    //             dropoffController.text.isNotEmpty &&
+                    //             actionValue == false) {
+                    //           if (pickupController.text == dropoffController.text) {
+                    //             BotToast.showText(text: "Please write different address");
+                    //             return;
+                    //           }
+                    //           if (pickupPoints == null || dropoffPoints == null) {
+                    //             BotToast.showText(text: "Location data missing");
+                    //             return;
+                    //           }
+                    //           await _controller.cliDataBinding(
+                    //             pickup: pickupController.text,
+                    //             dropoff: dropoffController.text,
+                    //             pickupLatitude: pickupPoints!.latitude.toString(),
+                    //             pickupLongitude: pickupPoints!.longitude.toString(),
+                    //             dropoffLatitude: dropoffPoints!.latitude.toString(),
+                    //             dropoffLongitude: dropoffPoints!.longitude.toString(),
+                    //             name: name,
+                    //             mobile: mobileNumber,
+                    //             email: email,
+                    //             phoneNumber: telNumber,
+                    //           );
+                    //           if (!mounted) return;
+                    //         } else {
+                    //           if (selectedBooking == null) {
+                    //             _controller.mobileController.text = temMobileNumber;
+                    //             Get.back();
+                    //             return;
+                    //           }
+                    //           _controller.cliJobHit = true;
+                    //           await _controller.dashBoardDataBinding(
+                    //               id: selectedBooking!.id,
+                    //               jobData: selectedBooking,
+                    //               cliHit: true
+                    //           );
+                    //           if (!mounted) return;
+                    //           Get.back();
+                    //         }
+                    //       } catch (e) {
+                    //         BotToast.showText(text: "Something went wrong");
+                    //         print(e);
+                    //       } finally {
+                    //         _isLoading = false;
+                    //       }
+                    //     },
+                    //     child: const Text(
+                    //       "New Booking",
+                    //       style: TextStyle(fontWeight: FontWeight.w700),
+                    //     ),
+                    //   ),
+                    // ),
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF1E40AF),
                           padding: const EdgeInsets.symmetric(vertical: 14),
                         ),
-                        onPressed: () async {
-                          if (_isLoading) return;
+                        onPressed: _isLoading ? null : () async {
+                          setState(() => _isLoading = true); // UI Loader Freeze Protect
+
                           try {
-                            _isLoading = true;
                             if (pickupController.text.isNotEmpty &&
                                 dropoffController.text.isNotEmpty &&
                                 actionValue == false) {
+
                               if (pickupController.text == dropoffController.text) {
                                 BotToast.showText(text: "Please write different address");
                                 return;
                               }
+
                               if (pickupPoints == null || dropoffPoints == null) {
                                 BotToast.showText(text: "Location data missing");
                                 return;
@@ -2797,30 +2871,45 @@ class _CenterAreaState extends State<_CenterArea> {
                                 email: email,
                                 phoneNumber: telNumber,
                               );
+
                               if (!mounted) return;
+
                             } else {
                               if (selectedBooking == null) {
                                 _controller.mobileController.text = temMobileNumber;
                                 Get.back();
                                 return;
                               }
+
                               _controller.cliJobHit = true;
+
                               await _controller.dashBoardDataBinding(
-                                  id: selectedBooking!.id,
-                                  jobData: selectedBooking,
-                                  cliHit: true
+                                id: selectedBooking!.id,
+                                jobData: selectedBooking,
+                                cliHit: true,
                               );
+
                               if (!mounted) return;
                               Get.back();
                             }
-                          } catch (e) {
-                            BotToast.showText(text: "Something went wrong");
-                            print(e);
+                          } catch (e, stackTrace) {
+                            // Actual exception ka reason console par detail me check karne ke liye:
+                            debugPrint("Booking Error Details: $e");
+                            debugPrint("StackTrace: $stackTrace");
+                            BotToast.showText(text: e.toString().replaceAll("Exception: ", ""));
                           } finally {
-                            _isLoading = false;
+                            if (mounted) {
+                              setState(() => _isLoading = false);
+                            }
                           }
                         },
-                        child: const Text(
+                        child: _isLoading
+                            ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                            : const Text(
                           "New Booking",
                           style: TextStyle(fontWeight: FontWeight.w700),
                         ),
@@ -2835,12 +2924,933 @@ class _CenterAreaState extends State<_CenterArea> {
       },
     );
   }
-
-
-
-
-
 }
+
+// class _CenterAreaState extends State<_CenterArea> {
+//   final CliController controller = Get.find<CliController>();
+//   DashboardController dashboard = Get.find();
+//
+//   final RxInt selectedIndex = (-1).obs;
+//
+//   BookingObjectData? selectedBooking;
+//
+//   int? selectedDriverId;
+//   int? selectedVehicleId;
+//
+//   bool isSwapped = false;
+//
+//   final TextEditingController pickupController = TextEditingController();
+//   LatLng? pickupPoints;
+//   String? name;
+//   String? email;
+//   String? mobileNumber;
+//   String? telNumber;
+//   final TextEditingController dropoffController = TextEditingController();
+//   LatLng? dropoffPoints;
+//   bool _isLoading = false;
+//   bool actionValue = false;
+//   bool submitBtnValue = false;
+//
+//   DashboardController _controller = Get.find();
+//
+//   Widget rightClickTextCell({
+//     required Widget child,
+//     required BookingObjectData item,
+//     required String clickValue,
+//   }) {
+//     return Listener(
+//       behavior: HitTestBehavior.opaque,
+//       onPointerDown: (event) {
+//         if (event.kind == PointerDeviceKind.mouse &&
+//             event.buttons == kSecondaryMouseButton) {
+//           final RenderBox? overlay =
+//           Overlay.of(context).context.findRenderObject() as RenderBox?;
+//
+//           if (overlay == null) return;
+//
+//           final RelativeRect position = RelativeRect.fromRect(
+//             Rect.fromPoints(
+//               event.position,
+//               event.position,
+//             ),
+//             Offset.zero & overlay.size,
+//           );
+//
+//           showRowContextMenu(
+//             context: context,
+//             position: position,
+//             item: item,
+//             clickValue: clickValue,
+//           );
+//         }
+//       },
+//       child: child,
+//     );
+//   }
+//
+//   void showRowContextMenu({
+//     required BuildContext context,
+//     required RelativeRect position,
+//     required BookingObjectData item,
+//     required String clickValue,
+//   }) {
+//     showMenu<String>(
+//       context: context,
+//       position: position,
+//       items: const [
+//         PopupMenuItem<String>(
+//           value: 'pickup',
+//           child: Row(
+//             children: [
+//               Icon(Icons.location_on, color: Color(0xFF059669), size: 18),
+//               SizedBox(width: 8),
+//               Text('Set as Pickup'),
+//             ],
+//           ),
+//         ),
+//         PopupMenuItem<String>(
+//           value: 'dropoff',
+//           child: Row(
+//             children: [
+//               Icon(Icons.location_on, color: Color(0xFFDC2626), size: 18),
+//               SizedBox(width: 8),
+//               Text('Set as Dropoff'),
+//             ],
+//           ),
+//         ),
+//       ],
+//     ).then((value) {
+//       if (value == null) return;
+//
+//       LatLng? parseLatLng(dynamic lat, dynamic lng) {
+//         if (lat == null || lng == null) return null;
+//         double? parsedLat = double.tryParse(lat.toString());
+//         double? parsedLng = double.tryParse(lng.toString());
+//         if (parsedLat != null && parsedLng != null) {
+//           return LatLng(parsedLat, parsedLng);
+//         }
+//         return null;
+//       }
+//
+//       setState(() {
+//         String selectedText = "";
+//         LatLng? selectedPoints;
+//
+//         if (clickValue == "dropoffClick") {
+//           selectedText = item.dropoff ?? "";
+//           selectedPoints = parseLatLng(item.dropoffLatitude, item.dropoffLongitude);
+//         } else {
+//           selectedText = item.pickup ?? "";
+//           selectedPoints = parseLatLng(item.pickupLatitude, item.pickupLongitude);
+//         }
+//
+//         if (value == 'pickup') {
+//           pickupController.text = selectedText;
+//           pickupPoints = selectedPoints;
+//         } else if (value == 'dropoff') {
+//           dropoffController.text = selectedText;
+//           dropoffPoints = selectedPoints;
+//         }
+//
+//         name = item.name;
+//         email = item.email;
+//         mobileNumber = item.mobile?.toString();
+//         telNumber = item.telephone;
+//       });
+//     });
+//   }
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     _controller.cliJobHit = false;
+//
+//     void setDefaultVehicle() {
+//       if (dashboard.dashboardAllData?.vehicleTypes != null &&
+//           dashboard.dashboardAllData!.vehicleTypes!.isNotEmpty) {
+//         dashboard.selectVehicleValue = dashboard.dashboardAllData!.vehicleTypes!.first;
+//         selectedVehicleId = dashboard.selectVehicleValue?.id;
+//       }
+//     }
+//
+//     if (dashboard.dashboardAllData == null) {
+//       dashboard.dashboardData().then((_) {
+//         setDefaultVehicle();
+//         setState(() {});
+//       });
+//     } else {
+//       setDefaultVehicle();
+//     }
+//   }
+//
+//   @override
+//   void dispose() {
+//     pickupController.dispose();
+//     dropoffController.dispose();
+//     super.dispose();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return GetBuilder<DashboardController>(
+//       builder: (homeController) {
+//         if (selectedVehicleId == null &&
+//             homeController.dashboardAllData?.vehicleTypes != null &&
+//             homeController.dashboardAllData!.vehicleTypes!.isNotEmpty) {
+//           homeController.selectVehicleValue ??=
+//               homeController.dashboardAllData!.vehicleTypes!.first;
+//           selectedVehicleId = homeController.selectVehicleValue?.id;
+//         }
+//
+//         return Padding(
+//           padding: const EdgeInsets.all(24),
+//           child: SingleChildScrollView(
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 /// HEADER WITH CUSTOMER INFO
+//                 Obx(() => Row(
+//                   children: [
+//                     CircleAvatar(
+//                       radius: 28,
+//                       backgroundColor: const Color(0xFF1E40AF),
+//                       child: Text(
+//                         controller.customerName.value.isNotEmpty
+//                             ? controller.customerName.value[0].toUpperCase()
+//                             : "Unknown",
+//                         style: const TextStyle(
+//                           color: Colors.white,
+//                           fontSize: 24,
+//                           fontWeight: FontWeight.w700,
+//                         ),
+//                       ),
+//                     ),
+//                     const SizedBox(width: 16),
+//                     Column(
+//                       crossAxisAlignment: CrossAxisAlignment.start,
+//                       children: [
+//                         Text(
+//                           controller.customerName.value.isEmpty
+//                               ? "Unknown"
+//                               : controller.customerName.value.toUpperCase(),
+//                           style: const TextStyle(
+//                             fontSize: 18,
+//                             fontWeight: FontWeight.w700,
+//                             color: Color(0xFF1F2937),
+//                           ),
+//                         ),
+//                         const SizedBox(height: 4),
+//                         Text(
+//                           controller.customerMobile.value.isEmpty
+//                               ? ""
+//                               : controller.customerMobile.value,
+//                           style: const TextStyle(
+//                             fontSize: 14,
+//                             color: Color(0xFF6B7280),
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//                     const Spacer(),
+//                     Container(
+//                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+//                       decoration: BoxDecoration(
+//                         color: const Color(0xFFF3F4F6),
+//                         borderRadius: BorderRadius.circular(8),
+//                       ),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.end,
+//                         children: const [
+//                           Text(
+//                             "Account Balance",
+//                             style: TextStyle(
+//                               fontSize: 12,
+//                               color: Color(0xFF6B7280),
+//                             ),
+//                           ),
+//                           SizedBox(height: 4),
+//                           Text(
+//                             "£0.00",
+//                             style: TextStyle(
+//                               fontSize: 16,
+//                               fontWeight: FontWeight.w700,
+//                               color: Color(0xFF1F2937),
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 )),
+//
+//                 const SizedBox(height: 28),
+//
+//                 /// PICKUP & DROPOFF SECTION
+//                 Container(
+//                   padding: const EdgeInsets.all(20),
+//                   decoration: BoxDecoration(
+//                     color: const Color(0xFFF9FAFB),
+//                     borderRadius: BorderRadius.circular(12),
+//                     border: Border.all(color: const Color(0xFFE5E7EB)),
+//                   ),
+//                   child: Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       Row(
+//                         children: [
+//                           Expanded(
+//                             child: Column(
+//                               crossAxisAlignment: CrossAxisAlignment.start,
+//                               children: [
+//                                 Row(
+//                                   children: const [
+//                                     Icon(Icons.location_on, size: 18, color: Color(0xFF059669)),
+//                                     SizedBox(width: 8),
+//                                     Text(
+//                                       "PICK UP LOCATION",
+//                                       style: TextStyle(
+//                                         fontSize: 12,
+//                                         fontWeight: FontWeight.w700,
+//                                         color: Color(0xFF374151),
+//                                         letterSpacing: 0.5,
+//                                       ),
+//                                     ),
+//                                   ],
+//                                 ),
+//                                 const SizedBox(height: 8),
+//                                 TextField(
+//                                   controller: pickupController,
+//                                   decoration: InputDecoration(
+//                                     hintText: "Enter pick up location",
+//                                     hintStyle: const TextStyle(color: Color(0xFFD1D5DB)),
+//                                     filled: true,
+//                                     fillColor: Colors.white,
+//                                     border: OutlineInputBorder(
+//                                       borderRadius: BorderRadius.circular(8),
+//                                       borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+//                                     ),
+//                                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+//                                   ),
+//                                 ),
+//                               ],
+//                             ),
+//                           ),
+//                           const SizedBox(width: 16),
+//                           Center(
+//                             child: Container(
+//                               padding: const EdgeInsets.all(8),
+//                               decoration: BoxDecoration(
+//                                 color: Colors.white,
+//                                 borderRadius: BorderRadius.circular(8),
+//                                 border: Border.all(color: const Color(0xFFE5E7EB)),
+//                               ),
+//                               child: InkWell(
+//                                 onTap: () {
+//
+//                                         setState(() {
+//                                           isSwapped = !isSwapped;
+//                                           final temp = pickupController.text;
+//                                           pickupController.text = dropoffController.text;
+//                                           dropoffController.text = temp;
+//                                           submitBtnValue = true;
+//                                         });
+//
+//                                 },
+//                                 child: const Icon(
+//                                   Icons.swap_horiz,
+//                                   color: Color(0xFF1E40AF),
+//                                   size: 20,
+//                                 ),
+//                               ),
+//                             ),
+//                           ),
+//                           const SizedBox(width: 16),
+//                           Expanded(
+//                             child: Column(
+//                               crossAxisAlignment: CrossAxisAlignment.start,
+//                               children: [
+//                                 Row(
+//                                   children: const [
+//                                     Icon(Icons.location_on, size: 18, color: Color(0xFFDC2626)),
+//                                     SizedBox(width: 8),
+//                                     Text(
+//                                       "DROP OFF LOCATION",
+//                                       style: TextStyle(
+//                                         fontSize: 12,
+//                                         fontWeight: FontWeight.w700,
+//                                         color: Color(0xFF374151),
+//                                         letterSpacing: 0.5,
+//                                       ),
+//                                     ),
+//                                   ],
+//                                 ),
+//                                 const SizedBox(height: 8),
+//                                 TextField(
+//                                   controller: dropoffController,
+//                                   decoration: InputDecoration(
+//                                     hintText: "Enter drop off location",
+//                                     hintStyle: const TextStyle(color: Color(0xFFD1D5DB)),
+//                                     filled: true,
+//                                     fillColor: Colors.white,
+//                                     border: OutlineInputBorder(
+//                                       borderRadius: BorderRadius.circular(8),
+//                                       borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+//                                     ),
+//                                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+//                                   ),
+//                                 ),
+//                               ],
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                       const SizedBox(height: 16),
+//                       // Center(
+//                       //   child: ElevatedButton.icon(
+//                       //     onPressed: () {
+//                       //       setState(() {
+//                       //         isSwapped = !isSwapped;
+//                       //         final temp = pickupController.text;
+//                       //         pickupController.text = dropoffController.text;
+//                       //         dropoffController.text = temp;
+//                       //         submitBtnValue = true;
+//                       //       });
+//                       //     },
+//                       //     icon: const Icon(Icons.swap_horiz),
+//                       //     label: const Text("Swap Pickup/Drop"),
+//                       //     style: ElevatedButton.styleFrom(
+//                       //       backgroundColor: const Color(0xFF1E40AF),
+//                       //       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+//                       //     ),
+//                       //   ),
+//                       // ),
+//                     ],
+//                   ),
+//                 ),
+//
+//                 const SizedBox(height: 28),
+//
+//                 /// LATEST BOOKING SECTION
+//                 const Text(
+//                   "LATEST BOOKING",
+//                   style: TextStyle(
+//                     fontSize: 14,
+//                     fontWeight: FontWeight.w700,
+//                     color: Color(0xFF374151),
+//                     letterSpacing: 0.5,
+//                   ),
+//                 ),
+//
+//                 const SizedBox(height: 16),
+//
+//                 /// TABLE
+//                 Obx(() {
+//                   if (controller.isLoading.value) {
+//                     return const Center(child: CircularProgressIndicator());
+//                   }
+//
+//                   if (controller.bookings.isEmpty) {
+//                     return const Center(child: Text("No Bookings"));
+//                   }
+//
+//                   return SingleChildScrollView(
+//                     scrollDirection: Axis.horizontal,
+//                     child:
+//                     DataTable(
+//                       headingRowColor: MaterialStateColor.resolveWith(
+//                             (states) => const Color(0xFFEFF6FF),
+//                       ),
+//                       columns: [
+//                         const DataColumn(
+//                           label: Text(
+//                             "PICK UP",
+//                             style: TextStyle(
+//                               fontWeight: FontWeight.w600,
+//                               color: Color(0xFF374151),
+//                             ),
+//                           ),
+//                         ),
+//                         const DataColumn(
+//                           label: Text(
+//                             "DROP OFF",
+//                             style: TextStyle(
+//                               fontWeight: FontWeight.w600,
+//                               color: Color(0xFF374151),
+//                             ),
+//                           ),
+//                         ),
+//                         const DataColumn(
+//                           label: Text(
+//                             "DATE",
+//                             style: TextStyle(
+//                               fontWeight: FontWeight.w600,
+//                               color: Color(0xFF374151),
+//                             ),
+//                           ),
+//                         ),         const DataColumn(
+//                           label: Text(
+//                             "TIME",
+//                             style: TextStyle(
+//                               fontWeight: FontWeight.w600,
+//                               color: Color(0xFF374151),
+//                             ),
+//                           ),
+//                         ),
+//                         const DataColumn(
+//                           label: Text(
+//                             "FARE",
+//                             style: TextStyle(
+//                               fontWeight: FontWeight.w600,
+//                               color: Color(0xFF374151),
+//                             ),
+//                           ),
+//                         ),
+//                         const DataColumn(
+//                           label: Text(
+//                             "Action",
+//                             style: TextStyle(
+//                               fontWeight: FontWeight.w600,
+//                               color: Color(0xFF374151),
+//                             ),
+//                           ),
+//                         ),
+//                       ],
+//                       rows: List.generate(controller.bookings.length, (index) {
+//                         BookingObjectData cliBookingData =
+//                         BookingObjectData.fromJson(controller.bookings[index]);
+//
+//                         String formattedTime = cliBookingData.pickupTime ?? "";
+//                         return DataRow(
+//                           cells: [
+//                                         // DataCell(SizedBox(
+//                                         //   width: Get.width / 6,
+//                                         //   child: rightClickTextCell(
+//                                         //     item: cliBookingData,
+//                                         //     clickValue: 'pickUpClick',
+//                                         //     onRightClick: () {},
+//                                         //     child: Text(cliBookingData.pickup ?? "",
+//                                         //         overflow: TextOverflow.ellipsis),
+//                                         //   ),
+//                                         // )),
+//                             DataCell(SizedBox(
+//                               width: 150,
+//                               child: rightClickTextCell(
+//                                     item: cliBookingData,
+//                                     clickValue: 'pickUpClick',
+//
+//                                 child: Text(
+//                                   cliBookingData.pickup ?? "",
+//                                   maxLines: 2,
+//                                   overflow: TextOverflow.ellipsis,
+//                                   style: const TextStyle(color: Color(0xFF374151)),
+//                                 ),
+//                               ),
+//                             )),
+//                             DataCell(SizedBox(
+//                               width: 150,
+//                               child: Row(
+//                                 children: [
+//                                   // Agar viapoints ki list null nahi hai aur usme items hain tabhi 'via' tag show hoga
+//                                   if (cliBookingData.viapoints != null && cliBookingData.viapoints!.isNotEmpty) ...[
+//                                     const SizedBox(width: 4),
+//                                     Tooltip(
+//                                       // Tamam viapoints ko map karke join kar dega taake hover par saare stop points nazar aayein
+//                                       message: cliBookingData.viapoints!
+//                                           .map((v) => v.toString()) // Agar Viapoint class me specific field (e.g. v.address ya v.name) hai to v.toString() ki jagah wo use karein
+//                                           .join("\n"),
+//                                       decoration: BoxDecoration(
+//                                         color: DynamicColors.primaryClr,
+//                                         borderRadius: BorderRadius.circular(6),
+//                                       ),
+//                                       textStyle: const TextStyle(color: Colors.white, fontSize: 12),
+//                                       child: Container(
+//                                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+//                                         decoration: BoxDecoration(
+//                                           color: const Color(0xFFE5E7EB),
+//                                           borderRadius: BorderRadius.circular(4),
+//                                           border: Border.all(color: const Color(0xFFD1D5DB)),
+//                                         ),
+//                                         child: const Text(
+//                                           "via",
+//                                           style: TextStyle(
+//                                             fontSize: 10,
+//                                             fontWeight: FontWeight.bold,
+//                                             color: Color(0xFF374151),
+//                                           ),
+//                                         ),
+//                                       ),
+//                                     ),
+//                                   ],
+//                                   SizedBox(width: 10.0,),
+//                                   Expanded(
+//                                     child: rightClickTextCell(
+//                                                       item: cliBookingData,
+//                                                       clickValue: 'dropoffClick',
+//
+//                                       child: Text(
+//                                         cliBookingData.dropoff ?? "",
+//                                         maxLines: 2,
+//                                         overflow: TextOverflow.ellipsis,
+//                                         style: const TextStyle(color: Color(0xFF374151)),
+//                                       ),
+//                                     ),
+//                                   ),
+//
+//                                 ],
+//                               ),
+//                             )),
+//                             DataCell(Text(
+//                               cliBookingData.pickupDate != null
+//                                   ? "${cliBookingData.pickupDate!.year}-${cliBookingData.pickupDate!.month}-${cliBookingData.pickupDate!.day}"
+//                                   : "",
+//                               style: const TextStyle(color: Color(0xFF374151)),
+//                             )),
+//                             DataCell(Text(
+//                               cliBookingData.pickupTime != null
+//                                   ? formattedTime
+//                                   : "",
+//                               style: const TextStyle(color: Color(0xFF374151)),
+//                             )),
+//                             DataCell(Text(
+//                               "£${cliBookingData.fares ?? 0}",
+//                               style: const TextStyle(color: Color(0xFF374151)),
+//                             )),
+//                             DataCell(
+//                               Obx(() => Checkbox(
+//                                 value: selectedIndex.value == index,
+//                                 onChanged: (value) {
+//                                   if (selectedIndex.value == index) {
+//                                     selectedIndex.value = -1;
+//                                     selectedBooking = null;
+//                                     pickupController.clear();
+//                                     dropoffController.clear();
+//                                     actionValue = false;
+//                                   } else {
+//                                     selectedIndex.value = index;
+//                                     selectedBooking = cliBookingData;
+//                                     actionValue = true;
+//                                     pickupController.text = cliBookingData.pickup ?? "";
+//                                     dropoffController.text = cliBookingData.dropoff ?? "";
+//                                   }
+//                                   setState(() {});
+//                                 },
+//                               )),
+//                             ),
+//                           ],
+//                         );
+//                       }),
+//                     ),
+//                     // DatatableWidget(
+//                     //   columns: [
+//                     //     buildHeaderWithSearch(
+//                     //         title: "PICKUP", removeSearching: true),
+//                     //     buildHeaderWithSearch(
+//                     //         title: "DROPOFF", removeSearching: true),
+//                     //     buildHeaderWithSearch(
+//                     //         title: "DATE & TIME", removeSearching: true),
+//                     //     buildHeaderWithSearch(
+//                     //         title: "TIME", removeSearching: true), // Header updated
+//                     //     buildHeaderWithSearch(
+//                     //         title: "FARE", removeSearching: true),
+//                     //     buildHeaderWithSearch(
+//                     //         title: "ACTION", removeSearching: true),
+//                     //   ],
+//                     //   totalRow: controller.bookings.length,
+//                     //   rows: List.generate(controller.bookings.length,
+//                     //           (index) {
+//                     //         BookingObjectData cliBookingData =
+//                     //         BookingObjectData.fromJson(
+//                     //             controller.bookings[index]);
+//                     //
+//                     //         // Date aur Time ko merge karke string format banana
+//                     //         String formattedDate = cliBookingData.pickupDate != null
+//                     //             ? "${cliBookingData.pickupDate!.year}-${cliBookingData.pickupDate!.month.toString().padLeft(2, '0')}-${cliBookingData.pickupDate!.day.toString().padLeft(2, '0')}"
+//                     //             : "";
+//                     //
+//                     //         String formattedTime = cliBookingData.pickupTime ?? "";
+//                     //
+//                     //         // Date aur Time dono ko ek saath combine karna
+//                     //         String dateTimeDisplay = "$formattedDate $formattedTime".trim();
+//                     //
+//                     //         return DataRow(
+//                     //           cells: [
+//                     //             DataCell(SizedBox(
+//                     //               width: Get.width / 6,
+//                     //               child: rightClickTextCell(
+//                     //                 item: cliBookingData,
+//                     //                 clickValue: 'pickUpClick',
+//                     //                 onRightClick: () {},
+//                     //                 child: Text(cliBookingData.pickup ?? "",
+//                     //                     overflow: TextOverflow.ellipsis),
+//                     //               ),
+//                     //             )),
+//                     //             DataCell(SizedBox(
+//                     //               width: Get.width / 6,
+//                     //               child: rightClickTextCell(
+//                     //                 item: cliBookingData,
+//                     //                 clickValue: 'dropoffClick',
+//                     //                 onRightClick: () {},
+//                     //                 child: Text(
+//                     //                     cliBookingData.dropoff ?? "",
+//                     //                     overflow: TextOverflow.ellipsis),
+//                     //               ),
+//                     //             )),
+//                     //             // ✅ Date & Time cell with Time included
+//                     //             DataCell(Center(
+//                     //               child: Text(
+//                     //                 dateTimeDisplay.isNotEmpty ? dateTimeDisplay : "-",
+//                     //                 style: const TextStyle(fontWeight: FontWeight.w500),
+//                     //               ),
+//                     //             )),
+//                     //             DataCell(Center(
+//                     //               child: Text(
+//                     //                 formattedTime.isNotEmpty ? dateTimeDisplay : "-",
+//                     //                 style: const TextStyle(fontWeight: FontWeight.w500),
+//                     //               ),
+//                     //             )),
+//                     //             DataCell(
+//                     //                 Text("£${cliBookingData.fares ?? 0}")),
+//                     //             DataCell(Center(child:
+//                     //             Obx(() => Checkbox(
+//                     //               value: selectedIndex.value == index,
+//                     //               onChanged: (value) {
+//                     //                 if (selectedIndex.value ==
+//                     //                     index) {
+//                     //                   selectedIndex.value = -1;
+//                     //                   selectedBooking = null;
+//                     //                   pickupController.clear();
+//                     //                   dropoffController.clear();
+//                     //                   actionValue = false;
+//                     //                 } else {
+//                     //                   selectedIndex.value = index;
+//                     //                   selectedBooking =
+//                     //                       cliBookingData;
+//                     //                   actionValue = true;
+//                     //                   pickupController.text =
+//                     //                       cliBookingData.pickup ?? "";
+//                     //                   dropoffController.text =
+//                     //                       cliBookingData.dropoff ??
+//                     //                           "";
+//                     //                 }
+//                     //                 setState(() {});
+//                     //               },
+//                     //             )),
+//                     //             )),
+//                     //           ],
+//                     //         );
+//                     //       }),
+//                     // ),
+//                   );
+//                 }),
+//
+//                 const SizedBox(height: 28),
+//
+//                 /// DRIVER + VEHICLE DROPDOWNS
+//                 Row(
+//                   children: [
+//                     Expanded(
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: [
+//                           const Text(
+//                             "Select Driver",
+//                             style: TextStyle(
+//                               fontSize: 14,
+//                               fontWeight: FontWeight.w600,
+//                               color: Color(0xFF374151),
+//                             ),
+//                           ),
+//                           const SizedBox(height: 8),
+//                           DropdownButtonFormField<DashboardDriverObject>(
+//                             decoration: InputDecoration(
+//                               border: OutlineInputBorder(
+//                                 borderRadius: BorderRadius.circular(8),
+//                               ),
+//                               contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+//                             ),
+//                             value: homeController.selectDriverValue,
+//                             items: homeController.dashboardAllData?.drivers
+//                                 ?.map((d) => DropdownMenuItem(
+//                               value: d,
+//                               child: Text("${d.username ?? ""} ${d.name ?? ""}".toUpperCase()),
+//                             ))
+//                                 .toList(),
+//                             onChanged: (v) {
+//                               homeController.selectDriverValue = v;
+//                               selectedDriverId = v?.id;
+//                               homeController.update();
+//                             },
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                     const SizedBox(width: 16),
+//                     Expanded(
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: [
+//                           const Text(
+//                             "Select Vehicle",
+//                             style: TextStyle(
+//                               fontSize: 14,
+//                               fontWeight: FontWeight.w600,
+//                               color: Color(0xFF374151),
+//                             ),
+//                           ),
+//                           const SizedBox(height: 8),
+//                           DropdownButtonFormField<DashboardVehicleTypeObject>(
+//                             decoration: InputDecoration(
+//                               border: OutlineInputBorder(
+//                                 borderRadius: BorderRadius.circular(8),
+//                               ),
+//                               contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+//                             ),
+//                             value: homeController.selectVehicleValue,
+//                             items: homeController.dashboardAllData?.vehicleTypes
+//                                 ?.map((v) => DropdownMenuItem(
+//                               value: v,
+//                               child: Text(v.name ?? ""),
+//                             ))
+//                                 .toList(),
+//                             onChanged: (v) {
+//                               homeController.selectVehicleValue = v;
+//                               selectedVehicleId = v?.id;
+//                               homeController.update();
+//                             },
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//
+//                 const SizedBox(height: 28),
+//
+//                 /// BUTTONS
+//                 Row(
+//                   children: [
+//                     if (actionValue == true && isSwapped == false)
+//                       Expanded(
+//                         child: ElevatedButton(
+//                           style: ElevatedButton.styleFrom(
+//                             backgroundColor: const Color(0xFF1E40AF),
+//                             padding: const EdgeInsets.symmetric(vertical: 14),
+//                           ),
+//                           onPressed: () {
+//                             if (selectedBooking == null) {
+//                               Get.snackbar("Error", "Select booking first");
+//                               return;
+//                             }
+//
+//                             if (selectedVehicleId == null &&
+//                                 homeController.dashboardAllData?.vehicleTypes != null &&
+//                                 homeController.dashboardAllData!.vehicleTypes!.isNotEmpty) {
+//                               selectedVehicleId = homeController.dashboardAllData!.vehicleTypes!.first.id;
+//                             }
+//
+//                             if (selectedDriverId == null || selectedVehicleId == null) {
+//                               Get.snackbar("Error", "Select driver & vehicle");
+//                               return;
+//                             }
+//
+//                             DateTime now = DateTime.now();
+//                             String currentDate = DateFormat('yyyy-MM-dd').format(now);
+//                             String currentTime = DateFormat('HH:mm').format(now);
+//
+//                             controller.postCLIJob(
+//                               selectedBooking!.id,
+//                               currentDate,
+//                               currentTime,
+//                               selectedDriverId,
+//                               selectedVehicleId,
+//                             );
+//                           },
+//                           child: const Text(
+//                             "SUBMIT",
+//                             style: TextStyle(fontWeight: FontWeight.w700),
+//                           ),
+//                         ),
+//                       ),
+//                     if (actionValue == true && isSwapped == false)
+//                       const SizedBox(width: 12),
+//                     Expanded(
+//                       child: ElevatedButton(
+//                         style: ElevatedButton.styleFrom(
+//                           backgroundColor: const Color(0xFF1E40AF),
+//                           padding: const EdgeInsets.symmetric(vertical: 14),
+//                         ),
+//                         onPressed: () async {
+//                           if (_isLoading) return;
+//                           try {
+//                             _isLoading = true;
+//                             if (pickupController.text.isNotEmpty &&
+//                                 dropoffController.text.isNotEmpty &&
+//                                 actionValue == false) {
+//                               if (pickupController.text == dropoffController.text) {
+//                                 BotToast.showText(text: "Please write different address");
+//                                 return;
+//                               }
+//                               if (pickupPoints == null || dropoffPoints == null) {
+//                                 BotToast.showText(text: "Location data missing");
+//                                 return;
+//                               }
+//
+//                               await _controller.cliDataBinding(
+//                                 pickup: pickupController.text,
+//                                 dropoff: dropoffController.text,
+//                                 pickupLatitude: pickupPoints!.latitude.toString(),
+//                                 pickupLongitude: pickupPoints!.longitude.toString(),
+//                                 dropoffLatitude: dropoffPoints!.latitude.toString(),
+//                                 dropoffLongitude: dropoffPoints!.longitude.toString(),
+//                                 name: name,
+//                                 mobile: mobileNumber,
+//                                 email: email,
+//                                 phoneNumber: telNumber,
+//                               );
+//                               if (!mounted) return;
+//                             } else {
+//                               if (selectedBooking == null) {
+//                                 _controller.mobileController.text = temMobileNumber;
+//                                 Get.back();
+//                                 return;
+//                               }
+//                               _controller.cliJobHit = true;
+//                               await _controller.dashBoardDataBinding(
+//                                   id: selectedBooking!.id,
+//                                   jobData: selectedBooking,
+//                                   cliHit: true
+//                               );
+//                               if (!mounted) return;
+//                               Get.back();
+//                             }
+//                           } catch (e) {
+//                             BotToast.showText(text: "Something went wrong");
+//                             print(e);
+//                           } finally {
+//                             _isLoading = false;
+//                           }
+//                         },
+//                         child: const Text(
+//                           "New Booking",
+//                           style: TextStyle(fontWeight: FontWeight.w700),
+//                         ),
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ],
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+//
+//
+//
+//
+//
+// }
 
 /// --------- RIGHT SIDEBAR ----------
 class _RightSidebar extends StatelessWidget {
