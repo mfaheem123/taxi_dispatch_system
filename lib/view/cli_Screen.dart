@@ -2842,10 +2842,6 @@ class _CenterAreaState extends State<_CenterArea> {
 
 }
 
-
-
-
-
 /// --------- RIGHT SIDEBAR ----------
 class _RightSidebar extends StatelessWidget {
   @override

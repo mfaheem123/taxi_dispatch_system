@@ -727,6 +727,9 @@ class FareController extends GetxController {
   final startingFareController = TextEditingController();
   final startingMilesController = TextEditingController();
   final perMileFareController = TextEditingController();
+  final minimumMilesController = TextEditingController();
+  final maximumMilesController = TextEditingController();
+  final mileageFareController = TextEditingController();
   final titleController = TextEditingController();
 
   List<String> weekDayList = [
