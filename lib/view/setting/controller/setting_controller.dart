@@ -86,7 +86,7 @@ class SettingController extends GetxController {
 
   getTemplateByTypes({selectedTempId}) async {
     if (selectTempleteType == null) {
-      BotToast.showText(text: "Please select template type first");
+      BotToast.showText(text: "PLEASE SELECT TEMPLATE TYPE FIRST");
       return;
 
     }
@@ -130,9 +130,9 @@ class SettingController extends GetxController {
     );
     if (response.statusCode == 200) {
       getTemplateHtmlText(selectedTempId: "$templateId");
-      BotToast.showText(text: "Successfully UPDATE ");
+      BotToast.showText(text: "SUCCESSFULLY UPDATE ");
     } else {
-      BotToast.showText(text: "Error, Update failed");
+      BotToast.showText(text: "ERROR, UPDATE FAILED");
     }
     loadingtemp = false;
     update();

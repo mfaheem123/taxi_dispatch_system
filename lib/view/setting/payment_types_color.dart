@@ -1,5 +1,7 @@
+import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../component/alert_close_button.dart';
 import '../../component/color.dart';
 import '../../component/color_picker_widget.dart';
 import '../../component/customButton.dart';
@@ -43,15 +45,9 @@ class _PaymentTypeDialogState extends State<PaymentTypeDialog> {
                 color: DynamicColors.black,
               ),
             ),
-            IconButton(
-              onPressed: () {
-                Get.back();
-              },
-              icon: Icon(
-                Icons.close,
-                color: DynamicColors.black,
-                size: 24,
-              ),
+            FocusTraversalOrder(
+              order: const NumericFocusOrder(999),
+              child: const AlertCloseButton(),
             ),
           ],
         ),
@@ -73,7 +69,7 @@ class _PaymentTypeDialogState extends State<PaymentTypeDialog> {
                   : list.isEmpty
                   ? const SizedBox(
                 height: 200,
-                child: Center(child: Text("No Payment Types Available")),
+                child: Center(child: Text("NO PAYMENT TYPES AVAILABLE")),
               )
                   : SingleChildScrollView(
                 child: LayoutBuilder(builder: (context, constraints) {
@@ -88,7 +84,7 @@ class _PaymentTypeDialogState extends State<PaymentTypeDialog> {
                         children: [
                           CustomButton(
                             height: 35,
-                            btnText: "Save",
+                            btnText: AppText.save,
                             verticalPadding: 0.0,
                             width: 100,
                             borderRadius: 4,

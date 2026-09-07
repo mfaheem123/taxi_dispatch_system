@@ -82,57 +82,109 @@ class _ComapanyInformationScreenState extends State<ComapanyInformationScreen> {
                 runSpacing: 16,
                 spacing: 10,
                 children: [
-
-                  GestureDetector(
-                    onTap: () {
-                      if (controller.profileImg == null && controller.networkLogoUrl == null) {
-                        controller.pickImage();
+                  Focus(
+                    onKeyEvent: (node, event) {
+                      if (event is KeyDownEvent &&
+                          (event.logicalKey == LogicalKeyboardKey.enter ||
+                              event.logicalKey == LogicalKeyboardKey.space)) {
+                        if (controller.profileImg != null ||
+                            (controller.networkLogoUrl != null && controller.networkLogoUrl!.isNotEmpty)) {
+                          // Image maujood hai — remove karo
+                          controller.profileImg = null;
+                          controller.networkLogoUrl = null;
+                          controller.update();
+                        } else {
+                          // Image nahi — picker kholo
+                          controller.pickImage();
+                        }
+                        return KeyEventResult.handled;
                       }
+                      return KeyEventResult.ignored;
                     },
-                    child: Container(
-                      height: isMobile ? 200 : 420,
-                      width: isDesktop ? maxWidth * 0.22 : maxWidth,
-                      margin: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.grey),
-                        image: controller.profileImg != null
-                            ? DecorationImage(
-                          image: MemoryImage(controller.profileImg!.bytes),
-                          fit: BoxFit.fill,
-                        )
-                            : (controller.networkLogoUrl != null && controller.networkLogoUrl!.isNotEmpty)
-                            ? DecorationImage(
-                          image: NetworkImage(controller.networkLogoUrl!),
-                          fit: BoxFit.fill,
-                        )
-                            : null,
-                      ),
-                      child: (controller.profileImg != null || controller.networkLogoUrl != null)
-                          ? Align(
-                        alignment: Alignment.topRight,
-                        child: GestureDetector(
-                          onTap: () {
-                            controller.profileImg = null;
-                            controller.networkLogoUrl = null;
-                            controller.update();
-                          },
-                          child: Icon(
-                            Icons.close_rounded,
-                            color: DynamicColors.redClr,
-                          ),
-                        ),
-                      )
-                          : const Center(
-                        child: Text(
-                          "UPLOAD IMAGE",
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
+                    child: Builder(
+                      builder: (context) {
+                        final focused = Focus.of(context).hasFocus;
+                        return Stack(
+                          alignment: Alignment.topRight,
+                          children: [
+                            InkWell(
+                              focusColor: Colors.transparent,
+                              onTap: () {
+                                if (controller.profileImg == null &&
+                                    (controller.networkLogoUrl == null || controller.networkLogoUrl!.isEmpty)) {
+                                  controller.pickImage();
+                                }
+                              },
+                              child: Container(
+                                height: isMobile ? 200 : 420,
+                                width: isDesktop ? maxWidth * 0.22 : maxWidth,
+                                margin: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                    color: focused ? DynamicColors.primaryClr : Colors.grey,
+                                    width: focused ? 2.5 : 1,
+                                  ),
+                                  image: controller.profileImg != null
+                                      ? DecorationImage(
+                                    image: MemoryImage(controller.profileImg!.bytes),
+                                    fit: BoxFit.fill,
+                                  )
+                                      : (controller.networkLogoUrl != null && controller.networkLogoUrl!.isNotEmpty)
+                                      ? DecorationImage(
+                                    image: NetworkImage(controller.networkLogoUrl!),
+                                    fit: BoxFit.fill,
+                                  )
+                                      : null,
+                                ),
+                                child: (controller.profileImg == null &&
+                                    (controller.networkLogoUrl == null || controller.networkLogoUrl!.isEmpty))
+                                    ? Center(
+                                  child: Text(
+                                    "UPLOAD IMAGE",
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold,
+                                      color: focused
+                                          ? DynamicColors.primaryClr
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                )
+                                    : null,
+                              ),
+                            ),
+                            // X button — InkWell ke bahar
+                            if (controller.profileImg != null ||
+                                (controller.networkLogoUrl != null && controller.networkLogoUrl!.isNotEmpty))
+                              Positioned(
+                                top: 8,
+                                right: 8,
+                                child: GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: () {
+                                    controller.profileImg = null;
+                                    controller.networkLogoUrl = null;
+                                    controller.update();
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    margin: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.7),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      Icons.close_rounded,
+                                      color: DynamicColors.redClr,
+                                      size: 24,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
                     ),
                   ),
 

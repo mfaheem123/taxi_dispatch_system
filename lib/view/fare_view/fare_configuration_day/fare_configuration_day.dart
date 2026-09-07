@@ -480,9 +480,17 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                         ),
                       ),
                       SizedBox(height: 20,),
-                      if(permissions.contains('read_fare_configuration')) SizedBox(
-                        width: Get.width,
-                        child: DatatableWidget(
+                      if(permissions.contains('read_fare_configuration')) Center(
+                        child: SizedBox(
+                        width: Get.width/ 1.5,
+                          child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxHeight: 282),
+                        child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: SizedBox(
+                              width: double.infinity,
+                        child:
+                        DatatableWidget(
                           columns: [
                             buildHeaderWithSearch(
                                 title: "VEHICLE TYPE", removeSearching: true),
@@ -569,7 +577,111 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                   ))
                               .toList(),
                         ),
+                      )),
+                        ))),
+
+                      const SizedBox(height: 25),
+
+                     // FARE CONFIGURATION MILEAGE SECTION
+                      Container(
+                        width: Get.width / 1.5,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: DynamicColors.gryClr),
+                        ),
+                        child: Column(
+                          children: [
+                            // Section Header Title
+                            Container(
+                              width: Get.width,
+                              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                              color: DynamicColors.gryClr.withOpacity(0.3),
+                              child: Text(
+                                "FARE CONFIGURATION MILEAGE",
+                                style: mozillaTextSemiBoldText(context: context, fontSize: 13),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            // Fields & Save Button Row
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Expanded(
+                                    child: CustomTextField(
+                                      borderRadius: 4,
+                                      controller: controller.minimumMilesController,
+                                      hintText: "MINIMUM MILES",
+                                      columnText: true,
+                                      height: 35,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: CustomTextField(
+                                      borderRadius: 4,
+                                      controller: controller.maximumMilesController,
+                                      hintText: "MAXIMUM MILES",
+                                      columnText: true,
+                                      height: 35,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: CustomTextField(
+                                      borderRadius: 4,
+                                      controller: controller.mileageFareController,
+                                      hintText: "FARES",
+                                      columnText: true,
+                                      height: 35,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 15),
+                                  CustomButton(
+                                    height: 35,
+                                    width: 120,
+                                    onTap: () {
+
+                                    },
+                                    btnText: AppText.save,
+                                    verticalPadding: 0.0,
+                                    borderRadius: 4,
+                                    style: mozillaTextRegularText(
+                                      fontSize: 13,
+                                      color: DynamicColors.whiteClr,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
+
+                      const SizedBox(height: 15),
+
+                      Center(
+                          child: SizedBox(
+                        width: Get.width / 1.5,
+                        child: DatatableWidget(
+                          columns: [
+                            buildHeaderWithSearch(title: "FROM MILES", removeSearching: true),
+                            buildHeaderWithSearch(title: "TO MILES", removeSearching: true),
+                            buildHeaderWithSearch(title: "FARES", removeSearching: true),
+                            buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
+                          ],
+                          rows: [],
+                        ),
+                      )),
                     ],
                   ),
                 );
