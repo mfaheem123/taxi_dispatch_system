@@ -483,7 +483,8 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                       if(permissions.contains('read_fare_configuration')) Center(
                         child: SizedBox(
                         width: Get.width/ 1.5,
-                        height: 282,
+                          child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxHeight: 282),
                         child: SingleChildScrollView(
                             scrollDirection: Axis.vertical,
                             child: SizedBox(
@@ -577,7 +578,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                               .toList(),
                         ),
                       )),
-                        )),
+                        ))),
 
                       const SizedBox(height: 25),
 
