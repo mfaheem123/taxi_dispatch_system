@@ -3208,7 +3208,10 @@ class DashboardController extends GetxController {
   BookingObjectData? jobDetails;
 
   dashBoardDataBinding(
-      {BookingObjectData? jobData, id, bool hitAddBooking = false, cliHit = false}) async {
+      {BookingObjectData? jobData, id, bool hitAddBooking = false, cliHit = false,
+        String? swappedPickup,   // <--- Swapped Pickup Address
+        String? swappedDropoff,  // <--- Swapped Dropoff Address
+      }) async {
     var response = await Api().get("bookings/getbyid/$id");
     // var response = await Api().get("bookings/getbyid/$id");
     if (response.statusCode == 200) {
@@ -3236,6 +3239,14 @@ class DashboardController extends GetxController {
       polyLineMarkerInfo.clear();
       viaPoints.clear();
       polylinePoints.clear();
+      // 1. SWAPPED ADDRESS OVERRIDE
+      if (cliHit && swappedPickup != null && swappedDropoff != null) {
+        pickupController.text = swappedPickup.toUpperCase();
+        dropOffController.text = swappedDropoff.toUpperCase();
+      } else {
+        pickupController.text = jobData.booking[0].pickup.toString().toUpperCase();
+        dropOffController.text = jobData.booking[0].dropoff.toString().toUpperCase();
+      }
       pickupController.text = jobData.booking[0].pickup.toString().toUpperCase();
       dropOffController.text = jobData.booking[0].dropoff.toString().toUpperCase();
 

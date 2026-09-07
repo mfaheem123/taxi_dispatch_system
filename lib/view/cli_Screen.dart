@@ -2887,7 +2887,9 @@ class _CenterAreaState extends State<_CenterArea> {
                                 id: selectedBooking!.id,
                                 jobData: selectedBooking,
                                 cliHit: true,
-                              );
+                                swappedPickup: pickupController.text,   // <--- CLI input Text Pass
+                                swappedDropoff: dropoffController.text, // <--- CLI input Text Pass
+                              );;
 
                               if (!mounted) return;
                               Get.back();
