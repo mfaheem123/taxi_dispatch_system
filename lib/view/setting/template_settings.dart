@@ -322,18 +322,18 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                       label: "SELECT TEMPLATE TYPE",
                                       items: controller.selectTempleteType!.templateTypes!,
                                       value: controller.selectedTemplateType,
-                                      itemLabel: (val) => val.name ?? "",
+                                      itemLabel: (val) => (val.name ?? "").toUpperCase(),
                                       onChanged: (val) {
                                         controller.selectedTemplateType = val;
                                         controller.getTemplateByTypes(selectedTempId: val!.id);
                                       },
                                     ),
                                   CustomDropdownField<Template>(
-                                    text: "Select User",
-                                    label: "Select User",
+                                    text: "SELECT USER",
+                                    label: "SELECT USER",
                                     items: controller.templeteByTypeMOdel?.templates ?? [],
                                     value: controller.templeteByTypeMOdel?.templates?.contains(controller.template) == true ? controller.template : null,
-                                    itemLabel: (val) => val.name ?? "",
+                                    itemLabel: (val) => (val.name ?? "").toUpperCase(),
                                     onChanged: (val) {
                                       controller.template = val;
                                       controller.getTemplateHtmlText(
@@ -394,7 +394,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                               controller:
                               controller.templateTitleController,
                               htmlEditorOptions: const HtmlEditorOptions(
-                                hint: 'Write text here...',
+                                hint: 'WRITE TEXT HERE...',
                                 shouldEnsureVisible: true,
                               ),
                               htmlToolbarOptions: HtmlToolbarOptions(
