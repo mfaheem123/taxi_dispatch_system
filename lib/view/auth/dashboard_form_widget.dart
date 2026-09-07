@@ -33,6 +33,12 @@ import '../locations_view/controller/locations_controller.dart';
 /// Declared in pubspec.yaml against assets/font-family/MozillaText-Regular.ttf.
 const _kFontFamily = 'MozillaText-Regular';
 
+/// Hints, field labels and section titles — the chrome around the values —
+/// are set in Outfit instead, so they read as a separate layer from the data
+/// the user typed. Declared in pubspec.yaml against
+/// assets/font-family/Outfit-Regular.ttf.
+const _kChromeFontFamily = 'Outfit-Regular';
+
 /// What the user typed or picked: bold, tracked, pure black — so a filled
 /// field reads apart from an empty one at a glance.
 const _kValueTextStyle = TextStyle(
@@ -51,6 +57,7 @@ const _kValueTextStyle = TextStyle(
 /// value style would bleed into every empty field. `color` is deliberately
 /// left null so the theme's hint colour still comes through the merge.
 const _kHintTextStyle = TextStyle(
+  fontFamily: _kChromeFontFamily,
   fontSize: 12,
   fontWeight: FontWeight.w400,
   letterSpacing: 0.15,
@@ -58,6 +65,7 @@ const _kHintTextStyle = TextStyle(
 
 /// Floating field labels — pinned for the same reason as [_kHintTextStyle].
 const _kLabelTextStyle = TextStyle(
+  fontFamily: _kChromeFontFamily,
   fontSize: 11,
   fontWeight: FontWeight.w400,
   letterSpacing: 0.15,
@@ -1834,6 +1842,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     const SizedBox(width: 6),
     Text(title.toUpperCase(),
         style: const TextStyle(
+            fontFamily: _kChromeFontFamily,
             color: _purple,
             fontWeight: FontWeight.w700,
             fontSize: _fsSection)),
@@ -2159,6 +2168,7 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
                     child: Text(
                       widget.labelText,
                       style: TextStyle(
+                        fontFamily: _kChromeFontFamily,
                         fontSize: _fsField,
                         fontWeight: FontWeight.w600,
                         color: Colors.grey.shade700,

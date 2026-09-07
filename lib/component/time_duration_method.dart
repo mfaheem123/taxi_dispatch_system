@@ -79,6 +79,11 @@ Future<String> getFares({
   // hamesha 2 nahi hota — isi wajah se W/R par fare double nahi ho raha
   // tha.
   bool isWaitAndReturn = false,
+  // Skips BotToast's full-screen spinner for this fare call. Set by a caller
+  // that is already showing a loader of its own — plotting a route ends in a
+  // fare, and the overlay landing on top of a screen's own loader is the
+  // "two loaders" the edit screen used to show while a booking bound.
+  bool silent = false,
 }) async {
   print("one way mils $miles");
   print("two way mils $returnMiles");
@@ -217,7 +222,8 @@ Future<String> getFares({
 
   try {
 
-    var response = await Api().post(formData, "fares/calculate-fare",sendCompanyId: true);
+    var response = await Api().post(formData, "fares/calculate-fare",
+        sendCompanyId: true, isProgressShow: silent);
 
 
     if (response != null && response.statusCode == 200) {

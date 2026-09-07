@@ -715,8 +715,24 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
 
       if (response.statusCode == 200) {
         final decodedData = json.decode(response.body) as Map<String, dynamic>;
+        // getbyid wraps the job in a LIST — {success, booking: [ {...} ]} —
+        // even though it only ever answers with one. Assigning that list
+        // straight to [booking] threw "List<dynamic> is not a subtype of
+        // Map<String, dynamic>" on the implicit downcast, and every
+        // booking?['...'] read below would have thrown on it anyway.
+        final raw = decodedData['booking'];
+        final job = raw is List
+            ? (raw.isEmpty ? null : raw.first as Map<String, dynamic>)
+            : raw as Map<String, dynamic>?;
+        if (job == null) {
+          setState(() {
+            errorMessage = "Booking not found";
+            isLoading = false;
+          });
+          return;
+        }
         setState(() {
-          booking = decodedData['booking'];
+          booking = job;
           isLoading = false;
         });
       } else {

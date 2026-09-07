@@ -30,6 +30,7 @@ import '../models/account_darshboard_model.dart';
 import '../models/all_addresses_model.dart';
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
 import '../models/dashboard_table_model.dart' hide Employee;
+import '../models/jobs_details_model.dart';
 import '../models/tracking_drivers_model.dart';
 import '../models/users_phone_numbers_model.dart';
 import '../widgets/fare_configuration.dart';
@@ -1189,7 +1190,46 @@ class DashboardController extends GetxController {
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // BUSINESS RULE IMPLEMENTATION: DETACHED OUTBOUND & RETURN SEGMENT ROUTES WITH SEQUENTIAL VIAS
 /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  Future<void> fetchRouteFromOSRM() async {
+  /// True while a screen is holding up its OWN loader and the route fetch is
+  /// part of what that loader is waiting for.
+  ///
+  /// The fare call at the end of [_fetchRouteFromOSRM] goes through
+  /// `Api().post`, which raises BotToast's full-screen spinner. Binding a
+  /// booking therefore put a SECOND loader over the screen that was already
+  /// showing one for the load itself — two spinners, one after the other, for
+  /// what is a single wait. The edit screen sets this for the length of its
+  /// bootstrap; a fare recalculated later off a field the operator edited
+  /// still shows the overlay, because there nothing else reports the wait.
+  bool suppressFareLoader = false;
+
+  /// The OSRM leg currently in flight, or null when none is.
+  ///
+  /// [dashBoardDataBinding] fires the route fetch WITHOUT awaiting it — the
+  /// text fields must not sit behind a round trip to a third-party router —
+  /// so a screen that gates its loader on the binding alone reveals the form
+  /// over a routeless map and then flashes again when the route lands.
+  Future<void>? _routeFetch;
+
+  /// Completes when no route fetch is outstanding. Never null, so a caller can
+  /// await it unconditionally.
+  Future<void> get pendingRouteFetch => _routeFetch ?? Future<void>.value();
+
+  /// Plots the journey, tracking the leg in [_routeFetch] so a screen that
+  /// wants one continuous loader can await it. Every existing call site is
+  /// unchanged: the fetch itself moved to [_fetchRouteFromOSRM].
+  Future<void> fetchRouteFromOSRM() {
+    final fetch = _fetchRouteFromOSRM();
+    _routeFetch = fetch;
+    // Cleared only if this is still the latest leg — an address picked while
+    // one is in flight starts another, and the older one finishing must not
+    // blank the newer one's future.
+    fetch.whenComplete(() {
+      if (identical(_routeFetch, fetch)) _routeFetch = null;
+    });
+    return fetch;
+  }
+
+  Future<void> _fetchRouteFromOSRM() async {
     markers.clear();
     polylines.clear();
     polylinePointsCoordinate.clear();
@@ -1544,6 +1584,8 @@ class DashboardController extends GetxController {
     // }
 
     final storedTemFare = await getFares(
+      // Silent while a screen is showing its own loader for this same wait.
+      silent: suppressFareLoader,
       journeyTypeId: selectJourneyTypeValue!.id,
       multiReservationList: multiReservationList,
       pickup: pickupController.text,
@@ -3172,58 +3214,53 @@ class DashboardController extends GetxController {
     if (response.statusCode == 200) {
 
 
-      // // ==========================================
-      // // 💥 FIX HERE: List aur Map dono ko handle karein
-      // // ==========================================
-      // dynamic bookingRawData = response.data['booking'];
-      //
-      // // Agar backend se array/list aa rahi ho toh pehla item [0] pick kar lein
-      // if (bookingRawData is List) {
-      //   if (bookingRawData.isEmpty) {
-      //     BotToast.showText(text: "Booking data not found");
-      //     return;
-      //   }
-      //   bookingRawData = bookingRawData.first;
-      // }
-      //
-      // // Ab safai se BookingObjectData ban jayega bina kisi error ke
-      // BookingObjectData jobData = BookingObjectData.fromJson(bookingRawData);
-      // jobDetails = jobData;
-
-
       DateTime now = DateTime.now();
       String currentDateStr = DateFormat('yyyy-MM-dd').format(now);
       String currentTimeStr = DateFormat('HH:mm').format(now);
-      BookingObjectData jobData = BookingObjectData.fromJson(response.data['booking']);
-      jobDetails = jobData;
+      // The WHOLE envelope, not response.data['booking'].
+      //
+      // getbyid answers {success, booking: [ {...} ]} — one job, but wrapped
+      // in a list — and JobsDetailsJobs is the model for that envelope: its
+      // fromJson reads json["success"] and json["booking"]. Handing it the
+      // list asked for json["booking"] on a List and threw "List<dynamic> is
+      // not a subtype of Map<String, dynamic>".
+      JobsDetailsJobs jobData = JobsDetailsJobs.fromJson(response.data);
+      // A 200 with an empty list is a booking that no longer exists (deleted,
+      // or an id from a stale tab). Every read below is booking[0], so say so
+      // and leave the form alone rather than throwing a RangeError.
+      if (jobData.booking.isEmpty) {
+        BotToast.showText(text: "BOOKING NOT FOUND");
+        return;
+      }
+      jobDetails = jobData.booking[0];
       polyLineMarkerInfo.clear();
       viaPoints.clear();
       polylinePoints.clear();
-      pickupController.text = jobData.pickup.toString().toUpperCase();
-      dropOffController.text = jobData.dropoff.toString().toUpperCase();
+      pickupController.text = jobData.booking[0].pickup.toString().toUpperCase();
+      dropOffController.text = jobData.booking[0].dropoff.toString().toUpperCase();
 
       polylinePoints.add(
-        LatLng(double.parse(jobData.pickupLatitude!),
-            double.parse(jobData.pickupLongitude!)),
+        LatLng(double.parse(jobData.booking[0].pickupLatitude!),
+            double.parse(jobData.booking[0].pickupLongitude!)),
       );
       polylinePoints.add(
-        LatLng(double.parse(jobData.dropoffLatitude!),
-            double.parse(jobData.dropoffLongitude!)),
+        LatLng(double.parse(jobData.booking[0].dropoffLatitude!),
+            double.parse(jobData.booking[0].dropoffLongitude!)),
       );
       polyLineMarkerInfo.add(ViaPoint(
-        lat: double.parse(jobData.pickupLatitude!),
-        lng: double.parse(jobData.pickupLongitude!),
+        lat: double.parse(jobData.booking[0].pickupLatitude!),
+        lng: double.parse(jobData.booking[0].pickupLongitude!),
         markerType: "PICKUP LOCATION",
         address: '',
       ));
       polyLineMarkerInfo.add(ViaPoint(
-        lat: double.parse(jobData.dropoffLatitude!),
-        lng: double.parse(jobData.dropoffLongitude!),
+        lat: double.parse(jobData.booking[0].dropoffLatitude!),
+        lng: double.parse(jobData.booking[0].dropoffLongitude!),
         markerType: "DROP LOCATION",
         address: '',
       ));
 
-      for (var item in jobData.viapoints!) {
+      for (var item in jobData.booking[0].viapoints!) {
         final p = LatLng(double.parse(item.latitude.toString()),
             double.parse(item.longitude.toString()));
         polylinePoints.add(LatLng(p.latitude, p.longitude));
@@ -3238,33 +3275,24 @@ class DashboardController extends GetxController {
         viaTextEditingController.add(ViaTextEditingControllerClass(
             TextEditingController(text: item.name ?? ""),
             TextEditingController(text: item.mobile ?? "")));
+      }
 
-        // markers.add(
-        //   CustomMarker(
-        //     withReturnType: "via",
-        //     child: Icon(Icons.location_pin,
-        //         color: DynamicColors.primaryClr,
-        //         size: 30),
-        //     type: "via",
-        //     point: p,
-        //     width: 30,
-        //     height: 30,
-        //   ),
-        // );
+      if(jobData.booking.length > 1){
+        withReturnDataBinding(jobData.booking[1]);
       }
 
       fetchRouteFromOSRM();
 
-      nameController.text = jobData.name!.toUpperCase();
-      emailController.text = jobData.email!;
-      mobileController.text = jobData.mobile!;
-      if (jobData.telephone != null) {
-        telController.text = jobData.telephone!;
+      nameController.text = jobData.booking[0].name!.toUpperCase();
+      emailController.text = jobData.booking[0].email!;
+      mobileController.text = jobData.booking[0].mobile!;
+      if (jobData.booking[0].telephone != null) {
+        telController.text = jobData.booking[0].telephone!;
       }
       if(cliHit == true){
         pickUpTimeController.text = DateFormat('HH:mm').format(DateTime.now());
       }else{
-        pickUpTimeController.text = jobData.pickupTime!;
+        pickUpTimeController.text = jobData.booking[0].pickupTime!;
       }
 
       // A time carried over from an existing job is a real choice — don't let
@@ -3272,64 +3300,64 @@ class DashboardController extends GetxController {
       pickUpTimePicked = true;
       // Same for the date: the job's own pickup date, so the Date field shows
       // the booking date instead of today's.
-      if (jobData.pickupDate != null) {
+      if (jobData.booking[0].pickupDate != null) {
         if(cliHit == true){
           pickUpDate = DateTime.now();
           pickUpDatePicked = true;
         }else{
-          pickUpDate = jobData.pickupDate;
+          pickUpDate = jobData.booking[0].pickupDate;
           pickUpDatePicked = true;
         }
 
       }
-      minController.text = jobData.leadTime ?? "";
+      minController.text = jobData.booking[0].leadTime ?? "";
 
-      if (jobData.passengers != null) {
-        passController.text = jobData.passengers.toString();
+      if (jobData.booking[0].passengers != null) {
+        passController.text = jobData.booking[0].passengers.toString();
       }
-      if (jobData.luggages != null) {
-        luggController.text = jobData.luggages.toString();
+      if (jobData.booking[0].luggages != null) {
+        luggController.text = jobData.booking[0].luggages.toString();
       }
-      if (jobData.handLuggages != null) {
-        sluggController.text = jobData.handLuggages.toString();
+      if (jobData.booking[0].handLuggages != null) {
+        sluggController.text = jobData.booking[0].handLuggages.toString();
       }
-      if (jobData.parkingCharges != null) {
-        parkingChargesController.text = jobData.parkingCharges.toString();
+      if (jobData.booking[0].parkingCharges != null) {
+        parkingChargesController.text = jobData.booking[0].parkingCharges.toString();
       }
-      if (jobData.congestionCharges != null) {
-        congestionChargesController.text = jobData.congestionCharges.toString();
+      if (jobData.booking[0].congestionCharges != null) {
+        congestionChargesController.text = jobData.booking[0].congestionCharges.toString();
       }
-      if (jobData.meetAndGreet != null) {
-        meetGreetController.text = jobData.meetAndGreet.toString();
+      if (jobData.booking[0].meetAndGreet != null) {
+        meetGreetController.text = jobData.booking[0].meetAndGreet.toString();
       }
-      if (jobData.waitingCharges != null) {
-        waitingChargesController.text = jobData.waitingCharges.toString();
+      if (jobData.booking[0].waitingCharges != null) {
+        waitingChargesController.text = jobData.booking[0].waitingCharges.toString();
       }
-      if (jobData.extraDropCharges != null) {
-        extraDropChargesController.text = jobData.extraDropCharges.toString();
+      if (jobData.booking[0].extraDropCharges != null) {
+        extraDropChargesController.text = jobData.booking[0].extraDropCharges.toString();
       }
-      if (jobData.creditCardCharges != null) {
-        creditCardChargesController.text = jobData.creditCardCharges.toString();
+      if (jobData.booking[0].creditCardCharges != null) {
+        creditCardChargesController.text = jobData.booking[0].creditCardCharges.toString();
       }
-      if (jobData.companyPrice != null) {
-        companyPriceController.text = jobData.companyPrice.toString();
+      if (jobData.booking[0].companyPrice != null) {
+        companyPriceController.text = jobData.booking[0].companyPrice.toString();
       }
-      if (jobData.specialInstructions != null) {
+      if (jobData.booking[0].specialInstructions != null) {
         specialRequirementsController.text =
-            jobData.specialInstructions.toString();
+            jobData.booking[0].specialInstructions.toString();
       }
-      slugController.text = jobData.fares.toString();
+      slugController.text = jobData.booking[0].fares.toString();
 
-      if (jobData.pickupDoorNumber != null) {
-        pickUpNoteController.text = jobData.pickupDoorNumber.toString();
+      if (jobData.booking[0].pickupDoorNumber != null) {
+        pickUpNoteController.text = jobData.booking[0].pickupDoorNumber.toString();
       }
-      if (jobData.dropoffDoorNumber != null) {
-        dropUpNoteController.text = jobData.dropoffDoorNumber.toString();
+      if (jobData.booking[0].dropoffDoorNumber != null) {
+        dropUpNoteController.text = jobData.booking[0].dropoffDoorNumber.toString();
       }
-      slugController.text = jobData.fares.toString();
+      slugController.text = jobData.booking[0].fares.toString();
 
-      if (jobData.childSeat!.isNotEmpty) {
-        for (var action in jobData.childSeat!) {
+      if (jobData.booking[0].childSeat!.isNotEmpty) {
+        for (var action in jobData.booking[0].childSeat!) {
           childSeatAlert.add(ChildSeatClass(
             sets: action.child,
             age: action.age,
@@ -3337,18 +3365,18 @@ class DashboardController extends GetxController {
         }
       }
 
-      if (jobData.restrictedDrivers?.isNotEmpty ?? false) {
+      if (jobData.booking[0].restrictedDrivers?.isNotEmpty ?? false) {
         final restrictedIds =
-            jobData.restrictedDrivers!.map((e) => e.id.toString()).toSet();
+            jobData.booking[0].restrictedDrivers!.map((e) => e.id.toString()).toSet();
         driversList.addAll(allDriverData!.drivers!
             .where((driver) => restrictedIds.contains(driver.id.toString())));
       }
 
 // 1. Using firstWhereOrNull (Cleanest & Safest)
-      if (jobData.subsidiaryId != null) {
+      if (jobData.booking[0].subsidiaryId != null) {
         selectSubsidiariesValue =
             dashboardAllData?.subsidiaries?.firstWhereOrNull(
-          (subsidiary) => subsidiary.id == jobData.subsidiaryId,
+          (subsidiary) => subsidiary.id == jobData.booking[0].subsidiaryId,
         );
       }
 
@@ -3357,36 +3385,36 @@ class DashboardController extends GetxController {
 
 // Professional approach using the 'collection' package
       selectAccountValue = dashboardAccountData?.accounts?.firstWhereOrNull(
-        (account) => account.id == jobData.accountId,
+        (account) => account.id == jobData.booking[0].accountId,
       );
 
       selectDepartmentData = dashboardAccountData?.accounts
           ?.expand((account) => account.departments ?? [])
           .firstWhere(
-            (dept) => dept.id.toString() == jobData.department.toString(),
+            (dept) => dept.id.toString() == jobData.booking[0].department.toString(),
             orElse: () => null, // This mimics the 'OrNull' behavior
           );
 
 // 1. Using firstWhereOrNull (Cleanest & Safest)
-      if (jobData.paymentTypeId != null) {
+      if (jobData.booking[0].paymentTypeId != null) {
         selectPaymentTypeValue =
             dashboardAllData?.paymentTypes?.firstWhereOrNull(
-          (payment) => payment.id == jobData.paymentTypeId,
+          (payment) => payment.id == jobData.booking[0].paymentTypeId,
         );
       }
 
       // 1. Using firstWhereOrNull (Cleanest & Safest)
-      if (jobData.journeyTypeId != null) {
+      if (jobData.booking[0].journeyTypeId != null) {
         selectJourneyTypeValue =
             dashboardAllData?.journeyTypes?.firstWhereOrNull(
-          (journey) => journey.id == jobData.journeyTypeId,
+          (journey) => journey.id == jobData.booking[0].journeyTypeId,
         );
       }
 
       // 1. Using firstWhereOrNull (Cleanest & Safest)
-      if (jobData.vehicleTypeId != null) {
+      if (jobData.booking[0].vehicleTypeId != null) {
         selectVehicleValue = dashboardAllData?.vehicleTypes?.firstWhereOrNull(
-          (vehicle) => vehicle.id == jobData.vehicleTypeId,
+          (vehicle) => vehicle.id == jobData.booking[0].vehicleTypeId,
         );
       }
 
@@ -3400,19 +3428,19 @@ class DashboardController extends GetxController {
       if (zones != null) {
         _controller.updateLocationValue.value == true;
         // Find pickup zone
-        if (jobData.pickupPlot != null) {
+        if (jobData.booking[0].pickupPlot != null) {
           dashboardZoneValue =
-              zones.firstWhereOrNull((z) => z.id == jobData.pickupPlot);
+              zones.firstWhereOrNull((z) => z.id == jobData.booking[0].pickupPlot);
           _controller.zoneValue =
-              zones.firstWhereOrNull((z) => z.id == jobData.pickupPlot);
+              zones.firstWhereOrNull((z) => z.id == jobData.booking[0].pickupPlot);
         }
 
         // Find dropoff zone
-        if (jobData.dropoffPlot != null) {
+        if (jobData.booking[0].dropoffPlot != null) {
           dashboardDZoneValue =
-              zones.firstWhereOrNull((z) => z.id == jobData.dropoffPlot);
+              zones.firstWhereOrNull((z) => z.id == jobData.booking[0].dropoffPlot);
           _controller.zoneDValue =
-              zones.firstWhereOrNull((z) => z.id == jobData.dropoffPlot);
+              zones.firstWhereOrNull((z) => z.id == jobData.booking[0].dropoffPlot);
         }
 
         _controller.updateLocationValue.value == false;
@@ -3423,6 +3451,82 @@ class DashboardController extends GetxController {
           update();
       }
     }
+  }
+
+
+  withReturnDataBinding(BookingObjectData bookingData){
+    pickupController.text = bookingData.pickup.toString().toUpperCase();
+    dropOffController.text = bookingData.dropoff.toString().toUpperCase();
+
+    polylinePoints.add(
+      LatLng(double.parse(bookingData.pickupLatitude!),
+          double.parse(bookingData.pickupLongitude!)),
+    );
+    polylinePoints.add(
+      LatLng(double.parse(bookingData.dropoffLatitude!),
+          double.parse(bookingData.dropoffLongitude!)),
+    );
+    polyLineMarkerInfo.add(ViaPoint(
+      lat: double.parse(bookingData.pickupLatitude!),
+      lng: double.parse(bookingData.pickupLongitude!),
+      markerType: "PICKUP TWO WAY LOCATION",
+      address: '',
+    ));
+    polyLineMarkerInfo.add(ViaPoint(
+      lat: double.parse(bookingData.dropoffLatitude!),
+      lng: double.parse(bookingData.dropoffLongitude!),
+      markerType: "DROP TWO WAY LOCATION",
+      address: '',
+    ));
+
+
+    for (var action in bookingData.viapoints!) {
+
+      final p = LatLng(double.parse(action.latitude.toString()),
+          double.parse(action.longitude.toString()));
+      polylinePoints.add(LatLng(p.latitude, p.longitude));
+
+      viaPoints.add(ViaPoint(
+        withReturnWay: 'via with return',
+        // name: currentTypeName,
+        address: action.viapoint!,
+        lat: action.latitude!,
+        lng: action.longitude!,
+      ));
+      viaTextEditingController.add(ViaTextEditingControllerClass(
+          TextEditingController(text: action.name ?? ""),
+          TextEditingController(text: action.mobile ?? "")));
+    }
+
+    returnFareValue = bookingData.fares.toString();
+
+    if (bookingData.pickupDate != null) {
+      pickUpDateReturn = bookingData.pickupDate;
+      pickUpDatePicked = true;
+    }
+    if (bookingData.pickupTime != null) {
+      pickUpTimeControllerReturn.text = bookingData.pickupTime!;
+    }
+    controllerAlert.clear();
+    bookingData.notes?.forEach((action){
+      controllerAlert.add(NoteClass(
+          note: action.note,
+          title: 'controller return note'
+      ));
+    });
+    // 1. Using firstWhereOrNull (Cleanest & Safest)
+    if (bookingData.driverId != null) {
+      selectDriverValueReturn = dashboardAllData?.drivers?.firstWhereOrNull(
+            (vehicle) => vehicle.id == bookingData.driverId,
+      );
+    }
+
+    if (bookingData.vehicleTypeId != null) {
+      selectVehicleValueReturn = dashboardAllData?.vehicleTypes?.firstWhereOrNull(
+            (vehicle) => vehicle.id == bookingData.vehicleTypeId,
+      );
+    }
+
   }
 
   bool cliJobHit = false;

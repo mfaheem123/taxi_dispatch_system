@@ -38,6 +38,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:timepickerfield/timepickerfield.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../alert/child_seats_alert.dart';
+import '../../component/networks/loader.dart';
 import '../../alert/extra_fares_alert.dart';
 import '../../alert/extra_info_alert.dart';
 import '../../alert/search_booking.dart';
@@ -63,6 +64,12 @@ import '../locations_view/controller/locations_controller.dart';
 /// Declared in pubspec.yaml against assets/font-family/MozillaText-Regular.ttf.
 const _kFontFamily = 'MozillaText-Regular';
 
+/// Hints, field labels and section titles — the chrome around the values —
+/// are set in Outfit instead, so they read as a separate layer from the data
+/// the user typed. Declared in pubspec.yaml against
+/// assets/font-family/Outfit-Regular.ttf.
+const _kChromeFontFamily = 'Outfit-Regular';
+
 /// What the user typed or picked: bold, tracked, pure black — so a filled
 /// field reads apart from an empty one at a glance.
 const _kValueTextStyle = TextStyle(
@@ -81,6 +88,7 @@ const _kValueTextStyle = TextStyle(
 /// value style would bleed into every empty field. `color` is deliberately
 /// left null so the theme's hint colour still comes through the merge.
 const _kHintTextStyle = TextStyle(
+  fontFamily: _kChromeFontFamily,
   fontSize: 12,
   fontWeight: FontWeight.w400,
   letterSpacing: 0.15,
@@ -88,6 +96,7 @@ const _kHintTextStyle = TextStyle(
 
 /// Floating field labels — pinned for the same reason as [_kHintTextStyle].
 const _kLabelTextStyle = TextStyle(
+  fontFamily: _kChromeFontFamily,
   fontSize: 11,
   fontWeight: FontWeight.w400,
   letterSpacing: 0.15,
@@ -221,6 +230,14 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     color: Colors.black,
   );
   // ────────── state
+  /// True until [_bootstrap] finishes, whatever way it finishes.
+  ///
+  /// The reference data can be seeded off the dashboard in the same turn the
+  /// screen mounts, so gating on `dashboardAllData` alone lets the form paint
+  /// EMPTY while the booking itself is still in flight — every field blank for
+  /// a round trip, then filling in under the user. This keeps the loader up
+  /// until the booking is actually bound.
+  bool _bootstrapping = true;
   String? driver;
   ZoneObject? dashboardZoneValue, dropZone;
   // String? account = 'DEMO';
@@ -371,6 +388,36 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   /// borrows them. The fetch is the cold path — a browser reload straight onto
   /// /EditJobs, with no dashboard behind it.
   Future<void> _bootstrap() async {
+    // One loader for the whole wait. Two used to show: this screen's own, for
+    // the booking fetch, and then BotToast's full-screen overlay, raised by
+    // the fare POST that ends the route fetch dashBoardDataBinding kicks off
+    // without awaiting. Suppressing the overlay and awaiting the route leg
+    // below collapses both into the single spinner [_loadingBody] draws.
+    controller.suppressFareLoader = true;
+    try {
+      await _load();
+      // The route leg, which dashBoardDataBinding deliberately does not
+      // await. Without this the form appeared over a map with no polyline on
+      // it, and the fare fields filled in a beat later under the operator.
+      // catchError, not a bare await: an OSRM timeout or a fare that throws
+      // must not strand the loader — the form is usable without the line on
+      // the map.
+      if (mounted) await controller.pendingRouteFetch.catchError((Object _) {});
+    } finally {
+      // finally, not a line after the await: _load() returns early when there
+      // is a booking to bind, and a non-200 or a throw inside the fetch must
+      // still take the loader down — a spinner that never clears is worse than
+      // a form that came up half-filled.
+      //
+      // The overlay goes back on here: from this point a fare is recalculated
+      // because the operator edited a charge or an address, and there is no
+      // other loader on screen to report it.
+      controller.suppressFareLoader = false;
+      if (mounted) setState(() => _bootstrapping = false);
+    }
+  }
+
+  Future<void> _load() async {
     final dashboard = Get.isRegistered<DashboardController>()
         ? Get.find<DashboardController>()
         : null;
@@ -386,10 +433,10 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
         await dashboard.dashboardData();
       }
       controller.seedReferenceDataFrom(dashboard);
-      // Paint the form NOW. The builder below gates on dashboardAllData, so a
-      // fresh instance shows a spinner until this lands — and waiting for the
-      // booking fetch instead would leave that spinner up for a round trip,
-      // or for good if the fetch comes back non-200.
+      // Pushes the seeded reference data into the tagged instance. It does not
+      // reveal the form on its own any more — the builder also gates on
+      // [_bootstrapping], so the loader stays up until the booking below is
+      // bound and the fields have something in them.
       if (mounted) controller.update();
     } else if (controller.dashboardAllData == null) {
       // No dashboard registered at all. Shouldn't happen — main.dart puts one
@@ -507,8 +554,8 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
             // there is no earlier screen that already loaded it. The dashboard
             // gates the identical form the same way in
             // defult_dashboard_view.dart, which is why that copy can assert.
-            if (controller.dashboardAllData == null) {
-              return const Center(child: CircularProgressIndicator());
+            if (_bootstrapping || controller.dashboardAllData == null) {
+              return _loadingBody();
             }
             return  SafeArea(
               // Top-aligned rather than Center so a short form stays put at
@@ -1107,6 +1154,20 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   /// Opened as a menu-bar tab: the strip hands the page an unbounded height and
   /// scrolls it itself, so neither of the above applies and both parts are laid
   /// out at their natural size.
+  /// What the screen shows until [_bootstrap] has the reference data and the
+  /// booking.
+  ///
+  /// Sized rather than a bare [Center] because this route can be hosted with
+  /// an unbounded height — the menu-bar tab strip renders it inside a
+  /// SingleChildScrollView (main_appbar.dart), where a Center shrink-wraps to
+  /// the spinner and parks it against the top edge. A fixed box gives the
+  /// loader somewhere to sit either way, and keeps the page from collapsing to
+  /// 50px and then jumping to full height when the form arrives.
+  Widget _loadingBody() => SizedBox(
+        height: 360,
+        child: Center(child: LoaderClass()),
+      );
+
   Widget _pageBody({
     required bool canScroll,
     required bool isMobile,
@@ -2220,6 +2281,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     const SizedBox(width: 6),
     Text(title.toUpperCase(),
         style: const TextStyle(
+            fontFamily: _kChromeFontFamily,
             color: _purple,
             fontWeight: FontWeight.w700,
             fontSize: _fsSection)),
@@ -2624,6 +2686,7 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
                     child: Text(
                       widget.labelText,
                       style: TextStyle(
+                        fontFamily: _kChromeFontFamily,
                         fontSize: _fsField,
                         fontWeight: FontWeight.w600,
                         color: Colors.grey.shade700,

@@ -95,7 +95,8 @@ class AppPages {
       // to the booking that was open instead of dropping to the login screen —
       // a `Get.to(EditJobsWidget(...))` page has no name to come back to.
       page: () => EditJobsWidget(
-        booking: EditJobDetails(id: int.tryParse(Get.parameters['id'] ?? '')),
+        booking: EditJobDetails(id: 1656/*int.tryParse(Get.parameters['id'] ?? '')*/),
+        // booking: EditJobDetails(id: int.tryParse(Get.parameters['id'] ?? '')),
       ),
       binding: DashBoardBindings(),
     ),
