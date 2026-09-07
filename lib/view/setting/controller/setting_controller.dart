@@ -41,6 +41,7 @@ class SettingController extends GetxController {
 
   /// text field controllers
   final templateTitleController = HtmlEditorController();
+  final subjectController = TextEditingController();
   final emailController = TextEditingController();
 
   void insertTagValue({value, bool temFormate = false}) async {
@@ -100,6 +101,14 @@ class SettingController extends GetxController {
     }
   }
 
+  bool get showSubjectField {
+    if (selectedTemplateType == null) return false;
+
+    String typeName = (selectedTemplateType?.name ?? "").toUpperCase();
+    return typeName.contains("EMAIL") ||
+        typeName.contains("INVOICE") ;
+  }
+
   HtmlTempleteModel? templeteHtmlModel;
   bool loadHtml = false;
   getTemplateHtmlText({selectedTempId}) async {
@@ -110,6 +119,8 @@ class SettingController extends GetxController {
     if (response.statusCode == 200) {
       templeteHtmlModel = HtmlTempleteModel.fromJson(response.data);
       templateTitleController.setText(templeteHtmlModel?.templates?.content ?? "");
+
+      subjectController.text = (templeteHtmlModel?.templates?.subject ?? template?.name ?? "").toUpperCase();
       loadHtml = false;
       update();
     }

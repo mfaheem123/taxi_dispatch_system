@@ -230,24 +230,26 @@ class _TemplateSettingsState extends State<TemplateSettings> {
     DropdownModel(id: 24, name: "LUGGAGES"),
     DropdownModel(id: 25, name: "HAND LUGGAGES"),
     DropdownModel(id: 26, name: "NOTES"),
-    DropdownModel(id: 4, name: "PAYMENT TYPE"),
-    DropdownModel(id: 4, name: "FARES"),
-    DropdownModel(id: 4, name: "COMPANY CHARGES"),
-    DropdownModel(id: 4, name: "PARKING CHARGES"),
-    DropdownModel(id: 4, name: "CONGESTION CHARGES"),
-    DropdownModel(id: 4, name: "MEET & GREET CHARGES"),
-    DropdownModel(id: 4, name: "WAITING CHARGES"),
-    DropdownModel(id: 4, name: "EXTRA DROPOFF CHARGES"),
-    DropdownModel(id: 4, name: "CREDIT CARD CHARGES"),
-    DropdownModel(id: 4, name: "T/FARES"),
-    DropdownModel(id: 4, name: "RETURN FARES"),
-    DropdownModel(id: 4, name: "MILES"),
-    DropdownModel(id: 4, name: "COMPANY NAME"),
-    DropdownModel(id: 4, name: "COMPANY TELEPHONE NUMBER"),
-    DropdownModel(id: 4, name: "COMPANY EMAIL"),
-    DropdownModel(id: 4, name: "COMPANY ADDRESS"),
-    DropdownModel(id: 4, name: "FLIGHT NUMBER"),
-    DropdownModel(id: 4, name: "ARRIVING FROM"),
+
+    // DropdownModel(id: 4, name: "PAYMENT TYPE"),
+    DropdownModel(id: 27, name: "PAYMENT TYPE"),
+    DropdownModel(id: 28, name: "FARES"),
+    DropdownModel(id: 29, name: "COMPANY CHARGES"),
+    DropdownModel(id: 30, name: "PARKING CHARGES"),
+    DropdownModel(id: 31, name: "CONGESTION CHARGES"),
+    DropdownModel(id: 32, name: "MEET & GREET CHARGES"),
+    DropdownModel(id: 33, name: "WAITING CHARGES"),
+    DropdownModel(id: 34, name: "EXTRA DROPOFF CHARGES"),
+    DropdownModel(id: 35, name: "CREDIT CARD CHARGES"),
+    DropdownModel(id: 36, name: "T/FARES"),
+    DropdownModel(id: 37, name: "RETURN FARES"),
+    DropdownModel(id: 38, name: "MILES"),
+    DropdownModel(id: 39, name: "COMPANY NAME"),
+    DropdownModel(id: 40, name: "COMPANY TELEPHONE NUMBER"),
+    DropdownModel(id: 41, name: "COMPANY EMAIL"),
+    DropdownModel(id: 42, name: "COMPANY ADDRESS"),
+    DropdownModel(id: 43, name: "FLIGHT NUMBER"),
+    DropdownModel(id: 44, name: "ARRIVING FROM"),
   ];
 
   @override
@@ -295,16 +297,14 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                             width: double.infinity,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(4),
-                                border: Border.all(
-                                    color: DynamicColors.textClr)),
+                                border: Border.all(color: DynamicColors.textClr)),
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 6.0),
+                              padding: const EdgeInsets.symmetric( horizontal: 10.0, vertical: 6.0),
                               child: Wrap(
                                 spacing: 10,
-                                runSpacing: 16,
+                                runSpacing: 10,
                                 crossAxisAlignment:
-                                WrapCrossAlignment.center,
+                                WrapCrossAlignment.end,
                                 children: [
                                   Container(
                                     width: double.infinity,
@@ -315,10 +315,9 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                     child: Text(AppText.templateSelection,
                                         style: titleDesign()),
                                   ),
-                                  if (permissions
-                                      .contains('read_template_type'))
+                                  // if (permissions
+                                  //     .contains('read_template_type'))
                                     CustomDropdownField<TemplateType>(
-                                      text: "SELECT TEMPLATE TYPE",
                                       label: "SELECT TEMPLATE TYPE",
                                       items: controller.selectTempleteType!.templateTypes!,
                                       value: controller.selectedTemplateType,
@@ -329,7 +328,6 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                       },
                                     ),
                                   CustomDropdownField<Template>(
-                                    text: "SELECT USER",
                                     label: "SELECT USER",
                                     items: controller.templeteByTypeMOdel?.templates ?? [],
                                     value: controller.templeteByTypeMOdel?.templates?.contains(controller.template) == true ? controller.template : null,
@@ -340,18 +338,31 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                           selectedTempId: val!.id);
                                     },
                                   ),
-                                  Padding(
-                                    padding:
-                                    const EdgeInsets.only(top: 20),
-                                    child: CustomTextField(
-                                      borderRadius: 4,
-                                      controller:
-                                      controller.emailController,
-                                      width: fieldWidth / 1.5,
-                                      hintText: AppText.email,
-                                      height: 30,
+                                  if (controller.showSubjectField) ...[
+                                    Padding(padding: const EdgeInsets.only(top: 15),
+                                      child: CustomTextField(
+                                        borderRadius: 4,
+                                        controller: controller.subjectController,
+                                        width: fieldWidth / 1.5,
+                                        hintText: "SUBJECT",
+                                        height: 30,
+                                        columnText: true,
+                                        readOnly: controller.template == null,
+                                      ),
                                     ),
-                                  ),
+                                  ],
+                                  // Padding(
+                                  //   padding:
+                                  //   const EdgeInsets.only(top: 20),
+                                  //   child: CustomTextField(
+                                  //     borderRadius: 4,
+                                  //     controller:
+                                  //     controller.emailController,
+                                  //     width: fieldWidth / 1.5,
+                                  //     hintText: AppText.email,
+                                  //     height: 30,
+                                  //   ),
+                                  // ),
                                   if (permissions
                                       .contains('update_template'))
                                     Padding(
@@ -365,7 +376,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                                   .id!);
                                         },
                                         verticalPadding: 0.0,
-                                        width: fieldWidth / 2.5,
+                                        width: controller.showSubjectField ? fieldWidth / 2.5 : fieldWidth / 1.5,
                                         height: 30,
                                         borderRadius: 4,
                                         btnText: AppText.save,
