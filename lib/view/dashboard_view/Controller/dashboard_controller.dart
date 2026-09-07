@@ -2817,7 +2817,7 @@ class DashboardController extends GetxController {
 // Check if the marker was actually found to avoid errors
     if (dropOffTwoIndex != -1) {
       // Assuming 'lat' is a property or constant available in your scope
-      dropOffLatTwoLat = markers[dropOffTwoIndex].point.longitude;
+      dropOffLatTwoLat = markers[dropOffTwoIndex].point.latitude;
       dropOffLngTwoLat = markers[dropOffTwoIndex].point.longitude;
     }
 
@@ -3279,9 +3279,11 @@ class DashboardController extends GetxController {
 
       if(jobData.booking.length > 1){
         withReturnDataBinding(jobData.booking[1]);
+      }else{
+        fetchRouteFromOSRM();
       }
 
-      fetchRouteFromOSRM();
+
 
       nameController.text = jobData.booking[0].name!.toUpperCase();
       emailController.text = jobData.booking[0].email!;
@@ -3312,6 +3314,12 @@ class DashboardController extends GetxController {
       }
       minController.text = jobData.booking[0].leadTime ?? "";
 
+      if (jobData.booking[0].pickupDoorNumber != null) {
+        pickUpNoteController.text = jobData.booking[0].pickupDoorNumber.toString();
+      }
+      if (jobData.booking[0].dropoffDoorNumber != null) {
+        dropUpNoteController.text = jobData.booking[0].dropoffDoorNumber.toString();
+      }
       if (jobData.booking[0].passengers != null) {
         passController.text = jobData.booking[0].passengers.toString();
       }
@@ -3498,6 +3506,8 @@ class DashboardController extends GetxController {
           TextEditingController(text: action.mobile ?? "")));
     }
 
+    fetchRouteFromOSRM();
+
     returnFareValue = bookingData.fares.toString();
 
     if (bookingData.pickupDate != null) {
@@ -3519,6 +3529,13 @@ class DashboardController extends GetxController {
       selectDriverValueReturn = dashboardAllData?.drivers?.firstWhereOrNull(
             (vehicle) => vehicle.id == bookingData.driverId,
       );
+    }
+
+    if (bookingData.pickupDoorNumber != null) {
+      returnPickUpNoteController.text = bookingData.pickupDoorNumber.toString();
+    }
+    if (bookingData.dropoffDoorNumber != null) {
+      returnDropUpNoteController.text = bookingData.dropoffDoorNumber.toString();
     }
 
     if (bookingData.vehicleTypeId != null) {
