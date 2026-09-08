@@ -3213,176 +3213,445 @@ class DashboardController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo data binding for update
   BookingObjectData? jobDetails;
 
-  dashBoardDataBinding(
-      {BookingObjectData? jobData, id, bool hitAddBooking = false, cliHit = false,
-        String? swappedPickup,   // <--- Swapped Pickup Address
-        String? swappedDropoff,  // <--- Swapped Dropoff Address
-      }) async {
+//   dashBoardDataBinding(
+//       {BookingObjectData? jobData, id, bool hitAddBooking = false, cliHit = false,
+//         String? swappedPickup,   // <--- Swapped Pickup Address
+//         String? swappedDropoff,  // <--- Swapped Dropoff Address
+//       }) async {
+//     var response = await Api().get("bookings/getbyid/$id");
+//     // var response = await Api().get("bookings/getbyid/$id");
+//     if (response.statusCode == 200) {
+//
+//
+//       DateTime now = DateTime.now();
+//       String currentDateStr = DateFormat('yyyy-MM-dd').format(now);
+//       String currentTimeStr = DateFormat('HH:mm').format(now);
+//       // The WHOLE envelope, not response.data['booking'].
+//       //
+//       // getbyid answers {success, booking: [ {...} ]} — one job, but wrapped
+//       // in a list — and JobsDetailsJobs is the model for that envelope: its
+//       // fromJson reads json["success"] and json["booking"]. Handing it the
+//       // list asked for json["booking"] on a List and threw "List<dynamic> is
+//       // not a subtype of Map<String, dynamic>".
+//       JobsDetailsJobs jobData = JobsDetailsJobs.fromJson(response.data);
+//       // A 200 with an empty list is a booking that no longer exists (deleted,
+//       // or an id from a stale tab). Every read below is booking[0], so say so
+//       // and leave the form alone rather than throwing a RangeError.
+//       if (jobData.booking.isEmpty) {
+//         BotToast.showText(text: "BOOKING NOT FOUND");
+//         return;
+//       }
+//       jobDetails = jobData.booking[0];
+//       polyLineMarkerInfo.clear();
+//       viaPoints.clear();
+//       polylinePoints.clear();
+//       // 1. SWAPPED ADDRESS OVERRIDE
+//       if (cliHit && swappedPickup != null && swappedDropoff != null) {
+//         pickupController.text = swappedPickup.toUpperCase();
+//         dropOffController.text = swappedDropoff.toUpperCase();
+//       } else {
+//         pickupController.text = jobDetails!.pickup.toString().toUpperCase();
+//         dropOffController.text = jobDetails!.dropoff.toString().toUpperCase();
+//       }
+//       pickupController.text = jobDetails!.pickup.toString().toUpperCase();
+//       dropOffController.text = jobDetails!.dropoff.toString().toUpperCase();
+//
+//       polylinePoints.add(
+//         LatLng(double.parse(jobDetails!.pickupLatitude!),
+//             double.parse(jobDetails!.pickupLongitude!)),
+//       );
+//       polylinePoints.add(
+//         LatLng(double.parse(jobDetails!.dropoffLatitude!),
+//             double.parse(jobDetails!.dropoffLongitude!)),
+//       );
+//       polyLineMarkerInfo.add(ViaPoint(
+//         lat: double.parse(jobDetails!.pickupLatitude!),
+//         lng: double.parse(jobDetails!.pickupLongitude!),
+//         markerType: "PICKUP LOCATION",
+//         address: '',
+//       ));
+//       polyLineMarkerInfo.add(ViaPoint(
+//         lat: double.parse(jobDetails!.dropoffLatitude!),
+//         lng: double.parse(jobDetails!.dropoffLongitude!),
+//         markerType: "DROP LOCATION",
+//         address: '',
+//       ));
+//
+//       for (var item in jobDetails!.viapoints!) {
+//         final p = LatLng(double.parse(item.latitude.toString()),
+//             double.parse(item.longitude.toString()));
+//         polylinePoints.add(LatLng(p.latitude, p.longitude));
+//
+//         viaPoints.add(ViaPoint(
+//           withReturnWay: 'via',
+//           // name: currentTypeName,
+//           address: item.viapoint!,
+//           lat: p.latitude,
+//           lng: p.longitude,
+//         ));
+//         viaTextEditingController.add(ViaTextEditingControllerClass(
+//             TextEditingController(text: item.name ?? ""),
+//             TextEditingController(text: item.mobile ?? "")));
+//       }
+//
+//       if(jobData.booking.length > 1){
+//         withReturnDataBinding(jobData.booking[1]);
+//       }else{
+//         fetchRouteFromOSRM();
+//       }
+//
+//
+//
+//       nameController.text = jobDetails!.name!.toUpperCase();
+//       emailController.text = jobDetails!.email!;
+//       mobileController.text = jobDetails!.mobile!;
+//       if (jobDetails!.telephone != null) {
+//         telController.text = jobDetails!.telephone!;
+//       }
+//       if(cliHit == true){
+//         pickUpTimeController.text = DateFormat('HH:mm').format(DateTime.now());
+//       }else{
+//         pickUpTimeController.text = jobDetails!.pickupTime!;
+//       }
+//
+//       // A time carried over from an existing job is a real choice — don't let
+//       // refreshUntouchedDateTimeFields() overwrite it with "now" on post.
+//       pickUpTimePicked = true;
+//       // Same for the date: the job's own pickup date, so the Date field shows
+//       // the booking date instead of today's.
+//       if (jobDetails!.pickupDate != null) {
+//         if(cliHit == true){
+//           pickUpDate = DateTime.now();
+//           pickUpDatePicked = true;
+//         }else{
+//           pickUpDate = jobDetails!.pickupDate;
+//           pickUpDatePicked = true;
+//         }
+//
+//       }
+//       minController.text = jobDetails!.leadTime ?? "";
+//
+//       if (jobDetails!.pickupDoorNumber != null) {
+//         pickUpNoteController.text = jobDetails!.pickupDoorNumber.toString();
+//       }
+//       if (jobDetails!.dropoffDoorNumber != null) {
+//         dropUpNoteController.text = jobDetails!.dropoffDoorNumber.toString();
+//       }
+//       if (jobDetails!.passengers != null) {
+//         passController.text = jobDetails!.passengers.toString();
+//       }
+//       if (jobDetails!.luggages != null) {
+//         luggController.text = jobDetails!.luggages.toString();
+//       }
+//       if (jobDetails!.handLuggages != null) {
+//         sluggController.text = jobDetails!.handLuggages.toString();
+//       }
+//       if (jobDetails!.parkingCharges != null) {
+//         parkingChargesController.text = jobDetails!.parkingCharges.toString();
+//       }
+//       if (jobDetails!.congestionCharges != null) {
+//         congestionChargesController.text = jobDetails!.congestionCharges.toString();
+//       }
+//       if (jobDetails!.meetAndGreet != null) {
+//         meetGreetController.text = jobDetails!.meetAndGreet.toString();
+//       }
+//       if (jobDetails!.waitingCharges != null) {
+//         waitingChargesController.text = jobDetails!.waitingCharges.toString();
+//       }
+//       if (jobDetails!.extraDropCharges != null) {
+//         extraDropChargesController.text = jobDetails!.extraDropCharges.toString();
+//       }
+//       if (jobDetails!.creditCardCharges != null) {
+//         creditCardChargesController.text = jobDetails!.creditCardCharges.toString();
+//       }
+//       if (jobDetails!.companyPrice != null) {
+//         companyPriceController.text = jobDetails!.companyPrice.toString();
+//       }
+//       if (jobDetails!.specialInstructions != null) {
+//         specialRequirementsController.text =
+//             jobDetails!.specialInstructions.toString();
+//       }
+//       slugController.text = jobDetails!.fares.toString();
+//
+//       if (jobDetails!.pickupDoorNumber != null) {
+//         pickUpNoteController.text = jobDetails!.pickupDoorNumber.toString();
+//       }
+//       if (jobDetails!.dropoffDoorNumber != null) {
+//         dropUpNoteController.text = jobDetails!.dropoffDoorNumber.toString();
+//       }
+//       slugController.text = jobDetails!.fares.toString();
+//
+//       if (jobDetails!.childSeat!.isNotEmpty) {
+//         for (var action in jobDetails!.childSeat!) {
+//           childSeatAlert.add(ChildSeatClass(
+//             sets: action.child,
+//             age: action.age,
+//           ));
+//         }
+//       }
+//
+//       if (jobDetails!.restrictedDrivers?.isNotEmpty ?? false) {
+//         final restrictedIds =
+//             jobDetails!.restrictedDrivers!.map((e) => e.id.toString()).toSet();
+//         driversList.addAll(allDriverData!.drivers!
+//             .where((driver) => restrictedIds.contains(driver.id.toString())));
+//       }
+//
+// // 1. Using firstWhereOrNull (Cleanest & Safest)
+//       if (jobDetails!.subsidiaryId != null) {
+//         selectSubsidiariesValue =
+//             dashboardAllData?.subsidiaries?.firstWhereOrNull(
+//           (subsidiary) => subsidiary.id == jobDetails!.subsidiaryId,
+//         );
+//       }
+//
+//       ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>get account data subsidiaries base
+//       await getAccountData(subsidiariesId: selectSubsidiariesValue!.id ?? 1);
+//
+// // Professional approach using the 'collection' package
+//       selectAccountValue = dashboardAccountData?.accounts?.firstWhereOrNull(
+//         (account) => account.id == jobDetails!.accountId,
+//       );
+//
+//       selectDepartmentData = dashboardAccountData?.accounts
+//           ?.expand((account) => account.departments ?? [])
+//           .firstWhere(
+//             (dept) => dept.id.toString() == jobDetails!.department.toString(),
+//             orElse: () => null, // This mimics the 'OrNull' behavior
+//           );
+//
+// // 1. Using firstWhereOrNull (Cleanest & Safest)
+//       if (jobDetails!.paymentTypeId != null) {
+//         selectPaymentTypeValue =
+//             dashboardAllData?.paymentTypes?.firstWhereOrNull(
+//           (payment) => payment.id == jobDetails!.paymentTypeId,
+//         );
+//       }
+//
+//       // 1. Using firstWhereOrNull (Cleanest & Safest)
+//       if (jobDetails!.journeyTypeId != null) {
+//         selectJourneyTypeValue =
+//             dashboardAllData?.journeyTypes?.firstWhereOrNull(
+//           (journey) => journey.id == jobDetails!.journeyTypeId,
+//         );
+//       }
+//
+//       // 1. Using firstWhereOrNull (Cleanest & Safest)
+//       if (jobDetails!.vehicleTypeId != null) {
+//         selectVehicleValue = dashboardAllData?.vehicleTypes?.firstWhereOrNull(
+//           (vehicle) => vehicle.id == jobDetails!.vehicleTypeId,
+//         );
+//       }
+//
+//       final LocationController _controller =
+//           Get.isRegistered<LocationController>()
+//               ? Get.find<LocationController>()
+//               : Get.put(LocationController());
+//
+//       final zones = _controller.locationtypezoneModel?.zonesList;
+//
+//       if (zones != null) {
+//         _controller.updateLocationValue.value == true;
+//         // Find pickup zone
+//         if (jobDetails!.pickupPlot != null) {
+//           dashboardZoneValue =
+//               zones.firstWhereOrNull((z) => z.id == jobDetails!.pickupPlot);
+//           _controller.zoneValue =
+//               zones.firstWhereOrNull((z) => z.id == jobDetails!.pickupPlot);
+//         }
+//
+//         // Find dropoff zone
+//         if (jobDetails!.dropoffPlot != null) {
+//           dashboardDZoneValue =
+//               zones.firstWhereOrNull((z) => z.id == jobDetails!.dropoffPlot);
+//           _controller.zoneDValue =
+//               zones.firstWhereOrNull((z) => z.id == jobDetails!.dropoffPlot);
+//         }
+//
+//         _controller.updateLocationValue.value == false;
+//       }
+//       if (hitAddBooking == true) {
+//         dashBoardApiValidation();
+//       } else {
+//           update();
+//       }
+//     }
+//   }
+
+  dashBoardDataBinding({
+    BookingObjectData? jobData,
+    id,
+    bool hitAddBooking = false,
+    bool cliHit = false,
+    String? swappedPickup,
+    String? swappedDropoff,
+  }) async {
     var response = await Api().get("bookings/getbyid/$id");
-    // var response = await Api().get("bookings/getbyid/$id");
+
     if (response.statusCode == 200) {
-
-
       DateTime now = DateTime.now();
       String currentDateStr = DateFormat('yyyy-MM-dd').format(now);
       String currentTimeStr = DateFormat('HH:mm').format(now);
-      // The WHOLE envelope, not response.data['booking'].
-      //
-      // getbyid answers {success, booking: [ {...} ]} — one job, but wrapped
-      // in a list — and JobsDetailsJobs is the model for that envelope: its
-      // fromJson reads json["success"] and json["booking"]. Handing it the
-      // list asked for json["booking"] on a List and threw "List<dynamic> is
-      // not a subtype of Map<String, dynamic>".
+
       JobsDetailsJobs jobData = JobsDetailsJobs.fromJson(response.data);
-      // A 200 with an empty list is a booking that no longer exists (deleted,
-      // or an id from a stale tab). Every read below is booking[0], so say so
-      // and leave the form alone rather than throwing a RangeError.
+
       if (jobData.booking.isEmpty) {
         BotToast.showText(text: "BOOKING NOT FOUND");
         return;
       }
+
       jobDetails = jobData.booking[0];
       polyLineMarkerInfo.clear();
       viaPoints.clear();
       polylinePoints.clear();
+
       // 1. SWAPPED ADDRESS OVERRIDE
       if (cliHit && swappedPickup != null && swappedDropoff != null) {
         pickupController.text = swappedPickup.toUpperCase();
         dropOffController.text = swappedDropoff.toUpperCase();
       } else {
-        pickupController.text = jobDetails!.pickup.toString().toUpperCase();
-        dropOffController.text = jobDetails!.dropoff.toString().toUpperCase();
+        pickupController.text = jobData.booking[0].pickup.toString().toUpperCase();
+        dropOffController.text = jobData.booking[0].dropoff.toString().toUpperCase();
       }
-      pickupController.text = jobDetails!.pickup.toString().toUpperCase();
-      dropOffController.text = jobDetails!.dropoff.toString().toUpperCase();
 
-      polylinePoints.add(
-        LatLng(double.parse(jobDetails!.pickupLatitude!),
-            double.parse(jobDetails!.pickupLongitude!)),
-      );
-      polylinePoints.add(
-        LatLng(double.parse(jobDetails!.dropoffLatitude!),
-            double.parse(jobDetails!.dropoffLongitude!)),
-      );
-      polyLineMarkerInfo.add(ViaPoint(
-        lat: double.parse(jobDetails!.pickupLatitude!),
-        lng: double.parse(jobDetails!.pickupLongitude!),
-        markerType: "PICKUP LOCATION",
-        address: '',
-      ));
-      polyLineMarkerInfo.add(ViaPoint(
-        lat: double.parse(jobDetails!.dropoffLatitude!),
-        lng: double.parse(jobDetails!.dropoffLongitude!),
-        markerType: "DROP LOCATION",
-        address: '',
-      ));
+      //  COORDINATES & MAP POINTS HANDLE
+      double pLat = double.parse(jobData.booking[0].pickupLatitude!);
+      double pLng = double.parse(jobData.booking[0].pickupLongitude!);
+      double dLat = double.parse(jobData.booking[0].dropoffLatitude!);
+      double dLng = double.parse(jobData.booking[0].dropoffLongitude!);
 
-      for (var item in jobDetails!.viapoints!) {
-        final p = LatLng(double.parse(item.latitude.toString()),
-            double.parse(item.longitude.toString()));
+      // Agar swap hua ho toh polyline markers/points swap kar ke add karein
+      if (cliHit && swappedPickup != null) {
+        polylinePoints.add(LatLng(dLat, dLng));
+        polylinePoints.add(LatLng(pLat, pLng));
+
+        polyLineMarkerInfo.add(ViaPoint(
+          lat: dLat,
+          lng: dLng,
+          markerType: "PICKUP LOCATION",
+          address: '',
+        ));
+        polyLineMarkerInfo.add(ViaPoint(
+          lat: pLat,
+          lng: pLng,
+          markerType: "DROP LOCATION",
+          address: '',
+        ));
+      } else {
+        polylinePoints.add(LatLng(pLat, pLng));
+        polylinePoints.add(LatLng(dLat, dLng));
+
+        polyLineMarkerInfo.add(ViaPoint(
+          lat: pLat,
+          lng: pLng,
+          markerType: "PICKUP LOCATION",
+          address: '',
+        ));
+        polyLineMarkerInfo.add(ViaPoint(
+          lat: dLat,
+          lng: dLng,
+          markerType: "DROP LOCATION",
+          address: '',
+        ));
+      }
+
+      for (var item in jobData.booking[0].viapoints!) {
+        final p = LatLng(
+          double.parse(item.latitude.toString()),
+          double.parse(item.longitude.toString()),
+        );
         polylinePoints.add(LatLng(p.latitude, p.longitude));
 
         viaPoints.add(ViaPoint(
           withReturnWay: 'via',
-          // name: currentTypeName,
           address: item.viapoint!,
           lat: p.latitude,
           lng: p.longitude,
         ));
         viaTextEditingController.add(ViaTextEditingControllerClass(
-            TextEditingController(text: item.name ?? ""),
-            TextEditingController(text: item.mobile ?? "")));
+          TextEditingController(text: item.name ?? ""),
+          TextEditingController(text: item.mobile ?? ""),
+        ));
       }
 
-      if(jobData.booking.length > 1){
+      if (jobData.booking.length > 1) {
         withReturnDataBinding(jobData.booking[1]);
-      }else{
-        fetchRouteFromOSRM();
       }
 
+      fetchRouteFromOSRM();
 
-
-      nameController.text = jobDetails!.name!.toUpperCase();
-      emailController.text = jobDetails!.email!;
-      mobileController.text = jobDetails!.mobile!;
-      if (jobDetails!.telephone != null) {
-        telController.text = jobDetails!.telephone!;
+      nameController.text = jobData.booking[0].name!.toUpperCase();
+      emailController.text = jobData.booking[0].email!;
+      mobileController.text = jobData.booking[0].mobile!;
+      if (jobData.booking[0].telephone != null) {
+        telController.text = jobData.booking[0].telephone!;
       }
-      if(cliHit == true){
+
+      if (cliHit == true) {
         pickUpTimeController.text = DateFormat('HH:mm').format(DateTime.now());
-      }else{
-        pickUpTimeController.text = jobDetails!.pickupTime!;
+      } else {
+        pickUpTimeController.text = jobData.booking[0].pickupTime!;
       }
 
-      // A time carried over from an existing job is a real choice — don't let
-      // refreshUntouchedDateTimeFields() overwrite it with "now" on post.
       pickUpTimePicked = true;
-      // Same for the date: the job's own pickup date, so the Date field shows
-      // the booking date instead of today's.
-      if (jobDetails!.pickupDate != null) {
-        if(cliHit == true){
+
+      if (jobData.booking[0].pickupDate != null) {
+        if (cliHit == true) {
           pickUpDate = DateTime.now();
           pickUpDatePicked = true;
-        }else{
-          pickUpDate = jobDetails!.pickupDate;
+        } else {
+          pickUpDate = jobData.booking[0].pickupDate;
           pickUpDatePicked = true;
         }
+      }
 
-      }
-      minController.text = jobDetails!.leadTime ?? "";
+      minController.text = jobData.booking[0].leadTime ?? "";
 
-      if (jobDetails!.pickupDoorNumber != null) {
-        pickUpNoteController.text = jobDetails!.pickupDoorNumber.toString();
+      if (jobData.booking[0].passengers != null) {
+        passController.text = jobData.booking[0].passengers.toString();
       }
-      if (jobDetails!.dropoffDoorNumber != null) {
-        dropUpNoteController.text = jobDetails!.dropoffDoorNumber.toString();
+      if (jobData.booking[0].luggages != null) {
+        luggController.text = jobData.booking[0].luggages.toString();
       }
-      if (jobDetails!.passengers != null) {
-        passController.text = jobDetails!.passengers.toString();
+      if (jobData.booking[0].handLuggages != null) {
+        sluggController.text = jobData.booking[0].handLuggages.toString();
       }
-      if (jobDetails!.luggages != null) {
-        luggController.text = jobDetails!.luggages.toString();
+      if (jobData.booking[0].parkingCharges != null) {
+        parkingChargesController.text = jobData.booking[0].parkingCharges.toString();
       }
-      if (jobDetails!.handLuggages != null) {
-        sluggController.text = jobDetails!.handLuggages.toString();
+      if (jobData.booking[0].congestionCharges != null) {
+        congestionChargesController.text = jobData.booking[0].congestionCharges.toString();
       }
-      if (jobDetails!.parkingCharges != null) {
-        parkingChargesController.text = jobDetails!.parkingCharges.toString();
+      if (jobData.booking[0].meetAndGreet != null) {
+        meetGreetController.text = jobData.booking[0].meetAndGreet.toString();
       }
-      if (jobDetails!.congestionCharges != null) {
-        congestionChargesController.text = jobDetails!.congestionCharges.toString();
+      if (jobData.booking[0].waitingCharges != null) {
+        waitingChargesController.text = jobData.booking[0].waitingCharges.toString();
       }
-      if (jobDetails!.meetAndGreet != null) {
-        meetGreetController.text = jobDetails!.meetAndGreet.toString();
+      if (jobData.booking[0].extraDropCharges != null) {
+        extraDropChargesController.text = jobData.booking[0].extraDropCharges.toString();
       }
-      if (jobDetails!.waitingCharges != null) {
-        waitingChargesController.text = jobDetails!.waitingCharges.toString();
+      if (jobData.booking[0].creditCardCharges != null) {
+        creditCardChargesController.text = jobData.booking[0].creditCardCharges.toString();
       }
-      if (jobDetails!.extraDropCharges != null) {
-        extraDropChargesController.text = jobDetails!.extraDropCharges.toString();
+      if (jobData.booking[0].companyPrice != null) {
+        companyPriceController.text = jobData.booking[0].companyPrice.toString();
       }
-      if (jobDetails!.creditCardCharges != null) {
-        creditCardChargesController.text = jobDetails!.creditCardCharges.toString();
-      }
-      if (jobDetails!.companyPrice != null) {
-        companyPriceController.text = jobDetails!.companyPrice.toString();
-      }
-      if (jobDetails!.specialInstructions != null) {
+      if (jobData.booking[0].specialInstructions != null) {
         specialRequirementsController.text =
-            jobDetails!.specialInstructions.toString();
+            jobData.booking[0].specialInstructions.toString();
       }
-      slugController.text = jobDetails!.fares.toString();
+      slugController.text = jobData.booking[0].fares.toString();
 
-      if (jobDetails!.pickupDoorNumber != null) {
-        pickUpNoteController.text = jobDetails!.pickupDoorNumber.toString();
+      if (jobData.booking[0].pickupDoorNumber != null) {
+        pickUpNoteController.text = jobData.booking[0].pickupDoorNumber.toString();
       }
-      if (jobDetails!.dropoffDoorNumber != null) {
-        dropUpNoteController.text = jobDetails!.dropoffDoorNumber.toString();
+      if (jobData.booking[0].dropoffDoorNumber != null) {
+        dropUpNoteController.text = jobData.booking[0].dropoffDoorNumber.toString();
       }
-      slugController.text = jobDetails!.fares.toString();
 
-      if (jobDetails!.childSeat!.isNotEmpty) {
-        for (var action in jobDetails!.childSeat!) {
+      if (jobData.booking[0].childSeat!.isNotEmpty) {
+        for (var action in jobData.booking[0].childSeat!) {
           childSeatAlert.add(ChildSeatClass(
             sets: action.child,
             age: action.age,
@@ -3390,94 +3659,86 @@ class DashboardController extends GetxController {
         }
       }
 
-      if (jobDetails!.restrictedDrivers?.isNotEmpty ?? false) {
+      if (jobData.booking[0].restrictedDrivers?.isNotEmpty ?? false) {
         final restrictedIds =
-            jobDetails!.restrictedDrivers!.map((e) => e.id.toString()).toSet();
+        jobData.booking[0].restrictedDrivers!.map((e) => e.id.toString()).toSet();
         driversList.addAll(allDriverData!.drivers!
             .where((driver) => restrictedIds.contains(driver.id.toString())));
       }
 
-// 1. Using firstWhereOrNull (Cleanest & Safest)
-      if (jobDetails!.subsidiaryId != null) {
+      if (jobData.booking[0].subsidiaryId != null) {
         selectSubsidiariesValue =
             dashboardAllData?.subsidiaries?.firstWhereOrNull(
-          (subsidiary) => subsidiary.id == jobDetails!.subsidiaryId,
-        );
+                  (subsidiary) => subsidiary.id == jobData.booking[0].subsidiaryId,
+            );
       }
 
-      ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>get account data subsidiaries base
       await getAccountData(subsidiariesId: selectSubsidiariesValue!.id ?? 1);
 
-// Professional approach using the 'collection' package
       selectAccountValue = dashboardAccountData?.accounts?.firstWhereOrNull(
-        (account) => account.id == jobDetails!.accountId,
+            (account) => account.id == jobData.booking[0].accountId,
       );
 
       selectDepartmentData = dashboardAccountData?.accounts
           ?.expand((account) => account.departments ?? [])
           .firstWhere(
-            (dept) => dept.id.toString() == jobDetails!.department.toString(),
-            orElse: () => null, // This mimics the 'OrNull' behavior
-          );
+            (dept) => dept.id.toString() == jobData.booking[0].department.toString(),
+        orElse: () => null,
+      );
 
-// 1. Using firstWhereOrNull (Cleanest & Safest)
-      if (jobDetails!.paymentTypeId != null) {
+      if (jobData.booking[0].paymentTypeId != null) {
         selectPaymentTypeValue =
             dashboardAllData?.paymentTypes?.firstWhereOrNull(
-          (payment) => payment.id == jobDetails!.paymentTypeId,
-        );
+                  (payment) => payment.id == jobData.booking[0].paymentTypeId,
+            );
       }
 
-      // 1. Using firstWhereOrNull (Cleanest & Safest)
-      if (jobDetails!.journeyTypeId != null) {
+      if (jobData.booking[0].journeyTypeId != null) {
         selectJourneyTypeValue =
             dashboardAllData?.journeyTypes?.firstWhereOrNull(
-          (journey) => journey.id == jobDetails!.journeyTypeId,
-        );
+                  (journey) => journey.id == jobData.booking[0].journeyTypeId,
+            );
       }
 
-      // 1. Using firstWhereOrNull (Cleanest & Safest)
-      if (jobDetails!.vehicleTypeId != null) {
+      if (jobData.booking[0].vehicleTypeId != null) {
         selectVehicleValue = dashboardAllData?.vehicleTypes?.firstWhereOrNull(
-          (vehicle) => vehicle.id == jobDetails!.vehicleTypeId,
+              (vehicle) => vehicle.id == jobData.booking[0].vehicleTypeId,
         );
       }
 
       final LocationController _controller =
-          Get.isRegistered<LocationController>()
-              ? Get.find<LocationController>()
-              : Get.put(LocationController());
+      Get.isRegistered<LocationController>()
+          ? Get.find<LocationController>()
+          : Get.put(LocationController());
 
       final zones = _controller.locationtypezoneModel?.zonesList;
 
       if (zones != null) {
         _controller.updateLocationValue.value == true;
-        // Find pickup zone
-        if (jobDetails!.pickupPlot != null) {
+        if (jobData.booking[0].pickupPlot != null) {
           dashboardZoneValue =
-              zones.firstWhereOrNull((z) => z.id == jobDetails!.pickupPlot);
+              zones.firstWhereOrNull((z) => z.id == jobData.booking[0].pickupPlot);
           _controller.zoneValue =
-              zones.firstWhereOrNull((z) => z.id == jobDetails!.pickupPlot);
+              zones.firstWhereOrNull((z) => z.id == jobData.booking[0].pickupPlot);
         }
 
-        // Find dropoff zone
-        if (jobDetails!.dropoffPlot != null) {
+        if (jobData.booking[0].dropoffPlot != null) {
           dashboardDZoneValue =
-              zones.firstWhereOrNull((z) => z.id == jobDetails!.dropoffPlot);
+              zones.firstWhereOrNull((z) => z.id == jobData.booking[0].dropoffPlot);
           _controller.zoneDValue =
-              zones.firstWhereOrNull((z) => z.id == jobDetails!.dropoffPlot);
+              zones.firstWhereOrNull((z) => z.id == jobData.booking[0].dropoffPlot);
         }
 
         _controller.updateLocationValue.value == false;
       }
+
       if (hitAddBooking == true) {
         dashBoardApiValidation();
       } else {
-          update();
+        update();
       }
     }
   }
-
 
   withReturnDataBinding(BookingObjectData bookingData){
     pickupTwoWayController.text = bookingData.pickup.toString().toUpperCase();
