@@ -147,9 +147,11 @@ import 'package:dashboard_new1/component/networks/api.dart';
 // import 'package:http/http.dart' as http;
 // import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../Model/cli_Customer_DetailModel.dart';
 import '../dashboard_view/models/dashboard_model.dart';
 
 class CliController extends GetxController {
+  CliCustomerModel? cliCustomerModel;
   WebSocketChannel? channel;
   RxBool isConnected = false.obs;
   RxBool isLoading = false.obs;

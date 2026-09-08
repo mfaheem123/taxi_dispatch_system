@@ -1898,6 +1898,7 @@ class _CenterArea extends StatefulWidget {
   @override
   State<_CenterArea> createState() => _CenterAreaState();
 }
+///--------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // class _CenterAreaState extends State<_CenterArea> {
 //   final CliController controller = Get.find<CliController>();
 //   DashboardController dashboard = Get.find();
@@ -3156,34 +3157,34 @@ class _CenterAreaState extends State<_CenterArea> {
                       ],
                     ),
                     const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF3F4F6),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: const [
-                          Text(
-                            "Account Balance",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Color(0xFF6B7280),
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            "£0.00",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF1F2937),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // Container(
+                    //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    //   decoration: BoxDecoration(
+                    //     color: const Color(0xFFF3F4F6),
+                    //     borderRadius: BorderRadius.circular(8),
+                    //   ),
+                    //   child: Column(
+                    //     crossAxisAlignment: CrossAxisAlignment.end,
+                    //     children: const [
+                    //       Text(
+                    //         "Account Balance",
+                    //         style: TextStyle(
+                    //           fontSize: 12,
+                    //           color: Color(0xFF6B7280),
+                    //         ),
+                    //       ),
+                    //       SizedBox(height: 4),
+                    //       Text(
+                    //         "£0.00",
+                    //         style: TextStyle(
+                    //           fontSize: 16,
+                    //           fontWeight: FontWeight.w700,
+                    //           color: Color(0xFF1F2937),
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
                   ],
                 )),
 
@@ -3252,40 +3253,31 @@ class _CenterAreaState extends State<_CenterArea> {
         onTap: () {
         setState(() {
         isSwapped = !isSwapped;
-
         // 1. Text Controllers Swap
         final tempText = pickupController.text;
         pickupController.text = dropoffController.text;
         dropoffController.text = tempText;
-
-        // 2. LatLng Points Swap
+        //  LatLng Points Swap
         final tempPoints = pickupPoints;
         pickupPoints = dropoffPoints;
         dropoffPoints = tempPoints;
-
-        // 3. Selected Booking Object ko bhi in-memory Swap karein (Agar API call bad me hoti hai)
         if (selectedBooking != null) {
         final tempPickup = selectedBooking!.pickup;
         final tempPickupLat = selectedBooking!.pickupLatitude;
         final tempPickupLng = selectedBooking!.pickupLongitude;
-
         selectedBooking!.pickup = selectedBooking!.dropoff;
         selectedBooking!.pickupLatitude = selectedBooking!.dropoffLatitude;
         selectedBooking!.pickupLongitude = selectedBooking!.dropoffLongitude;
-
         selectedBooking!.dropoff = tempPickup;
         selectedBooking!.dropoffLatitude = tempPickupLat;
         selectedBooking!.dropoffLongitude = tempPickupLng;
         }
-
-        // 4. Main Dashboard Controller Sync
+        //  Main Dashboard Controller Sync
         _controller.pickupController.text = pickupController.text;
         _controller.dropOffController.text = dropoffController.text;
-
         submitBtnValue = true;
         });
-
-        // 5. Naya Route Fetch Karein
+        //  Naya Route Fetch Karein
         _controller.fetchRouteFromOSRM();
         },
                                   child: const Icon(
@@ -3380,11 +3372,9 @@ class _CenterAreaState extends State<_CenterArea> {
                   if (controller.isLoading.value) {
                     return const Center(child: CircularProgressIndicator());
                   }
-
                   if (controller.bookings.isEmpty) {
                     return const Center(child: Text("No Bookings"));
                   }
-
                   return SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child:
@@ -3518,7 +3508,6 @@ class _CenterAreaState extends State<_CenterArea> {
                                     child: rightClickTextCell(
                                                       item: cliBookingData,
                                                       clickValue: 'dropoffClick',
-
                                       child: Text(
                                         cliBookingData.dropoff ?? "",
                                         maxLines: 2,
@@ -3826,7 +3815,6 @@ class _CenterAreaState extends State<_CenterArea> {
                                 BotToast.showText(text: "Location data missing");
                                 return;
                               }
-
                                    await _controller.cliDataBinding(
                                 pickup: pickupController.text,
                                 dropoff: dropoffController.text,
@@ -3879,15 +3867,12 @@ class _CenterAreaState extends State<_CenterArea> {
       },
     );
   }
-
-
-
-
-
 }
 
 /// --------- RIGHT SIDEBAR ----------
 class _RightSidebar extends StatelessWidget {
+  final CliController controller = Get.find<CliController>();
+  DashboardController dashboard = Get.find();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -3928,11 +3913,20 @@ class _RightSidebar extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          _kv("Used", "0", valueColor: Colors.green.shade600),
+          _kv(
+              "Used",
+              (controller.cliCustomerModel?.rideHistory?.used ?? 0).toString(),
+              valueColor: Colors.green.shade600
+          ),
           const SizedBox(height: 12),
-          _kv("Cancelled", "0", valueColor: Colors.red.shade600),
+
+          _kv(
+              "Cancelled",
+              (controller.cliCustomerModel?.rideHistory?.cancelled ?? 0).toString(),
+              valueColor: Colors.red.shade600
+          ),
           const SizedBox(height: 12),
-          _kv("Balance Amount", "£0.00"),
+          // _kv("Balance Amount", "£0.00"),
           const Spacer(),
 
           Container(
