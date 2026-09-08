@@ -44,19 +44,33 @@ class SettingController extends GetxController {
   final subjectController = TextEditingController();
   final emailController = TextEditingController();
 
+  // void insertTagValue({value, bool temFormate = false}) async {
+  //   String currentText = await templateTitleController.getText();
+  //   String valueAdding = value.toString().replaceAll(" ", "_");
+  //   if (currentText.trim().isEmpty || currentText.trim() == "<p></p>") {
+  //     // 👇 Agar text empty hai
+  //     if (temFormate == false) {
+  //       templateTitleController.setText("<p>{{$valueAdding}}</p>");
+  //     } else {
+  //       templateTitleController.setText("<p>$value</p>");
+  //     }
+  //   } else {
+  //     // 👇 Agar text already hai
+  //     templateTitleController.insertHtml("{{$valueAdding}}");
+  //   }
+  //   update();
+  // }
   void insertTagValue({value, bool temFormate = false}) async {
-    String currentText = await templateTitleController.getText();
     String valueAdding = value.toString().replaceAll(" ", "_");
+    String tagText = temFormate == false ? "{{$valueAdding}}" : "$value";
+
+    String currentText = await templateTitleController.getText();
+
     if (currentText.trim().isEmpty || currentText.trim() == "<p></p>") {
-      // 👇 Agar text empty hai
-      if (temFormate == false) {
-        templateTitleController.setText("<p>{{$valueAdding}}</p>");
-      } else {
-        templateTitleController.setText("<p>$value</p>");
-      }
+      templateTitleController.setText("<p>$tagText</p>");
     } else {
-      // 👇 Agar text already hai
-      templateTitleController.insertHtml("{{$valueAdding}}");
+      String updatedText = currentText.replaceAll(RegExp(r'<\/p>\s*$'), " $tagText</p>");
+      templateTitleController.setText(updatedText);
     }
     update();
   }
