@@ -3644,6 +3644,7 @@ class DashboardController extends GetxController {
       slugController.text = jobData.booking[0].fares.toString();
 
       if (jobData.booking[0].pickupDoorNumber != null) {
+
         pickUpNoteController.text = jobData.booking[0].pickupDoorNumber.toString();
       }
       if (jobData.booking[0].dropoffDoorNumber != null) {
@@ -3715,16 +3716,20 @@ class DashboardController extends GetxController {
 
       if (zones != null) {
         _controller.updateLocationValue.value == true;
+
         if (jobData.booking[0].pickupPlot != null) {
           dashboardZoneValue =
               zones.firstWhereOrNull((z) => z.id == jobData.booking[0].pickupPlot);
+
           _controller.zoneValue =
               zones.firstWhereOrNull((z) => z.id == jobData.booking[0].pickupPlot);
         }
 
         if (jobData.booking[0].dropoffPlot != null) {
+
           dashboardDZoneValue =
               zones.firstWhereOrNull((z) => z.id == jobData.booking[0].dropoffPlot);
+
           _controller.zoneDValue =
               zones.firstWhereOrNull((z) => z.id == jobData.booking[0].dropoffPlot);
         }
@@ -3733,6 +3738,7 @@ class DashboardController extends GetxController {
       }
 
       if (hitAddBooking == true) {
+
         dashBoardApiValidation();
       } else {
         update();
@@ -3817,6 +3823,7 @@ class DashboardController extends GetxController {
         : Get.put(LocationController());
 
     final zones = _controller.locationtypezoneModel?.zonesList;
+
 
 
     if (zones != null) {
