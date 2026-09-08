@@ -324,13 +324,16 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                       itemLabel: (val) => (val.name ?? "").toUpperCase(),
                                       onChanged: (val) {
                                         controller.selectedTemplateType = val;
+                                        controller.template = null;
+                                        controller.templeteByTypeMOdel = null;
                                         controller.getTemplateByTypes(selectedTempId: val!.id);
                                       },
                                     ),
                                   CustomDropdownField<Template>(
                                     label: "SELECT USER",
                                     items: controller.templeteByTypeMOdel?.templates ?? [],
-                                    value: controller.templeteByTypeMOdel?.templates?.contains(controller.template) == true ? controller.template : null,
+                                    // value: controller.templeteByTypeMOdel?.templates?.contains(controller.template) == true ? controller.template : null,
+                                    value: controller.template,
                                     itemLabel: (val) => (val.name ?? "").toUpperCase(),
                                     onChanged: (val) {
                                       controller.template = val;
@@ -401,7 +404,9 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                 border: Border.all(
                                     color: DynamicColors.textClr)),
                             height: 500,
-                            child: HtmlEditor(
+                            child: IgnorePointer(
+                                ignoring: controller.isDropdownOpen,
+                                child: HtmlEditor(
                               controller:
                               controller.templateTitleController,
                               htmlEditorOptions: const HtmlEditorOptions(
@@ -444,7 +449,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                               ),
                               otherOptions:
                               const OtherOptions(height: 500),
-                            ),
+                            )),
                           ),
                         ],
                       ),
