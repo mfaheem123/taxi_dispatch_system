@@ -952,10 +952,10 @@ class _BookingTableState extends State<BookingTable> {
                                       if(permissions.contains('update_booking')) Expanded(
                                         child: IconButton(
                                           icon:  Icon(Icons.more_horiz, color: Colors.green),
-                                         // onPressed: (){
-                                         //   controller.dashBoardDataBinding(id: item.id!);
-                                         // },
-                                          onPressed: () {
+                                         onPressed: (){
+                                           controller.dashBoardDataBinding(id: item.id!);
+                                         },
+                                         /* onPressed: () {
                                             // openMenuPage keys the chip strip by TITLE, so the
                                             // title has to name this booking. "COMPLETE BOOKINGS"
                                             // is the completed-bookings list's own title, so
@@ -1026,7 +1026,7 @@ class _BookingTableState extends State<BookingTable> {
                                             //   Routes.updateBooking,
                                             //   arguments: item.id,
                                             // );
-                                          },
+                                          },*/
                                         ),
                                       ),
                                     ],

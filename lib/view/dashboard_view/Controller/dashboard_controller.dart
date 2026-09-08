@@ -2924,6 +2924,12 @@ class DashboardController extends GetxController {
             "${pickUpDateReturn!.year}-${pickUpDateReturn!.month}-${pickUpDateReturn!.day}",
       if (dropOffTwoWayController.text.isNotEmpty)
         "return_pickup_time": pickUpTimeControllerReturn.text,
+      if (pickupTwoWayController.text.isNotEmpty)
+      "return_pickup_plot": dashboardRNZoneValue!.id,
+      if (pickupTwoWayController.text.isNotEmpty)
+      "return_dropoff_plot": dashboardRN1ZoneValue!.id,
+      if (pickupTwoWayController.text.isNotEmpty)
+      "return_lead_time": minControllerReturn.text,
       if (viaReturnPostList.isNotEmpty)
         'return_viapoints': jsonEncode(viaReturnPostList),
       if (selectDriverValueReturn != null)
@@ -3289,10 +3295,6 @@ class DashboardController extends GetxController {
       }
 
       if(jobData.booking.length > 1){
-        print(jobData.booking[0].pickup);
-        print(jobData.booking[0].dropoff);
-        print(jobData.booking[1].pickup);
-        print(jobData.booking[1].dropoff);
         withReturnDataBinding(jobData.booking[1]);
       }else{
         fetchRouteFromOSRM();
@@ -3524,6 +3526,8 @@ class DashboardController extends GetxController {
     fetchRouteFromOSRM();
 
     returnFareValue = bookingData.fares.toString();
+    minControllerReturn.text = bookingData.leadTime ?? "";
+    slugControllerReturn.text = bookingData.fares.toString();
 
     if (bookingData.pickupDate != null) {
       pickUpDateReturn = bookingData.pickupDate;
@@ -3546,9 +3550,38 @@ class DashboardController extends GetxController {
       );
     }
 
+    final LocationController _controller =
+    Get.isRegistered<LocationController>()
+        ? Get.find<LocationController>()
+        : Get.put(LocationController());
+
+    final zones = _controller.locationtypezoneModel?.zonesList;
+
+
+    if (zones != null) {
+      _controller.updateLocationValue.value == true;
+      // Find pickup zone
+      if (bookingData.pickupPlot != null) {
+        dashboardRNZoneValue =
+            zones.firstWhereOrNull((z) => z.id == bookingData.pickupPlot);
+        _controller.zoneValue =
+            zones.firstWhereOrNull((z) => z.id == bookingData.pickupPlot);
+      }
+
+      // Find dropoff zone
+      if (bookingData.dropoffPlot != null) {
+        dashboardRN1ZoneValue =
+            zones.firstWhereOrNull((z) => z.id == bookingData.dropoffPlot);
+        _controller.zoneDValue =
+            zones.firstWhereOrNull((z) => z.id == bookingData.dropoffPlot);
+      }
+      _controller.updateLocationValue.value == false;
+    }
+
     if (bookingData.pickupDoorNumber != null) {
       returnPickUpNoteController.text = bookingData.pickupDoorNumber.toString();
     }
+
     if (bookingData.dropoffDoorNumber != null) {
       returnDropUpNoteController.text = bookingData.dropoffDoorNumber.toString();
     }

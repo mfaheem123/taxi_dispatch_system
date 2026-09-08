@@ -939,7 +939,17 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                     },
                                     22,
                                     itemLabel: (p) => p.journeyType!,
-                                    allowUnselect: false
+                                    allowUnselect: false,
+                                    // Read-only on the edit screen. The
+                                    // journey type decides which legs a
+                                    // booking has — switching O/W to R/N here
+                                    // would need a return leg created, and
+                                    // R/N to O/W one deleted, neither of which
+                                    // this form does. It reports the booking's
+                                    // type and gates the R/N fields off it
+                                    // (see [_isReturnJourney]); changing the
+                                    // type is a new booking, not an edit.
+                                    enabled: false,
                                   ),
                                   _dropdown<DashboardVehicleTypeObject>(
                                     'Vehicle Type',
@@ -1347,23 +1357,16 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
             if (controller.markers is List<CustomMarker>) {
               controller.markers.removeWhere((marker) => marker.type == "PICKUP TWO WAY LOCATION");
             }
-            // controller.tempStoreReturnMils = null;
-            // controller.fixedFare.value = "0";
-            // controller.returnFareValue = "";
-            // controller.slugControllerReturn.clear();
-            // // controller.slugController.clear();
             controller.dropDownShow.value = false;
             // controller.tempStoreMils = null;
             controller.fetchRouteFromOSRM();
             controller.update();
-            // FocusScope.of(Get.context!)
-            //     .requestFocus(controller.pickupTwoTextFieldFocusNode);
-            // _clearTwoWayData(controller);
           },
           addressFocusNode: controller.pickupTwoTextFieldFocusNode,
           onCurrentLocation: () async {
             controller.swapeToChangeReturnLocation();
             },
+            notesController: controller.returnPickUpNoteController
         ),
         Visibility(
           visible: controller.isAirportResponseReturn.value,
@@ -1462,15 +1465,6 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
             // 1. Only Two-Way controllers clear karein
             controller.dropOffTwoWayController.clear();
             controller.clearReturnViaIfNoPickupAndDrop();
-            // 3. Fares aur temporaries reset
-            // controller.tempStoreMils = null;
-            // // controller.fixedFare.value = "0";
-            // controller.returnFareValue = "";
-            // controller.tempStoreReturnMils = null;
-            // controller.slugControllerReturn.clear();
-            // // controller.slugController.clear();
-            // // controller.totalDistance.value = "0";
-            // // controller.totalTimeDuration.value = "0";
             controller.dropDownShow.value = false;
             //  Route API
             controller.fetchRouteFromOSRM();
@@ -1483,6 +1477,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
           onCurrentLocation: () async {
             controller.swapeToChangeReturnLocation();
           },
+            notesController: controller.returnDropUpNoteController
         ),
       ],
     );
@@ -2485,6 +2480,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
         String? hint,
         bool isExpanded = true,
         bool allowUnselect = true,
+        bool enabled = true,
       }) {
     return _labelled(
       label ?? '',
@@ -2505,6 +2501,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
             hintText: (hint ?? '').toUpperCase(),
             itemLabel: itemLabel,
             allowUnselect: allowUnselect,
+            enabled: enabled,
           ),
         ),
       ),
@@ -2561,6 +2558,7 @@ class _DropdownField<T> extends StatefulWidget {
     this.itemLabel,
     this.isExpanded = true,
     this.allowUnselect = true,
+    this.enabled = true,
   });
 
   final T? value;
@@ -2575,6 +2573,12 @@ class _DropdownField<T> extends StatefulWidget {
   final String Function(T item)? itemLabel;
   final bool isExpanded;
   final bool allowUnselect;
+
+  /// False makes the field read-only: the menu no longer opens, the box greys
+  /// out and it drops out of the Tab order (DropdownButton keys all three off
+  /// a null onChanged). The picked value still renders, so a disabled field
+  /// reports what the booking holds rather than going blank.
+  final bool enabled;
 
   @override
   State<_DropdownField<T>> createState() => _DropdownFieldState<T>();
@@ -2645,7 +2649,12 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
               // i.e. the allowUnselect: false fields with no selection.
               hint: _hintChild,
               isExpanded: widget.isExpanded,
-              icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
+              // Explicit colour, so DropdownButton.iconDisabledColor never
+              // gets a look in — the disabled shade is picked here instead.
+              icon: Icon(Icons.arrow_drop_down,
+                  color: widget.enabled
+                      ? Colors.grey.shade600
+                      : Colors.grey.shade400),
               // Ambient style for the open menu. The closed field is styled
               // separately below.
               style: const TextStyle(
@@ -2674,7 +2683,10 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
                     _labelOf(e).toUpperCase(),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: _kValueTextStyle,
+                    style: _kValueTextStyle.copyWith(
+                        color: widget.enabled
+                            ? _kValueTextStyle.color
+                            : Colors.grey.shade600),
                   ),
                 )),
               ],
@@ -2706,9 +2718,11 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
                   ),
                 )),
               ],
-              onChanged: (T? newValue) {
-                widget.onChanged(newValue);
-              },
+              onChanged: widget.enabled
+                  ? (T? newValue) {
+                      widget.onChanged(newValue);
+                    }
+                  : null,
             ),
           ),
         );
