@@ -353,7 +353,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     // below — and the map, and the dialogs — can find THIS instance rather
     // than the dashboard's. Created here and deleted in dispose(), so a closed
     // edit screen leaves nothing behind.
-    _formTag = DashboardController.newEditFormTag(1673);
+    _formTag = DashboardController.newEditFormTag(1685);
     // _formTag = DashboardController.newEditFormTag(widget.booking.id);
     controller = Get.put(
       DashboardController(formTag: _formTag),
@@ -453,7 +453,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     }
     if (!mounted) return;
 
-    final id = 1673;
+    final id = 1685;
     // final id = widget.booking.id;
     if (id != null) {
       // Restores the selections off the booking, and fetches the accounts for
@@ -1751,7 +1751,14 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                         if (controller.pickupController.text.isNotEmpty
                         // &&    controller.dropOffController.text.isNotEmpty
                         ) {
-                          showDialog(context: context, builder: (_) => ViaLocation());
+                          // THIS screen's form, passed in explicitly: the
+                          // dialog is its own route, so it is outside the
+                          // BookingFormScope above and would otherwise bind to
+                          // the dashboard's instance and show no via points.
+                          showDialog(
+                              context: context,
+                              builder: (_) =>
+                                  ViaLocation(formController: controller));
                         }else{
                           BotToast.showText(text: "Please write pickup and dropoff location");
                         }

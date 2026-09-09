@@ -3525,6 +3525,10 @@ class DashboardController extends GetxController {
       jobDetails = jobData.booking[0];
       polyLineMarkerInfo.clear();
       viaPoints.clear();
+      // Cleared with viaPoints, not separately: the two lists are read by
+      // index against each other below and in the via dialog, so leaving the
+      // controllers behind pairs the new points with the old booking's names.
+      viaTextEditingController.clear();
       polylinePoints.clear();
 
       // 1. SWAPPED ADDRESS OVERRIDE
@@ -3732,6 +3736,11 @@ class DashboardController extends GetxController {
               (vehicle) => vehicle.id == jobData.booking[0].vehicleTypeId,
         );
       }
+      if (jobData.booking[0].driverId != null) {
+        selectDriverValue = dashboardAllData?.drivers?.firstWhereOrNull(
+              (vehicle) => vehicle.id == jobData.booking[0].driverId,
+        );
+      }
 
       final LocationController _controller =
       Get.isRegistered<LocationController>()
@@ -3764,8 +3773,20 @@ class DashboardController extends GetxController {
       }
 
       if (jobData.booking.length > 1) {
-        withReturnDataBinding(jobData.booking[1]);
+        jourValue = 'R/N';
+        selectJourneyTypeValue =
+            dashboardAllData?.journeyTypes?.firstWhereOrNull(
+                  (journey) => journey.id == jobData.booking[0].journeyTypeId,
+            );
+        fixedFare.value = (double.parse(jobData.booking[1].fares!)+ double.parse(jobData.booking[0].fares!)).toString();
+            withReturnDataBinding(jobData.booking[1]);
       }else{
+        selectJourneyTypeValue =
+            dashboardAllData?.journeyTypes?.firstWhereOrNull(
+                  (journey) => journey.id == 1,
+            );
+        jourValue = "O/W";
+        fixedFare.value = jobData.booking[0].fares.toString();
         getFaresCalculation();
       }
 

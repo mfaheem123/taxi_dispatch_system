@@ -19,7 +19,16 @@ class ViaTextEditingControllerClass {
 }
 
 class ViaLocation extends StatefulWidget {
-  const ViaLocation({super.key});
+  const ViaLocation({super.key, this.formController});
+
+  /// The booking form this dialog edits the via points of.
+  ///
+  /// A dialog is its own route, so it is NOT under the opening screen's
+  /// [BookingFormScope] and cannot read the form off its context. Screens that
+  /// run a detached form of their own — the edit screen — therefore pass their
+  /// instance in at the call site. Left null it falls back to the dashboard's
+  /// permanent instance, which is what every dashboard-side caller wants.
+  final DashboardController? formController;
 
   @override
   State<ViaLocation> createState() => _ViaLocationState();
@@ -33,7 +42,9 @@ class _ViaLocationState extends State<ViaLocation> {
   FocusNode searchFocusNode = FocusNode();
   Timer? _debounce;
 
-  final DashboardController _controller = Get.find();
+  /// This dialog's form: the caller's instance, or the dashboard's.
+  late final DashboardController _controller =
+      widget.formController ?? Get.find<DashboardController>();
 
   // CHANGE INFO: Dialog ke persistent scrollbar ko properly render aur manage karne ke liye explicit controller banaya gaya hai.
   final ScrollController _viaDialogScrollController = ScrollController();
@@ -54,6 +65,10 @@ class _ViaLocationState extends State<ViaLocation> {
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: GetBuilder<DashboardController>(
+          // The form this dialog was opened for, not whichever instance is
+          // registered untagged — a detached form keeps its via points on its
+          // own instance, so an untagged lookup read an empty list.
+          tag: _controller.formTag,
           builder: (controller) {
             return SizedBox(
               height: 400,
