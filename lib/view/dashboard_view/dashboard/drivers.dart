@@ -9,6 +9,7 @@ import 'package:lucide_icons_flutter/test_icons.dart';
 
 import '../../../alert/child_seats_alert.dart';
 import '../../../alert/send_email_alert.dart';
+import '../../../alert/sinbin_driver_alert.dart';
 import '../../../component/marker_class.dart';
 import '../../../component/short_text.dart';
 import '../../../component/textStyle.dart';
@@ -741,10 +742,13 @@ class _DriversViewState extends State<DriversView> {
     await showMenu(
       context: context,
       position: RelativeRect.fromLTRB(left, top, left, top),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
       items: [
         PopupMenuItem(
           value: 1,
-          height: 12,
+          height: 30,
           child: Text("TRACK",
             style:
             mozillaTextRegularText(fontSize: 13),
@@ -752,7 +756,7 @@ class _DriversViewState extends State<DriversView> {
         ),
         PopupMenuItem(
           value: 2,
-          height: 12,
+          height: 30,
           child: Text("SINBIN",
             style:
             mozillaTextRegularText(fontSize: 13),
@@ -760,7 +764,7 @@ class _DriversViewState extends State<DriversView> {
         ),
         PopupMenuItem(
           value: 3,
-          height: 12,
+          height: 30,
           child: Text("FORCE BREAK",
             style:
             mozillaTextRegularText(fontSize: 13),
@@ -768,7 +772,7 @@ class _DriversViewState extends State<DriversView> {
         ),
         PopupMenuItem(
           value: 4,
-          height: 12,
+          height: 30,
           child: Text("LOGOUT",
             style:
             mozillaTextRegularText(fontSize: 13),
@@ -776,7 +780,7 @@ class _DriversViewState extends State<DriversView> {
         ),
         PopupMenuItem(
           value: 5,
-          height: 12,
+          height: 30,
           child: Text("CALL DRIVER",
             style:
             mozillaTextRegularText(fontSize: 13),
@@ -836,7 +840,12 @@ class _DriversViewState extends State<DriversView> {
 
         print("Viewing profile of ${driver.username}");
       } else if (value == 2) {
-        print("Assigning task...");
+        // print("Assigning task...");
+        print("Sinbin selected for ${driver?.username}");
+        showDialog(
+          context: context,
+          builder: (context) => SinbinDriverAlert(driver: driver),
+        );
       }
     });
   }

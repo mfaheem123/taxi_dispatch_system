@@ -57,13 +57,51 @@ class DriverSinBinController extends GetxController{
 
     print("Submitting Payload: $formData");
     
-    var response = await Api().post(formData,
+    var response = await Api().post(
+        formData,
         "sinbin/driver-sinbin-settings", sendCompanyId: true, auth: true);
 
     if (response.statusCode == 200) {
       BotToast.showText(text: "DRIVER SINBIN ADDED SUCCESSFULLY!");
     }
     isAddSinBin = false;
+    update();
+  }
+
+
+  void updateValue(TextEditingController textController, int change) {
+    int currentVal = int.tryParse(textController.text) ?? 0;
+    textController.text = (currentVal + change).toString();
+    update();
+  }
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>get all driver sinBin
+
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>post driver sinBin
+
+  bool isDriverSinBinLoading = false;
+
+  addDriverSinBin(driverId, sinbinTime) async {
+    isDriverSinBinLoading = true;
+    update();
+
+    var formData = {
+      "driver_id": driverId,
+      // "message": "You are in Sin Bin",
+      "sinbin_time": sinbinTime,
+      "is_active": true,
+    };
+    print("Submitting Payload: $formData");
+
+    var response = await Api().post(
+        formData,
+        "sinbin/driver-sinbin/add", sendCompanyId: true, auth: true);
+
+    if (response.statusCode == 200) {
+      BotToast.showText(text: "YOU ARE IN SINBIN");
+    }
+    isDriverSinBinLoading = false;
     update();
   }
 
