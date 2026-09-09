@@ -169,10 +169,8 @@ class CliController extends GetxController {
   /// 🔹 POST CLI JOB WITH CURRENT DATE & TIME
   postCLIJob(bid, dynamic date, dynamic time, did, vid) async {
     CLIJOBLoader(false);
-
     // Current Date and Time
     DateTime now = DateTime.now();
-
     // Force strictly current system date & time
     String formattedDate = DateFormat('yyyy-MM-dd').format(now);
     String formattedTime = DateFormat('HH:mm').format(now);
@@ -185,7 +183,6 @@ class CliController extends GetxController {
       'driver_id': did,
       'company_id': Api.singleton.globalCompanyId,
     };
-
     print("--- POSTING CLI JOB DATA ---");
     print(formData);
 
