@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 import '../model/driver_sin_bin_setting_model.dart';
+import '../model/get_driver_sinbin_model.dart';
 
 class DriverSinBinController extends GetxController{
 
@@ -77,12 +78,29 @@ class DriverSinBinController extends GetxController{
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>get all driver sinBin
 
+  bool isLoadingGetSinBin = false;
+  GetDriverSinBin? getDriverSinBinModel;
+  List<Driver> sinBinDriversList = [];
+
+  getDriverSinBin() async {
+    isLoadingGetSinBin = true;
+    update();
+    
+    var response = await Api().get("sinbin/sinbin-drivers/get", sendCompanyId: true);
+    if (response.statusCode == 200) {
+      getDriverSinBinModel = GetDriverSinBin.fromJson(response.data);
+      sinBinDriversList = getDriverSinBinModel?.drivers ?? [];
+    }
+    isLoadingGetSinBin = false;
+    update();
+  }
+
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>post driver sinBin
 
   bool isDriverSinBinLoading = false;
 
-  addDriverSinBin(driverId, sinbinTime) async {
+  addDriverSinBin(driverId, sinbinTime, {bool isActive = true}) async {
     isDriverSinBinLoading = true;
     update();
 
@@ -90,7 +108,7 @@ class DriverSinBinController extends GetxController{
       "driver_id": driverId,
       // "message": "You are in Sin Bin",
       "sinbin_time": sinbinTime,
-      "is_active": true,
+      "is_active": isActive,
     };
     print("Submitting Payload: $formData");
 
@@ -99,8 +117,10 @@ class DriverSinBinController extends GetxController{
         "sinbin/driver-sinbin/add", sendCompanyId: true, auth: true);
 
     if (response.statusCode == 200) {
-      BotToast.showText(text: "YOU ARE IN SINBIN");
+      BotToast.showText(text: isActive ? "YOU ARE IN SINBIN" : "DRIVER REMOVED FROM SINBIN");
+      getDriverSinBin();
     }
+
     isDriverSinBinLoading = false;
     update();
   }
