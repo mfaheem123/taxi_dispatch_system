@@ -1,10 +1,8 @@
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-
-import '../../../../alert/restrict_drivers_alert.dart';
-import '../../../../alert/success_alert.dart';
 import '../../../../component/color.dart';
 import '../../../../component/datatable_widget.dart';
 import '../../../../component/textStyle.dart';
@@ -12,8 +10,6 @@ import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
 import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../../dashboard_view/booking_table.dart';
-import '../../../dashboard_view/widgets/time_picker_widget.dart';
-import '../../controller/driver_controller.dart';
 import '../../controller/driver_sin_bin_controller.dart';
 
 class DriverSinBinSetting extends StatefulWidget {
@@ -24,9 +20,6 @@ class DriverSinBinSetting extends StatefulWidget {
 }
 
 class _DriverSinBinSettingState extends State<DriverSinBinSetting> {
-  // DriverController controller = Get.isRegistered<DriverController>()
-  //     ? Get.find<DriverController>()
-  //     : Get.put(DriverController());
   DriverSinBinController controller = Get.isRegistered<DriverSinBinController>()
       ? Get.find<DriverSinBinController>()
       : Get.put(DriverSinBinController());
@@ -36,6 +29,7 @@ class _DriverSinBinSettingState extends State<DriverSinBinSetting> {
     super.initState();
     shortCutKeyValue.value = "driverSinBinSetting";
     controller.getDriverSinBinSetting();
+    controller.getDriverSinBin();
   }
 
   int selectedRowIndex = 0;
@@ -59,13 +53,6 @@ class _DriverSinBinSettingState extends State<DriverSinBinSetting> {
 
           return SingleChildScrollView(
             scrollDirection: Axis.vertical,
-            //   child: Container(
-            // width: fieldWidth*2.8,
-            // decoration: BoxDecoration(
-            //     borderRadius: BorderRadius.circular(4),
-            //     border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
-            // ),
-            // child: SingleChildScrollView(
             child: Padding(padding: EdgeInsets.all(16),
             child: Column(
               children: [
@@ -96,7 +83,6 @@ class _DriverSinBinSettingState extends State<DriverSinBinSetting> {
                           padding: EdgeInsets.all(16),
                           child: Wrap(
                             crossAxisAlignment: WrapCrossAlignment.end,
-                            // verticalDirection: VerticalDirection.down,
                             spacing: fieldWidth / 2,
                             children: [
                               Row(
@@ -104,29 +90,11 @@ class _DriverSinBinSettingState extends State<DriverSinBinSetting> {
                                     MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  CustomTextField(
-                                    borderRadius: 4,
-                                    controller: controller.recoverJobController,
-                                    width: fieldWidth / 1.5,
-                                    hintText: AppText.recoverJob,
-                                    columnText: true,
-                                  ),
-                                  CustomTextField(
-                                    borderRadius: 4,
-                                    controller: controller.rejectJobController,
-                                    width: fieldWidth / 1.5,
-                                    hintText: AppText.rejectJob,
-                                    columnText: true,
-                                  ),
-                                  CustomTextField(
-                                    borderRadius: 4,
-                                    controller: controller.ignoreJobController,
-                                    width: fieldWidth / 1.5,
-                                    hintText: AppText.ignoreJob,
-                                    columnText: true,
-                                  ),
+                                  buildNumberField(controller.recoverJobController, AppText.recoverJob, fieldWidth / 1.7),
+                                  buildNumberField(controller.rejectJobController, AppText.rejectJob, fieldWidth / 1.7),
+                                  buildNumberField(controller.ignoreJobController, AppText.ignoreJob, fieldWidth / 1.7),
                                   CustomButton(
-                                      width: fieldWidth / 2,
+                                      width: fieldWidth / 2.5,
                                       height: 30,
                                       verticalPadding: 0.0,
                                       btnText: AppText.save,
@@ -139,6 +107,7 @@ class _DriverSinBinSettingState extends State<DriverSinBinSetting> {
                                         // SuccessAlert.show(
                                         //     "Data saved successfully!");
                                       }),
+                                  SizedBox(width: 10),
                                 ],
                               )
                             ],
@@ -149,7 +118,15 @@ class _DriverSinBinSettingState extends State<DriverSinBinSetting> {
                 ),
 
                 SizedBox(height: 30),
-                SingleChildScrollView(
+
+                controller.isLoadingGetSinBin
+                    ? const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(30.0),
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+                    : SingleChildScrollView(
                   scrollDirection: Axis.vertical,
                   child: SizedBox(
                     width: Get.width/1.5,
@@ -160,22 +137,116 @@ class _DriverSinBinSettingState extends State<DriverSinBinSetting> {
                         buildHeaderWithSearch(title: "VEHICLE", removeSearching: true),
                         buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
                       ],
-                      totalRow: totalRows,
+                      totalRow: controller.sinBinDriversList.length,
+                      rows: controller.sinBinDriversList.map((driver) {
+                        return DataRow(
                       cells: [
-                        DataCell(Center(child: Text("#PHC VEHICLE"))),
-                        DataCell(Center(child: Text("PHC VEHICLE"))),
-                        DataCell(Center(child: Text("#PHC VEHICLE"))),
-                        DataCell(Center(child: Text("PHC VEHICLE"))),
+                        DataCell(Center(child: Text(driver.username ?? ""))),
+                        DataCell(Center(child: Text(driver.name ?? ""))),
+                        DataCell(Center(child: Text(driver.vehicle?.vehicleType?.name ?? ""))),
+                        DataCell(
+                          Center(
+                            child: Focus(
+                              child: Builder(
+                                builder: (context) {
+                                  final hasFocus = Focus.of(context).hasFocus;
+                                  return Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(6),
+                                      onTap: () {
+                                        controller.addDriverSinBin(driver.id, 0, isActive: false);
+                                      },
+                                      child: AnimatedContainer(
+                                        duration: const Duration(milliseconds: 150),
+                                        height: 30,
+                                        width: 32,
+                                        decoration: BoxDecoration(
+                                          color: DynamicColors.redClr,
+                                          borderRadius: BorderRadius.circular(6),
+                                          border: Border.all(
+                                            color: hasFocus ? Colors.black : Colors.transparent,
+                                            width: hasFocus ? 2 : 0,
+                                          ),
+                                          boxShadow: hasFocus ? [
+                                            BoxShadow(
+                                              color: DynamicColors.redClr.withOpacity(0.6),
+                                              blurRadius: 6,
+                                              spreadRadius: 2,
+                                            )
+                                          ] : [],
+                                        ),
+                                        child: const Icon(
+                                          Icons.hourglass_full,
+                                          size: 18,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        )
                       ],
-                    ),
+                    );
+                      }).toList(),
                   ),
                 ),
-              ],
+                )],
             ),
           ));
-          // ));
         });
       }),
+    );
+  }
+  Widget buildNumberField(TextEditingController textCtrl, String hintText, double width) {
+    return Focus(
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent || event is KeyRepeatEvent) {
+          if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+            controller.updateValue(textCtrl, 1);
+            return KeyEventResult.handled;
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+            controller.updateValue(textCtrl, -1);
+            return KeyEventResult.handled;
+          }
+        }
+        return KeyEventResult.ignored;
+      },
+      child: CustomTextField(
+        width: width,
+        borderRadius: 4,
+        controller: textCtrl,
+        hintText: hintText,
+        columnText: true,
+        // height: 38,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
+        ],
+        suffixIcon: FocusScope(
+          canRequestFocus: false,
+          skipTraversal: true,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              InkWell(
+                focusNode: FocusNode(canRequestFocus: false),
+                onTap: () => controller.updateValue(textCtrl, 1),
+                child: const Icon(Icons.arrow_drop_up, size: 15),
+              ),
+              InkWell(
+                focusNode: FocusNode(canRequestFocus: false),
+                onTap: () => controller.updateValue(textCtrl, -1),
+                child: const Icon(Icons.arrow_drop_down, size: 15),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
