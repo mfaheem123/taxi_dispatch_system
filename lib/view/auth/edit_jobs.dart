@@ -54,6 +54,7 @@ import '../dashboard_view/models/users_phone_numbers_model.dart';
 import '../dashboard_view/utils/address_query_match.dart';
 import '../dashboard_view/utils/page_arrow_scroll.dart';
 import '../dashboard_view/widgets/fare_configuration.dart';
+import '../dashboard_view/widgets/via_location.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
 import '../locations_view/controller/locations_controller.dart';
 
@@ -352,12 +353,18 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     // below — and the map, and the dialogs — can find THIS instance rather
     // than the dashboard's. Created here and deleted in dispose(), so a closed
     // edit screen leaves nothing behind.
-    _formTag = DashboardController.newEditFormTag(1664);
+    _formTag = DashboardController.newEditFormTag(1673);
     // _formTag = DashboardController.newEditFormTag(widget.booking.id);
     controller = Get.put(
       DashboardController(formTag: _formTag),
       tag: _formTag,
     );
+    // This screen's map is a short, wide strip under the form rather than the
+    // dashboard's big square panel, so the shared defaults frame the journey
+    // too far out to read the street names. Set on THIS instance only, so the
+    // dashboard and both booking screens keep the zoom they had.
+    controller.mapZoomBoost = 2;
+    controller.mapFitPadding = 24;
     // Writes wait for the first frame. Loading a booking assigns to
     // TextEditingControllers and Rx values that widgets are listening to, and
     // this screen is mounted during a tab switch — the outgoing tab is still
@@ -446,7 +453,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     }
     if (!mounted) return;
 
-    final id = 1664;
+    final id = 1673;
     // final id = widget.booking.id;
     if (id != null) {
       // Restores the selections off the booking, and fetches the accounts for
@@ -652,63 +659,63 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                     controller.swapeToChangeLocation();
                                   },
                                 ),
-                                // Visibility(
-                                //   visible: controller.isAirportResponse.value,
-                                //   child: Padding(
-                                //     padding: const EdgeInsets.only(top: 4),
-                                //     child: isMobile
-                                //         ? Column(
-                                //       crossAxisAlignment:
-                                //       CrossAxisAlignment.stretch,
-                                //       children: [
-                                //         _field('FL',
-                                //             tab: 3.3,
-                                //             controller: controller
-                                //                 .selectAirportController),
-                                //         const SizedBox(height: 4),
-                                //         _timeField('ARP',
-                                //             tab: 3.6,
-                                //             controller: controller
-                                //                 .arrivalTimeController,
-                                //             onPicked: () => controller
-                                //                 .arrivalTimePicked = true),
-                                //       ],
-                                //     )
-                                //         :
-                                //     Row(
-                                //       crossAxisAlignment: CrossAxisAlignment.center,
-                                //       children: [
-                                //         SizedBox(width: 80, child:  Row(mainAxisSize: MainAxisSize.min, children: [
-                                //           Icon(Icons.circle, size: 9, color: _purple),
-                                //           const SizedBox(width: 6),
-                                //           Text("FL",
-                                //               style:
-                                //               const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsLabel)),
-                                //         ])),
-                                //         const SizedBox(width: 2),
-                                //         Expanded(
-                                //           flex: 3,
-                                //           // Caption blank: the dotted FL tag
-                                //           // to the left already names it.
-                                //           child: _field('',
-                                //               tab: 3.3,
-                                //               controller: controller
-                                //                   .selectAirportController),
-                                //         ),
-                                //         const SizedBox(width: 12),
-                                //         Expanded(
-                                //           flex: 1,
-                                //           child: _timeField('ARP',
-                                //               tab: 3.6,
-                                //               controller: controller
-                                //                   .arrivalTimeController,
-                                //               onPicked: () => controller
-                                //                   .arrivalTimePicked = true),
-                                //         ),
-                                //       ],
-                                //     ),
-                                //   ),
-                                // ),
+                                Visibility(
+                                  visible: controller.isAirportResponse.value,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: isMobile
+                                        ? Column(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                      children: [
+                                        _field('FL',
+                                            tab: 3.3,
+                                            controller: controller
+                                                .selectAirportController),
+                                        const SizedBox(height: 4),
+                                        _timeField('ARP',
+                                            tab: 3.6,
+                                            controller: controller
+                                                .arrivalTimeController,
+                                            onPicked: () => controller
+                                                .arrivalTimePicked = true),
+                                      ],
+                                    )
+                                        :
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        SizedBox(width: 80, child:  Row(mainAxisSize: MainAxisSize.min, children: [
+                                          Icon(Icons.circle, size: 9, color: _purple),
+                                          const SizedBox(width: 6),
+                                          Text("FL",
+                                              style:
+                                              const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsLabel)),
+                                        ])),
+                                        const SizedBox(width: 2),
+                                        Expanded(
+                                          flex: 3,
+                                          // Caption blank: the dotted FL tag
+                                          // to the left already names it.
+                                          child: _field('',
+                                              tab: 3.3,
+                                              controller: controller
+                                                  .selectAirportController),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          flex: 1,
+                                          child: _timeField('ARP',
+                                              tab: 3.6,
+                                              controller: controller
+                                                  .arrivalTimeController,
+                                              onPicked: () => controller
+                                                  .arrivalTimePicked = true),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                                 const SizedBox(height: 4),
                                 _locationRow<ZoneObject>(
                                   'DROP   ',
@@ -1740,7 +1747,16 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                         order: 0.2,
                         onTap: () => _headerAction('Associated booking')),
                   iconBtn(Icons.play_arrow, 'Dispatch',
-                      order: 0.3, onTap: () => _headerAction('Dispatch')),
+                      order: 0.3, onTap: () {
+                        if (controller.pickupController.text.isNotEmpty
+                        // &&    controller.dropOffController.text.isNotEmpty
+                        ) {
+                          showDialog(context: context, builder: (_) => ViaLocation());
+                        }else{
+                          BotToast.showText(text: "Please write pickup and dropoff location");
+                        }
+                        // _headerAction('Dispatch');
+                  }),
                   iconBtn(Icons.chat_bubble_outline, 'Messages',
                       order: 0.4, onTap: () => _headerAction('Messages')),
                   iconBtn(Icons.send, 'Send details',

@@ -1363,7 +1363,7 @@ class BookingObjectData {
     stripePaymentId: json["stripe_payment_id"],
     invoiceNumber: json["invoice_number"],
     initialSubsidiaryId: json["initial_subsidiary_id"],
-        createdAt: DateTime.parse(json["created_at"]),
+        createdAt: DateTime.  parse(json["created_at"]),
 
     updatedAt: DateTime.parse(json["updated_at"]),
     eta: json["eta"],

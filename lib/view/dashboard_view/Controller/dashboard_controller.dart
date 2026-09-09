@@ -69,6 +69,28 @@ class DashboardController extends GetxController {
   /// True on the edit screen's private instance, false on the dashboard's.
   bool get isDetachedForm => formTag != null;
 
+  /// Extra zoom levels this form's map frames the journey at, on top of the
+  /// shared defaults.
+  ///
+  /// The map widget is shared with the dashboard and both booking screens, so
+  /// the zoom cannot simply be raised in MapViewWidget — that would pull the
+  /// dashboard in too. It lives here instead because the edit screen owns its
+  /// own instance ([formTag]), so a value set on that instance moves only that
+  /// screen's map, and because two of the four zoom decisions are made in
+  /// [focusMapOnJourney] below, which the widget does not call directly on
+  /// every path.
+  ///
+  /// 0 leaves every other call site at exactly the zoom it had before.
+  double mapZoomBoost = 0;
+
+  /// Breathing room left around the journey when [focusMapOnJourney] fits it,
+  /// in logical pixels.
+  ///
+  /// Separate from [mapZoomBoost] because it is the only lever that tightens a
+  /// LONG journey: those are bounds-driven, so raising the max zoom does
+  /// nothing once the route itself is what decides the scale.
+  double mapFitPadding = 60;
+
   static int _formTagSeq = 0;
 
   /// A tag no other form is using. Two edit tabs on the same booking still get
@@ -1119,16 +1141,16 @@ class DashboardController extends GetxController {
     if (pts.isEmpty) return;
     try {
       if (pts.length == 1) {
-        mapController.move(pts.first, singlePointZoom);
+        mapController.move(pts.first, singlePointZoom + mapZoomBoost);
         return;
       }
       mapController.fitCamera(
         CameraFit.coordinates(
           coordinates: pts,
-          padding: const EdgeInsets.all(60),
+          padding: EdgeInsets.all(mapFitPadding),
           // Two addresses on the same street would otherwise fit at street
           // level, which reads as a broken map rather than as a short journey.
-          maxZoom: 15,
+          maxZoom: 15 + mapZoomBoost,
         ),
       );
     } catch (_) {
@@ -1217,7 +1239,7 @@ class DashboardController extends GetxController {
   /// Plots the journey, tracking the leg in [_routeFetch] so a screen that
   /// wants one continuous loader can await it. Every existing call site is
   /// unchanged: the fetch itself moved to [_fetchRouteFromOSRM].
-  Future<void> fetchRouteFromOSRM() {
+  Future<void> fetchRouteFromOSRM({faresHit = true}) {
     final fetch = _fetchRouteFromOSRM();
     _routeFetch = fetch;
     // Cleared only if this is still the latest leg — an address picked while
@@ -2490,7 +2512,7 @@ class DashboardController extends GetxController {
           ? null
           : returnCompanyPriceController.text,
       returnMiles: dropOffTwoWayController.text.isNotEmpty &&
-          pickupTwoWayController.text.isNotEmpty
+          pickupTwoWayController.text.isNotEmpty && tempStoreMils != null
           ? (double.parse(totalDistance.value) -
                   double.parse(tempStoreMils.toString()))
               .toString()
@@ -2924,9 +2946,9 @@ class DashboardController extends GetxController {
             "${pickUpDateReturn!.year}-${pickUpDateReturn!.month}-${pickUpDateReturn!.day}",
       if (dropOffTwoWayController.text.isNotEmpty)
         "return_pickup_time": pickUpTimeControllerReturn.text,
-      if (pickupTwoWayController.text.isNotEmpty)
+      if (pickupTwoWayController.text.isNotEmpty && dashboardRNZoneValue != null)
       "return_pickup_plot": dashboardRNZoneValue!.id,
-      if (pickupTwoWayController.text.isNotEmpty)
+      if (pickupTwoWayController.text.isNotEmpty && dashboardRN1ZoneValue != null)
       "return_dropoff_plot": dashboardRN1ZoneValue!.id,
       if (pickupTwoWayController.text.isNotEmpty)
       "return_lead_time": minControllerReturn.text,
@@ -3574,10 +3596,6 @@ class DashboardController extends GetxController {
         ));
       }
 
-      if (jobData.booking.length > 1) {
-        withReturnDataBinding(jobData.booking[1]);
-      }
-
       fetchRouteFromOSRM();
 
       nameController.text = jobData.booking[0].name!.toUpperCase();
@@ -3663,8 +3681,12 @@ class DashboardController extends GetxController {
       if (jobData.booking[0].restrictedDrivers?.isNotEmpty ?? false) {
         final restrictedIds =
         jobData.booking[0].restrictedDrivers!.map((e) => e.id.toString()).toSet();
-        driversList.addAll(allDriverData!.drivers!
-            .where((driver) => restrictedIds.contains(driver.id.toString())));
+        if(allDriverData != null && allDriverData!.drivers!.isNotEmpty){
+          driversList.addAll(allDriverData!.drivers!
+              .where((driver) => restrictedIds.contains(driver.id.toString())));
+        }else{
+          driversList.clear();
+        }
       }
 
       if (jobData.booking[0].subsidiaryId != null) {
@@ -3693,6 +3715,10 @@ class DashboardController extends GetxController {
                   (payment) => payment.id == jobData.booking[0].paymentTypeId,
             );
       }
+
+      // dashboardAllData!.journeyTypes
+      // selectJourneyTypeValue
+      // // journey_type_id
 
       if (jobData.booking[0].journeyTypeId != null) {
         selectJourneyTypeValue =
@@ -3737,8 +3763,13 @@ class DashboardController extends GetxController {
         _controller.updateLocationValue.value == false;
       }
 
-      if (hitAddBooking == true) {
+      if (jobData.booking.length > 1) {
+        withReturnDataBinding(jobData.booking[1]);
+      }else{
+        getFaresCalculation();
+      }
 
+      if (hitAddBooking == true) {
         dashBoardApiValidation();
       } else {
         update();
@@ -3859,7 +3890,7 @@ class DashboardController extends GetxController {
             (vehicle) => vehicle.id == bookingData.vehicleTypeId,
       );
     }
-
+    getFaresCalculation();
   }
 
   bool cliJobHit = false;

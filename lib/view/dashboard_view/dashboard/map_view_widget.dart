@@ -361,7 +361,10 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                     mapController: controller.mapController,
                     options: MapOptions(
                       initialCenter:polylinePoints.isEmpty?LatLng(51.2709722, 0.1893883): polylinePoints.first,
-                      initialZoom: 13.0,
+                      // Whichever form owns this map decides how close it
+                      // sits; the boost is 0 everywhere except the edit
+                      // screen, so the dashboard still opens at 13.
+                      initialZoom: 13.0 + controller.mapZoomBoost,
                       interactionOptions: const InteractionOptions(
                         flags: InteractiveFlag.all,
                         enableMultiFingerGestureRace: true,
@@ -373,11 +376,29 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                         // MapController to fit while it had no map, so the fit
                         // has to be re-issued here rather than only on first
                         // load.
-                        if (controller.mapFocusPoints.isNotEmpty) {
-                          controller.focusMapOnJourney();
-                        } else if (polylinePoints.length >= 2) {
-                          controller.focusMapOnJourney(points: polylinePoints);
-                        }
+                        //
+                        // A FRAME LATER, though, not inline. onMapReady runs
+                        // inside flutter_map's first frame, by which point the
+                        // TileLayer has already worked out which tiles the
+                        // INITIAL camera needs. Fitting synchronously moves
+                        // the camera out from under that decision without
+                        // giving the layer another load pass, so it holds
+                        // tiles for a viewport that is no longer on screen and
+                        // the map renders as bare grey with only the polyline
+                        // and markers on it — until any zoom emits a camera
+                        // event and the tiles finally catch up. Deferring to
+                        // the post-frame callback makes the fit an ordinary
+                        // camera move that the TileLayer observes.
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (!mounted) return;
+                          if (controller.mapFocusPoints.isNotEmpty) {
+                            controller.focusMapOnJourney();
+                          } else if (polylinePoints.length >= 2) {
+                            controller.focusMapOnJourney(
+                              points: polylinePoints,
+                            );
+                          }
+                        });
                       },
                     ),
                     children: [
@@ -606,8 +627,10 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                             if (controller.mapFocusPoints.isNotEmpty) {
                               controller.focusMapOnJourney();
                             } else {
-                              controller.mapController
-                                  .move(polylinePoints.first, 13.0);
+                              controller.mapController.move(
+                                polylinePoints.first,
+                                13.0 + controller.mapZoomBoost,
+                              );
                             }
                           },
                           child: const Icon(Icons.center_focus_strong, color: Colors.black87, size: 20,),

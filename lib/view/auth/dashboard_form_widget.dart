@@ -892,7 +892,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           _controller.updateLocationValue.value == true
               ? []
               : _controller.locationtypezoneModel!.zonesList!,
-              (v) => setState(() => _controller.RNzoneValue = v),
+              (v) => setState(() {
+                controller.dashboardRNZoneValue = v;
+                _controller.RNzoneValue = v;
+              }),
           isMobile,
               (value) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -947,6 +950,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           onCurrentLocation: () async {
             controller.swapeToChangeReturnLocation();
             },
+          notesController: controller.returnPickUpNoteController
         ),
         Visibility(
           visible: controller.isAirportResponseReturn.value,
@@ -1012,7 +1016,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           _controller.updateLocationValue.value == true
               ? []
               : _controller.locationtypezoneModel!.zonesList!,
-              (v) => setState(() => _controller.RN1zoneValue = v),
+              (v) => setState(() {
+                controller.dashboardRN1ZoneValue = v;
+                _controller.RN1zoneValue = v;
+              }),
           isMobile,
               (value) {
             controller.onChangeHandler(
@@ -1064,6 +1071,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           onCurrentLocation: () async {
             controller.swapeToChangeReturnLocation();
           },
+            notesController: controller.returnDropUpNoteController
         ),
         const SizedBox(height: 8),
         _grid(cols, [

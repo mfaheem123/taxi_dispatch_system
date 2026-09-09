@@ -38,31 +38,6 @@ class _ViaLocationState extends State<ViaLocation> {
   // CHANGE INFO: Dialog ke persistent scrollbar ko properly render aur manage karne ke liye explicit controller banaya gaya hai.
   final ScrollController _viaDialogScrollController = ScrollController();
 
-  Future<List<String>> _getNamesRequest(String query) async {
-    if (query.isEmpty) return [];
-    const duration = Duration(milliseconds: 800);
-
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-    final completer = Completer<List<String>>();
-    _controller.selectedTextFieldsValue.value = "VIA";
-    _debounce = Timer(duration, () async {
-      await _controller.getAddresses(fieldsName: "VIA", searchingText: query);
-
-      final list = _controller.allAddressesData
-          .map((m) => "${m.name ?? ''} ${m.postcode ?? ''}")
-          .toList();
-
-      completer.complete(list);
-    });
-    return completer.future;
-  }
-
-  Future<List<AllAddressesModel>> _getFakeRequestData(String query) async {
-    _controller.onChangeHandler(fieldName: "VIA",searchingText: query);
-    return await Future.delayed(const Duration(seconds: 1), () async {
-      return _controller.allAddressesData.where((e) => e.name!.toLowerCase().contains(query.toLowerCase())).toList();
-    });
-  }
 
   @override
   void dispose() {
