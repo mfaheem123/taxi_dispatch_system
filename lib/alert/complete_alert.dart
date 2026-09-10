@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../component/alert_close_button.dart';
 import '../component/color.dart';
 import '../component/customButton.dart';
 import '../component/dropdown_button.dart';
 import '../component/textStyle.dart';
 import '../controller/fob_controller.dart';
 import '../view/customer/model/restricDriver.dart';
-
-// void showCompleteBookingAlert(int id) {
-//   Get.dialog(CompleteBookingAlert(bookingId: id),
-//     barrierColor: Colors.black54,
-//   );
-// }
 
 class CompleteBookingAlert extends StatefulWidget {
   final dynamic bookingItem;
@@ -49,47 +44,41 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: DynamicColors.gryClr.withOpacity(0.5),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+              ),
               child: Row(
                 children: [
-                  Text(
-                    "COMPLETE BOOKING ${widget.bookingItem?.referenceNumber ?? "N/A"}",
-                    style: mozillaTextSemiBoldText(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87
+                  Icon(Icons.done_all, color: DynamicColors.primaryClr),
+                  const SizedBox(width: 10),
+                  RichText(
+                    text: TextSpan(
+                      style: mozillaTextSemiBoldText(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                      children: [
+                        const TextSpan(text: "COMPLETE BOOKING ("),
+                        TextSpan(
+                          text: widget.bookingItem?.referenceNumber ?? "N/A",
+                          style: TextStyle(color: DynamicColors.primaryClr, fontWeight: FontWeight.bold),
+                        ),
+                        const TextSpan(text: ")"),
+                      ],
                     ),
                   ),
                   const Spacer(),
-                  AnimatedBuilder(
-                    animation: closeButtonFocusNode,
-                    builder: (context, child) {
-                      final isFocused = closeButtonFocusNode.hasFocus;
-                      return Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
-                            width: 2,
-                          ),
-                          color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
-                        ),
-                        child: IconButton(
-                          focusNode: closeButtonFocusNode,
-                          onPressed: () => Get.back(),
-                          icon: const Icon(Icons.close, size: 22, color: Colors.grey),
-                          splashRadius: 20,
-                        ),
-                      );
-                    },
+                  FocusTraversalOrder(
+                    order: const NumericFocusOrder(999),
+                    child: const AlertCloseButton(),
                   ),
                 ],
               ),
             ),
-            const Divider(height: 1),
+            const Divider(height: 1, thickness: 1),
+            SizedBox(height: 30),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
+              padding: const EdgeInsets.symmetric(horizontal: 26.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -102,7 +91,6 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
                   ),
                   const SizedBox(height: 10),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -126,8 +114,9 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
                 ],
               ),
             ),
-
+            SizedBox(height: 30),
             const Divider(height: 1),
+
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
@@ -138,7 +127,7 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
                     height: 28,
                     verticalPadding: 0.0,
                     btnText: "BACK",
-                    btnColor: Colors.grey,
+                    btnColor: Colors.grey.shade300,
                     borderRadius: 4,
                     style: mozillaTextSemiBoldText(
                         fontSize: 14,
