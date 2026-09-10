@@ -688,14 +688,32 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       controller: controller.minController),
                                 ]),
                                 _grid(isMobile ? 1 : 3, [
-                                  _field('No. of Passengers',
-                                      tab: 16,
-                                      prefix: Icons.person_outline,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly,
-                                        LengthLimitingTextInputFormatter(2),
-                                      ],
-                                      controller: controller.passController),
+                                    Obx(
+                                    () => _field(
+                            'No. of Passengers',
+                            tab: 16,
+                            prefix: Icons.person_outline,
+                            controller: controller.passController,
+                            isError: controller.isPassengerError.value,
+                            onChanged: (val) => controller.validatePassengerLimit(val),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(2),
+                            ],
+                          ),
+                    ),
+                                  // _field('No. of Passengers',
+                                  //     tab: 16,
+                                  //     prefix: Icons.person_outline,
+                                  //     controller: controller.passController,
+                                  //     isError: controller.isPassengerError.value,
+                                  //     onChanged: (val) => controller.validatePassengerLimit(val),
+                                  //     inputFormatters: [
+                                  //       FilteringTextInputFormatter.digitsOnly,
+                                  //       LengthLimitingTextInputFormatter(2),
+                                  //     ],
+                                  //
+                                  // ),
                                   _field('FARE',
                                       tab: 17,
                                       prefix: Icons.currency_pound,
@@ -739,12 +757,32 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.dashboardAllData!.vehicleTypes!,
                                         (v) => setState(() {
                                       controller.selectVehicleValue = v;
+
+                                      // Auto fill passenger count from API
+                                      if (v != null && v.passengers != null) {
+                                        controller.passController.text = v.passengers.toString();
+                                      }
+
+                                      // Auto-fill ke baad validation update karein
+                                      controller.validatePassengerLimit(controller.passController.text);
                                       controller.getFaresCalculation();
                                     }),
-                                    _isReturnJourney?35:20,
+                                    _isReturnJourney ? 35 : 20,
                                     itemLabel: (p) => p.name!,
                                     allowUnselect: false,
                                   ),
+                                  // _dropdown<DashboardVehicleTypeObject>(
+                                  //   'Vehicle Type',
+                                  //   controller.selectVehicleValue,
+                                  //   controller.dashboardAllData!.vehicleTypes!,
+                                  //       (v) => setState(() {
+                                  //     controller.selectVehicleValue = v;
+                                  //     controller.getFaresCalculation();
+                                  //   }),
+                                  //   _isReturnJourney?35:20,
+                                  //   itemLabel: (p) => p.name!,
+                                  //   allowUnselect: false,
+                                  // ),
                                   _dropdown<DepartmentObject>(
                                     'Select Department',
                                     controller.selectDepartmentData,
@@ -1943,6 +1981,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         VoidCallback? onPrefixTap,
         TextEditingController? controller,
         List<TextInputFormatter>? inputFormatters,
+        bool isError = false,                  // New parameter
+        ValueChanged<String>? onChanged,          // New parameter
       }) {
     Widget? prefixWidget;
     if (prefix != null) {
@@ -1967,6 +2007,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         child: GlowFocus(
           child: TextField(
             controller: controller,
+            onChanged: onChanged, // Listener added
             textCapitalization: TextCapitalization.characters,
             inputFormatters: inputFormatters ??
                 [
@@ -1981,6 +2022,13 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               prefixIconConstraints:
               const BoxConstraints(minWidth: 28, minHeight: 0),
               prefixIcon: prefixWidget,
+              // Border handling for Red error indicator
+              enabledBorder: isError
+                  ? const OutlineInputBorder(borderSide: BorderSide(color: Colors.red, width: 2.0))
+                  : null,
+              focusedBorder: isError
+                  ? const OutlineInputBorder(borderSide: BorderSide(color: Colors.red, width: 2.0))
+                  : null,
             ),
           ),
         ),

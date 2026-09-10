@@ -3984,6 +3984,38 @@ class DashboardController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking functionality
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo passenger function
+  // final passController = TextEditingController();
+  // DashboardVehicleTypeObject? selectVehicleValue;
+
+  RxBool isPassengerError = false.obs;
+
+  void validatePassengerLimit(String value) {
+    if (value.isEmpty || selectVehicleValue == null) {
+      isPassengerError.value = false;
+      return;
+    }
+
+    int enteredCount = int.tryParse(value) ?? 0;
+    int maxLimit = selectVehicleValue?.passengers ?? 0;
+
+    // Condition Check: Limit cross hone par red border aur alert
+    if (enteredCount > maxLimit) {
+      isPassengerError.value = true;
+
+      Get.defaultDialog(
+        title: "Limit Exceeded",
+        middleText: "You can increase vehicle type.",
+        textConfirm: "OK",
+        confirmTextColor: Colors.white,
+        onConfirm: () => Get.back(),
+      );
+    } else {
+      isPassengerError.value = false;
+    }
+  }
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo passenger function
+
   @override
   void onClose() {
     // suggestionFocusNode.dispose();
