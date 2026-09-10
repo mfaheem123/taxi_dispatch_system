@@ -108,11 +108,23 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
                               ]),
                           const Spacer(),
                           // const SizedBox(width: 40),
-                          CustomButton(
-                            width: 195, height: 36, verticalPadding: 0.0, borderRadius: 6,
-                            btnText: "CALCULATE DISTANCE",
-                            style: mozillaTextSemiBoldText(fontSize: 14, color: Colors.white),
-                            onTap: () {},
+                          ElevatedButton.icon(
+                            onPressed: () {},
+                            icon: const Icon(
+                                Icons.route, size: 16),
+                            label: Text(
+                              "CALCULATE DISTANCE",
+                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: DynamicColors.primaryClr,
+                              foregroundColor: Colors.white,
+                              minimumSize: const Size(200, 38),
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
                           ),
                         ],
                       )),

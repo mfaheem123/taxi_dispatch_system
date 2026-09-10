@@ -10,6 +10,7 @@ import '../component/color.dart';
 import '../component/customButton.dart';
 import '../component/textStyle.dart';
 import '../controller/fob_controller.dart';
+import 'delete_permission_alert.dart';
 
 class CancelBookingRequest extends StatefulWidget {
   final dynamic bookingItem;
@@ -192,75 +193,92 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         CustomButton(
-                          width: 100,
-                          height: 35,
+                          width: 80,
+                          height: 28,
+                          verticalPadding: 0.0,
                           btnText: "BACK",
                           btnColor: Colors.grey.shade300,
-                          verticalPadding: 0.0,
-                          borderRadius: 6,
-                          onTap: () => Get.back(),
-                          style: mozillaTextSemiBoldText(fontSize: 14,
+                          borderRadius: 4,
+                          style: mozillaTextSemiBoldText(
+                              fontSize: 14,
                               color: Colors.black87,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(width: 15),
-                        CustomButton(
-                          width: 220,
-                          height: 40,
-                          // btnText: "CONFIRM CANCELLATION",
-                          btnColor: DynamicColors.primaryClr,
-                          verticalPadding: 0.0,
-                          borderRadius: 8,
-                          widget: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.delete_forever,
-                                color: Colors.white,
-                                size: 18,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                "CONFIRM CANCELLATION",
-                                style: mozillaTextSemiBoldText(
-                                  fontSize: 14,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
+                              fontWeight: FontWeight.bold
                           ),
-                          onTap: () {
+                          onTap: () => Get.back(),
+                        ),
+                        const SizedBox(width: 12),
+
+                        ElevatedButton.icon(
+                          onPressed: () {
                             if (reasonController.text.trim().isEmpty) {
                               BotToast.showText(text: "PLEASE PROVIDE A REASON");
                               return;
                             }
 
-                            Get.defaultDialog(
-                              title: "CONFIRMATION",
-                              titleStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                              middleText: "ARE YOU SURE YOU WANT TO CANCEL THIS BOOKING?",
-                              backgroundColor: Colors.white,
-                              radius: 8,
-
-                              textCancel: "NO",
-                              cancelTextColor: Colors.black54,
-                              onCancel: () => Get.back(),
-
-                              textConfirm: "YES",
-                              confirmTextColor: Colors.white,
-                              buttonColor: DynamicColors.primaryClr,
-                              onConfirm: () {
-                                Get.back();
-                                
-                                controller.postCancelBooking(widget.bookingId);
-                              }
+                            Get.dialog(
+                              AlertDialog(
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                title: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.warning_amber_rounded, color: DynamicColors.primaryClr),
+                                    const SizedBox(width: 8),
+                                    Text("CONFIRMATION",  style: mozillaTextSemiBoldText(
+                                        fontSize: 14,
+                                        color: Colors.black87,
+                                        fontWeight: FontWeight.bold),
+                                        textAlign: TextAlign.center),
+                                  ],
+                                ),
+                                content: Text("ARE YOU SURE YOU WANT TO CANCEL THIS BOOKING?",
+                                  style: mozillaTextSemiBoldText(
+                                      fontSize: 14,
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center),
+                                actionsAlignment: MainAxisAlignment.center,
+                                actions: [
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: DynamicColors.primaryClr,
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                    ),
+                                    onPressed: () {
+                                      Get.back();
+                                    },
+                                    child: const Text("NO"),
+                                  ),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: DynamicColors.primaryClr,
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                    ),
+                                    onPressed: () {
+                                      Get.back();
+                                      controller.postCancelBooking(widget.bookingId);
+                                    },
+                                    child: const Text("YES"),
+                                  ),
+                                ],
+                              ),
                             );
                           },
-                          style: mozillaTextSemiBoldText(
-                            fontSize: 14,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                          icon: const Icon(
+                              Icons.delete_forever, size: 16),
+                          label: Text(
+                            "CONFIRM CANCELLATION",
+                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: DynamicColors.primaryClr,
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(200, 38),
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
                           ),
                         ),
                       ],

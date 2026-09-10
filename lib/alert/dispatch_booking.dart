@@ -112,11 +112,23 @@ class _DispatchBookingState extends State<DispatchBooking> {
                     ]),
                     const Spacer(),
                     // const SizedBox(width: 40),
-                    CustomButton(
-                      width: 195, height: 36, verticalPadding: 0.0, borderRadius: 6,
-                      btnText: "CALCULATE DISTANCE",
-                      style: mozillaTextSemiBoldText(fontSize: 14, color: Colors.white),
-                      onTap: () {},
+                    ElevatedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(
+                          Icons.route, size: 16),
+                      label: Text(
+                        "CALCULATE DISTANCE",
+                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: DynamicColors.primaryClr,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(200, 38),
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
                     ),
                   ],
                 )),
@@ -147,7 +159,7 @@ class _DispatchBookingState extends State<DispatchBooking> {
                             DataCell(Text("${(driver.username ?? '').toUpperCase()}", style: mozillaTextRegularText(fontSize: 14))),
                             DataCell(Text((driver.name ?? '').toUpperCase(), style: mozillaTextRegularText(fontSize: 14))),
                             DataCell(Text((driver.subsidiary?.name ?? '').toUpperCase(), style: mozillaTextRegularText(fontSize: 14))),
-                            DataCell(Text(driver.bookingStatus ?? '', style: mozillaTextRegularText(fontSize: 14, color: Colors.green))),
+                            DataCell(Text((driver.bookingStatus ?? '').toUpperCase(), style: mozillaTextRegularText(fontSize: 14, color: Colors.green))),
                             DataCell(Center(child: Text("-", style: mozillaTextRegularText(fontSize: 14)))),
                             DataCell(Center(child: Text("-", style: mozillaTextRegularText(fontSize: 14)))),
                             DataCell(
