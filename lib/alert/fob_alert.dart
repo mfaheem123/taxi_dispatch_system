@@ -1,6 +1,7 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../component/alert_close_button.dart';
 import '../component/customButton.dart';
 import '../component/textStyle.dart';
 import '../controller/fob_controller.dart';
@@ -48,35 +49,35 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+            // Padding(
+            //   padding: const EdgeInsets.all(16.0),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: DynamicColors.gryClr.withOpacity(0.5),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+              ),
               child: Row(
                 children: [
-                  Text("DISPATCH FOB ${widget.bookingItem?.referenceNumber ?? "N/A"}",
-                      style: mozillaTextSemiBoldText(
-                          fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
+                  Icon(Icons.near_me_rounded, color: DynamicColors.primaryClr),
+                  const SizedBox(width: 10),
+                  RichText(
+                    text: TextSpan(
+                      style: mozillaTextSemiBoldText(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                      children: [
+                        const TextSpan(text: "DISPATCH FOB ("),
+                        TextSpan(
+                          text: widget.bookingItem?.referenceNumber ?? "N/A",
+                          style: TextStyle(color: DynamicColors.primaryClr, fontWeight: FontWeight.bold),
+                        ),
+                        const TextSpan(text: ")"),
+                      ],
+                    ),
+                  ),
                   const Spacer(),
-                  AnimatedBuilder(
-                    animation: closeButtonFocusNode,
-                    builder: (context, child) {
-                      final isFocused = closeButtonFocusNode.hasFocus;
-                      return Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
-                            width: 2,
-                          ),
-                          color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
-                        ),
-                        child: IconButton(
-                          focusNode: closeButtonFocusNode,
-                          onPressed: () => Get.back(),
-                          icon: const Icon(Icons.close, size: 22, color: Colors.grey),
-                          splashRadius: 20,
-                        ),
-                      );
-                    },
+                  FocusTraversalOrder(
+                    order: const NumericFocusOrder(999),
+                    child: const AlertCloseButton(),
                   ),
                 ],
               ),
