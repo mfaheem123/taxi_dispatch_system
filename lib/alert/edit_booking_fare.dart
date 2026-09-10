@@ -5,6 +5,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 
+import '../component/alert_close_button.dart';
 import '../component/color.dart';
 import '../component/textStyle.dart';
 import '../controller/fob_controller.dart';
@@ -21,7 +22,6 @@ class EditBookingFare extends StatefulWidget {
 class _EditBookingFareState extends State<EditBookingFare> {
   final TextEditingController fareController = TextEditingController();
   final controller = Get.put(FobController());
-  final FocusNode closeButtonFocusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -37,45 +37,40 @@ class _EditBookingFareState extends State<EditBookingFare> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-                padding: EdgeInsetsGeometry.all(16.0),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: DynamicColors.gryClr.withOpacity(0.5),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+              ),
               child: Row(
                 children: [
-                  Text(
-                    "EDIT BOOKING FARE ${widget.bookingItem?.referenceNumber ?? "N/A"}",
-                    style: mozillaTextSemiBoldText(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87
+                  Icon(Icons.currency_pound_sharp, color: DynamicColors.primaryClr),
+                  const SizedBox(width: 10),
+                  RichText(
+                    text: TextSpan(
+                      style: mozillaTextSemiBoldText(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                      children: [
+                        const TextSpan(text: "EDIT BOOKING FARE ("),
+                        TextSpan(
+                          text: widget.bookingItem?.referenceNumber ?? "N/A",
+                          style: TextStyle(color: DynamicColors.primaryClr, fontWeight: FontWeight.bold),
+                        ),
+                        const TextSpan(text: ")"),
+                      ],
                     ),
                   ),
                   const Spacer(),
-                  AnimatedBuilder(
-                    animation: closeButtonFocusNode,
-                    builder: (context, child) {
-                      final isFocused = closeButtonFocusNode.hasFocus;
-                      return Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
-                            width: 2,
-                          ),
-                          color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
-                        ),
-                        child: IconButton(
-                          focusNode: closeButtonFocusNode,
-                          onPressed: () => Get.back(),
-                          icon: const Icon(Icons.close, size: 22, color: Colors.grey),
-                          splashRadius: 20,
-                        ),
-                      );
-                    },
+                  FocusTraversalOrder(
+                    order: const NumericFocusOrder(999),
+                    child: const AlertCloseButton(),
                   ),
                 ],
               ),
             ),
-            Divider(height: 1),
+            const Divider(height: 1, thickness: 1),
+            SizedBox(height: 20),
+
             Padding(
               padding: EdgeInsetsGeometry.symmetric(horizontal: 24, vertical: 30),
               child: Column(
@@ -123,7 +118,7 @@ class _EditBookingFareState extends State<EditBookingFare> {
                     height: 28,
                     verticalPadding: 0.0,
                     btnText: "CANCEL",
-                    btnColor: Colors.grey,
+                    btnColor: Colors.grey.shade300,
                     borderRadius: 4,
                     style: mozillaTextSemiBoldText(
                         fontSize: 14,
@@ -133,13 +128,24 @@ class _EditBookingFareState extends State<EditBookingFare> {
                     onTap: () => Get.back(),
                   ),
                   const SizedBox(width: 12),
-                  CustomButton(
-                      width: 180, height: 28, verticalPadding: 0.0, borderRadius: 4,
-                      btnText: "UPDATE FARE",
-                      style: const TextStyle(color: Colors.white, fontSize: 14),
-                      onTap: () {
-                        controller.updateBookingFare(widget.bookingId, fareController.text);
-                      }
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      controller.updateBookingFare(widget.bookingId, fareController.text);
+                    },
+                    icon: const Icon(Icons.save, size: 16),
+                    label: Text(
+                      "UPDATE FARE",
+                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: DynamicColors.primaryClr,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(200, 38),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
                   ),
                 ],
               ),
