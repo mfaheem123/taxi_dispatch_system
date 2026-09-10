@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../component/alert_close_button.dart';
 import '../component/color.dart';
 import '../component/customButton.dart';
 import '../component/textStyle.dart';
@@ -19,8 +20,6 @@ class _DispatchBookingState extends State<DispatchBooking> {
   final controller = Get.put(DispatchController());
   final _controller = Get.find<DashboardController>();
 
-  final FocusNode closeButtonFocusNode = FocusNode();
-
   @override
   void initState() {
     // TODO: implement initState
@@ -37,7 +36,6 @@ class _DispatchBookingState extends State<DispatchBooking> {
         alignment: Alignment.topCenter,
         child: IntrinsicWidth(
           child: Container(
-            // padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(8),
@@ -70,33 +68,15 @@ class _DispatchBookingState extends State<DispatchBooking> {
                         ],
                       ),
                     ),
-                    // Text("DISPATCH BOOKING ${widget.bookingItem?.referenceNumber ?? "N/A"}",
-                    //     style: mozillaTextSemiBoldText(
-                    //         fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
                     const Spacer(),
-                    AnimatedBuilder(
-                      animation: closeButtonFocusNode,
-                      builder: (context, child) {
-                        final isFocused = closeButtonFocusNode.hasFocus;
-                        return Container(
-                          decoration: BoxDecoration(shape: BoxShape.circle,
-                            border: Border.all(color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
-                              width: 2,
-                            ),
-                            color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
-                          ),
-                          child: IconButton(
-                            focusNode: closeButtonFocusNode,
-                            onPressed: () => Get.back(),
-                            icon: const Icon(Icons.close, size: 22, color: Colors.grey),
-                            splashRadius: 20,
-                          ),
-                        );
-                      },
+                    FocusTraversalOrder(
+                      order: const NumericFocusOrder(999),
+                      child: const AlertCloseButton(),
                     ),
                   ],
                 )),
-                const Divider(height: 30, thickness: 1),
+                const Divider(height: 1, thickness: 1),
+                SizedBox(height: 30),
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -143,20 +123,6 @@ class _DispatchBookingState extends State<DispatchBooking> {
                 const SizedBox(height: 15),
                 // Data Table Section with GetX Obx
                 Obx(() {
-                  // if (controller.isLoading.value) {
-                  //   return const SizedBox(
-                  //     height: 200,
-                  //     child: Center(child: CircularProgressIndicator()),
-                  //   );
-                  // }
-                  //
-                  // if (controller.drivers.isEmpty) {
-                  //   return const SizedBox(
-                  //     height: 100,
-                  //     child: Center(child: Text("No Drivers Found")),
-                  //   );
-                  // }
-
                   return Column(
                     children: [
                     SingleChildScrollView(
@@ -167,7 +133,7 @@ class _DispatchBookingState extends State<DispatchBooking> {
                       headingRowColor: WidgetStateProperty.all(Colors.grey.shade50),
                       border: TableBorder.all(color: Colors.grey.shade300, width: 1),
                       columns: [
-                        _buildDataColumn("USERNAME", Icons.badge_outlined),
+                        _buildDataColumn("ID", Icons.badge_outlined),
                         _buildDataColumn("DRIVER NAME", Icons.person_outline),
                         _buildDataColumn("SUBSIDIARY", Icons.apartment_rounded),
                         _buildDataColumn("STATUS", Icons.bar_chart_rounded),
@@ -210,84 +176,34 @@ class _DispatchBookingState extends State<DispatchBooking> {
                       else if (controller.drivers.isEmpty)
                         const Padding(
                           padding: EdgeInsets.all(20.0),
-                          child: Center(child: Text("NO DRIVERS FOUND")),
+                          child: Center(child: Text("")),
                         ),
                     ],
                   );
                 }),
-
-
-
-                const SizedBox(height: 20),
-
-                // Footer
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Focus(
-                      child: Builder(
-                        builder: (context) {
-                          final isFocused = Focus.of(context).hasFocus;
-                          return Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(6),
-                              onTap: () => Get.back(),
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 150),
-                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: isFocused ? Colors.grey.shade300 : Colors.grey.shade200,
-                                  borderRadius: BorderRadius.circular(6),
-                                  border: Border.all(
-                                    color: isFocused ? DynamicColors.primaryClr : Colors.grey.shade300,
-                                    width: isFocused ? 2 : 1,
-                                  ),
-                                  boxShadow: isFocused
-                                      ? [
-                                    BoxShadow(
-                                      color: DynamicColors.primaryClr.withOpacity(0.3),
-                                      blurRadius: 4,
-                                      spreadRadius: 1,
-                                    )
-                                  ]
-                                      : [],
-                                ),
-                                child: Text(
-                                  "CLOSE",
-                                  style: mozillaTextSemiBoldText(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    )
-                    // InkWell(
-                    //   onTap: () => Get.back(),
-                    //   child: Container(
-                    //     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                    //     decoration: BoxDecoration(
-                    //       color: Colors.grey.shade200,
-                    //       borderRadius: BorderRadius.circular(6),
-                    //       border: Border.all(color: Colors.grey.shade300),
-                    //     ),
-                    //     child: Text(
-                    //       "CLOSE",
-                    //       style: mozillaTextSemiBoldText(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87),
-                    //     ),
-                    //   ),
-                    // )
-                  ],
-                ),
                 const SizedBox(height: 10),
               ],
             ),
           ),
+                const Divider(height: 1),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: CustomButton(
+                      width: 100,
+                      height: 35,
+                      btnText: "CLOSE",
+                      btnColor: DynamicColors.primaryClr,
+                      verticalPadding: 0.0,
+                      borderRadius: 6,
+                      onTap: () => Get.back(),
+                      style: mozillaTextSemiBoldText(fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
         ]),
       ),
     )));

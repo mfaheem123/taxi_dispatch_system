@@ -7,13 +7,6 @@ import '../component/textStyle.dart';
 import '../controller/fob_controller.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
 
-// void showDispatchFob() {
-//   Get.dialog(
-//     DispatchFobAlert(),
-//     barrierColor: Colors.black54,
-//   );
-// }
-
 class DispatchFobAlert extends StatefulWidget {
   final dynamic bookingItem;
   const DispatchFobAlert({super.key, this.bookingItem});
@@ -27,8 +20,6 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
   final controller = Get.put(FobController());
   final _controller = Get.find<DashboardController>();
 
-  final FocusNode closeButtonFocusNode = FocusNode();
-
   @override
   void initState() {
     super.initState();
@@ -41,7 +32,7 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
-        width: 650,
+        width: 670,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -49,8 +40,6 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Padding(
-            //   padding: const EdgeInsets.all(16.0),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
@@ -82,72 +71,56 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
                 ],
               ),
             ),
-            const Divider(height: 1),
+            const Divider(height: 1, thickness: 1),
+            SizedBox(height: 30),
 
             Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(8),
+                      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Icon(Icons.person, size: 20, color: Colors.black87),
                           ),
-                          child: const Icon(Icons.person_search, color: Colors
-                              .black54),
-                        ),
-                        const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("SELECT DRIVER TO DISPATCH",
-                                style: mozillaTextSemiBoldText(
-                                    fontSize: 16, fontWeight: FontWeight.bold)),
-                            Text("CHOOSE A DRIVER, THEN PRESS DISPATCH.",
-                                style: mozillaTextRegularText(
-                                    fontSize: 13, color: Colors.grey)),
-                          ],
-                        ),
-                        const Spacer(),
-                        CustomButton(
-                          width: 165,
-                          height: 35,
-                          verticalPadding: 0.0,
-                          borderRadius: 4,
-                          btnText: "CALCULATE DISTANCE",
-                          style: mozillaTextSemiBoldText(
-                              fontSize: 14, color: Colors.white),
-                          onTap: () {},
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
+                          SizedBox(width: 12),
+                          Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("SELECT DRIVER TO DISPATCH",
+                                    style: mozillaTextSemiBoldText(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black)),
+                                Text("CHOOSE A DRIVER, THEN PRESS DISPATCH",
+                                  style: mozillaTextRegularText(fontSize: 12, color: Colors.grey.shade600),
+                                ),
+                              ]),
+                          const Spacer(),
+                          // const SizedBox(width: 40),
+                          CustomButton(
+                            width: 195, height: 36, verticalPadding: 0.0, borderRadius: 6,
+                            btnText: "CALCULATE DISTANCE",
+                            style: mozillaTextSemiBoldText(fontSize: 14, color: Colors.white),
+                            onTap: () {},
+                          ),
+                        ],
+                      )),
+                  const SizedBox(height: 15),
                   Obx(() {
-                    if (controller.isLoading.value) {
-                      return const SizedBox(
-                        height: 200,
-                        child: Center(child: CircularProgressIndicator()),
-                      );
-                    }
-
-                    if (controller.drivers.isEmpty) {
-                      return const SizedBox(
-                        height: 100,
-                        child: Center(child: Text("NO DRIVERS FOUND")),
-                      );
-                    }
-
-                    return SingleChildScrollView(
+                    return Column(
+                      children: [
+                      SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: DataTable(
                         headingRowHeight: 45,
@@ -157,11 +130,11 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
                         border: TableBorder.all(color: Colors.grey.shade300,
                             width: 1),
                         columns: [
-                          _buildDataColumn("USERNAME"),
-                          _buildDataColumn("DRIVER"),
-                          _buildDataColumn("ATTRIBUTES"),
-                          _buildDataColumn("STATUS"),
-                          _buildDataColumn("ACTION"),
+                          _buildDataColumn("ID", Icons.badge_outlined),
+                          _buildDataColumn("DRIVER", Icons.person_outline),
+                          _buildDataColumn("ATTRIBUTES", Icons.local_offer_outlined),
+                          _buildDataColumn("STATUS", Icons.bar_chart_rounded),
+                          _buildDataColumn("ACTION", Icons.bolt_rounded),
                         ],
                         rows: controller.drivers.map((driver) {
                           return DataRow(
@@ -196,7 +169,18 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
                           );
                         }).toList(),
                       ),
-                    );
+                    ),
+                        if (controller.isLoading.value)
+                          const Padding(
+                            padding: EdgeInsets.all(20.0),
+                            child: Center(child: CircularProgressIndicator()),
+                          )
+                        else if (controller.drivers.isEmpty)
+                          const Padding(
+                            padding: EdgeInsets.all(20.0),
+                            child: Center(child: Text("")),
+                          ),
+                      ]);
                   }),
                 ],
               ),
@@ -227,10 +211,14 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
     );
   }
 
-  DataColumn _buildDataColumn(String label) {
+  DataColumn _buildDataColumn(String label, IconData icon) {
     return DataColumn(
-      label: Text(label, style: mozillaTextSemiBoldText(
-          fontWeight: FontWeight.bold, fontSize: 16)),
+      label: Row(
+          children: [
+            Icon(icon, size: 16, color: Colors.black87),
+            const SizedBox(width: 6),
+            Text(label, style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 16)),
+          ]),
     );
   }
 }
