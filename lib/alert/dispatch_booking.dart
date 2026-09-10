@@ -185,7 +185,9 @@ class _DispatchBookingState extends State<DispatchBooking> {
               ],
             ),
           ),
+                SizedBox(height: 30),
                 const Divider(height: 1),
+
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Align(

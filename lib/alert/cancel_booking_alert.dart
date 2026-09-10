@@ -5,6 +5,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 
+import '../component/alert_close_button.dart';
 import '../component/color.dart';
 import '../component/customButton.dart';
 import '../component/textStyle.dart';
@@ -58,49 +59,42 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(20),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: DynamicColors.gryClr.withOpacity(0.5),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                ),
                 child: Row(
                   children: [
-                    Expanded(
-                      child: Text(
-                        "CANCEL BOOKING REQUEST ${widget.bookingItem?.referenceNumber ?? "N/A"}",
-                        style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87
-                        ),
+                    Icon(Icons.cancel, color: DynamicColors.primaryClr),
+                    const SizedBox(width: 10),
+                    RichText(
+                      text: TextSpan(
+                        style: mozillaTextSemiBoldText(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                        children: [
+                          const TextSpan(text: "CANCEL BOOKING REQUEST ("),
+                          TextSpan(
+                            text: widget.bookingItem?.referenceNumber ?? "N/A",
+                            style: TextStyle(color: DynamicColors.primaryClr, fontWeight: FontWeight.bold),
+                          ),
+                          const TextSpan(text: ")"),
+                        ],
                       ),
                     ),
-                    AnimatedBuilder(
-                      animation: closeButtonFocusNode,
-                      builder: (context, child) {
-                        final isFocused = closeButtonFocusNode.hasFocus;
-                        return Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
-                              width: 2,
-                            ),
-                            color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
-                          ),
-                          child: IconButton(
-                            focusNode: closeButtonFocusNode,
-                            onPressed: () => Get.back(),
-                            icon: const Icon(Icons.close, size: 22, color: Colors.grey),
-                            splashRadius: 20,
-                          ),
-                        );
-                      },
+                    const Spacer(),
+                    FocusTraversalOrder(
+                      order: const NumericFocusOrder(999),
+                      child: const AlertCloseButton(),
                     ),
                   ],
                 ),
               ),
-              const Divider(),
+              const Divider(height: 1, thickness: 1),
+              SizedBox(height: 30),
 
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -110,7 +104,6 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
-                          color: Colors.grey,
                           letterSpacing: 1.1
                       ),
                     ),
@@ -165,7 +158,6 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
-                          color: Colors.grey,
                           letterSpacing: 1.1
                       ),
                     ),
@@ -192,30 +184,52 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
                       ),
                     ),
 
-                    const SizedBox(height: 30),
-                    Row(
+                    SizedBox(height: 30),
+                    const Divider(height: 1),
+
+                    Padding(padding: EdgeInsets.all(16.0),
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         CustomButton(
                           width: 100,
                           height: 35,
                           btnText: "BACK",
-                          btnColor: Colors.grey,
+                          btnColor: Colors.grey.shade300,
                           verticalPadding: 0.0,
                           borderRadius: 6,
                           onTap: () => Get.back(),
                           style: mozillaTextSemiBoldText(fontSize: 14,
-                              color: Colors.white,
+                              color: Colors.black87,
                               fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(width: 15),
                         CustomButton(
                           width: 220,
                           height: 40,
-                          btnText: "CONFIRM CANCELLATION",
+                          // btnText: "CONFIRM CANCELLATION",
                           btnColor: DynamicColors.primaryClr,
                           verticalPadding: 0.0,
                           borderRadius: 8,
+                          widget: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.delete_forever,
+                                color: Colors.white,
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                "CONFIRM CANCELLATION",
+                                style: mozillaTextSemiBoldText(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
                           onTap: () {
                             if (reasonController.text.trim().isEmpty) {
                               BotToast.showText(text: "PLEASE PROVIDE A REASON");
@@ -250,7 +264,7 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
                           ),
                         ),
                       ],
-                    ),
+                    )),
                   ],
                 ),
               ),

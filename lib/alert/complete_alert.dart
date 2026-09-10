@@ -137,11 +137,8 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
                     onTap: () => Get.back(),
                   ),
                   const SizedBox(width: 12),
-                  CustomButton(
-                    width: 180, height: 28, verticalPadding: 0.0, borderRadius: 4,
-                    btnText: controller.isCompleteStatus ? "PROCESSING..." : "COMPLETE BOOKING",
-                    style: const TextStyle(color: Colors.white, fontSize: 14),
-                    onTap: controller.isCompleteStatus
+                  ElevatedButton.icon(
+                    onPressed: controller.isCompleteStatus
                         ? null
                         : () async {
                       await controller.postCompleteBooking(widget.bookingId);
@@ -149,12 +146,21 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
                         Navigator.of(context).pop();
                       }
                     },
-                    // onTap:
-                    //   // controller.postCompleteBooking(widget.bookingId);
-                    //   controller.isCompleteStatus
-                    //       ? null
-                    //       : () => controller.postCompleteBooking(widget.bookingId),
-
+                    icon: const Icon(
+                      Icons.done_all, size: 16),
+                    label: Text(
+                      controller.isCompleteStatus ? "PROCESSING..." : "COMPLETE BOOKING",
+                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: DynamicColors.primaryClr,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(200, 38),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
                   ),
                 ],
               ),
