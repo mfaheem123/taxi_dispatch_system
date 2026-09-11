@@ -4,6 +4,8 @@ import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../component/alert_close_button.dart';
+import '../component/dropdown_button.dart';
 import '../controller/dashboard_alert_controller.dart';
 import '../view/customer/model/restricDriver.dart';
 
@@ -26,9 +28,6 @@ class DriverInfoAlert extends StatefulWidget {
 
 class _DriverInfoAlertState extends State<DriverInfoAlert> {
   final controller = Get.find<DashboardAlertController>();
-
-  final FocusNode dropdownFocusNode = FocusNode();
-  final FocusNode closeButtonFocusNode = FocusNode();
 
   // Initially keeping selected driver as null so "SELECT DRIVER" is active
   DriverObject? localSelectedDriver;
@@ -86,8 +85,12 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
             mainAxisSize: MainAxisSize.min,
             children: [
               // Header
-              Padding(
-                padding: const EdgeInsets.all(16.0),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: DynamicColors.gryClr.withOpacity(0.5),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                ),
                 child: Row(
                   children: [
                     Text(
@@ -99,27 +102,9 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                       ),
                     ),
                     const Spacer(),
-                    AnimatedBuilder(
-                      animation: closeButtonFocusNode,
-                      builder: (context, child) {
-                        final isFocused = closeButtonFocusNode.hasFocus;
-                        return Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
-                              width: 2,
-                            ),
-                            color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
-                          ),
-                          child: IconButton(
-                            focusNode: closeButtonFocusNode,
-                            onPressed: () => Get.back(),
-                            icon: const Icon(Icons.close, size: 22, color: Colors.grey),
-                            splashRadius: 20,
-                          ),
-                        );
-                      },
+                    FocusTraversalOrder(
+                      order: const NumericFocusOrder(999),
+                      child: const AlertCloseButton(),
                     ),
                   ],
                 ),
@@ -132,92 +117,26 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                   children: [
                     Row(
                       children: [
-                        // Dropdown with Default "SELECT DRIVER" Option
-                  AnimatedBuilder(
-                    animation: dropdownFocusNode,
-                    builder: (context, child) {
-                      final isFocused = dropdownFocusNode.hasFocus;
-                      return Container(
-                        width: 250,
-                        height: 42,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: isFocused ? DynamicColors.primaryClr : Colors.grey.shade500,
-                            width: isFocused ? 2 : 1,
-                          ),
-                          borderRadius: BorderRadius.circular(6),
-                          boxShadow: isFocused
-                              ? [BoxShadow(
-                                  color: DynamicColors.primaryClr.withOpacity(0.25),
-                                  blurRadius: 6, spreadRadius: 1,
-                                )]
-                              : [],
+                        CustomDropdownField<DriverObject?>(
+                          height: 35,
+                          width: 200,
+                          label: "SELECT DRIVER",
+                          items: controller.fetchDriver?.drivers ?? [],
+                          value: controller.selectedDriver.value,
+                          itemLabel: (item) => "${item?.username} ${item?.name ?? ''}".trim(),
+                          onChanged: (DriverObject? newValue) {
+                            if (newValue != null) {
+                              print("--- DRIVER DEBUG INFO ---");
+                              print("Driver Name: ${newValue.name}");
+                              print("Active Status: ${newValue.active}");
+                              print("Session Status from API: '${newValue.sessionStatus}'");
+                            }
+                            setState(() {
+                              localSelectedDriver = newValue;
+                              controller.selectedDriver.value = newValue;
+                            });
+                          },
                         ),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<DriverObject?>(
-                              focusNode: dropdownFocusNode,
-                              focusColor: Colors.transparent,
-                              value: currentDriver,
-                              hint: Text(
-                                "SELECT DRIVER",
-                                style: mozillaTextSemiBoldText(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey.shade700,
-                                ),
-                              ),
-                              isExpanded: true,
-                              icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
-                              style: mozillaTextSemiBoldText(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black87,
-                              ),
-                              items: [
-                                // Placeholder Item: SELECT DRIVER
-                                DropdownMenuItem<DriverObject?>(
-                                  value: null,
-                                  child: Text(
-                                    "SELECT DRIVER",
-                                    style: mozillaTextSemiBoldText(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.grey.shade700,
-                                    ),
-                                  ),
-                                ),
-                                ...drivers.map((DriverObject driver) {
-                                  return DropdownMenuItem<DriverObject?>(
-                                    value: driver,
-                                    child: Text(
-                                      "${driver.username} ${driver.name ?? ''}".trim(),
-                                      style: mozillaTextSemiBoldText(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                  );
-                                }),
-                              ],
-                              onChanged: (DriverObject? newValue) {
-                                if (newValue != null) {
-                                  print("--- DRIVER DEBUG INFO ---");
-                                  print("Driver Name: ${newValue.name}");
-                                  print("Active Status: ${newValue.active}");
-                                  print("Session Status from API: '${newValue.sessionStatus}'");
-                                }
-                                setState(() {
-                                  localSelectedDriver = newValue;
-                                  controller.selectedDriver.value = newValue;
-                                });
-                              },
-                            ),
-                          ),
-                      );
-                      },
-                  ),
                         const Spacer(),
 
                         // Logged status text and button show only when a driver is selected
