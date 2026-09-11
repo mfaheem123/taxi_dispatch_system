@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../component/dropdown_button.dart';
 import '../../../component/datatable_widget.dart';
+import '../component/alert_close_button.dart';
 import '../controller/dashboard_alert_controller.dart';
 import '../view/customer/model/restricDriver.dart';
 import '../view/dashboard_view/booking_table.dart';
@@ -87,30 +88,12 @@ class _DriverEarningsAlertState extends State<DriverEarningsAlert> {
                         ),
                       ),
                       const Spacer(),
-                      AnimatedBuilder(
-                        animation: closeButtonFocusNode,
-                        builder: (context, child) {
-                          final isFocused = closeButtonFocusNode.hasFocus;
-                          return Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
-                                width: 2,
-                              ),
-                              color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
-                            ),
-                            child: IconButton(
-                              focusNode: closeButtonFocusNode,
-                              onPressed: () {
-                                controller.clearEarnings();
-                                Get.back();
-                              },
-                              icon: const Icon(Icons.close, size: 22, color: Colors.grey),
-                              splashRadius: 20,
-                            ),
-                          );
-                        },
+                      FocusTraversalOrder(
+                        order: const NumericFocusOrder(999),
+                        child: AlertCloseButton(onTap: () {
+                          controller.clearEarnings();
+                          Get.back();
+                        }),
                       ),
                     ],
                   ),

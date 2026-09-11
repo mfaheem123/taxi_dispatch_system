@@ -24,7 +24,7 @@ class DashboardAlertController extends GetxController{
       if (response.statusCode == 200) {
         fetchDriver = RestricDriverModel.fromJson(response.data);
         if (fetchDriver?.drivers != null && fetchDriver!.drivers!.isNotEmpty) {
-          selectedDriver.value = fetchDriver!.drivers!.first;
+          // selectedDriver.value = fetchDriver!.drivers!.first;
         }
         update();
       }

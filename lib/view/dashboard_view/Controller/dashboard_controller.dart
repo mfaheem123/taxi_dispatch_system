@@ -3626,6 +3626,7 @@ class DashboardController extends GetxController {
       if (jobData.booking[0].telephone != null) {
         telController.text = jobData.booking[0].telephone!;
       }
+      totalTimeDuration.value = jobData.booking[0].eta.toString().toUpperCase();
 
       if (cliHit == true) {
         pickUpTimeController.text = DateFormat('HH:mm').format(DateTime.now());
@@ -3805,6 +3806,14 @@ class DashboardController extends GetxController {
             );
         jourValue = "O/W";
         fixedFare.value = jobData.booking[0].fares.toString();
+        if(jobData.booking[0].flightNumber != null){
+          isAirportResponse.value = true;
+          selectAirportController.text = jobData.booking[0].flightNumber.toString();
+        }
+        if(jobData.booking[0].arrivingFrom != null){
+          isAirportResponse.value = true;
+        arrivalTimeController.text = jobData.booking[0].arrivingFrom.toString();
+        }
         getFaresCalculation();
       }
 
@@ -3928,6 +3937,15 @@ class DashboardController extends GetxController {
       selectVehicleValueReturn = dashboardAllData?.vehicleTypes?.firstWhereOrNull(
             (vehicle) => vehicle.id == bookingData.vehicleTypeId,
       );
+    }
+
+    if(bookingData.flightNumber != null){
+      isAirportResponseReturn.value = true;
+      selectAirportControllerReturn.text = bookingData.flightNumber.toString();
+    }
+    if(bookingData.arrivingFrom != null){
+      isAirportResponseReturn.value = true;
+      arrivalReturnTimeController.text = bookingData.arrivingFrom.toString();
     }
     getFaresCalculation();
   }
