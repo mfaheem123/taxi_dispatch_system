@@ -579,6 +579,7 @@ class _DriversViewState extends State<DriversView> {
                   // ----- Driver List -----
                   Expanded(
                     child: Obx(
+
                           () => ListView.builder(
                         itemCount: controller.driverSelectionTab.value !=
                             "activeDriver"
