@@ -37,6 +37,7 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:timepickerfield/timepickerfield.dart';
 import '../../../alert/restrict_drivers_alert.dart';
+import '../../alert/cancel_booking_alert.dart';
 import '../../alert/child_seats_alert.dart';
 import '../../component/networks/loader.dart';
 import '../../alert/extra_fares_alert.dart';
@@ -46,6 +47,7 @@ import '../../component/marker_class.dart';
 import '../../component/text_field.dart';
 import '../dashboard_view/booking_form_scope.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
+import '../dashboard_view/dashboard/F3_alert.dart';
 import '../dashboard_view/dashboard/map_view_widget.dart';
 import '../dashboard_view/models/account_darshboard_model.dart';
 import '../dashboard_view/models/all_addresses_model.dart';
@@ -199,6 +201,10 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   static const _border = Colors.black;
   static const _surface = Color(0xFFF5F6FA);
   static const _red = Color(0xFFEF4444);
+  /// The bottom-row actions (PAY / RECEIPT / MAP REPORT / AUDIT REPORT /
+  /// SAVE) in the design are green; CANCEL beside them stays [_red].
+  static const _green = Color(0xFF22C55E);
+
   // ────────── font sizes (compact)
   static const _fsLabel = 11.0;
 
@@ -207,6 +213,11 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   /// PICKUP / DROPOFF tag because these sit inside grid cells, where the
   /// caption is taken straight out of the field's own width.
   static const _kCaptionWidth = 70.0;
+
+  /// Width of the DRV / R/DRV dropdowns in the bottom row. Roughly the
+  /// width of a grid cell above them, so the row reads as part of the same
+  /// form rather than one field stretched across the card.
+  static const _kDriverFieldWidth = 230.0;
   static const _kCaptionStyle = TextStyle(
     fontSize: 10,
     fontWeight: FontWeight.w700,
@@ -784,9 +795,30 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                   },
                                   notesController: controller.dropUpNoteController,
                                   addressFocusNode: controller.dropOffTextFieldFocusNode,
+                                  // The route button opens the via-points dialog.
+                                  // PICK's swap button keeps calling
+                                  // swapeToChangeLocation() — no branch on the
+                                  // icon is needed, because each row chooses
+                                  // both its glyph and its handler here.
                                   onCurrentLocation: () {
-                                    controller.swapeToChangeLocation();
+                                    if (controller.pickupController.text.isEmpty) {
+                                      BotToast.showText(
+                                          text:
+                                              "Please write pickup and dropoff location");
+                                      return;
+                                    }
+                                    showDialog(
+                                      context: context,
+                                      // A dialog is its own route and sits
+                                      // outside this screen's BookingFormScope,
+                                      // so the detached form instance has to be
+                                      // handed in — see ViaLocation.formController.
+                                      builder: (_) =>
+                                          ViaLocation(formController: controller),
+                                    );
                                   },
+                                  actionIcon: LucideIcons.route,
+                                  actionTooltip: 'Via locations',
                                 ),
                                 const Divider(height: 14),
                                 _sectionHeader(Icons.person,
@@ -1484,6 +1516,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
           onCurrentLocation: () async {
             controller.swapeToChangeReturnLocation();
           },
+          actionIcon: LucideIcons.route,
             notesController: controller.returnDropUpNoteController
         ),
       ],
@@ -1748,20 +1781,6 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                         onTap: () => _headerAction('Associated booking')),
                   iconBtn(Icons.play_arrow, 'Dispatch',
                       order: 0.3, onTap: () {
-                        if (controller.pickupController.text.isNotEmpty
-                        // &&    controller.dropOffController.text.isNotEmpty
-                        ) {
-                          // THIS screen's form, passed in explicitly: the
-                          // dialog is its own route, so it is outside the
-                          // BookingFormScope above and would otherwise bind to
-                          // the dashboard's instance and show no via points.
-                          showDialog(
-                              context: context,
-                              builder: (_) =>
-                                  ViaLocation(formController: controller));
-                        }else{
-                          BotToast.showText(text: "Please write pickup and dropoff location");
-                        }
                         // _headerAction('Dispatch');
                   }),
                   iconBtn(Icons.chat_bubble_outline, 'Messages',
@@ -1810,6 +1829,12 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
         TextEditingController? notesController, // ← notes field controller
         VoidCallback? onPressed,
         FocusNode? addressFocusNode, // ← lets F2 focus the PICKUP field
+        // The glyph in the boxed grey button at the end of the field. PICK
+        // carries the swap arrows; DROP carries LucideIcons.route — the two
+        // pins joined by a winding path from the design. Both still run
+        // [onCurrentLocation].
+        IconData actionIcon = LucideIcons.arrowDownUp,
+        String actionTooltip = 'Use current location',
       }) {
     final tag = Row(mainAxisSize: MainAxisSize.min, children: [
       Icon(Icons.circle, size: 9, color: dot),
@@ -1832,7 +1857,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
           contentPadding:
           const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
           suffixIconConstraints:
-          const BoxConstraints(minWidth: 60, minHeight: 32),
+          const BoxConstraints(minWidth: 70, minHeight: 32),
           suffixIcon: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
@@ -1849,11 +1874,13 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                   child: IconButton(
                     tooltip: 'Clear',
                     onPressed: onPressed,
-                    icon:
-                    const Icon(Icons.close, size: 16, color: Colors.grey),
+                    // Solid red disc with the cross knocked out of it, the way
+                    // the design draws it — Icons.cancel is that shape already,
+                    // so it needs no ring or fill of its own behind it.
+                    icon: const Icon(Icons.cancel, size: 17, color: _red),
                     padding: EdgeInsets.zero,
                     constraints:
-                    const BoxConstraints(minWidth: 28, minHeight: 28),
+                    const BoxConstraints(minWidth: 26, minHeight: 28),
                     splashRadius: 16,
                   ),
                 ),
@@ -1862,15 +1889,11 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
               FocusTraversalOrder(
                 order: NumericFocusOrder(tabBase + 1.6),
                 child: GlowFocus(
-                  radius: 14,
-                  child: IconButton(
-                    tooltip: 'Use current location',
+                  radius: 4,
+                  child: _FieldActionButton(
+                    icon: actionIcon,
+                    tooltip: actionTooltip,
                     onPressed: onCurrentLocation,
-                    icon:
-                    Icon(LucideIcons.arrowDownUp, size: 16, color: Colors.grey),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                    splashRadius: 16,
                   ),
                 ),
               ),
@@ -2171,6 +2194,122 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     ]);
   }
   // ────────── driver row (Driver dd → tab 25)
+  // Labels of the status-gated bottom-row actions. Shared by [_visibleActions]
+  // and the row that renders them so the two can never drift over a typo.
+  static const _aPay = 'PAY';
+  static const _aReason = 'REASON';
+  static const _aReceipt = 'RECEIPT';
+  static const _aMapReport = 'MAP REPORT';
+  static const _aAuditReport = 'AUDIT REPORT';
+
+  /// The loaded booking's status, trimmed and upper-cased. Empty while no job
+  /// is loaded.
+  String get _bookingStatusText =>
+      (controller.jobDetails?.bookingStatus?.bookingStatus ?? '')
+          .trim()
+          .toUpperCase();
+
+  /// Which of the status-gated actions the bottom row shows:
+  ///
+  ///   WAITING            CLEAR · RECEIPT · AUDIT REPORT · SAVE
+  ///   COMPLETED          CLEAR · PAY · RECEIPT · MAP REPORT · AUDIT REPORT · SAVE
+  ///   CANCELLED          CLEAR · REASON · AUDIT REPORT · SAVE
+  ///   MISSED / DECLINED  CLEAR · AUDIT REPORT · SAVE
+  ///
+  /// CLEAR and SAVE are in every one of those lists, so they are not gated
+  /// here — only what sits between them is.
+  ///
+  /// Matched on a prefix, not the whole word: the statuses come down from the
+  /// API (the dashboard builds its own tab titles from the same feed), so
+  /// COMPLETE / COMPLETED and CANCEL / CANCELLED both have to land. A status
+  /// this list does not name — including a booking that has not been saved
+  /// yet — keeps the full set rather than a stripped row.
+  Set<String> get _visibleActions {
+    final status = _bookingStatusText;
+    if (status.startsWith('WAIT')) {
+      return const {_aReceipt, _aAuditReport};
+    }
+    if (status.startsWith('COMPLET')) {
+      return const {_aPay, _aReceipt, _aMapReport, _aAuditReport};
+    }
+    if (status.startsWith('CANCEL')) {
+      return const {_aReason, _aAuditReport};
+    }
+    if (status.startsWith('MISS') || status.startsWith('DECLIN')) {
+      return const {_aAuditReport};
+    }
+    return const {_aPay, _aReceipt, _aMapReport, _aAuditReport};
+  }
+
+  /// REASON — the note whoever cancelled the booking left behind, off
+  /// `cancelled_reason`. Only reachable while the booking is cancelled.
+  void _onShowCancelReason() {
+    final reason = controller.jobDetails?.cancelledReason?.trim();
+    showShortcutDialog(
+      context,
+      title: 'Cancellation reason',
+      contentWidget: Text(
+        reason == null || reason.isEmpty
+            ? 'No reason was recorded for this cancellation.'
+            : reason,
+        style: _kValueTextStyle,
+      ),
+    );
+  }
+
+  /// The booking the bottom-row actions work on. Null until a job is loaded
+  /// into the form — every action below needs one.
+  int? get _loadedJobId {
+    final id = controller.jobDetails?.id;
+    if (id == null) return null;
+    return int.tryParse(id.toString());
+  }
+
+  void _onCancelBooking() {
+    final id = _loadedJobId;
+    if (id == null) {
+      BotToast.showText(text: 'Load a booking before cancelling it');
+      return;
+    }
+    showDialog(
+      context: context,
+      builder: (_) => CancelBookingRequest(bookingId: id),
+    );
+  }
+
+  /// PAY / RECEIPT / MAP REPORT / AUDIT REPORT are in the design but have no
+  /// endpoint or screen behind them anywhere in the app yet — the booking
+  /// table's own ACTIONS menu lists AUDIT REPORT and does nothing with it
+  /// either. The buttons sit in the row so it matches the design; give each
+  /// one its real handler here as the backend for it lands.
+  void _onActionPending(String label) =>
+      BotToast.showText(text: '$label is not available yet');
+
+  /// One of the bottom-row actions from the design. Same shape as CLEAR and
+  /// SAVE beside it, just tighter in the horizontal padding, because six of
+  /// these share the row with the two driver dropdowns.
+  Widget _bottomAction(String label,
+      {required num tab, required Color color, VoidCallback? onTap}) {
+    return FocusTraversalOrder(
+      order: NumericFocusOrder(tab.toDouble()),
+      child: GlowFocus(
+        child: ElevatedButton(
+          onPressed: onTap,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: color,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+            textStyle:
+                const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsField),
+          ),
+          child: Text(label),
+        ),
+      ),
+    );
+  }
+
   Widget _driverRow(bool isMobile) {
     final dd = _dropdown<DashboardDriverObject>(
       null,
@@ -2258,6 +2397,44 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
         ),
       ),
     );
+    // The row the design has, gated by the booking's status — see
+    // [_visibleActions] for which status gets which buttons. 43.1-43.5 slots
+    // them between R/DRV (43) and SAVE without renumbering anything above.
+    final visible = _visibleActions;
+    final actions = <Widget>[
+      // CLEAR and SAVE are in every status' list, so neither is gated.
+      //
+      // Called through a closure, NOT as `onTap: controller.refreshPostAllFields()`:
+      // the method is `async` with no declared return type, so the call form
+      // runs the refresh on every rebuild and hands its Future to a
+      // VoidCallback slot, which throws while building.
+      _bottomAction('CLEAR [F7]',
+          tab: 43.1,
+          color: _red,
+          onTap: () => controller.refreshPostAllFields()),
+      if (visible.contains(_aReason))
+        _bottomAction(_aReason,
+            tab: 43.15, color: _purple, onTap: _onShowCancelReason),
+      if (visible.contains(_aPay))
+        _bottomAction(_aPay,
+            tab: 43.2, color: _purple, onTap: () => _onActionPending(_aPay)),
+      if (visible.contains(_aReceipt))
+        _bottomAction(_aReceipt,
+            tab: 43.3,
+            color: _purple,
+            onTap: () => _onActionPending(_aReceipt)),
+      if (visible.contains(_aMapReport))
+        _bottomAction(_aMapReport,
+            tab: 43.4,
+            color: _purple,
+            onTap: () => _onActionPending(_aMapReport)),
+      if (visible.contains(_aAuditReport))
+        _bottomAction(_aAuditReport,
+            tab: 43.5,
+            color: _purple,
+            onTap: () => _onActionPending(_aAuditReport)),
+    ];
+
     // R/DRV sits beside DRV here rather than at the end of a return block of
     // its own, the same pairing the rest of the form now uses.
     if (isMobile) {
@@ -2271,11 +2448,13 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
           _rDriverDropdown(),
         ],
         const SizedBox(height: 10),
-        Row(children: [
-          Expanded(child: clear),
-          const SizedBox(width: 10),
-          Expanded(child: home),
-        ]),
+        // Six buttons never fit a phone row, so they wrap and each one hugs
+        // its own text instead of being stretched to an equal share.
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [...actions, /*clear,*/ home],
+        ),
       ]);
     }
     return Row(children: [
@@ -2284,15 +2463,27 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
         child: Text('Driver',
             style: TextStyle(fontSize: _fsField, fontWeight: FontWeight.w600)),
       ),
-      Expanded(child: dd),
+      // Sized, not Expanded: a driver name is short, so letting the two
+      // dropdowns swallow the whole row left them far wider than the fields
+      // above them. The leftover width goes to the buttons, which right-align
+      // against the edge of the card the way the design has them.
+      SizedBox(width: _kDriverFieldWidth, child: dd),
       if (_isReturnJourney) ...[
         const SizedBox(width: 12),
-        Expanded(child: _rDriverDropdown()),
+        SizedBox(width: _kDriverFieldWidth, child: _rDriverDropdown()),
       ],
       const SizedBox(width: 10),
-      clear,
-      const SizedBox(width: 8),
-      home,
+      // Wrap rather than a plain Row: on a narrow desktop window the driver
+      // dropdowns keep their width and the buttons drop to a second line,
+      // instead of the row overflowing.
+      Expanded(
+        child: Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          alignment: WrapAlignment.end,
+          children: [...actions, /*clear, */home],
+        ),
+      ),
     ]);
   }
   // ────────── shared primitives
@@ -2419,6 +2610,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       {required num tab,
         required DateTime? value,
         required ValueChanged<DateTime> onChanged}) {
+    final now = DateTime.now();
     return _labelled(
       label,
       FocusTraversalOrder(
@@ -2428,6 +2620,11 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
             label: null,
             value: value,
             onChanged: onChanged,
+            // No job can be booked into the past: every day before today is
+            // greyed out and unselectable. A job already saved with an older
+            // date still SHOWS that date - the bound only gates what can be
+            // picked, it never rewrites the value handed in.
+            firstDate: DateTime(now.year, now.month, now.day),
             // The calendar is an overlay off the root Overlay, so _withFormFont
             // at the top of this screen never reaches it. baseTextStyle is
             // merged under every string in the field AND the popup, so the
@@ -3709,6 +3906,92 @@ class _CustomerModelAutocompleteState
     );
   }
 }
+// ════════════════════════════════════════════════════════════════════
+// The boxed button at the end of a PICK / DROP field
+// ════════════════════════════════════════════════════════════════════
+/// The grey key the swap / route glyph sits in, at the end of an address field.
+const _kFieldActionBg = Color(0xFFE9ECEF);
+const _kFieldActionBorder = Color(0xFFCED4DA);
+
+/// Filled while the button holds focus, so the white glyph has something dark
+/// to read against. The same indigo GlowFocus rings it with.
+const _kFieldActionFocusBg = Color(0xFF312E81);
+
+/// The swap / route button at the end of a PICK or DROP field.
+///
+/// A widget of its own rather than an inline [IconButton] because the glyph has
+/// to repaint as focus arrives and leaves — white on indigo while focused,
+/// black on grey at rest — and neither [GlowFocus] (which only paints a ring
+/// around its child) nor [IconButton] hands that state down to the icon.
+class _FieldActionButton extends StatefulWidget {
+  const _FieldActionButton({
+    required this.icon,
+    required this.tooltip,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback? onPressed;
+
+  @override
+  State<_FieldActionButton> createState() => _FieldActionButtonState();
+}
+
+class _FieldActionButtonState extends State<_FieldActionButton> {
+  // Owned here so the button keeps its single Tab stop — the focus node is the
+  // button's own, not a wrapper's, which is what lets Enter / Space activate it.
+  final FocusNode _node = FocusNode(debugLabel: 'field action button');
+  bool _focused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _node.addListener(_handleFocusChange);
+  }
+
+  void _handleFocusChange() {
+    if (_node.hasFocus != _focused) {
+      setState(() => _focused = _node.hasFocus);
+    }
+  }
+
+  @override
+  void dispose() {
+    _node.removeListener(_handleFocusChange);
+    _node.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      focusNode: _node,
+      tooltip: widget.tooltip,
+      onPressed: widget.onPressed,
+      icon: Icon(
+        widget.icon,
+        size: 15,
+        color: _focused ? Colors.white : Colors.black,
+      ),
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(minWidth: 30, minHeight: 28),
+      splashRadius: 16,
+      // Boxed rather than bare: the design has this one sitting in its own key
+      // at the edge of the field, which also separates it from the clear cross
+      // beside it.
+      style: IconButton.styleFrom(
+        backgroundColor: _focused ? _kFieldActionFocusBg : _kFieldActionBg,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4),
+          side: BorderSide(
+              color: _focused ? _kFieldActionFocusBg : _kFieldActionBorder),
+        ),
+      ),
+    );
+  }
+}
+
 // ════════════════════════════════════════════════════════════════════
 // The focus ring and the dropdown date field now live in the
 // flutter_web_date_picker package (GlowFocus / WebDateField).
