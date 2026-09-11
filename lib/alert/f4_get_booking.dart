@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../Model/driver_earning_model.dart';
+import '../component/alert_close_button.dart';
 import '../component/color.dart';
 import '../component/datatable_widget.dart';
 import '../component/textStyle.dart';
@@ -40,9 +41,9 @@ class DriverBookingsAlert extends StatelessWidget {
                 fontSize: 23,
               ),
             ),
-            IconButton(
-              onPressed: () => Get.back(),
-              icon: const Icon(Icons.close, size: 20),
+            FocusTraversalOrder(
+              order: const NumericFocusOrder(999),
+              child: const AlertCloseButton(),
             ),
           ],
         ),
