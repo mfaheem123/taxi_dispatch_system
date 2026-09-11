@@ -376,9 +376,9 @@ class _DriversViewState extends State<DriversView> {
                           isExpanded: true, // Use true here so text reaches the icon and then clips
                           decoration: const InputDecoration(
                             /*border: OutlineInputBorder(),
-                                                                                                isDense: true,
-                                                                                                contentPadding: EdgeInsets.symmetric(horizontal: 2),
-                                                                                                */
+                             isDense: true,
+                            contentPadding: EdgeInsets.symmetric(horizontal: 2),
+                            */
                             // Remove the internal border since you have a Container border
                             border: InputBorder.none,
                             isDense: true,
