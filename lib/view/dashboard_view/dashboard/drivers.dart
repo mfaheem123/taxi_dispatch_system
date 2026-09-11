@@ -606,11 +606,16 @@ class _DriversViewState extends State<DriversView> {
                                   controller.selectedDriverIndex == index;
 
                           return GestureDetector(
+                            onTapDown: (TapDownDetails details) {
+                              _showContextMenu(context, details.globalPosition, driver, index: index);
+                            },
                             onSecondaryTapDown: (details) {
                               _showContextMenu(
                                   context, details.globalPosition, driver,
                                   index: index);
                             },
+
+
                             child: Card(
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -623,8 +628,11 @@ class _DriversViewState extends State<DriversView> {
                                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1.0),
                                 child: Row(
                                   children: [
+
                                     // Driver Name
+
                                     Expanded(
+
                                       flex: 3,
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
@@ -657,6 +665,8 @@ class _DriversViewState extends State<DriversView> {
                                     ),
                                     const SizedBox(width: 4),
 
+
+
                                     // Vehicle Type
                                     Expanded(
                                       flex: 2,
@@ -668,6 +678,8 @@ class _DriversViewState extends State<DriversView> {
                                       ),
                                     ),
                                     const SizedBox(width: 4),
+
+
 
                                     //  Share Icon
                                     IconButton(

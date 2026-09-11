@@ -2784,7 +2784,25 @@ class DashboardController extends GetxController {
     if (selectVehicleValue == null) {
       return BotToast.showText(text: "Please select vehicle type");
     }
+// ==================== PASSENGER CHECK START ====================
+    if (passController.text.trim().isEmpty) {
+      isPassengerError.value = true;
+      return BotToast.showText(text: "Please enter number of passengers");
+    }
 
+    int enteredPassengers = int.tryParse(passController.text.trim()) ?? 0;
+    int maxAllowedPassengers = selectVehicleValue?.passengers ?? 0;
+
+    // Save validation check: Limit se zyada par Toast show hoga
+    if (enteredPassengers > maxAllowedPassengers) {
+      isPassengerError.value = true;
+      return BotToast.showText(
+        text: "Passenger limit exceeded for ${selectVehicleValue?.name ?? 'vehicle'}",
+      );
+    } else {
+      isPassengerError.value = false;
+    }
+    // ==================== PASSENGER CHECK END ====================
     postDashboardApi(id: id);
     return null;
   }
@@ -3985,33 +4003,34 @@ class DashboardController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking functionality
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo passenger function
-  // final passController = TextEditingController();
-  // DashboardVehicleTypeObject? selectVehicleValue;
 
   RxBool isPassengerError = false.obs;
 
-  void validatePassengerLimit(String value) {
+// 1. Text field typing/onChanged check + Popup
+  bool validatePassengerLimit(String value) {
     if (value.isEmpty || selectVehicleValue == null) {
       isPassengerError.value = false;
-      return;
+      return true;
     }
 
     int enteredCount = int.tryParse(value) ?? 0;
     int maxLimit = selectVehicleValue?.passengers ?? 0;
 
-    // Condition Check: Limit cross hone par red border aur alert
     if (enteredCount > maxLimit) {
       isPassengerError.value = true;
 
       Get.defaultDialog(
         title: "Limit Exceeded",
-        middleText: "You can increase vehicle type.",
+        middleText: "Maximum passenger limit exceeded.",
         textConfirm: "OK",
         confirmTextColor: Colors.white,
+        buttonColor: DynamicColors.primaryClr,
         onConfirm: () => Get.back(),
       );
+      return false;
     } else {
       isPassengerError.value = false;
+      return true;
     }
   }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo passenger function
