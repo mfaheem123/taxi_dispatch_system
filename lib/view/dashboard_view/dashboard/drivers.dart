@@ -587,12 +587,16 @@ class _DriversViewState extends State<DriversView> {
                         padding: EdgeInsets.zero,
                         // padding: const EdgeInsets.symmetric(vertical: 8),
                         itemBuilder: (context, index) {
+
+
                           final driver = controller.driverSelectionTab.value !=
                               "activeDriver"
                               ? controller.busyDriversList[index]
                               : controller.onlineDriversList[index];
 
+
                           String timeOnline = "";
+
 
                           if (driver.lastLoginAt != null) {
                             timeOnline = formatDurationss(
@@ -614,8 +618,6 @@ class _DriversViewState extends State<DriversView> {
                                   context, details.globalPosition, driver,
                                   index: index);
                             },
-
-
                             child: Card(
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -628,11 +630,8 @@ class _DriversViewState extends State<DriversView> {
                                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 1.0),
                                 child: Row(
                                   children: [
-
                                     // Driver Name
-
                                     Expanded(
-
                                       flex: 3,
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
@@ -664,8 +663,6 @@ class _DriversViewState extends State<DriversView> {
                                       ),
                                     ),
                                     const SizedBox(width: 4),
-
-
 
                                     // Vehicle Type
                                     Expanded(
