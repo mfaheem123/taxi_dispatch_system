@@ -758,8 +758,6 @@ class DashboardController extends GetxController {
   }
 
   var selectedBookingTab = 'TODAY BOOKINGS'.obs;
-
-
   RxString selectedTab = 'MAPS'.obs;
   RxString driverSelectionTab = 'activeDriver'.obs;
   var miles = '00.0'.obs;
