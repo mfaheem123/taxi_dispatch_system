@@ -5,6 +5,7 @@ import 'package:dashboard_new1/alert/restrict_drivers_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../component/alert_close_button.dart';
 import '../component/color.dart';
 import '../component/customButton.dart';
 import '../component/dropdown_button.dart';
@@ -22,7 +23,6 @@ class SendEmailAlert extends StatefulWidget {
 
 class _SendEmailAlertState extends State<SendEmailAlert> {
   final dashBoardCntrl = Get.find<DashboardController>();
-  final FocusNode closeButtonFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -42,7 +42,7 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      insetPadding: EdgeInsets.all(20),
+      // insetPadding: EdgeInsets.all(20),
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
@@ -52,39 +52,29 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: DynamicColors.gryClr.withOpacity(0.5),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+        ),
+            child: Row(
               children: [
+                Icon(Icons.email_outlined, color: DynamicColors.primaryClr),
+                const SizedBox(width: 10),
                 Text(AppText.sendEmail,
                   style: mozillaTextSemiBoldText(
                     fontWeight: FontWeight.w700,
                     fontSize: 13,
                   ),
                 ),
-                AnimatedBuilder(
-                  animation: closeButtonFocusNode,
-                  builder: (context, child) {
-                    final isFocused = closeButtonFocusNode.hasFocus;
-                    return Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
-                          width: 2,
-                        ),
-                        color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
-                      ),
-                      child: IconButton(
-                        focusNode: closeButtonFocusNode,
-                        onPressed: () => Get.back(),
-                        icon: const Icon(Icons.close, size: 22, color: Colors.grey),
-                        splashRadius: 20,
-                      ),
-                    );
-                  },
+                const Spacer(),
+                FocusTraversalOrder(
+                  order: const NumericFocusOrder(999),
+                  child: const AlertCloseButton(),
                 ),
               ],
-            ),
+            )),
 
             Divider(),
 
