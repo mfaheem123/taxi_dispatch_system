@@ -3,6 +3,8 @@ import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../component/alert_close_button.dart';
+
 void showSystemShortcutsAlert() {
   Get.dialog(
     const BackSlashAlert(),
@@ -43,9 +45,9 @@ class BackSlashAlert extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  InkWell(
-                    onTap: () => Get.back(),
-                    child: const Icon(Icons.close, size: 22, color: Colors.grey),
+                  FocusTraversalOrder(
+                    order: const NumericFocusOrder(999),
+                    child: const AlertCloseButton(),
                   ),
                 ],
               ),
