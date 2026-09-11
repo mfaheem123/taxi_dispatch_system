@@ -311,7 +311,7 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                                                 child: Icon(
                                                   Icons.phone,
                                                   color: DynamicColors.whiteClr,
-                                                  size: 18,
+                                                  size: 16,
                                                 ),
                                               ),
                                             ),
