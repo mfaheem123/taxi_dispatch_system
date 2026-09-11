@@ -507,6 +507,11 @@ class DashboardDriverObject {
   String? sessionStatus;
   String? driverStatus;
   DateTime? lastLoginAt;
+  bool? hasPda;
+  String? make;
+  String? model;
+  String? color;
+  String? vehicleNo;
 
   DashboardDriverObject({
     this.id,
@@ -520,6 +525,11 @@ class DashboardDriverObject {
     this.driverStatus,
     this.latitude,
     this.longitude,
+    this.hasPda,
+    this.make,
+    this.model,
+    this.color,
+    this.vehicleNo,
   });
 
   factory DashboardDriverObject.fromJson(Map<String, dynamic> json) => DashboardDriverObject(
@@ -536,6 +546,12 @@ class DashboardDriverObject {
     lastLoginAt: json['last_login_at'] != null
         ? DateTime.parse(json['last_login_at']).toLocal()
         : null,
+    hasPda: json["has_pda"],
+    make: json["vehicle_no"],
+    model: json["model"],
+    color: json["make"],
+    vehicleNo: json["model"],
+
   );
 
   Map<String, dynamic> toJson() => {
@@ -550,6 +566,11 @@ class DashboardDriverObject {
     "driver_status": driverStatus,
     "last_login_at": lastLoginAt,
     "vehicle_type": vehicleType,
+    "has_pda": hasPda,
+    "make": make,
+    "model": model,
+    "color": color,
+    "vehicle_no": vehicleNo,
   };
 }
 

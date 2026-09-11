@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'component/color.dart';
+import 'component/customButton.dart';
 import 'component/datatable_widget.dart';
 import 'component/dropdown_button.dart';
 import 'component/textStyle.dart';
@@ -48,11 +49,11 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
             : 550.0;
 
         return SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: 15),
-              Padding(padding: EdgeInsets.symmetric(
-                vertical: 30, horizontal: isMobile ? 10 : 40),
+          // child: Column(
+          //   children: [
+          //     SizedBox(height: 15),
+              // Padding(padding: EdgeInsets.symmetric(
+              //   vertical: 30, horizontal: isMobile ? 10 : 40),
                 child: Container(
                   width: containerWidth,
                   decoration: BoxDecoration(
@@ -85,7 +86,9 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
                             padding: const EdgeInsets.symmetric(horizontal: 16.0),
                             child: Row(
                                   children: [
-                                    Text("MULTI VEHICLE",
+                                    Icon(Icons.layers, color: DynamicColors.primaryClr, size: 20),
+                                    const SizedBox(width: 8),
+                                    Text("MULTI VEHICLE MANAGEMENT",
                                         style: titleDesign()),
                                     Spacer(),
                                     Focus(
@@ -120,7 +123,15 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
+                          Container(
+                          width: Get.width,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF8FAFC),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: const Color(0xFFE2E8F0)),
+                          ),
+                            child: Row(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Expanded(
@@ -131,7 +142,7 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
                                         "ADD VEHICLE TYPE",
                                         style: TextStyle(
                                           fontSize: 12,
-                                          fontWeight: FontWeight.w500,
+                                          fontWeight: FontWeight.bold,
                                           color: Colors.black87,
                                         ),
                                       ),
@@ -214,7 +225,7 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
                                   ),
                                 )
                               ],
-                            ),
+                            )),
                             const SizedBox(height: 25),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(4),
@@ -224,9 +235,9 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
                                 child: DatatableWidget(
                                     columns: [
                                   buildHeaderWithSearch(
-                                      title: "Vehicle", removeSearching: true),
+                                      title: "VEHICLE", removeSearching: true),
                                   buildHeaderWithSearch(
-                                      title: "Action", removeSearching: true),
+                                      title: "ACTION", removeSearching: true),
                                 ], rows: [
                                   // Existing extensions
                                   ...controller.multiVehicleList.map((object) {
@@ -273,16 +284,42 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
                                   }).toList(),
                                 ]),
                             ),
-                        )],
+                        )
+                          ],
+
                         ),
                       ),
+
+                  SizedBox(height: 30),
+                  const Divider(height: 1),
+
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        CustomButton(
+                          width: 80,
+                          height: 28,
+                          verticalPadding: 0.0,
+                          btnText: "CLOSE",
+                          btnColor: Colors.grey.shade300,
+                          borderRadius: 4,
+                          style: mozillaTextSemiBoldText(
+                              fontSize: 14,
+                              color: Colors.black87,
+                              fontWeight: FontWeight.bold
+                          ),
+                          onTap: () => Get.back(),
+                        ),
+                        ])),
                     ],
                   ),
                 ),
-              ),
-              SizedBox(height: 20),
-            ],
-          ),
+              // ),
+              // SizedBox(height: 20),
+          //   ],
+          // ),
         );
       });
     });

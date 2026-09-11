@@ -87,38 +87,46 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
           fieldWidth = fieldWidth.clamp(200.0, 400.0);
         }
         return SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(
-                height: 8,
-              ),
-              Padding(
-                // padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 80),
-                padding: EdgeInsets.symmetric(
-                    vertical: 50,
-                    horizontal: isMobile ? 10 : 40),
+          // child: Column(
+          //   children: [
+          //     SizedBox(
+          //       height: 8,
+          //     ),
+          //     Padding(
+          //       // padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 80),
+          //       padding: EdgeInsets.symmetric(
+          //           vertical: 50,
+          //           horizontal: isMobile ? 10 : 40),
                 child: Container(
-                  width: Get.width,
+                  // width: Get.width,
                   decoration: BoxDecoration(
                       color: DynamicColors.whiteClr,
+                      borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: DynamicColors.secondaryClr,
                       )),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Container(
+                      //     width: Get.width,
+                      //     height: kToolbarHeight,
+                      //     color: DynamicColors.secondaryClr,
+                      //     child:
                       Container(
-                          width: Get.width,
-                          height: kToolbarHeight,
-                          color: DynamicColors.secondaryClr,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Align(
-                                alignment: Alignment.centerLeft,
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: DynamicColors.gryClr.withOpacity(0.5),
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                          ),
+                            // child: Align(
+                            //     alignment: Alignment.centerLeft,
                                 child: Row(
                                   children: [
-                                    Text("MULTI RESERVATION",
-                                        style: titleDesign()),
+                                     Icon(Icons.calendar_month, color: DynamicColors.primaryClr, size: 20),
+                                    const SizedBox(width: 8),
+                                    Text("MULTI-BOOKING CONFIGURATION",
+                                      style: titleDesign()),
                                     Spacer(),
                                     Focus(
                                       onKeyEvent: (node, event) {
@@ -158,12 +166,24 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                     )
                                   ],
                                 )),
-                          )),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 30),
+
+                      const Divider(height: 1, color: Color(0xFFE2E8F0)),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                  // 2. Dates and Time Inputs Container
+                  Container(
+                    width: Get.width,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8FAFC),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                    ),
                     child: Wrap(
-                      spacing: isHighRes ? 30 : 10,
+                      spacing: isHighRes ? 30 : 12,
                       runSpacing: 12,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
@@ -174,7 +194,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           // width: fieldWidth/1.4,
                           // width: fieldWidth/1.2,
                           // width: 155,
-                          width: isHighRes ? 180 : 155,
+                          width: isHighRes ? 200 : 175,
                           column: true,
                           child: SizedBox(
                               height: 30,
@@ -198,7 +218,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           // width: fieldWidth/1.4,
                           // width: fieldWidth/1.2,
                           // width: 155,
-                          width: isHighRes ? 180 : 155,
+                          width: isHighRes ? 200 : 175,
                           column: true,
                           child: SizedBox(
                               height: 30,
@@ -224,7 +244,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           // width: fieldWidth/2.3,
                           // width: fieldWidth / 2.0,
                           // width: 90,
-                          width: isHighRes ? 110 : 90,
+                          width: isHighRes ? 130 : 110,
                           child: _timeField(
                               controller.multiReservationToTimeController,
                               onChanged: (_) {
@@ -242,7 +262,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                             // width: fieldWidth/2.3,
                             // width: fieldWidth / 2.0,
                             // width: 90,
-                            width: isHighRes ? 110 : 90,
+                            width: isHighRes ? 130 : 110,
                             child: _timeField(controller
                                 .returnMultiReservationToTimeController,
                                 onChanged: (_) {
@@ -296,10 +316,30 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                       ],
                     ),
                   ),
+                ],
+            ),
+          ),
+
                       Padding(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                        child: Wrap(
+                          padding: const EdgeInsets.all(16.0),
+                      child: Container(
+                        // width: Get.width,
+                        padding: const EdgeInsets.all(12),
+                        width: Get.width,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                          const Text(
+                          "SELECT DAYS",
+                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF64748B)),
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
                           runSpacing: 10,
                           spacing: isHighRes ? 30 : 8,
                           crossAxisAlignment: WrapCrossAlignment.center,
@@ -383,7 +423,9 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                             ),
                           ],
                         ),
-                      ),
+                          ],
+                        ),
+                      )),
                       SizedBox(
                         height: 25,
                       ),
@@ -469,13 +511,14 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                       // ),
 
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.all(16.0),
+                    child:
+                    SingleChildScrollView(
+                        // scrollDirection: Axis.horizontal,
                         child: SizedBox(
-                          // width: Get.width/2,
+                          width: Get.width,
                           // width: maxWidth < 1000 ? 1000 : maxWidth - 80,
-                          width: maxWidth < 1000 ? 800 : maxWidth - 100,
+                          // width: maxWidth < 1000 ? 800 : maxWidth - 100,
                           child: DatatableWidget(
                             columns: [
                               buildHeaderWithSearch(title: "EXCLUDE"),
@@ -601,58 +644,96 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                         ),
                       ),
 
-                      SizedBox(
-                        height: 30,
-                      ),
+                      SizedBox(height: 30),
+                      const Divider(height: 1),
+
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Align(
-                          alignment: Alignment.bottomRight,
-                          child: CustomButton(
-                            onTap: () async{
-                              if (controller.multiReservationList.isEmpty) {
-                                BotToast.showText(text: "Please select data first");
-                                return;
-                              }
-                              await controller.getFaresCalculation();
-                              // final storedTemFare = await getFares(
-                              //     journeyTypeId: controller.selectJourneyTypeValue!.id,
-                              //     multiReservationList: controller.multiReservationList,
-                              //     dropOff: controller.pickupController.text,
-                              //     pickup: controller.dropOffController.text,
-                              //     miles: controller.totalDistance.value,
-                              //     dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
-                              //     pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
-                              //     pickupTime: controller.pickUpTimeController.text,
-                              //     vehicleTypeId: controller.selectVehicleValue!.id,
-                              //     returnVehicleTypeId: controller.selectVehicleValueReturn == null ? null : controller.selectVehicleValueReturn!.id
-                              //
-                              // );
-                              // var fareValue = jsonDecode(storedTemFare);
-                              // controller.fixedFare.value = fareValue['total_fare'].toString();
-                              // controller.returnFareValue = fareValue== null?"0": fareValue['return_fare'].toString();
-                              // controller.slugControllerReturn.text = fareValue== null?"0": fareValue['return_fare'].toString();
-                              // controller.slugController.text = fareValue['fare'].toString();
-                              // controller.update();
-                              Get.back();
-                            },
-                            height: 35,
-                            width: fieldWidth / 2,
-                            fontSize: 14,
-                            borderRadius: 4,
-                            verticalPadding: 0.0,
-                            btnText: AppText.saveAndClose,
-                          ),
-                        ),
+                        padding: const EdgeInsets.all(12.0),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                CustomButton(
+                                  width: 80,
+                                  height: 28,
+                                  verticalPadding: 0.0,
+                                  btnText: "DISCARD",
+                                  btnColor: Colors.grey.shade300,
+                                  borderRadius: 4,
+                                  style: mozillaTextSemiBoldText(
+                                      fontSize: 14,
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.bold
+                                  ),
+                                  onTap: () => Get.back(),
+                                ),
+
+                                const SizedBox(width: 10),
+
+                                ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: DynamicColors.primaryClr,
+                                    foregroundColor: Colors.white,
+                                    minimumSize: const Size(200, 38),
+                                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                  ),
+                                  onPressed: () async {
+                                    if (controller.multiReservationList.isEmpty) {
+                                      BotToast.showText(text: "Please select data first");
+                                      return;
+                                    }
+                                    await controller.getFaresCalculation();
+                                    },
+                                  icon: const Icon(Icons.check_circle, size: 16),
+                                  label: const Text("CONFIRM SELECTION",
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                ),
+                          // CustomButton(
+                          //   onTap: () async{
+                          //     if (controller.multiReservationList.isEmpty) {
+                          //       BotToast.showText(text: "Please select data first");
+                          //       return;
+                          //     }
+                          //     await controller.getFaresCalculation();
+                          //     // final storedTemFare = await getFares(
+                          //     //     journeyTypeId: controller.selectJourneyTypeValue!.id,
+                          //     //     multiReservationList: controller.multiReservationList,
+                          //     //     dropOff: controller.pickupController.text,
+                          //     //     pickup: controller.dropOffController.text,
+                          //     //     miles: controller.totalDistance.value,
+                          //     //     dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
+                          //     //     pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
+                          //     //     pickupTime: controller.pickUpTimeController.text,
+                          //     //     vehicleTypeId: controller.selectVehicleValue!.id,
+                          //     //     returnVehicleTypeId: controller.selectVehicleValueReturn == null ? null : controller.selectVehicleValueReturn!.id
+                          //     //
+                          //     // );
+                          //     // var fareValue = jsonDecode(storedTemFare);
+                          //     // controller.fixedFare.value = fareValue['total_fare'].toString();
+                          //     // controller.returnFareValue = fareValue== null?"0": fareValue['return_fare'].toString();
+                          //     // controller.slugControllerReturn.text = fareValue== null?"0": fareValue['return_fare'].toString();
+                          //     // controller.slugController.text = fareValue['fare'].toString();
+                          //     // controller.update();
+                          //     Get.back();
+                          //   },
+                          //   height: 35,
+                          //   width: fieldWidth / 2,
+                          //   fontSize: 14,
+                          //   borderRadius: 4,
+                          //   verticalPadding: 0.0,
+                          //   btnText: AppText.saveAndClose,
+                          // ),
+                        ]),
                       ),
-                    ],
-                  ),
-                ),
-              ),
+                  //   ],
+                  // ),
+                // ),
               SizedBox(
                 height: 20,
               ),
-            ],
+            ]),
           ),
         );
       });

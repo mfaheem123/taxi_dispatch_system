@@ -376,9 +376,9 @@ class _DriversViewState extends State<DriversView> {
                           isExpanded: true, // Use true here so text reaches the icon and then clips
                           decoration: const InputDecoration(
                             /*border: OutlineInputBorder(),
-                                                                                                isDense: true,
-                                                                                                contentPadding: EdgeInsets.symmetric(horizontal: 2),
-                                                                                                */
+                             isDense: true,
+                            contentPadding: EdgeInsets.symmetric(horizontal: 2),
+                            */
                             // Remove the internal border since you have a Container border
                             border: InputBorder.none,
                             isDense: true,
@@ -579,6 +579,7 @@ class _DriversViewState extends State<DriversView> {
                   // ----- Driver List -----
                   Expanded(
                     child: Obx(
+
                           () => ListView.builder(
                         itemCount: controller.driverSelectionTab.value !=
                             "activeDriver"
@@ -587,12 +588,16 @@ class _DriversViewState extends State<DriversView> {
                         padding: EdgeInsets.zero,
                         // padding: const EdgeInsets.symmetric(vertical: 8),
                         itemBuilder: (context, index) {
+
+
                           final driver = controller.driverSelectionTab.value !=
                               "activeDriver"
                               ? controller.busyDriversList[index]
                               : controller.onlineDriversList[index];
 
+
                           String timeOnline = "";
+
 
                           if (driver.lastLoginAt != null) {
                             timeOnline = formatDurationss(
@@ -606,6 +611,10 @@ class _DriversViewState extends State<DriversView> {
                                   controller.selectedDriverIndex == index;
 
                           return GestureDetector(
+                            // 1. LEFT CLICK (Normal Tap) -> Info Popup Details Show Karega
+                              onTapDown: (TapDownDetails details) {
+                                _showDriverInfoCard(context, details.globalPosition, driver);
+                              },
                             onSecondaryTapDown: (details) {
                               _showContextMenu(
                                   context, details.globalPosition, driver,
@@ -669,6 +678,8 @@ class _DriversViewState extends State<DriversView> {
                                     ),
                                     const SizedBox(width: 4),
 
+
+
                                     //  Share Icon
                                     IconButton(
                                       padding: EdgeInsets.zero,
@@ -731,7 +742,98 @@ class _DriversViewState extends State<DriversView> {
       },
     );
   }
+  void _showDriverInfoCard(
+      BuildContext context, Offset offset, DashboardDriverObject? driver) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.transparent, // Background dim nahi hoga
+      builder: (BuildContext context) {
+        return Stack(
+          children: [
+            Positioned(
+              left: offset.dx - 220, // Cursor position se thoda left shift karne ke liye
+              top: offset.dy - 50,
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  width: 210,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 6,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header Row with Close Icon
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.android, size: 16, color: Colors.green),
+                              const SizedBox(width: 4),
+                              Text(
+                                "USR - ${driver?.id ?? ''}",
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                              ),
+                            ],
+                          ),
+                          InkWell(
+                            onTap: () => Navigator.pop(context),
+                            child: const Icon(Icons.close, size: 16, color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                      const Divider(height: 12),
 
+                      // Driver Info Details
+                      _infoRow("NAME", driver?.username ?? "GEORGE HAMPTON"),
+                      _infoRow("VEHICLE NO", "KKR 123"),
+                      _infoRow("MAKE", "TOYOTA"),
+                      _infoRow("MODEL", "PRIUS"),
+                      _infoRow("COLOR", "GREY"),
+                      _infoRow("LAST ACTIVITY", "04-09-26 10:36"),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+// Helper Widget for Info Rows
+  Widget _infoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      child: RichText(
+        text: TextSpan(
+          style: const TextStyle(fontSize: 11, color: Colors.black),
+          children: [
+            TextSpan(
+              text: "$label - ",
+              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),
+            ),
+            TextSpan(
+              text: value,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
   void _showContextMenu(
       BuildContext context, Offset offset, DashboardDriverObject? driver,
 
