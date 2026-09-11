@@ -17,7 +17,8 @@ class DashboardF9Alert {
       // key has to be bound inside the dialog itself.
       EscapeDismissible(
         child: Dialog(
-          insetPadding: const EdgeInsets.symmetric(horizontal: 50, vertical: 24),
+          // insetPadding: const EdgeInsets.symmetric(horizontal: 50, vertical: 24),
+          insetPadding:  EdgeInsets.zero,
         backgroundColor: Colors.transparent,
         child: Align(
           alignment: Alignment.topCenter,
@@ -37,7 +38,7 @@ class DashboardF9Alert {
                   return Container(
                     width: dialogWidth,
                     constraints: const BoxConstraints(
-                      maxHeight: 650,
+                      maxHeight: 720,
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,

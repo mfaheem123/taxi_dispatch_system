@@ -15,7 +15,8 @@ class DashboardF8Alert {
       // key has to be bound inside the dialog itself.
       EscapeDismissible(
         child: Dialog(
-        insetPadding: const EdgeInsets.only(top: 40, left: 60, right: 60),
+        // insetPadding: const EdgeInsets.only(top: 40, left: 60, right: 60),
+        insetPadding: EdgeInsets.zero,
         backgroundColor: Colors.transparent,
         child: Align(
           alignment: Alignment.topCenter,
@@ -23,7 +24,7 @@ class DashboardF8Alert {
             builder: (context, setState) {
               return Container(
                 width: Get.width * 0.6,
-                padding: const EdgeInsets.all(14),
+                // padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
