@@ -782,7 +782,7 @@ class _DriversViewState extends State<DriversView> {
                               const Icon(Icons.android, size: 16, color: Colors.green),
                               const SizedBox(width: 4),
                               Text(
-                                "USR - ${driver?.id ?? ''}",
+                                "USR - ${driver?.username ?? ''}",
                                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                               ),
                             ],
@@ -797,11 +797,11 @@ class _DriversViewState extends State<DriversView> {
 
                       // Driver Info Details
                       _infoRow("NAME", driver?.username ?? "GEORGE HAMPTON"),
-                      _infoRow("VEHICLE NO", "KKR 123"),
-                      _infoRow("MAKE", "TOYOTA"),
-                      _infoRow("MODEL", "PRIUS"),
-                      _infoRow("COLOR", "GREY"),
-                      _infoRow("LAST ACTIVITY", "04-09-26 10:36"),
+                      _infoRow("VEHICLE NO", driver?.vehicleNo  ?? "KKR 123"),
+                      _infoRow("MAKE", driver?.make ??"TOYOTA"),
+                      _infoRow("MODEL", driver?.model ?? "PRIUS"),
+                      _infoRow("COLOR", driver?.color ??"GREY"),
+                      _infoRow("LAST ACTIVITY", driver?.lastLoginAt.toString() ??"04-09-26 10:36"),
                     ],
                   ),
                 ),
