@@ -13,6 +13,7 @@ class SearchBookingAlert extends StatefulWidget {
 }
 
 class _SearchBookingAlertState extends State<SearchBookingAlert> {
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _mobileController = TextEditingController();
   final TextEditingController _telephoneController = TextEditingController();
@@ -57,9 +58,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                     style: mozillaTextSemiBoldText(
                       fontSize: 14,
                       color: const Color(0xFF101B2E),
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
+                      fontWeight: FontWeight.w900, ),),
                   const Spacer(),
                   IconButton(
                     icon: const Icon(Icons.close, color: Colors.grey, size: 20),
@@ -90,11 +89,9 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                     const SizedBox(width: 12),
                     _buildDatePickerWithLabel("TO DATE", _toDateController),
                     const SizedBox(width: 12),
-                    
                     // Filter Button
                     _buildButton("FILTER",  DynamicColors.primaryClr, Colors.white, isWide: true),
                     const SizedBox(width: 8),
-                    
                     // Clear Button
                     _buildButton("CLEAR", Colors.grey.shade100, Colors.black87, isWide: false),
                   ],
@@ -291,3 +288,10 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     );
   }
 }
+
+
+
+
+
+
+

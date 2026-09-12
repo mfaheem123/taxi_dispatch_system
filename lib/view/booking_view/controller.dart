@@ -71,6 +71,7 @@ class BookingController extends GetxController{
 
   final int tableId = 2;
   getDashboardTableData() async {
+
     preBookingLoad(true);
     var response = await Api().get("bookings/getbytabs/${tableId}", sendCompanyId: true,
         queryParameters: {
@@ -100,6 +101,7 @@ class BookingController extends GetxController{
       preBookingTotalPages.value = dashboardTableModelData!.totalPages ?? 1;
       preBookingAll.value = dashboardTableModelData?.data ?? [];
       preBookingFiltered.value = preBookingAll;
+
       update();
       preBookingLoad(false);
 
@@ -122,6 +124,7 @@ class BookingController extends GetxController{
   RxList<BookingObjectData> webBookingAll = <BookingObjectData>[].obs;
   RxList<BookingObjectData> webBookingFiltered = <BookingObjectData>[].obs;
   DashboardTableModel? webBookingModelData;
+
   RxBool webBookingLoad = false.obs;
   RxInt webBookingCurrentPage = 1.obs;
   RxInt webBookingTotalPages = 1.obs;
