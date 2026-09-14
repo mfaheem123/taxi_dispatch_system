@@ -185,10 +185,13 @@ class _AllBookingViewState extends State<AllBookingView> {
                               ),
                               const SizedBox(width: 8),
                               Expanded(
-                                flex: 1,
-                                child: CustomTimePicker(
-                                  controller: controller.bookingStartTimeController,
-                                  onTimeSelected: (time) => setState(() {}),
+                                flex: 2,
+                                child: SizedBox(
+                                  height: 30,
+                                  child: CustomTimePicker(
+                                    controller: controller.bookingStartTimeController,
+                                    onTimeSelected: (time) => setState(() {}),
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -212,10 +215,13 @@ class _AllBookingViewState extends State<AllBookingView> {
                               ),
                               const SizedBox(width: 8),
                               Expanded(
-                                flex: 1,
-                                child: CustomTimePicker(
-                                  controller: controller.bookingEndTimeController,
-                                  onTimeSelected: (time) => setState(() {}),
+                                flex: 2,
+                                child: SizedBox(
+                                  height: 30,
+                                  child: CustomTimePicker(
+                                    controller: controller.bookingEndTimeController,
+                                    onTimeSelected: (time) => setState(() {}),
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 8),
