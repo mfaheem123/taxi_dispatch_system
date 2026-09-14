@@ -642,8 +642,8 @@ class DashboardController extends GetxController {
   final dropOffTwoWayController = TextEditingController();
   final selectAirportController = TextEditingController();
   // final selectReturnAirportController = TextEditingController();
-  final arrivalTimeController = TextEditingController(text: nowHHmm);
-  final arrivalReturnTimeController = TextEditingController(text: nowHHmm);
+  final arrivalTimeController = TextEditingController();
+  final arrivalReturnTimeController = TextEditingController();
   final switchController = ValueNotifier<bool>(false);
   RxBool smsCheckbox = true.obs;
   RxBool addReturnFare = true.obs;
@@ -1585,7 +1585,13 @@ class DashboardController extends GetxController {
       }
     }
 
-    totalDistance.value = totalComputedMiles.toStringAsFixed(2);
+    if(jourValue == "W/R"){
+      totalDistance.value = (totalComputedMiles * 2).toStringAsFixed(2);
+    }else{
+      totalDistance.value = totalComputedMiles.toStringAsFixed(2);
+    }
+
+
     tempStoreTotalDistance.value = totalComputedMiles.toStringAsFixed(2);
     tempStoreMils = computedOutboundMiles.toStringAsFixed(2);
     tempStoreReturnMils = computedReturnMiles.toStringAsFixed(2);
@@ -3645,6 +3651,15 @@ class DashboardController extends GetxController {
         }
       }
 
+      if(jobData.booking[0].flightNumber != null){
+        isAirportResponse.value = true;
+        selectAirportController.text = jobData.booking[0].flightNumber.toString();
+      }
+      if(jobData.booking[0].arrivingFrom != null){
+        isAirportResponse.value = true;
+        arrivalTimeController.text = jobData.booking[0].arrivingFrom.toString();
+      }
+
       minController.text = jobData.booking[0].leadTime ?? "";
 
       if (jobData.booking[0].passengers != null) {
@@ -3797,22 +3812,28 @@ class DashboardController extends GetxController {
                   (journey) => journey.id == jobData.booking[0].journeyTypeId,
             );
         fixedFare.value = (double.parse(jobData.booking[1].fares!)+ double.parse(jobData.booking[0].fares!)).toString();
-            withReturnDataBinding(jobData.booking[1]);
+
+        if(jobData.booking[1].flightNumber != null){
+          isAirportResponse.value = true;
+          selectAirportControllerReturn.text = jobData.booking[1].flightNumber.toString();
+        }
+        if(jobData.booking[1].arrivingFrom != null){
+          isAirportResponse.value = true;
+          arrivalReturnTimeController.text = jobData.booking[1].arrivingFrom.toString();
+        }
+        withReturnDataBinding(jobData.booking[1]);
       }else{
         selectJourneyTypeValue =
             dashboardAllData?.journeyTypes?.firstWhereOrNull(
-                  (journey) => journey.id == 1,
+                  (journey) => journey.id == jobData.booking[0].journeyTypeId,
             );
-        jourValue = "O/W";
+        if(selectJourneyTypeValue!.id == 1){
+          jourValue = "O/W";
+        }else if (selectJourneyTypeValue!.id == 2){
+          jourValue = "W/R";
+        }
         fixedFare.value = jobData.booking[0].fares.toString();
-        if(jobData.booking[0].flightNumber != null){
-          isAirportResponse.value = true;
-          selectAirportController.text = jobData.booking[0].flightNumber.toString();
-        }
-        if(jobData.booking[0].arrivingFrom != null){
-          isAirportResponse.value = true;
-        arrivalTimeController.text = jobData.booking[0].arrivingFrom.toString();
-        }
+
         getFaresCalculation();
       }
 

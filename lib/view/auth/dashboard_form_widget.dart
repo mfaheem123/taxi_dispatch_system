@@ -408,12 +408,17 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                             controller: controller
                                                 .selectAirportController),
                                         const SizedBox(height: 4),
-                                        _timeField('ARP',
+
+                                        _field('ARP',
                                             tab: 4.6,
                                             controller: controller
-                                                .arrivalTimeController,
-                                            onPicked: () => controller
-                                                .arrivalTimePicked = true),
+                                                .arrivalTimeController),
+                                        // _timeField('ARP',
+                                        //     tab: 4.6,
+                                        //     controller: controller
+                                        //         .arrivalTimeController,
+                                        //     onPicked: () => controller
+                                        //         .arrivalTimePicked = true),
                                       ],
                                     )
                                         :
@@ -438,12 +443,18 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                         const SizedBox(width: 12),
                                         Expanded(
                                           flex: 1,
-                                          child: _timeField('ARP',
+                                          child:
+                                          _field('ARP',
                                               tab: 4.6,
                                               controller: controller
-                                                  .arrivalTimeController,
-                                              onPicked: () => controller
-                                                  .arrivalTimePicked = true),
+                                                  .arrivalTimeController),
+
+                                              // _timeField('ARP',
+                                              // tab: 4.6,
+                                              // controller: controller
+                                              //     .arrivalTimeController,
+                                              // onPicked: () => controller
+                                              //     .arrivalTimePicked = true),
                                         ),
                                       ],
                                     ),
@@ -664,6 +675,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                           } else if (type == "w/r") {
                                             controller.jourValue = "W/R";
                                             controller.changeJourneyFtn();
+
                                           } else {
                                             controller.jourValue = null;
                                             print("⚠️ NO MATCH FOUND for type: '$type' — jourValue set to null");
@@ -1004,12 +1016,17 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                     controller: controller
                         .selectAirportControllerReturn),
                 const SizedBox(height: 4),
-                _timeField('ARP',
+
+                _field('ARP',
                     tab: 22.6,
                     controller: controller
-                        .arrivalReturnTimeController,
-                    onPicked: () =>
-                        controller.arrivalReturnTimePicked = true),
+                        .arrivalReturnTimeController),
+                // _timeField('ARP',
+                //     tab: 22.6,
+                //     controller: controller
+                //         .arrivalReturnTimeController,
+                //     onPicked: () =>
+                //         controller.arrivalReturnTimePicked = true),
               ],
             )
                 :
@@ -1034,11 +1051,17 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   flex: 1,
-                  child: _timeField('ARP',
+                  child:
+                  _field('ARP',
                       tab: 22.6,
                       controller: controller
-                          .arrivalReturnTimeController,
-                      onPicked: () => controller.arrivalTimePicked = true),
+                          .arrivalReturnTimeController),
+
+                  // _timeField('ARP',
+                  //     tab: 22.6,
+                  //     controller: controller
+                  //         .arrivalReturnTimeController,
+                  //     onPicked: () => controller.arrivalTimePicked = true),
                 ),
               ],
             ),
