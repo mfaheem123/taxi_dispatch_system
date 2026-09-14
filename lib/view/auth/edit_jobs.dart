@@ -2325,7 +2325,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       child: GlowFocus(
         child: ElevatedButton(
           onPressed: () {
-            controller.refreshPostAllFields();
+            // controller.refreshPostAllFields();
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: _red,
@@ -2335,7 +2335,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
             textStyle:
             const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsField),
           ),
-          child: Text('CLEAR [F7]'.toUpperCase()),
+          child: Text('Cancel'.toUpperCase()),
         ),
       ),
     );
@@ -2408,10 +2408,11 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       // the method is `async` with no declared return type, so the call form
       // runs the refresh on every rebuild and hands its Future to a
       // VoidCallback slot, which throws while building.
-      _bottomAction('CLEAR [F7]',
+      _bottomAction('Cancel',
           tab: 43.1,
           color: _red,
-          onTap: () => controller.refreshPostAllFields()),
+          onTap: () => _onShowCancelReason),
+          // onTap: () => controller.refreshPostAllFields()),
       if (visible.contains(_aReason))
         _bottomAction(_aReason,
             tab: 43.15, color: _purple, onTap: _onShowCancelReason),
