@@ -611,6 +611,7 @@ class _DriversViewState extends State<DriversView> {
                                   controller.selectedDriverIndex == index;
 
                           return GestureDetector(
+
                             // 1. LEFT CLICK (Normal Tap) -> Info Popup Details Show Karega
                               onTapDown: (TapDownDetails details) {
                                 _showDriverInfoCard(context, details.globalPosition, driver);
