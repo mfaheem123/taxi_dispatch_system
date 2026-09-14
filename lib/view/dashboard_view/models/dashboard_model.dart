@@ -571,6 +571,10 @@ class DashboardDriverObject {
     "model": model,
     "color": color,
     "vehicle_no": vehicleNo,
+
+    // "model": model,
+    // "color": color,
+    // "vehicle_no": vehicleNo,
   };
 }
 

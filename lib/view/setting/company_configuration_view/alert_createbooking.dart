@@ -279,7 +279,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           // width: fieldWidth / 2,
                           // width: 140,
                           // width: 135,
-                          width: 70,
+                          width: 85,
                           fontSize: 10,
                           borderRadius: 4,
                           verticalPadding: 0.0,
@@ -292,8 +292,22 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               returnTime: controller.jourValue == 'R/N'? controller.returnMultiReservationToTimeController.text:null,
                             );
                           },
-                          btnText: "ADD",
-                        ),
+                            widget: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.add, size: 16, color: DynamicColors.whiteClr),
+                                const SizedBox(width: 4),
+                                Text(
+                                  "ADD",
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: DynamicColors.whiteClr,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 18),
@@ -305,13 +319,27 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                             controller.update();
                             // Get.back();
                           },
-                          width: 70,
+                          width: 85,
                           fontSize: 10,
                           borderRadius: 4,
                           verticalPadding: 0.0,
-                          btnText: AppText.cancel,
                           btnColor: DynamicColors.redClr,
-                        ),
+                            widget: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.delete_forever, size: 16, color: DynamicColors.whiteClr),
+                                const SizedBox(width: 4),
+                                Text(
+                                  AppText.clear,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: DynamicColors.whiteClr,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -512,11 +540,12 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
 
                   Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child:
-                    SingleChildScrollView(
-                        // scrollDirection: Axis.horizontal,
-                        child: SizedBox(
-                          width: Get.width,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 225),
+                      child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: SizedBox(
+                            width: Get.width,
                           // width: maxWidth < 1000 ? 1000 : maxWidth - 80,
                           // width: maxWidth < 1000 ? 800 : maxWidth - 100,
                           child: DatatableWidget(
@@ -640,7 +669,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                 );
                               }).toList(),
                     ]),
-                          ),
+                          )),
                         ),
                       ),
 
@@ -685,6 +714,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                       return;
                                     }
                                     await controller.getFaresCalculation();
+                                    Get.back();
                                     },
                                   icon: const Icon(Icons.check_circle, size: 16),
                                   label: const Text("CONFIRM SELECTION",

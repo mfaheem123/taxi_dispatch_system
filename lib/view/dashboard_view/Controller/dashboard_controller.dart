@@ -208,6 +208,7 @@ class DashboardController extends GetxController {
     }
   }
 
+
   List<DashboardDriverObject> onlineDriversList = [];
 
   // 2. Connect To Driver Login
@@ -2057,7 +2058,7 @@ class DashboardController extends GetxController {
   void startBookingCountTimer() {
     _bookingCountTimer?.cancel();
     _bookingCountTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
-      // await getBookingCounts();
+      await getBookingCounts();
     });
   }
 
@@ -2226,7 +2227,7 @@ class DashboardController extends GetxController {
       _checkBookingsTimeAndPlaySound(dashboardTableModelData?.data ?? []);
       _timer?.cancel();
       _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-        // getDashboardTableData(tableId: selectedTabId);
+        getDashboardTableData(tableId: selectedTabId);
       });
       update();
     }
