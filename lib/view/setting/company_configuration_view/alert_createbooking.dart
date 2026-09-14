@@ -540,12 +540,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
 
                   Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Container(
-                      height: 220,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: const Color(0xFFE2E8F0)),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 225),
                       child: SingleChildScrollView(
                           scrollDirection: Axis.vertical,
                           child: SizedBox(
