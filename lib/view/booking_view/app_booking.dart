@@ -11,6 +11,7 @@ import '../../component/pagination.dart';
 import '../../component/responsive_datatable_widget.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_widget.dart';
+import '../../utils/open_edit_booking_tab.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
 import 'controller.dart';
@@ -267,7 +268,9 @@ class _AppBookingState extends State<AppBooking> {
                                 constraints: const BoxConstraints(),
                                 icon: Icon(Icons.edit_calendar,
                                     size: 22, color: DynamicColors.primaryClr),
-                                onPressed: () {},
+                                onPressed: () {
+                                  setState(() => openEditBookingTab(item.id));
+                                },
                               ),
                               const SizedBox(width: 2),
                               const Text("|",

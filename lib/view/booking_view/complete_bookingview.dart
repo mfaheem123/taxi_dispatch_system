@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../alert/delete_permission_alert.dart';
+import '../../utils/open_edit_booking_tab.dart';
 import '../../alert/driver_login_alert.dart';
 import '../../alert/restrict_drivers_alert.dart';
 import '../../component/color.dart';
@@ -431,7 +432,9 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                                   constraints: const BoxConstraints(),
                                   icon: Icon(Icons.edit_calendar,
                                       size: 22, color: DynamicColors.primaryClr),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    setState(() => openEditBookingTab(item.id));
+                                  },
                                 ),
                                const SizedBox(width: 2),
                                 const Text("|",

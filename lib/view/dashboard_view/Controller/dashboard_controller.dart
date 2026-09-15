@@ -22,10 +22,12 @@ import '../../../component/networks/Url.dart';
 import '../../../component/suggestion_widget/suggestion_controller.dart';
 import '../../../component/time_duration_method.dart';
 import '../../../tabbarview.dart';
+import '../../../utils/open_edit_booking_tab.dart';
 import '../../cli_Screen.dart';
 import '../../locations_view/Model/location_types_zoneModel.dart';
 import '../../locations_view/controller/locations_controller.dart';
 import '../../setting/company_configuration_view/alert_createbooking.dart';
+import '../dashboard/defult_dashboard_view.dart';
 import '../models/account_darshboard_model.dart';
 import '../models/all_addresses_model.dart';
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
@@ -3003,23 +3005,39 @@ class DashboardController extends GetxController {
     print("------------------------- ${formData}");
     var response = await Api().post(formData,  id == null ? "bookings/add" : "bookings/update/$id",auth: true, sendCompanyId: true, );
     if (response.statusCode == 200) {
-      if (id != null) {
-        refreshPostAllFields();
-      } else {
-        if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" ==
-                "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
-            selectedTabId == 1) {
-          // dashboardTableModelData!.data!.insert(
-          //     0, BookingObjectData.fromJson(response.data['bookings'][0]));
-        } else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" !=
-                "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
-            selectedTabId == 2) {
-          dashboardTableModelData!.data!.insert(
-              0, BookingObjectData.fromJson(response.data['bookings'][0]));
-        }
-
-        refreshPostAllFields();
+      refreshPostAllFields();
+      int titleIndex = selectedMenuItems.indexWhere(
+              (element) => element.title == kEditBookingTabTitle);
+      if (titleIndex != -1) {
+        selectedMenuItems.remove(selectedMenuItems[titleIndex]);
       }
+
+      int index = selectedMenuItems.indexWhere(
+              (element) => element.selectedItem == true);
+      if (index != -1) {
+        selectedMenuItems[index].selectedItem =
+        false;
+      }
+      currentPage.value = ByDefaultDashboard();
+      update();
+      // if (id != null) {
+      //   refreshPostAllFields();
+      //
+      // } else {
+      //   if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" ==
+      //           "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
+      //       selectedTabId == 1) {
+      //     // dashboardTableModelData!.data!.insert(
+      //     //     0, BookingObjectData.fromJson(response.data['bookings'][0]));
+      //   } else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" !=
+      //           "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
+      //       selectedTabId == 2) {
+      //     dashboardTableModelData!.data!.insert(
+      //         0, BookingObjectData.fromJson(response.data['bookings'][0]));
+      //   }
+      //
+      //   refreshPostAllFields();
+      // }
       print(response.data);
     }
   }

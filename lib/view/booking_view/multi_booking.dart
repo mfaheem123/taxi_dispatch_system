@@ -10,6 +10,7 @@ import '../../component/datatable_widget.dart';
 import '../../component/pagination.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_widget.dart';
+import '../../utils/open_edit_booking_tab.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
 import 'complete_bookingview.dart';
@@ -167,10 +168,11 @@ class _MultiBookingState extends State<MultiBooking> {
                         side: BorderSide.none, // 👈 remove border
                       ),
                       onPressed: () {
-                        setState(() {
-                          // _currentPage = CompleteBookingsScreen();
-                          controller.menuBarController.menuBarRefresh(title: "COMPLETE BOOKINGS", pageName: CompleteBookingsScreen());
-                        });
+                        setState(() => openEditBookingTab(item.id));
+                        // setState(() {
+                        //   // _currentPage = CompleteBookingsScreen();
+                        //   controller.menuBarController.menuBarRefresh(title: "COMPLETE BOOKINGS", pageName: CompleteBookingsScreen());
+                        // });
 
                       },
                       child: Icon(Icons.edit_calendar, size: 20),
