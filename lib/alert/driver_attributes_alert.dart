@@ -19,13 +19,8 @@ class _DriverAttributesAlertState extends State<DriverAttributesAlert> {
 
   @override
   Widget build(BuildContext context) {
-    return EscapeDismissible(
-      child: Dialog(
-        insetPadding: const EdgeInsets.all(20),
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        child: Container(
-          width: 550,
+    return Container(
+          // width: 550,
           padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -111,8 +106,6 @@ class _DriverAttributesAlertState extends State<DriverAttributesAlert> {
               ),
             ],
           ),
-        ),
-      ),
     );
   }
 

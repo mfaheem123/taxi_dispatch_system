@@ -46,50 +46,53 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
     // Escape closes the alert. This one is opened with
     // `barrierDismissible: false`, which also switches OFF Flutter's built-in
     // Escape handling — see EscapeDismissible.
-    return EscapeDismissible(
-      child: Dialog(
-      insetPadding: EdgeInsets.all(20),
-      backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: GetBuilder<DashboardController>(
-        // Follows whichever form opened the dialog.
+    return GetBuilder<DashboardController>(
+    // return EscapeDismissible(
+    //   child: Dialog(
+    //   insetPadding: EdgeInsets.all(20),
+    //   backgroundColor: Colors.white,
+    //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    //   child: GetBuilder<DashboardController>(
         tag: dashBoardCntrl.formTag,
         builder: (controller) {
           return Container(
-            height: 350,
-            width: 650,
+            // height: 350,
+            // width: 650,
             padding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //   children: [
+                //     Text(AppText.extraFears,
+                //       style: mozillaTextSemiBoldText(
+                //         fontWeight: FontWeight.w700,
+                //         fontSize: 13,
+                //       ),
+                //     ),
+                //     const Spacer(),
+                //     FocusTraversalOrder(
+                //       order: const NumericFocusOrder(999),
+                //       child: const AlertCloseButton(),
+                //     ),
+                //   ],
+                // ),
+
+                // Divider(),
+                //
+                // SizedBox(height: 15,),
+
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(AppText.extraFears,
-                      style: mozillaTextSemiBoldText(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13,
-                      ),
-                    ),
-                    const Spacer(),
-                    FocusTraversalOrder(
-                      order: const NumericFocusOrder(999),
-                      child: const AlertCloseButton(),
-                    ),
-                  ],
-                ),
-
-                Divider(),
-
-                SizedBox(height: 15,),
-
-                Row(
-                  children: [
-                    _buildFareField(label: "PARKING", controller: dashBoardCntrl.parkingChargesController),
+                    _buildFareField(label: "PARKING", controller: dashBoardCntrl.parkingChargesController,
+                      onChanged: (val) => controller.getFaresCalculation()),
                     const SizedBox(width: 8),
-                    _buildFareField(label: "CONGESTION", controller: dashBoardCntrl.congestionChargesController),
+                    _buildFareField(label: "CONGESTION", controller: dashBoardCntrl.congestionChargesController,
+                      onChanged: (val) => controller.getFaresCalculation()),
                     const SizedBox(width: 8),
-                    _buildFareField(label: "WAITING", controller: dashBoardCntrl.waitingChargesController),
+                    _buildFareField(label: "WAITING", controller: dashBoardCntrl.waitingChargesController,
+                      onChanged: (val) => controller.getFaresCalculation()),
                   ],
                 ),
 
@@ -97,87 +100,91 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
 
                 Row(
                   children: [
-                    _buildFareField(label: "EXTRA DROP", controller: dashBoardCntrl.extraDropChargesController),
+                    _buildFareField(label: "EXTRA DROP", controller: dashBoardCntrl.extraDropChargesController,
+                      onChanged: (val) => controller.getFaresCalculation()),
                     const SizedBox(width: 8),
-                    _buildFareField(label: "CREDIT CARD", controller: dashBoardCntrl.creditCardChargesController),
+                    _buildFareField(label: "CREDIT CARD", controller: dashBoardCntrl.creditCardChargesController,
+                      onChanged: (val) => controller.getFaresCalculation()),
                     const SizedBox(width: 8),
-                    _buildFareField(label: "MEET & GREET ", controller: dashBoardCntrl.meetGreetController),
+                    _buildFareField(label: "MEET & GREET ", controller: dashBoardCntrl.meetGreetController,
+                      onChanged: (val) => controller.getFaresCalculation()),
                   ],
                 ),
                 SizedBox(height: 15,),
                 Row(
                   children: [
-                    _buildFareField(label: "COMPANY PRICE", controller: dashBoardCntrl.companyPriceController),
+                    _buildFareField(label: "COMPANY PRICE", controller: dashBoardCntrl.companyPriceController,
+                      onChanged: (val) => controller.getFaresCalculation()),
                     const SizedBox(width: 8),
-                    _buildFareField(label: "RETURN COMPANY PRICE", controller: dashBoardCntrl.returnCompanyPriceController),
+                    _buildFareField(label: "RETURN COMPANY PRICE", controller: dashBoardCntrl.returnCompanyPriceController,
+                      onChanged: (val) => controller.getFaresCalculation()),
                   ],
                 ),
-                Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    SizedBox(
-                      width: 90,
-                      height: 35,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Get.back();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          padding: EdgeInsets.zero,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                        child: Text("Cancel",
-                          style: TextStyle(
-                              color: DynamicColors.whiteClr
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    SizedBox(
-                      width: 90,
-                      height: 35,
-                      child: ElevatedButton(
-                        onPressed: () async{
-                          controller.getFaresCalculation();
-                          Get.back();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: DynamicColors.primaryClr,
-                          padding: EdgeInsets.zero,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                        child: Text("Save",
-                          style: TextStyle(
-                              color: DynamicColors.whiteClr
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
+                // Spacer(),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.end,
+                //   children: [
+                //     SizedBox(
+                //       width: 90,
+                //       height: 35,
+                //       child: ElevatedButton(
+                //         onPressed: () {
+                //           Get.back();
+                //         },
+                //         style: ElevatedButton.styleFrom(
+                //           backgroundColor: Colors.red,
+                //           padding: EdgeInsets.zero,
+                //           shape: RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(4),
+                //           ),
+                //         ),
+                //         child: Text("Cancel",
+                //           style: TextStyle(
+                //               color: DynamicColors.whiteClr
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //     SizedBox(
+                //       width: 10,
+                //     ),
+                //     SizedBox(
+                //       width: 90,
+                //       height: 35,
+                //       child: ElevatedButton(
+                //         onPressed: () async{
+                //           controller.getFaresCalculation();
+                //           Get.back();
+                //         },
+                //         style: ElevatedButton.styleFrom(
+                //           backgroundColor: DynamicColors.primaryClr,
+                //           padding: EdgeInsets.zero,
+                //           shape: RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(4),
+                //           ),
+                //         ),
+                //         child: Text("Save",
+                //           style: TextStyle(
+                //               color: DynamicColors.whiteClr
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                // SizedBox(
+                //   height: 10,
+                // ),
               ],
             ),
           );
         }
-      ),
-      ),
     );
   }
   Widget _buildFareField({
     required String label,
     required TextEditingController controller,
+    required ValueChanged<String> onChanged,
   }) {
     return Expanded(
       child: Column(
@@ -191,6 +198,7 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
           CustomTextField(
             hintText: "0.00",
             controller: controller,
+            onChanged: onChanged,
             keyboardType: TextInputType.number,
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,
@@ -201,7 +209,7 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
               width: 22,
               margin: const EdgeInsets.only(right: 8),
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: Colors.grey.shade100,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(4),
                   bottomLeft: Radius.circular(4),
