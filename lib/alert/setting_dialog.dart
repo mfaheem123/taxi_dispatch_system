@@ -2,6 +2,7 @@ import 'package:dashboard_new1/alert/restrict_drivers_alert.dart';
 import 'package:flutter/material.dart';
 
 import '../component/alert_close_button.dart';
+import '../component/color.dart';
 import '../component/escape_dismissible.dart';
 import '../component/textStyle.dart';
 import 'driver_attributes_alert.dart';
@@ -27,24 +28,35 @@ class _SettingsDialogState extends State<SettingsDialog> {
         child: Container(
           width: 850,
           height: 500,
-          padding: const EdgeInsets.all(16),
+          // padding: const EdgeInsets.all(16),
           child: Column(
             children: [
               // 1. Header
-              Row(
+              Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: DynamicColors.gryClr.withOpacity(0.5),
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                  ),
+                  child:  Row(
                 children: [
                   const Icon(Icons.tune, color: Color(0xFF15803D), size: 20),
-                  const SizedBox(width: 8),
-                  Text("SETTINGS", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w700, fontSize: 14)),
+                  const SizedBox(width: 10),
+                  Text("SETTINGS", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 18)),
                   const Spacer(),
-                  const AlertCloseButton(),
+                  FocusTraversalOrder(
+                    order: const NumericFocusOrder(999),
+                    child: const AlertCloseButton(),
+                  ),
                 ],
-              ),
-              const Divider(height: 20),
+              )),
+              const Divider(height: 1, thickness: 1),
+              // SizedBox(height: 30),
 
-              // 2. Main Area (Left Panel + Right Screen View)
               Expanded(
-                child: Row(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
                   children: [
                     // Left Panel
                     Container(
@@ -55,7 +67,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                         children: [
                           _navBtn(0, Icons.attach_money, "EXTRA FARES"),
                           const SizedBox(height: 6),
-                          _navBtn(1, Icons.block, "RESTRICTIONS"),
+                          _navBtn(1, Icons.person_off_sharp, "RESTRICTIONS"),
                           const SizedBox(height: 6),
                           _navBtn(2, Icons.manage_accounts, "ATTRIBUTES"),
                         ],
@@ -68,15 +80,15 @@ class _SettingsDialogState extends State<SettingsDialog> {
                       child: IndexedStack(
                         index: selectedIndex,
                         children: [
-                          const ExtraFaresAlert(),          // Screen 1 Call
-                          RestrictDriversAlert(),      // Screen 2 Call
-                          const DriverAttributesAlert(),     // Screen 3 Call
+                          const ExtraFaresAlert(),
+                          RestrictDriversAlert(),
+                          const DriverAttributesAlert(),
                         ],
                       ),
                     ),
                   ],
                 ),
-              ),
+              )),
             ],
           ),
         ),
@@ -93,15 +105,23 @@ class _SettingsDialogState extends State<SettingsDialog> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFF0FDF4) : Colors.transparent,
+          color: isSelected ? Colors.white : Colors.transparent,
           borderRadius: BorderRadius.circular(6),
-          border: isSelected ? Border.all(color: const Color(0xFFBBF7D0)) : null,
+          border: isSelected ? Border.all(color: Colors.grey.shade300) : null,
+          boxShadow: isSelected
+              ? [ BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            )
+          ]
+              : null,
         ),
         child: Row(
           children: [
-            Icon(icon, size: 16, color: isSelected ? const Color(0xFF15803D) : const Color(0xFF64748B)),
+            Icon(icon, size: 16, color: isSelected ? Colors.black87 : Colors.black54),
             const SizedBox(width: 8),
-            Text(title, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: isSelected ? const Color(0xFF15803D) : const Color(0xFF475569))),
+            Text(title, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: isSelected ? Colors.black : Colors.black87,)),
           ],
         ),
       ),

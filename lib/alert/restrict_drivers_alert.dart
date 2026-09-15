@@ -49,17 +49,18 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
     shortCutKeyValue.value = "alert";
     // Escape closes the alert: see EscapeDismissible for why the framework's
     // own Escape-to-dismiss never reached these dialogs.
-    return EscapeDismissible(
-      child: Dialog(
-        insetPadding: EdgeInsets.all(20),
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: GetBuilder<DashboardController>(
+    return GetBuilder<DashboardController>(
+    // return EscapeDismissible(
+    //   child: Dialog(
+    //     insetPadding: EdgeInsets.all(20),
+    //     backgroundColor: Colors.white,
+    //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    //     child: GetBuilder<DashboardController>(
             // Follows whichever form opened the dialog.
             tag: dashBoardCntrl.formTag,
             builder: (controller) {
               return SizedBox(
-                width: 450,
+                // width: 450,
                 // child: controller.allDriverData == null?SizedBox.shrink(): Column(
                 //   crossAxisAlignment: CrossAxisAlignment.start,
                 //   children: [
@@ -67,24 +68,24 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          color: DynamicColors.gryClr.withOpacity(0.5),
-                          child: Row(
-                            children: [
-                              // Icon(Icons., color: DynamicColors.primaryClr, size: 20),
-                              const SizedBox(width: 8),
-                              Text(
-                                AppText.restrictDrivers,
-                                style: mozillaTextSemiBoldText(fontWeight: FontWeight.w700, fontSize: 18),
-                              ),
-                              const Spacer(),
-                              FocusTraversalOrder(
-                                order: const NumericFocusOrder(999),
-                                child: const AlertCloseButton(),
-                              ),
-                            ],
-                          )),
+                      // Container(
+                      //     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      //     color: DynamicColors.gryClr.withOpacity(0.5),
+                      //     child: Row(
+                      //       children: [
+                      //         // Icon(Icons., color: DynamicColors.primaryClr, size: 20),
+                      //         const SizedBox(width: 8),
+                      //         Text(
+                      //           AppText.restrictDrivers,
+                      //           style: mozillaTextSemiBoldText(fontWeight: FontWeight.w700, fontSize: 18),
+                      //         ),
+                      //         const Spacer(),
+                      //         FocusTraversalOrder(
+                      //           order: const NumericFocusOrder(999),
+                      //           child: const AlertCloseButton(),
+                      //         ),
+                      //       ],
+                      //     )),
 
                       SizedBox(height: 15),
                       // Row(
@@ -258,7 +259,7 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                                             children: [
                                               // TABLE HEADER BAR
                                               Container(
-                                                height: 40,
+                                                height: 38,
                                                 color: const Color(0xFFEEF2F6),
                                                 child: Row(
                                                   children: [
@@ -271,9 +272,7 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                                                         ),
                                                       ),
                                                     ),
-                                                    const VerticalDivider(
-                                                        width: 1,
-                                                        color: Color(0xFFE5E7EB)),
+                                                    Container(width: 1, color: const Color(0xFFE5E7EB)),
                                                     Expanded(
                                                       child: Padding(
                                                         padding: const EdgeInsets.only(left: 12.0),
@@ -286,11 +285,10 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                                                         ),
                                                       ),
                                                     ),
-                                                    const VerticalDivider(width: 1, color: Color(0xFFE5E7EB)),
+                                                    Container(width: 1, color: const Color(0xFFE5E7EB)),
                                                     const SizedBox(
                                                       width: 50,
-                                                      child: Center(
-                                                        child: Icon(Icons.settings, size: 16, color: Colors.grey,
+                                                      child: Center(child: Icon(Icons.settings, size: 16, color: Colors.grey,
                                                         ),
                                                       ),
                                                     ),
@@ -298,9 +296,7 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                                                 ),
                                               ),
 
-                                              SizedBox(
-                                                // height: 220,
-                                                child: ListView.separated(
+                                              ListView.separated(
                                                     itemCount: controller.driversList.length,
                                                     scrollDirection: Axis.vertical,
                                                     shrinkWrap: true,
@@ -308,9 +304,10 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                                                     separatorBuilder: (context, index) => const Divider(height: 1, color: Color(0xFFE5E7EB)),
                                                     itemBuilder: (context, index) {
                                                       final driver = controller.driversList[index];
-                                                      return Container(
+                                                      return SizedBox(
+                                                        height: 44,
                                                         // padding: const EdgeInsets.symmetric(vertical: 3.0),
-                                                        color: Colors.white,
+                                                        // color: Colors.white,
                                                         child: Row(
                                                           // mainAxisAlignment: MainAxisAlignment.center,
                                                           children: [
@@ -321,7 +318,6 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                                                             //       top: BorderSide(color: Colors.grey),
                                                             //       left: BorderSide(color: Colors.grey),
                                                             //       bottom: BorderSide(color: Colors.grey),
-                                                            //       // 👉 right side intentionally remove kiya (no border)
                                                             //     ),
                                                             //   ),
                                                             SizedBox(
@@ -329,7 +325,7 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                                                               child: Center(child: Text("${index + 1}"),
                                                               ),
                                                             ),
-                                                            Container(width: 1, height: 48, color: const Color(0xFFE5E7EB)),
+                                                            Container(width: 1, color: const Color(0xFFE5E7EB)),
                                                             Expanded(
                                                               child: Padding(
                                                                 padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -337,8 +333,8 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                                                                   children: [
                                                                     // Driver Username Tag (Green Box)
                                                                     Container(
-                                                                      width: 110,
-                                                                      height: 32,
+                                                                      width: 100,
+                                                                      height: 28,
                                                                       decoration: BoxDecoration(
                                                                         color: DynamicColors.primaryClr,
                                                                         borderRadius: BorderRadius.circular(2),
@@ -346,16 +342,12 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                                                                       child: Center(
                                                                         child: Text(
                                                                           driver.username ?? "${index + 1}",
-                                                                          style: mozillaTextSemiBoldText(
-                                                                            fontSize: 12,
-                                                                            color: Colors.white,
-                                                                            fontWeight: FontWeight.bold,
+                                                                          style: mozillaTextSemiBoldText(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold,
                                                                           ),
                                                                         ),
                                                                       ),
                                                                     ),
                                                                     const SizedBox(width: 12),
-
                                                                     Expanded(
                                                                       child: Text(
                                                                         (driver.name ?? "").toUpperCase(),
@@ -371,18 +363,17 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                                                                 ),
                                                               ),
                                                             ),
-                                                            Container(width: 1, height: 48, color: const Color(0xFFE5E7EB)),
-                                                            Focus(
+                                                            Container(width: 1, color: const Color(0xFFE5E7EB)),
+                                                        SizedBox(
+                                                          width: 50,
+                                                          child: Focus(
                                                               onKeyEvent: (node, event) {
                                                                 if (event is KeyDownEvent &&
-                                                                    (event.logicalKey ==LogicalKeyboardKey.enter ||
-                                                                        event.logicalKey ==
-                                                                            LogicalKeyboardKey.space)) {
+                                                                    (event.logicalKey ==LogicalKeyboardKey.enter || event.logicalKey == LogicalKeyboardKey.space)) {
                                                                   controller.driversList.removeAt(index);
                                                                   controller.update();
                                                                   return KeyEventResult.handled;
-                                                                }
-                                                                return KeyEventResult.ignored;
+                                                                } return KeyEventResult.ignored;
                                                               },
                                                               child: Builder(
                                                                 builder: (context) {
@@ -395,14 +386,10 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                                                                     child: Container(
                                                                       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
                                                                       decoration: BoxDecoration(
-                                                                        color: isFocused
-                                                                            ? DynamicColors.primaryClr.withOpacity(0.15)
-                                                                            : Colors.transparent,
+                                                                        color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
                                                                       ),
                                                                       child: Center(
-                                                                        child: Icon(
-                                                                          Icons.delete_forever,
-                                                                          color: DynamicColors.redClr,
+                                                                        child: Icon(Icons.delete_forever, color: DynamicColors.redClr,
                                                                         ),
                                                                       ),
                                                                     ),
@@ -410,11 +397,10 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                                                                 },
                                                               ),
                                                             )
-                                                          ],
+                                                        )],
                                                         ),
                                                       );
                                                     }),
-                                              ),
                                             ],
                                           ),
                                         )
@@ -423,8 +409,7 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                       SizedBox(height: 20),
                     ]),
               );
-            }),
-      ),
+            }
     );
   }
 
