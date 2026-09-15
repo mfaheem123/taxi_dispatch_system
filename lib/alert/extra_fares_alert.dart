@@ -1,12 +1,10 @@
-
-
-
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/escape_dismissible.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../component/alert_close_button.dart';
 import '../component/color.dart';
 import '../component/textStyle.dart';
 import '../component/text_field.dart';
@@ -26,18 +24,15 @@ class ExtraFaresAlert extends StatefulWidget {
   /// and cannot look the controller up from context.
   final DashboardController? formController;
 
-
   @override
   State<ExtraFaresAlert> createState() => _ExtraFaresAlertState();
 }
 
 class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
-
   /// The form that opened this dialog — the edit screen's private instance
   /// when it passed one, the dashboard's permanent controller otherwise.
   late final DashboardController dashBoardCntrl =
       widget.formController ?? Get.find<DashboardController>();
-  final FocusNode closeButtonFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -66,9 +61,7 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
             padding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
-
               children: [
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -78,181 +71,45 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                         fontSize: 13,
                       ),
                     ),
-                    AnimatedBuilder(
-                      animation: closeButtonFocusNode,
-                      builder: (context, child) {
-                        final isFocused = closeButtonFocusNode.hasFocus;
-                        return Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: isFocused ? DynamicColors.primaryClr : Colors.transparent,
-                              width: 2,
-                            ),
-                            color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
-                          ),
-                          child: IconButton(
-                            focusNode: closeButtonFocusNode,
-                            onPressed: () => Get.back(),
-                            icon: const Icon(Icons.close, size: 22, color: Colors.grey),
-                            splashRadius: 20,
-                          ),
-                        );
-                      },
+                    const Spacer(),
+                    FocusTraversalOrder(
+                      order: const NumericFocusOrder(999),
+                      child: const AlertCloseButton(),
                     ),
                   ],
                 ),
 
                 Divider(),
 
-                SizedBox(
-                  height: 15,
-                ),
+                SizedBox(height: 15,),
 
                 Row(
                   children: [
-                    Expanded(
-                      child: CustomTextField(
-                        hintText: "PARKING CHARGES",
-                        controller: dashBoardCntrl.parkingChargesController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter
-                              .digitsOnly,
-                          LengthLimitingTextInputFormatter(
-                              2),
-                        ],
-                        borderRadius: 0,
-                      ),
-                    ),
-
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: CustomTextField(
-                            borderRadius: 0,
-                            hintText: "CONGESTION CHARGES",
-                            controller: dashBoardCntrl.congestionChargesController,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter
-                                .digitsOnly,
-                            LengthLimitingTextInputFormatter(
-                                2),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    Expanded(
-                      child: CustomTextField(
-                          borderRadius: 0,
-                          hintText: "MEET & GREET",
-                          controller: dashBoardCntrl.meetGreetController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter
-                              .digitsOnly,
-                          LengthLimitingTextInputFormatter(
-                              2),
-                        ],
-                      ),
-                    ),
-
+                    _buildFareField(label: "PARKING", controller: dashBoardCntrl.parkingChargesController),
+                    const SizedBox(width: 8),
+                    _buildFareField(label: "CONGESTION", controller: dashBoardCntrl.congestionChargesController),
+                    const SizedBox(width: 8),
+                    _buildFareField(label: "WAITING", controller: dashBoardCntrl.waitingChargesController),
                   ],
                 ),
 
-                SizedBox(
-                  height: 15,
-                ),
+                SizedBox(height: 15),
 
                 Row(
                   children: [
-                    Expanded(
-                      child: CustomTextField(
-                        hintText: "WAITING CHARGES",
-                        controller: dashBoardCntrl.waitingChargesController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter
-                              .digitsOnly,
-                          LengthLimitingTextInputFormatter(
-                              2),
-                        ],
-                        borderRadius: 0,
-                      ),
-                    ),
-
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: CustomTextField(
-                            borderRadius: 0,
-                            hintText: "EXTRA DROP CHARGES",
-                            controller: dashBoardCntrl.extraDropChargesController,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter
-                                .digitsOnly,
-                            LengthLimitingTextInputFormatter(
-                                2),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    Expanded(
-                      child: CustomTextField(
-                          borderRadius: 0,
-                          hintText: "CREDIT CARD CHARGES",
-                          controller: dashBoardCntrl.creditCardChargesController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter
-                              .digitsOnly,
-                          LengthLimitingTextInputFormatter(
-                              2),
-                        ],
-                      ),
-                    ),
+                    _buildFareField(label: "EXTRA DROP", controller: dashBoardCntrl.extraDropChargesController),
+                    const SizedBox(width: 8),
+                    _buildFareField(label: "CREDIT CARD", controller: dashBoardCntrl.creditCardChargesController),
+                    const SizedBox(width: 8),
+                    _buildFareField(label: "MEET & GREET ", controller: dashBoardCntrl.meetGreetController),
                   ],
                 ),
-                SizedBox(
-                  height: 15,
-                ),
+                SizedBox(height: 15,),
                 Row(
                   children: [
-                    Expanded(
-                      child: CustomTextField(
-                        hintText: "COMPANY PRICE",
-                        controller: dashBoardCntrl.companyPriceController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter
-                              .digitsOnly,
-                          LengthLimitingTextInputFormatter(
-                              2),
-                        ],
-                        borderRadius: 0,
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: CustomTextField(
-                            borderRadius: 0,
-                            hintText: "RETURN COMPANY PRICE",
-                            controller: dashBoardCntrl.returnCompanyPriceController,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter
-                                .digitsOnly,
-                            LengthLimitingTextInputFormatter(
-                                2),
-                          ],
-                        ),
-                      ),
-                    ),
+                    _buildFareField(label: "COMPANY PRICE", controller: dashBoardCntrl.companyPriceController),
+                    const SizedBox(width: 8),
+                    _buildFareField(label: "RETURN COMPANY PRICE", controller: dashBoardCntrl.returnCompanyPriceController),
                   ],
                 ),
                 Spacer(),
@@ -260,7 +117,7 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     SizedBox(
-                      width: 150,
+                      width: 90,
                       height: 35,
                       child: ElevatedButton(
                         onPressed: () {
@@ -284,7 +141,7 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                       width: 10,
                     ),
                     SizedBox(
-                      width: 150,
+                      width: 90,
                       height: 35,
                       child: ElevatedButton(
                         onPressed: () async{
@@ -315,6 +172,59 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
           );
         }
       ),
+      ),
+    );
+  }
+  Widget _buildFareField({
+    required String label,
+    required TextEditingController controller,
+  }) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Color(0xFF374151)),
+          ),
+          const SizedBox(height: 4),
+          CustomTextField(
+            hintText: "0.00",
+            controller: controller,
+            keyboardType: TextInputType.number,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(2),
+            ],
+            borderRadius: 4,
+            prefixIcon: Container(
+              width: 22,
+              margin: const EdgeInsets.only(right: 8),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(4),
+                  bottomLeft: Radius.circular(4),
+                ),
+                border: Border(
+                  left: BorderSide(color: DynamicColors.primaryClr),
+                  right: BorderSide(color: DynamicColors.primaryClr),
+                  top: BorderSide(color: DynamicColors.primaryClr),
+                  bottom: BorderSide(color: DynamicColors.primaryClr),
+                ),
+              ),
+              child: const Center(
+                child: Text(
+                  '£',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
