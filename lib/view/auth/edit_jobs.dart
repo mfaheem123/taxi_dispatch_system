@@ -48,6 +48,7 @@ import '../../component/text_field.dart';
 import '../dashboard_view/booking_form_scope.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/dashboard/F3_alert.dart';
+import '../../utils/open_edit_booking_tab.dart';
 import '../dashboard_view/dashboard/map_view_widget.dart';
 import '../dashboard_view/models/account_darshboard_model.dart';
 import '../dashboard_view/models/all_addresses_model.dart';
@@ -328,34 +329,6 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       ? Get.find<LocationController>()
       : Get.put(LocationController());
 
-  // @override
-  // void dispose() {
-  //   for (final c in [
-  //     controller.pickupController,
-  //     controller.dropOffController,
-  //     controller.nameController,
-  //     controller.emailController,
-  //     controller.mobileController,
-  //     controller.telController,
-  //     _date,
-  //     controller.pickUpTimeController,
-  //     controller.minController,
-  //     controller.passController,
-  //     controller.slugController,
-  //     controller.passController,
-  //     controller.luggController,
-  //     controller.sluggController,
-  //     controller.pickupTwoWayController,
-  //     controller.dropOffTwoWayController,
-  //     _rDate,
-  //     controller.pickUpTimeControllerReturn,
-  //     controller.minControllerReturn,
-  //     controller.slugControllerReturn,
-  //   ]) {
-  //     c.dispose();
-  //   }
-  //   super.dispose();
-  // }
 
   @override
   void initState() {
@@ -1193,12 +1166,12 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   }
 
   /// A map big enough to read a route on without pushing the form out of reach.
-  /// Clamped rather than left as a straight fraction of the viewport: half of a
-  /// laptop's height is a usable map, half of a phone's is not.
+  /// Clamped rather than left as a straight fraction of the viewport: most of a
+  /// laptop's height is a usable map, the same share of a phone's is not.
   /// Smallest slice of the window the map may be squeezed into on desktop.
   /// Below this it stops being a map and starts being a strip, so the form
   /// gives way first (it clips) rather than the map.
-  static const _kMinMapHeight = 240.0;
+  static const _kMinMapHeight = 360.0;
 
   /// Lays the form card and the map out on the page.
   ///
@@ -1304,9 +1277,14 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     );
   }
 
+  /// Height of the map wherever this page scrolls (phone / iPad, and the
+  /// menu-bar tab strip). Local to this screen: [MapViewWidget] carries no
+  /// height of its own, so every other host — the dashboard, create booking,
+  /// update booking — keeps whatever box it already gives the map, and raising
+  /// these numbers moves nothing outside this file.
   static double _mapHeight(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
-    return (h * 0.55).clamp(280.0, 520.0).toDouble();
+    return (h * 0.72).clamp(360.0, 760.0).toDouble();
   }
   // ────────── RETURN JOURNEY SECTION
   /// Shared cleanup for two-way pickup/drop clear buttons.
@@ -2387,19 +2365,25 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
             return KeyEventResult.ignored;
           },
           child: ElevatedButton.icon(
-            onPressed: () {
+            onPressed: () async{
               if (controller.jourValue == 'R/N' &&
                   controller.pickupTwoWayController.text.isEmpty &&
                   controller.dropOffTwoWayController.text.isEmpty) {
                 BotToast.showText(text: "Please chose waiting return");
                 return;
               }
-              controller.dashBoardApiValidation(
+              final saved = await controller.dashBoardApiValidation(
                   id: controller.jobDetails == null
                       ? null
                       : controller.cliJobHit == true
                       ? null
                       : int.parse(controller.jobDetails!.id!));
+              // Only leave on a save that actually reached the backend. A
+              // failed validation or a rejected POST has already put a toast
+              // on screen, and navigating home would hide the form the user
+              // still has to fix.
+              if (!saved) return;
+              closeEditBookingTab();
             },
             icon: const Icon(Icons.home_outlined, size: 16),
             label: const Text('SAVE [HOME]'),

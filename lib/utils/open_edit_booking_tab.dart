@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../view/auth/edit_jobs.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
+import '../view/dashboard_view/dashboard/defult_dashboard_view.dart';
 
 /// Title of the chip the booking editor is opened under. Every caller shares
 /// the one title, so re-editing any booking reuses the same tab instead of
@@ -50,4 +51,28 @@ bool openEditBookingTab(String? id) {
   dashboardController.menuBarRefresh(
       title: kEditBookingTabTitle, pageName: page);
   return true;
+}
+
+/// Closes the booking-editor tab and drops the user back on the dashboard.
+///
+/// The chip is REMOVED from the strip, not just deselected: the booking has
+/// been saved, so leaving a stale "BOOKING | EDIT" chip behind would reopen a
+/// form for a job the user is done with — and it would keep counting against
+/// the [kMaxOpenTabs] cap.
+///
+/// Safe to call when the editor was opened on its own route rather than as a
+/// tab: removeWhere on a strip that has no such chip is a no-op, and the
+/// dashboard is still the right place to land.
+void closeEditBookingTab() {
+  final DashboardController dashboardController = Get.find();
+
+  dashboardController.selectedMenuItems
+      .removeWhere((tab) => tab.title == kEditBookingTabTitle);
+  // Whatever chip stays behind must not be left marked selected, or the strip
+  // paints two highlighted chips once a later one is picked.
+  for (final tab in dashboardController.selectedMenuItems) {
+    tab.selectedItem = false;
+  }
+  dashboardController.currentPage.value = ByDefaultDashboard();
+  dashboardController.update();
 }

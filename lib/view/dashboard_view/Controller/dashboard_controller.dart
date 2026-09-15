@@ -2756,17 +2756,26 @@ class DashboardController extends GetxController {
   List<DashboardVehicleTypeObject> multiVehicleList = [];
   List multiVehicleTempList = [];
 
-  dashBoardApiValidation({int? id}) async {
+  /// Validates the booking form and, when it passes, posts it.
+  ///
+  /// Returns `true` only when the booking actually reached the backend with a
+  /// 200 — every validation bail and every failed request returns `false`, so
+  /// callers that navigate away on save (edit_jobs' SAVE [HOME]) can tell a
+  /// real save from a toast. Callers that ignore the result are unaffected.
+  Future<bool> dashBoardApiValidation({int? id}) async {
     if (pickupController.text.isEmpty) {
-      return BotToast.showText(text: "Please select pickup location");
+      BotToast.showText(text: "Please select pickup location");
+      return false;
     }
 
     if (dropOffController.text.isEmpty) {
-      return BotToast.showText(text: "Please select dropoff location");
+      BotToast.showText(text: "Please select dropoff location");
+      return false;
     }
 
     if (selectSubsidiariesValue == null) {
-      return BotToast.showText(text: "Please select subsidiaries");
+      BotToast.showText(text: "Please select subsidiaries");
+      return false;
     }
 
     // if (nameController.text.isEmpty) {
@@ -2778,24 +2787,30 @@ class DashboardController extends GetxController {
     // }
 
     if (mobileController.text.isEmpty) {
-      return BotToast.showText(text: "Please write mobile");
+      BotToast.showText(text: "Please write mobile");
+      return false;
     }
     if (pickUpTimeController.text.isEmpty) {
-      return BotToast.showText(text: "Please select pickup time");
+      BotToast.showText(text: "Please select pickup time");
+      return false;
     }
     if (selectJourneyTypeValue == null) {
-      return BotToast.showText(text: "Please select journey type");
+      BotToast.showText(text: "Please select journey type");
+      return false;
     }
     if (selectPaymentTypeValue == null) {
-      return BotToast.showText(text: "Please select payment type");
+      BotToast.showText(text: "Please select payment type");
+      return false;
     }
     if (selectVehicleValue == null) {
-      return BotToast.showText(text: "Please select vehicle type");
+      BotToast.showText(text: "Please select vehicle type");
+      return false;
     }
 // ==================== PASSENGER CHECK START ====================
     if (passController.text.trim().isEmpty) {
       isPassengerError.value = true;
-      return BotToast.showText(text: "Please enter number of passengers");
+      BotToast.showText(text: "Please enter number of passengers");
+      return false;
     }
 
     int enteredPassengers = int.tryParse(passController.text.trim()) ?? 0;
@@ -2804,18 +2819,22 @@ class DashboardController extends GetxController {
     // Save validation check: Limit se zyada par Toast show hoga
     if (enteredPassengers > maxAllowedPassengers) {
       isPassengerError.value = true;
-      return BotToast.showText(
+      BotToast.showText(
         text: "Passenger limit exceeded for ${selectVehicleValue?.name ?? 'vehicle'}",
       );
+      return false;
     } else {
       isPassengerError.value = false;
     }
     // ==================== PASSENGER CHECK END ====================
-    postDashboardApi(id: id);
-    return null;
+    // Awaited: the POST used to be fired and forgotten, so an `await` on this
+    // method came back while the request was still in flight and the caller
+    // could not know whether the booking had saved.
+    return await postDashboardApi(id: id);
   }
 
-  postDashboardApi({int? id}) async {
+  /// Posts the booking. `true` only on a 200 back from the backend.
+  Future<bool> postDashboardApi({int? id}) async {
     /// Fields the user never opened go out as the current date/time; anything
     /// they picked on the form is posted as selected.
     refreshUntouchedDateTimeFields();
@@ -3004,22 +3023,15 @@ class DashboardController extends GetxController {
     print(markers);
     print("------------------------- ${formData}");
     var response = await Api().post(formData,  id == null ? "bookings/add" : "bookings/update/$id",auth: true, sendCompanyId: true, );
-    if (response.statusCode == 200) {
+    // Null-checked: Api.post returns nothing on the "No Internet connection"
+    // branch, so reading statusCode straight off it threw instead of failing
+    // the save.
+    if (response != null && response.statusCode == 200) {
       refreshPostAllFields();
-      int titleIndex = selectedMenuItems.indexWhere(
-              (element) => element.title == kEditBookingTabTitle);
-      if (titleIndex != -1) {
-        selectedMenuItems.remove(selectedMenuItems[titleIndex]);
-      }
-
-      int index = selectedMenuItems.indexWhere(
-              (element) => element.selectedItem == true);
-      if (index != -1) {
-        selectedMenuItems[index].selectedItem =
-        false;
-      }
-      currentPage.value = ByDefaultDashboard();
-      update();
+      print(selectedMenuItems);
+      // selectedMenuItems.remove(item);
+      // currentPage.value =
+      //     ByDefaultDashboard();
       // if (id != null) {
       //   refreshPostAllFields();
       //
@@ -3039,7 +3051,9 @@ class DashboardController extends GetxController {
       //   refreshPostAllFields();
       // }
       print(response.data);
+      return true;
     }
+    return false;
   }
 
   restrictedDriversListConfig() async {
@@ -3670,11 +3684,11 @@ class DashboardController extends GetxController {
         }
       }
 
-      if(jobData.booking[0].flightNumber != null){
+      if(jobData.booking[0].flightNumber != null && jobData.booking[0].flightNumber != ""){
         isAirportResponse.value = true;
         selectAirportController.text = jobData.booking[0].flightNumber.toString();
       }
-      if(jobData.booking[0].arrivingFrom != null){
+      if(jobData.booking[0].arrivingFrom != null && jobData.booking[0].arrivingFrom != ""){
         isAirportResponse.value = true;
         arrivalTimeController.text = jobData.booking[0].arrivingFrom.toString();
       }
@@ -3832,11 +3846,11 @@ class DashboardController extends GetxController {
             );
         fixedFare.value = (double.parse(jobData.booking[1].fares!)+ double.parse(jobData.booking[0].fares!)).toString();
 
-        if(jobData.booking[1].flightNumber != null){
+        if(jobData.booking[1].flightNumber != null && jobData.booking[1].flightNumber !=""){
           isAirportResponse.value = true;
           selectAirportControllerReturn.text = jobData.booking[1].flightNumber.toString();
         }
-        if(jobData.booking[1].arrivingFrom != null){
+        if(jobData.booking[1].arrivingFrom != null && jobData.booking[1].arrivingFrom !=""){
           isAirportResponse.value = true;
           arrivalReturnTimeController.text = jobData.booking[1].arrivingFrom.toString();
         }
