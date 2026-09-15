@@ -529,9 +529,29 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   },
                                   notesController: controller.dropUpNoteController,
                                   addressFocusNode: controller.dropOffTextFieldFocusNode,
+                                  // The route button opens the via-points
+                                  // dialog. PICK's swap button keeps calling
+                                  // swapeToChangeLocation() — no branch on the
+                                  // icon is needed, because each row chooses
+                                  // both its glyph and its handler here.
                                   onCurrentLocation: () {
-                                    controller.swapeToChangeLocation();
+                                    if (controller.pickupController.text.isEmpty) {
+                                      BotToast.showText(
+                                          text:
+                                              "Please write pickup and dropoff location");
+                                      return;
+                                    }
+                                    // No formController: this screen runs on
+                                    // the untagged dashboard instance, which is
+                                    // what ViaLocation falls back to — the same
+                                    // form its Via tab already opens.
+                                    showDialog(
+                                      context: context,
+                                      builder: (_) => ViaLocation(),
+                                    );
                                   },
+                                  actionIcon: LucideIcons.route,
+                                  actionTooltip: 'Via locations',
                                 ),
                                 const Divider(height: 14),
                                 _sectionHeader(Icons.person,
@@ -1130,9 +1150,28 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             // _clearTwoWayData(controller, recalcRoute: true);
           },
           addressFocusNode: controller.dropOffTwoWayTextFieldFocusNode,
-          onCurrentLocation: () async {
-            controller.swapeToChangeReturnLocation();
+          // The return row's route button opens the same via dialog the
+          // outbound DROP does. R/PICK keeps the swap arrows and
+          // swapeToChangeReturnLocation().
+          onCurrentLocation: () {
+            if (controller.pickupTwoWayController.text.isEmpty) {
+              BotToast.showText(
+                  text: "Please write return pickup and dropoff location");
+              return;
+            }
+            // ViaLocation takes no outbound/return argument — it reads
+            // viaSelectionOneWay, the toggle inside the dialog, to decide
+            // whether a point is added as 'via' or 'via with return'. Opened
+            // off the RETURN row it should land on the return side, so set it
+            // first; the user can still flip it in the dialog.
+            controller.viaSelectionOneWay.value = false;
+            showDialog(
+              context: context,
+              builder: (_) => ViaLocation(),
+            );
           },
+          actionIcon: LucideIcons.route,
+          actionTooltip: 'Via locations',
             notesController: controller.returnDropUpNoteController
         ),
         const SizedBox(height: 8),
@@ -1439,6 +1478,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         TextEditingController? notesController, // ← notes field controller
         VoidCallback? onPressed,
         FocusNode? addressFocusNode, // ← lets F2 focus the PICKUP field
+        // The glyph on the button at the end of the field. PICK carries the
+        // swap arrows; DROP carries LucideIcons.route — the two pins joined by
+        // a winding path. Both still run [onCurrentLocation], so each row picks
+        // its glyph and its handler together at the call site.
+        IconData actionIcon = LucideIcons.arrowDownUp,
+        String actionTooltip = 'Use current location',
       }) {
     final tag = Row(mainAxisSize: MainAxisSize.min, children: [
       Icon(Icons.circle, size: 9, color: dot),
@@ -1493,10 +1538,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 child: GlowFocus(
                   radius: 14,
                   child: IconButton(
-                    tooltip: 'Use current location',
+                    tooltip: actionTooltip,
                     onPressed: onCurrentLocation,
                     icon:
-                    Icon(LucideIcons.arrowDownUp, size: 16, color: Colors.grey),
+                    Icon(actionIcon, size: 16, color: Colors.grey),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
                     splashRadius: 16,
