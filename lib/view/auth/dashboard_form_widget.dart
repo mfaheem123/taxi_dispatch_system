@@ -10,6 +10,7 @@ import '../../alert/child_seats_alert.dart';
 import '../../alert/extra_fares_alert.dart';
 import '../../alert/extra_info_alert.dart';
 import '../../alert/search_booking.dart';
+import '../../alert/setting_dialog.dart';
 import '../../component/marker_class.dart';
 import '../../component/text_field.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
@@ -1684,8 +1685,14 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ],
     );
     final right = Row(mainAxisSize: MainAxisSize.min, children: [
-      iconBtn(Icons.person, tab: _isReturnJourney ? 39 : 24, onPressed: () {
-        showDialog(context: context, builder: (_) => RestrictDriversAlert());
+      // iconBtn(Icons.person, tab: _isReturnJourney ? 39 : 24, onPressed: () {
+      //   showDialog(context: context, builder: (_) => RestrictDriversAlert());
+      // }),
+      iconBtn(Icons.settings_suggest, tab: _isReturnJourney ? 39 : 24, onPressed: () {
+        showDialog(
+          context: context,
+          builder: (_) => SettingsDialog(),
+        );
       }),
       iconBtn(Icons.attach_money, tab: _isReturnJourney ? 40 : 25, onPressed: () {
         showDialog(
@@ -1693,14 +1700,14 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           builder: (_) => ChildSeatsAlert(),
         );
       }),
-      iconBtn(Icons.note_add, tab: _isReturnJourney ? 41 : 26, onPressed: () {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => ExtraFaresAlert(),
-        );
-      }),
-      iconBtn(Icons.calculate, tab: _isReturnJourney ? 42 : 27, onPressed: () {
+      // iconBtn(Icons.note_add, tab: _isReturnJourney ? 41 : 26, onPressed: () {
+      //   showDialog(
+      //     context: context,
+      //     barrierDismissible: false,
+      //     builder: (_) => ExtraFaresAlert(),
+      //   );
+      // }),
+      iconBtn(Icons.calculate, tab: _isReturnJourney ? 41 : 26, onPressed: () {
         showDialog(
           context: context,
           builder: (_) => ExtraInfoAlert(),
