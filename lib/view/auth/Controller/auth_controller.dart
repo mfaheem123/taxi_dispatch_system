@@ -17,7 +17,7 @@ import '../reminder_payment_alert.dart';
 // SOCKET SERVICE IMPORT
 
 class AuthController extends GetxController {
-
+  bool isExpiryAlertShown = false; // Add this line
   final sp = GetStorage();
   RxString currentExtension = "".obs;
   checkUserStatus() async {
@@ -87,8 +87,12 @@ class AuthController extends GetxController {
           Get.offAllNamed(Routes.myHomePage);
           PostAuthLoader(false);
           update();
+
         }
-        await checkExpiryDocumentsOnLogin();
+        // Naya Code:
+        Future.delayed(const Duration(milliseconds: 600), () {
+          checkExpiryDocumentsOnLogin();
+        });
       } else {
         PostAuthLoader(false);
         // Error handling behtar karne ke liye response message bhi dikha sakte hain
@@ -140,6 +144,7 @@ class AuthController extends GetxController {
       sp.remove('company_id');
       Employee.selectedEmployee = null;
       currentExtension.value = "---";
+      isExpiryAlertShown = false;
       Get.offAllNamed(Routes.loginScreen);
     }
   }
@@ -149,18 +154,22 @@ class AuthController extends GetxController {
   DriverExpiryResponse? driverExpiryResponse;
 
   checkExpiryDocumentsOnLogin() async {
-
-    var response = await Api().get("drivers/driver-expiry-documents"
-      // sendCompanyId: true,
+    if (isExpiryAlertShown) return;
+    var response = await Api().get("drivers/driver-expiry-documents",
+      sendCompanyId: true,
     );
     if (response.statusCode == 200 ) {
       final expiryData = DriverExpiryResponse.fromJson(response.data);
-
+      print("${response.data} driver API Response API1111111111111111111111111111111111111111111111111111");
       // Condition: Agar Drivers list me items hon to alert show karo
       if (expiryData.status && expiryData.drivers.isNotEmpty) {
-        DriverExpiryDocumentsAlert.show(Get.context!, expiryData.drivers);
+        // Safe check: Ensure context exists before showing alert
+        if (Get.context != null) {
+          DriverExpiryDocumentsAlert.show(Get.context!, expiryData.drivers);
+        }
+        // DriverExpiryDocumentsAlert.show(Get.context!, expiryData.drivers);
       }
-
+      print("${response.data} driver API Response 22222222222222222222222222222222222222222222");
     }else{
       print("Expiry API Error: $response");
 

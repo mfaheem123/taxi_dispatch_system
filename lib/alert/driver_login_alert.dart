@@ -9,6 +9,7 @@ class DriverExpiryDocumentsAlert {
   DriverExpiryDocumentsAlert(context);
 
   static void show(BuildContext context, List<DriverExpiryItem> drivers) {
+    if (Get.isDialogOpen ?? false) return;
     final ScrollController scrollController = ScrollController();
 
     final tableBorder = TableBorder(
