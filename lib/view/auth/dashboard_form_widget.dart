@@ -1752,7 +1752,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       //     builder: (_) => ExtraFaresAlert(),
       //   );
       // }),
-      iconBtn(Icons.calculate, tab: _isReturnJourney ? 41 : 26, onPressed: () {
+      iconBtn(Icons.sticky_note_2, tab: _isReturnJourney ? 41 : 26, onPressed: () {
         showDialog(
           context: context,
           builder: (_) => ExtraInfoAlert(),
