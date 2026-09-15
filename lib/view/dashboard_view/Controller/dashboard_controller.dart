@@ -3028,7 +3028,6 @@ class DashboardController extends GetxController {
     // the save.
     if (response != null && response.statusCode == 200) {
       refreshPostAllFields();
-      print(selectedMenuItems);
       // selectedMenuItems.remove(item);
       // currentPage.value =
       //     ByDefaultDashboard();
