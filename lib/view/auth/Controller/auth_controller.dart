@@ -7,6 +7,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import '../../dashboard_view/Controller/dashboard_controller.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../alert/cli_extention_alert.dart';
 import '../../../alert/driver_login_alert.dart';
@@ -134,6 +135,18 @@ class AuthController extends GetxController {
     } finally {
       // --- SOCKET CLOSE ---
       SubscriptionSocketService.closeSocket();
+
+      // The dashboard's own sockets and pollers. They live on the
+      // DashboardController, which is put with Get.put and therefore survives
+      // Get.offAllNamed below — without this its CLI / driver-login /
+      // driver-busy sockets and its 5-second table poll keep running against
+      // a token that is about to be erased.
+      //
+      // Guarded by isRegistered: logging out from the login screen, or before
+      // the dashboard has ever been opened, means there is nothing to close.
+      if (Get.isRegistered<DashboardController>()) {
+        await Get.find<DashboardController>().disposeSockets();
+      }
 
       sp.remove('token');
       sp.remove('userData');

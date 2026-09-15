@@ -163,6 +163,15 @@ class DashboardController extends GetxController {
   bool isConnected = false;
   Timer? _bookingCountTimer;
 
+  /// Every socket this controller has opened.
+  ///
+  /// [_channel] only ever holds the LAST connection made: connectToCli,
+  /// connectToDriverLogin and connectToBusyDriver all assign to that one
+  /// field, so the first two are left with no handle and closing [_channel]
+  /// shut down exactly one of three. Anything that has to close them all —
+  /// logout above all — goes through this list instead.
+  final List<WebSocketChannel> _openSockets = [];
+
 // Global company ID access karne ke liye Api singleton ka use karenge
   final String _companyId = Api.singleton.globalCompanyId;
   final Set<String> _playedBookingIds = {};
@@ -187,6 +196,7 @@ class DashboardController extends GetxController {
 
     try {
       _channel = WebSocketChannel.connect(url);
+      _openSockets.add(_channel!);
 
       _channel!.stream.listen(
             (message) {
@@ -218,6 +228,7 @@ class DashboardController extends GetxController {
     final url = Uri.parse(_buildSocketUrl("/driver-login", sendCompanyId: sendCompanyId));
     try {
       _channel = WebSocketChannel.connect(url);
+      _openSockets.add(_channel!);
 
       _channel!.stream.listen(
             (message) {
@@ -290,6 +301,7 @@ class DashboardController extends GetxController {
     final url = Uri.parse(_buildSocketUrl("/driver-busy", sendCompanyId: sendCompanyId));
     try {
       _channel = WebSocketChannel.connect(url);
+      _openSockets.add(_channel!);
 
       _channel!.stream.listen(
             (message) {
@@ -4105,12 +4117,60 @@ class DashboardController extends GetxController {
   }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo passenger function
 
+  /// Closes every socket and stops every poll this controller owns.
+  ///
+  /// Logout calls this, not just [onClose]: the dashboard controller is put
+  /// with `Get.put` and survives `Get.offAllNamed(loginScreen)`, so logging
+  /// out does not tear it down. Its three sockets and its 5-second pollers
+  /// otherwise kept hitting the backend with a token that had just been
+  /// erased — which is the "socket still hitting after logout" symptom.
+  ///
+  /// Safe to call more than once: a closed sink ignores a second close, a
+  /// cancelled timer ignores a second cancel, and the socket list is emptied
+  /// as it goes. Reconnecting afterwards is just the usual connectToCli /
+  /// connectToDriverLogin / connectToBusyDriver on the next login.
+  Future<void> disposeSockets() async {
+    for (final socket in _openSockets) {
+      try {
+        await socket.sink.close();
+      } catch (e) {
+        // A socket that already died on its own throws here; the point is
+        // only that it is not left listening, so this is not worth failing
+        // the logout over.
+        print("Socket close error: $e");
+      }
+    }
+    _openSockets.clear();
+    _channel = null;
+    isConnected = false;
+
+    // The periodic pollers. _timer is the one that matters most: it is
+    // re-armed from getDashboardTableData's own 200 branch, so it refetches
+    // the booking table every 5s forever unless it is cancelled here.
+    _timer?.cancel();
+    _timer = null;
+    _bookingCountTimer?.cancel();
+    _bookingCountTimer = null;
+    timer?.cancel();
+    timer = null;
+    dashboardTimer?.cancel();
+    dashboardTimer = null;
+
+    // Debounces are one-shot, but one already in flight would still fire its
+    // request a moment after the token was cleared.
+    _debounce?.cancel();
+    _tableDashboardBebounce?.cancel();
+    _phoneNumberBebounce?.cancel();
+    _newCustomDebounce?.cancel();
+  }
+
   @override
   void onClose() {
     // suggestionFocusNode.dispose();
     // keyboardFocusNode.dispose();
-    _bookingCountTimer?.cancel();
-    timer?.cancel();
+    // Not awaited: onClose is synchronous and the close only has to be
+    // started, not finished, before the controller goes away.
+    disposeSockets();
     pickupFocusNode.dispose();
     dropoffFocusNode.dispose();
     via1FocusNode.dispose();
