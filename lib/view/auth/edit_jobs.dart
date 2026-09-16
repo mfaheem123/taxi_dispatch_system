@@ -2564,7 +2564,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       label,
       FocusTraversalOrder(
         order: NumericFocusOrder(tab.toDouble()),
-        child: _CustomerModelAutocomplete(
+        child: CustomerModelAutocomplete(
           controller: controller,
           items: customers,
           onSelected: onPicked,
@@ -3550,8 +3550,8 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
 // ════════════════════════════════════════════════════════════════════
 // Autocomplete: backed by CustomerObject (mobile + name + email)
 // ════════════════════════════════════════════════════════════════════
-class _CustomerModelAutocomplete extends StatefulWidget {
-  const _CustomerModelAutocomplete({
+class CustomerModelAutocomplete extends StatefulWidget {
+  const CustomerModelAutocomplete({
     required this.controller,
     required this.items,
     required this.decoration,
@@ -3564,11 +3564,10 @@ class _CustomerModelAutocomplete extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final ValueChanged<CustomerObject>? onSelected;
   @override
-  State<_CustomerModelAutocomplete> createState() =>
-      _CustomerModelAutocompleteState();
+  State<CustomerModelAutocomplete> createState() =>
+      CustomerModelAutocompleteState();
 }
-class _CustomerModelAutocompleteState
-    extends State<_CustomerModelAutocomplete> {
+class CustomerModelAutocompleteState extends State<CustomerModelAutocomplete> {
   final _layerLink = LayerLink();
   final _focusNode = FocusNode();
   final _fieldKey = GlobalKey();
@@ -3590,7 +3589,7 @@ class _CustomerModelAutocompleteState
     widget.controller.addListener(_onText);
   }
   @override
-  void didUpdateWidget(covariant _CustomerModelAutocomplete oldWidget) {
+  void didUpdateWidget(covariant CustomerModelAutocomplete oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.items != widget.items && _userTyped) {
       WidgetsBinding.instance.addPostFrameCallback((_) {

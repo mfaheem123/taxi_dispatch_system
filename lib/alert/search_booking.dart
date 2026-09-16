@@ -297,8 +297,10 @@ import 'package:dashboard_new1/component/text_field.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/time_picker_widget.dart';
 
 import '../component/networks/api.dart';
+import '../view/auth/edit_jobs.dart';
 import '../view/dashboard_view/booking_table.dart';
 import '../view/dashboard_view/models/pick_booking_alert_model.dart';
+import '../view/dashboard_view/models/users_phone_numbers_model.dart';
 
 // Aapke API helper class aur model ka import Path apne project ke mutabiq adjustment kar lein
 // import 'package:dashboard_new1/models/booking_model.dart';
@@ -827,11 +829,626 @@ class SearchBookingAlert extends StatefulWidget {
 //   }
 // }
 
+// class _SearchBookingAlertState extends State<SearchBookingAlert> {
+//   // Top Filter Controllers
+//   final TextEditingController _nameController = TextEditingController();
+//   final TextEditingController _mobileController = TextEditingController();
+//   final TextEditingController _telephoneController = TextEditingController();
+//   final TextEditingController _fromDateController = TextEditingController();
+//   final TextEditingController _toDateController = TextEditingController();
+//
+//   // Table Column Search Controllers
+//   final TextEditingController _searchRefController = TextEditingController();
+//   final TextEditingController _searchDateTimeController = TextEditingController();
+//   final TextEditingController _searchVehicleController = TextEditingController();
+//   final TextEditingController _searchPickupController = TextEditingController();
+//   final TextEditingController _searchDropoffController = TextEditingController();
+//   final TextEditingController _searchFareController = TextEditingController();
+//   final TextEditingController _searchCustomerController = TextEditingController();
+//   final TextEditingController _searchAccountController = TextEditingController();
+//   final TextEditingController _searchDriverController = TextEditingController();
+//   final TextEditingController _searchPaymentTypeController = TextEditingController();
+//   final TextEditingController _searchStatusController = TextEditingController();
+//   final ScrollController _scrollController = ScrollController();
+//
+//   // ── GetX Reactive Variables for Search & Data ──
+//
+//   PickBookingModel? _bookingModel;
+//   Bookings? bookings;
+//   RxList<Bookings> PickBookingListAll = <Bookings>[].obs;
+//   RxList<Bookings> PickBookingfiltered = <Bookings>[].obs;
+//
+//   RxBool isLoading = false.obs;
+//
+//   RxString searchName = ''.obs;
+//   RxString searchMobile = ''.obs;
+//   RxString searchTele = ''.obs;
+//   RxString searchFromDate = ''.obs;
+//   RxString searchToDate = ''.obs;
+//
+//   RxString searchRef = ''.obs;
+//   RxString searchPickup = ''.obs;
+//   RxString searchDropoff = ''.obs;
+//   RxString searchStatus = ''.obs;
+//   RxString searchVehicle = ''.obs;
+//   RxString searchPaymentType = ''.obs;
+//   RxString searchFare = ''.obs;
+//   RxString searchCustomer = ''.obs;
+//   RxString searchAccount = ''.obs;
+//   RxString searchDriver = ''.obs;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//   }
+//
+//
+//   @override
+//   void dispose() {
+//     // 2. Dispose properly to prevent memory leaks
+//     _scrollController.dispose();
+//     super.dispose();
+//   }
+//
+//   // Mobile Auto-Fill Logic
+//   Future<void> autoFillCustomerDetails(String mobileNumber) async {
+//     if (mobileNumber.trim().length < 3) return;
+//
+//     try {
+//       dynamic response = await Api().get(
+//         'bookings/pick-bookings',
+//         sendCompanyId: true,
+//         queryParameters: {
+//           "mobile": mobileNumber.trim(),
+//         },
+//       );
+//
+//       Map<String, dynamic>? data;
+//       if (response is Map<String, dynamic>) {
+//         data = response;
+//       } else if (response != null && response.data != null) {
+//         data = response.data;
+//       }
+//
+//       if (data != null && data['status'] == true) {
+//         List rawList = data['bookings'] ?? [];
+//         if (rawList.isNotEmpty) {
+//           Bookings firstBooking = Bookings.fromJson(rawList.first);
+//           _nameController.text = firstBooking.name ?? '';
+//           _telephoneController.text = firstBooking.telephone ?? '';
+//         }
+//       }
+//     } catch (e) {
+//       debugPrint("Auto-fill error: $e");
+//     }
+//   }
+//
+//   // ── Search & Fetch Function
+//   Future<void> fetchBookings() async {
+//     try {
+//       isLoading.value = true;
+//       Map<String, dynamic> queryParams = {
+//
+//         "name": searchName.value.toLowerCase(),
+//         "mobile": searchMobile.value.toLowerCase(),
+//         "telephone": searchTele.value.toLowerCase(),
+//         "from_date": searchFromDate.value,
+//         "to_date": searchToDate.value,
+//         "search_ref": searchRef.value.toLowerCase(),
+//         "search_pickup": searchPickup.value.toLowerCase(),
+//         "search_dropoff": searchDropoff.value.toLowerCase(),
+//         "search_status": searchStatus.value.toLowerCase(),
+//         "search_vehicle": searchVehicle.value.toLowerCase(),
+//         "search_payment_type": searchPaymentType.value.toLowerCase(),
+//         "search_fares": searchFare.value.toLowerCase(),
+//         "search_customer": searchCustomer.value.toLowerCase(),
+//         "search_account": searchAccount.value.toLowerCase(),
+//         "search_driver": searchDriver.value.toLowerCase(),
+//       };
+//       // Remove Empty Query Params
+//       queryParams.removeWhere((key, value) => value == '' || value == "MM/DD/YYYY");
+//       dynamic response = await Api().get(
+//         "bookings/pick-bookings",
+//         queryParameters: queryParams,
+//         sendCompanyId: true,);
+//       if (response.statusCode == 200) {
+//         _bookingModel = PickBookingModel.fromJson(response.data);
+//         PickBookingListAll.value = _bookingModel!.bookings ?? [];
+//         PickBookingfiltered.value = PickBookingListAll;
+//         isLoading.value = false;
+//   }
+//     } catch (e) {
+//       debugPrint("API Fetch Error: $e");
+//     } finally {
+//       isLoading.value = false;
+//     }
+//   }
+//
+//   // Trigger search on change/submit
+//   void onSearchBooking() {
+//
+//     // Map controller values to reactive strings
+//     searchName.value = _nameController.text.trim();
+//     searchMobile.value = _mobileController.text.trim();
+//     searchTele.value = _telephoneController.text.trim();
+//     searchFromDate.value = _fromDateController.text.trim();
+//     searchToDate.value = _toDateController.text.trim();
+//
+//     searchRef.value = _searchRefController.text.trim();
+//     searchVehicle.value = _searchVehicleController.text.trim();
+//     searchPickup.value = _searchPickupController.text.trim();
+//     searchDropoff.value = _searchDropoffController.text.trim();
+//     searchFare.value = _searchFareController.text.trim();
+//     searchCustomer.value = _searchCustomerController.text.trim();
+//     searchAccount.value = _searchAccountController.text.trim();
+//     searchDriver.value = _searchDriverController.text.trim();
+//     searchPaymentType.value = _searchPaymentTypeController.text.trim();
+//     searchStatus.value = _searchStatusController.text.trim();
+//
+//     fetchBookings();
+//   }
+//
+//   void _clearFilters() {
+//     _nameController.clear();
+//     _mobileController.clear();
+//     _telephoneController.clear();
+//     _fromDateController.clear();
+//     _toDateController.clear();
+//     _searchRefController.clear();
+//     _searchDateTimeController.clear();
+//     _searchVehicleController.clear();
+//     _searchPickupController.clear();
+//     _searchDropoffController.clear();
+//     _searchFareController.clear();
+//     _searchCustomerController.clear();
+//     _searchAccountController.clear();
+//     _searchDriverController.clear();
+//     _searchPaymentTypeController.clear();
+//     _searchStatusController.clear();
+//
+//     onSearchBooking();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     double dialogHeight = MediaQuery.of(context).size.height * 0.70; // Dialog height thodi extend ki hai scroll space ke liye
+//
+//     return Dialog(
+//       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+//       insetPadding: const EdgeInsets.all(10), // Padding thodi kam ki hai taake max width mile
+//       backgroundColor: Colors.white,
+//       child: Container(
+//         width: MediaQuery.of(context).size.width * 0.98, // Full dialog width expand ki hai
+//         height: dialogHeight,
+//         decoration: BoxDecoration(
+//           color: Colors.white,
+//           borderRadius: BorderRadius.circular(8),
+//         ),
+//         child: Column(
+//           children: [
+//             // ── Title Section ──
+//             Container(
+//               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+//               decoration: const BoxDecoration(
+//                 color: Color(0xFFF8F9FA),
+//                 borderRadius: BorderRadius.only(
+//                   topLeft: Radius.circular(8),
+//                   topRight: Radius.circular(8),
+//                 ),
+//               ),
+//               child: Row(
+//                 children: [
+//                   const Icon(Icons.search, color: Color(0xFF00569A), size: 24),
+//                   const SizedBox(width: 8),
+//                   Text(
+//                     "SEARCH BOOKINGS",
+//                     style: _kOutfitStyle(fontSize: 14, fontWeight: FontWeight.bold, color: const Color(0xFF101B2E)),
+//                   ),
+//                   const Spacer(),
+//                   IconButton(
+//                     icon: const Icon(Icons.close, color: Colors.grey, size: 20),
+//                     onPressed: () => Navigator.of(context).pop(),
+//                     padding: EdgeInsets.zero,
+//                     constraints: const BoxConstraints(),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//             const Divider(height: 1, color: Colors.black12),
+//
+//             // ── Top Filter Section ──
+//             Padding(
+//               padding: const EdgeInsets.only(left: 0.0, top: 8.0, bottom: 8.0),
+//               child: SingleChildScrollView(
+//                 scrollDirection: Axis.horizontal,
+//                 child: Row(
+//                   crossAxisAlignment: CrossAxisAlignment.end,
+//                   children: [
+//                     _buildInputWithLabel("NAME", _nameController, width: 140),
+//                     const SizedBox(width: 12),
+//                     _buildMobileInputWithAutoFill("MOBILE", _mobileController, width: 140),
+//                     const SizedBox(width: 12),
+//                     _buildInputWithLabel("TELEPHONE", _telephoneController, width: 140),
+//                     const SizedBox(width: 12),
+//                     _buildDatePickerWithLabel("FROM DATE", _fromDateController),
+//                     const SizedBox(width: 12),
+//                     _buildDatePickerWithLabel("TO DATE", _toDateController),
+//                     const SizedBox(width: 12),
+//                     _buildButton("FILTER", DynamicColors.primaryClr, Colors.white, isWide: true, onTap: onSearchBooking),
+//                     const SizedBox(width: 8),
+//                     _buildButton("CLEAR", Colors.grey.shade100, Colors.black87, isWide: false, onTap: _clearFilters),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//
+//             const Divider(height: 1, color: Colors.black12),
+//
+//             // ── Dynamic Data Table Section (Vertical Scrollable) ──
+//             // ── Dynamic Data Table Section (Only Rows Update) ──
+//             Expanded(
+//               child: Container(
+//                 width: double.infinity,
+//                 color: Colors.white,
+//                 child: Obx(() {
+//                   // 1. Loading State Check
+//                   if (isLoading.value) {
+//                     return const Center(child: CircularProgressIndicator());
+//                   }
+//
+//                   // 2. Empty State Check
+//                   if (PickBookingfiltered.isEmpty) {
+//                     return const Center(child: Text("No bookings found."));
+//                   }
+//
+//                   // 3. Scrollbar Darker & Explicit Horizontal Scroll added
+//                   return RawScrollbar(
+//                     controller: _scrollController,
+//                     thumbVisibility: true,
+//                     trackVisibility: true,
+//                     thumbColor: Colors.grey.shade800, // Dark Thumb for visibility
+//                     trackColor: Colors.grey.shade300, // Darker Track
+//                     thickness: 8,
+//                     radius: const Radius.circular(8),
+//                     child: SingleChildScrollView(
+//                       controller: _scrollController,
+//                       scrollDirection: Axis.vertical,
+//                       physics: const AlwaysScrollableScrollPhysics(),
+//                       child: SingleChildScrollView(
+//                         scrollDirection: Axis.horizontal, // Columns ki width exact force karne ke liye
+//                         child: DatatableWidget(
+//                           columnSpacing: 8,
+//                           horizontalMargin: 6,
+//                           headingRowHeight: 60,
+//                           dataRowMinHeight: 50,
+//                           dataRowMaxHeight: 65,
+//                           columns: [
+//                             buildPickBookingHeader(
+//                               title: "REF #",
+//                               width: 60,
+//                               controller: _searchRefController,
+//                               onChanged: (v) => onSearchBooking(),
+//                             ),
+//                             buildPickBookingHeader(
+//                               title: "DATE/TIME",
+//                               width: 95,
+//                               controller: _searchDateTimeController,
+//                               onChanged: (v) => onSearchBooking(),
+//                             ),
+//                             buildPickBookingHeader(
+//                               title: "VEHICLE",
+//                               width: 65,
+//                               controller: _searchVehicleController,
+//                               onChanged: (v) => onSearchBooking(),
+//                             ),
+//                             buildPickBookingHeader(
+//                               title: "PICKUP",
+//                               width: 140,
+//                               controller: _searchPickupController,
+//                               onChanged: (v) => onSearchBooking(),
+//                             ),
+//                             buildPickBookingHeader(
+//                               title: "DROPOFF",
+//                               width: 140,
+//                               controller: _searchDropoffController,
+//                               onChanged: (v) => onSearchBooking(),
+//                             ),
+//                             buildPickBookingHeader(
+//                               title: "FARES",
+//                               width: 65,
+//                               controller: _searchFareController,
+//                               onChanged: (v) => onSearchBooking(),
+//                             ),
+//                             buildPickBookingHeader(
+//                               title: "CUST",
+//                               width: 100,
+//                               controller: _searchCustomerController,
+//                               onChanged: (v) => onSearchBooking(),
+//                             ),
+//                             buildPickBookingHeader(
+//                               title: "ACC",
+//                               width: 80,
+//                               controller: _searchAccountController,
+//                               onChanged: (v) => onSearchBooking(),
+//                             ),
+//                             buildPickBookingHeader(
+//                               title: "DRIVER",
+//                               width: 80,
+//                               controller: _searchDriverController,
+//                               onChanged: (v) => onSearchBooking(),
+//                             ),
+//                             buildPickBookingHeader(
+//                               title: "P/T",
+//                               width: 70,
+//                               controller: _searchPaymentTypeController,
+//                               onChanged: (v) => onSearchBooking(),
+//                             ),
+//                             buildPickBookingHeader(
+//                               title: "STATUS",
+//                               width: 80,
+//                               controller: _searchStatusController,
+//                               onChanged: (v) => onSearchBooking(),
+//                             ),
+//                             buildPickBookingHeader(
+//                               title: "ACTION",
+//                               width: 55,
+//                               removeSearch: true,
+//                             ),
+//                           ],
+//                           rows: PickBookingfiltered.map((booking) {
+//                             return DataRow(
+//                               key: ValueKey(booking.referenceNumber ?? booking.id),
+//                               cells: [
+//                                 DataCell(_buildCellText(booking.referenceNumber ?? '', width: 60)),
+//                                 DataCell(_buildCellText("${booking.pickupDate ?? ''}\n${booking.pickupTime ?? ''}", width: 95, isSmall: true)),
+//                                 DataCell(_buildCellText(booking.vehicleType?.name ?? '', width: 65)),
+//                                 DataCell(_buildCellText(booking.pickup ?? '', width: 140)),
+//                                 DataCell(_buildCellText(booking.dropoff ?? '', width: 140)),
+//                                 DataCell(_buildCellText("£${booking.fares ?? '0.00'}", width: 65)),
+//                                 DataCell(_buildCellText(booking.name ?? '', width: 100)),
+//                                 DataCell(_buildCellText(booking.account?.name ?? '-', width: 80)),
+//                                 DataCell(_buildCellText(booking.driver?.name ?? '-', width: 80)),
+//                                 DataCell(_buildCellText(booking.paymentType?.name ?? '', width: 70)),
+//                                 DataCell(_buildCellText(booking.bookingStatus?.bookingStatus ?? '', width: 80)),
+//                                 DataCell(
+//                                   SizedBox(
+//                                     width: 55,
+//                                     child: Center(
+//                                       child: TextButton(
+//                                         style: TextButton.styleFrom(padding: EdgeInsets.zero),
+//                                         onPressed: () {},
+//                                         child: Text(
+//                                           "PICK",
+//                                           style: _kOutfitStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.blue),
+//                                         ),
+//                                       ),
+//                                     ),
+//                                   ),
+//                                 ),
+//                               ],
+//                             );
+//                           }).toList(),
+//                         ),
+//                       ),
+//                     ),
+//                   );
+//                 }),
+//               ),
+//             ),
+//
+//             const Divider(height: 1, color: Colors.black12),
+//
+//             // ── Footer Section ──
+//             Padding(
+//               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+//               child: Row(
+//                 children: [
+//                   _buildButton("CLOSE", Colors.grey.shade100, Colors.black87, isWide: false, onTap: () => Navigator.of(context).pop()),
+//                 ],
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+//
+// // ── Text overflow handling helper function ──
+//   Widget _buildCellText(String text, {required double width, bool isSmall = false}) {
+//     return SizedBox(
+//       width: width,
+//       child: Center(
+//         child: Text(
+//           text,
+//           maxLines: 2,
+//           textAlign: TextAlign.center,
+//           overflow: TextOverflow.ellipsis,
+//           style: _kOutfitStyle(
+//             fontSize: isSmall ? 11 : 12,
+//             fontWeight: FontWeight.normal,
+//             color: DynamicColors.textClr,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+//
+//   // Outfit font helper
+//   TextStyle _kOutfitStyle({double fontSize = 12, FontWeight fontWeight = FontWeight.normal, Color color = Colors.black}) {
+//     return TextStyle(
+//       fontFamily: 'Outfit-Regular',
+//       fontSize: fontSize,
+//       fontWeight: fontWeight,
+//       color: color,
+//     );
+//   }
+//
+//   Widget _buildInputWithLabel(String label, TextEditingController controller, {double width = 120}) {
+//     return CustomTextField(
+//       borderRadius: 4,
+//       controller: controller,
+//       width: width,
+//       height: 32,
+//       hintText: label,
+//       columnText: true,
+//       contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+//     );
+//   }
+//
+//   Widget _buildMobileInputWithAutoFill(String label, TextEditingController controller, {double width = 120}) {
+//     return SizedBox(
+//       width: width,
+//       child: Focus(
+//         onFocusChange: (hasFocus) {
+//           if (!hasFocus && controller.text.isNotEmpty) {
+//             autoFillCustomerDetails(controller.text);
+//           }
+//         },
+//         child: CustomTextField(
+//           borderRadius: 4,
+//           controller: controller,
+//           width: width,
+//           height: 32,
+//           hintText: label,
+//           columnText: true,
+//           contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+//           onChanged: (val) {
+//             if (val.length >= 10) {
+//               autoFillCustomerDetails(val);
+//             }
+//           },
+//         ),
+//       ),
+//     );
+//   }
+//
+//   Widget _buildDatePickerWithLabel(String label, TextEditingController controller) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Text(
+//           label,
+//           style: _kOutfitStyle(fontSize: 10, fontWeight: FontWeight.bold),
+//         ),
+//         const SizedBox(height: 4),
+//         SizedBox(
+//           width: 140,
+//           height: 32,
+//           child: KeyboardDatePicker(
+//             key: ValueKey(controller.text),
+//             initialDate: controller.text.isNotEmpty && controller.text != "MM/DD/YYYY"
+//                 ? DateTime.tryParse(controller.text) ?? DateTime.now()
+//                 : DateTime.now(),
+//             borderClr: Colors.grey.shade300,
+//             fontSize: 12,
+//             iconSize: 14,
+//             onChanged: (date) {
+//               setState(() {
+//                 controller.text = date.toIso8601String().split("T").first;
+//               });
+//             },
+//             onSubmitted: (date) {
+//               setState(() {
+//                 controller.text = date.toIso8601String().split("T").first;
+//               });
+//             },
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+//
+//   Widget _buildButton(String text, Color bgColor, Color textColor, {bool isWide = false, VoidCallback? onTap}) {
+//     return GestureDetector(
+//       onTap: onTap,
+//       child: Container(
+//         height: 32,
+//         padding: EdgeInsets.symmetric(horizontal: isWide ? 32 : 16),
+//         alignment: Alignment.center,
+//         decoration: BoxDecoration(
+//           color: bgColor,
+//           borderRadius: BorderRadius.circular(4),
+//           border: Border.all(color: bgColor == Colors.white || bgColor == Colors.grey.shade100 ? Colors.grey.shade300 : bgColor),
+//         ),
+//         child: Text(
+//           text,
+//           style: _kOutfitStyle(fontSize: 12, fontWeight: FontWeight.bold, color: textColor),
+//         ),
+//       ),
+//     );
+//   }
+//
+//
+//   DataColumn buildPickBookingHeader({
+//     required String title,
+//     required double width,
+//     TextEditingController? controller,
+//     Function(String)? onChanged,
+//     bool removeSearch = false,
+//     double fontSize = 12,
+//   }) {
+//     return DataColumn(
+//       label: Container(
+//         width: width, // Yahan se Column aur Field dono ki width control hogi
+//         alignment: Alignment.center,
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           crossAxisAlignment: CrossAxisAlignment.center,
+//           children: [
+//             Text(
+//               title,
+//               textAlign: TextAlign.center,
+//               style: TextStyle(
+//                 fontWeight: FontWeight.bold,
+//                 fontSize: fontSize,
+//                 color: Colors.black87,
+//               ),
+//             ),
+//             const SizedBox(height: 4),
+//             if (!removeSearch)
+//               SizedBox(
+//                 width: double.infinity, // Width container ke barabar stretch hogi
+//                 height: 28,
+//                 child: TextField(
+//                   controller: controller,
+//                   onChanged: onChanged,
+//                   style: const TextStyle(
+//                     fontWeight: FontWeight.w700,
+//                     fontSize: 12,
+//                   ),
+//                   decoration: InputDecoration(
+//                     hintText: "Search",
+//                     hintStyle: TextStyle(
+//                       fontWeight: FontWeight.w600,
+//                       color: Colors.grey.shade600,
+//                       fontSize: 11,
+//                     ),
+//                     contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
+//                     border: OutlineInputBorder(
+//                       borderRadius: BorderRadius.circular(4),
+//                       borderSide: const BorderSide(color: Colors.grey),
+//                     ),
+//                     focusedBorder: OutlineInputBorder(
+//                       borderRadius: BorderRadius.circular(4),
+//                       borderSide: const BorderSide(color: Color(0xFF00569A)),
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+//
+// }
+
 class _SearchBookingAlertState extends State<SearchBookingAlert> {
   // Top Filter Controllers
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _mobileController = TextEditingController();
   final TextEditingController _telephoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _fromDateController = TextEditingController();
   final TextEditingController _toDateController = TextEditingController();
 
@@ -847,16 +1464,20 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
   final TextEditingController _searchDriverController = TextEditingController();
   final TextEditingController _searchPaymentTypeController = TextEditingController();
   final TextEditingController _searchStatusController = TextEditingController();
+
   final ScrollController _scrollController = ScrollController();
+  final ScrollController _horizontalScrollController = ScrollController();
 
   // ── GetX Reactive Variables for Search & Data ──
-
   PickBookingModel? _bookingModel;
-  Bookings? bookings;
   RxList<Bookings> PickBookingListAll = <Bookings>[].obs;
   RxList<Bookings> PickBookingfiltered = <Bookings>[].obs;
 
   RxBool isLoading = false.obs;
+  RxBool isCustomerLoading = false.obs;
+
+  // Local state for Customer Autocomplete Suggestions
+  RxList<CustomerObject> customerList = <CustomerObject>[].obs;
 
   RxString searchName = ''.obs;
   RxString searchMobile = ''.obs;
@@ -878,47 +1499,45 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
   @override
   void initState() {
     super.initState();
+    // Default current date selection
+    DateTime now = DateTime.now();
+    _fromDateController.text = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+    _toDateController.text = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
     fetchBookings();
   }
 
-
   @override
   void dispose() {
-    // 2. Dispose properly to prevent memory leaks
     _scrollController.dispose();
+    _horizontalScrollController.dispose();
     super.dispose();
   }
 
-  // Mobile Auto-Fill Logic
-  Future<void> autoFillCustomerDetails(String mobileNumber) async {
-    if (mobileNumber.trim().length < 3) return;
-
+  // ── Customer Phone Search API (Local Method)
+  Future<void> getPhoneNumbersOfUsers({
+    required String fieldsName,
+    required String searchingText,
+  }) async {
     try {
-      dynamic response = await Api().get(
-        'bookings/pick-bookings',
+      isCustomerLoading.value = true;
+      var response = await Api().get(
+        "customers/search?mobile=$searchingText",
         sendCompanyId: true,
-        queryParameters: {
-          "mobile": mobileNumber.trim(),
-        },
       );
 
-      Map<String, dynamic>? data;
-      if (response is Map<String, dynamic>) {
-        data = response;
-      } else if (response != null && response.data != null) {
-        data = response.data;
-      }
-
-      if (data != null && data['status'] == true) {
-        List rawList = data['bookings'] ?? [];
-        if (rawList.isNotEmpty) {
-          Bookings firstBooking = Bookings.fromJson(rawList.first);
-          _nameController.text = firstBooking.name ?? '';
-          _telephoneController.text = firstBooking.telephone ?? '';
+      if (response != null && response.statusCode == 200) {
+        final list = response.data['customer'];
+        if (list != null && list is List) {
+          customerList.value = list.map((e) => CustomerObject.fromJson(e)).toList();
+        } else {
+          customerList.clear();
         }
       }
     } catch (e) {
-      debugPrint("Auto-fill error: $e");
+      debugPrint("Customer Search Error: $e");
+      customerList.clear();
+    } finally {
+      isCustomerLoading.value = false;
     }
   }
 
@@ -927,12 +1546,11 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     try {
       isLoading.value = true;
       Map<String, dynamic> queryParams = {
-
         "name": searchName.value.toLowerCase(),
         "mobile": searchMobile.value.toLowerCase(),
         "telephone": searchTele.value.toLowerCase(),
-        "from_date": searchFromDate.value,
-        "to_date": searchToDate.value,
+        "from_date": _fromDateController.text.trim(),
+        "to_date": _toDateController.text.trim(),
         "search_ref": searchRef.value.toLowerCase(),
         "search_pickup": searchPickup.value.toLowerCase(),
         "search_dropoff": searchDropoff.value.toLowerCase(),
@@ -944,18 +1562,21 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
         "search_account": searchAccount.value.toLowerCase(),
         "search_driver": searchDriver.value.toLowerCase(),
       };
+
       // Remove Empty Query Params
       queryParams.removeWhere((key, value) => value == '' || value == "MM/DD/YYYY");
+
       dynamic response = await Api().get(
         "bookings/pick-bookings",
         queryParameters: queryParams,
-        sendCompanyId: true,);
-      if (response.statusCode == 200) {
+        sendCompanyId: true,
+      );
+
+      if (response != null && response.statusCode == 200) {
         _bookingModel = PickBookingModel.fromJson(response.data);
         PickBookingListAll.value = _bookingModel!.bookings ?? [];
         PickBookingfiltered.value = PickBookingListAll;
-        isLoading.value = false;
-  }
+      }
     } catch (e) {
       debugPrint("API Fetch Error: $e");
     } finally {
@@ -965,8 +1586,6 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
 
   // Trigger search on change/submit
   void onSearchBooking() {
-
-    // Map controller values to reactive strings
     searchName.value = _nameController.text.trim();
     searchMobile.value = _mobileController.text.trim();
     searchTele.value = _telephoneController.text.trim();
@@ -991,6 +1610,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     _nameController.clear();
     _mobileController.clear();
     _telephoneController.clear();
+    _emailController.clear();
     _fromDateController.clear();
     _toDateController.clear();
     _searchRefController.clear();
@@ -1010,14 +1630,15 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
 
   @override
   Widget build(BuildContext context) {
-    double dialogHeight = MediaQuery.of(context).size.height * 0.70; // Dialog height thodi extend ki hai scroll space ke liye
+    double screenWidth = MediaQuery.of(context).size.width;
+    double dialogHeight = MediaQuery.of(context).size.height * 0.80;
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      insetPadding: const EdgeInsets.all(10), // Padding thodi kam ki hai taake max width mile
+      insetPadding: const EdgeInsets.all(10),
       backgroundColor: Colors.white,
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.98, // Full dialog width expand ki hai
+        width: screenWidth * 0.96,
         height: dialogHeight,
         decoration: BoxDecoration(
           color: Colors.white,
@@ -1057,20 +1678,46 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
 
             // ── Top Filter Section ──
             Padding(
-              padding: const EdgeInsets.only(left: 0.0, top: 8.0, bottom: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 15.0),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    _buildInputWithLabel("NAME", _nameController, width: 140),
-                    const SizedBox(width: 12),
-                    _buildMobileInputWithAutoFill("MOBILE", _mobileController, width: 140),
-                    const SizedBox(width: 12),
-                    _buildInputWithLabel("TELEPHONE", _telephoneController, width: 140),
-                    const SizedBox(width: 12),
+                    _buildInputWithLabel("NAME", _nameController, width: 130),
+                    const SizedBox(width: 10),
+
+                    // Obx hata diya gaya hai taake improper Obx exception na aaye
+                    SizedBox(
+                      width: 150,
+                      child: _customerAutocompleteField(
+                        'MOBILE',
+                        tab: 2,
+                        controller: _mobileController,
+                        customers: customerList, // Direct list pass karein
+                        onChanged: (q) {
+                          if (q.trim().isEmpty) return;
+                          getPhoneNumbersOfUsers(
+                            fieldsName: "Phone Number",
+                            searchingText: q,
+                          );
+                        },
+                        onPicked: (c) {
+                          setState(() {
+                            _mobileController.text = c.mobile ?? '';
+                            _nameController.text = c.name ?? '';
+                            _emailController.text = c.email ?? '';
+                            _telephoneController.text = c.telephone ?? '';
+                          });
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(width: 10),
+                    _buildInputWithLabel("TELEPHONE", _telephoneController, width: 130),
+                    const SizedBox(width: 10),
                     _buildDatePickerWithLabel("FROM DATE", _fromDateController),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
                     _buildDatePickerWithLabel("TO DATE", _toDateController),
                     const SizedBox(width: 12),
                     _buildButton("FILTER", DynamicColors.primaryClr, Colors.white, isWide: true, onTap: onSearchBooking),
@@ -1083,93 +1730,120 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
 
             const Divider(height: 1, color: Colors.black12),
 
-            // ── Dynamic Data Table Section (Vertical Scrollable) ──
-            // ── Dynamic Data Table Section (Only Rows Update) ──
+            // ── Dynamic Data Table Section
             Expanded(
-              child: Container(
-                width: double.infinity,
-                color: Colors.white,
-                child: Obx(() {
-                  // 1. Loading State Check
-                  if (isLoading.value) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  // 2. Empty State Check
-                  if (PickBookingfiltered.isEmpty) {
-                    return const Center(child: Text("No bookings found."));
-                  }
-
-                  // 3. Table UI Base (Yeh Widget Destroy Nahi Hoga)
-                  return RawScrollbar(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  width: double.infinity,
+                  color: Colors.white,
+                  child: RawScrollbar(
                     controller: _scrollController,
                     thumbVisibility: true,
                     trackVisibility: true,
-                    thickness: 6,
-                    radius: const Radius.circular(4),
+                    thumbColor: Colors.grey.shade800,
+                    trackColor: Colors.grey.shade300,
+                    thickness: 8,
+                    radius: const Radius.circular(8),
                     child: SingleChildScrollView(
                       controller: _scrollController,
                       scrollDirection: Axis.vertical,
                       physics: const AlwaysScrollableScrollPhysics(),
-                      child: DatatableWidget(
-                        columnSpacing: 8,
-                        horizontalMargin: 4,
-                        headingRowHeight: 60,
-                        dataRowMinHeight: 50,
-                        dataRowMaxHeight: 65,
-                        // Headers fixed rahenge:
-                        columns: [
-                          buildHeaderWithSearch(controller: _searchRefController, onChanged: (v) => onSearchBooking(), title: "REF #"),
-                          buildHeaderWithSearch(controller: _searchDateTimeController, onChanged: (v) => onSearchBooking(), title: "DATE/TIME"),
-                          buildHeaderWithSearch(controller: _searchVehicleController, onChanged: (v) => onSearchBooking(), title: "VEHICLE"),
-                          buildHeaderWithSearch(controller: _searchPickupController, onChanged: (v) => onSearchBooking(), title: "PICKUP"),
-                          buildHeaderWithSearch(controller: _searchDropoffController, onChanged: (v) => onSearchBooking(), title: "DROPOFF"),
-                          buildHeaderWithSearch(controller: _searchFareController, onChanged: (v) => onSearchBooking(), title: "FARES"),
-                          buildHeaderWithSearch(controller: _searchCustomerController, onChanged: (v) => onSearchBooking(), title: "CUST"),
-                          buildHeaderWithSearch(controller: _searchAccountController, onChanged: (v) => onSearchBooking(), title: "ACC"),
-                          buildHeaderWithSearch(controller: _searchDriverController, onChanged: (v) => onSearchBooking(), title: "DRIVER"),
-                          buildHeaderWithSearch(controller: _searchPaymentTypeController, onChanged: (v) => onSearchBooking(), title: "P/T"),
-                          buildHeaderWithSearch(controller: _searchStatusController, onChanged: (v) => onSearchBooking(), title: "STATUS"),
-                          buildHeaderWithSearch(onChanged: (v) {}, title: "ACTION"),
-                        ],
-                        // Rows Reactive mapping se bind hongi:
-                        rows: PickBookingfiltered.map((booking) {
-                          return DataRow(
-                            key: ValueKey(booking.referenceNumber ?? booking.id), // Unique Key for Row performance optimization
-                            cells: [
-                              DataCell(Center(child: _buildCellText(booking.referenceNumber ?? ''))),
-                              DataCell(Center(child: _buildCellText("${booking.pickupDate ?? ''}\n${booking.pickupTime ?? ''}", isSmall: true))),
-                              DataCell(Center(child: _buildCellText(booking.vehicleType?.name ?? ''))),
-                              DataCell(Center(child: _buildCellText(booking.pickup ?? ''))),
-                              DataCell(Center(child: _buildCellText(booking.dropoff ?? ''))),
-                              DataCell(Center(child: _buildCellText("£${booking.fares ?? '0.00'}"))),
-                              DataCell(Center(child: _buildCellText(booking.name ?? ''))),
-                              DataCell(Center(child: _buildCellText(booking.account?.name ?? '-'))),
-                              DataCell(Center(child: _buildCellText(booking.driver?.name ?? '-'))),
-                              DataCell(Center(child: _buildCellText(booking.paymentType?.name ?? ''))),
-                              DataCell(Center(child: _buildCellText(booking.bookingStatus?.bookingStatus ?? ''))),
-                              DataCell(
-                                Center(
-                                  child: SizedBox(
-                                    width: 30,
-                                    child: TextButton(
-                                      style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                                      onPressed: () {},
-                                      child: Text(
-                                        "PICK",
-                                        style: _kOutfitStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.blue),
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                      child: SingleChildScrollView(
+                        controller: _horizontalScrollController,
+                        scrollDirection: Axis.horizontal,
+                        child: SizedBox(
+                          // Dialog screen ki full available width occupy karega
+                          width: screenWidth * 0.96 - 20,
+                          child: Obx(() => DatatableWidget(
+                            columnSpacing: 10,
+                            horizontalMargin: 8,
+                            headingRowHeight: 60,
+                            dataRowMinHeight: 50,
+                            dataRowMaxHeight: 65,
+                            columns: [
+
+                              buildHeaderWithSearch(
+                                title: "REF #",
+
+                                controller: _searchRefController,
+                                onChanged: (v) => onSearchBooking(),
+                              ),
+                              buildHeaderWithSearch(
+                                title: "DATE/TIME",
+
+                                controller: _searchDateTimeController,
+                                onChanged: (v) => onSearchBooking(),
+
+                              ),
+                              buildHeaderWithSearch(
+                                title: "VEHICLE",
+
+                                controller: _searchVehicleController,
+                                onChanged: (v) => onSearchBooking(),
+                              ),
+                              buildHeaderWithSearch(
+                                title: "PICKUP",
+
+                                controller: _searchPickupController,
+                                onChanged: (v) => onSearchBooking(),
+                              ),
+                              buildHeaderWithSearch(
+                                title: "DROPOFF",
+
+                                controller: _searchDropoffController,
+                                onChanged: (v) => onSearchBooking(),
+                              ),
+                              buildHeaderWithSearch(
+                                title: "FARES",
+
+                                controller: _searchFareController,
+                                onChanged: (v) => onSearchBooking(),
+                              ),
+                              buildHeaderWithSearch(
+                                title: "CUST",
+
+                                controller: _searchCustomerController,
+                                onChanged: (v) => onSearchBooking(),
+                              ),
+                              buildHeaderWithSearch(
+                                title: "ACC",
+
+                                controller: _searchAccountController,
+                                onChanged: (v) => onSearchBooking(),
+                              ),
+                              buildHeaderWithSearch(
+                                title: "DRIVER",
+
+                                controller: _searchDriverController,
+                                onChanged: (v) => onSearchBooking(),
+                              ),
+                              buildHeaderWithSearch(
+                                title: "P/T",
+
+                                controller: _searchPaymentTypeController,
+                                onChanged: (v) => onSearchBooking(),
+                              ),
+                              buildHeaderWithSearch(
+                                title: "STATUS",
+
+                                controller: _searchStatusController,
+                                onChanged: (v) => onSearchBooking(),
+                              ),
+                              buildHeaderWithSearch(
+                                title: "ACTION",
+
+                                removeSearching: true,
+
                               ),
                             ],
-                          );
-                        }).toList(),
+                            rows: _buildTableRows(),
+                          )),
+                        ),
                       ),
                     ),
-                  );
-                }),
+                  ),
+                ),
               ),
             ),
 
@@ -1190,25 +1864,137 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     );
   }
 
-// ── Text overflow handling helper function ──
-  Widget _buildCellText(String text, {bool isSmall = false}) {
-    return Container(
-      constraints: const BoxConstraints(maxWidth: 90), // Fixed width constraint per cell
-      child: Text(
-        text,
-        maxLines: 3,
-        overflow: TextOverflow.ellipsis,
-        style: _kOutfitStyle(
-          fontSize: isSmall ? 12 : 13,
-          fontWeight: FontWeight.normal,
-          color: DynamicColors.textClr,
+  // ── Helper to render rows or Circular Loader underneath headers ──
+  List<DataRow> _buildTableRows() {
+    if (isLoading.value) {
+      return [
+        DataRow(
+          cells: List.generate(
+            12,
+                (index) => DataCell(
+              index == 5
+                  ? const SizedBox(
+                height: 25,
+                width: 25,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+                  : const SizedBox.shrink(),
+            ),
+          ),
+        )
+      ];
+    }
+
+    if (PickBookingfiltered.isEmpty) {
+      return [
+        DataRow(
+          cells: List.generate(
+            12,
+                (index) => DataCell(
+              index == 5
+                  ? Center(child: Text("No bookings found.", style: _kOutfitStyle(fontSize: 12, color: Colors.grey)))
+                  : const SizedBox.shrink(),
+            ),
+          ),
+        )
+      ];
+    }
+
+    return PickBookingfiltered.map((booking) {
+      return DataRow(
+        key: ValueKey(booking.referenceNumber ?? booking.id),
+        cells: [
+          DataCell(Center(child: _buildCellText(booking.referenceNumber ?? '', width: 90, isSmall: false))),
+          DataCell(Center(child: _buildCellText("${booking.pickupDate ?? ''}\n${booking.pickupTime ?? ''}", width: 95, isSmall: false))),
+          DataCell(Center(child: _buildCellText(booking.vehicleType?.name ?? '', width: 65))),
+          DataCell(Center(child: _buildCellText(booking.pickup ?? '', width: 180))),
+          DataCell(Center(child: _buildCellText(booking.dropoff ?? '', width: 180))),
+          DataCell(Center(child: _buildCellText("£${booking.fares ?? '0.00'}", width: 65))),
+          DataCell(Center(child: _buildCellText(booking.name ?? '', width: 100))),
+          DataCell(Center(child: _buildCellText(booking.account?.name ?? '-', width: 80))),
+          DataCell(Center(child: _buildCellText(booking.driver?.name ?? '-', width: 80))),
+          DataCell(Center(child: _buildCellText(booking.paymentType?.name ?? '', width: 70))),
+          DataCell(Center(child: _buildCellText(booking.bookingStatus?.bookingStatus ?? '', width: 80))),
+          DataCell(
+            Center(
+              child: SizedBox(
+                width: 40,
+                child: Center(
+                  child: TextButton(
+                    style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                    onPressed: () {},
+                    child: Text(
+                      "PICK",
+                      style: _kOutfitStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.blue),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }).toList();
+  }
+
+  // Autocomplete Field Builder
+  Widget _customerAutocompleteField(
+      String label, {
+        required int tab,
+        required TextEditingController controller,
+        required List<CustomerObject> customers,
+        required ValueChanged<CustomerObject> onPicked,
+        ValueChanged<String>? onChanged,
+        IconData? prefix,
+      }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        FocusTraversalOrder(
+          order: NumericFocusOrder(tab.toDouble()),
+          child: CustomerModelAutocomplete(
+
+            controller: controller,
+            items: customers,
+            onSelected: onPicked,
+            onChanged: onChanged,
+            decoration: _inputDecoration().copyWith(
+              label: Text(label.toUpperCase()),
+              labelStyle: _kOutfitStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black54),
+              prefixIconConstraints: const BoxConstraints(minWidth: 28, minHeight: 0),
+              prefixIcon: prefix != null
+                  ? Padding(
+                padding: const EdgeInsets.only(left: 8, right: 4),
+                child: Icon(prefix, size: 15, color: Colors.grey),
+              )
+                  : null,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+ Widget _buildCellText(String text, {required double width, bool isSmall = false}) {
+    return SizedBox(
+      width: width,
+      child: Center(
+        child: Text(
+          text,
+          maxLines: 2,
+          textAlign: TextAlign.center,
+          overflow: TextOverflow.ellipsis,
+          style: _kOutfitStyle(
+            fontSize: isSmall ? 13 : 15,
+            fontWeight: FontWeight.normal,
+            color: DynamicColors.textClr,
+          ),
         ),
       ),
     );
   }
 
-  // Outfit font helper
-  TextStyle _kOutfitStyle({double fontSize = 12, FontWeight fontWeight = FontWeight.normal, Color color = Colors.black}) {
+ TextStyle _kOutfitStyle({double fontSize = 12, FontWeight fontWeight = FontWeight.normal, Color color = Colors.black}) {
     return TextStyle(
       fontFamily: 'Outfit-Regular',
       fontSize: fontSize,
@@ -1217,7 +2003,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     );
   }
 
-  Widget _buildInputWithLabel(String label, TextEditingController controller, {double width = 120}) {
+ Widget _buildInputWithLabel(String label, TextEditingController controller, {double width = 120}) {
     return CustomTextField(
       borderRadius: 4,
       controller: controller,
@@ -1229,34 +2015,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     );
   }
 
-  Widget _buildMobileInputWithAutoFill(String label, TextEditingController controller, {double width = 120}) {
-    return SizedBox(
-      width: width,
-      child: Focus(
-        onFocusChange: (hasFocus) {
-          if (!hasFocus && controller.text.isNotEmpty) {
-            autoFillCustomerDetails(controller.text);
-          }
-        },
-        child: CustomTextField(
-          borderRadius: 4,
-          controller: controller,
-          width: width,
-          height: 32,
-          hintText: label,
-          columnText: true,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-          onChanged: (val) {
-            if (val.length >= 10) {
-              autoFillCustomerDetails(val);
-            }
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDatePickerWithLabel(String label, TextEditingController controller) {
+ Widget _buildDatePickerWithLabel(String label, TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1266,7 +2025,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
         ),
         const SizedBox(height: 4),
         SizedBox(
-          width: 140,
+          width: 130,
           height: 32,
           child: KeyboardDatePicker(
             key: ValueKey(controller.text),
@@ -1292,12 +2051,12 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     );
   }
 
-  Widget _buildButton(String text, Color bgColor, Color textColor, {bool isWide = false, VoidCallback? onTap}) {
+ Widget _buildButton(String text, Color bgColor, Color textColor, {bool isWide = false, VoidCallback? onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         height: 32,
-        padding: EdgeInsets.symmetric(horizontal: isWide ? 32 : 16),
+        padding: EdgeInsets.symmetric(horizontal: isWide ? 24 : 16),
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: bgColor,
@@ -1311,8 +2070,16 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
       ),
     );
   }
+
+ InputDecoration _inputDecoration() {
+    return InputDecoration(
+      isDense: true,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(4), borderSide: const BorderSide(color: Colors.grey)),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(4), borderSide: const BorderSide(color: Color(0xFF00569A))),
+    );
+  }
+
 }
-
-
 
 
