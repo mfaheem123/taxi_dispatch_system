@@ -59,6 +59,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
         } else {
           controller.getAllFareConfiguration();
         }
+        controller.getFareConfigMileage();
       }, builder: (controller) {
         return controller.getFareGetVehicleTypeAccountLoader.value
             ? Center(
@@ -617,6 +618,10 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                       inputFormatters: [
                                         FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
                                       ],
+                                      suffixIcon: _buildStepperIcons(
+                                        onIncrement: () => controller.incrementValue(controller.minimumMilesController),
+                                        onDecrement: () => controller.decrementValue(controller.minimumMilesController),
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(width: 10),
@@ -630,6 +635,9 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                       inputFormatters: [
                                         FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
                                       ],
+                                      suffixIcon: _buildStepperIcons(
+                                          onIncrement: () => controller.incrementValue(controller.maximumMilesController), 
+                                          onDecrement: () => controller.decrementValue(controller.maximumMilesController)),
                                     ),
                                   ),
                                   const SizedBox(width: 10),
@@ -643,6 +651,9 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                       inputFormatters: [
                                         FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
                                       ],
+                                      suffixIcon: _buildStepperIcons(
+                                          onIncrement: () =>  controller.incrementValue(controller.mileageFareController), 
+                                          onDecrement: () => controller.decrementValue(controller.mileageFareController)),
                                     ),
                                   ),
                                   const SizedBox(width: 15),
@@ -650,7 +661,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                     height: 35,
                                     width: 120,
                                     onTap: () {
-
+                                      controller.postFareMileage();
                                     },
                                     btnText: AppText.save,
                                     verticalPadding: 0.0,
@@ -679,7 +690,45 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                             buildHeaderWithSearch(title: "FARES", removeSearching: true),
                             buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
                           ],
-                          rows: [],
+                          rows: controller.getFareMileageModel?.fareConfigurationsMileage?.map((data) =>
+                              DataRow(
+                                cells: [
+                                  DataCell(Center(child: Text(data.minimumMiles ?? "0.00"))),
+                                  DataCell(Center(child: Text(data.maximumMiles ?? "0.00"))),
+                                  DataCell(Center(child: Text(data.fares ?? "0.00"))),
+                                  DataCell(
+                                    Center(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          OutlinedButton(
+                                            style: OutlinedButton.styleFrom(
+                                              padding: EdgeInsets.zero,
+                                              minimumSize: const Size(32, 32),
+                                              side: const BorderSide(color: Colors.transparent),
+                                            ),
+                                            onPressed: () {},
+                                            child: Icon(Icons.edit_calendar, size: 20, color: DynamicColors.primaryClr),
+                                          ),
+
+                                          OutlinedButton(
+                                            style: OutlinedButton.styleFrom(
+                                              padding: EdgeInsets.zero,
+                                              minimumSize: const Size(32, 32),
+                                              side: const BorderSide(color: Colors.transparent),
+                                            ),
+                                            onPressed: () {
+                                              controller.deleteFareConfigMileage(data.id);
+                                            },
+                                            child: Icon(Icons.delete_forever, size: 20, color: DynamicColors.redClr),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ))
+                              .toList(),
                         ),
                       )),
                     ],
@@ -687,6 +736,30 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                 );
               });
       }),
+    );
+  }
+  Widget _buildStepperIcons({required VoidCallback onIncrement, required VoidCallback onDecrement}) {
+    return SizedBox(
+      width: 20,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: 14,
+            child: InkWell(
+              onTap: onIncrement,
+              child: const Icon(Icons.arrow_drop_up, size: 16),
+            ),
+          ),
+          SizedBox(
+            height: 14,
+            child: InkWell(
+              onTap: onDecrement,
+              child: const Icon(Icons.arrow_drop_down, size: 16),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
