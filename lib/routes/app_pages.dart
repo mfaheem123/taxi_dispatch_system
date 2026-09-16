@@ -12,7 +12,6 @@ import '../view/cli_Screen.dart';
 import '../view/customer/add_customerScreen.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
 import '../view/booking_view/craate_booking.dart';
-import '../view/dashboard_view/dashboard.dart';
 import '../view/dashboard_view/widgets/view_drivers_map.dart';
 import '../view/main_appbar/main_appbar.dart';
 import '../view/new_cli_screen.dart' hide ResponsivePassengerScreen;
@@ -70,11 +69,6 @@ class AppPages {
       name: _Paths.completeBookingsScreen,
       page: () => CompleteBookingsScreen(),
       // binding: DashBoardBindings(),
-    ),
-    GetPage(
-      name: _Paths.dashBoarScreen,
-      page: () => DashBoarScreen(),
-      binding: DashBoardBindings(),
     ),
     GetPage(
       name: _Paths.createBooking,

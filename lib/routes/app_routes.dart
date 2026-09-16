@@ -4,7 +4,6 @@ abstract class Routes {
   Routes._();
   static const myHomePage = _Paths.myHomePage;
   static const loginScreen = _Paths.loginScreen;
-  static const dashBoarScreen = _Paths.dashBoarScreen;
   static const createBooking = _Paths.createBooking;
   static const viewDriversMap = _Paths.viewDriversMap;
   static const createVehicle = _Paths.createVehicle;
@@ -18,7 +17,6 @@ abstract class Routes {
 abstract class _Paths {
   static const myHomePage = '/MyHomePage';
   static const loginScreen = '/LoginScreen';
-  static const dashBoarScreen = '/DashBoarScreen';
   static const createBooking = '/CreateBooking';
   static const updateBooking = '/UpdateBooking';
   static const editJobs = '/EditJobs';
