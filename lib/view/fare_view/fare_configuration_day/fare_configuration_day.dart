@@ -8,6 +8,7 @@ import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
 import '../../../component/datatable_widget.dart';
@@ -663,7 +664,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                     onTap: () {
                                       controller.postFareMileage();
                                     },
-                                    btnText: AppText.save,
+                                    btnText: controller.updateFareMileageValue.value == false ? AppText.save : AppText.update,
                                     verticalPadding: 0.0,
                                     borderRadius: 4,
                                     style: mozillaTextRegularText(
@@ -707,7 +708,9 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                               minimumSize: const Size(32, 32),
                                               side: const BorderSide(color: Colors.transparent),
                                             ),
-                                            onPressed: () {},
+                                            onPressed: () {
+                                              controller.bindFareMileage(data);
+                                            },
                                             child: Icon(Icons.edit_calendar, size: 20, color: DynamicColors.primaryClr),
                                           ),
 

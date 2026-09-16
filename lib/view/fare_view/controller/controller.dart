@@ -909,10 +909,10 @@ class FareController extends GetxController {
   }
 
   // POST MILEAGE
-  bool isLoadingMileage = false;
+  RxBool isLoadingMileage = false.obs;
 
   postFareMileage() async {
-    isLoadingMileage = true;
+    isLoadingMileage(true);
     update();
 
     var formData = {
@@ -922,14 +922,30 @@ class FareController extends GetxController {
     };
      var response = await Api().post(
          formData,
-         "fare-configuration-mileage/add", sendCompanyId: true);
+         updateFareMileageValue == false
+         ? "fare-configuration-mileage/add"
+         : "fare-configuration-mileage/update/${fareMileageUpdateId.value}", sendCompanyId: true);
      if (response.statusCode == 200) {
        print(response.data);
-       BotToast.showText(text: "FARE CONFIGURATION MILEAGE IS ADDED SUCCESSFULLY");
+       BotToast.showText(text: updateFareMileageValue.value
+       ? "FARE CONFIGURATION MILEAGE IS UPDATE SUCCESSFULLY"
+       : "FARE CONFIGURATION MILEAGE IS ADDED SUCCESSFULLY");
      }
     clearMileageData();
-     isLoadingMileage = false;
+     isLoadingMileage(false);
      update();
+  }
+
+  RxBool updateFareMileageValue = false.obs;
+  RxInt fareMileageUpdateId = 0.obs;
+
+  bindFareMileage(FareConfigurationsMileage data) {
+    mileageFareController.text = data.fares ?? "";
+    minimumMilesController.text = data.minimumMiles ?? "";
+    maximumMilesController.text = data.maximumMiles ?? "";
+
+    updateFareMileageValue(true);
+    fareMileageUpdateId(data.id);
   }
 
   void clearMileageData () {
