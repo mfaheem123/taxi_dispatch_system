@@ -2567,7 +2567,8 @@ class DashboardController extends GetxController {
     double total = double.tryParse(totalFare) ?? 0.0;
     double ret = double.tryParse(returnFare) ?? 0.0;
     final oneWayFare = (total - ret).toStringAsFixed(2);
-    fixedFare.value = oneWayFare;
+    fixedFare.value = total.toStringAsFixed(2);
+    // fixedFare.value = oneWayFare;
     returnFareValue = returnFare;
     slugControllerReturn.text = returnFare;
     slugController.text = oneWayFare;
