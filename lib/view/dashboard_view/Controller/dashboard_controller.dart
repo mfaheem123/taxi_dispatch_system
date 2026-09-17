@@ -3850,7 +3850,7 @@ class DashboardController extends GetxController {
 
         _controller.updateLocationValue.value == false;
       }
-// ── JOURNEY TYPE & FARE HANDLING ──
+            // ── JOURNEY TYPE & FARE HANDLING ──
       if ((jobData.booking.length > 1) && !pickBooking) {
         jourValue = 'R/N';
         selectJourneyTypeValue =
