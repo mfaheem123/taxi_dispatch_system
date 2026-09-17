@@ -417,9 +417,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                   height: 35,
                                 ),
 
-                                if(controller.fareConfiguration != "NORMAL"
-                                      ? true
-                                      : false)
+                                if(controller.fareConfiguration != "NORMAL")
                                   CustomTextField(
                                     inputFormatters: [
                                       UpperCaseTextFormatter(),
@@ -427,7 +425,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                     borderRadius: 4,
                                     controller: controller.titleController,
                                     width: fieldWidth,
-                                    hintText: "Title",
+                                    hintText: "TITLE",
                                     columnText: true,
                                     height: 35,
                                   ),
