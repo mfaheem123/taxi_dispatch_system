@@ -3573,6 +3573,7 @@ class DashboardController extends GetxController {
     id,
     bool hitAddBooking = false,
     bool cliHit = false,
+    bool pickBooking = false,
     String? swappedPickup,
     String? swappedDropoff,
   }) async {
@@ -3849,8 +3850,8 @@ class DashboardController extends GetxController {
 
         _controller.updateLocationValue.value == false;
       }
-
-      if (jobData.booking.length > 1) {
+// ── JOURNEY TYPE & FARE HANDLING ──
+      if ((jobData.booking.length > 1) && !pickBooking) {
         jourValue = 'R/N';
         selectJourneyTypeValue =
             dashboardAllData?.journeyTypes?.firstWhereOrNull(
@@ -3868,12 +3869,16 @@ class DashboardController extends GetxController {
         }
         withReturnDataBinding(jobData.booking[1]);
       }else{
-        selectJourneyTypeValue =
+        if(pickBooking == true){
+          selectJourneyTypeValue = dashboardAllData?.journeyTypes?.firstWhereOrNull(
+                (journey) => journey.id == 1,);
+        }else{  selectJourneyTypeValue =
             dashboardAllData?.journeyTypes?.firstWhereOrNull(
-                  (journey) => journey.id == jobData.booking[0].journeyTypeId,
-            );
+                  (journey) => journey.id == jobData.booking[0].journeyTypeId);
+        }
         if(selectJourneyTypeValue!.id == 1){
           jourValue = "O/W";
+
         }else if (selectJourneyTypeValue!.id == 2){
           jourValue = "W/R";
         }
@@ -3881,6 +3886,7 @@ class DashboardController extends GetxController {
 
         getFaresCalculation();
       }
+
 
       if (hitAddBooking == true) {
         dashBoardApiValidation();
@@ -4427,6 +4433,12 @@ class DashboardController extends GetxController {
     }
   }
 }
+
+
+
+
+
+
 
 class DashBoardBindings implements Bindings {
   @override
