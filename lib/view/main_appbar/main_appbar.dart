@@ -755,7 +755,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   const Spacer(),
                   // ================= CENTER: Nexus Text =================
                   Text(
-                    "NEXUS © 2026",
+                    "CABFLOW © 2026",
                     style: mozillaTextRegularText(color: Colors.grey, fontSize: 12),
                   ),
                   const Spacer(),
