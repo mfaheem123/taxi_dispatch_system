@@ -3,6 +3,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/routes/app_pages.dart';
 import 'package:dashboard_new1/view/dashboard_view/Controller/dashboard_controller.dart';
 import 'package:dashboard_new1/view/locations_view/controller/zone_controller.dart';
+import 'package:dashboard_new1/view/vehicles_view/model/vehicle_type_model.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -500,6 +501,7 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
     String pickupDate = booking?['pickup_date'] ?? "N/A";
     String pickupTime = booking?['pickup_time'] ?? "N/A";
     String fares = booking?['fares']?.toString() ?? "0.00";
+    String vehicleType = booking?['vehicle_type']?['name'] ?? "N/A";
 
     bool isAsapMode = widget.bookingMode.toUpperCase() == 'ASAP';
 
@@ -660,8 +662,12 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Fare: £$fares", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green)),
+                  Text(("Fare: £$fares").toUpperCase(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green)),
+                  Text("VEHICLE TYPE: $vehicleType", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green)),
+
+
                 ],
+
               )
             ],
           ),
