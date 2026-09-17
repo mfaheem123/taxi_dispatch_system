@@ -118,11 +118,11 @@ class _EditBookingFareState extends State<EditBookingFare> {
                     height: 28,
                     verticalPadding: 0.0,
                     btnText: "CANCEL",
-                    btnColor: Colors.grey.shade300,
+                    btnColor: Colors.red,
                     borderRadius: 4,
                     style: mozillaTextSemiBoldText(
                         fontSize: 14,
-                        color: Colors.black87,
+                        color: Colors.white,
                         fontWeight: FontWeight.bold
                     ),
                     onTap: () => Get.back(),

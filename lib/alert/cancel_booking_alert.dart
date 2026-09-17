@@ -197,11 +197,11 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
                           height: 28,
                           verticalPadding: 0.0,
                           btnText: "BACK",
-                          btnColor: Colors.grey.shade300,
+                          btnColor: Colors.red,
                           borderRadius: 4,
                           style: mozillaTextSemiBoldText(
                               fontSize: 14,
-                              color: Colors.black87,
+                              color: Colors.white,
                               fontWeight: FontWeight.bold
                           ),
                           onTap: () => Get.back(),

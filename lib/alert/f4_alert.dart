@@ -164,7 +164,7 @@ class _DriverEarningsAlertState extends State<DriverEarningsAlert> {
                             height: 35,
                             borderRadius: 4,
                             btnText: AppText.view,
-                            btnColor: DynamicColors.greenClr,
+                            btnColor: DynamicColors.primaryClr,
                             style: mozillaTextSemiBoldText(
                               fontSize: 12,
                               color: DynamicColors.whiteClr,

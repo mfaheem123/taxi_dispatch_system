@@ -208,7 +208,7 @@ class _DispatchBookingState extends State<DispatchBooking> {
                       width: 100,
                       height: 35,
                       btnText: "CLOSE",
-                      btnColor: DynamicColors.primaryClr,
+                      btnColor: Colors.red,
                       verticalPadding: 0.0,
                       borderRadius: 6,
                       onTap: () => Get.back(),
