@@ -922,7 +922,7 @@ class FareController extends GetxController {
     };
      var response = await Api().post(
          formData,
-         updateFareMileageValue == false
+         updateFareMileageValue.value == false
          ? "fare-configuration-mileage/add"
          : "fare-configuration-mileage/update/${fareMileageUpdateId.value}", sendCompanyId: true);
      if (response.statusCode == 200) {
@@ -930,6 +930,9 @@ class FareController extends GetxController {
        BotToast.showText(text: updateFareMileageValue.value
        ? "FARE CONFIGURATION MILEAGE IS UPDATE SUCCESSFULLY"
        : "FARE CONFIGURATION MILEAGE IS ADDED SUCCESSFULLY");
+
+       await getFareConfigMileage();
+
      }
     clearMileageData();
      isLoadingMileage(false);
@@ -946,27 +949,32 @@ class FareController extends GetxController {
 
     updateFareMileageValue(true);
     fareMileageUpdateId(data.id);
+
+    update();
   }
 
   void clearMileageData () {
     mileageFareController.clear();
     minimumMilesController.clear();
     maximumMilesController.clear();
+    updateFareMileageValue.value = false;
+    fareMileageUpdateId.value = 0;
+    update();
 }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all fare config mileage
-  bool isFareConfigMileage = false;
+  RxBool isFareConfigMileage = false.obs;
   GetFareMileageModel? getFareMileageModel;
   
   getFareConfigMileage() async {
-    isFareConfigMileage = true;
+    isFareConfigMileage(true);
     update();
     
     var response = await Api().get("fare-configuration-mileage/get", sendCompanyId: true);
     if (response.statusCode == 200) {
       getFareMileageModel = GetFareMileageModel.fromJson(response.data);
     }
-    isFareConfigMileage = false;
+    isFareConfigMileage(false);
     update();
   }
 
