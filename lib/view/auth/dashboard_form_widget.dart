@@ -2695,8 +2695,7 @@ class _StringAutocomplete extends StatefulWidget {
     required this.controller,
     required this.suggestions,
     required this.decoration,
-    this.onChanged,
-  });
+  }) : onChanged = null;
   final TextEditingController controller;
   final List<String> suggestions;
   final InputDecoration decoration;
