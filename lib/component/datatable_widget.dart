@@ -72,6 +72,7 @@ import 'color.dart';
 //   }
 // }
 
+const _kFontFamily = 'Outfit-Regular';
 
 class DatatableWidget extends StatefulWidget {
   DatatableWidget({
@@ -114,10 +115,12 @@ class _DatatableWidgetState extends State<DatatableWidget> {
       dataRowMaxHeight: widget.dataRowMaxHeight ?? 56,
       headingRowColor: WidgetStateProperty.all(DynamicColors.secondaryClr),
       headingTextStyle: const TextStyle(
+        fontFamily: _kFontFamily,
         fontWeight: FontWeight.w800,
         fontSize: 13,
       ),
       dataTextStyle: const TextStyle(
+        // fontFamily: _kFontFamily,
         fontSize: 13,
         fontWeight: FontWeight.w800,
       ),

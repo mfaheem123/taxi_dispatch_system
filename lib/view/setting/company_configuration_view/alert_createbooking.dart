@@ -129,7 +129,12 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                      Icon(Icons.calendar_month, color: DynamicColors.primaryClr, size: 20),
                                     const SizedBox(width: 8),
                                     Text("MULTI-BOOKING CONFIGURATION",
-                                      style: titleDesign()),
+                                      style: outFitRegular(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
                                     Spacer(),
                                     Focus(
                                       onKeyEvent: (node, event) {
@@ -692,12 +697,12 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                   height: 28,
                                   verticalPadding: 0.0,
                                   btnText: "DISCARD",
-                                  btnColor: Colors.grey.shade300,
+                                  btnColor: Colors.red,
                                   borderRadius: 4,
                                   style: TextStyle(
                                       fontFamily: _kFontFamily,
                                       fontSize: 14,
-                                      color: Colors.black87,
+                                      color: Colors.white,
                                       fontWeight: FontWeight.bold
                                   ),
                                   onTap: () => Get.back(),
