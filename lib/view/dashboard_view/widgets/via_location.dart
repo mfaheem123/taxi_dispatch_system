@@ -883,7 +883,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                   height: 30,
                                   child: TextButton.icon(
                                     style: TextButton.styleFrom(
-                                      backgroundColor: const Color(0xFF4CAF50),
+                                      backgroundColor: DynamicColors.primaryClr,
                                       padding: const EdgeInsets.symmetric(horizontal: 24),
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                                     ),
@@ -1149,7 +1149,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                     child: ElevatedButton(
                                       onPressed: () => _addViaPoint(isReturnWay: isReturnSection, addressCtrl: addressCtrl),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(0xFF4CAF50),
+                                        backgroundColor: DynamicColors.primaryClr,
                                         padding: EdgeInsets.zero,
                                         elevation: 0,
                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),

@@ -20,6 +20,9 @@ import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../dashboard_view/widgets/user_info_widget.dart';
 import '../controller/setting_controller.dart';
 
+
+const _kFontFamily = 'Outfit-Regular';
+
 class MultiReservationAlert extends StatefulWidget {
   const MultiReservationAlert({super.key});
 
@@ -47,7 +50,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
       child: TimePickerField(
         controller: controller,
         accent: DynamicColors.primaryClr,
-        textStyle: const TextStyle(fontSize: 12, color: Colors.black87),
+        textStyle: const TextStyle(fontFamily: _kFontFamily, fontSize: 12, color: Colors.black87),
         // The field writes the value itself; this just refreshes the alert.
         onChanged: onChanged,
         decoration: InputDecoration(
@@ -300,6 +303,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                 Text(
                                   "ADD",
                                   style: TextStyle(
+                                    fontFamily: _kFontFamily,
                                     fontSize: 10,
                                     color: DynamicColors.whiteClr,
                                     fontWeight: FontWeight.bold,
@@ -332,6 +336,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                 Text(
                                   AppText.clear,
                                   style: TextStyle(
+                                    fontFamily: _kFontFamily,
                                     fontSize: 10,
                                     color: DynamicColors.whiteClr,
                                     fontWeight: FontWeight.bold,
@@ -364,7 +369,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           children: [
                           const Text(
                           "SELECT DAYS",
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF64748B)),
+                          style: TextStyle(fontFamily: _kFontFamily, fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF64748B)),
                         ),
                         const SizedBox(height: 8),
                         Wrap(
@@ -617,7 +622,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                           child: TimePickerField(
                                             controller: TextEditingController(text: object.returnTime ?? ""),
                                             accent: DynamicColors.primaryClr,
-                                            textStyle: const TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
+                                            textStyle: const TextStyle(fontFamily: _kFontFamily, fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
                                             onChanged: (val) {
                                               object.returnTime = val;
                                             },
@@ -644,6 +649,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                             controller: TextEditingController(text: object.endTime ?? ""),
                                             accent: DynamicColors.primaryClr,
                                             textStyle: const TextStyle(
+                                              fontFamily: _kFontFamily,
                                               fontSize: 12,
                                               color: Colors.black,
                                               fontWeight: FontWeight.bold,
@@ -662,7 +668,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                             ),
                                           ),
                                         )
-                                            : const Text("-", style: TextStyle(color: Colors.grey)),
+                                            : const Text("-", style: TextStyle(fontFamily: _kFontFamily, color: Colors.grey)),
                                       ),
                                     ),
                                   ],
@@ -688,7 +694,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                   btnText: "DISCARD",
                                   btnColor: Colors.grey.shade300,
                                   borderRadius: 4,
-                                  style: mozillaTextSemiBoldText(
+                                  style: TextStyle(
+                                      fontFamily: _kFontFamily,
                                       fontSize: 14,
                                       color: Colors.black87,
                                       fontWeight: FontWeight.bold
@@ -718,7 +725,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                     },
                                   icon: const Icon(Icons.check_circle, size: 16),
                                   label: const Text("CONFIRM SELECTION",
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                      style: TextStyle(fontFamily: _kFontFamily, fontWeight: FontWeight.bold, fontSize: 12)),
                                 ),
                           // CustomButton(
                           //   onTap: () async{
