@@ -64,8 +64,7 @@ class _AuthorizationAlertState extends State<AuthorizationAlert> {
       actions: [
         ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: DynamicColors.primaryClr),
-          onPressed: (){
-
+          onPressed: () async{
           },
           child: const Text("OK", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         )

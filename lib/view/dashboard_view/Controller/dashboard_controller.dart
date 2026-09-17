@@ -3253,7 +3253,6 @@ class DashboardController extends GetxController {
     selectAccountValue = null;
     selectDepartmentData = null;
     selectDriverValueReturn = null;
-    selectVehicleValueReturn = null;
     switchController.value = false;
     smsCheckbox.value = true;
     emailCheckbox.value = false;
@@ -3289,6 +3288,7 @@ class DashboardController extends GetxController {
     selectSubsidiariesValue = dashboardAllData!.subsidiaries![0];
     selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
     selectVehicleValue = dashboardAllData!.vehicleTypes![0];
+    selectVehicleValueReturn = dashboardAllData!.vehicleTypes![0];
     selectDriverValue = null;
     jobDetails = null;
     dashboardDataLoader(false);
