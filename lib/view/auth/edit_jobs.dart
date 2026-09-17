@@ -1759,7 +1759,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                         'User', orDash(job?.employee?.username ?? job?.bookedBy)),
                     metaPill('Booked', bookedStamp()),
                     metaPill('Status',
-                        orDash(job?.bookingStatus?.bookingStatus),
+                        orDash(job?.trash  == true?"DELETE": job?.bookingStatus?.bookingStatus),
                         background: _purpleSoft, valueColor: _purple),
                   ],
                 ),
