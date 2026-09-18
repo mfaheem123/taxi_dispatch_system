@@ -583,7 +583,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   onTap: () async{
                     await authController.logout();
                     controller.selectedMenuItems.clear();
-                    controller.currentPage.value = ByDefaultDashboard();
+                    // controller.currentPage.value = ByDefaultDashboard();
                   },
                     child: Icon(
                       Icons.power_settings_new,
