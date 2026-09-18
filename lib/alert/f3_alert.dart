@@ -193,7 +193,7 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                                   ),
                                   child: Text(
                                     "VEHICLE INFO",
-                                    style: outFitRegular(
+                                    style: mozillaTextSemiBoldText(
                                         context: context,
                                         fontSize: 14,
                                         color: DynamicColors.whiteClr
@@ -261,7 +261,7 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                                   ),
                                   child: Text(
                                     "DRIVER INFO",
-                                    style: outFitRegular(
+                                    style: mozillaTextSemiBoldText(
                                         context: context,
                                         fontSize: 14,
                                         color: DynamicColors.whiteClr
@@ -277,7 +277,7 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                                         children: [
                                           Text(
                                             "MOBILE #: ",
-                                            style: outFitRegular(
+                                            style: mozillaTextSemiBoldText(
                                               fontSize: 13,
                                               fontWeight: FontWeight.w800,
                                               color: Colors.black87,
@@ -348,9 +348,9 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
       children: [
         Text(
           label,
-          style: outFitRegular(
+          style: mozillaTextSemiBoldText(
             fontSize: 13,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
             color: Colors.black87,
           ),
         ),

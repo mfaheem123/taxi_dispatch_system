@@ -50,7 +50,7 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
-        width: 650,
+        width: 600,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -77,7 +77,7 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
                           const TextSpan(text: "CANCEL BOOKING REQUEST ("),
                           TextSpan(
                             text: widget.bookingItem?.referenceNumber ?? "N/A",
-                            style: TextStyle(color: DynamicColors.primaryClr, fontWeight: FontWeight.bold),
+                            style: outFitRegular(color: DynamicColors.primaryClr, fontWeight: FontWeight.bold),
                           ),
                           const TextSpan(text: ")"),
                         ],
@@ -92,7 +92,7 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
                 ),
               ),
               const Divider(height: 1, thickness: 1),
-              SizedBox(height: 30),
+              SizedBox(height: 15),
 
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -100,17 +100,13 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
 
-                    const Text(
+                    Text(
                       "SELECT CANCELLATION REASON",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          letterSpacing: 1.1
-                      ),
+                      style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 14),
                     ),
                     const SizedBox(height: 12),
                     Wrap(
-                      spacing: 10,
+                      spacing: 5,
                       runSpacing: 10,
                       children: reasons.map((reason) {
                         final bool isSelected = reasonController.text == reason;
@@ -131,7 +127,7 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
                           },
                           borderRadius: BorderRadius.circular(6),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(6),
                               border: Border.all(color: DynamicColors.primaryClr),
@@ -154,24 +150,20 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
 
                     const SizedBox(height: 24),
 
-                    const Text(
+                    Text(
                       "OTHER DETAILS / REASON",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                          letterSpacing: 1.1
-                      ),
+                      style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 13),
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: reasonController,
-                      maxLines: 4,
-                      style: const TextStyle(fontSize: 14),
+                      maxLines: 3,
+                      style: outFitRegular(fontSize: 14),
                       textCapitalization: TextCapitalization.characters,
                       inputFormatters: [UpperCaseTextFormatter()],
                       decoration: InputDecoration(
                         hintText: "TYPE SPECIFIC REASON HERE...",
-                        hintStyle: TextStyle(fontSize: 13, color: Colors.grey),
+                        hintStyle: outFitRegular(fontSize: 13, color: Colors.grey),
                         filled: true,
                         fillColor: Colors.grey.shade50,
                         border: OutlineInputBorder(
@@ -185,7 +177,7 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
                       ),
                     ),
 
-                    SizedBox(height: 30),
+                    SizedBox(height: 15),
                     const Divider(height: 1),
 
                     Padding(padding: EdgeInsets.all(16.0),
@@ -269,7 +261,7 @@ class _CancelBookingRequestState extends State<CancelBookingRequest> {
                               Icons.delete_forever, size: 16),
                           label: Text(
                             "CONFIRM CANCELLATION",
-                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                            style: mozillaTextSemiBoldText(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white),
                           ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: DynamicColors.primaryClr,

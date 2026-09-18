@@ -75,17 +75,17 @@ class _DriverEarningsAlertState extends State<DriverEarningsAlert> {
               mainAxisSize: MainAxisSize.min,
               children: [
 
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: DynamicColors.gryClr.withOpacity(0.5),
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                  ),
                   child: Row(
                     children: [
                       Text(
                         AppText.driverEarning,
-                        style: mozillaTextSemiBoldText(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
+                        style: titleDesign()
                       ),
                       const Spacer(),
                       FocusTraversalOrder(
@@ -225,7 +225,7 @@ class _DriverEarningsAlertState extends State<DriverEarningsAlert> {
                                         displayedDriver != null
                                             ? "${displayedDriver.id} ${displayedDriver.name ?? ''}".trim().toUpperCase()
                                             : "NO DRIVER SELECTED",
-                                        style: mozillaTextRegularText(fontSize: 13, color: Colors.black87),
+                                        style: outFitRegular(fontSize: 13, color: Colors.black87),
                                       ),
                                     ),
                                   ),
@@ -233,7 +233,7 @@ class _DriverEarningsAlertState extends State<DriverEarningsAlert> {
                                     Center(
                                       child: Text(
                                         earningModel.totalBookings?.toString() ?? "0",
-                                        style: mozillaTextRegularText(fontSize: 13, color: Colors.black87),
+                                        style: outFitRegular(fontSize: 13, color: Colors.black87),
                                       ),
                                     ),
                                   ),
@@ -241,7 +241,7 @@ class _DriverEarningsAlertState extends State<DriverEarningsAlert> {
                                     Center(
                                       child: Text(
                                         "£${earningModel.totalEarnings?.toStringAsFixed(2) ?? "0.00"}",
-                                        style: mozillaTextRegularText(fontSize: 13, color: Colors.black87),
+                                        style: outFitRegular(fontSize: 13, color: Colors.black87),
                                       ),
                                     ),
                                   ),

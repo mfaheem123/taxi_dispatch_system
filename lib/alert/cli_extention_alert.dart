@@ -1,6 +1,8 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../component/color.dart';
 import '../component/networks/api.dart';
 import '../view/administration/model/user_model.dart';
 import '../view/auth/Controller/auth_controller.dart';
@@ -14,6 +16,7 @@ class ExtensionAlert {
     final authController = Get.find<AuthController>();
     bool isPermanentSave = true;
     RxBool postExtensionLoad = false.obs;
+    RxBool isActiveToggle = false.obs;
 
     postExtension(String extensionNumber, bool isPermanent) async {
       if (Employee.selectedEmployee == null) {
@@ -46,7 +49,7 @@ class ExtensionAlert {
         child: StatefulBuilder(
           builder: (context, setState) {
             return Container(
-              width: Get.width * 0.3,
+              width: Get.width * 0.2,
               decoration: BoxDecoration(
                 color: const Color(0xFFF4F9F8),
                 borderRadius: BorderRadius.circular(12),
@@ -54,18 +57,18 @@ class ExtensionAlert {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Padding(
+                  Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    child: Row(
+                    decoration: BoxDecoration(
+                      color: DynamicColors.gryClr.withOpacity(0.5),
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                    ),
+                    child:  Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           "EXTENSIONS",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF4A4A4A),
-                          ),
+                          style: titleDesign()
                         ),
                         InkWell(
                           onTap: () => Get.back(),
@@ -116,12 +119,11 @@ class ExtensionAlert {
                                 },
                               ),
                             ),
-                            const Text(
+                            Text(
                               "PERMANENT SAVE",
-                              style: TextStyle(
+                              style: outFitRegular(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF5A6A75),
                               ),
                             ),
                           ],
@@ -131,10 +133,34 @@ class ExtensionAlert {
                   ),
                   const Divider(height: 1, color: Colors.black12),
                   Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Align(
-                      alignment: Alignment.bottomRight,
-                      child: ElevatedButton(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Transform.scale(
+                                scale: 0.8,
+                                child: Obx(() => Switch(
+                                  value: isActiveToggle.value,
+                                  activeColor: Colors.white,
+                                  activeTrackColor: const Color(0xFF43489A),
+                                  onChanged: (value) {
+                                    isActiveToggle.value = value;
+                                  },
+                                )),
+                              ),
+                              Text(
+                                "DISABLE CALL ALERTS",
+                                style: outFitRegular(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                      ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF43489A), // Bright Green
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
@@ -156,7 +182,7 @@ class ExtensionAlert {
                           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                       ),
-                    ),
+                    ]),
                   ),
                 ],
               ),
