@@ -303,23 +303,19 @@ import '../view/dashboard_view/booking_table.dart';
 import '../view/dashboard_view/models/pick_booking_alert_model.dart';
 import '../view/dashboard_view/models/users_phone_numbers_model.dart';
 
-// Aapke API helper class aur model ka import Path apne project ke mutabiq adjustment kar lein
-// import 'package:dashboard_new1/models/booking_model.dart';
-// import 'package:dashboard_new1/services/api.dart';
-
 class SearchBookingAlert extends StatefulWidget {
-  final String? initialMobileNumber; // Add this line
+  final String? pickMobileNumber; // Add this line
+  final String? pickName; // Add this line
+  final String? pickTeleNumber; // Add this line
 
   const SearchBookingAlert({
     Key? key,
-    this.initialMobileNumber, // Add this line
+    this.pickMobileNumber, this.pickName, this.pickTeleNumber, // Add this line
   }) : super(key: key);
 
   @override
   State<SearchBookingAlert> createState() => _SearchBookingAlertState();
 }
-
-
 
 class _SearchBookingAlertState extends State<SearchBookingAlert> {
   // Top Filter Controllers
@@ -354,7 +350,6 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
   RxBool isLoading = false.obs;
   RxBool isCustomerLoading = false.obs;
 
-  // Local state for Customer Autocomplete Suggestions
   RxList<CustomerObject> customerList = <CustomerObject>[].obs;
 
   RxString searchName = ''.obs;
@@ -394,10 +389,19 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     _toDateController.text = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
 
     // Pre-fill mobile number if passed from Dashboard
-    if (widget.initialMobileNumber != null && widget.initialMobileNumber!.isNotEmpty) {
-      _mobileController.text = widget.initialMobileNumber!;
-      searchMobile.value = widget.initialMobileNumber!.trim();
+    if (widget.pickMobileNumber != null && widget.pickMobileNumber!.isNotEmpty) {
+      _mobileController.text = widget.pickMobileNumber!;
+      searchMobile.value = widget.pickMobileNumber!.trim();
     }
+    if (widget.pickName != null && widget.pickName!.isNotEmpty) {
+      _nameController.text = widget.pickName!;
+      searchName.value = widget.pickName!.trim();
+    }
+    if (widget.pickTeleNumber != null && widget.pickTeleNumber!.isNotEmpty) {
+      _telephoneController.text = widget.pickTeleNumber!;
+      searchTele.value = widget.pickTeleNumber!.trim();
+    }
+
 
     fetchBookings();
   }
@@ -609,7 +613,6 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                         },
                       ),
                     ),
-
                     const SizedBox(width: 10),
                     _buildInputWithLabel("TELEPHONE", _telephoneController, width: 130),
                     const SizedBox(width: 10),
@@ -829,7 +832,6 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                           );
                         },
                       );
-
                       try {
                         await deshController.dashBoardDataBinding(
                           id: booking.id,
@@ -840,6 +842,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                         debugPrint("Error loading booking: $e");
                       } finally {
                         if (context.mounted) {
+                          Navigator.of(context).pop();
                           Navigator.of(context).pop();
                         }
                       }

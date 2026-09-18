@@ -201,7 +201,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   void _showPickBookingAlert() {
     showDialog(
       context: context,
-      builder: (ctx) => SearchBookingAlert(initialMobileNumber:  controller.mobileController.text,),
+      builder: (ctx) => SearchBookingAlert(pickMobileNumber:  controller.mobileController.text,
+        pickName: controller.nameController.text,
+        pickTeleNumber: controller.telController.text,),
     );
   }
   final DashboardController controller = Get.isRegistered<DashboardController>()
