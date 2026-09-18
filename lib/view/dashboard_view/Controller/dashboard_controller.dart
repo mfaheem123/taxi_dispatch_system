@@ -3760,7 +3760,7 @@ class DashboardController extends GetxController {
       }
       totalTimeDuration.value = jobData.booking[0].eta.toString().toUpperCase();
 
-      if (cliHit == true) {
+      if (cliHit == true || pickBooking == true) {
         pickUpTimeController.text = DateFormat('HH:mm').format(DateTime.now());
       } else {
         pickUpTimeController.text = jobData.booking[0].pickupTime!;
@@ -3769,7 +3769,7 @@ class DashboardController extends GetxController {
       pickUpTimePicked = true;
 
       if (jobData.booking[0].pickupDate != null) {
-        if (cliHit == true) {
+        if (cliHit == true || pickBooking == true) {
           pickUpDate = DateTime.now();
           pickUpDatePicked = true;
         } else {
@@ -3861,7 +3861,6 @@ class DashboardController extends GetxController {
       }
 
       await getAccountData(subsidiariesId: selectSubsidiariesValue!.id ?? 1);
-
       selectAccountValue = dashboardAccountData?.accounts?.firstWhereOrNull(
             (account) => account.id == jobData.booking[0].accountId,
       );
@@ -3896,14 +3895,16 @@ class DashboardController extends GetxController {
               (vehicle) => vehicle.id == jobData.booking[0].vehicleTypeId,
         );
       }
-      if (jobData.booking[0].driverId != null) {
+
+      if (pickBooking == true ) {
+        selectDriverValue = null;
+      }else if (jobData.booking[0].driverId != null) {
         selectDriverValue = dashboardAllData?.drivers?.firstWhereOrNull(
               (vehicle) => vehicle.id == jobData.booking[0].driverId,
         );
       }
 
-      final LocationController _controller =
-      Get.isRegistered<LocationController>()
+      final LocationController _controller = Get.isRegistered<LocationController>()
           ? Get.find<LocationController>()
           : Get.put(LocationController());
 

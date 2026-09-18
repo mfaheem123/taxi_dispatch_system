@@ -303,18 +303,19 @@ import '../view/dashboard_view/booking_table.dart';
 import '../view/dashboard_view/models/pick_booking_alert_model.dart';
 import '../view/dashboard_view/models/users_phone_numbers_model.dart';
 
-// Aapke API helper class aur model ka import Path apne project ke mutabiq adjustment kar lein
-// import 'package:dashboard_new1/models/booking_model.dart';
-// import 'package:dashboard_new1/services/api.dart';
-
 class SearchBookingAlert extends StatefulWidget {
-  const SearchBookingAlert({super.key});
+  final String? pickMobileNumber; // Add this line
+  final String? pickName; // Add this line
+  final String? pickTeleNumber; // Add this line
+
+  const SearchBookingAlert({
+    Key? key,
+    this.pickMobileNumber, this.pickName, this.pickTeleNumber, // Add this line
+  }) : super(key: key);
 
   @override
   State<SearchBookingAlert> createState() => _SearchBookingAlertState();
 }
-
-
 
 class _SearchBookingAlertState extends State<SearchBookingAlert> {
   // Top Filter Controllers
@@ -349,7 +350,6 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
   RxBool isLoading = false.obs;
   RxBool isCustomerLoading = false.obs;
 
-  // Local state for Customer Autocomplete Suggestions
   RxList<CustomerObject> customerList = <CustomerObject>[].obs;
 
   RxString searchName = ''.obs;
@@ -369,15 +369,43 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
   RxString searchAccount = ''.obs;
   RxString searchDriver = ''.obs;
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // Default current date selection
+  //   DateTime now = DateTime.now();
+  //   _fromDateController.text = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+  //   _toDateController.text = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+  //   fetchBookings();
+  // }
+
   @override
   void initState() {
     super.initState();
+
     // Default current date selection
     DateTime now = DateTime.now();
     _fromDateController.text = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
     _toDateController.text = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+
+    // Pre-fill mobile number if passed from Dashboard
+    if (widget.pickMobileNumber != null && widget.pickMobileNumber!.isNotEmpty) {
+      _mobileController.text = widget.pickMobileNumber!;
+      searchMobile.value = widget.pickMobileNumber!.trim();
+    }
+    if (widget.pickName != null && widget.pickName!.isNotEmpty) {
+      _nameController.text = widget.pickName!;
+      searchName.value = widget.pickName!.trim();
+    }
+    if (widget.pickTeleNumber != null && widget.pickTeleNumber!.isNotEmpty) {
+      _telephoneController.text = widget.pickTeleNumber!;
+      searchTele.value = widget.pickTeleNumber!.trim();
+    }
+
+
     fetchBookings();
   }
+
 
   @override
   void dispose() {
@@ -585,7 +613,6 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                         },
                       ),
                     ),
-
                     const SizedBox(width: 10),
                     _buildInputWithLabel("TELEPHONE", _telephoneController, width: 130),
                     const SizedBox(width: 10),
@@ -796,7 +823,6 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                   child: TextButton(
                     style: TextButton.styleFrom(padding: EdgeInsets.zero),
                     onPressed: () async {
-                      // 1. Loading Indicator / Progress Dialog Dikhayein
                       showDialog(
                         context: context,
                         barrierDismissible: false, // User screen tap karke dismiss na kar sake
@@ -806,24 +832,17 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                           );
                         },
                       );
-
                       try {
-                        // 2. Dashboard Data Binding Execute Karein
                         await deshController.dashBoardDataBinding(
                           id: booking.id,
                           pickBooking: true,
                         );
-
-                        // 3. Jitna delay Dena Chahte Hain Dijiye (e.g., 1 ya 2 seconds)
                         await Future.delayed(const Duration(seconds: 1));
                       } catch (e) {
                         debugPrint("Error loading booking: $e");
                       } finally {
                         if (context.mounted) {
-                          // 4. Pehle Loader Pop Karein
                           Navigator.of(context).pop();
-
-                          // 5. Baad Me Primary BottomSheet / Screen Dialog Pop Karein
                           Navigator.of(context).pop();
                         }
                       }
