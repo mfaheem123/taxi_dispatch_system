@@ -1319,8 +1319,6 @@ class _BookingTableState extends State<BookingTable> {
   }
 }
 
-const _kFontFamily = 'Outfit-Regular';
-
 DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget? widget, textFieldHeight, double? fontSize, Widget? customWidget, Function(String)? onChanged,
   TextEditingController? controller,
   FocusNode? focusNode,
@@ -1331,7 +1329,7 @@ DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget?
       child: widget?? Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(title!, style: TextStyle(fontFamily: _kFontFamily, fontWeight: FontWeight.bold,
+          Text(title!, style: TextStyle(fontWeight: FontWeight.bold,
               fontSize: fontSize ?? 13
           )),
           SizedBox(height: 4),
@@ -1349,12 +1347,11 @@ DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget?
                   onTap: () {
                     shortCutKeyValue.value = "tableSelected";
                   },
-                  style: TextStyle( fontFamily: _kFontFamily,
+                  style: mozillaTextRegularText(
                       fontWeight: FontWeight.w800, fontSize: 12),
                   decoration: InputDecoration(
                     hintText: "SEARCH",
-                    hintStyle: TextStyle(
-                        fontFamily: _kFontFamily,
+                    hintStyle: mozillaTextRegularText(
                         fontWeight: FontWeight.w800,
                         color: DynamicColors.textClr.withOpacity(0.8),
                         fontSize: 12),
