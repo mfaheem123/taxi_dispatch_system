@@ -12,9 +12,6 @@ import 'component/dropdown_button.dart';
 import 'component/textStyle.dart';
 import 'component/text_widget.dart';
 
-
-const _kFontFamily = 'Outfit-Regular';
-
 class MultiVehiclePage extends StatefulWidget {
   MultiVehiclePage({super.key});
 
@@ -143,8 +140,7 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
                                     children: [
                                       Text(
                                         "ADD VEHICLE TYPE",
-                                        style: TextStyle(
-                                          fontFamily: _kFontFamily,
+                                        style: outFitRegular(
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.black87,
@@ -235,8 +231,7 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
                                     icon: Icon(Icons.add, color: Colors.white, size: 16),
                                     label: Text(
                                       "ADD",
-                                      style: TextStyle(
-                                        fontFamily: _kFontFamily,
+                                      style: mozillaTextSemiBoldText(
                                         fontWeight: FontWeight.bold,
                                         color: DynamicColors.whiteClr,
                                         fontSize: 12,
@@ -325,8 +320,7 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
                           btnText: "CLOSE",
                           btnColor: Colors.red,
                           borderRadius: 4,
-                          style: TextStyle(
-                              fontFamily: _kFontFamily,
+                          style: mozillaTextSemiBoldText(
                               fontSize: 14,
                               color: Colors.white,
                               fontWeight: FontWeight.bold

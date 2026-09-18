@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
+import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/view/dashboard_view/Controller/dashboard_controller.dart';
 import 'package:dropdown_flutter/custom_dropdown.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +15,6 @@ import '../../../component/alert_close_button.dart';
 import '../../../component/escape_dismissible.dart';
 import '../../../component/text_field.dart';
 import '../models/all_addresses_model.dart';
-
-const _kFontFamily = 'Outfit-Regular';
 
 class ViaTextEditingControllerClass {
   TextEditingController name = TextEditingController();
@@ -801,7 +800,7 @@ class _ViaLocationState extends State<ViaLocation> {
                               Icon(Icons.route, color: DynamicColors.primaryClr),
                               const SizedBox(width: 10),
                               Text("VIAPOINT(S) MANAGEMENT",
-                                  style: TextStyle(fontFamily: _kFontFamily, fontWeight: FontWeight.bold, fontSize: 18)),
+                                  style: titleDesign()),
                               const Spacer(),
                               FocusTraversalOrder(
                                 order: const NumericFocusOrder(999),
@@ -875,7 +874,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                       controller.viaMilsCondition = false;
                                       Navigator.pop(context);
                                     },
-                                    child: const Text("CANCEL", style: TextStyle(fontFamily: _kFontFamily, color: Colors.white, fontWeight: FontWeight.bold)),
+                                    child: Text("CANCEL", style: mozillaTextSemiBoldText(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
                                   ),
                                 ),
                                 const SizedBox(width: 10),
@@ -898,7 +897,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                       Navigator.pop(context);
                                     },
                                     icon: const Icon(Icons.check, color: Colors.white, size: 18),
-                                    label: const Text("APPLY CHANGES", style: TextStyle(fontFamily: _kFontFamily, color: Colors.white, fontWeight: FontWeight.bold)),
+                                    label: Text("APPLY CHANGES", style: mozillaTextSemiBoldText(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
                                   ),
                                 )
                               ],
@@ -981,8 +980,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                       visualDensity: VisualDensity.compact,
                                       title: Text(
                                         "${item.name} ${item.postcode}".toUpperCase(),
-                                        style: TextStyle(
-                                          fontFamily: _kFontFamily,
+                                        style: outFitRegular(
                                           fontSize: 12,
                                           fontWeight: isHighlighted ? FontWeight.bold : FontWeight.normal,
                                           color: isHighlighted ? Colors.blue : Colors.black,
@@ -1026,7 +1024,7 @@ class _ViaLocationState extends State<ViaLocation> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title,
-            style: const TextStyle(fontFamily: _kFontFamily, fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black)),
+            style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black)),
         const SizedBox(height: 8),
 
         Container(
@@ -1049,10 +1047,10 @@ class _ViaLocationState extends State<ViaLocation> {
                 child: IntrinsicHeight(
                   child: Row(
                     children: [
-                      const SizedBox(
+                      SizedBox(
                         width: 32,
                         child: Center(
-                          child: Text("#", style: TextStyle(fontFamily: _kFontFamily, fontWeight: FontWeight.bold, fontSize: 13)),
+                          child: Text("#", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 13)),
                         ),
                       ),
                       Container(width: 1, color: const Color(0xFFCBD5E1)),
@@ -1129,10 +1127,10 @@ class _ViaLocationState extends State<ViaLocation> {
                                             }
                                           }
                                         },
-                                        style: const TextStyle(fontFamily: _kFontFamily, fontSize: 12),
+                                        style: outFitRegular(fontSize: 12),
                                         decoration: InputDecoration(
                                           hintText: isReturnSection ? "SEARCH RETURN ADDRESS..." : "SEARCH ADDRESS...",
-                                          hintStyle: const TextStyle(fontFamily: _kFontFamily, fontSize: 11, color: Colors.grey),
+                                          hintStyle: outFitRegular(fontSize: 11, color: Colors.grey),
                                           fillColor: Colors.white,
                                           filled: true,
                                           isDense: true,
@@ -1164,12 +1162,12 @@ class _ViaLocationState extends State<ViaLocation> {
                         ),
                       ),
                       Container(width: 1, color: const Color(0xFFCBD5E1)),
-                      const SizedBox(
+                      SizedBox(
                         width: 52,
                         child: Center(
                           child: Text(
                             "ACTION",
-                            style: TextStyle(fontFamily: _kFontFamily, fontWeight: FontWeight.bold, fontSize: 10, color: Colors.black),
+                            style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 10, color: Colors.black),
                           ),
                         ),
                       ),
@@ -1197,7 +1195,7 @@ class _ViaLocationState extends State<ViaLocation> {
                             SizedBox(
                               width: 32,
                               child: Center(
-                                child: Text('${index + 1}', style: const TextStyle(fontFamily: _kFontFamily, fontWeight: FontWeight.bold, fontSize: 12)),
+                                child: Text('${index + 1}', style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 12)),
                               ),
                             ),
                             Container(width: 1, color: const Color(0xFFCBD5E1)),
@@ -1209,7 +1207,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                     SizedBox(
                                       height: 30,
                                       child: TextField(
-                                        style: const TextStyle(fontFamily: _kFontFamily, fontSize: 11, fontWeight: FontWeight.w600),
+                                        style: outFitRegular(fontSize: 11, fontWeight: FontWeight.w600),
                                         readOnly: true,
                                         controller: TextEditingController(text: point.address.toUpperCase()),
                                         decoration: const InputDecoration(
@@ -1229,14 +1227,14 @@ class _ViaLocationState extends State<ViaLocation> {
                                             child: TextField(
                                               textCapitalization: TextCapitalization.characters,
                                               inputFormatters: [UpperCaseTextFormatter()],
-                                              style: const TextStyle(fontFamily: _kFontFamily, fontSize: 11),
+                                              style: outFitRegular(fontSize: 11),
                                               controller: mainIndex < controller.viaTextEditingController.length
                                                   ? controller.viaTextEditingController[mainIndex].name
                                                   : TextEditingController(),
-                                              decoration: const InputDecoration(
+                                              decoration: InputDecoration(
                                                 contentPadding: EdgeInsets.symmetric(horizontal: 8),
                                                 hintText: "NAME",
-                                                hintStyle: TextStyle(fontFamily: _kFontFamily, fontSize: 10),
+                                                hintStyle: outFitRegular(fontSize: 10),
                                                 border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black26)),
                                               ),
                                             ),
@@ -1249,14 +1247,14 @@ class _ViaLocationState extends State<ViaLocation> {
                                             child: TextField(
                                               keyboardType: TextInputType.phone,
                                               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                              style: const TextStyle(fontFamily: _kFontFamily, fontSize: 11),
+                                              style: outFitRegular(fontSize: 11),
                                               controller: mainIndex < controller.viaTextEditingController.length
                                                   ? controller.viaTextEditingController[mainIndex].mobile
                                                   : TextEditingController(),
-                                              decoration: const InputDecoration(
+                                              decoration: InputDecoration(
                                                 contentPadding: EdgeInsets.symmetric(horizontal: 8),
                                                 hintText: "MOBILE",
-                                                hintStyle: TextStyle(fontFamily: _kFontFamily, fontSize: 10),
+                                                hintStyle: outFitRegular(fontSize: 10),
                                                 border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black26)),
                                               ),
                                             ),
