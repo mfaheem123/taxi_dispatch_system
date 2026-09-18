@@ -201,7 +201,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   void _showPickBookingAlert() {
     showDialog(
       context: context,
-      builder: (ctx) => const SearchBookingAlert(),
+      builder: (ctx) => SearchBookingAlert(initialMobileNumber:  controller.mobileController.text,),
     );
   }
   final DashboardController controller = Get.isRegistered<DashboardController>()
@@ -735,18 +735,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                             ],
                           ),
                     ),
-                                  // _field('No. of Passengers',
-                                  //     tab: 16,
-                                  //     prefix: Icons.person_outline,
-                                  //     controller: controller.passController,
-                                  //     isError: controller.isPassengerError.value,
-                                  //     onChanged: (val) => controller.validatePassengerLimit(val),
-                                  //     inputFormatters: [
-                                  //       FilteringTextInputFormatter.digitsOnly,
-                                  //       LengthLimitingTextInputFormatter(2),
-                                  //     ],
-                                  //
-                                  // ),
+
                                   _field('FARE',
                                       tab: 17,
                                       prefix: Icons.currency_pound,
