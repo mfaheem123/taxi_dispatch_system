@@ -172,6 +172,55 @@ class DashboardController extends GetxController {
   /// logout above all — goes through this list instead.
   final List<WebSocketChannel> _openSockets = [];
 
+  /// Set by [disposeSockets], cleared by [inItStateOFController].
+  ///
+  /// [connectToDriverLogin] reconnects from its own `onDone`, so closing that
+  /// socket is what *triggers* a fresh one. Without this flag logout could
+  /// never actually stop it: the replacement is opened after [_openSockets]
+  /// has been cleared, so nothing holds a handle to it and it keeps answering
+  /// under the old session for the rest of the page's life.
+  bool _socketsDisposed = false;
+
+  /// Bumped on every teardown. A socket opened in generation N checks this
+  /// before reconnecting, so a close that only lands after the next login has
+  /// already reconnected cannot stack a second listener on top of the new one.
+  int _socketGeneration = 0;
+
+  /// Pending driver-login reconnect, so [disposeSockets] can cancel one that
+  /// is waiting rather than let it fire into a session that has ended.
+  Timer? _driverLoginRetry;
+
+  /// How long to wait before retrying the driver-login socket.
+  static const Duration _reconnectDelay = Duration(seconds: 5);
+
+  /// Registers [channel] and makes sure a failed handshake stays handled.
+  ///
+  /// WebSocketChannel.connect returns before the connection is established, so
+  /// a failure never reaches the try/catch around it - it lands on `ready`.
+  /// With nothing listening there it reaches the zone as an uncaught
+  /// "WebSocketChannelException: Failed to connect WebSocket", which is what
+  /// logging out of a dashboard with a dead socket was throwing.
+  void _trackSocket(WebSocketChannel channel, String label) {
+    _openSockets.add(channel);
+    channel.ready.catchError((Object e) {
+      print("$label socket connect failed: $e");
+    });
+  }
+
+  /// Closes [sink] without letting its failure escape, and without waiting for
+  /// the close handshake - on web that only completes when the browser fires
+  /// the close event, and a socket still CONNECTING never fires it.
+  Future<void> _closeQuietly(WebSocketSink sink) async {
+    try {
+      await sink.close();
+    } catch (e) {
+      // A socket that already died on its own rejects here. The point is only
+      // that it is not left listening, so this is not worth failing the
+      // logout over.
+      print("Socket close error: $e");
+    }
+  }
+
 // Global company ID access karne ke liye Api singleton ka use karenge
   final String _companyId = Api.singleton.globalCompanyId;
   final Set<String> _playedBookingIds = {};
@@ -196,7 +245,7 @@ class DashboardController extends GetxController {
 
     try {
       _channel = WebSocketChannel.connect(url);
-      _openSockets.add(_channel!);
+      _trackSocket(_channel!, "CLI");
 
       _channel!.stream.listen(
             (message) {
@@ -226,11 +275,16 @@ class DashboardController extends GetxController {
   // 2. Connect To Driver Login
   void connectToDriverLogin({bool sendCompanyId = false}) {
     final url = Uri.parse(_buildSocketUrl("/driver-login", sendCompanyId: sendCompanyId));
+    final generation = _socketGeneration;
     try {
-      _channel = WebSocketChannel.connect(url);
-      _openSockets.add(_channel!);
+      // Held locally as well as in _channel: by the time onDone runs, _channel
+      // may already point at a different socket, and this is the one whose
+      // entry in _openSockets has to go.
+      final channel = WebSocketChannel.connect(url);
+      _channel = channel;
+      _trackSocket(channel, "Driver login");
 
-      _channel!.stream.listen(
+      channel.stream.listen(
             (message) {
           final data = jsonDecode(message);
 
@@ -283,10 +337,29 @@ class DashboardController extends GetxController {
         },
         onError: (error) => print("Connection Error: $error"),
         onDone: () {
-          connectToDriverLogin(sendCompanyId: sendCompanyId);
           print("🔌 Socket Disconnected");
-          print("Close Code: ${_channel?.closeCode}");
-          print("Close Reason: ${_channel?.closeReason}");
+          print("Close Code: ${channel.closeCode}");
+          print("Close Reason: ${channel.closeReason}");
+
+          // This one is finished either way - keeping it would make
+          // disposeSockets close a socket that is already gone, and grow the
+          // list by one on every retry.
+          _openSockets.remove(channel);
+
+          // Only an unexpected drop deserves a reconnect. After logout the
+          // close was deliberate, and reconnecting would resurrect a listener
+          // that logout just spent the effort to shut down.
+          if (_socketsDisposed || generation != _socketGeneration) return;
+
+          // Backed off. A server that refuses the connection makes onDone fire
+          // immediately, so reconnecting from here without a delay is a tight
+          // loop - connect, fail, onDone, connect - that floods the console
+          // and starves the UI until the tab stops responding.
+          _driverLoginRetry?.cancel();
+          _driverLoginRetry = Timer(_reconnectDelay, () {
+            if (_socketsDisposed || generation != _socketGeneration) return;
+            connectToDriverLogin(sendCompanyId: sendCompanyId);
+          });
         },
       );
     } catch (e) {
@@ -301,7 +374,7 @@ class DashboardController extends GetxController {
     final url = Uri.parse(_buildSocketUrl("/driver-busy", sendCompanyId: sendCompanyId));
     try {
       _channel = WebSocketChannel.connect(url);
-      _openSockets.add(_channel!);
+      _trackSocket(_channel!, "Driver busy");
 
       _channel!.stream.listen(
             (message) {
@@ -418,6 +491,8 @@ class DashboardController extends GetxController {
     var response = await Api().get("drivers/login-busy",sendCompanyId: true,);
     if (response.statusCode == 200) {
       print(response.data);
+      onlineDriversList.clear();
+      busyDriversList.clear();
       if (response.data['login_drivers'].isNotEmpty) {
         response.data['login_drivers'].forEach((element) {
           onlineDriversList.insert(
@@ -727,6 +802,12 @@ class DashboardController extends GetxController {
   }
 
   inItStateOFController() async {
+    // Runs from MyHomePage's initState, so it runs again on every sign-in.
+    // Clear anything the previous session left open, then re-arm the flag so
+    // the sockets below are allowed to live.
+    await disposeSockets();
+    _socketsDisposed = false;
+
     Future.delayed(Duration(seconds: 1), () {
       String myExtension = Employee.selectedEmployee?.extensionNumber ?? "200";
       print("Connecting to CLI with Extension: $myExtension");
@@ -4137,15 +4218,17 @@ class DashboardController extends GetxController {
   /// as it goes. Reconnecting afterwards is just the usual connectToCli /
   /// connectToDriverLogin / connectToBusyDriver on the next login.
   Future<void> disposeSockets() async {
+    // Set before the first close: onDone can fire synchronously from
+    // sink.close(), and the reconnect in connectToDriverLogin reads these.
+    _socketsDisposed = true;
+    _socketGeneration++;
+    _driverLoginRetry?.cancel();
+    _driverLoginRetry = null;
+
     for (final socket in _openSockets) {
-      try {
-        await socket.sink.close();
-      } catch (e) {
-        // A socket that already died on its own throws here; the point is
-        // only that it is not left listening, so this is not worth failing
-        // the logout over.
-        print("Socket close error: $e");
-      }
+      // Started, not awaited - see _closeQuietly. Awaiting a socket that never
+      // connected is what left logout parked instead of navigating.
+      _closeQuietly(socket.sink);
     }
     _openSockets.clear();
     _channel = null;

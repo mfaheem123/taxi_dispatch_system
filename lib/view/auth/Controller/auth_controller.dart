@@ -120,31 +120,31 @@ class AuthController extends GetxController {
     }
   }
 
+  /// Guards against a second logout starting while the first is still waiting
+  /// on the API. Two runs would each tear the sockets down and each push a
+  /// login route, leaving a duplicate screen on the stack.
+  bool _isLoggingOut = false;
+
   Future<void> logout() async {
+    if (_isLoggingOut) return;
+    _isLoggingOut = true;
+
+    // Everything sits inside the try so that however it fails - a socket that
+    // never connected, a server that never answers - the finally still clears
+    // the session and lands on the login screen. Staying signed in is the one
+    // outcome a logout must never have.
     try {
-      var rawId = Employee.selectedEmployee?.id;
-      if (rawId != null) {
-        String empId = rawId.toString();
-        var response = await Api().post(
-            {},
-            'employees/logout/$empId',
-            auth: false
-        );
-        if (response.statusCode == 200) {
-          BotToast.showText(text: "Logged out successfully");
-        }
-      }
-    } catch (e) {
-      print("Logout API Error: $e");
-    } finally {
-      // --- SOCKET CLOSE ---
+      // Torn down BEFORE the token is erased, not after. Every socket and
+      // poller below is authenticated with the token still in storage, so
+      // closing them first leaves nothing in flight to come back against a
+      // session that no longer exists.
       SubscriptionSocketService.closeSocket();
 
       // The dashboard's own sockets and pollers. They live on the
-      // DashboardController, which is put with Get.put and therefore survives
-      // Get.offAllNamed below — without this its CLI / driver-login /
-      // driver-busy sockets and its 5-second table poll keep running against
-      // a token that is about to be erased.
+      // DashboardController, which is put with Get.put(permanent: true) and
+      // therefore survives Get.offAllNamed below - without this its CLI /
+      // driver-login / driver-busy sockets and its table pollers keep running
+      // against a token that is about to be erased.
       //
       // Guarded by isRegistered: logging out from the login screen, or before
       // the dashboard has ever been opened, means there is nothing to close.
@@ -152,17 +152,53 @@ class AuthController extends GetxController {
         await Get.find<DashboardController>().disposeSockets();
       }
 
+      var rawId = Employee.selectedEmployee?.id;
+      if (rawId != null) {
+        String empId = rawId.toString();
+
+        // isProgressShow: true suppresses Api.post's full-screen BotToast
+        // loader. It is a modal barrier, and anything that stops it closing
+        // leaves it over the login screen swallowing taps - signing out must
+        // not be able to make signing in impossible.
+        final Future<dynamic> call = Api().post(
+          {},
+          'employees/logout/$empId',
+          auth: false,
+          isProgressShow: true,
+        );
+
+        // Api.post builds a bare Dio() with no connect or receive timeout, so
+        // a backend that accepts the connection and then goes quiet would hang
+        // this await - and with it the navigation below - indefinitely. The
+        // local session is being cleared either way, so there is nothing to
+        // gain by waiting longer.
+        final response =
+            await call.timeout(const Duration(seconds: 8), onTimeout: () => null);
+
+        if (response?.statusCode == 200) {
+          BotToast.showText(text: "Logged out successfully");
+        }
+      }
+    } catch (e) {
+      // The server-side logout failing must not strand the user in a signed-in
+      // shell: the local session is cleared either way, below.
+      print("Logout API Error: $e");
+    } finally {
       sp.remove('token');
       sp.remove('userData');
       sp.remove('company_id');
       Employee.selectedEmployee = null;
       currentExtension.value = "---";
       isExpiryAlertShown = false;
+      // The login button returns early while this is true. A logout landing
+      // mid sign-in would otherwise leave it stuck, and every later tap on
+      // LOGIN would do nothing at all.
+      PostAuthLoader(false);
+      _isLoggingOut = false;
+      update();
       Get.offAllNamed(Routes.loginScreen);
     }
   }
-
-
 
   DriverExpiryResponse? driverExpiryResponse;
 
