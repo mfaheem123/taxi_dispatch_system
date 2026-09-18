@@ -88,11 +88,11 @@ class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
                     color: Colors.green,
                   ),
                   onPressed: () async {
-                    if (isPlaying) {
-                      await _audioPlayer.pause();
-                    } else {
-                      await _audioPlayer.play(UrlSource(widget.audioUrl));
-                    }
+                    // if (isPlaying) {
+                    //   await _audioPlayer.pause();
+                    // } else {
+                    //   await _audioPlayer.play(UrlSource(widget.audioUrl));
+                    // }
                   },
                 ),
                 // Timeline Slider
@@ -108,8 +108,8 @@ class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
                     max: duration.inSeconds.toDouble(),
                     value: position.inSeconds.toDouble().clamp(0.0, duration.inSeconds.toDouble()),
                     onChanged: (val) async {
-                      final position = Duration(seconds: val.toInt());
-                      await _audioPlayer.seek(position);
+                      // final position = Duration(seconds: val.toInt());
+                      // await _audioPlayer.seek(position);
                     },
                     activeColor: Colors.green,
                     inactiveColor: Colors.grey.shade300,
@@ -178,7 +178,8 @@ class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
           verticalPadding: 0.0,
           borderRadius: 4,
           btnText: "CLOSE",
-          fontSize: 14,
+          btnColor: Colors.red,
+          style: mozillaTextSemiBoldText(color: Colors.white, fontSize: 14),
           onTap: () {
             _audioPlayer.stop();
             Get.back();

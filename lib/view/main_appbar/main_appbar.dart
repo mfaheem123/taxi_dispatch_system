@@ -2275,11 +2275,11 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "CALL RECORDINGS",
           onTap: () {
             if(controller.selectedMenuItems.length <20){
-            // setState(() {
-            //   controller.currentPage.value = CallRecordingScreen();
-            //   controller.menuBarRefresh(
-            //       title: "CALL RECORDINGS", pageName: CallRecordingScreen());
-            // });
+            setState(() {
+              controller.currentPage.value = CallRecordingScreen();
+              controller.menuBarRefresh(
+                  title: "CALL RECORDINGS", pageName: CallRecordingScreen());
+            });
             }else{
               BotToast.showText(text: "Maintain at least 20 pages open simultaneously.");
             }

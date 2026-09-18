@@ -9,8 +9,6 @@ import '../component/dropdown_button.dart';
 import '../controller/dashboard_alert_controller.dart';
 import '../view/customer/model/restricDriver.dart';
 
-const _kFontFamily = 'Outfit-Regular';
-
 void showDriverInfoAlert() {
   final controller = Get.put(DashboardAlertController());
   controller.fetchRestrictedDrivers();
@@ -67,7 +65,7 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
               child: Center(
                 child: Text(
                   "NO DRIVERS FOUND",
-                  style: TextStyle(fontFamily: _kFontFamily,fontSize: 16, fontWeight: FontWeight.bold),
+                  style: outFitRegular(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             );
@@ -97,12 +95,7 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                   children: [
                     Text(
                       AppText.driverInfo,
-                      style: outFitRegular(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
+                      style: titleDesign()),
                     const Spacer(),
                     FocusTraversalOrder(
                       order: const NumericFocusOrder(999),
@@ -145,7 +138,7 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                         if (isDriverSelected) ...[
                           Text(
                             isLoggedIn ? "LOGGED IN" : "LOGGED OUT",
-                            style: outFitRegular(
+                            style: mozillaTextSemiBoldText(
                               fontSize: 16,
                               fontWeight: FontWeight.w900,
                               color: isLoggedIn ? DynamicColors.greenClr : DynamicColors.redClr,
@@ -164,7 +157,7 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                             borderRadius: 4,
                             verticalPadding: 0.0,
                             fontSize: 12,
-                            style: outFitRegular(
+                            style: mozillaTextSemiBoldText(
                               fontSize: 12,
                               color: DynamicColors.whiteClr,
                               fontWeight: FontWeight.w600,
