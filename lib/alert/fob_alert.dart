@@ -57,7 +57,7 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
                         const TextSpan(text: "DISPATCH FOB ("),
                         TextSpan(
                           text: widget.bookingItem?.referenceNumber ?? "N/A",
-                          style: TextStyle(color: DynamicColors.primaryClr, fontWeight: FontWeight.bold),
+                          style: outFitRegular(color: DynamicColors.primaryClr, fontWeight: FontWeight.bold),
                         ),
                         const TextSpan(text: ")"),
                       ],
@@ -72,7 +72,7 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
               ),
             ),
             const Divider(height: 1, thickness: 1),
-            SizedBox(height: 30),
+            SizedBox(height: 18),
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -103,7 +103,7 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
                                 Text("SELECT DRIVER TO DISPATCH",
                                     style: mozillaTextSemiBoldText(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black)),
                                 Text("CHOOSE A DRIVER, THEN PRESS DISPATCH",
-                                  style: mozillaTextRegularText(fontSize: 12, color: Colors.grey.shade600),
+                                  style: outFitRegular(fontSize: 12, color: Colors.grey.shade600),
                                 ),
                               ]),
                           const Spacer(),
@@ -114,7 +114,7 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
                                 Icons.route, size: 16),
                             label: Text(
                               "CALCULATE DISTANCE",
-                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                              style: mozillaTextSemiBoldText(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white),
                             ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: DynamicColors.primaryClr,
@@ -152,14 +152,14 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
                           return DataRow(
                             cells: [
                               DataCell(Text("${(driver.username ?? '').toUpperCase()}",
-                                  style: mozillaTextRegularText(fontSize: 14))),
+                                  style: outFitRegular(fontSize: 14))),
                               DataCell(Text((driver.name ?? '').toUpperCase(),
-                                  style: mozillaTextRegularText(fontSize: 14))),
+                                  style: outFitRegular(fontSize: 14))),
                               DataCell(Center(child: Text("-",
-                                  style: mozillaTextRegularText(
+                                  style: outFitRegular(
                                       fontSize: 14)))),
                               DataCell(Text(driver.bookingStatus ?? '',
-                                  style: mozillaTextRegularText(
+                                  style: outFitRegular(
                                       fontSize: 14, color: Colors.green))),
                               DataCell(
                                 Center(
@@ -194,21 +194,22 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
                           ),
                       ]);
                   }),
+                  const SizedBox(height: 10),
                 ],
               ),
             ),
 
-            SizedBox(height: 30),
+            SizedBox(height: 5),
             const Divider(height: 1),
 
 
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(10.0),
               child: Align(
                 alignment: Alignment.centerRight,
                 child: CustomButton(
-                  width: 100,
-                  height: 35,
+                  width: 65,
+                  height: 30,
                   btnText: "CLOSE",
                   btnColor: Colors.red,
                   verticalPadding: 0.0,
