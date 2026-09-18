@@ -224,19 +224,18 @@ class _TrashBookingState extends State<TrashBooking> {
                         height: double.infinity,
                         alignment: Alignment.center,
                         color: DynamicColors.statusColor,
-                        child: Text(
-                          (item.bookingStatus?.bookingStatus
-                              .toString() ??
-                              '')
-                              .toUpperCase(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: DynamicColors.whiteClr,
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.delete_forever, color: DynamicColors.whiteClr, size: 14),
+                              const SizedBox(width: 2),
+                              Text(
+                                (item.bookingStatus?.bookingStatus.toString() ?? '').toUpperCase(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(color: DynamicColors.whiteClr, fontSize: 11, fontWeight: FontWeight.bold,
+                                )),
+                            ]),
                       ),
                       (item.journeyType?.journeyType ?? '')
                           .toUpperCase(),
