@@ -19,6 +19,7 @@ class SendEmailAlert extends StatefulWidget {
 }
 
 class _SendEmailAlertState extends State<SendEmailAlert> {
+  final recipientController = TextEditingController();
   final dashBoardCntrl = Get.find<DashboardController>();
 
   @override
@@ -108,6 +109,7 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                                       hintStyle: outFitRegular(fontSize: 11),
                                       controller: dashBoardCntrl.emailToController,
                                       borderRadius: 6,
+                                      inputFormatters: [UpperCaseTextFormatter()],
                                     ),
                                   ),
                                   const SizedBox(width: 8),
@@ -152,7 +154,9 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                             borderRadius: 6,
                             hintText: "RECIPIENT@EXAMPLE.COM",
                             hintStyle: outFitRegular(fontSize: 11),
-                            controller: dashBoardCntrl.subjectController),
+                            controller: recipientController,
+                          inputFormatters: [UpperCaseTextFormatter()]
+                        ),
                         const SizedBox(height: 14),
                         _buildFieldLabel("SUBJECT"),
                         CustomTextField(
@@ -160,6 +164,7 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                           hintStyle: outFitRegular(fontSize: 11),
                           controller: dashBoardCntrl.subjectController,
                           borderRadius: 6,
+                          inputFormatters: [UpperCaseTextFormatter()],
                         ),
                         const SizedBox(height: 14),
                         _buildFieldLabel("EMAIL CONTENT"),
@@ -171,6 +176,7 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                           height: 90,
                           borderRadius: 6,
                           contentPadding: const EdgeInsets.all(10),
+                          inputFormatters: [UpperCaseTextFormatter()],
                         ),
                         // const SizedBox(height: 5),
 
@@ -315,6 +321,7 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
                                       hintStyle: outFitRegular(fontSize: 11),
                                       controller: dashBoardCntrl.mobileNoController,
                                       borderRadius: 6,
+                                      inputFormatters: [UpperCaseTextFormatter()],
                                     ),
                                   ),
                                   const SizedBox(width: 8),
@@ -361,6 +368,7 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
                           hintStyle: outFitRegular(fontSize: 11),
                           controller: dashBoardCntrl.smsToController,
                           borderRadius: 6,
+                          inputFormatters: [UpperCaseTextFormatter()],
                         ),
                         const SizedBox(height: 16),
 
@@ -374,6 +382,7 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
                           height: 110,
                           borderRadius: 6,
                           contentPadding: const EdgeInsets.all(10),
+                          inputFormatters: [UpperCaseTextFormatter()],
                         ),
                         // const SizedBox(height: 5),
 
