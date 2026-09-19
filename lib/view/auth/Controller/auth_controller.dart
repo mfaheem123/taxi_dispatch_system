@@ -54,6 +54,17 @@ class AuthController extends GetxController {
       var response = await Api()
           .post(formData, 'employees/login', sendCompanyId: true, auth: false, isProgressShow: true);
 
+      // Api.post returns null when the request never got a response - the
+      // backend refusing connections, a handshake timing out. Api has already
+      // said so on screen; all that is left here is to stop, rather than read
+      // .statusCode off null and land in the catch below, which only
+      // debugPrints. That is what made a transient network failure look like
+      // a LOGIN button that does nothing at all.
+      if (response == null) {
+        PostAuthLoader(false);
+        return;
+      }
+
       if (response.statusCode == 200) {
         var employeeData = response.data['employee'];
         var token = response.data['token'];
@@ -101,6 +112,7 @@ class AuthController extends GetxController {
       }
     } catch (e) {
       PostAuthLoader(false);
+      BotToast.showText(text: "Login failed. Please try again.");
       debugPrint("Unknown error: $e");
     }
 
