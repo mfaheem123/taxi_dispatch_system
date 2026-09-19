@@ -48,7 +48,7 @@ TextStyle mozillaTextSemiBoldText({
     fontSize: finalFontSize,
     color: color ?? DynamicColors.textClr,
     fontWeight: fontWeight ?? FontWeight.w900,
-    fontFamily: "MozillaText-SemiBold"
+    fontFamily: "Outfit-SemiBold"
   );
 }
 
