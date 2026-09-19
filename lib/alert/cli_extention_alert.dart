@@ -10,9 +10,10 @@ import '../view/setting/controller/extension_controller.dart';
 
 class ExtensionAlert {
   static void show() {
-    final TextEditingController extensionCtrl = TextEditingController(
-        text: Employee.selectedEmployee?.extensionNumber ?? ""
-    );
+    // final TextEditingController extensionCtrl = TextEditingController(
+    //     text: Employee.selectedEmployee?.extensionNumber ?? ""
+    // );
+    final TextEditingController extensionCtrl = TextEditingController(text: "");
     final authController = Get.find<AuthController>();
     bool isPermanentSave = true;
     RxBool postExtensionLoad = false.obs;
