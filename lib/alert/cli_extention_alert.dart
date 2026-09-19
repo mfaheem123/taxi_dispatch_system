@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../component/alert_close_button.dart';
 import '../component/color.dart';
 import '../component/networks/api.dart';
 import '../view/administration/model/user_model.dart';
@@ -71,9 +72,9 @@ class ExtensionAlert {
                           "EXTENSIONS",
                           style: titleDesign()
                         ),
-                        InkWell(
-                          onTap: () => Get.back(),
-                          child: const Icon(Icons.close, color: Colors.grey),
+                        FocusTraversalOrder(
+                          order: const NumericFocusOrder(999),
+                          child: const AlertCloseButton(),
                         ),
                       ],
                     ),
