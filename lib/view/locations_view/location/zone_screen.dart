@@ -2462,8 +2462,9 @@ class _ZoneScreenState extends State<ZoneScreen> {
                               width: 160,
                               child: TextField(
                                 controller: controller.postcodeController,
+                                inputFormatters: [UpperCaseTextFormatter()],
                                 decoration: InputDecoration(
-                                  labelText: "Post Code",
+                                  labelText: "POST CODE",
                                   hintText: "e.g. SW1A 1AA",
                                   border: OutlineInputBorder(),
                                   isDense: true,
@@ -2476,6 +2477,23 @@ class _ZoneScreenState extends State<ZoneScreen> {
                                   }
                                 },
                               ),
+                            ),
+                            const SizedBox(width: 6),
+
+                            ElevatedButton(
+                              onPressed: () {
+                                final value = controller.postcodeController.text;
+                                if (value.isNotEmpty) {
+                                  _goToPostcode(value);
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: DynamicColors.primaryClr,
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: const Text("SEARCH"),
                             ),
                             const SizedBox(width: 10),
 

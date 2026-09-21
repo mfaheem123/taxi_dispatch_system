@@ -912,6 +912,13 @@ class FareController extends GetxController {
   RxBool isLoadingMileage = false.obs;
 
   postFareMileage() async {
+    if (minimumMilesController.text.trim().isEmpty ||
+        maximumMilesController.text.trim().isEmpty ||
+        mileageFareController.text.trim().isEmpty) {
+      BotToast.showText(text: "PLEASE FILL ALL REQUIRED FIELDS");
+      return;
+    }
+
     isLoadingMileage(true);
     update();
 
