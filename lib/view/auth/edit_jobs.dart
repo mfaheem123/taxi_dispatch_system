@@ -2413,7 +2413,15 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       _bottomAction('CANCEL',
           tab: 43.1,
           color: _red,
-          onTap: () => _onCancelBooking),
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (_) => CancelBookingRequest(
+              bookingId: controller.jobDetails?.id ?? 0,
+              bookingItem: controller.jobDetails,
+            ),
+          );
+        }),
           // onTap: () => controller.refreshPostAllFields()),
       if (visible.contains(_aReason))
         _bottomAction(_aReason,
