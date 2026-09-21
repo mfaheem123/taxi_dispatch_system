@@ -32,7 +32,7 @@ class DriverExpiryDocumentsAlert {
           width: 1000,
           height: 400,
           // padding: const EdgeInsets.all(20),
-          padding: const EdgeInsets.only(bottom: 10, right: 5),
+          padding: const EdgeInsets.only(bottom: 10),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,7 +72,7 @@ class DriverExpiryDocumentsAlert {
                     controller: scrollController,
                     child: Padding(
                       // padding: const EdgeInsets.only(right: 15.0), // Padding so table doesn't overlap scrollbar
-                      padding: const EdgeInsets.only(left: 20.0, right: 15.0, bottom: 5.0),
+                      padding: const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(4),
                         child: Table(
