@@ -1584,12 +1584,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     if (isMobile) {
       return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         tag,
-        const SizedBox(height: 6),
+        const SizedBox(height: 4),
         address,
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
         Row(children: [
           Expanded(child: zoneDd),
-          const SizedBox(width: 8),
+          const SizedBox(width: 4),
           Expanded(child: notes),
         ]),
       ]);
@@ -1597,13 +1597,13 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SizedBox(width: 80, child: tag),
+        SizedBox(width: 70, child: tag),
         const SizedBox(width: 2),
         Expanded(flex: 5, child: address),
         const SizedBox(width: 8),
-        SizedBox(width: 150, child: zoneDd),
+        SizedBox(width: 130, child: zoneDd),
         const SizedBox(width: 8),
-        SizedBox(width: 160, child: notes), // gave the field a bounded width
+        SizedBox(width: 130, child: notes), // gave the field a bounded width
       ],
     );
   }
@@ -2278,11 +2278,15 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
                 if (widget.allowUnselect) const SizedBox.shrink(),
                 ...widget.items.map((e) => Align(
                   alignment: AlignmentDirectional.centerStart,
-                  child: Text(
-                    _labelOf(e).toUpperCase(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: _kValueTextStyle,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      _labelOf(e).toUpperCase(),
+                      maxLines: 1,
+                      softWrap: false,
+                      style: _kValueTextStyle,
+                    ),
                   ),
                 )),
               ],
@@ -2293,24 +2297,32 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
                 if (widget.allowUnselect)
                   DropdownMenuItem<T?>(
                     value: null,
-                    child: Text(
-                      widget.labelText,
-                      style: TextStyle(
-                        fontFamily: _kChromeFontFamily,
-                        fontSize: _fsField,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey.shade700,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        widget.labelText,
+                        style: TextStyle(
+                          fontFamily: _kChromeFontFamily,
+                          fontSize: _fsField,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey.shade700,
+                        ),
                       ),
                     ),
                   ),
                 // Actual items
                 ...widget.items.map((e) => DropdownMenuItem<T?>(
                   value: e,
-                  child: Text(
-                    _labelOf(e).toUpperCase(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: _fsField),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      _labelOf(e).toUpperCase(),
+                      maxLines: 1,
+                      softWrap: false,
+                      style: const TextStyle(fontSize: _fsField),
+                    ),
                   ),
                 )),
               ],
@@ -2632,16 +2644,20 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
                             ? const Color(0xFFEEF2FF)
                             : Colors.white,
                         alignment: Alignment.centerLeft,
-                        child: Text(
-                          "${a.name} ${a.postcode}",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: active
-                                ? FontWeight.w600
-                                : FontWeight.w500,
-                            color: Colors.black87,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "${a.name} ${a.postcode}",
+                            maxLines: 1,
+                            softWrap: false,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: active
+                                  ? FontWeight.w600
+                                  : FontWeight.w500,
+                              color: Colors.black87,
+                            ),
                           ),
                         ),
                       ),
@@ -2677,6 +2693,10 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
             controller: widget.controller,
             focusNode: _focusNode,
             style: _kValueTextStyle,
+            maxLines: null,
+            minLines: 1,
+            textInputAction: TextInputAction.done,
+            keyboardType: TextInputType.multiline,
             decoration: widget.decoration,
           ),
         ),
@@ -2870,15 +2890,19 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
                                   : Colors.grey),
                           const SizedBox(width: 8),
                           Expanded(
-                            child: Text(s,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: active
-                                      ? FontWeight.w600
-                                      : FontWeight.w400,
-                                )),
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(s,
+                                  maxLines: 1,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: active
+                                        ? FontWeight.w600
+                                        : FontWeight.w400,
+                                  )),
+                            ),
                           ),
                         ]),
                       ),
@@ -2910,6 +2934,10 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
             controller: widget.controller,
             focusNode: _focusNode,
             style: _kValueTextStyle,
+            maxLines: null,
+            minLines: 1,
+            textInputAction: TextInputAction.done,
+            keyboardType: TextInputType.multiline,
             decoration: widget.decoration,
           ),
         ),

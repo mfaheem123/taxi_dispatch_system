@@ -2410,10 +2410,18 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       // the method is `async` with no declared return type, so the call form
       // runs the refresh on every rebuild and hands its Future to a
       // VoidCallback slot, which throws while building.
-      _bottomAction('Cancel',
+      _bottomAction('CANCEL',
           tab: 43.1,
           color: _red,
-          onTap: () => _onShowCancelReason),
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (_) => CancelBookingRequest(
+              bookingId: controller.jobDetails?.id ?? 0,
+              bookingItem: controller.jobDetails,
+            ),
+          );
+        }),
           // onTap: () => controller.refreshPostAllFields()),
       if (visible.contains(_aReason))
         _bottomAction(_aReason,
