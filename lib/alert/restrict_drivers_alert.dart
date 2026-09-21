@@ -499,7 +499,7 @@ class _RestrictedDriversState extends State<RestrictedDrivers> {
                 child: ListTile(
                   title: Text(
                     items[index],
-                    style: mozillaTextRegularText(
+                    style: outFitRegular(
                       fontSize: 12,
                       color: isSelected
                           ? DynamicColors.primaryClr
@@ -580,7 +580,7 @@ class _RestrictedDriversState extends State<RestrictedDrivers> {
                   widget.titleText ?? AppText.selectDriver,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: mozillaTextRegularText(
+                  style: outFitRegular(
                     fontSize: 12,
                   ),
                 ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../component/alert_close_button.dart';
 import '../component/color.dart';
 import '../component/textStyle.dart';
 
@@ -25,30 +26,39 @@ class DriverExpiryDocumentsAlert {
     Get.dialog(
       Dialog(
         backgroundColor: Colors.white,
+        clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         child: Container(
           width: 1000,
           height: 400,
-          padding: const EdgeInsets.all(20),
+          // padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.only(bottom: 10),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // DRIVER EXPIRY DOCUMENTS
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: DynamicColors.gryClr.withOpacity(0.5),
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                  ),
+                  child: Row(
+                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     "DRIVER EXPIRY DOCUMENTS",
                     style: mozillaTextSemiBoldText(
                         fontWeight: FontWeight.w800, fontSize: 17),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.close, color: Colors.grey),
-                    onPressed: () => Get.back(),
+                  const Spacer(),
+                  FocusTraversalOrder(
+                    order: const NumericFocusOrder(999),
+                    child: const AlertCloseButton(),
                   ),
                 ],
-              ),
+              )),
               const SizedBox(height: 10),
 
               Flexible(
@@ -61,7 +71,8 @@ class DriverExpiryDocumentsAlert {
                   child: SingleChildScrollView(
                     controller: scrollController,
                     child: Padding(
-                      padding: const EdgeInsets.only(right: 15.0), // Padding so table doesn't overlap scrollbar
+                      // padding: const EdgeInsets.only(right: 15.0), // Padding so table doesn't overlap scrollbar
+                      padding: const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(4),
                         child: Table(
@@ -114,11 +125,13 @@ class DriverExpiryDocumentsAlert {
               ),
               SizedBox(height: 20.0),
               // Bottom Close Button
-              Align(
+              Padding(
+                  padding: const EdgeInsets.only(right: 20.0),
+                  child:Align(
                 alignment: Alignment.centerRight,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: DynamicColors.secondaryClr,
+                    backgroundColor: DynamicColors.redClr,
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4),
@@ -128,13 +141,13 @@ class DriverExpiryDocumentsAlert {
                   child: const Text(
                     "CLOSE",
                     style: TextStyle(
-                      color: Colors.black,
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 13,
                     ),
                   ),
                 ),
-              ),
+              )),
 
             ],
           ),

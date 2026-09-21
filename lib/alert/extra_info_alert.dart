@@ -109,7 +109,7 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                                         hintText: AppText.specialRequirements,
                                         controller: dashBoardCntrl
                                             .specialRequirementsController,
-                                        hintStyle: mozillaTextRegularText(
+                                        hintStyle: outFitRegular(
                                             fontSize: 10),
                                         contentPadding:
                                             const EdgeInsets.all(10),
@@ -134,7 +134,7 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                                               'RETURN SPECIAL REQUIREMENTS',
                                           controller: dashBoardCntrl
                                               .specialRequirementsReturnController,
-                                          hintStyle: mozillaTextRegularText(
+                                          hintStyle: outFitRegular(
                                               fontSize: 10),
                                           contentPadding: EdgeInsets.all(10),
                                           borderRadius: 6,
@@ -167,7 +167,7 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                                               hintText: "ENTER NEW NOTE...",
                                               controller: controller
                                                   .controllerNoteController,
-                                              hintStyle: mozillaTextRegularText(
+                                              hintStyle: outFitRegular(
                                                   fontSize: 10),
                                               borderRadius: 4,
                                             ),
@@ -257,7 +257,7 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                                                   controller: controller
                                                       .controllerNoteReturnController,
                                                   hintStyle:
-                                                      mozillaTextRegularText(
+                                                      outFitRegular(
                                                           fontSize: 10),
                                                   borderRadius: 6,
                                                 ),
@@ -324,13 +324,13 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                                 CustomButton(
                                   width: 85,
                                   height: 34,
-                                  btnColor: const Color(0xFFE2E8F0),
+                                  btnColor: Colors.red,
                                   borderRadius: 6,
                                   verticalPadding: 0,
                                   onTap: () => Get.back(),
                                   style: mozillaTextSemiBoldText(
                                     fontSize: 12,
-                                    color: const Color(0xFF475569),
+                                    color: Colors.white,
                                   ),
                                   btnText: AppText.cancel.toUpperCase(),
                                 ),
@@ -376,10 +376,9 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
       padding: const EdgeInsets.only(bottom: 6.0),
       child: Text(
         labelText,
-        style: const TextStyle(
+        style: outFitRegular(
           fontSize: 12,
           fontWeight: FontWeight.bold,
-          letterSpacing: 0.5,
         ),
       ),
     );

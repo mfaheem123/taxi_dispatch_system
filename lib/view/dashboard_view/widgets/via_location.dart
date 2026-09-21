@@ -705,6 +705,8 @@ class _ViaLocationState extends State<ViaLocation> {
 
   final FocusNode outboundFocusNode = FocusNode();
   final FocusNode returnFocusNode = FocusNode();
+  final FocusNode outboundAddBtnFocusNode = FocusNode();
+  final FocusNode returnAddBtnFocusNode = FocusNode();
 
   final GlobalKey outboundKey = GlobalKey();
   final GlobalKey returnKey = GlobalKey();
@@ -725,6 +727,8 @@ class _ViaLocationState extends State<ViaLocation> {
       _controller.selectedModel = null;
       _controller.selectedTextFieldsValue.value = "";
       _controller.activeFieldKey.value = null;
+
+      outboundFocusNode.requestFocus();
     });
   }
 
@@ -733,6 +737,8 @@ class _ViaLocationState extends State<ViaLocation> {
     _viaDialogScrollController.dispose();
     outboundAddressController.dispose();
     returnAddressController.dispose();
+    outboundAddBtnFocusNode.dispose();
+    returnAddBtnFocusNode.dispose();
     super.dispose();
   }
 
@@ -823,6 +829,8 @@ class _ViaLocationState extends State<ViaLocation> {
                                   children: [
                                     // OUTBOUND TRIP
                                     Expanded(
+                                        child: FocusTraversalOrder(
+                                          order: const NumericFocusOrder(1),
                                       child: _buildTripColumn(
                                         title: "OUTBOUND TRIP",
                                         addressCtrl: outboundAddressController,
@@ -831,7 +839,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                         isReturnSection: false,
                                         controller: controller,
                                       ),
-                                    ),
+                                    )),
 
                                     // RETURN TRIP
                                     if (isReturnJourney) ...[
@@ -839,6 +847,8 @@ class _ViaLocationState extends State<ViaLocation> {
                                       Container(width: 1, color: Colors.grey.shade300),
                                       const SizedBox(width: 16),
                                       Expanded(
+                                          child: FocusTraversalOrder(
+                                            order: const NumericFocusOrder(2),
                                         child: _buildTripColumn(
                                           title: "RETURN TRIP",
                                           addressCtrl: returnAddressController,
@@ -847,7 +857,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                           isReturnSection: true,
                                           controller: controller,
                                         ),
-                                      ),
+                                      )),
                                     ],
                                   ],
                                 ),
@@ -954,6 +964,12 @@ class _ViaLocationState extends State<ViaLocation> {
 
                               controller.allAddressesData.clear();
                               controller.update();
+
+                              if (activeKey == returnKey) {
+                                returnFocusNode.requestFocus();
+                              } else {
+                                outboundFocusNode.requestFocus();
+                              }
                             }
                           }
                         },
@@ -992,6 +1008,12 @@ class _ViaLocationState extends State<ViaLocation> {
                                         controller.allAddressesData.clear();
                                         controller.selectedTextFieldsValue.value = "";
                                         controller.update();
+
+                                        if (activeKey == returnKey) {
+                                          returnFocusNode.requestFocus();
+                                        } else {
+                                          outboundFocusNode.requestFocus();
+                                        }
                                       },
                                     ),
                                   );
@@ -1015,12 +1037,16 @@ class _ViaLocationState extends State<ViaLocation> {
     required String title,
     required TextEditingController addressCtrl,
     required bool isReturnSection,
-    required DashboardController controller, required FocusNode focusNode, required GlobalKey<State<StatefulWidget>> fieldKey,
+    required DashboardController controller,
+    required FocusNode focusNode,
+    required GlobalKey<State<StatefulWidget>> fieldKey,
   }) {
     final String targetType = isReturnSection ? 'via with return' : 'via';
     final filteredList = controller.viaPoints.where((p) => p.withReturnWay == targetType).toList();
 
-    return Column(
+    return FocusTraversalGroup(
+        policy: OrderedTraversalPolicy(),
+      child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title,
@@ -1057,27 +1083,29 @@ class _ViaLocationState extends State<ViaLocation> {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.all(6.0),
-                          child: RawKeyboardListener(
-                            focusNode: controller.searchingAddressViaFocusNode,
-                            onKey: (event) {
-                              if (event is RawKeyDownEvent) {
-                                if (event.logicalKey == LogicalKeyboardKey.arrowDown &&
-                                    controller.highlightedIndex.value < controller.suggestions.length - 1) {
-                                  controller.highlightedIndex.value++;
-                                } else if (event.logicalKey == LogicalKeyboardKey.arrowUp &&
-                                    controller.highlightedIndex.value > 0) {
-                                  controller.highlightedIndex.value--;
-                                } else if (event.logicalKey == LogicalKeyboardKey.enter &&
-                                    controller.suggestions.isNotEmpty) {
-                                  final selected = controller.suggestions[controller.highlightedIndex.value].name;
-                                  controller.selectSuggestion(selected);
-                                }
-                              }
-                            },
-                            child: SizedBox(
+                          // child: RawKeyboardListener(
+                          //   focusNode: controller.searchingAddressViaFocusNode,
+                          //   onKey: (event) {
+                          //     if (event is RawKeyDownEvent) {
+                          //       if (event.logicalKey == LogicalKeyboardKey.arrowDown &&
+                          //           controller.highlightedIndex.value < controller.suggestions.length - 1) {
+                          //         controller.highlightedIndex.value++;
+                          //       } else if (event.logicalKey == LogicalKeyboardKey.arrowUp &&
+                          //           controller.highlightedIndex.value > 0) {
+                          //         controller.highlightedIndex.value--;
+                          //       } else if (event.logicalKey == LogicalKeyboardKey.enter &&
+                          //           controller.suggestions.isNotEmpty) {
+                          //         final selected = controller.suggestions[controller.highlightedIndex.value].name;
+                          //         controller.selectSuggestion(selected);
+                          //       }
+                          //     }
+                          //   },
+                          //   child: SizedBox(
                               child: Row(
                                 children: [
                                   Expanded(
+                              child: FocusTraversalOrder(
+                              order: const NumericFocusOrder(1),
                                     child: Focus(
                                       onKeyEvent: (node, event) {
                                         if (event is KeyDownEvent) {
@@ -1092,11 +1120,11 @@ class _ViaLocationState extends State<ViaLocation> {
                                         }
                                         return KeyEventResult.ignored;
                                       },
-                                      child: TextField(
+                                      child: CustomTextField(
                                         key: fieldKey,
                                         focusNode: focusNode,
                                         controller: addressCtrl,
-                                        textCapitalization: TextCapitalization.characters,
+                                        // textCapitalization: TextCapitalization.characters,
                                         inputFormatters: [UpperCaseTextFormatter()],
                                         onTap: () {
                                           controller.selectedTextFieldsValue.value = "via";
@@ -1124,27 +1152,26 @@ class _ViaLocationState extends State<ViaLocation> {
                                               controller.allAddressesData.clear();
                                               controller.selectedTextFieldsValue.value = "";
                                               controller.update();
+
+                                              focusNode.requestFocus();
                                             }
                                           }
                                         },
-                                        style: outFitRegular(fontSize: 12),
-                                        decoration: InputDecoration(
                                           hintText: isReturnSection ? "SEARCH RETURN ADDRESS..." : "SEARCH ADDRESS...",
-                                          hintStyle: outFitRegular(fontSize: 11, color: Colors.grey),
+                                          hintStyle: outFitRegular(fontSize: 11),
                                           fillColor: Colors.white,
-                                          filled: true,
-                                          isDense: true,
-                                          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
-                                          border: const OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                                        borderRadius: 6,
                                         ),
                                       ),
-                                    ),
-                                  ),
+                                    )),
                                   const SizedBox(width: 4),
                                   SizedBox(
                                     width: 34,
                                     height: double.infinity,
+                                    child: FocusTraversalOrder(
+                                      order: const NumericFocusOrder(2),
                                     child: ElevatedButton(
+                                      focusNode: isReturnSection ? returnAddBtnFocusNode : outboundAddBtnFocusNode,
                                       onPressed: () => _addViaPoint(isReturnWay: isReturnSection, addressCtrl: addressCtrl),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: DynamicColors.primaryClr,
@@ -1154,13 +1181,13 @@ class _ViaLocationState extends State<ViaLocation> {
                                       ),
                                       child: const Icon(Icons.add, color: Colors.white, size: 20),
                                     ),
-                                  ),
+                                  )),
                                 ],
                               ),
                             ),
                           ),
-                        ),
-                      ),
+                        // ),
+                      // ),
                       Container(width: 1, color: const Color(0xFFCBD5E1)),
                       SizedBox(
                         width: 52,
@@ -1206,7 +1233,13 @@ class _ViaLocationState extends State<ViaLocation> {
                                   children: [
                                     SizedBox(
                                       height: 30,
+                                  child: FocusTraversalGroup(
+                                      policy: WidgetOrderTraversalPolicy(),
+                                  child: Focus(
+                                    canRequestFocus: false,
+                                    skipTraversal: true,
                                       child: TextField(
+                                        focusNode: FocusNode(skipTraversal: true, canRequestFocus: false),
                                         style: outFitRegular(fontSize: 11, fontWeight: FontWeight.w600),
                                         readOnly: true,
                                         controller: TextEditingController(text: point.address.toUpperCase()),
@@ -1217,13 +1250,15 @@ class _ViaLocationState extends State<ViaLocation> {
                                           border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black26)),
                                         ),
                                       ),
-                                    ),
+                                    ))),
                                     const SizedBox(height: 4),
                                     Row(
                                       children: [
                                         Expanded(
                                           child: SizedBox(
                                             height: 30,
+                                            child: FocusTraversalOrder(
+                                              order: NumericFocusOrder(3 + (index * 3)),
                                             child: TextField(
                                               textCapitalization: TextCapitalization.characters,
                                               inputFormatters: [UpperCaseTextFormatter()],
@@ -1239,11 +1274,13 @@ class _ViaLocationState extends State<ViaLocation> {
                                               ),
                                             ),
                                           ),
-                                        ),
+                                        )),
                                         const SizedBox(width: 4),
                                         Expanded(
                                           child: SizedBox(
                                             height: 30,
+                                            child: FocusTraversalOrder(
+                                              order: NumericFocusOrder(4 + (index * 3)),
                                             child: TextField(
                                               keyboardType: TextInputType.phone,
                                               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -1259,7 +1296,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                               ),
                                             ),
                                           ),
-                                        ),
+                                        )),
                                       ],
                                     ),
                                   ],
@@ -1273,6 +1310,8 @@ class _ViaLocationState extends State<ViaLocation> {
                                 child: SizedBox(
                                   width: 32,
                                   height: 32,
+                                  child: FocusTraversalOrder(
+                                    order: NumericFocusOrder(5 + (index * 3)),
                                   child: ElevatedButton(
                                     onPressed: () {
                                       if (mainIndex != -1) {
@@ -1293,7 +1332,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                   ),
                                 ),
                               ),
-                            ),
+                            )),
                           ],
                         ),
                       ),
@@ -1304,6 +1343,6 @@ class _ViaLocationState extends State<ViaLocation> {
           ),
         ),
       ],
-    );
+    ));
   }
 }
