@@ -156,7 +156,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   static const _fsTab = 12.0;
   // ────────── state
   String? driver;
-  ZoneObject? dashboardZoneValue, dropZone;
+  // ZoneObject? dashboardZoneValue, dropZone;
   // String? account = 'DEMO';
   // String? vehicleType = 'Saloon';
   // bool quotation = true;
@@ -341,7 +341,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       ? []
                                       : _controller.locationtypezoneModel!.zonesList!,
                                       (v) => setState(
-                                          () => controller.dashboardZoneValue = v),
+                                          () {
+                                            controller.dashboardZoneValue = v;
+                                        controller.getFaresCalculation();
+                                      }),
                                   isMobile,
                                       (value) {
                                     WidgetsBinding.instance
@@ -475,7 +478,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       : _controller
                                       .locationtypezoneModel!.zonesList!,
                                       (v) => setState(
-                                          () => controller.dashboardDZoneValue = v),
+                                          () {
+                                            controller.dashboardDZoneValue = v;
+                                            controller.getFaresCalculation();
+                                          }),
                                   isMobile,
                                       (value) {
                                     WidgetsBinding.instance
