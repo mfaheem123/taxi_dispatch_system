@@ -1714,8 +1714,8 @@ class DashboardController extends GetxController {
       pickup: pickupController.text,
       dropOff: dropOffController.text,
       miles: postMils,
-      pickUpPlotId: dashboardDZoneValue != null ? dashboardDZoneValue!.id : null,
-      dropoffPlotId: dashboardZoneValue != null ? dashboardZoneValue!.id : null,
+      pickUpPlotId: dashboardDZoneValue != null ? dashboardZoneValue!.id : null,
+      dropoffPlotId: dashboardZoneValue != null ? dashboardDZoneValue!.id : null,
 
       pickupDate: "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
       pickupTime: pickUpTimeController.text,
@@ -2050,6 +2050,10 @@ class DashboardController extends GetxController {
   changeJourneyFtn() async{
     pickupTwoWayController.clear();
     dropOffTwoWayController.clear();
+    dashboardRNZoneValue = null;
+    dashboardRN1ZoneValue = null;
+
+
     tempStoreReturnMils = null;
     FocusScope.of(Get.context!).requestFocus(pickupTwoTextFieldFocusNode);
     polyLineMarkerInfo.removeWhere((item) =>
@@ -2057,7 +2061,7 @@ class DashboardController extends GetxController {
         item.markerType == "DROP TWO WAY LOCATION"
     );
 
-    // 2. تمام Return map markers صاف کریں
+
     markers.removeWhere((marker) =>
     marker.type == "pickup two way" ||
         marker.type == "dropOff two way" ||

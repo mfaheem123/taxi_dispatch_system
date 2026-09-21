@@ -156,7 +156,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   static const _fsTab = 12.0;
   // ────────── state
   String? driver;
-  // ZoneObject? dashboardZoneValue, dropZone;
   // String? account = 'DEMO';
   // String? vehicleType = 'Saloon';
   // bool quotation = true;
