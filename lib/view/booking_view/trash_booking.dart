@@ -131,7 +131,7 @@ class _TrashBookingState extends State<TrashBooking> {
                         }),
                     TableColumnConfig(
                         title: "CUSTOMER",
-                        sizeType: ColumnSizeType.medium,
+                        sizeType: ColumnSizeType.small,
                         onChanged: (v) {
                           controller.trashname.text = v;
                           controller.trashBookingonSearch();
@@ -180,7 +180,7 @@ class _TrashBookingState extends State<TrashBooking> {
                         }),
                     TableColumnConfig(
                         title: "STATUS",
-                        sizeType: ColumnSizeType.fixed,
+                        sizeType: ColumnSizeType.small,
                         onChanged: (v) {
                           controller.trashbookingStatus.text = v;
                           controller.trashBookingonSearch();
