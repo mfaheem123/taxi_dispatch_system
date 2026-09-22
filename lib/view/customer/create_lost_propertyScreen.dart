@@ -1861,6 +1861,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
     // storage, so it is picked up here. Registered after the refresh above and
     // therefore run after it — the other order would wipe the prefill.
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final handedOver = takeHandedOverBooking();
       if (handedOver != null) applyBooking(handedOver);
     });
