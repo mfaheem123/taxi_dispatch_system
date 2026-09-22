@@ -151,6 +151,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   static const _green = Color(0xFF22C55E);
   // ────────── font sizes (compact)
   static const _fsLabel = 11.0;
+
+  /// Width of the tag column that every row of the form starts with, and the
+  /// gap between two fields sitting side by side. Both are shared so the rows
+  /// cannot drift apart one edit at a time.
+  static const _kLabelColumnWidth = 62.0;
+  static const _kFieldGap = 4.0;
   static const _fsField = 12.0;
   static const _fsSection = 12.0;
   static const _fsTab = 12.0;
@@ -430,7 +436,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     Row(
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
-                                        SizedBox(width: 80, child:  Row(mainAxisSize: MainAxisSize.min, children: [
+                                        SizedBox(width: _kLabelColumnWidth - 2, child:  Row(mainAxisSize: MainAxisSize.min, children: [
                                           Icon(Icons.circle, size: 9, color: Colors.green),
                                           const SizedBox(width: 6),
                                           Text("FL",
@@ -1051,7 +1057,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(width: 80, child:  Row(mainAxisSize: MainAxisSize.min, children: [
+                SizedBox(width: _kLabelColumnWidth - 2, child:  Row(mainAxisSize: MainAxisSize.min, children: [
                   Icon(Icons.circle, size: 9, color: Colors.green),
                   const SizedBox(width: 6),
                   Text("FL",
@@ -1605,12 +1611,17 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SizedBox(width: 70, child: tag),
-        const SizedBox(width: 2),
+        // 62 is the width of the longest tag ('PICKUP' beside its dot) plus a
+        // hair, not a round number picked by eye: the column is fixed so the
+        // address fields of the PICK and DROP rows start on the same x, and
+        // any wider than the text needs is dead space in front of every row.
+        // The FL/ARP rows below use the same 62 so the whole form shares one
+        // left edge.
+        SizedBox(width: _kLabelColumnWidth, child: tag),
         Expanded(flex: 5, child: address),
-        const SizedBox(width: 8),
+        const SizedBox(width: _kFieldGap),
         SizedBox(width: 130, child: zoneDd),
-        const SizedBox(width: 8),
+        const SizedBox(width: _kFieldGap),
         SizedBox(width: 130, child: notes), // gave the field a bounded width
       ],
     );

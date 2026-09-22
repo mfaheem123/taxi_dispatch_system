@@ -62,6 +62,7 @@ class _CreateComplaintState extends State<CreateComplaint> {
     // storage, so it is picked up here. Registered after the clear above and
     // therefore run after it — the other order would wipe the prefill.
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final handedOver = takeHandedOverBooking();
       if (handedOver != null) {
         controller.fillComplaintFromHandedOverBooking(handedOver);
