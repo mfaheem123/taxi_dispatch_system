@@ -17,6 +17,7 @@ import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
 import '../dashboard_view/widgets/time_picker_widget.dart';
 import '../dashboard_view/widgets/user_info_widget.dart';
+import '../../utils/new_window_booking.dart';
 import 'controller/customer_controller.dart';
 
 class CreateComplaint extends StatefulWidget {
@@ -57,6 +58,15 @@ class _CreateComplaintState extends State<CreateComplaint> {
         controller.clearComplaintForm();
       });
     }
+    // Opened from a booking in another window: the booking travelled through
+    // storage, so it is picked up here. Registered after the clear above and
+    // therefore run after it — the other order would wipe the prefill.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final handedOver = takeHandedOverBooking();
+      if (handedOver != null) {
+        controller.fillComplaintFromHandedOverBooking(handedOver);
+      }
+    });
     controller.getDriversDropdown(); //  add this
   }
 

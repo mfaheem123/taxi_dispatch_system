@@ -653,6 +653,66 @@ sendCompanyId: true,
 
     update();
   }
+
+  /// Prefills the complaint form from a booking handed over by another window.
+  ///
+  /// [fillComplaintFromBooking] casts its argument to the customer module's
+  /// `Booking`. A booking arriving from the job editor is a
+  /// `BookingObjectData` — the same fields under a different class — so that
+  /// cast would throw on it. The fields are read dynamically here instead,
+  /// which also keeps this controller free of an import that would collide
+  /// with the `Booking`/`Customer`/`Driver` names already hidden above.
+  void fillComplaintFromHandedOverBooking(dynamic b) {
+    if (b == null) return;
+
+    customerNameController.text = (b.name ?? "").toString().toUpperCase();
+    customerMobileController.text = (b.mobile ?? "").toString();
+    customerRefNoController.text =
+        (b.referenceNumber ?? "").toString().toUpperCase();
+    regController.text =
+        (b.driver?.vehicle?.vehicleNumber ?? "").toString().toUpperCase();
+    customerNoteController.text = _firstNoteOf(b);
+    // The editor carries the pickup date as a DateTime, the complaint form as
+    // the plain yyyy-MM-dd string the API expects back.
+    incidentedController.text = dateOnly(b.pickupDate);
+    pickupAddress = (b.pickup ?? "").toString().toUpperCase();
+    dropoffAddress = (b.dropoff ?? "").toString().toUpperCase();
+
+    selectedBookingForComplaint = b;
+    updateBookingId = int.tryParse(b.id.toString());
+    updateCustomerId = int.tryParse(b.customerId.toString());
+
+    update();
+  }
+
+  /// The text of a booking's first note, or "" when it carries none.
+  ///
+  /// Notes reach this controller either already parsed into note objects or
+  /// still as the raw maps they were decoded from, depending on which model
+  /// the booking came out of — both shapes are read.
+  String _firstNoteOf(dynamic b) {
+    try {
+      final notes = b.notes;
+      if (notes is List && notes.isNotEmpty) {
+        final first = notes.first;
+        final note = first is Map ? first["note"] : first.note;
+        return (note ?? "").toString();
+      }
+    } catch (_) {}
+    return "";
+  }
+
+  /// [value] as a yyyy-MM-dd string: a DateTime formatted, anything else left
+  /// as it is, null as "".
+  String dateOnly(dynamic value) {
+    if (value == null) return "";
+    if (value is DateTime) {
+      return "${value.year.toString().padLeft(4, '0')}-"
+          "${value.month.toString().padLeft(2, '0')}-"
+          "${value.day.toString().padLeft(2, '0')}";
+    }
+    return value.toString().split("T").first;
+  }
   GetDriverDropdown? getDriverDropdownModel;
   List<Driver> driverList = [];
 

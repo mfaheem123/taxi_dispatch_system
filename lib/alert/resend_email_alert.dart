@@ -1,4 +1,5 @@
 import 'package:dashboard_new1/component/color.dart';
+import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
@@ -27,9 +28,9 @@ class ResendEmailAlert extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     "RESEND EMAIL",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    style: titleDesign(),
                   ),
                   FocusTraversalOrder(
                     order: const NumericFocusOrder(999),
@@ -39,17 +40,24 @@ class ResendEmailAlert extends StatelessWidget {
               ),
             ),
 
-            const Padding(
+            const Divider(height: 1, thickness: 1),
+            SizedBox(height: 15),
+
+             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 25),
               child: Text(
                 "ARE YOU SURE YOU WANT TO RESEND CONFIRMATION EMAIL?",
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: outFitRegular(
                     fontWeight: FontWeight.bold,
                     fontSize: 13,
                     color: Colors.black87),
               ),
             ),
+
+            const Divider(height: 1),
+            SizedBox(height: 15),
+
 
             // Buttons
             Padding(
@@ -64,9 +72,9 @@ class ResendEmailAlert extends StatelessWidget {
                           borderRadius: BorderRadius.circular(6)),
                     ),
                     onPressed: () => Get.back(),
-                    child: const Text("NO",
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold)),
+                    child: Text("NO",
+                        style: mozillaTextSemiBoldText(
+                            fontSize: 13, color: Colors.white, fontWeight: FontWeight.bold)),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
@@ -78,9 +86,9 @@ class ResendEmailAlert extends StatelessWidget {
                     onPressed: () {
                       Get.back();
                     },
-                    child: const Text("YES",
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold)),
+                    child: Text("YES",
+                        style: mozillaTextSemiBoldText(
+                            fontSize: 13, color: Colors.white, fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
@@ -93,10 +101,10 @@ class ResendEmailAlert extends StatelessWidget {
 }
 
 class ResendSms extends StatefulWidget {
-  final dynamic customerPhone;
+  final dynamic bookingItem;
   final Function(List<String> numbers)? onSend;
 
-  const ResendSms({super.key, this.customerPhone, this.onSend});
+  const ResendSms({super.key, this.bookingItem, this.onSend});
 
   @override
   State<ResendSms> createState() => _ResendSmsState();
@@ -108,6 +116,16 @@ class _ResendSmsState extends State<ResendSms> {
 
   @override
   Widget build(BuildContext context) {
+
+    final String customerName = (widget.bookingItem?.name != null && widget.bookingItem!.name!.isNotEmpty)
+        ? widget.bookingItem!.name!
+        : "N/A";
+
+    final String customerPhone = (widget.bookingItem?.mobile != null && widget.bookingItem!.mobile!.isNotEmpty)
+        ? widget.bookingItem!.mobile!
+        // : ((widget.bookingItem?.telephone != null && widget.bookingItem!.telephone!.isNotEmpty)
+        // ? widget.bookingItem!.telephone!
+        : "N/A";
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 4,
@@ -127,13 +145,9 @@ class _ResendSmsState extends State<ResendSms> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     "RESEND SMS",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.black87,
-                    ),
+                    style: titleDesign()
                   ),
                   FocusTraversalOrder(
                     order: const NumericFocusOrder(999),
@@ -149,17 +163,16 @@ class _ResendSmsState extends State<ResendSms> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     "SELECT MOBILE NUMBERS TO RECEIVE THE CONFIRMATION SMS.",
-                    style: TextStyle(
+                    style: outFitRegular(
                       fontWeight: FontWeight.bold,
-                      fontSize: 12,
+                      fontSize: 13,
                       color: Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 14),
 
-                  // Main Customer Checkbox Card
                   InkWell(
                     onTap: () {
                       setState(() {
@@ -175,9 +188,8 @@ class _ResendSmsState extends State<ResendSms> {
                       ),
                       child: Row(
                         children: [
-                          SizedBox(
-                            height: 20,
-                            width: 20,
+                          Transform.scale(
+                            scale: 0.8,
                             child: Checkbox(
                               value: isMainCustomerSelected,
                               activeColor: DynamicColors.primaryClr,
@@ -193,14 +205,22 @@ class _ResendSmsState extends State<ResendSms> {
                           ),
                           const SizedBox(width: 10),
                           Expanded(
-                            child: Text(
-                              "MAIN: ${widget.customerPhone != null && widget.customerPhone!.isNotEmpty
-                                  ? widget.customerPhone
-                                  : 'N/A'}",
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                                color: Colors.black87,
+                            child: RichText(
+                              text: TextSpan(
+                                style: outFitRegular(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                  color: Colors.black87,
+                                ),
+                                children: [
+                                  const TextSpan(text: "MAIN: "),
+                                  TextSpan(
+                                    text: customerName.toUpperCase(),
+                                  ),
+                                  TextSpan(
+                                    text: " ($customerPhone)",
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -222,9 +242,9 @@ class _ResendSmsState extends State<ResendSms> {
                       controller: customNumberController,
                       keyboardType: TextInputType.phone,
                       style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: "PRESS ENTER TO ADD CUSTOM NUMBER",
-                        hintStyle: TextStyle(
+                        hintStyle: outFitRegular(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: Colors.grey,
@@ -257,8 +277,8 @@ class _ResendSmsState extends State<ResendSms> {
                     ),
                     onPressed: () {
                       List<String> selectedNumbers = [];
-                      if (isMainCustomerSelected && widget.customerPhone != null) {
-                        selectedNumbers.add(widget.customerPhone!);
+                      if (isMainCustomerSelected && customerPhone != "N/A" && customerPhone.isNotEmpty) {
+                        selectedNumbers.add(customerPhone);
                       }
                       if (customNumberController.text.trim().isNotEmpty) {
                         selectedNumbers.add(customNumberController.text.trim());
@@ -270,11 +290,12 @@ class _ResendSmsState extends State<ResendSms> {
 
                       Get.back();
                     },
-                    child: const Text(
+                    child: Text(
                       "SEND",
-                      style: TextStyle(
+                      style: mozillaTextSemiBoldText(
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
+                        color: Colors.white
                       ),
                     ),
                   ),

@@ -1805,6 +1805,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../../utils/new_window_booking.dart';
 import '../../alert/lost_property_booking_alert.dart';
 import '../../component/datatable_widget.dart';
 import '../../component/textStyle.dart';
@@ -1855,6 +1856,43 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
         controller.refreshFields();
       });
     }
+
+    // Opened from a booking in another window: the booking travelled through
+    // storage, so it is picked up here. Registered after the refresh above and
+    // therefore run after it — the other order would wipe the prefill.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final handedOver = takeHandedOverBooking();
+      if (handedOver != null) applyBooking(handedOver);
+    });
+  }
+
+  // ============================================================
+  // ATTACH A BOOKING
+  // ============================================================
+
+  /// Puts [booking] on the form, exactly as picking one out of
+  /// [searchLostProperty]'s dialog does — the booking row at the bottom of the
+  /// screen reads the same fields whichever way it arrived.
+  void applyBooking(dynamic booking) {
+    controller.selectedBookingForLostProperty = booking;
+
+    controller.updateBookingId = int.tryParse(booking.id.toString());
+
+    controller.updateCustomerId =
+        int.tryParse(booking.customerId.toString());
+
+    final pickupDate = booking.pickupDate;
+    if (pickupDate != null && pickupDate.toString().isNotEmpty) {
+      controller.lostDateController = controller.dateOnly(pickupDate);
+    }
+
+    controller.propertyMobileController.text =
+        (booking.mobile ?? "").toString();
+
+    controller.propertyNameController.text =
+        (booking.name ?? "").toString().toUpperCase();
+
+    controller.update();
   }
 
   @override

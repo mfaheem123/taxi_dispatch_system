@@ -14,6 +14,7 @@ abstract class Routes {
   static const updateBooking = _Paths.updateBooking;
   static const editJobs = _Paths.editJobs;
   static const createComplaint = _Paths.createComplaint;
+  static const lostProperty = _Paths.lostProperty;
 }
 
 abstract class _Paths {
@@ -29,4 +30,5 @@ abstract class _Paths {
   static const completeBookingsScreen = '/CompleteBookingsScreen';
   static const CustomerFormScreen = '/CustomerFormScreen';
   static const createComplaint = '/CreateComplaint';
+  static const lostProperty = '/LostProperty';
 }

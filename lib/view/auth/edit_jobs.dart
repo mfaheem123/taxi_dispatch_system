@@ -47,7 +47,7 @@ import '../../alert/search_booking.dart';
 import '../../component/marker_class.dart';
 import '../../component/text_field.dart';
 import '../../routes/app_pages.dart';
-import '../../utils/open_new_window.dart';
+import '../../utils/new_window_booking.dart';
 import '../dashboard_view/booking_form_scope.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/dashboard/F3_alert.dart';
@@ -1939,7 +1939,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                       }),
                   iconBtn(Icons.chat_bubble_outline, 'Messages',
                       order: 0.4, onTap: () { _headerAction('Messages');
-                    Get.dialog(ResendSms());
+                    Get.dialog(ResendSms(bookingItem: controller.jobDetails,));
                   }),
                   iconBtn(Icons.send, 'Send details',
                       order: 0.5, onTap: () {
@@ -1948,11 +1948,14 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                       }),
                   outlinePill(
                       Icons.warning_amber_rounded, 'Complaint', _red,
-                      order: 0.6, onTap: () => openInNewWindow(Uri.base.origin + '/#' + Routes.createComplaint)/*_headerAction('Complaint')*/
+                      order: 0.6, onTap: () => openBookingInNewWindow(
+                          Routes.createComplaint, controller.jobDetails)
                       ),
                   outlinePill(
                       Icons.inventory_2_outlined, 'Lost property', _purple,
-                      order: 0.7, onTap: () => _headerAction('Lost property')),
+                      order: 0.7, onTap: () => openBookingInNewWindow(
+                          Routes.lostProperty, controller.jobDetails)
+                  ),
                 ],
               ),
             ],
