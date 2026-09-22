@@ -2310,32 +2310,18 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                             height: 32,
                                             child:
                                             KeyboardDatePicker(
-                                              initialDate: () {
-                                                final bookingDate =
-                                                    controller
-                                                        .selectedBookingForLostProperty
-                                                        ?.pickupDate;
-
-                                                if (bookingDate != null &&
-                                                    bookingDate
-                                                        .isNotEmpty) {
-                                                  try {
-                                                    return DateTime
-                                                        .parse(
-                                                      bookingDate,
-                                                    );
-                                                  } catch (e) {}
-                                                }
-
-                                                return controller
-                                                    .lostDateController !=
-                                                    ""
-                                                    ? DateTime.tryParse(
-                                                    controller
-                                                        .lostDateController) ??
-                                                    DateTime.now()
-                                                    : DateTime.now();
-                                              }(),
+                                              // The booking's own date, not
+                                              // today's: whichever way the
+                                              // booking arrived, its pickup
+                                              // date is the date the property
+                                              // went missing on.
+                                              initialDate: controller.asDate(
+                                                      controller
+                                                          .selectedBookingForLostProperty
+                                                          ?.pickupDate) ??
+                                                  controller.asDate(controller
+                                                      .lostDateController) ??
+                                                  DateTime.now(),
                                               onChanged: (date) {
                                                 controller
                                                     .lostDateController =

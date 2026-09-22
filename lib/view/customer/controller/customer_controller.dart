@@ -673,8 +673,12 @@ sendCompanyId: true,
         (b.driver?.vehicle?.vehicleNumber ?? "").toString().toUpperCase();
     customerNoteController.text = _firstNoteOf(b);
     // The editor carries the pickup date as a DateTime, the complaint form as
-    // the plain yyyy-MM-dd string the API expects back.
+    // the plain yyyy-MM-dd string the API expects back. The INCIDENT is the
+    // job, so it is dated by the job; the COMPLAINT is being made now, and is
+    // stored as today rather than left empty behind a field that already shows
+    // today.
     incidentedController.text = dateOnly(b.pickupDate);
+    complainDateController.text = dateOnly(DateTime.now());
     pickupAddress = (b.pickup ?? "").toString().toUpperCase();
     dropoffAddress = (b.dropoff ?? "").toString().toUpperCase();
 
@@ -705,13 +709,25 @@ sendCompanyId: true,
   /// [value] as a yyyy-MM-dd string: a DateTime formatted, anything else left
   /// as it is, null as "".
   String dateOnly(dynamic value) {
-    if (value == null) return "";
-    if (value is DateTime) {
-      return "${value.year.toString().padLeft(4, '0')}-"
-          "${value.month.toString().padLeft(2, '0')}-"
-          "${value.day.toString().padLeft(2, '0')}";
-    }
-    return value.toString().split("T").first;
+    final date = asDate(value);
+    if (date == null) return "";
+    return "${date.year.toString().padLeft(4, '0')}-"
+        "${date.month.toString().padLeft(2, '0')}-"
+        "${date.day.toString().padLeft(2, '0')}";
+  }
+
+  /// [value] as a DateTime, or null when there is no date in it.
+  ///
+  /// A booking's pickup date reaches these forms as a DateTime from the job
+  /// editor and as a String from the search dialogs, so both are accepted
+  /// rather than one being assumed — reading a String field off a DateTime is
+  /// what used to throw and leave the form on today's date.
+  DateTime? asDate(dynamic value) {
+    if (value == null) return null;
+    if (value is DateTime) return value;
+    final text = value.toString().trim();
+    if (text.isEmpty) return null;
+    return DateTime.tryParse(text.split("T").first);
   }
   GetDriverDropdown? getDriverDropdownModel;
   List<Driver> driverList = [];
