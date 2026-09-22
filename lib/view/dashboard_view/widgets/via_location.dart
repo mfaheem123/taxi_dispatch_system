@@ -65,6 +65,7 @@ class _ViaLocationState extends State<ViaLocation> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _controller.allAddressesData.clear();
       _controller.selectedModel = null;
+      
       _controller.selectedTextFieldsValue.value = "";
       _controller.activeFieldKey.value = null;
 
@@ -77,6 +78,7 @@ class _ViaLocationState extends State<ViaLocation> {
     _viaDialogScrollController.dispose();
     outboundAddressController.dispose();
     returnAddressController.dispose();
+    outboundAddBtnFocusNode.dispose();
     outboundAddBtnFocusNode.dispose();
     returnAddBtnFocusNode.dispose();
     super.dispose();
@@ -101,8 +103,8 @@ class _ViaLocationState extends State<ViaLocation> {
         addressCtrl.clear();
         _controller.selectedModel = null;
         _controller.allAddressesData.clear();
+        
         _controller.selectedTextFieldsValue.value = "";
-
         _controller.viaTextEditingController.add(
           ViaTextEditingControllerClass(TextEditingController(), TextEditingController()),
         );
@@ -123,6 +125,7 @@ class _ViaLocationState extends State<ViaLocation> {
     // scrolls inside the dialog instead of pushing the buttons off the bottom
     // of the screen — the old flat 80% of the screen height did not leave room
     // for any of this and overflowed once a few viapoints were added.
+    //NEW VIA ATTECHED 
     const double chromeHeight = 240;
     final double listMaxHeight =
         (screenHeight - chromeHeight).clamp(200.0, double.infinity);
@@ -151,22 +154,25 @@ class _ViaLocationState extends State<ViaLocation> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                          color: DynamicColors.gryClr.withOpacity(0.5),
-                          child: Row(
-                            children: [
-                              Icon(Icons.route, color: DynamicColors.primaryClr),
-                              const SizedBox(width: 10),
-                              Text("VIAPOINT(S) MANAGEMENT",
-                                  style: titleDesign()),
-                              const Spacer(),
-                              FocusTraversalOrder(
-                                order: const NumericFocusOrder(999),
-                                child: const AlertCloseButton(),
-                              ),
-                            ],
-                          )),
+                        width: 8,
+                        child: Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            color: DynamicColors.gryClr.withOpacity(0.5),
+                            child: Row(
+                              children: [
+                                Icon(Icons.route, color: DynamicColors.primaryClr),
+                                const SizedBox(width: 10),
+                                Text("VIAPOINT(S) MANAGEMENT",
+                                    style: titleDesign()),
+                                const Spacer(),
+                                FocusTraversalOrder(
+                                  order: const NumericFocusOrder(999),
+                                  child: const AlertCloseButton(),
+                                ),
+                              ],
+                            )),
+                      ),
 
                       Padding(
                         padding: const EdgeInsets.all(16.0),
