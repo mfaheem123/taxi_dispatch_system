@@ -10,6 +10,7 @@ import '../view/booking_view/complete_bookingview.dart';
 import '../view/booking_view/update_booking.dart';
 import '../view/cli_Screen.dart';
 import '../view/customer/add_customerScreen.dart';
+import '../view/customer/create_complaint.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
 import '../view/booking_view/craate_booking.dart';
 import '../view/dashboard_view/dashboard.dart';
@@ -111,6 +112,10 @@ class AppPages {
     GetPage(
       name: _Paths.createVehicle,
       page: () => CreateVehicleTypes(),
+    ),
+    GetPage(
+      name: _Paths.createComplaint,
+      page: () => CreateComplaint(),
     ),
   ];
 }

@@ -46,6 +46,8 @@ import '../../alert/extra_info_alert.dart';
 import '../../alert/search_booking.dart';
 import '../../component/marker_class.dart';
 import '../../component/text_field.dart';
+import '../../routes/app_pages.dart';
+import '../../utils/open_new_tab_stub.dart';
 import '../dashboard_view/booking_form_scope.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/dashboard/F3_alert.dart';
@@ -1946,7 +1948,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                       }),
                   outlinePill(
                       Icons.warning_amber_rounded, 'Complaint', _red,
-                      order: 0.6, onTap: () => _headerAction('Complaint')
+                      order: 0.6, onTap: () => openInNewTab(Uri.base.origin + '/#' + Routes.createComplaint)/*_headerAction('Complaint')*/
                       ),
                   outlinePill(
                       Icons.inventory_2_outlined, 'Lost property', _purple,
