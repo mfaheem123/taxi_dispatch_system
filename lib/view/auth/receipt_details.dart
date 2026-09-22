@@ -1,0 +1,202 @@
+import 'package:dashboard_new1/component/textStyle.dart';
+import 'package:flutter/material.dart';
+
+class BookingReceiptScreen extends StatelessWidget {
+  final dynamic bookingItem;
+
+  const BookingReceiptScreen({Key? key, required this.bookingItem}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Logo & Company Info
+              Center(
+                child: Column(
+                  children: [
+                    Image.asset(
+                      'assets/cabflow_logo.png',
+                      height: 55,
+                    ),
+                    const SizedBox(height: 8),
+                     Text('BOOKING RECEIPT', style: outFitRegular(fontSize: 22, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                     Text('EMAIL: COMPANYTEST.COM', style: outFitRegular(fontSize: 12, color: Colors.grey)),
+                     Text('MOBILE: 020820177 | TELEPHONE: 020820177', style: outFitRegular(fontSize: 12, color: Colors.grey)),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('NAME: ${bookingItem?.name ?? ''}',
+                          style: outFitRegular(fontWeight: FontWeight.w600, fontSize: 13)),
+                      Text('EMAIL: ${bookingItem?.email ?? ''}',
+                          style: outFitRegular(fontWeight: FontWeight.w600, fontSize: 13)),
+                      Text('MOBILE: ${bookingItem?.mobile ?? ''}',
+                          style: outFitRegular(fontWeight: FontWeight.w600, fontSize: 13)),
+                      Text('TELEPHONE: ${bookingItem?.telephone ?? ''}',
+                          style: outFitRegular(fontWeight: FontWeight.w600, fontSize: 13)),
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                           Text('STATUS: ', style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 13)),
+                          Text(
+                            ((bookingItem?.bookingStatus?.bookingStatus ?? 'COMPLETED').toString()).toUpperCase(),
+                            style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.green),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        'DATETIME: ${bookingItem?.pickupDate ?? ''} ${bookingItem?.pickupTime ?? ''}'.trim().isEmpty
+                            ? 'DATETIME: ${bookingItem?.dateTime ?? ''}'
+                            : 'DATETIME: ${bookingItem?.pickupDate ?? ''} ${bookingItem?.pickupTime ?? ''}'.trim(),
+                        style: outFitRegular(fontSize: 13),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // BOOKING DETAILS
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                color: const Color(0xFFF3F4F6),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('BOOKING', style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text('REFERENCE # ${(bookingItem?.referenceNumber ?? bookingItem?.id ?? '').toString()}',
+                        style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.red)),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Column(
+                  children: [
+                    _buildRow(
+                      'PICKUP DOOR #', (bookingItem?.pickupDoorNumber ?? '').toString(),
+                      'DROPOFF DOOR #', (bookingItem?.dropoffDoorNumber ?? '').toString(),
+                    ),
+                    const SizedBox(height: 8),
+                    _buildRow(
+                      'PICKUP', (bookingItem?.pickup ?? '').toString(),
+                      'DROPOFF', (bookingItem?.dropoff ?? '').toString(),
+                    ),
+                    const SizedBox(height: 8),
+                    _buildRow(
+                      'JOURNEY TYPE', (bookingItem?.journeyType?.journeyType ?? 'O/W').toString(),
+                      'ACCOUNT', (bookingItem?.account?.name ?? '').toString(),
+                    ),
+                    const SizedBox(height: 8),
+                    _buildRow(
+                      'VEHICLE TYPE', (bookingItem?.vehicleType?.name ?? '').toString(),
+                      'DRIVER', (bookingItem?.driver?.username ?? '').toString(),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // PAYMENT & CHARGES
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                color: const Color(0xFFF3F4F6),
+                child: const Text('PAYMENT & CHARGES', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              ),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Column(
+                  children: [
+                    _buildRow(
+                      'PAYMENT TYPE', (bookingItem?.paymentType?.name ?? 'CASH').toString(),
+                      'MEET & GREET', '£ ${bookingItem?.meetAndGreet ?? '0'}',
+                    ),
+                    const SizedBox(height: 8),
+                    _buildRow(
+                      'PARKING', '£ ${bookingItem?.parkingCharges ?? '0'}',
+                      'WAITING', '£ ${bookingItem?.waitingCharges ?? '0'}',
+                    ),
+                    const SizedBox(height: 8),
+                    _buildRow(
+                      'EXTRA DROP', '£ ${bookingItem?.extraDropCharges ?? '0'}',
+                      'FARES', '£ ${bookingItem?.fares ?? '0'}',
+                    ),
+                    const SizedBox(height: 8),
+                    _buildRow(
+                      'CONGESTION', '£ ${bookingItem?.congestionCharges ?? '0'}',
+                      '', '',
+                    ),
+                  ],
+                ),
+              ),
+
+              // --- TOTAL CHARGES FOOTER ---
+              Container(
+                padding: const EdgeInsets.all(12),
+                color: const Color(0xFFF3F4F6),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('TOTAL CHARGES', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    Text('£ ${bookingItem?.totalCharges ?? bookingItem?.fare ?? '0.00'}',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRow(String label1, String val1, String label2, String val2) {
+    return Row(
+      children: [
+        Expanded(
+          child: Row(
+            children: [
+              SizedBox(width: 120, child: Text(label1, style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 11))),
+              Expanded(child: Text(val1, style: outFitRegular(fontSize: 12, fontWeight: FontWeight.w600))),
+            ],
+          ),
+        ),
+        if (label2.isNotEmpty)
+          Expanded(
+            child: Row(
+              children: [
+                SizedBox(width: 120, child: Text(label2, style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 11))),
+                Expanded(child: Text(val2, style: outFitRegular(fontSize: 12, fontWeight: FontWeight.w600))),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+}

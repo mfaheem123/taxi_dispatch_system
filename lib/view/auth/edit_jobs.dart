@@ -63,6 +63,7 @@ import '../dashboard_view/widgets/fare_configuration.dart';
 import '../dashboard_view/widgets/via_location.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
 import '../locations_view/controller/locations_controller.dart';
+import 'receipt_details.dart';
 
 
 // ════════════════════════════════════════════════════════════════════
@@ -2448,6 +2449,21 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   void _onActionPending(String label) =>
       BotToast.showText(text: '$label is not available yet');
 
+  void _onReceiptAction(String action) {
+    if (action == 'VIEW') {
+      showDialog(
+        context: context,
+        builder: (_) => BookingReceiptScreen(
+          bookingItem: controller.jobDetails,
+        ),
+      );
+    } else if (action == 'EMAIL') {
+      // EMAIL logic
+    } else if (action == 'EXPORT TO PDF') {
+      // EXPORT TO PDF logic
+    }
+  }
+
   /// One of the bottom-row actions from the design. Same shape as CLEAR and
   /// SAVE beside it, just tighter in the horizontal padding, because six of
   /// these share the row with the two driver dropdowns.
@@ -2597,10 +2613,31 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
         _bottomAction(_aPay,
             tab: 43.2, color: _purple, onTap: () => _onActionPending(_aPay)),
       if (visible.contains(_aReceipt))
-        _bottomAction(_aReceipt,
-            tab: 43.3,
-            color: _purple,
-            onTap: () => _onActionPending(_aReceipt)),
+        PopupMenuButton<String>(
+          tooltip: '',
+          offset: const Offset(40, 40),
+          onSelected: (action) => _onReceiptAction(action),
+          itemBuilder: (context) => const [
+            PopupMenuItem(value: 'VIEW', child: Text('VIEW', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
+            PopupMenuItem(value: 'EMAIL', child: Text('EMAIL', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
+            PopupMenuItem(value: 'EXPORT TO PDF', child: Text('EXPORT TO PDF', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
+          ],
+          child: IgnorePointer(
+            child: _bottomAction(
+              _aReceipt,
+              tab: 43.3,
+              color: _purple,
+              onTap: () {},
+            ),
+          ),
+        ),
+
+
+      // if (visible.contains(_aReceipt))
+      //   _bottomAction(_aReceipt,
+      //       tab: 43.3,
+      //       color: _purple,
+      //       onTap: () => _onActionPending(_aReceipt)),
       if (visible.contains(_aMapReport))
         _bottomAction(_aMapReport,
             tab: 43.4,
