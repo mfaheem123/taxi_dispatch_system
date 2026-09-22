@@ -1494,7 +1494,15 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       child: _AddressModelAutocomplete(
         controller: controller,
         items: addresses,
-        onChanged: onChanged,
+        // Emptying the field by hand (backspace, or select-all + delete)
+        // leaves the row half-cleared: the text is gone but the marker,
+        // polyline, fare and via points it produced are still live. So the
+        // last deletion runs the very same handler the ✕ button does — both
+        // paths reset the row identically.
+        onChanged: (value) {
+          onChanged?.call(value);
+          if (value.isEmpty) onPressed?.call();
+        },
         onSelected: onAddressSelected,
         onPickIndex: onPickIndex,
         focusNode: addressFocusNode,
