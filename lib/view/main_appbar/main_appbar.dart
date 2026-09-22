@@ -78,6 +78,7 @@ import '../fare_view/fare_meter/fare_meter.dart';
 import '../fare_view/plot_fare/create_fixed_fare_setting.dart';
 import '../fare_view/plot_fare/plot_fare.dart';
 import '../locations_view/controller/locations_controller.dart';
+import '../locations_view/controller/zone_controller.dart';
 import '../locations_view/location/localization_screen.dart';
 import '../locations_view/location/location_formScreen.dart';
 import '../locations_view/location/location_listScreen.dart';
@@ -1255,6 +1256,9 @@ class _MyHomePageState extends State<MyHomePage> {
             if(controller.selectedMenuItems.length <20){
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
+            if (Get.isRegistered<ZoneController>()) {
+              Get.find<ZoneController>().clearZoneForm();
+            }
             setState(() {
               if(permissions.contains('create_zone')){
                 controller.currentPage.value = ZoneScreen();

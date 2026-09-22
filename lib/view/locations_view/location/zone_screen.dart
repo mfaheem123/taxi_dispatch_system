@@ -1460,24 +1460,25 @@ class _ZoneScreenState extends State<ZoneScreen> {
     controller.refreshMapController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        setState(() {
+        // setState(() {
           if (controller.updateZone.value) {
             // --- UPDATE MODE LOGIC ---
             if (controller.draft.isNotEmpty) {
-              _polyPoints[controller.zoneUpdateId.value.toString()] = List<LatLng>.from(controller.draft);
-              _selectedPolyId = controller.zoneUpdateId.value.toString();
+              controller.polyPoints[controller.zoneUpdateId.value.toString()] = List<LatLng>.from(controller.draft);
+              controller.selectedPolyId.value = controller.zoneUpdateId.value.toString();
               mode = DrawMode.edit;
             } else if (controller.rectStart != null && controller.rectCurrent != null) {
               final rectPts = _rectFromDiagonal(controller.rectStart!, controller.rectCurrent!);
-              _polyPoints[controller.zoneUpdateId.value.toString()] = rectPts;
-              _selectedPolyId = controller.zoneUpdateId.value.toString();
+              controller.polyPoints[controller.zoneUpdateId.value.toString()] = rectPts;
+              controller.selectedPolyId.value = controller.zoneUpdateId.value.toString();
               mode = DrawMode.rectangle;
             }
           } else {
-            mode = DrawMode.navigate;
-            controller.mode.value = DrawMode.navigate;
+            controller.clearZoneForm();
+            // mode = DrawMode.navigate;
+            // controller.mode.value = DrawMode.navigate;
           }
-        });
+          setState(() {});
       }
     });
   }
@@ -1573,10 +1574,12 @@ class _ZoneScreenState extends State<ZoneScreen> {
           final dLat = p.latitude - center0.latitude;
           final dLng = p.longitude - center0.longitude;
           final moved = _translateBounds(b0, dLat, dLng);
-          setState(() => _polyPoints[_selectedPolyId!] = _ptsFromBounds(moved));
+          // setState(() =>
+          controller.polyPoints[controller.selectedPolyId.value!] = _ptsFromBounds(moved);
+          // );
         } else if (_activeHandle != null) {
           final nb = _boundsWithDraggedHandle(b0, _activeHandle!, p);
-          setState(() => _polyPoints[_selectedPolyId!] = _ptsFromBounds(nb));
+          setState(() => controller.polyPoints[controller.selectedPolyId.value!] = _ptsFromBounds(nb));
         }
         return;
       }
@@ -1723,7 +1726,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
 
   void _onPanStart(Offset global) async {
 
-    bool hasExistingZone = _polyPoints.isNotEmpty || controller.draft.isNotEmpty;
+    bool hasExistingZone = controller.polyPoints.isNotEmpty || controller.draft.isNotEmpty;
 
     // if (hasExistingZone && (mode == DrawMode.points || mode == DrawMode.freehand || mode == DrawMode.rectangle)) {
     //   BotToast.showText(
@@ -1756,7 +1759,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
     if (mode == DrawMode.rectangle) {
       // Saved rectangle grips
       if (_selectedPolyId != null) {
-        final pts = _polyPoints[_selectedPolyId!];
+        final pts = controller.polyPoints[controller.selectedPolyId.value!];
         if (pts != null && _isAxisAlignedRect(pts)) {
           final b = _boundsFromPts(pts);
           final hit = await _nearestRectGripAt(global, b);
@@ -1891,17 +1894,17 @@ class _ZoneScreenState extends State<ZoneScreen> {
     final set = <Polygon>{};
 
     // Saved polygons
-    _polyPoints.forEach((id, pts) {
+    controller.polyPoints.forEach((id, pts) {
       set.add(Polygon(
         polygonId: PolygonId(id),
         points: pts,
         strokeWidth: 3,
-        strokeColor: id == _selectedPolyId ? Colors.orange : Colors.green,
-        fillColor: (id == _selectedPolyId ? Colors.orange : Colors.green)
+        strokeColor: id == controller.selectedPolyId.value ? Colors.orange : Colors.green,
+        fillColor: (id == controller.selectedPolyId.value ? Colors.orange : Colors.green)
             .withOpacity(0.18),
         geodesic: true,
         consumeTapEvents: true,
-        zIndex: id == _selectedPolyId ? 2 : 1,
+        zIndex: id == controller.selectedPolyId.value ? 2 : 1,
         onTap: () {
           if (mode == DrawMode.edit || mode == DrawMode.rectangle) {
             setState(() => _selectedPolyId = id);
@@ -1909,7 +1912,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
         },
       ));
     });
-    if (controller.updateZone.value && _polyPoints.isEmpty) {
+    if (controller.updateZone.value && controller.polyPoints.isEmpty) {
       if (controller.draft.isNotEmpty) {
         set.add(Polygon(
           polygonId: PolygonId(controller.zoneUpdateId.value.toString()),
@@ -2051,7 +2054,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
 
     // Rectangle-mode grips for saved rectangles (no need to switch to Edit)
     if (mode == DrawMode.rectangle && _selectedPolyId != null) {
-      final pts = _polyPoints[_selectedPolyId!];
+      final pts = controller.polyPoints[controller.selectedPolyId.value!];
       if (pts != null && _isAxisAlignedRect(pts)) {
 
         final b = _boundsFromPts(pts);
@@ -2072,7 +2075,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
               setState(() {
                 final nb = _boundsWithDraggedHandle(b, handle, newPos);
                 final newPts = _ptsFromBounds(nb);
-                _polyPoints[_selectedPolyId!] = newPts;
+                controller.polyPoints[controller.selectedPolyId.value!] = newPts;
 
                 controller.rectStart = LatLng(nb.minLat, nb.minLng);
                 controller.rectCurrent = LatLng(nb.maxLat, nb.maxLng);
@@ -2093,7 +2096,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
               final dLat = newCenter.latitude - center.latitude;
               final dLng = newCenter.longitude - center.longitude;
               final moved = _translateBounds(b, dLat, dLng);
-              _polyPoints[_selectedPolyId!] = _ptsFromBounds(moved);
+              controller.polyPoints[controller.selectedPolyId.value!] = _ptsFromBounds(moved);
             });
           },
         ));
@@ -2102,7 +2105,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
 
     // Edit mode grips (unchanged)
     if (mode == DrawMode.edit && _selectedPolyId != null) {
-      final pts = _polyPoints[_selectedPolyId!];
+      final pts = controller.polyPoints[controller.selectedPolyId.value!];
       if (pts != null && pts.isNotEmpty) {
         if (_isAxisAlignedRect(pts)) {
           final b = _boundsFromPts(pts);
@@ -2120,7 +2123,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
               onDragEnd: (newPos) {
                 setState(() {
                   final nb = _boundsWithDraggedHandle(b, handle, newPos);
-                  _polyPoints[_selectedPolyId!] = _ptsFromBounds(nb);
+                  controller.polyPoints[controller.selectedPolyId.value!] = _ptsFromBounds(nb);
                 });
               },
             ));
@@ -2138,18 +2141,18 @@ class _ZoneScreenState extends State<ZoneScreen> {
                 setState(() {
                   final list = List<LatLng>.from(pts);
                   list[i] = newPos;
-                  _polyPoints[_selectedPolyId!] = list;
+                  controller.polyPoints[controller.selectedPolyId.value!] = list;
 
                   controller.draft.assignAll(list);
                   controller.pointsDraft.assignAll(list);
                 });
               },
               onTap: () {
-                final list = List<LatLng>.from(_polyPoints[_selectedPolyId!]!);
+                final list = List<LatLng>.from(controller.polyPoints[controller.selectedPolyId.value!]!);
                 if (list.length > 3) {
                   setState(() {
                     list.removeAt(i);
-                    _polyPoints[_selectedPolyId!] = list;
+                    controller.polyPoints[controller.selectedPolyId.value!] = list;
                     controller.draft.assignAll(list);
                     controller.pointsDraft.assignAll(list);
                   });
@@ -2196,340 +2199,384 @@ class _ZoneScreenState extends State<ZoneScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return GetBuilder<ZoneController>(
+      builder: (controller) {
+        final polygons = _buildPolygonsForRender();
+        final markers = _buildMarkersForRender();
 
-    final polygons = _buildPolygonsForRender();
-    final markers = _buildMarkersForRender();
-
-    return SizedBox(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      child: Container(
-        color: Colors.grey[200],
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Form Section
-            Expanded(
-              flex: 1,
-              child: Container(
-                padding: EdgeInsets.all(15),
-                color: Colors.white,
-                margin: EdgeInsets.symmetric(horizontal: 10),
-                child: FocusTraversalGroup(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 15),
-
-                      // 1️⃣ NAME
-                      TextField(
-                        focusNode: _nameFocusNode,
-                        textInputAction: TextInputAction.next,
-                        controller: controller.zonenameContoller,
-                        inputFormatters: [UpperCaseTextFormatter()],
-                        decoration: InputDecoration(
-                          labelText: 'NAME',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 15),
-
-                      // 2️⃣ SHORT NAME
-                      TextField(
-                        focusNode: _shortNameFocusNode,
-                        textInputAction: TextInputAction.next,
-                        controller: controller.secondarynamezoneController,
-                        inputFormatters: [UpperCaseTextFormatter()],
-                        decoration: InputDecoration(
-                          labelText: 'SHORT NAME',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 15),
-
-                      // 3️⃣ ZONE TYPE
-                      _noScrollArrowKeys(
-                        child: Obx(() => DropdownButtonFormField<String>(
-                          focusNode: _zoneFocusNode,
-                          value: controller.zoneValue.value.toUpperCase(),
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 8),
-                          ),
-                          items: List<String>.from(controller.zoneItems)
-                              .map((e) => DropdownMenuItem(
-                              value: e.toUpperCase(),
-                              child: Text(e.toUpperCase())))
-                              .toList(),
-                          onChanged: (String? newValue) {
-                            controller.zoneValue.value = newValue!;
-                          },
-                        )),
-                      ),
-                      SizedBox(height: 15),
-
-                      // 4️⃣ CATEGORY
-                      _noScrollArrowKeys(
-                        child: Obx(() => DropdownButtonFormField<String>(
-                          focusNode: _categoryFocusNode,
-                          value: controller.categoryValue.value.toUpperCase(),
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 8),
-                          ),
-                          items: List<String>.from(controller.categoryItems)
-                              .map((e) => DropdownMenuItem(
-                              value: e.toUpperCase(),
-                              child: Text(e.toUpperCase())))
-                              .toList(),
-                          onChanged: (String? newValue) {
-                            controller.categoryValue.value = newValue!;
-                          },
-                        )),
-                      ),
-                      SizedBox(height: 20),
-
-                      // 5️⃣ & 6️⃣ BUTTONS
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        return SizedBox(
+          height: MediaQuery
+              .of(context)
+              .size
+              .height,
+          width: MediaQuery
+              .of(context)
+              .size
+              .width,
+          child: Container(
+            color: Colors.grey[200],
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Form Section
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    padding: EdgeInsets.all(15),
+                    color: Colors.white,
+                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    child: FocusTraversalGroup(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ElevatedButton(
-                            focusNode: _clearButtonFocusNode,
-                            onPressed: () {
-                              controller.clearZoneForm();
-                              setState(() {});
-                            },
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              backgroundColor: Colors.red[700],
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
-                              shape: RoundedRectangleBorder(
+                          SizedBox(height: 15),
+
+                          // 1️⃣ NAME
+                          TextField(
+                            focusNode: _nameFocusNode,
+                            textInputAction: TextInputAction.next,
+                            controller: controller.zonenameContoller,
+                            inputFormatters: [UpperCaseTextFormatter()],
+                            decoration: InputDecoration(
+                              labelText: 'NAME',
+                              border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(5),
                               ),
                             ),
-                            child: Text('CLEAR'),
                           ),
-                          if (permissions.contains('update_zone'))
-                            ElevatedButton(
-                              focusNode: _saveButtonFocusNode,
-                              onPressed: () async {
-                                await controller.postZone(context);
-                                setState(() {
-                                  _polyPoints.clear();
-                                  _selectedPolyId = null;
-                                  mode = DrawMode.navigate;
-                                  _cancelActiveRectDrag();
-                                });
-                                BotToast.showText(
-                                    text: 'ZONE DATA SUBMITTED SUCCESSFULLY');
-                              },
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.white,
-                                backgroundColor: Colors.green[700],
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
+                          SizedBox(height: 15),
+
+                          // 2️⃣ SHORT NAME
+                          TextField(
+                            focusNode: _shortNameFocusNode,
+                            textInputAction: TextInputAction.next,
+                            controller: controller.secondarynamezoneController,
+                            inputFormatters: [UpperCaseTextFormatter()],
+                            decoration: InputDecoration(
+                              labelText: 'SHORT NAME',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5),
                               ),
-                              child: Text(
-                                  controller.updateZone.value ? "EDIT" : "SAVE"),
-                            )
+                            ),
+                          ),
+                          SizedBox(height: 15),
+
+                          // 3️⃣ ZONE TYPE
+                          _noScrollArrowKeys(
+                            child: Obx(() =>
+                                DropdownButtonFormField<String>(
+                                  focusNode: _zoneFocusNode,
+                                  value: controller.zoneValue.value
+                                      .toUpperCase(),
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    contentPadding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 8),
+                                  ),
+                                  items: List<String>.from(controller.zoneItems)
+                                      .map((e) =>
+                                      DropdownMenuItem(
+                                          value: e.toUpperCase(),
+                                          child: Text(e.toUpperCase())))
+                                      .toList(),
+                                  onChanged: (String? newValue) {
+                                    controller.zoneValue.value = newValue!;
+                                  },
+                                )),
+                          ),
+                          SizedBox(height: 15),
+
+                          // 4️⃣ CATEGORY
+                          _noScrollArrowKeys(
+                            child: Obx(() =>
+                                DropdownButtonFormField<String>(
+                                  focusNode: _categoryFocusNode,
+                                  value: controller.categoryValue.value
+                                      .toUpperCase(),
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    contentPadding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 8),
+                                  ),
+                                  items: List<String>.from(
+                                      controller.categoryItems)
+                                      .map((e) =>
+                                      DropdownMenuItem(
+                                          value: e.toUpperCase(),
+                                          child: Text(e.toUpperCase())))
+                                      .toList(),
+                                  onChanged: (String? newValue) {
+                                    controller.categoryValue.value = newValue!;
+                                  },
+                                )),
+                          ),
+                          SizedBox(height: 20),
+
+                          // 5️⃣ & 6️⃣ BUTTONS
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ElevatedButton(
+                                focusNode: _clearButtonFocusNode,
+                                onPressed: () {
+                                  controller.clearZoneForm();
+                                  setState(() {});
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  backgroundColor: Colors.red[700],
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 10),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                ),
+                                child: Text('CLEAR'),
+                              ),
+                              if (permissions.contains('update_zone'))
+                                ElevatedButton(
+                                  focusNode: _saveButtonFocusNode,
+                                  onPressed: () async {
+                                    await controller.postZone(context);
+                                    setState(() {
+                                      _polyPoints.clear();
+                                      _selectedPolyId = null;
+                                      mode = DrawMode.navigate;
+                                      _cancelActiveRectDrag();
+                                    });
+                                    BotToast.showText(
+                                        text: 'ZONE DATA SUBMITTED SUCCESSFULLY');
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: Colors.green[700],
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 10),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                  ),
+                                  child: Text(
+                                      controller.updateZone.value
+                                          ? "EDIT"
+                                          : "SAVE"),
+                                )
+                            ],
+                          ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
 
-            // Map Placeholder
-            Expanded(
-              flex: 3,
-              child: Container(
-                  color: DynamicColors.whiteClr,
-                  width: MediaQuery.of(context).size.width * 0.7,
-                  height: MediaQuery.of(context).size.height * 0.55,
-                  child: Stack(children: [
-                    RepaintBoundary(
-                        key: controller.mapKey,
-                        child: GoogleMap(
-                          key: ValueKey("main-map"),
-                          initialCameraPosition: _initialCamera,
-                          onMapCreated: (c) async {
-                            if (!controller.ctrl.isCompleted) {
-                              controller.ctrl.complete(c);
-                            }
-                            await Future.delayed(const Duration(milliseconds: 500));
-                            if (mounted) setState(() {});
-                          },
-                          scrollGesturesEnabled: !_lockMapGestures,
-                          zoomGesturesEnabled: !_lockMapGestures,
-                          rotateGesturesEnabled: !_lockMapGestures,
-                          tiltGesturesEnabled: !_lockMapGestures,
-                          polygons: polygons,
-                          markers: markers,
-                          myLocationButtonEnabled: false,
-                          zoomControlsEnabled: false,
-                          compassEnabled: false,
-                          onTap: (latLng) async {
-                            if (!controller.ctrl.isCompleted) return;
+                // Map Placeholder
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                      color: DynamicColors.whiteClr,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width * 0.7,
+                      height: MediaQuery
+                          .of(context)
+                          .size
+                          .height * 0.55,
+                      child: Stack(children: [
+                        RepaintBoundary(
+                            key: controller.mapKey,
+                            child: GoogleMap(
+                              key: ValueKey("main-map"),
+                              initialCameraPosition: _initialCamera,
+                              onMapCreated: (c) async {
+                                if (!controller.ctrl.isCompleted) {
+                                  controller.ctrl.complete(c);
+                                }
+                                await Future.delayed(
+                                    const Duration(milliseconds: 500));
+                                if (mounted) setState(() {});
+                              },
+                              scrollGesturesEnabled: !_lockMapGestures,
+                              zoomGesturesEnabled: !_lockMapGestures,
+                              rotateGesturesEnabled: !_lockMapGestures,
+                              tiltGesturesEnabled: !_lockMapGestures,
+                              polygons: polygons,
+                              markers: markers,
+                              myLocationButtonEnabled: false,
+                              zoomControlsEnabled: false,
+                              compassEnabled: false,
+                              onTap: (latLng) async {
+                                if (!controller.ctrl.isCompleted) return;
 
-                            bool hasExistingZone = _polyPoints.isNotEmpty || controller.draft.isNotEmpty;
+                                bool hasExistingZone = controller.polyPoints.isNotEmpty ||
+                                    controller.draft.isNotEmpty;
 
-                            // if (hasExistingZone && mode == DrawMode.points) {
-                            if (controller.updateZone.value && hasExistingZone && mode == DrawMode.points) {
-                              BotToast.showText(
-                                text: "You can only edit this existing zone, creating a new zone is not allowed.",
-                              );
-                              return;
-                            }
+                                // if (hasExistingZone && mode == DrawMode.points) {
+                                if (controller.updateZone.value &&
+                                    hasExistingZone &&
+                                    mode == DrawMode.points) {
+                                  BotToast.showText(
+                                    text: "You can only edit this existing zone, creating a new zone is not allowed.",
+                                  );
+                                  return;
+                                }
 
-                            try {
-                              final ctrl = await controller.ctrl.future;
-                              final screen = await ctrl.getScreenCoordinate(latLng);
-                              if (screen.y <= _toolbarHeight) return;
-                              if (mode == DrawMode.points) {
-                                setState(() => controller.pointsDraft.add(latLng));
-                              } else if (mode == DrawMode.edit) {
-                                setState(() => _selectedPolyId = null);
-                              }
-                            } catch (e) {
-                              debugPrint("Map coordinate error: $e");
-                            }
-                          },
-                        )),
-
-                    if (mode == DrawMode.freehand || mode == DrawMode.rectangle)
-                      Positioned(
-                        top: 45,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        child: Listener(
-                          key: UniqueKey(),
-                          behavior: HitTestBehavior.opaque,
-                          onPointerDown: (e) => _onPanStart(e.position),
-                          onPointerMove: (e) => _onPanUpdate(e.position),
-                          onPointerUp: (_) => _onPanEnd(),
-                          onPointerCancel: (_) => _onPanEnd(),
-                        ),
-                      ),
-
-                    if ((mode == DrawMode.freehand &&
-                        controller.draft.isNotEmpty) ||
-                        (mode == DrawMode.rectangle &&
-                            (controller.rectStart != null &&
-                                controller.rectCurrent != null ||
-                                _selectedPolyId != null)) ||
-                        (mode == DrawMode.points &&
-                            controller.pointsDraft.isNotEmpty))
-                      Positioned(
-                          left: 12,
-                          bottom: 16,
-                          child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                  color: Colors.black54,
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 8),
-                                  child: Text(
-                                      "Tip: In Rectangle mode, drag corners/edges or the center to resize/move — even before saving.",
-                                      style: TextStyle(color: Colors.white))))),
-                    Container(
-                        decoration: BoxDecoration(
-                            color: DynamicColors.whiteClr,
-                            border: Border(
-                                top: BorderSide(color: DynamicColors.gryClr),
-                                bottom: BorderSide(color: DynamicColors.gryClr))),
-                        height: 45,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            SizedBox(
-                              width: 160,
-                              child: TextField(
-                                controller: controller.postcodeController,
-                                inputFormatters: [UpperCaseTextFormatter()],
-                                decoration: InputDecoration(
-                                  labelText: "POST CODE",
-                                  hintText: "e.g. SW1A 1AA",
-                                  border: OutlineInputBorder(),
-                                  isDense: true,
-                                  contentPadding: EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 8),
-                                ),
-                                onSubmitted: (value) {
-                                  if (value.isNotEmpty) {
-                                    _goToPostcode(value);
+                                try {
+                                  final ctrl = await controller.ctrl.future;
+                                  final screen = await ctrl.getScreenCoordinate(
+                                      latLng);
+                                  if (screen.y <= _toolbarHeight) return;
+                                  if (mode == DrawMode.points) {
+                                    setState(() =>
+                                        controller.pointsDraft.add(latLng));
+                                  } else if (mode == DrawMode.edit) {
+                                    setState(() => _selectedPolyId = null);
                                   }
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-
-                            ElevatedButton(
-                              onPressed: () {
-                                final value = controller.postcodeController.text;
-                                if (value.isNotEmpty) {
-                                  _goToPostcode(value);
+                                } catch (e) {
+                                  debugPrint("Map coordinate error: $e");
                                 }
                               },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: DynamicColors.primaryClr,
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              child: const Text("SEARCH"),
-                            ),
-                            const SizedBox(width: 10),
+                            )),
 
-                            _modeButton(DrawMode.navigate, Icons.pan_tool_alt,
-                                "Navigate"),
-
-                            _modeButton(
-                                DrawMode.freehand, Icons.gesture, "Freehand"),
-                            _modeButton(DrawMode.rectangle, Icons.crop_square,
-                                "Rectangle"),
-                            _modeButton(
-                                DrawMode.points, Icons.more_horiz, "Points"),
-                            _modeButton(DrawMode.edit, Icons.edit, "Edit"),
-                            IconButton(
-                              tooltip: "Clear all",
-                              icon: const Icon(Icons.delete_outline),
-                              onPressed: () => setState(() {
-                                controller.draft.clear();
-                                controller.pointsDraft.clear();
-                                controller.rectStart = null;
-                                controller.rectCurrent = null;
-                                _polyPoints.clear();
-                                _selectedPolyId = null;
-                                if (mode == DrawMode.edit || mode == DrawMode.navigate) {
-                                  mode = DrawMode.points;
-                                  controller.mode.value = DrawMode.points;
-                                }
-                              }),
+                        if (mode == DrawMode.freehand ||
+                            mode == DrawMode.rectangle)
+                          Positioned(
+                            top: 45,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            child: Listener(
+                              key: UniqueKey(),
+                              behavior: HitTestBehavior.opaque,
+                              onPointerDown: (e) => _onPanStart(e.position),
+                              onPointerMove: (e) => _onPanUpdate(e.position),
+                              onPointerUp: (_) => _onPanEnd(),
+                              onPointerCancel: (_) => _onPanEnd(),
                             ),
-                          ],
-                        )),
-                  ])),
+                          ),
+
+                        if ((mode == DrawMode.freehand &&
+                            controller.draft.isNotEmpty) ||
+                            (mode == DrawMode.rectangle &&
+                                (controller.rectStart != null &&
+                                    controller.rectCurrent != null ||
+                                    _selectedPolyId != null)) ||
+                            (mode == DrawMode.points &&
+                                controller.pointsDraft.isNotEmpty))
+                          Positioned(
+                              left: 12,
+                              bottom: 16,
+                              child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                      color: Colors.black54,
+                                      borderRadius: BorderRadius.circular(8)),
+                                  child: const Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 8),
+                                      child: Text(
+                                          "Tip: In Rectangle mode, drag corners/edges or the center to resize/move — even before saving.",
+                                          style: TextStyle(
+                                              color: Colors.white))))),
+                        Container(
+                            decoration: BoxDecoration(
+                                color: DynamicColors.whiteClr,
+                                border: Border(
+                                    top: BorderSide(
+                                        color: DynamicColors.gryClr),
+                                    bottom: BorderSide(
+                                        color: DynamicColors.gryClr))),
+                            height: 45,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                SizedBox(
+                                  width: 160,
+                                  child: TextField(
+                                    controller: controller.postcodeController,
+                                    inputFormatters: [UpperCaseTextFormatter()],
+                                    decoration: InputDecoration(
+                                      labelText: "POST CODE",
+                                      hintText: "e.g. SW1A 1AA",
+                                      border: OutlineInputBorder(),
+                                      isDense: true,
+                                      contentPadding: EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 8),
+                                    ),
+                                    onSubmitted: (value) {
+                                      if (value.isNotEmpty) {
+                                        _goToPostcode(value);
+                                      }
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+
+                                ElevatedButton(
+                                  onPressed: () {
+                                    final value = controller.postcodeController
+                                        .text;
+                                    if (value.isNotEmpty) {
+                                      _goToPostcode(value);
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: DynamicColors.primaryClr,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 12),
+                                    minimumSize: Size.zero,
+                                    tapTargetSize: MaterialTapTargetSize
+                                        .shrinkWrap,
+                                  ),
+                                  child: const Text("SEARCH"),
+                                ),
+                                const SizedBox(width: 10),
+
+                                _modeButton(
+                                    DrawMode.navigate, Icons.pan_tool_alt,
+                                    "Navigate"),
+
+                                _modeButton(
+                                    DrawMode.freehand, Icons.gesture,
+                                    "Freehand"),
+                                _modeButton(
+                                    DrawMode.rectangle, Icons.crop_square,
+                                    "Rectangle"),
+                                _modeButton(
+                                    DrawMode.points, Icons.more_horiz,
+                                    "Points"),
+                                _modeButton(DrawMode.edit, Icons.edit, "Edit"),
+                                IconButton(
+                                  tooltip: "Clear all",
+                                  icon: const Icon(Icons.delete_outline),
+                                  onPressed: () =>
+                                      setState(() {
+                                        controller.draft.clear();
+                                        controller.pointsDraft.clear();
+                                        controller.rectStart = null;
+                                        controller.rectCurrent = null;
+                                        controller.polyPoints.clear();
+                                        controller.selectedPolyId.value = null;
+                                        if (mode == DrawMode.edit ||
+                                            mode == DrawMode.navigate) {
+                                          mode = DrawMode.points;
+                                          controller.mode.value =
+                                              DrawMode.points;
+                                        }
+                                      }),
+                                ),
+                              ],
+                            )),
+                      ])),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
