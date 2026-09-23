@@ -1,6 +1,8 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 
 import '../../component/networks/api.dart';
 import '../administration/model/list_subsDiary.dart';
@@ -24,6 +26,7 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     if(widget.bookingItem?.subsidiaryId != null){
       getSubsidiary();
     }
@@ -65,8 +68,8 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
                     const SizedBox(height: 8),
                      Text('BOOKING RECEIPT', style: outFitRegular(fontSize: 32, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
-                     Text('EMAIL: ${selectedSubsidiary !=null? selectedSubsidiary!.email : ''}', style: outFitRegular(fontSize: 12, color: Colors.grey)),
-                     Text('MOBILE:  ${selectedSubsidiary !=null?selectedSubsidiary!.emergencyContactNumber : ''}| TELEPHONE: ${selectedSubsidiary !=null?selectedSubsidiary!.telephoneNumber : ''}', style: outFitRegular(fontSize: 12, color: Colors.grey)),
+                     Text('EMAIL: ${selectedSubsidiary !=null? selectedSubsidiary!.email : ''}', style: outFitRegular(fontSize: 14)),
+                     Text('MOBILE:  ${selectedSubsidiary !=null?selectedSubsidiary!.emergencyContactNumber : ''}| TELEPHONE: ${selectedSubsidiary !=null?selectedSubsidiary!.telephoneNumber : ''}', style: outFitRegular(fontSize: 14)),
 
                   ],
                 ),
@@ -80,14 +83,14 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('NAME: ${widget.bookingItem!.name ?? ''}',
-                          style: outFitRegular(fontWeight: FontWeight.w600, fontSize: 13)),
-                      Text('EMAIL: ${widget.bookingItem!.email ?? ''}',
-                          style: outFitRegular(fontWeight: FontWeight.w600, fontSize: 13)),
-                      Text('MOBILE: ${widget.bookingItem!.mobile ?? ''}',
-                          style: outFitRegular(fontWeight: FontWeight.w600, fontSize: 13)),
-                      Text('TELEPHONE: ${widget.bookingItem!.telephone ?? ''}',
-                          style: outFitRegular(fontWeight: FontWeight.w600, fontSize: 13)),
+                      Text('NAME: ${widget.bookingItem?.name ?? ''}',
+                          style: outFitRegular(fontWeight: FontWeight.w600, fontSize: 14)),
+                      Text('EMAIL: ${widget.bookingItem?.email ?? ''}',
+                          style: outFitRegular(fontWeight: FontWeight.w600, fontSize: 14)),
+                      Text('MOBILE: ${widget.bookingItem?.mobile ?? ''}',
+                          style: outFitRegular(fontWeight: FontWeight.w600, fontSize: 14)),
+                      Text('TELEPHONE: ${widget.bookingItem?.telephone ?? ''}',
+                          style: outFitRegular(fontWeight: FontWeight.w600, fontSize: 14)),
 
                     ],
                   ),
@@ -99,18 +102,15 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
                         children: [
                            Text('STATUS: ', style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 14)),
                           Text(
-                            ((widget.bookingItem!.bookingStatus?.bookingStatus ?? 'COMPLETED').toString()).toUpperCase(),
-                            style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.green),
+                            ((widget.bookingItem?.bookingStatus?.bookingStatus ?? '').toString()).toUpperCase(),
+                            style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.green),
 
                           ),
                         ],
                       ),
                       Text(
-                        'DATETIME: ${widget.bookingItem!.pickupDate ?? ''} ${widget.bookingItem!.pickupTime ?? ''}'.trim().isEmpty
-                            ? 'DATETIME: ${widget.bookingItem!.createdAt ?? ''}'
-                            : 'DATETIME: ${widget.bookingItem!.pickupDate ?? ''} ${widget.bookingItem!.pickupTime ?? ''}'.trim(),
-                        style: outFitRegular(fontSize: 13),
-
+                        'DATETIME: ${_formatDate(widget.bookingItem?.pickupDate)} ${widget.bookingItem?.pickupTime ?? ''}'.trim(),
+                        style: outFitRegular(fontSize: 14),
                       ),
                     ],
                   ),
@@ -128,9 +128,10 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
                   // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('BOOKING', style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 16)),
-                    Text('REFERENCE # ${(widget.bookingItem?.referenceNumber ?? widget.bookingItem?.id ?? '').toString()}',
+                    const Spacer(),
+                    Text('REFERENCE # ', style: outFitRegular(fontSize: 14, fontWeight: FontWeight.bold),),
+                        Text ('${(widget.bookingItem?.referenceNumber ?? widget.bookingItem?.id ?? '').toString()}',
                         style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.red)),
-
                   ],
                 ),
               ),
@@ -143,8 +144,8 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
                 child: Column(
                   children: [
                     _buildRow(
-                      'PICKUP DOOR #', (widget.bookingItem?.pickupDoorNumber ?? '').toString(),
-                      'DROPOFF DOOR #', (widget.bookingItem?.dropoffDoorNumber ?? '').toString(),
+                      'PICKUP DOOR #', ((widget.bookingItem?.pickupDoorNumber ?? '').toString()).toUpperCase(),
+                      'DROPOFF DOOR #', ((widget.bookingItem?.dropoffDoorNumber ?? '').toString()).toUpperCase(),
 
                     ),
                     const SizedBox(height: 8),
@@ -154,8 +155,8 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
                     ),
                     const SizedBox(height: 8),
                     _buildRow(
-                      'JOURNEY TYPE', (widget.bookingItem?.journeyType?.journeyType ?? 'O/W').toString(),
-                      'ACCOUNT', (widget.bookingItem?.account?.name ?? '').toString(),
+                      'JOURNEY TYPE', ((widget.bookingItem?.journeyType?.journeyType ?? 'O/W').toString()).toUpperCase(),
+                      'ACCOUNT', ((widget.bookingItem?.account?.name ?? '').toString()).toUpperCase(),
 
                     ),
                     const SizedBox(height: 8),
@@ -184,7 +185,7 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
                 child: Column(
                   children: [
                     _buildRow(
-                      'PAYMENT TYPE', (widget.bookingItem?.paymentType?.name ?? 'CASH').toString(),
+                      'PAYMENT TYPE', ((widget.bookingItem?.paymentType?.name ?? 'CASH').toString()).toUpperCase(),
                       'MEET & GREET', '£ ${widget.bookingItem?.meetAndGreet ?? '0'}',
 
                     ),
@@ -215,9 +216,9 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('TOTAL CHARGES', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    Text('TOTAL CHARGES', style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 14)),
                     Text('£ ${widget.bookingItem?.totalCharges ?? widget.bookingItem?.fares ?? '0.00'}',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                        style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 14)),
 
                   ],
                 ),
@@ -254,5 +255,10 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
           ),
       ],
     );
+  }
+
+  String _formatDate(DateTime? rawDate) {
+    if (rawDate == null) return '';
+    return "${rawDate.year}-${rawDate.month.toString().padLeft(2, '0')}-${rawDate.day.toString().padLeft(2, '0')}";
   }
 }

@@ -6,6 +6,7 @@ import 'package:get_storage/get_storage.dart';
 import '../view/auth/login_screen.dart';
 import '../view/auth/edit_jobs.dart';
 import '../view/auth/new_login_screen.dart';
+import '../view/auth/receipt_details.dart';
 import '../view/booking_view/complete_bookingview.dart';
 import '../view/booking_view/update_booking.dart';
 import '../view/cli_Screen.dart';
@@ -121,6 +122,10 @@ class AppPages {
     GetPage(
       name: _Paths.lostProperty,
       page: () => LostPropertyScreen(),
+    ),
+    GetPage(
+      name: _Paths.receiptDetails,
+      page: () => BookingReceiptScreen(),
     ),
   ];
 }
