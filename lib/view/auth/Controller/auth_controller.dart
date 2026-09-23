@@ -227,10 +227,10 @@ class AuthController extends GetxController {
         // Safe check: Ensure context exists before showing alert
         if (Get.context != null) {
           DriverExpiryDocumentsAlert.show(Get.context!, expiryData.drivers);
+          print("${response.data} driver API Response 22222222222222222222222222222222222222222222");
         }
         // DriverExpiryDocumentsAlert.show(Get.context!, expiryData.drivers);
       }
-      print("${response.data} driver API Response 22222222222222222222222222222222222222222222");
     }else{
       print("Expiry API Error: $response");
 

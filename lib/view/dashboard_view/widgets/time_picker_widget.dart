@@ -1318,7 +1318,7 @@ class KeyboardDatePicker extends StatefulWidget {
     this.fontSize = 12,
     this.iconSize = 14,
     this.allowPastDates = true,
-    this.allowFutureDates = true,
+    this.allowFutureDates = true, FocusNode? focusNode,
   })  : initialDate = initialDate ?? DateTime(2000, 1, 1),
         super(key: key);
 
