@@ -1,3 +1,4 @@
+import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 
@@ -43,6 +44,7 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: widget.bookingItem?.subsidiaryId != null && selectedSubsidiary == null?Center(child: CircularProgressIndicator(),): SafeArea(
@@ -55,15 +57,17 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
               Center(
                 child: Column(
                   children: [
+                    SizedBox(height: 20),
                     Image.asset(
                       'assets/cabflow_logo.png',
                       height: 55,
                     ),
                     const SizedBox(height: 8),
-                     Text('BOOKING RECEIPT', style: outFitRegular(fontSize: 22, fontWeight: FontWeight.bold)),
+                     Text('BOOKING RECEIPT', style: outFitRegular(fontSize: 32, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
                      Text('EMAIL: ${selectedSubsidiary !=null? selectedSubsidiary!.email : ''}', style: outFitRegular(fontSize: 12, color: Colors.grey)),
                      Text('MOBILE:  ${selectedSubsidiary !=null?selectedSubsidiary!.emergencyContactNumber : ''}| TELEPHONE: ${selectedSubsidiary !=null?selectedSubsidiary!.telephoneNumber : ''}', style: outFitRegular(fontSize: 12, color: Colors.grey)),
+
                   ],
                 ),
               ),
@@ -84,6 +88,7 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
                           style: outFitRegular(fontWeight: FontWeight.w600, fontSize: 13)),
                       Text('TELEPHONE: ${widget.bookingItem!.telephone ?? ''}',
                           style: outFitRegular(fontWeight: FontWeight.w600, fontSize: 13)),
+
                     ],
                   ),
                   Column(
@@ -92,10 +97,11 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                           Text('STATUS: ', style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 13)),
+                           Text('STATUS: ', style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 14)),
                           Text(
                             ((widget.bookingItem!.bookingStatus?.bookingStatus ?? 'COMPLETED').toString()).toUpperCase(),
                             style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.green),
+
                           ),
                         ],
                       ),
@@ -104,6 +110,7 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
                             ? 'DATETIME: ${widget.bookingItem!.createdAt ?? ''}'
                             : 'DATETIME: ${widget.bookingItem!.pickupDate ?? ''} ${widget.bookingItem!.pickupTime ?? ''}'.trim(),
                         style: outFitRegular(fontSize: 13),
+
                       ),
                     ],
                   ),
@@ -114,13 +121,16 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
               // BOOKING DETAILS
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                color: const Color(0xFFF3F4F6),
+                decoration: BoxDecoration(borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                  color: DynamicColors.gryClr.withOpacity(0.5)),
+               
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('BOOKING', style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 16)),
                     Text('REFERENCE # ${(widget.bookingItem?.referenceNumber ?? widget.bookingItem?.id ?? '').toString()}',
                         style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.red)),
+
                   ],
                 ),
               ),
@@ -128,12 +138,14 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(10)),
                 ),
                 child: Column(
                   children: [
                     _buildRow(
                       'PICKUP DOOR #', (widget.bookingItem?.pickupDoorNumber ?? '').toString(),
                       'DROPOFF DOOR #', (widget.bookingItem?.dropoffDoorNumber ?? '').toString(),
+
                     ),
                     const SizedBox(height: 8),
                     _buildRow(
@@ -144,6 +156,7 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
                     _buildRow(
                       'JOURNEY TYPE', (widget.bookingItem?.journeyType?.journeyType ?? 'O/W').toString(),
                       'ACCOUNT', (widget.bookingItem?.account?.name ?? '').toString(),
+
                     ),
                     const SizedBox(height: 8),
                     _buildRow(
@@ -158,19 +171,22 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
               // PAYMENT & CHARGES
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                color: const Color(0xFFF3F4F6),
-                child: const Text('PAYMENT & CHARGES', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                decoration: BoxDecoration(borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                    color: DynamicColors.gryClr.withOpacity(0.5)),
+                child: Text('PAYMENT & CHARGES', style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 20)),
               ),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(8)),
                 ),
                 child: Column(
                   children: [
                     _buildRow(
                       'PAYMENT TYPE', (widget.bookingItem?.paymentType?.name ?? 'CASH').toString(),
                       'MEET & GREET', '£ ${widget.bookingItem?.meetAndGreet ?? '0'}',
+
                     ),
                     const SizedBox(height: 8),
                     _buildRow(
@@ -194,13 +210,15 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
               // --- TOTAL CHARGES FOOTER ---
               Container(
                 padding: const EdgeInsets.all(12),
-                color: const Color(0xFFF3F4F6),
+                decoration: BoxDecoration(borderRadius: const BorderRadius.vertical(bottom: Radius.circular(8)),
+                  color: DynamicColors.gryClr.withOpacity(0.5)),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text('TOTAL CHARGES', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                     Text('£ ${widget.bookingItem?.totalCharges ?? widget.bookingItem?.fares ?? '0.00'}',
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+
                   ],
                 ),
               ),
@@ -217,17 +235,20 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
         Expanded(
           child: Row(
             children: [
-              SizedBox(width: 120, child: Text(label1, style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 11))),
-              Expanded(child: Text(val1, style: outFitRegular(fontSize: 12, fontWeight: FontWeight.w600))),
+              SizedBox(width: 140, child: Text(label1, style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 14))),
+              const SizedBox(width: 12),
+              Expanded(child: Text(val1, style: outFitRegular(fontSize: 14, fontWeight: FontWeight.w600))),
             ],
           ),
         ),
+        const SizedBox(width: 24),
         if (label2.isNotEmpty)
           Expanded(
             child: Row(
               children: [
-                SizedBox(width: 120, child: Text(label2, style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 11))),
-                Expanded(child: Text(val2, style: outFitRegular(fontSize: 12, fontWeight: FontWeight.w600))),
+                SizedBox(width: 140, child: Text(label2, style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 14))),
+                const SizedBox(width: 12),
+                Expanded(child: Text(val2, style: outFitRegular(fontSize: 14, fontWeight: FontWeight.w600))),
               ],
             ),
           ),
