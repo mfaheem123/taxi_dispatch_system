@@ -3779,7 +3779,7 @@ class CustomerModelAutocomplete extends StatefulWidget {
     required this.items,
     required this.decoration,
     this.onChanged,
-    this.onSelected,
+    this.onSelected, FocusNode? focusNode,
   });
   final TextEditingController controller;
   final List<CustomerObject> items;

@@ -218,35 +218,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ? Get.find<LocationController>()
       : Get.put(LocationController());
 
-  // @override
-  // void dispose() {
-  //   for (final c in [
-  //     controller.pickupController,
-  //     controller.dropOffController,
-  //     controller.nameController,
-  //     controller.emailController,
-  //     controller.mobileController,
-  //     controller.telController,
-  //     _date,
-  //     controller.pickUpTimeController,
-  //     controller.minController,
-  //     controller.passController,
-  //     controller.slugController,
-  //     controller.passController,
-  //     controller.luggController,
-  //     controller.sluggController,
-  //     controller.pickupTwoWayController,
-  //     controller.dropOffTwoWayController,
-  //     _rDate,
-  //     controller.pickUpTimeControllerReturn,
-  //     controller.minControllerReturn,
-  //     controller.slugControllerReturn,
-  //   ]) {
-  //     c.dispose();
-  //   }
-  //   super.dispose();
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -614,8 +585,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       width: double.infinity,
                                       child: ElevatedButton.icon(
                                         onPressed: () {
-                                          print("PICK BOOKING COMMIT");
-                                          // _showPickBookingAlert();
+                                          // print("PICK BOOKING COMMIT");
+                                          _showPickBookingAlert();
                                         },
                                         icon: const Icon(Icons.search,
                                             size: 16, color: Colors.white),
