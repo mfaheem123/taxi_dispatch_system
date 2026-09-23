@@ -2462,12 +2462,16 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
 
   void _onReceiptAction(String action) {
     if (action == 'VIEW') {
-      showDialog(
-        context: context,
-        builder: (_) => BookingReceiptScreen(
-          bookingItem: controller.jobDetails!,
-        ),
+      openBookingInNewWindow(
+        Routes.receiptDetails,
+        controller.jobDetails,
       );
+      // showDialog(
+      //   context: context,
+      //   builder: (_) => BookingReceiptScreen(
+      //     bookingItem: controller.jobDetails!,
+      //   ),
+      // );
     } else if (action == 'EMAIL') {
       // EMAIL logic
     } else if (action == 'EXPORT TO PDF') {
