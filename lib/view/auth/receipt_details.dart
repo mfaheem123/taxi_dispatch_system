@@ -1,16 +1,51 @@
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 
-class BookingReceiptScreen extends StatelessWidget {
-  final dynamic bookingItem;
+import '../../component/networks/api.dart';
+import '../administration/model/list_subsDiary.dart';
+import '../dashboard_view/models/dashboard_table_model.dart';
 
-  const BookingReceiptScreen({Key? key, required this.bookingItem}) : super(key: key);
+class BookingReceiptScreen extends StatefulWidget {
+  BookingObjectData? bookingItem;
+
+  BookingReceiptScreen({Key? key, this.bookingItem}) : super(key: key);
+
+  @override
+  State<BookingReceiptScreen> createState() => _BookingReceiptScreenState();
+}
+
+class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
+
+  SubsDiaryModel? subsDiaryModel;
+  Subsidiaries? selectedSubsidiary;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if(widget.bookingItem?.subsidiaryId != null){
+      getSubsidiary();
+    }
+  }
+
+  getSubsidiary() async {
+      var response = await Api().get('subsidiaries/get', sendCompanyId: true);
+      if (response.statusCode == 200) {
+        subsDiaryModel = SubsDiaryModel.fromJson(response.data);
+        int indexx = subsDiaryModel!.subsidiaries!.indexWhere((test) => test.id == widget.bookingItem?.subsidiaryId);
+        if (indexx != -1) {
+          selectedSubsidiary = subsDiaryModel!.subsidiaries![indexx];
+          setState(() {});
+        }
+      }
+
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
+      body: widget.bookingItem?.subsidiaryId != null && selectedSubsidiary == null?Center(child: CircularProgressIndicator(),): SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -27,8 +62,8 @@ class BookingReceiptScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                      Text('BOOKING RECEIPT', style: outFitRegular(fontSize: 22, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
-                     Text('EMAIL: COMPANYTEST.COM', style: outFitRegular(fontSize: 12, color: Colors.grey)),
-                     Text('MOBILE: 020820177 | TELEPHONE: 020820177', style: outFitRegular(fontSize: 12, color: Colors.grey)),
+                     Text('EMAIL: ${selectedSubsidiary !=null? selectedSubsidiary!.email : ''}', style: outFitRegular(fontSize: 12, color: Colors.grey)),
+                     Text('MOBILE:  ${selectedSubsidiary !=null?selectedSubsidiary!.emergencyContactNumber : ''}| TELEPHONE: ${selectedSubsidiary !=null?selectedSubsidiary!.telephoneNumber : ''}', style: outFitRegular(fontSize: 12, color: Colors.grey)),
                   ],
                 ),
               ),
@@ -41,13 +76,13 @@ class BookingReceiptScreen extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('NAME: ${bookingItem?.name ?? ''}',
+                      Text('NAME: ${widget.bookingItem!.name ?? ''}',
                           style: outFitRegular(fontWeight: FontWeight.w600, fontSize: 13)),
-                      Text('EMAIL: ${bookingItem?.email ?? ''}',
+                      Text('EMAIL: ${widget.bookingItem!.email ?? ''}',
                           style: outFitRegular(fontWeight: FontWeight.w600, fontSize: 13)),
-                      Text('MOBILE: ${bookingItem?.mobile ?? ''}',
+                      Text('MOBILE: ${widget.bookingItem!.mobile ?? ''}',
                           style: outFitRegular(fontWeight: FontWeight.w600, fontSize: 13)),
-                      Text('TELEPHONE: ${bookingItem?.telephone ?? ''}',
+                      Text('TELEPHONE: ${widget.bookingItem!.telephone ?? ''}',
                           style: outFitRegular(fontWeight: FontWeight.w600, fontSize: 13)),
                     ],
                   ),
@@ -59,15 +94,15 @@ class BookingReceiptScreen extends StatelessWidget {
                         children: [
                            Text('STATUS: ', style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 13)),
                           Text(
-                            ((bookingItem?.bookingStatus?.bookingStatus ?? 'COMPLETED').toString()).toUpperCase(),
+                            ((widget.bookingItem!.bookingStatus?.bookingStatus ?? 'COMPLETED').toString()).toUpperCase(),
                             style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.green),
                           ),
                         ],
                       ),
                       Text(
-                        'DATETIME: ${bookingItem?.pickupDate ?? ''} ${bookingItem?.pickupTime ?? ''}'.trim().isEmpty
-                            ? 'DATETIME: ${bookingItem?.dateTime ?? ''}'
-                            : 'DATETIME: ${bookingItem?.pickupDate ?? ''} ${bookingItem?.pickupTime ?? ''}'.trim(),
+                        'DATETIME: ${widget.bookingItem!.pickupDate ?? ''} ${widget.bookingItem!.pickupTime ?? ''}'.trim().isEmpty
+                            ? 'DATETIME: ${widget.bookingItem!.createdAt ?? ''}'
+                            : 'DATETIME: ${widget.bookingItem!.pickupDate ?? ''} ${widget.bookingItem!.pickupTime ?? ''}'.trim(),
                         style: outFitRegular(fontSize: 13),
                       ),
                     ],
@@ -84,7 +119,7 @@ class BookingReceiptScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('BOOKING', style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 16)),
-                    Text('REFERENCE # ${(bookingItem?.referenceNumber ?? bookingItem?.id ?? '').toString()}',
+                    Text('REFERENCE # ${(widget.bookingItem?.referenceNumber ?? widget.bookingItem?.id ?? '').toString()}',
                         style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.red)),
                   ],
                 ),
@@ -97,23 +132,23 @@ class BookingReceiptScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     _buildRow(
-                      'PICKUP DOOR #', (bookingItem?.pickupDoorNumber ?? '').toString(),
-                      'DROPOFF DOOR #', (bookingItem?.dropoffDoorNumber ?? '').toString(),
+                      'PICKUP DOOR #', (widget.bookingItem?.pickupDoorNumber ?? '').toString(),
+                      'DROPOFF DOOR #', (widget.bookingItem?.dropoffDoorNumber ?? '').toString(),
                     ),
                     const SizedBox(height: 8),
                     _buildRow(
-                      'PICKUP', (bookingItem?.pickup ?? '').toString(),
-                      'DROPOFF', (bookingItem?.dropoff ?? '').toString(),
+                      'PICKUP', (widget.bookingItem?.pickup ?? '').toString(),
+                      'DROPOFF', (widget.bookingItem?.dropoff ?? '').toString(),
                     ),
                     const SizedBox(height: 8),
                     _buildRow(
-                      'JOURNEY TYPE', (bookingItem?.journeyType?.journeyType ?? 'O/W').toString(),
-                      'ACCOUNT', (bookingItem?.account?.name ?? '').toString(),
+                      'JOURNEY TYPE', (widget.bookingItem?.journeyType?.journeyType ?? 'O/W').toString(),
+                      'ACCOUNT', (widget.bookingItem?.account?.name ?? '').toString(),
                     ),
                     const SizedBox(height: 8),
                     _buildRow(
-                      'VEHICLE TYPE', (bookingItem?.vehicleType?.name ?? '').toString(),
-                      'DRIVER', (bookingItem?.driver?.username ?? '').toString(),
+                      'VEHICLE TYPE', (widget.bookingItem?.vehicleType?.name ?? '').toString(),
+                      'DRIVER', (widget.bookingItem?.driver?.username ?? '').toString(),
                     ),
                   ],
                 ),
@@ -134,22 +169,22 @@ class BookingReceiptScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     _buildRow(
-                      'PAYMENT TYPE', (bookingItem?.paymentType?.name ?? 'CASH').toString(),
-                      'MEET & GREET', '£ ${bookingItem?.meetAndGreet ?? '0'}',
+                      'PAYMENT TYPE', (widget.bookingItem?.paymentType?.name ?? 'CASH').toString(),
+                      'MEET & GREET', '£ ${widget.bookingItem?.meetAndGreet ?? '0'}',
                     ),
                     const SizedBox(height: 8),
                     _buildRow(
-                      'PARKING', '£ ${bookingItem?.parkingCharges ?? '0'}',
-                      'WAITING', '£ ${bookingItem?.waitingCharges ?? '0'}',
+                      'PARKING', '£ ${widget.bookingItem?.parkingCharges ?? '0'}',
+                      'WAITING', '£ ${widget.bookingItem?.waitingCharges ?? '0'}',
                     ),
                     const SizedBox(height: 8),
                     _buildRow(
-                      'EXTRA DROP', '£ ${bookingItem?.extraDropCharges ?? '0'}',
-                      'FARES', '£ ${bookingItem?.fares ?? '0'}',
+                      'EXTRA DROP', '£ ${widget.bookingItem?.extraDropCharges ?? '0'}',
+                      'FARES', '£ ${widget.bookingItem?.fares ?? '0'}',
                     ),
                     const SizedBox(height: 8),
                     _buildRow(
-                      'CONGESTION', '£ ${bookingItem?.congestionCharges ?? '0'}',
+                      'CONGESTION', '£ ${widget.bookingItem?.congestionCharges ?? '0'}',
                       '', '',
                     ),
                   ],
@@ -164,7 +199,7 @@ class BookingReceiptScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text('TOTAL CHARGES', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                    Text('£ ${bookingItem?.totalCharges ?? bookingItem?.fare ?? '0.00'}',
+                    Text('£ ${widget.bookingItem?.totalCharges ?? widget.bookingItem?.fares ?? '0.00'}',
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                   ],
                 ),

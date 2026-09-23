@@ -2465,7 +2465,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       showDialog(
         context: context,
         builder: (_) => BookingReceiptScreen(
-          bookingItem: controller.jobDetails,
+          bookingItem: controller.jobDetails!,
         ),
       );
     } else if (action == 'EMAIL') {
