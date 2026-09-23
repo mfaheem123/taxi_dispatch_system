@@ -41,21 +41,15 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
 
   // Table Column Search Controllers
   final TextEditingController _searchRefController = TextEditingController();
-  final TextEditingController _searchDateTimeController =
-      TextEditingController();
-  final TextEditingController _searchVehicleController =
-      TextEditingController();
+  final TextEditingController _searchDateTimeController = TextEditingController();
+  final TextEditingController _searchVehicleController = TextEditingController();
   final TextEditingController _searchPickupController = TextEditingController();
-  final TextEditingController _searchDropoffController =
-      TextEditingController();
+  final TextEditingController _searchDropoffController = TextEditingController();
   final TextEditingController _searchFareController = TextEditingController();
-  final TextEditingController _searchCustomerController =
-      TextEditingController();
-  final TextEditingController _searchAccountController =
-      TextEditingController();
+  final TextEditingController _searchCustomerController = TextEditingController();
+  final TextEditingController _searchAccountController = TextEditingController();
   final TextEditingController _searchDriverController = TextEditingController();
-  final TextEditingController _searchPaymentTypeController =
-      TextEditingController();
+  final TextEditingController _searchPaymentTypeController = TextEditingController();
   final TextEditingController _searchStatusController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final ScrollController _horizontalScrollController = ScrollController();
@@ -378,7 +372,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-// ── Title Section ──
+                  /// ── Title Section ──
                   Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16.0, vertical: 12.0),
@@ -414,7 +408,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                   ),
                   const Divider(height: 1, color: Colors.black12),
 
-// ── Top Filter Section ──
+                    /// ── Top Filter Section ──
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12.0, vertical: 12.0),
@@ -485,8 +479,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                   ),
 
                   const Divider(height: 1, color: Colors.black12),
-
-// ── Dynamic Data Table Section ──
+                  /// ── Dynamic Data Table Section ──
                   Flexible(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -670,7 +663,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
 
                   const Divider(height: 1, color: Colors.black12),
 
-// ── Footer Section ──
+                    /// ── Footer Section ──
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16.0, vertical: 8.0),
