@@ -5,6 +5,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 
 import '../../component/networks/api.dart';
+import '../../utils/new_window_booking.dart';
 import '../administration/model/list_subsDiary.dart';
 import '../dashboard_view/models/dashboard_table_model.dart';
 
@@ -26,6 +27,16 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    // Opened from a booking in another window: the booking travelled through
+    // storage rather than the constructor (a popped window boots as a fresh
+    // instance), so it is picked up here before the first build.
+    if (widget.bookingItem == null) {
+      final handedOver = takeHandedOverBooking();
+      if (handedOver != null) {
+        widget.bookingItem = handedOver;
+      }
+    }
 
     if(widget.bookingItem?.subsidiaryId != null){
       getSubsidiary();
