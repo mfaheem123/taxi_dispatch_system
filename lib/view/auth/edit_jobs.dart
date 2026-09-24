@@ -28,6 +28,7 @@
 // claiming the hook would leave the dashboard without one once this screen pops.
 
 import 'package:bot_toast/bot_toast.dart';
+import 'package:dashboard_new1/view/auth/receipt_pdf.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -2460,7 +2461,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   void _onActionPending(String label) =>
       BotToast.showText(text: '$label is not available yet');
 
-  void _onReceiptAction(String action) {
+  Future<void> _onReceiptAction(String action) async {
     if (action == 'VIEW') {
       openBookingInNewWindow(
         Routes.receiptDetails,
@@ -2475,7 +2476,9 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     } else if (action == 'EMAIL') {
       // EMAIL logic
     } else if (action == 'EXPORT TO PDF') {
-      // EXPORT TO PDF logic
+      await exportReceiptPdf(
+        bookingItem: controller.jobDetails,
+      );
     }
   }
 
