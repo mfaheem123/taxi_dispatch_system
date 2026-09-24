@@ -2463,9 +2463,19 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
 
   Future<void> _onReceiptAction(String action) async {
     if (action == 'VIEW') {
+      // `bookings/getbyid` returns the main booking first and any return
+      // legs after it; the receipt lists those under the main booking.
+      // Only when that list really belongs to the booking on screen and has
+      // more than the main booking in it — a single booking gets no RETURN
+      // BOOKING section.
+      final bookings = controller.jobDataaa?.booking ?? const [];
+      final hasReturn = bookings.length > 1 &&
+          bookings.first.id?.toString() ==
+              controller.jobDetails?.id?.toString();
       openBookingInNewWindow(
         Routes.receiptDetails,
         controller.jobDetails,
+        linked: hasReturn ? bookings.sublist(1) : const [],
       );
       // showDialog(
       //   context: context,

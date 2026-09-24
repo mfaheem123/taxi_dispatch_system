@@ -24,7 +24,15 @@ const String _kHandoffKey = 'newWindowBooking';
 /// Query parameter carrying the booking id on the popped window's URL.
 const String _kHandoffIdParam = 'bookingId';
 
+/// Storage key the bookings linked to the parked one (the return legs of a
+/// return journey, which `bookings/getbyid` sends after the main booking) are
+/// written under.
+const String _kHandoffLinkedKey = 'newWindowLinkedBookings';
+
 /// Opens [route] in a new window with [booking] handed over to it.
+///
+/// [linked] travels alongside it — the other bookings the same lookup
+/// returned, e.g. the return legs a receipt lists under the main booking.
 ///
 /// The booking is parked BEFORE the window opens and without an `await` in
 /// between: the new instance reads storage while it boots, so a write still in
@@ -32,7 +40,8 @@ const String _kHandoffIdParam = 'bookingId';
 /// an async gap here is also what gets the popup blocked, since the browser
 /// only opens windows while it is still processing the click.
 Future<void> openBookingInNewWindow(
-    String route, BookingObjectData? booking) {
+    String route, BookingObjectData? booking,
+    {List<BookingObjectData> linked = const []}) {
   final payload = _encode(booking);
   if (payload == null) {
     // Nothing to hand over — clear whatever an earlier window parked, so the
@@ -40,6 +49,20 @@ Future<void> openBookingInNewWindow(
     removeSharedValue(_kHandoffKey);
   } else {
     writeSharedValue(_kHandoffKey, payload);
+  }
+
+  final linkedPayload = linked.map(_encode).whereType<String>().toList();
+  if (payload == null || linkedPayload.isEmpty) {
+    removeSharedValue(_kHandoffLinkedKey);
+  } else {
+    // Tagged with the main booking's id for the same reason the main payload
+    // is checked against the URL: a list some earlier window left behind must
+    // not end up on this booking's receipt.
+    writeSharedValue(
+      _kHandoffLinkedKey,
+      '{"forId":${jsonEncode(booking?.id?.toString())},'
+      '"bookings":[${linkedPayload.join(',')}]}',
+    );
   }
 
   final id = booking?.id;
@@ -76,6 +99,31 @@ BookingObjectData? takeHandedOverBooking() {
 
   removeSharedValue(_kHandoffKey);
   return booking;
+}
+
+/// Returns the bookings handed over next to the main one, and consumes them.
+///
+/// Empty when none were handed over, when they belong to a different booking
+/// than the URL names, or when they cannot be decoded.
+List<BookingObjectData> takeHandedOverLinkedBookings() {
+  final raw = readSharedValue(_kHandoffLinkedKey);
+  if (raw == null || raw.isEmpty) return const [];
+
+  try {
+    final map = jsonDecode(raw) as Map<String, dynamic>;
+    final expectedId = handedOverBookingId();
+    if (expectedId != null && map['forId']?.toString() != expectedId) {
+      return const [];
+    }
+    removeSharedValue(_kHandoffLinkedKey);
+    return [
+      for (final b in (map['bookings'] as List? ?? const []))
+        BookingObjectData.fromJson(b as Map<String, dynamic>),
+    ];
+  } catch (_) {
+    removeSharedValue(_kHandoffLinkedKey);
+    return const [];
+  }
 }
 
 /// The booking id on this window's URL, or null when there is none.

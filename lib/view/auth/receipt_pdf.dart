@@ -137,7 +137,8 @@ Future<void> exportReceiptPdf({
                   pw.Text('STATUS: ${(mainBooking.bookingStatus?.bookingStatus ?? '').toUpperCase()}',
                       style: const pw.TextStyle(fontSize: 9)),
                   pw.Text('DATETIME: $dateTimeStr', style: const pw.TextStyle(fontSize: 9)),
-                  pw.Text('RETURN DATETIME: $returnDateTimeStr', style: const pw.TextStyle(fontSize: 9)),
+                  if (returnBooking != null)
+                    pw.Text('RETURN DATETIME: $returnDateTimeStr', style: const pw.TextStyle(fontSize: 9)),
                 ],
               ),
             ],
@@ -161,8 +162,9 @@ Future<void> exportReceiptPdf({
               'DROPOFF DOOR #:', (mainBooking.dropoffDoorNumber ?? '').toUpperCase()),
           _pdfRow('PICKUP:', mainBooking.pickup ?? '',
               'DROPOFF:', mainBooking.dropoff ?? ''),
-          _pdfRow('RETURN PICKUP:', returnBooking?.pickup ?? '',
-              'RETURN DROPOFF:', returnBooking?.dropoff ?? ''),
+          if (returnBooking != null)
+            _pdfRow('RETURN PICKUP:', returnBooking.pickup ?? '',
+                'RETURN DROPOFF:', returnBooking.dropoff ?? ''),
 
           _pdfRow('JOURNEY TYPE:', (mainBooking.journeyType?.journeyType ?? '').toUpperCase(),
               'ACCOUNT:', (mainBooking.account?.name ?? '').toUpperCase()),
@@ -193,7 +195,8 @@ Future<void> exportReceiptPdf({
           _pdfRow('EXTRA DROP:', '£ ${mainBooking.extraDropCharges ?? '0.00'}',
               'FARES:', '£ ${mainBooking.fares ?? '0.00'}'),
           _pdfRow('CONGESTION:', '£ ${mainBooking.congestionCharges ?? '0.00'}',
-              'RETURN FARES:', '£ ${returnBooking?.fares ?? '0.00'}'),
+              returnBooking != null ? 'RETURN FARES:' : '',
+              returnBooking != null ? '£ ${returnBooking.fares ?? '0.00'}' : ''),
 
           pw.SizedBox(height: 10),
 

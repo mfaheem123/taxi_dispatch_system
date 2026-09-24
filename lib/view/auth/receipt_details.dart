@@ -12,7 +12,12 @@ import '../dashboard_view/models/dashboard_table_model.dart';
 class BookingReceiptScreen extends StatefulWidget {
   BookingObjectData? bookingItem;
 
-  BookingReceiptScreen({Key? key, this.bookingItem}) : super(key: key);
+  /// The return legs of [bookingItem] — every booking after the first one
+  /// `bookings/getbyid` returned. Each gets its own RETURN BOOKING section.
+  List<BookingObjectData> returnBookings;
+
+  BookingReceiptScreen({Key? key, this.bookingItem, this.returnBookings = const []})
+      : super(key: key);
 
   @override
   State<BookingReceiptScreen> createState() => _BookingReceiptScreenState();
@@ -36,6 +41,9 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
       if (handedOver != null) {
         widget.bookingItem = handedOver;
       }
+    }
+    if (widget.returnBookings.isEmpty) {
+      widget.returnBookings = takeHandedOverLinkedBookings();
     }
 
     if(widget.bookingItem?.subsidiaryId != null){
@@ -123,6 +131,11 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
                         'DATETIME: ${_formatDate(widget.bookingItem?.pickupDate)} ${widget.bookingItem?.pickupTime ?? ''}'.trim(),
                         style: outFitRegular(fontSize: 14),
                       ),
+                      for (final (i, ret) in widget.returnBookings.indexed)
+                        Text(
+                          '${_returnLabel(i)} DATETIME: ${_formatDate(ret.pickupDate)} ${ret.pickupTime ?? ''}'.trim(),
+                          style: outFitRegular(fontSize: 14),
+                        ),
                     ],
                   ),
                 ],
@@ -130,55 +143,14 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
               const SizedBox(height: 20),
 
               // BOOKING DETAILS
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
-                  color: DynamicColors.gryClr.withOpacity(0.5)),
-               
-                child: Row(
-                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('BOOKING', style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 16)),
-                    const Spacer(),
-                    Text('REFERENCE # ', style: outFitRegular(fontSize: 14, fontWeight: FontWeight.bold),),
-                        Text ('${(widget.bookingItem?.referenceNumber ?? widget.bookingItem?.id ?? '').toString()}',
-                        style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.red)),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(10)),
-                ),
-                child: Column(
-                  children: [
-                    _buildRow(
-                      'PICKUP DOOR #', ((widget.bookingItem?.pickupDoorNumber ?? '').toString()).toUpperCase(),
-                      'DROPOFF DOOR #', ((widget.bookingItem?.dropoffDoorNumber ?? '').toString()).toUpperCase(),
-
-                    ),
-                    const SizedBox(height: 8),
-                    _buildRow(
-                      'PICKUP', (widget.bookingItem?.pickup ?? '').toString(),
-                      'DROPOFF', (widget.bookingItem?.dropoff ?? '').toString(),
-                    ),
-                    const SizedBox(height: 8),
-                    _buildRow(
-                      'JOURNEY TYPE', ((widget.bookingItem?.journeyType?.journeyType ?? 'O/W').toString()).toUpperCase(),
-                      'ACCOUNT', ((widget.bookingItem?.account?.name ?? '').toString()).toUpperCase(),
-
-                    ),
-                    const SizedBox(height: 8),
-                    _buildRow(
-                      'VEHICLE TYPE', (widget.bookingItem?.vehicleType?.name ?? '').toString(),
-                      'DRIVER', (widget.bookingItem?.driver?.username ?? '').toString(),
-                    ),
-                  ],
-                ),
-              ),
+              _bookingSection('BOOKING', widget.bookingItem),
               const SizedBox(height: 20),
+
+              // RETURN BOOKING DETAILS — one section per return leg
+              for (final (i, ret) in widget.returnBookings.indexed) ...[
+                _bookingSection('${_returnLabel(i)} BOOKING', ret),
+                const SizedBox(height: 20),
+              ],
 
               // PAYMENT & CHARGES
               Container(
@@ -213,8 +185,18 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
                     const SizedBox(height: 8),
                     _buildRow(
                       'CONGESTION', '£ ${widget.bookingItem?.congestionCharges ?? '0'}',
-                      '', '',
+                      widget.returnBookings.isEmpty ? '' : '${_returnLabel(0)} FARES',
+                      widget.returnBookings.isEmpty ? '' : '£ ${widget.returnBookings[0].fares ?? '0'}',
                     ),
+                    // Any further return legs, two to a row.
+                    for (var i = 1; i < widget.returnBookings.length; i += 2) ...[
+                      const SizedBox(height: 8),
+                      _buildRow(
+                        '${_returnLabel(i)} FARES', '£ ${widget.returnBookings[i].fares ?? '0'}',
+                        i + 1 < widget.returnBookings.length ? '${_returnLabel(i + 1)} FARES' : '',
+                        i + 1 < widget.returnBookings.length ? '£ ${widget.returnBookings[i + 1].fares ?? '0'}' : '',
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -238,6 +220,65 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  /// "RETURN" when there is a single return leg, "RETURN 1", "RETURN 2", …
+  /// when there are several, so their sections and fares can be told apart.
+  String _returnLabel(int index) =>
+      widget.returnBookings.length > 1 ? 'RETURN ${index + 1}' : 'RETURN';
+
+  /// Header bar plus the details box for one booking — the main booking and
+  /// every return leg are laid out the same way.
+  Widget _bookingSection(String title, BookingObjectData? booking) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+              color: DynamicColors.gryClr.withOpacity(0.5)),
+          child: Row(
+            children: [
+              Text(title, style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 16)),
+              const Spacer(),
+              Text('REFERENCE # ', style: outFitRegular(fontSize: 14, fontWeight: FontWeight.bold),),
+              Text((booking?.referenceNumber ?? booking?.id ?? '').toString(),
+                  style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.red)),
+            ],
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.shade300),
+            borderRadius: const BorderRadius.vertical(bottom: Radius.circular(10)),
+          ),
+          child: Column(
+            children: [
+              _buildRow(
+                'PICKUP DOOR #', ((booking?.pickupDoorNumber ?? '').toString()).toUpperCase(),
+                'DROPOFF DOOR #', ((booking?.dropoffDoorNumber ?? '').toString()).toUpperCase(),
+              ),
+              const SizedBox(height: 8),
+              _buildRow(
+                'PICKUP', (booking?.pickup ?? '').toString(),
+                'DROPOFF', (booking?.dropoff ?? '').toString(),
+              ),
+              const SizedBox(height: 8),
+              _buildRow(
+                'JOURNEY TYPE', ((booking?.journeyType?.journeyType ?? 'O/W').toString()).toUpperCase(),
+                'ACCOUNT', ((booking?.account?.name ?? '').toString()).toUpperCase(),
+              ),
+              const SizedBox(height: 8),
+              _buildRow(
+                'VEHICLE TYPE', (booking?.vehicleType?.name ?? '').toString(),
+                'DRIVER', (booking?.driver?.username ?? '').toString(),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
