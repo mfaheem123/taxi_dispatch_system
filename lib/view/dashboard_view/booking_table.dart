@@ -1319,7 +1319,6 @@ class _BookingTableState extends State<BookingTable> {
   }
 }
 
-
 DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget? widget, textFieldHeight, double? fontSize, Widget? customWidget, Function(String)? onChanged,
   TextEditingController? controller,
   FocusNode? focusNode,
@@ -1351,7 +1350,7 @@ DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget?
                   style: mozillaTextRegularText(
                       fontWeight: FontWeight.w800, fontSize: 12),
                   decoration: InputDecoration(
-                    hintText: "Search",
+                    hintText: "SEARCH",
                     hintStyle: mozillaTextRegularText(
                         fontWeight: FontWeight.w800,
                         color: DynamicColors.textClr.withOpacity(0.8),

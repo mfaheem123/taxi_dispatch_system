@@ -72,7 +72,6 @@ import 'color.dart';
 //   }
 // }
 
-
 class DatatableWidget extends StatefulWidget {
   DatatableWidget({
     super.key,

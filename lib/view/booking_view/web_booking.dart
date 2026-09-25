@@ -271,7 +271,7 @@ class _WebBookingState extends State<WebBooking> {
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                     color: DynamicColors.whiteClr,
-                                    fontSize: 9,
+                                    fontSize: 11,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),

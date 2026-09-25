@@ -35,7 +35,7 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        width: 450,
+        width: 420,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -61,7 +61,7 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
                         const TextSpan(text: "COMPLETE BOOKING ("),
                         TextSpan(
                           text: widget.bookingItem?.referenceNumber ?? "N/A",
-                          style: TextStyle(color: DynamicColors.primaryClr, fontWeight: FontWeight.bold),
+                          style: outFitRegular(color: DynamicColors.primaryClr, fontWeight: FontWeight.bold),
                         ),
                         const TextSpan(text: ")"),
                       ],
@@ -76,7 +76,7 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
               ),
             ),
             const Divider(height: 1, thickness: 1),
-            SizedBox(height: 30),
+            SizedBox(height: 15),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 26.0),
               child: Column(
@@ -98,7 +98,7 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
                          builder: (ctrl) {
                            return CustomDropdownField<DriverObject>(
                              label: "SELECT DRIVERS",
-                             width: 320,
+                             width: 420,
                              height: 35,
                              items: controller.allDriverData?.drivers ?? [],
                              value: controller.selectDriverObject,
@@ -114,7 +114,7 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
                 ],
               ),
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 15),
             const Divider(height: 1),
 
             Padding(
@@ -127,11 +127,11 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
                     height: 28,
                     verticalPadding: 0.0,
                     btnText: "BACK",
-                    btnColor: Colors.grey.shade300,
+                    btnColor: Colors.red,
                     borderRadius: 4,
                     style: mozillaTextSemiBoldText(
-                        fontSize: 14,
-                        color: Colors.black87,
+                        fontSize: 13,
+                        color: Colors.white,
                         fontWeight: FontWeight.bold
                     ),
                     onTap: () => Get.back(),
@@ -150,7 +150,7 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
                       Icons.done_all, size: 16),
                     label: Text(
                       controller.isCompleteStatus ? "PROCESSING..." : "COMPLETE BOOKING",
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                      style: mozillaTextSemiBoldText(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: DynamicColors.primaryClr,

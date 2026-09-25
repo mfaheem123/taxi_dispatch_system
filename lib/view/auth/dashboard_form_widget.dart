@@ -151,12 +151,17 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   static const _green = Color(0xFF22C55E);
   // ────────── font sizes (compact)
   static const _fsLabel = 11.0;
+
+  /// Width of the tag column that every row of the form starts with, and the
+  /// gap between two fields sitting side by side. Both are shared so the rows
+  /// cannot drift apart one edit at a time.
+  static const _kLabelColumnWidth = 62.0;
+  static const _kFieldGap = 4.0;
   static const _fsField = 12.0;
   static const _fsSection = 12.0;
   static const _fsTab = 12.0;
   // ────────── state
   String? driver;
-  ZoneObject? dashboardZoneValue, dropZone;
   // String? account = 'DEMO';
   // String? vehicleType = 'Saloon';
   // bool quotation = true;
@@ -201,7 +206,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   void _showPickBookingAlert() {
     showDialog(
       context: context,
-      builder: (ctx) => const SearchBookingAlert(),
+      builder: (ctx) => SearchBookingAlert(pickMobileNumber:  controller.mobileController.text,
+        pickName: controller.nameController.text,
+        pickTeleNumber: controller.telController.text,),
     );
   }
   final DashboardController controller = Get.isRegistered<DashboardController>()
@@ -210,35 +217,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   final LocationController _controller = Get.isRegistered<LocationController>()
       ? Get.find<LocationController>()
       : Get.put(LocationController());
-
-  // @override
-  // void dispose() {
-  //   for (final c in [
-  //     controller.pickupController,
-  //     controller.dropOffController,
-  //     controller.nameController,
-  //     controller.emailController,
-  //     controller.mobileController,
-  //     controller.telController,
-  //     _date,
-  //     controller.pickUpTimeController,
-  //     controller.minController,
-  //     controller.passController,
-  //     controller.slugController,
-  //     controller.passController,
-  //     controller.luggController,
-  //     controller.sluggController,
-  //     controller.pickupTwoWayController,
-  //     controller.dropOffTwoWayController,
-  //     _rDate,
-  //     controller.pickUpTimeControllerReturn,
-  //     controller.minControllerReturn,
-  //     controller.slugControllerReturn,
-  //   ]) {
-  //     c.dispose();
-  //   }
-  //   super.dispose();
-  // }
 
   @override
   void initState() {
@@ -339,7 +317,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       ? []
                                       : _controller.locationtypezoneModel!.zonesList!,
                                       (v) => setState(
-                                          () => controller.dashboardZoneValue = v),
+                                          () {
+                                            controller.dashboardZoneValue = v;
+                                        controller.getFaresCalculation();
+                                      }),
                                   isMobile,
                                       (value) {
                                     WidgetsBinding.instance
@@ -426,7 +407,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     Row(
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
-                                        SizedBox(width: 80, child:  Row(mainAxisSize: MainAxisSize.min, children: [
+                                        SizedBox(width: _kLabelColumnWidth - 2, child:  Row(mainAxisSize: MainAxisSize.min, children: [
                                           Icon(Icons.circle, size: 9, color: Colors.green),
                                           const SizedBox(width: 6),
                                           Text("FL",
@@ -473,7 +454,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       : _controller
                                       .locationtypezoneModel!.zonesList!,
                                       (v) => setState(
-                                          () => controller.dashboardDZoneValue = v),
+                                          () {
+                                            controller.dashboardDZoneValue = v;
+                                            controller.getFaresCalculation();
+                                          }),
                                   isMobile,
                                       (value) {
                                     WidgetsBinding.instance
@@ -601,6 +585,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       width: double.infinity,
                                       child: ElevatedButton.icon(
                                         onPressed: () {
+                                          // print("PICK BOOKING COMMIT");
                                           _showPickBookingAlert();
                                         },
                                         icon: const Icon(Icons.search,
@@ -735,18 +720,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                             ],
                           ),
                     ),
-                                  // _field('No. of Passengers',
-                                  //     tab: 16,
-                                  //     prefix: Icons.person_outline,
-                                  //     controller: controller.passController,
-                                  //     isError: controller.isPassengerError.value,
-                                  //     onChanged: (val) => controller.validatePassengerLimit(val),
-                                  //     inputFormatters: [
-                                  //       FilteringTextInputFormatter.digitsOnly,
-                                  //       LengthLimitingTextInputFormatter(2),
-                                  //     ],
-                                  //
-                                  // ),
+
                                   _field('FARE',
                                       tab: 17,
                                       prefix: Icons.currency_pound,
@@ -1054,7 +1028,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(width: 80, child:  Row(mainAxisSize: MainAxisSize.min, children: [
+                SizedBox(width: _kLabelColumnWidth - 2, child:  Row(mainAxisSize: MainAxisSize.min, children: [
                   Icon(Icons.circle, size: 9, color: Colors.green),
                   const SizedBox(width: 6),
                   Text("FL",
@@ -1497,7 +1471,15 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       child: _AddressModelAutocomplete(
         controller: controller,
         items: addresses,
-        onChanged: onChanged,
+        // Emptying the field by hand (backspace, or select-all + delete)
+        // leaves the row half-cleared: the text is gone but the marker,
+        // polyline, fare and via points it produced are still live. So the
+        // last deletion runs the very same handler the ✕ button does — both
+        // paths reset the row identically.
+        onChanged: (value) {
+          onChanged?.call(value);
+          if (value.isEmpty) onPressed?.call();
+        },
         onSelected: onAddressSelected,
         onPickIndex: onPickIndex,
         focusNode: addressFocusNode,
@@ -1587,12 +1569,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     if (isMobile) {
       return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         tag,
-        const SizedBox(height: 6),
+        const SizedBox(height: 4),
         address,
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
         Row(children: [
           Expanded(child: zoneDd),
-          const SizedBox(width: 8),
+          const SizedBox(width: 4),
           Expanded(child: notes),
         ]),
       ]);
@@ -1600,13 +1582,18 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SizedBox(width: 80, child: tag),
-        const SizedBox(width: 2),
+        // 62 is the width of the longest tag ('PICKUP' beside its dot) plus a
+        // hair, not a round number picked by eye: the column is fixed so the
+        // address fields of the PICK and DROP rows start on the same x, and
+        // any wider than the text needs is dead space in front of every row.
+        // The FL/ARP rows below use the same 62 so the whole form shares one
+        // left edge.
+        SizedBox(width: _kLabelColumnWidth, child: tag),
         Expanded(flex: 5, child: address),
-        const SizedBox(width: 8),
-        SizedBox(width: 150, child: zoneDd),
-        const SizedBox(width: 8),
-        SizedBox(width: 160, child: notes), // gave the field a bounded width
+        const SizedBox(width: _kFieldGap),
+        SizedBox(width: 130, child: zoneDd),
+        const SizedBox(width: _kFieldGap),
+        SizedBox(width: 130, child: notes), // gave the field a bounded width
       ],
     );
   }
@@ -2281,11 +2268,15 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
                 if (widget.allowUnselect) const SizedBox.shrink(),
                 ...widget.items.map((e) => Align(
                   alignment: AlignmentDirectional.centerStart,
-                  child: Text(
-                    _labelOf(e).toUpperCase(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: _kValueTextStyle,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      _labelOf(e).toUpperCase(),
+                      maxLines: 1,
+                      softWrap: false,
+                      style: _kValueTextStyle,
+                    ),
                   ),
                 )),
               ],
@@ -2296,24 +2287,32 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
                 if (widget.allowUnselect)
                   DropdownMenuItem<T?>(
                     value: null,
-                    child: Text(
-                      widget.labelText,
-                      style: TextStyle(
-                        fontFamily: _kChromeFontFamily,
-                        fontSize: _fsField,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey.shade700,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        widget.labelText,
+                        style: TextStyle(
+                          fontFamily: _kChromeFontFamily,
+                          fontSize: _fsField,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey.shade700,
+                        ),
                       ),
                     ),
                   ),
                 // Actual items
                 ...widget.items.map((e) => DropdownMenuItem<T?>(
                   value: e,
-                  child: Text(
-                    _labelOf(e).toUpperCase(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: _fsField),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      _labelOf(e).toUpperCase(),
+                      maxLines: 1,
+                      softWrap: false,
+                      style: const TextStyle(fontSize: _fsField),
+                    ),
                   ),
                 )),
               ],
@@ -2635,16 +2634,20 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
                             ? const Color(0xFFEEF2FF)
                             : Colors.white,
                         alignment: Alignment.centerLeft,
-                        child: Text(
-                          "${a.name} ${a.postcode}",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: active
-                                ? FontWeight.w600
-                                : FontWeight.w500,
-                            color: Colors.black87,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "${a.name} ${a.postcode}",
+                            maxLines: 1,
+                            softWrap: false,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: active
+                                  ? FontWeight.w600
+                                  : FontWeight.w500,
+                              color: Colors.black87,
+                            ),
                           ),
                         ),
                       ),
@@ -2680,6 +2683,10 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
             controller: widget.controller,
             focusNode: _focusNode,
             style: _kValueTextStyle,
+            maxLines: null,
+            minLines: 1,
+            textInputAction: TextInputAction.done,
+            keyboardType: TextInputType.multiline,
             decoration: widget.decoration,
           ),
         ),
@@ -2695,8 +2702,7 @@ class _StringAutocomplete extends StatefulWidget {
     required this.controller,
     required this.suggestions,
     required this.decoration,
-    this.onChanged,
-  });
+  }) : onChanged = null;
   final TextEditingController controller;
   final List<String> suggestions;
   final InputDecoration decoration;
@@ -2874,15 +2880,19 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
                                   : Colors.grey),
                           const SizedBox(width: 8),
                           Expanded(
-                            child: Text(s,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: active
-                                      ? FontWeight.w600
-                                      : FontWeight.w400,
-                                )),
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(s,
+                                  maxLines: 1,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: active
+                                        ? FontWeight.w600
+                                        : FontWeight.w400,
+                                  )),
+                            ),
                           ),
                         ]),
                       ),
@@ -2914,6 +2924,10 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
             controller: widget.controller,
             focusNode: _focusNode,
             style: _kValueTextStyle,
+            maxLines: null,
+            minLines: 1,
+            textInputAction: TextInputAction.done,
+            keyboardType: TextInputType.multiline,
             decoration: widget.decoration,
           ),
         ),

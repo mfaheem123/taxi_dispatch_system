@@ -26,6 +26,7 @@ import '../../vehicles_view/model/vehicle_type_model.dart';
 import '../airport_charges/airport_model.dart';
 import '../fare_by_vehicle/model/fare_by_vehicle_model.dart';
 import '../fare_charges/fare_charges.dart';
+import '../model/get_fare_mileage.dart';
 
 class FareController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
@@ -891,6 +892,105 @@ class FareController extends GetxController {
 
       getAllFareViewLoader(false);
 
+      update();
+    }
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> fare config mileage
+
+  void incrementValue(TextEditingController controller, {double step = 1.0}) {
+    double current = double.tryParse(controller.text) ?? 0.0;
+    controller.text = (current + step).toString();
+  }
+
+  void decrementValue(TextEditingController controller, {double step = 1.0}) {
+    double current = double.tryParse(controller.text) ?? 0.0;
+    controller.text = (current - step).toString();
+  }
+
+  // POST MILEAGE
+  RxBool isLoadingMileage = false.obs;
+
+  postFareMileage() async {
+    if (minimumMilesController.text.trim().isEmpty ||
+        maximumMilesController.text.trim().isEmpty ||
+        mileageFareController.text.trim().isEmpty) {
+      BotToast.showText(text: "PLEASE FILL ALL REQUIRED FIELDS");
+      return;
+    }
+
+    isLoadingMileage(true);
+    update();
+
+    var formData = {
+      "fares": mileageFareController.text,
+      "maximum_miles": maximumMilesController.text,
+      "minimum_miles": minimumMilesController.text,
+    };
+     var response = await Api().post(
+         formData,
+         updateFareMileageValue.value == false
+         ? "fare-configuration-mileage/add"
+         : "fare-configuration-mileage/update/${fareMileageUpdateId.value}", sendCompanyId: true);
+     if (response.statusCode == 200) {
+       print(response.data);
+       BotToast.showText(text: updateFareMileageValue.value
+       ? "FARE CONFIGURATION MILEAGE IS UPDATE SUCCESSFULLY"
+       : "FARE CONFIGURATION MILEAGE IS ADDED SUCCESSFULLY");
+
+       await getFareConfigMileage();
+
+     }
+    clearMileageData();
+     isLoadingMileage(false);
+     update();
+  }
+
+  RxBool updateFareMileageValue = false.obs;
+  RxInt fareMileageUpdateId = 0.obs;
+
+  bindFareMileage(FareConfigurationsMileage data) {
+    mileageFareController.text = data.fares ?? "";
+    minimumMilesController.text = data.minimumMiles ?? "";
+    maximumMilesController.text = data.maximumMiles ?? "";
+
+    updateFareMileageValue(true);
+    fareMileageUpdateId(data.id);
+
+    update();
+  }
+
+  void clearMileageData () {
+    mileageFareController.clear();
+    minimumMilesController.clear();
+    maximumMilesController.clear();
+    updateFareMileageValue.value = false;
+    fareMileageUpdateId.value = 0;
+    update();
+}
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all fare config mileage
+  RxBool isFareConfigMileage = false.obs;
+  GetFareMileageModel? getFareMileageModel;
+  
+  getFareConfigMileage() async {
+    isFareConfigMileage(true);
+    update();
+    
+    var response = await Api().get("fare-configuration-mileage/get", sendCompanyId: true);
+    if (response.statusCode == 200) {
+      getFareMileageModel = GetFareMileageModel.fromJson(response.data);
+    }
+    isFareConfigMileage(false);
+    update();
+  }
+
+  // delete
+  deleteFareConfigMileage(int? id) async {
+    var response = await Api().delete("fare-configuration-mileage/delete/${id}");
+    if (response.statusCode == 200) {
+      BotToast.showText(text: "FARE CONFIGURATION MILEAGE DELETED SUCCESSFULLY");
+      getFareConfigMileage();
       update();
     }
   }

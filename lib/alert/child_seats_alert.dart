@@ -364,13 +364,13 @@ class _ChildSeatsAlertState extends State<ChildSeatsAlert> {
                             CustomButton(
                               width: 80,
                               height: 34,
-                              btnColor: const Color(0xFFE2E8F0),
+                              btnColor: Colors.red,
                               borderRadius: 6,
                               verticalPadding: 0,
                               onTap: () => Get.back(),
                               style: mozillaTextSemiBoldText(
                                 fontSize: 12,
-                                color: const Color(0xFF475569),
+                                color: Colors.white,
                               ),
                               btnText: "CLOSE",
                             ),
@@ -491,7 +491,7 @@ class _ChildSeatsAlertState extends State<ChildSeatsAlert> {
         style: const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.bold,
-          color: Color(0xFF475569),
+          color: Colors.black,
           letterSpacing: 0.5,
         ),
       ),

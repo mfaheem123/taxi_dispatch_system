@@ -28,6 +28,7 @@
 // claiming the hook would leave the dashboard without one once this screen pops.
 
 import 'package:bot_toast/bot_toast.dart';
+import 'package:dashboard_new1/view/auth/receipt_pdf.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,12 +40,15 @@ import 'package:timepickerfield/timepickerfield.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../alert/cancel_booking_alert.dart';
 import '../../alert/child_seats_alert.dart';
+import '../../alert/resend_email_alert.dart';
 import '../../component/networks/loader.dart';
 import '../../alert/extra_fares_alert.dart';
 import '../../alert/extra_info_alert.dart';
 import '../../alert/search_booking.dart';
 import '../../component/marker_class.dart';
 import '../../component/text_field.dart';
+import '../../routes/app_pages.dart';
+import '../../utils/new_window_booking.dart';
 import '../dashboard_view/booking_form_scope.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/dashboard/F3_alert.dart';
@@ -60,6 +64,7 @@ import '../dashboard_view/widgets/fare_configuration.dart';
 import '../dashboard_view/widgets/via_location.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
 import '../locations_view/controller/locations_controller.dart';
+import 'receipt_details.dart';
 
 
 // ════════════════════════════════════════════════════════════════════
@@ -202,12 +207,19 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   static const _border = Colors.black;
   static const _surface = Color(0xFFF5F6FA);
   static const _red = Color(0xFFEF4444);
+
   /// The bottom-row actions (PAY / RECEIPT / MAP REPORT / AUDIT REPORT /
   /// SAVE) in the design are green; CANCEL beside them stays [_red].
   static const _green = Color(0xFF22C55E);
 
   // ────────── font sizes (compact)
   static const _fsLabel = 11.0;
+
+  /// Width of the tag column that every row of the form starts with, and the
+  /// gap between two fields sitting side by side. Both are shared so the rows
+  /// cannot drift apart one edit at a time.
+  static const _kLabelColumnWidth = 62.0;
+  static const _kFieldGap = 4.0;
 
   /// Width of the caption column [_labelled] draws to the left of every field,
   /// and the type it draws it in. Narrower and a point smaller than the
@@ -242,6 +254,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     letterSpacing: 0.3,
     color: Colors.black,
   );
+
   // ────────── state
   /// True until [_bootstrap] finishes, whatever way it finishes.
   ///
@@ -253,11 +266,13 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   bool _bootstrapping = true;
   String? driver;
   ZoneObject? dashboardZoneValue, dropZone;
+
   // String? account = 'DEMO';
   // String? vehicleType = 'Saloon';
   // bool quotation = true;
   AllAddressesModel? _selectedPickup;
   AllAddressesModel? _selectedDrop;
+
   // Kept focused (instead of a plain unfocus()) when the PICKUP/DROP
   // autocomplete is dismissed by a tap outside it, so the arrow-key page
   // scrolling below keeps working — unfocus() moves primary focus to the
@@ -273,6 +288,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
 
   // ────────── return-journey state
   ZoneObject? returnDropZone;
+
   // DashboardVehicleTypeObject? returnVehicleValue;
   // DashboardDriverObject? returnDriverValue;
   // late final _rDropoff = TextEditingController();
@@ -285,20 +301,26 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     controller.selectJourneyTypeValue?.journeyType?.toUpperCase().trim();
     return j == 'R/N' || j == 'RETURN';
   }
+
   // late final _pass = TextEditingController(text: '0');
   // late final _lugg = TextEditingController(text: '0');
   // late final _slugg = TextEditingController(text: '0');
   //_isReturnJourney ? 46 : 31
   void _onMultiReservation() => debugPrint('F8 / Multi Reservation tapped');
+
   void _onAddVehicles() => debugPrint('F9 / Vehicles tapped');
+
   void _onVia() => debugPrint('Via tapped');
+
   void _onClear() => debugPrint('F7 / Clear tapped');
+
   void _showPickBookingAlert() {
     showDialog(
       context: context,
       builder: (ctx) => const SearchBookingAlert(),
     );
   }
+
   /// Tag this screen's private DashboardController is registered under.
   /// Unique per screen instance, so two edit tabs on the same booking still
   /// get a form each.
@@ -471,9 +493,13 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     _pickupFieldFocusNode.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
-    final w = MediaQuery.of(context).size.width;
+    final w = MediaQuery
+        .of(context)
+        .size
+        .width;
     final isMobile = w < 640;
     final isTablet = w >= 640 && w < 1024;
     final cols = isMobile ? 1 : (isTablet ? 2 : 4);
@@ -481,7 +507,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     // the map sit beside it. Here it owns the page, but a form stretched across
     // a wide monitor reads badly, so cap it and centre what is left.
     final formWidth =
-        isMobile ? double.infinity : (w * 0.88).clamp(600.0, 1320.0);
+    isMobile ? double.infinity : (w * 0.88).clamp(600.0, 1320.0);
     // Scrolling is for the small screens only. A phone or an iPad cannot show
     // the whole form at once, so there it scrolls; on desktop web the form is
     // meant to sit inside the window, so the wheel, the drag and the scrollbar
@@ -511,657 +537,770 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       // than the dashboard's.
       controller: controller,
       child: Material(
-      color: Colors.white,
-      child: _withFormFont(
-      context,
-      Focus(
-        // No autofocus: the fields own the initial focus, and an invisible
-        // full-screen node grabbing it first would strand the caret.
-        focusNode: _shortcutFocusNode,
-        // Focusable (so a dismissed autocomplete can park focus here instead
-        // of dropping it) but NOT a Tab stop — otherwise Shift+Tab off the
-        // first field lands on this invisible full-screen node and the focus
-        // ring appears to vanish.
-        skipTraversal: true,
-        // Arrow up / down scrolls the hosting page. Handled with a raw key
-        // handler rather than a shortcut binding so a key REPEAT scrolls
-        // without re-animating.
-        onKeyEvent: (node, event) => handlePageArrowScroll(context, event),
-        child: GetBuilder<DashboardController>(
-          // This screen's instance, not the dashboard's.
-          tag: _formTag,
-          initState: (_) {
-            // Only when the seed did not already bring the overlay across.
-            if (controller.seeZoneOnMapModel == null) {
-              controller.seeZoneOnMapp();
-            }
-            if (_controller.locationtypezoneModel == null) {
-              _controller.getLocationTypeZone();
-            }
-          },
-          builder: (controller) {
-            // Every dropdown below reads its items off dashboardAllData with a
-            // null assertion. initState starts the fetch, but the first frame
-            // lands before it returns — and this route can be entered with no
-            // dashboard behind it (a restart straight into the booking), so
-            // there is no earlier screen that already loaded it. The dashboard
-            // gates the identical form the same way in
-            // defult_dashboard_view.dart, which is why that copy can assert.
-            if (_bootstrapping || controller.dashboardAllData == null) {
-              return _loadingBody();
-            }
-            return  SafeArea(
-              // Top-aligned rather than Center so a short form stays put at
-              // the top of the page instead of floating mid-screen.
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: SizedBox(
-                  width: formWidth,
-                  child: _pageBody(
-                    canScroll: canScroll,
-                    isMobile: isMobile,
-                    form: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(isMobile ? 0 : 10),
-                      border: Border.all(color: _border.withOpacity(0.2)),
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: FocusTraversalGroup(
-                      policy: OrderedTraversalPolicy(),
-                      child: Column(
-                        children: [
-                          _headerBar(isMobile),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal:isMobile ? 12 : 16,vertical: 6),
+        color: Colors.white,
+        child: _withFormFont(
+          context,
+          Focus(
+            // No autofocus: the fields own the initial focus, and an invisible
+            // full-screen node grabbing it first would strand the caret.
+            focusNode: _shortcutFocusNode,
+            // Focusable (so a dismissed autocomplete can park focus here instead
+            // of dropping it) but NOT a Tab stop — otherwise Shift+Tab off the
+            // first field lands on this invisible full-screen node and the focus
+            // ring appears to vanish.
+            skipTraversal: true,
+            // Arrow up / down scrolls the hosting page. Handled with a raw key
+            // handler rather than a shortcut binding so a key REPEAT scrolls
+            // without re-animating.
+            onKeyEvent: (node, event) => handlePageArrowScroll(context, event),
+            child: GetBuilder<DashboardController>(
+              // This screen's instance, not the dashboard's.
+              tag: _formTag,
+              initState: (_) {
+                // Only when the seed did not already bring the overlay across.
+                if (controller.seeZoneOnMapModel == null) {
+                  controller.seeZoneOnMapp();
+                }
+                if (_controller.locationtypezoneModel == null) {
+                  _controller.getLocationTypeZone();
+                }
+              },
+              builder: (controller) {
+                // Every dropdown below reads its items off dashboardAllData with a
+                // null assertion. initState starts the fetch, but the first frame
+                // lands before it returns — and this route can be entered with no
+                // dashboard behind it (a restart straight into the booking), so
+                // there is no earlier screen that already loaded it. The dashboard
+                // gates the identical form the same way in
+                // defult_dashboard_view.dart, which is why that copy can assert.
+                if (_bootstrapping || controller.dashboardAllData == null) {
+                  return _loadingBody();
+                }
+                return SafeArea(
+                  // Top-aligned rather than Center so a short form stays put at
+                  // the top of the page instead of floating mid-screen.
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: SizedBox(
+                      width: formWidth,
+                      child: _pageBody(
+                        canScroll: canScroll,
+                        isMobile: isMobile,
+                        form: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(
+                                isMobile ? 0 : 10),
+                            border: Border.all(color: _border.withOpacity(0.2)),
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: FocusTraversalGroup(
+                            policy: OrderedTraversalPolicy(),
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                _locationRow<ZoneObject>(
-                                  'PICKUP',
-                                  _purple,
-                                  controller.pickupController,
-                                  controller.allAddressesData,
-                                  controller.dashboardZoneValue,
-                                  _controller.updateLocationValue.value == true || _controller.locationtypezoneModel == null
-                                      ? []
-                                      : _controller.locationtypezoneModel!.zonesList!,
-                                      (v) => setState(
-                                          () => controller.dashboardZoneValue = v),
-                                  isMobile,
-                                      (value) {
-                                    WidgetsBinding.instance
-                                        .addPostFrameCallback((_) {
-                                      if (value.isEmpty) {
-                                        controller.dropDownShow.value = false;
-                                      } else {
-                                        controller.dropDownShow.value = true;
-                                      }
-                                      controller.onChangeHandler(
-                                          fieldName: "PICKUP LOCATION",
-                                          searchingText: value);
-                                    });
-                                  },
-                                      (addr) =>
-                                      setState(() => _selectedPickup = addr),
-                                  0,
-                                  zoneLabel: (z) => z.name!,
-                                  onPickIndex: (index) {
-                                    controller.tapSelect(index);
-                                  },
-                                  onPressed: () {
-                                    final pickupPolylineIndex = controller.polyLineMarkerInfo
-                                        .indexWhere((e) => e.markerType == "PICKUP LOCATION");
-                                    if (pickupPolylineIndex >= 0) {
-                                      controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
-                                    }
-                                    final pickupMarkerIndex =
-                                    controller.markers.indexWhere((e) => e.type == "pickup");
-                                    if (pickupMarkerIndex >= 0) {
-                                      controller.markers.removeAt(pickupMarkerIndex);
-                                    }
-                                    controller.pickupController.clear();
-                                    // controller.dropOffController.clear();
-                                    controller.dropDownShow.value = false;
-                                    controller.suggestions.clear();
-                                    controller.clearViaIfNoPickupAndDrop();
-                                    controller.totalDistance.value = "0.00";
-                                    controller.totalTimeDuration.value = "0 min";
-                                    controller.fixedFare.value = "0";
-                                    controller.returnFareValue = "0";
-                                    controller.tempStoreViaMils = "0";
-                                    controller.slugController.clear();
-                                    controller.slugControllerReturn.clear();
-                                    controller.tempStoreMils = null;
-                                    controller.fetchRouteFromOSRM();
-                                    FocusScope.of(Get.context!).requestFocus(_pickupFieldFocusNode);
-                                    controller.update();
-                                  },
-                                  notesController: controller.pickUpNoteController,
-                                  addressFocusNode: _pickupFieldFocusNode,
-                                  onCurrentLocation: () {
-                                    controller.swapeToChangeLocation();
-                                  },
-                                ),
-                                Visibility(
-                                  visible: controller.isAirportResponse.value,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(top: 4),
-                                    child: isMobile
-                                        ? Column(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                      children: [
-                                        _field('FL',
-                                            tab: 3.3,
-                                            controller: controller
-                                                .selectAirportController),
-                                        const SizedBox(height: 4),
-                                        _field('ARP',
-                                            tab: 3.6,
-                                            controller: controller
-                                                .arrivalTimeController),
-                                        // _timeField('ARP',
-                                        //     tab: 3.6,
-                                        //     controller: controller
-                                        //         .arrivalTimeController,
-                                        //     onPicked: () => controller
-                                        //         .arrivalTimePicked = true),
-                                      ],
-                                    )
-                                        :
-                                    Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        SizedBox(width: 80, child:  Row(mainAxisSize: MainAxisSize.min, children: [
-                                          Icon(Icons.circle, size: 9, color: _purple),
-                                          const SizedBox(width: 6),
-                                          Text("FL",
-                                              style:
-                                              const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsLabel)),
-                                        ])),
-                                        const SizedBox(width: 2),
-                                        Expanded(
-                                          flex: 3,
-                                          // Caption blank: the dotted FL tag
-                                          // to the left already names it.
-                                          child: _field('',
-                                              tab: 3.3,
-                                              controller: controller
-                                                  .selectAirportController),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          flex: 1,
-                                          child:
-                                          _field('ARP',
-                                              tab: 3.6,
-                                              controller: controller
-                                                  .arrivalTimeController),
-                                          // _timeField('ARP',
-                                          //     tab: 3.6,
-                                          //     controller: controller
-                                          //         .arrivalTimeController,
-                                          //     onPicked: () => controller
-                                          //         .arrivalTimePicked = true),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                _locationRow<ZoneObject>(
-                                  'DROP   ',
-                                  _red,
-                                  controller.dropOffController,
-                                  controller.allAddressesData,
-                                  controller.dashboardDZoneValue,
-                                  _controller.updateLocationValue.value == true || _controller.locationtypezoneModel == null
-                                      ? []
-                                      : _controller
-                                      .locationtypezoneModel!.zonesList!,
-                                      (v) => setState(
-                                          () => controller.dashboardDZoneValue = v),
-                                  isMobile,
-                                      (value) {
-                                    WidgetsBinding.instance
-                                        .addPostFrameCallback((_) {
-                                      if (value.isEmpty) {
-                                        controller.dropDownShow.value = false;
-                                      } else {
-                                        controller.dropDownShow.value = true;
-                                      }
-                                      controller.onChangeHandler(
-                                          fieldName: "DROP LOCATION",
-                                          searchingText: value);
-                                    });
-                                  },
-                                      (addr) =>
-                                      setState(() => _selectedDrop = addr),
-                                  3,
-                                  zoneLabel: (z) => z.name!,
-                                  onPickIndex: (index) =>
-                                      controller.tapSelect(index),
-                                  onPressed: () {
-                                    final dropPolylineIndex = controller.polyLineMarkerInfo
-                                        .indexWhere((e) => e.markerType == "DROP LOCATION");
-
-                                    if (dropPolylineIndex >= 0) {
-                                      controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
-                                    }
-                                    final dropOffMarkerIndex =
-                                    controller.markers.indexWhere((e) => e.type == "dropOff");
-
-                                    if (dropOffMarkerIndex >= 0) {
-                                      controller.markers.removeAt(dropOffMarkerIndex);
-                                    }
-                                    // controller.viaPoints.clear();
-                                    // controller.viaTextEditingController.clear();
-                                    // controller.pickupController.clear();
-                                    controller.dropOffController.clear();
-                                    controller.clearViaIfNoPickupAndDrop();
-                                    controller.dropDownShow.value = false;
-                                    controller.suggestions.clear();
-                                    // controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "DROP LOCATION" || item.markerType == "Create Booking DROP LOCATION");
-                                    controller.totalDistance.value = "0.00";
-                                    controller.totalTimeDuration.value = "0 min";
-                                    controller.fixedFare.value = "0";
-                                    controller.returnFareValue = "0";
-                                    controller.tempStoreViaMils = "0";
-                                    controller.slugController.clear();
-                                    controller.slugControllerReturn.clear();
-                                    controller.tempStoreMils = null;
-                                    controller.fetchRouteFromOSRM();
-                                    FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
-                                    controller.update();
-                                  },
-                                  notesController: controller.dropUpNoteController,
-                                  addressFocusNode: controller.dropOffTextFieldFocusNode,
-                                  // The route button opens the via-points dialog.
-                                  // PICK's swap button keeps calling
-                                  // swapeToChangeLocation() — no branch on the
-                                  // icon is needed, because each row chooses
-                                  // both its glyph and its handler here.
-                                  onCurrentLocation: () {
-                                    if (controller.pickupController.text.isEmpty) {
-                                      BotToast.showText(
-                                          text:
-                                              "Please write pickup and dropoff location");
-                                      return;
-                                    }
-                                    showDialog(
-                                      context: context,
-                                      // A dialog is its own route and sits
-                                      // outside this screen's BookingFormScope,
-                                      // so the detached form instance has to be
-                                      // handed in — see ViaLocation.formController.
-                                      builder: (_) =>
-                                          ViaLocation(formController: controller),
-                                    );
-                                  },
-                                  actionIcon: LucideIcons.route,
-                                  actionTooltip: 'Via locations',
-                                ),
-                                const Divider(height: 14),
-                                _sectionHeader(Icons.person,
-                                    'PASSENGER & BOOKING DETAILS'),
-                                const SizedBox(height: 4),
-                                _grid(isMobile ? 1 : (isTablet ? 3 : 5), [
-                                  _field('Name',
-                                      tab: 7,
-                                      controller: controller.nameController),
-                                  _field('Email',
-                                      tab: 8,
-                                      controller: controller.emailController),
-                                  _customerAutocompleteField(
-                                    'Mobile',
-                                    tab: 9,
-                                    controller: controller.mobileController,
-                                    customers: controller.customerPhoneNumber
-                                        ?.customerInfo ??
-                                        const [],
-                                    onChanged: (q) {
-                                      if (q.trim().isEmpty) return;
-                                      controller.onPhoneNoChangeHandler(
-                                        fieldName: "Phone Number",
-                                        searchingText: q,
-                                      );
-                                    },
-                                    onPicked: (c) {
-                                      setState(() {
-                                        controller.mobileController.text =
-                                            c.mobile ?? '';
-                                        controller.nameController.text =
-                                            c.name ?? '';
-                                        controller.emailController.text =
-                                            c.email ?? '';
-                                        controller.telController.text =
-                                            c.telephone ?? '';
-                                      });
-                                    },
-                                  ),
-                                  _field('Tel.',
-                                      tab: 10,
-                                      controller: controller.telController),
-                                  FocusTraversalOrder(
-                                    order: const NumericFocusOrder(10.5),
-                                    child: SizedBox(
-                                      height: 32,
-                                      width: double.infinity,
-                                      child: ElevatedButton.icon(
-                                        onPressed: () {
-                                          _showPickBookingAlert();
-                                        },
-                                        icon: const Icon(Icons.search,
-                                            size: 16, color: Colors.white),
-                                        label: const Text(
-                                          'Pick Booking',
-                                          style: TextStyle(
-                                              fontSize: _fsField,
-                                              color: Colors.white),
-                                        ),
-                                        style: ButtonStyle(
-                                          backgroundColor: WidgetStateProperty.all(_purple),
-                                          padding: WidgetStateProperty.all(EdgeInsets.zero),
-                                          shape: WidgetStateProperty.all(
-                                            RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(6),
-                                            ),
-                                          ),
-                                          side: WidgetStateProperty.resolveWith((states) {
-                                            if (states.contains(WidgetState.focused)) {
-                                              return const BorderSide(color: Colors.white, width: 2);
+                                _headerBar(isMobile),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: isMobile ? 12 : 16,
+                                      vertical: 6),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .stretch,
+                                    children: [
+                                      _locationRow<ZoneObject>(
+                                        'PICKUP',
+                                        _purple,
+                                        controller.pickupController,
+                                        controller.allAddressesData,
+                                        controller.dashboardZoneValue,
+                                        _controller.updateLocationValue.value ==
+                                            true ||
+                                            _controller.locationtypezoneModel ==
+                                                null
+                                            ? []
+                                            : _controller.locationtypezoneModel!
+                                            .zonesList!,
+                                            (v) =>
+                                            setState(
+                                                    () =>
+                                                controller.dashboardZoneValue =
+                                                    v),
+                                        isMobile,
+                                            (value) {
+                                          WidgetsBinding.instance
+                                              .addPostFrameCallback((_) {
+                                            if (value.isEmpty) {
+                                              controller.dropDownShow.value =
+                                              false;
+                                            } else {
+                                              controller.dropDownShow.value =
+                                              true;
                                             }
-                                            return BorderSide.none;
-                                          }),
+                                            controller.onChangeHandler(
+                                                fieldName: "PICKUP LOCATION",
+                                                searchingText: value);
+                                          });
+                                        },
+                                            (addr) =>
+                                            setState(() =>
+                                            _selectedPickup = addr),
+                                        0,
+                                        zoneLabel: (z) => z.name!,
+                                        onPickIndex: (index) {
+                                          controller.tapSelect(index);
+                                        },
+                                        onPressed: () {
+                                          final pickupPolylineIndex = controller
+                                              .polyLineMarkerInfo
+                                              .indexWhere((e) =>
+                                          e.markerType == "PICKUP LOCATION");
+                                          if (pickupPolylineIndex >= 0) {
+                                            controller.polyLineMarkerInfo
+                                                .removeAt(pickupPolylineIndex);
+                                          }
+                                          final pickupMarkerIndex =
+                                          controller.markers.indexWhere((e) =>
+                                          e.type == "pickup");
+                                          if (pickupMarkerIndex >= 0) {
+                                            controller.markers.removeAt(
+                                                pickupMarkerIndex);
+                                          }
+                                          controller.pickupController.clear();
+                                          // controller.dropOffController.clear();
+                                          controller.dropDownShow.value = false;
+                                          controller.suggestions.clear();
+                                          controller
+                                              .clearViaIfNoPickupAndDrop();
+                                          controller.totalDistance.value =
+                                          "0.00";
+                                          controller.totalTimeDuration.value =
+                                          "0 min";
+                                          controller.fixedFare.value = "0";
+                                          controller.returnFareValue = "0";
+                                          controller.tempStoreViaMils = "0";
+                                          controller.slugController.clear();
+                                          controller.slugControllerReturn
+                                              .clear();
+                                          controller.tempStoreMils = null;
+                                          controller.fetchRouteFromOSRM();
+                                          FocusScope.of(Get.context!)
+                                              .requestFocus(
+                                              _pickupFieldFocusNode);
+                                          controller.update();
+                                        },
+                                        notesController: controller
+                                            .pickUpNoteController,
+                                        addressFocusNode: _pickupFieldFocusNode,
+                                        onCurrentLocation: () {
+                                          controller.swapeToChangeLocation();
+                                        },
+                                      ),
+                                      Visibility(
+                                        visible: controller.isAirportResponse
+                                            .value,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 4),
+                                          child: isMobile
+                                              ? Column(
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                            children: [
+                                              _field('FL',
+                                                  tab: 3.3,
+                                                  controller: controller
+                                                      .selectAirportController),
+                                              const SizedBox(height: 4),
+                                              _field('ARP',
+                                                  tab: 3.6,
+                                                  controller: controller
+                                                      .arrivalTimeController),
+                                              // _timeField('ARP',
+                                              //     tab: 3.6,
+                                              //     controller: controller
+                                              //         .arrivalTimeController,
+                                              //     onPicked: () => controller
+                                              //         .arrivalTimePicked = true),
+                                            ],
+                                          )
+                                              :
+                                          Row(
+                                            crossAxisAlignment: CrossAxisAlignment
+                                                .center,
+                                            children: [
+                                              SizedBox(width: _kLabelColumnWidth - 2,
+                                                  child: Row(
+                                                      mainAxisSize: MainAxisSize
+                                                          .min, children: [
+                                                    Icon(Icons.circle, size: 9,
+                                                        color: _purple),
+                                                    const SizedBox(width: 6),
+                                                    Text("FL",
+                                                        style:
+                                                        const TextStyle(
+                                                            fontWeight: FontWeight
+                                                                .w700,
+                                                            fontSize: _fsLabel)),
+                                                  ])),
+                                              const SizedBox(width: 2),
+                                              Expanded(
+                                                flex: 3,
+                                                // Caption blank: the dotted FL tag
+                                                // to the left already names it.
+                                                child: _field('',
+                                                    tab: 3.3,
+                                                    controller: controller
+                                                        .selectAirportController),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                flex: 1,
+                                                child:
+                                                _field('ARP',
+                                                    tab: 3.6,
+                                                    controller: controller
+                                                        .arrivalTimeController),
+                                                // _timeField('ARP',
+                                                //     tab: 3.6,
+                                                //     controller: controller
+                                                //         .arrivalTimeController,
+                                                //     onPicked: () => controller
+                                                //         .arrivalTimePicked = true),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                ]),
-                                // Row 4 — DATE / TIME beside their return twins. R/DATE and R/TIME
-                                // used to sit in the RETURN JOURNEY block further down; the form
-                                // pairs each return field with the outbound one it mirrors.
-                                _grid(cols, [
-                                  _dateField('Date',
-                                      tab: 11,
-                                      value: controller.pickUpDate,
-                                      onChanged: (d) => setState(() {
-                                            controller.pickUpDate = d;
-                                            controller.pickUpDatePicked = true;
-                                          })),
-                                  _timeField('Time',
-                                      tab: 12,
-                                      controller:
-                                      controller.pickUpTimeController,
-                                      onPicked: () =>
-                                          controller.pickUpTimePicked = true),
-                                  if (_isReturnJourney) _rDateField(),
-                                  if (_isReturnJourney) _rTimeField(),
-                                ]),
-                                // Rows 5-6 — the two return address rows, the only part of the
-                                // return journey with no outbound field to sit beside.
-                                if (_isReturnJourney)
-                                  _returnJourneySection(isMobile, controller),
-                                const Divider(height: 10),
-                                _sectionHeader(
-                                    Icons.directions_car, 'VEHICLE & PAYMENT'),
-                                const SizedBox(height: 4),
-                                // Row 7 — LEAD / JOUR / VEH / R/VEH.
-                                _grid(isMobile ? 1 : (isTablet ? 2 : 4), [
-                                  _field('Lead Time',
-                                      tab: 21,
-                                      controller: controller.minController),
-                                  _dropdown<JourneyTypeObject>(
-                                    'Journey Type'.toUpperCase(),
-                                    controller.selectJourneyTypeValue,
-                                    controller.dashboardAllData!.journeyTypes ?? const [],
-                                        (v) {
-                                      // 1. Validation check for pickup and dropoff locations
-                                      if (controller.pickupController.text.isNotEmpty &&
-                                          controller.dropOffController.text.isNotEmpty) {
-                                        setState(() {
-                                          // Dropdown menu close
-                                          controller.dropDownShow.value = false;
+                                      const SizedBox(height: 4),
+                                      _locationRow<ZoneObject>(
+                                        'DROP   ',
+                                        _red,
+                                        controller.dropOffController,
+                                        controller.allAddressesData,
+                                        controller.dashboardDZoneValue,
+                                        _controller.updateLocationValue.value ==
+                                            true ||
+                                            _controller.locationtypezoneModel ==
+                                                null
+                                            ? []
+                                            : _controller
+                                            .locationtypezoneModel!.zonesList!,
+                                            (v) =>
+                                            setState(
+                                                    () =>
+                                                controller.dashboardDZoneValue =
+                                                    v),
+                                        isMobile,
+                                            (value) {
+                                          WidgetsBinding.instance
+                                              .addPostFrameCallback((_) {
+                                            if (value.isEmpty) {
+                                              controller.dropDownShow.value =
+                                              false;
+                                            } else {
+                                              controller.dropDownShow.value =
+                                              true;
+                                            }
+                                            controller.onChangeHandler(
+                                                fieldName: "DROP LOCATION",
+                                                searchingText: value);
+                                          });
+                                        },
+                                            (addr) =>
+                                            setState(() =>
+                                            _selectedDrop = addr),
+                                        3,
+                                        zoneLabel: (z) => z.name!,
+                                        onPickIndex: (index) =>
+                                            controller.tapSelect(index),
+                                        onPressed: () {
+                                          final dropPolylineIndex = controller
+                                              .polyLineMarkerInfo
+                                              .indexWhere((e) =>
+                                          e.markerType == "DROP LOCATION");
 
-                                          // Selected value assign
-                                          controller.selectJourneyTypeValue = v;
-
-                                          // Debug prints
-                                          print("RAW journeyType from API => '${v?.journeyType}'");
-
-                                          // String normalization (trim + lowercase)
-                                          final type = (v?.journeyType ?? "").trim().toLowerCase();
-                                          print("NORMALIZED type => '$type'");
-
-                                          // Map journeyType value
-                                          if (type == "o/w") {
-                                            controller.jourValue = "O/W";
-                                            controller.changeJourneyFtn();
-                                          } else if (type == "r/n") {
-                                            controller.jourValue = "R/N";
-                                          } else if (type == "w/r") {
-                                            controller.jourValue = "W/R";
-                                            controller.changeJourneyFtn();
-                                          } else {
-                                            controller.jourValue = null;
-                                            print("⚠️ NO MATCH FOUND for type: '$type' — jourValue set to null");
+                                          if (dropPolylineIndex >= 0) {
+                                            controller.polyLineMarkerInfo
+                                                .removeAt(dropPolylineIndex);
                                           }
+                                          final dropOffMarkerIndex =
+                                          controller.markers.indexWhere((e) =>
+                                          e.type == "dropOff");
 
-                                          print("FINAL controller.jourValue => ${controller.jourValue}");
-                                        });
+                                          if (dropOffMarkerIndex >= 0) {
+                                            controller.markers.removeAt(
+                                                dropOffMarkerIndex);
+                                          }
+                                          // controller.viaPoints.clear();
+                                          // controller.viaTextEditingController.clear();
+                                          // controller.pickupController.clear();
+                                          controller.dropOffController.clear();
+                                          controller
+                                              .clearViaIfNoPickupAndDrop();
+                                          controller.dropDownShow.value = false;
+                                          controller.suggestions.clear();
+                                          // controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "DROP LOCATION" || item.markerType == "Create Booking DROP LOCATION");
+                                          controller.totalDistance.value =
+                                          "0.00";
+                                          controller.totalTimeDuration.value =
+                                          "0 min";
+                                          controller.fixedFare.value = "0";
+                                          controller.returnFareValue = "0";
+                                          controller.tempStoreViaMils = "0";
+                                          controller.slugController.clear();
+                                          controller.slugControllerReturn
+                                              .clear();
+                                          controller.tempStoreMils = null;
+                                          controller.fetchRouteFromOSRM();
+                                          FocusScope.of(Get.context!)
+                                              .requestFocus(controller
+                                              .dropOffTextFieldFocusNode);
+                                          controller.update();
+                                        },
+                                        notesController: controller
+                                            .dropUpNoteController,
+                                        addressFocusNode: controller
+                                            .dropOffTextFieldFocusNode,
+                                        // The route button opens the via-points dialog.
+                                        // PICK's swap button keeps calling
+                                        // swapeToChangeLocation() — no branch on the
+                                        // icon is needed, because each row chooses
+                                        // both its glyph and its handler here.
+                                        onCurrentLocation: () {
+                                          if (controller.pickupController.text
+                                              .isEmpty) {
+                                            BotToast.showText(
+                                                text:
+                                                "Please write pickup and dropoff location");
+                                            return;
+                                          }
+                                          showDialog(
+                                            context: context,
+                                            // A dialog is its own route and sits
+                                            // outside this screen's BookingFormScope,
+                                            // so the detached form instance has to be
+                                            // handed in — see ViaLocation.formController.
+                                            builder: (_) =>
+                                                ViaLocation(
+                                                    formController: controller),
+                                          );
+                                        },
+                                        actionIcon: LucideIcons.route,
+                                        actionTooltip: 'Via locations',
+                                      ),
+                                      const Divider(height: 14),
+                                      _sectionHeader(Icons.person,
+                                          'PASSENGER & BOOKING DETAILS'),
+                                      const SizedBox(height: 4),
+                                      _grid(isMobile ? 1 : (isTablet ? 3 : 5), [
+                                        _field('Name',
+                                            tab: 7,
+                                            controller: controller
+                                                .nameController),
+                                        _field('Email',
+                                            tab: 8,
+                                            controller: controller
+                                                .emailController),
+                                        _customerAutocompleteField(
+                                          'Mobile',
+                                          tab: 9,
+                                          controller: controller
+                                              .mobileController,
+                                          customers: controller
+                                              .customerPhoneNumber
+                                              ?.customerInfo ??
+                                              const [],
+                                          onChanged: (q) {
+                                            if (q
+                                                .trim()
+                                                .isEmpty) return;
+                                            controller.onPhoneNoChangeHandler(
+                                              fieldName: "Phone Number",
+                                              searchingText: q,
+                                            );
+                                          },
+                                          onPicked: (c) {
+                                            setState(() {
+                                              controller.mobileController.text =
+                                                  c.mobile ?? '';
+                                              controller.nameController.text =
+                                                  c.name ?? '';
+                                              controller.emailController.text =
+                                                  c.email ?? '';
+                                              controller.telController.text =
+                                                  c.telephone ?? '';
+                                            });
+                                          },
+                                        ),
+                                        _field('Tel.',
+                                            tab: 10,
+                                            controller: controller
+                                                .telController),
+                                        FocusTraversalOrder(
+                                          order: const NumericFocusOrder(10.5),
+                                          child: SizedBox(
+                                            height: 32,
+                                            width: double.infinity,
+                                            child: ElevatedButton.icon(
+                                              onPressed: () {
+                                                _showPickBookingAlert();
+                                              },
+                                              icon: const Icon(Icons.search,
+                                                  size: 16,
+                                                  color: Colors.white),
+                                              label: const Text(
+                                                'Pick Booking',
+                                                style: TextStyle(
+                                                    fontSize: _fsField,
+                                                    color: Colors.white),
+                                              ),
+                                              style: ButtonStyle(
+                                                backgroundColor: WidgetStateProperty
+                                                    .all(_purple),
+                                                padding: WidgetStateProperty
+                                                    .all(EdgeInsets.zero),
+                                                shape: WidgetStateProperty.all(
+                                                  RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius
+                                                        .circular(6),
+                                                  ),
+                                                ),
+                                                side: WidgetStateProperty
+                                                    .resolveWith((states) {
+                                                  if (states.contains(
+                                                      WidgetState.focused)) {
+                                                    return const BorderSide(
+                                                        color: Colors.white,
+                                                        width: 2);
+                                                  }
+                                                  return BorderSide.none;
+                                                }),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ]),
+                                      // Row 4 — DATE / TIME beside their return twins. R/DATE and R/TIME
+                                      // used to sit in the RETURN JOURNEY block further down; the form
+                                      // pairs each return field with the outbound one it mirrors.
+                                      _grid(cols, [
+                                        _dateField('Date',
+                                            tab: 11,
+                                            value: controller.pickUpDate,
+                                            onChanged: (d) =>
+                                                setState(() {
+                                                  controller.pickUpDate = d;
+                                                  controller.pickUpDatePicked =
+                                                  true;
+                                                })),
+                                        _timeField('Time',
+                                            tab: 12,
+                                            controller:
+                                            controller.pickUpTimeController,
+                                            onPicked: () =>
+                                            controller.pickUpTimePicked = true),
+                                        if (_isReturnJourney) _rDateField(),
+                                        if (_isReturnJourney) _rTimeField(),
+                                      ]),
+                                      // Rows 5-6 — the two return address rows, the only part of the
+                                      // return journey with no outbound field to sit beside.
+                                      if (_isReturnJourney)
+                                        _returnJourneySection(
+                                            isMobile, controller),
+                                      const Divider(height: 10),
+                                      _sectionHeader(
+                                          Icons.directions_car,
+                                          'VEHICLE & PAYMENT'),
+                                      const SizedBox(height: 4),
+                                      // Row 7 — LEAD / JOUR / VEH / R/VEH.
+                                      _grid(isMobile ? 1 : (isTablet ? 2 : 4), [
+                                        _field('Lead Time',
+                                            tab: 21,
+                                            controller: controller
+                                                .minController),
+                                        _dropdown<JourneyTypeObject>(
+                                          'Journey Type'.toUpperCase(),
+                                          controller.selectJourneyTypeValue,
+                                          controller.dashboardAllData!
+                                              .journeyTypes ?? const [],
+                                              (v) {
+                                            // 1. Validation check for pickup and dropoff locations
+                                            if (controller.pickupController.text
+                                                .isNotEmpty &&
+                                                controller.dropOffController
+                                                    .text.isNotEmpty) {
+                                              setState(() {
+                                                // Dropdown menu close
+                                                controller.dropDownShow.value =
+                                                false;
 
-                                        // 2. Fares calculation trigger
-                                        controller.getFaresCalculation();
-                                      } else {
-                                        // 3. Validation fail warning
-                                        BotToast.showText(text: "Please select pickup and drop location first");
-                                      }
-                                    },
-                                    22,
-                                    itemLabel: (p) => p.journeyType!,
-                                    allowUnselect: false,
-                                    // Read-only on the edit screen. The
-                                    // journey type decides which legs a
-                                    // booking has — switching O/W to R/N here
-                                    // would need a return leg created, and
-                                    // R/N to O/W one deleted, neither of which
-                                    // this form does. It reports the booking's
-                                    // type and gates the R/N fields off it
-                                    // (see [_isReturnJourney]); changing the
-                                    // type is a new booking, not an edit.
-                                    enabled: false,
-                                  ),
-                                  _dropdown<DashboardVehicleTypeObject>(
-                                    'Vehicle Type',
-                                    controller.selectVehicleValue,
-                                    controller.dashboardAllData!.vehicleTypes!,
-                                        (v) => setState(() {
-                                      controller.selectVehicleValue = v;
-                                      controller.getFaresCalculation();
-                                    }),
-                                    23,
-                                    itemLabel: (p) => p.name!,
-                                    allowUnselect: false,
-                                  ),
-                                  if (_isReturnJourney) _rVehicleDropdown(),
-                                ]),
-                                // Row 8 — ACC / QUOTATION / PASS / LUGG / SLGG.
-                                _grid(isMobile ? 1 : (isTablet ? 3 : 5), [
-                                  _dropdown<DashboardAccountObject>(
-                                    'SELECT ACCOUNT',
-                                    controller.selectAccountValue,
-                                    controller.dashboardAccountData?.accounts ??
-                                        const [],
-                                        (v) {
-                                      setState(() {
-                                        controller.selectAccountValue = v;
-                                        controller.selectDepartmentData = null;
-                                      });
-                                    },
-                                    25,
-                                    itemLabel: (p) => p.name!,
-                                  ),
-                                  _quotationToggle(),
-                                  _field('No. of Passengers',
-                                      tab: 27,
-                                      prefix: Icons.person_outline,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly,
-                                        LengthLimitingTextInputFormatter(2),
-                                      ],
-                                      controller: controller.passController),
-                                  ..._luggageFields(),
-                                ]),
-                                // Row 9 — PAY / ADD RETURN FARE / DEPARTMENT, then the SMS and
-                                // EMAIL pair and the four dialog buttons.
-                                _grid(isMobile ? 1 : (isTablet ? 2 : 4), [
-                                  _dropdown<PaymentTypeObject>(
-                                    'Pay By',
-                                    controller.selectPaymentTypeValue,
-                                    controller.dashboardAllData!.paymentTypes ??
-                                        const [],
-                                        (v) => setState(() =>
-                                    controller.selectPaymentTypeValue = v),
-                                    30,
-                                    itemLabel: (p) => p.name!,
-                                      allowUnselect: false
-                                  ),
-                                  if (_isReturnJourney) _addReturnFareCheckbox(),
-                                  _dropdown<DepartmentObject>(
-                                    'Select Department',
-                                    controller.selectDepartmentData,
-                                    controller.selectAccountValue == null
-                                        ? []
-                                        : controller
-                                        .selectAccountValue!.departments!,
-                                        (v) => setState(() {
-                                      controller.selectDepartmentData = v;
-                                      controller.update();
-                                    }),
+                                                // Selected value assign
+                                                controller
+                                                    .selectJourneyTypeValue = v;
 
-                                    32,
-                                    itemLabel: (p) => p.name ?? "",
+                                                // Debug prints
+                                                print(
+                                                    "RAW journeyType from API => '${v
+                                                        ?.journeyType}'");
+
+                                                // String normalization (trim + lowercase)
+                                                final type = (v?.journeyType ??
+                                                    "").trim().toLowerCase();
+                                                print(
+                                                    "NORMALIZED type => '$type'");
+
+                                                // Map journeyType value
+                                                if (type == "o/w") {
+                                                  controller.jourValue = "O/W";
+                                                  controller.changeJourneyFtn();
+                                                } else if (type == "r/n") {
+                                                  controller.jourValue = "R/N";
+                                                } else if (type == "w/r") {
+                                                  controller.jourValue = "W/R";
+                                                  controller.changeJourneyFtn();
+                                                } else {
+                                                  controller.jourValue = null;
+                                                  print(
+                                                      "⚠️ NO MATCH FOUND for type: '$type' — jourValue set to null");
+                                                }
+
+                                                print(
+                                                    "FINAL controller.jourValue => ${controller
+                                                        .jourValue}");
+                                              });
+
+                                              // 2. Fares calculation trigger
+                                              controller.getFaresCalculation();
+                                            } else {
+                                              // 3. Validation fail warning
+                                              BotToast.showText(
+                                                  text: "Please select pickup and drop location first");
+                                            }
+                                          },
+                                          22,
+                                          itemLabel: (p) => p.journeyType!,
+                                          allowUnselect: false,
+                                          // Read-only on the edit screen. The
+                                          // journey type decides which legs a
+                                          // booking has — switching O/W to R/N here
+                                          // would need a return leg created, and
+                                          // R/N to O/W one deleted, neither of which
+                                          // this form does. It reports the booking's
+                                          // type and gates the R/N fields off it
+                                          // (see [_isReturnJourney]); changing the
+                                          // type is a new booking, not an edit.
+                                          enabled: false,
+                                        ),
+                                        _dropdown<DashboardVehicleTypeObject>(
+                                          'Vehicle Type',
+                                          controller.selectVehicleValue,
+                                          controller.dashboardAllData!
+                                              .vehicleTypes!,
+                                              (v) =>
+                                              setState(() {
+                                                controller.selectVehicleValue =
+                                                    v;
+                                                controller
+                                                    .getFaresCalculation();
+                                              }),
+                                          23,
+                                          itemLabel: (p) => p.name!,
+                                          allowUnselect: false,
+                                        ),
+                                        if (_isReturnJourney) _rVehicleDropdown(),
+                                      ]),
+                                      // Row 8 — ACC / QUOTATION / PASS / LUGG / SLGG.
+                                      _grid(isMobile ? 1 : (isTablet ? 3 : 5), [
+                                        _dropdown<DashboardAccountObject>(
+                                          'SELECT ACCOUNT',
+                                          controller.selectAccountValue,
+                                          controller.dashboardAccountData
+                                              ?.accounts ??
+                                              const [],
+                                              (v) {
+                                            setState(() {
+                                              controller.selectAccountValue = v;
+                                              controller.selectDepartmentData =
+                                              null;
+                                            });
+                                          },
+                                          25,
+                                          itemLabel: (p) => p.name!,
+                                        ),
+                                        _quotationToggle(),
+                                        _field('No. of Passengers',
+                                            tab: 27,
+                                            prefix: Icons.person_outline,
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter
+                                                  .digitsOnly,
+                                              LengthLimitingTextInputFormatter(
+                                                  2),
+                                            ],
+                                            controller: controller
+                                                .passController),
+                                        ..._luggageFields(),
+                                      ]),
+                                      // Row 9 — PAY / ADD RETURN FARE / DEPARTMENT, then the SMS and
+                                      // EMAIL pair and the four dialog buttons.
+                                      _grid(isMobile ? 1 : (isTablet ? 2 : 4), [
+                                        _dropdown<PaymentTypeObject>(
+                                            'Pay By',
+                                            controller.selectPaymentTypeValue,
+                                            controller.dashboardAllData!
+                                                .paymentTypes ??
+                                                const [],
+                                                (v) =>
+                                                setState(() =>
+                                                controller
+                                                    .selectPaymentTypeValue =
+                                                    v),
+                                            30,
+                                            itemLabel: (p) => p.name!,
+                                            allowUnselect: false
+                                        ),
+                                        if (_isReturnJourney) _addReturnFareCheckbox(),
+                                        _dropdown<DepartmentObject>(
+                                          'Select Department',
+                                          controller.selectDepartmentData,
+                                          controller.selectAccountValue == null
+                                              ? []
+                                              : controller
+                                              .selectAccountValue!.departments!,
+                                              (v) =>
+                                              setState(() {
+                                                controller
+                                                    .selectDepartmentData = v;
+                                                controller.update();
+                                              }),
+
+                                          32,
+                                          itemLabel: (p) => p.name ?? "",
+                                        ),
+                                        _commsAndActionsRow(isMobile),
+                                      ]),
+                                      // Row 10 — R/LEAD, on its own.
+                                      if (_isReturnJourney)
+                                        _grid(isMobile ? 1 : (isTablet ? 2 : 4),
+                                            [_rLeadField()]),
+
+                                      ///todo multi reservation
+                                      // _grid(cols, [
+                                      //   WebDateField('Date',
+                                      //       tab: _isReturnJourney?36.1:21.1,
+                                      //       // The calendar is an overlay off the
+                                      //       // root Overlay, so _withFormFont at the
+                                      //       // top of this screen never reaches it.
+                                      //       // baseTextStyle is merged under every
+                                      //       // string in the field AND the popup, so
+                                      //       // the family lands in one place instead
+                                      //       // of per slot.
+                                      //       baseTextStyle:
+                                      //       const TextStyle(fontFamily: _kFontFamily),
+                                      //       textStyle: _kValueTextStyle,
+                                      //       // fieldTextColor is what the package
+                                      //       // paints the value with while the field
+                                      //       // is at rest (black87 by default); the
+                                      //       // focused/open value stays the accent.
+                                      //       style: WebDatePickerStyle.of(context)
+                                      //           .copyWith(fieldTextColor: Colors.black),
+                                      //       // Unfocused / disabled border comes from
+                                      //       // the form's own decoration (grey 0.7) —
+                                      //       // the package default leaves it to the
+                                      //       // theme. Focused stays the purple accent.
+                                      //       decoration: _inputDecoration(),
+                                      //       value: controller.pickUpDate,
+                                      //       onChanged: (d) => setState(() {
+                                      //         controller.pickUpDate = d;
+                                      //         controller.pickUpDatePicked = true;
+                                      //       })),
+                                      //   _timeField('Time',
+                                      //       tab: _isReturnJourney?36.2:21.2,
+                                      //       controller:
+                                      //       controller.pickUpTimeController,
+                                      //       onPicked: () =>
+                                      //       controller.pickUpTimePicked = true),
+                                      //   WebDateField('Date',
+                                      //       tab: _isReturnJourney?36.3:21.3,
+                                      //       baseTextStyle:
+                                      //       const TextStyle(fontFamily: _kFontFamily),
+                                      //       textStyle: _kValueTextStyle,
+                                      //       style: WebDatePickerStyle.of(context)
+                                      //           .copyWith(fieldTextColor: Colors.black),
+                                      //       decoration: _inputDecoration(),
+                                      //       value: controller.pickUpDate,
+                                      //       onChanged: (d) => setState(() {
+                                      //         controller.pickUpDate = d;
+                                      //         controller.pickUpDatePicked = true;
+                                      //       })),
+                                      //   _timeField('Time',
+                                      //       tab: _isReturnJourney?36.4:21.4,
+                                      //       controller:
+                                      //       controller.pickUpTimeController,
+                                      //       onPicked: () =>
+                                      //       controller.pickUpTimePicked = true),
+                                      // ]),
+                                      ///todo multi reservation
+
+
+                                      const SizedBox(height: 4),
+                                      _statusCards(isMobile),
+                                      const SizedBox(height: 4),
+                                      // The fares bar's editable pair: FARE and, on a return, R/FARE.
+                                      _grid(isMobile ? 1 : (isTablet ? 2 : 4), [
+                                        _field('FARE',
+                                            tab: 40,
+                                            prefix: Icons.currency_pound,
+                                            controller: controller
+                                                .slugController),
+                                        if (_isReturnJourney) _rFareField(),
+                                      ]),
+                                      const SizedBox(height: 4),
+                                      _driverRow(isMobile),
+                                    ],
                                   ),
-                                  _commsAndActionsRow(isMobile),
-                                ]),
-                                // Row 10 — R/LEAD, on its own.
-                                if (_isReturnJourney)
-                                  _grid(isMobile ? 1 : (isTablet ? 2 : 4), [_rLeadField()]),
-                                ///todo multi reservation
-                                // _grid(cols, [
-                                //   WebDateField('Date',
-                                //       tab: _isReturnJourney?36.1:21.1,
-                                //       // The calendar is an overlay off the
-                                //       // root Overlay, so _withFormFont at the
-                                //       // top of this screen never reaches it.
-                                //       // baseTextStyle is merged under every
-                                //       // string in the field AND the popup, so
-                                //       // the family lands in one place instead
-                                //       // of per slot.
-                                //       baseTextStyle:
-                                //       const TextStyle(fontFamily: _kFontFamily),
-                                //       textStyle: _kValueTextStyle,
-                                //       // fieldTextColor is what the package
-                                //       // paints the value with while the field
-                                //       // is at rest (black87 by default); the
-                                //       // focused/open value stays the accent.
-                                //       style: WebDatePickerStyle.of(context)
-                                //           .copyWith(fieldTextColor: Colors.black),
-                                //       // Unfocused / disabled border comes from
-                                //       // the form's own decoration (grey 0.7) —
-                                //       // the package default leaves it to the
-                                //       // theme. Focused stays the purple accent.
-                                //       decoration: _inputDecoration(),
-                                //       value: controller.pickUpDate,
-                                //       onChanged: (d) => setState(() {
-                                //         controller.pickUpDate = d;
-                                //         controller.pickUpDatePicked = true;
-                                //       })),
-                                //   _timeField('Time',
-                                //       tab: _isReturnJourney?36.2:21.2,
-                                //       controller:
-                                //       controller.pickUpTimeController,
-                                //       onPicked: () =>
-                                //       controller.pickUpTimePicked = true),
-                                //   WebDateField('Date',
-                                //       tab: _isReturnJourney?36.3:21.3,
-                                //       baseTextStyle:
-                                //       const TextStyle(fontFamily: _kFontFamily),
-                                //       textStyle: _kValueTextStyle,
-                                //       style: WebDatePickerStyle.of(context)
-                                //           .copyWith(fieldTextColor: Colors.black),
-                                //       decoration: _inputDecoration(),
-                                //       value: controller.pickUpDate,
-                                //       onChanged: (d) => setState(() {
-                                //         controller.pickUpDate = d;
-                                //         controller.pickUpDatePicked = true;
-                                //       })),
-                                //   _timeField('Time',
-                                //       tab: _isReturnJourney?36.4:21.4,
-                                //       controller:
-                                //       controller.pickUpTimeController,
-                                //       onPicked: () =>
-                                //       controller.pickUpTimePicked = true),
-                                // ]),
-                                ///todo multi reservation
-
-
-                                const SizedBox(height: 4),
-                                _statusCards(isMobile),
-                                const SizedBox(height: 4),
-                                // The fares bar's editable pair: FARE and, on a return, R/FARE.
-                                _grid(isMobile ? 1 : (isTablet ? 2 : 4), [
-                                  _field('FARE',
-                                      tab: 40,
-                                      prefix: Icons.currency_pound,
-                                      controller: controller.slugController),
-                                  if (_isReturnJourney) _rFareField(),
-                                ]),
-                                const SizedBox(height: 4),
-                                _driverRow(isMobile),
+                                ),
                               ],
                             ),
                           ),
-                        ],
+                        ),
+                        // ---- The journey, drawn ----
+                        // On the dashboard this widget is a sibling of the form, one
+                        // panel over; a standalone edit page has to carry it or the
+                        // route the PICK / DROP fields are plotting is invisible.
+                        //
+                        // The height matters more than it looks: MapViewWidget is a
+                        // Stack with no size of its own, so an unbounded parent takes
+                        // its inner layout out with a "size: MISSING" — the same
+                        // reason the dashboard wraps it in a SizedBox. A height of
+                        // its own only while the page scrolls, though: on desktop
+                        // _pageBody hands it the space the form leaves, which is what
+                        // keeps the whole map on screen.
+                        map: Container(
+                          height: canScroll ? _mapHeight(context) : null,
+                          margin: EdgeInsets.fromLTRB(
+                              0, 12, 0, isMobile ? 0 : 12),
+                          clipBehavior: Clip.antiAlias,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                                isMobile ? 0 : 10),
+                            border: Border.all(color: _border.withOpacity(0.2)),
+                          ),
+                          // createBooking drops the MAPS / PLOT toggle and the
+                          // distance readout it carries: both belong to the
+                          // dashboard, and this screen has the status cards for the
+                          // figures.
+                          child: MapViewWidget(createBooking: true),
+                        ),
                       ),
                     ),
                   ),
-                  // ---- The journey, drawn ----
-                  // On the dashboard this widget is a sibling of the form, one
-                  // panel over; a standalone edit page has to carry it or the
-                  // route the PICK / DROP fields are plotting is invisible.
-                  //
-                  // The height matters more than it looks: MapViewWidget is a
-                  // Stack with no size of its own, so an unbounded parent takes
-                  // its inner layout out with a "size: MISSING" — the same
-                  // reason the dashboard wraps it in a SizedBox. A height of
-                  // its own only while the page scrolls, though: on desktop
-                  // _pageBody hands it the space the form leaves, which is what
-                  // keeps the whole map on screen.
-                  map: Container(
-                    height: canScroll ? _mapHeight(context) : null,
-                    margin: EdgeInsets.fromLTRB(0, 12, 0, isMobile ? 0 : 12),
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(isMobile ? 0 : 10),
-                      border: Border.all(color: _border.withOpacity(0.2)),
-                    ),
-                    // createBooking drops the MAPS / PLOT toggle and the
-                    // distance readout it carries: both belong to the
-                    // dashboard, and this screen has the status cards for the
-                    // figures.
-                    child: MapViewWidget(createBooking: true),
-                  ),
-                  ),
-                ),
-              ),
-            );
-          },
+                );
+              },
+            ),
+          ),
         ),
       ),
-    ),
-    ),
     );
   }
 
@@ -1196,7 +1335,8 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   /// the spinner and parks it against the top edge. A fixed box gives the
   /// loader somewhere to sit either way, and keeps the page from collapsing to
   /// 50px and then jumping to full height when the form arrives.
-  Widget _loadingBody() => SizedBox(
+  Widget _loadingBody() =>
+      SizedBox(
         height: 360,
         child: Center(child: LoaderClass()),
       );
@@ -1246,8 +1386,8 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
           );
         }
         final formMax = (constraints.maxHeight -
-                padding.vertical -
-                _kMinMapHeight)
+            padding.vertical -
+            _kMinMapHeight)
             .clamp(0.0, double.infinity);
         return Padding(
           padding: padding,
@@ -1283,20 +1423,26 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   /// update booking — keeps whatever box it already gives the map, and raising
   /// these numbers moves nothing outside this file.
   static double _mapHeight(BuildContext context) {
-    final h = MediaQuery.of(context).size.height;
+    final h = MediaQuery
+        .of(context)
+        .size
+        .height;
     return (h * 0.72).clamp(360.0, 760.0).toDouble();
   }
+
   // ────────── RETURN JOURNEY SECTION
   /// Shared cleanup for two-way pickup/drop clear buttons.
   void _clearTwoWayData(DashboardController ctrl, {bool recalcRoute = false}) {
     // Remove two-way polyline markers
     ctrl.polyLineMarkerInfo.removeWhere(
-          (e) => e.markerType == "PICKUP TWO WAY LOCATION" ||
+          (e) =>
+      e.markerType == "PICKUP TWO WAY LOCATION" ||
           e.markerType == "DROP TWO WAY LOCATION",
     );
     // Remove two-way map markers
     ctrl.markers.removeWhere(
-          (m) => m.type == "pickup two way" ||
+          (m) =>
+      m.type == "pickup two way" ||
           m.type == "dropOff two way" ||
           m.type == "via with return",
     );
@@ -1329,68 +1475,71 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
         _sectionHeader(Icons.swap_horiz, 'RETURN JOURNEY'),
         const SizedBox(height: 8),
         _locationRow<ZoneObject>(
-          'PICK',
-          _purple,
-          controller.pickupTwoWayController,
-          controller.allAddressesData,
-          // Was LocationController.RNzoneValue — a singleton the dashboard
-          // form writes to as well, so the two screens shared one return zone.
-          // dashboardRNZoneValue lives on this screen's own instance and
-          // isolates with the rest of the form.
-          controller.dashboardRNZoneValue,
-          // Same guard the outbound rows use: locationtypezoneModel is null
-          // until getLocationTypeZone() lands, and a return journey rendered
-          // before then used to bring the screen down on the null assertion.
-          _controller.updateLocationValue.value == true ||
-                  _controller.locationtypezoneModel == null
-              ? []
-              : _controller.locationtypezoneModel!.zonesList!,
-              (v) => setState(() => controller.dashboardRNZoneValue = v),
-          isMobile,
-              (value) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              controller.onChangeHandler(
-                  fieldName: "PICKUP TWO WAY LOCATION", searchingText: value);
-            });
-          },
-              (addr) {
-            setState(() => _selectedDrop = addr);
-          },
-          14,
-          zoneLabel: (z) => z.name!,
-          onPickIndex: (index) => controller.tapSelect(index),
-          onPressed: () {
-            FocusScope.of(Get.context!).requestFocus(controller.pickupTwoTextFieldFocusNode);
+            'PICK',
+            _purple,
+            controller.pickupTwoWayController,
+            controller.allAddressesData,
+            // Was LocationController.RNzoneValue — a singleton the dashboard
+            // form writes to as well, so the two screens shared one return zone.
+            // dashboardRNZoneValue lives on this screen's own instance and
+            // isolates with the rest of the form.
+            controller.dashboardRNZoneValue,
+            // Same guard the outbound rows use: locationtypezoneModel is null
+            // until getLocationTypeZone() lands, and a return journey rendered
+            // before then used to bring the screen down on the null assertion.
+            _controller.updateLocationValue.value == true ||
+                _controller.locationtypezoneModel == null
+                ? []
+                : _controller.locationtypezoneModel!.zonesList!,
+                (v) => setState(() => controller.dashboardRNZoneValue = v),
+            isMobile,
+                (value) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                controller.onChangeHandler(
+                    fieldName: "PICKUP TWO WAY LOCATION", searchingText: value);
+              });
+            },
+                (addr) {
+              setState(() => _selectedDrop = addr);
+            },
+            14,
+            zoneLabel: (z) => z.name!,
+            onPickIndex: (index) => controller.tapSelect(index),
+            onPressed: () {
+              FocusScope.of(Get.context!).requestFocus(
+                  controller.pickupTwoTextFieldFocusNode);
 
-            final pickupPolylineIndex = controller.polyLineMarkerInfo
-                .indexWhere((e) => e.markerType == "PICKUP TWO WAY LOCATION");
+              final pickupPolylineIndex = controller.polyLineMarkerInfo
+                  .indexWhere((e) => e.markerType == "PICKUP TWO WAY LOCATION");
 
-            if (pickupPolylineIndex >= 0) {
-              controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
-            }
-            final pickupMarkerIndex =
-            controller.markers.indexWhere((e) => e.type == "pickup two way");
-            if (pickupMarkerIndex >= 0) {
-              controller.markers.removeAt(pickupMarkerIndex);
-            }
-            controller.pickupTwoWayController.clear();
-            controller.clearReturnViaIfNoPickupAndDrop();
-            controller.selectAirportControllerReturn.clear();
-            controller.arrivalReturnTimeController.clear();
-            controller.isAirportResponseReturn.value = false;
-            // controller.dropOffTwoWayController.clear();
-            controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "PICKUP TWO WAY LOCATION");
-            if (controller.markers is List<CustomMarker>) {
-              controller.markers.removeWhere((marker) => marker.type == "PICKUP TWO WAY LOCATION");
-            }
-            controller.dropDownShow.value = false;
-            // controller.tempStoreMils = null;
-            controller.fetchRouteFromOSRM();
-            controller.update();
-          },
-          addressFocusNode: controller.pickupTwoTextFieldFocusNode,
-          onCurrentLocation: () async {
-            controller.swapeToChangeReturnLocation();
+              if (pickupPolylineIndex >= 0) {
+                controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
+              }
+              final pickupMarkerIndex =
+              controller.markers.indexWhere((e) => e.type == "pickup two way");
+              if (pickupMarkerIndex >= 0) {
+                controller.markers.removeAt(pickupMarkerIndex);
+              }
+              controller.pickupTwoWayController.clear();
+              controller.clearReturnViaIfNoPickupAndDrop();
+              controller.selectAirportControllerReturn.clear();
+              controller.arrivalReturnTimeController.clear();
+              controller.isAirportResponseReturn.value = false;
+              // controller.dropOffTwoWayController.clear();
+              controller.polyLineMarkerInfo.removeWhere((item) =>
+              item.markerType == "PICKUP TWO WAY LOCATION");
+              if (controller.markers is List<CustomMarker>) {
+                controller.markers.removeWhere((marker) =>
+                marker.type == "PICKUP TWO WAY LOCATION");
+              }
+              controller.dropDownShow.value = false;
+              // controller.tempStoreMils = null;
+              controller.fetchRouteFromOSRM();
+              controller.update();
+            },
+            addressFocusNode: controller.pickupTwoTextFieldFocusNode,
+            onCurrentLocation: () async {
+              controller.swapeToChangeReturnLocation();
             },
             notesController: controller.returnPickUpNoteController
         ),
@@ -1424,13 +1573,15 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(width: 80, child:  Row(mainAxisSize: MainAxisSize.min, children: [
-                  Icon(Icons.circle, size: 9, color: _purple),
-                  const SizedBox(width: 6),
-                  Text("FL",
-                      style:
-                      const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsLabel)),
-                ])),
+                SizedBox(width: _kLabelColumnWidth - 2,
+                    child: Row(mainAxisSize: MainAxisSize.min, children: [
+                      Icon(Icons.circle, size: 9, color: _purple),
+                      const SizedBox(width: 6),
+                      Text("FL",
+                          style:
+                          const TextStyle(
+                              fontWeight: FontWeight.w700, fontSize: _fsLabel)),
+                    ])),
                 const SizedBox(width: 2),
                 Expanded(
                   flex: 3,
@@ -1460,59 +1611,61 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
         ),
         const SizedBox(height: 4),
         _locationRow<ZoneObject>(
-          'DROP',
-          _red,
-          controller.dropOffTwoWayController,
-          controller.allAddressesData,
-          controller.dashboardRN1ZoneValue,
-          _controller.updateLocationValue.value == true ||
-                  _controller.locationtypezoneModel == null
-              ? []
-              : _controller.locationtypezoneModel!.zonesList!,
-              (v) => setState(() => controller.dashboardRN1ZoneValue = v),
-          isMobile,
-              (value) {
-            controller.onChangeHandler(
-                fieldName: "DROP TWO WAY LOCATION", searchingText: value);
-          },
-              (addr) {
-            setState(() => _selectedDrop = addr);
-          },
-          17,
-          zoneLabel: (z) => z.name!,
-          onPickIndex: (index) => controller.tapSelect(index),
-          onPressed: () {
-            FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
+            'DROP',
+            _red,
+            controller.dropOffTwoWayController,
+            controller.allAddressesData,
+            controller.dashboardRN1ZoneValue,
+            _controller.updateLocationValue.value == true ||
+                _controller.locationtypezoneModel == null
+                ? []
+                : _controller.locationtypezoneModel!.zonesList!,
+                (v) => setState(() => controller.dashboardRN1ZoneValue = v),
+            isMobile,
+                (value) {
+              controller.onChangeHandler(
+                  fieldName: "DROP TWO WAY LOCATION", searchingText: value);
+            },
+                (addr) {
+              setState(() => _selectedDrop = addr);
+            },
+            17,
+            zoneLabel: (z) => z.name!,
+            onPickIndex: (index) => controller.tapSelect(index),
+            onPressed: () {
+              FocusScope.of(Get.context!).requestFocus(
+                  controller.dropOffTwoWayTextFieldFocusNode);
 
-            final dropPolylineIndex = controller.polyLineMarkerInfo
-                .indexWhere((e) => e.markerType == "DROP TWO WAY LOCATION");
+              final dropPolylineIndex = controller.polyLineMarkerInfo
+                  .indexWhere((e) => e.markerType == "DROP TWO WAY LOCATION");
 
-            if (dropPolylineIndex >= 0) {
-              controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
-            }
-            final dropOffMarkerIndex =
-            controller.markers.indexWhere((e) => e.type == "dropOff two way");
+              if (dropPolylineIndex >= 0) {
+                controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
+              }
+              final dropOffMarkerIndex =
+              controller.markers.indexWhere((e) => e.type == "dropOff two way");
 
-            if (dropOffMarkerIndex >= 0) {
-              controller.markers.removeAt(dropOffMarkerIndex);
-            }
-            controller.markers.removeWhere((marker) => marker.type == "via with return");
-            // 1. Only Two-Way controllers clear karein
-            controller.dropOffTwoWayController.clear();
-            controller.clearReturnViaIfNoPickupAndDrop();
-            controller.dropDownShow.value = false;
-            //  Route API
-            controller.fetchRouteFromOSRM();
-            controller.update();
-            // FocusScope.of(Get.context!)
-            //     .requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
-            // _clearTwoWayData(controller, recalcRoute: true);
-          },
-          addressFocusNode: controller.dropOffTwoWayTextFieldFocusNode,
-          onCurrentLocation: () async {
-            controller.swapeToChangeReturnLocation();
-          },
-          actionIcon: LucideIcons.route,
+              if (dropOffMarkerIndex >= 0) {
+                controller.markers.removeAt(dropOffMarkerIndex);
+              }
+              controller.markers.removeWhere((marker) =>
+              marker.type == "via with return");
+              // 1. Only Two-Way controllers clear karein
+              controller.dropOffTwoWayController.clear();
+              controller.clearReturnViaIfNoPickupAndDrop();
+              controller.dropDownShow.value = false;
+              //  Route API
+              controller.fetchRouteFromOSRM();
+              controller.update();
+              // FocusScope.of(Get.context!)
+              //     .requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
+              // _clearTwoWayData(controller, recalcRoute: true);
+            },
+            addressFocusNode: controller.dropOffTwoWayTextFieldFocusNode,
+            onCurrentLocation: () async {
+              controller.swapeToChangeReturnLocation();
+            },
+            actionIcon: LucideIcons.route,
             notesController: controller.returnDropUpNoteController
         ),
       ],
@@ -1526,35 +1679,40 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   // DATE, R/VEH beside VEH, R/FARE beside FARE — so each is built here and
   // placed by the main column. _returnJourneySection keeps only the two
   // address rows, which have no outbound twin to sit beside.
-  Widget _rDateField() => _dateField('R/Date',
-      tab: 13,
-      value: controller.pickUpDateReturn,
-      onChanged: (d) => setState(() {
-            controller.pickUpDateReturn = d;
-            controller.pickUpDateReturnPicked = true;
-          }));
+  Widget _rDateField() =>
+      _dateField('R/Date',
+          tab: 13,
+          value: controller.pickUpDateReturn,
+          onChanged: (d) =>
+              setState(() {
+                controller.pickUpDateReturn = d;
+                controller.pickUpDateReturnPicked = true;
+              }));
 
-  Widget _rTimeField() => _timeField('R/Time',
-      tab: 14,
-      controller: controller.pickUpTimeControllerReturn,
-      onPicked: () => controller.pickUpTimeReturnPicked = true);
+  Widget _rTimeField() =>
+      _timeField('R/Time',
+          tab: 14,
+          controller: controller.pickUpTimeControllerReturn,
+          onPicked: () => controller.pickUpTimeReturnPicked = true);
 
   Widget _rLeadField() =>
       _field('R/Lead', tab: 39, controller: controller.minControllerReturn);
 
-  Widget _rFareField() => _field('R/Fare',
-      tab: 41,
-      prefix: Icons.currency_pound,
-      controller: controller.slugControllerReturn);
+  Widget _rFareField() =>
+      _field('R/Fare',
+          tab: 41,
+          prefix: Icons.currency_pound,
+          controller: controller.slugControllerReturn);
 
   // One builder where the mobile and desktop branches previously carried two
   // copies of this dropdown. The bodies differed only in the order of two
   // statements that both ran either way; this is the desktop copy.
-  Widget _rVehicleDropdown() => _dropdown<DashboardVehicleTypeObject>(
+  Widget _rVehicleDropdown() =>
+      _dropdown<DashboardVehicleTypeObject>(
         'Select R/VEH',
         controller.selectVehicleValueReturn,
         controller.dashboardAllData!.vehicleTypes!,
-        (v) {
+            (v) {
           if (v == null) return;
           // The old copies passed `() async {}` to setState. Nothing in the
           // body is awaited, and Flutter asserts when a setState callback
@@ -1570,11 +1728,12 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
         allowUnselect: false,
       );
 
-  Widget _rDriverDropdown() => _dropdown<DashboardDriverObject>(
+  Widget _rDriverDropdown() =>
+      _dropdown<DashboardDriverObject>(
         'Select R/DRV',
         controller.selectDriverValueReturn,
         controller.dashboardAllData!.drivers ?? const [],
-        (v) => setState(() => controller.selectDriverValueReturn = v),
+            (v) => setState(() => controller.selectDriverValueReturn = v),
         43,
         itemLabel: (p) => p.name ?? '',
       );
@@ -1588,15 +1747,15 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
           child: GlowFocus(
             radius: 4,
             child: SizedBox(
-            width: 20,
-            height: 20,
-            child: Checkbox(
-              value: controller.addReturnFare.value,
-              onChanged: (v) =>
-                  setState(() => controller.addReturnFare.value = v ?? false),
-              activeColor: _purple,
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
+              width: 20,
+              height: 20,
+              child: Checkbox(
+                value: controller.addReturnFare.value,
+                onChanged: (v) =>
+                    setState(() => controller.addReturnFare.value = v ?? false),
+                activeColor: _purple,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
             ),
           ),
         ),
@@ -1620,7 +1779,9 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     final job = controller.jobDetails;
 
     String orDash(String? v) =>
-        (v == null || v.trim().isEmpty) ? '—' : v.trim();
+        (v == null || v
+            .trim()
+            .isEmpty) ? '—' : v.trim();
 
     // createdAt is the parsed one; bookedAt is whatever the API sent, so it is
     // only worth a look when createdAt is absent.
@@ -1637,7 +1798,9 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       if (a == null) return null;
       if (a is Map) {
         final r = a['reference_number'] ?? a['referenceNumber'];
-        return (r == null || '$r'.trim().isEmpty) ? null : '$r'.trim();
+        return (r == null || '$r'
+            .trim()
+            .isEmpty) ? null : '$r'.trim();
       }
       final s = '$a'.trim();
       return s.isEmpty ? null : s;
@@ -1756,10 +1919,13 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                     outlinePill(null, orDash(job?.referenceNumber), _purple,
                         order: 0.1),
                     metaPill(
-                        'User', orDash(job?.employee?.username ?? job?.bookedBy)),
+                        'User',
+                        orDash(job?.employee?.username ?? job?.bookedBy)),
                     metaPill('Booked', bookedStamp()),
                     metaPill('Status',
-                        orDash(job?.bookingStatus?.bookingStatus),
+                        orDash(
+                            job?.trash == true ? "DELETE" : job?.bookingStatus
+                                ?.bookingStatus),
                         background: _purpleSoft, valueColor: _purple),
                   ],
                 ),
@@ -1778,17 +1944,26 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                   iconBtn(Icons.play_arrow, 'Dispatch',
                       order: 0.3, onTap: () {
                         // _headerAction('Dispatch');
-                  }),
+                      }),
                   iconBtn(Icons.chat_bubble_outline, 'Messages',
-                      order: 0.4, onTap: () => _headerAction('Messages')),
+                      order: 0.4, onTap: () { _headerAction('Messages');
+                    Get.dialog(ResendSms(bookingItem: controller.jobDetails,));
+                  }),
                   iconBtn(Icons.send, 'Send details',
-                      order: 0.5, onTap: () => _headerAction('Send details')),
+                      order: 0.5, onTap: () {
+                        _headerAction('Send details');
+                        Get.dialog(ResendEmailAlert());
+                      }),
                   outlinePill(
                       Icons.warning_amber_rounded, 'Complaint', _red,
-                      order: 0.6, onTap: () => _headerAction('Complaint')),
+                      order: 0.6, onTap: () => openBookingInNewWindow(
+                          Routes.createComplaint, controller.jobDetails)
+                      ),
                   outlinePill(
                       Icons.inventory_2_outlined, 'Lost property', _purple,
-                      order: 0.7, onTap: () => _headerAction('Lost property')),
+                      order: 0.7, onTap: () => openBookingInNewWindow(
+                          Routes.lostProperty, controller.jobDetails)
+                  ),
                 ],
               ),
             ],
@@ -1802,9 +1977,9 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   /// The header's booking actions have no endpoint behind them yet — the bar
   /// was built to a design, not to an API. Each one says so rather than
   /// failing silently under the cursor.
-  void _headerAction(String name) =>
-      BotToast.showText(text: '$name is not wired up yet');
-
+  void _headerAction(String name) {
+// BotToast.showText(text: '$name is not wired up yet');
+}
 
 // ────────── location row
   Widget _locationRow<T>(
@@ -1945,12 +2120,17 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SizedBox(width: 80, child: tag),
-        const SizedBox(width: 2),
+        // 62 is the width of the longest tag ('PICKUP' beside its dot) plus a
+        // hair, not a round number picked by eye: the column is fixed so the
+        // address fields of the PICK and DROP rows start on the same x, and
+        // any wider than the text needs is dead space in front of every row.
+        // The FL/ARP rows below use the same 62 so the whole form shares one
+        // left edge.
+        SizedBox(width: _kLabelColumnWidth, child: tag),
         Expanded(flex: 5, child: address),
-        const SizedBox(width: 8),
+        const SizedBox(width: _kFieldGap),
         SizedBox(width: 150, child: zoneDd),
-        const SizedBox(width: 8),
+        const SizedBox(width: _kFieldGap),
         SizedBox(width: 160, child: notes), // gave the field a bounded width
       ],
     );
@@ -2281,6 +2461,37 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   void _onActionPending(String label) =>
       BotToast.showText(text: '$label is not available yet');
 
+  Future<void> _onReceiptAction(String action) async {
+    if (action == 'VIEW') {
+      // `bookings/getbyid` returns the main booking first and any return
+      // legs after it; the receipt lists those under the main booking.
+      // Only when that list really belongs to the booking on screen and has
+      // more than the main booking in it — a single booking gets no RETURN
+      // BOOKING section.
+      final bookings = controller.jobDataaa?.booking ?? const [];
+      final hasReturn = bookings.length > 1 &&
+          bookings.first.id?.toString() ==
+              controller.jobDetails?.id?.toString();
+      openBookingInNewWindow(
+        Routes.receiptDetails,
+        controller.jobDetails,
+        linked: hasReturn ? bookings.sublist(1) : const [],
+      );
+      // showDialog(
+      //   context: context,
+      //   builder: (_) => BookingReceiptScreen(
+      //     bookingItem: controller.jobDetails!,
+      //   ),
+      // );
+    } else if (action == 'EMAIL') {
+      // EMAIL logic
+    } else if (action == 'EXPORT TO PDF') {
+      await exportReceiptPdf(
+        bookingItem: controller.jobDataaa,
+      );
+    }
+  }
+
   /// One of the bottom-row actions from the design. Same shape as CLEAR and
   /// SAVE beside it, just tighter in the horizontal padding, because six of
   /// these share the row with the two driver dropdowns.
@@ -2410,10 +2621,18 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       // the method is `async` with no declared return type, so the call form
       // runs the refresh on every rebuild and hands its Future to a
       // VoidCallback slot, which throws while building.
-      _bottomAction('Cancel',
+      _bottomAction('CANCEL',
           tab: 43.1,
           color: _red,
-          onTap: () => _onShowCancelReason),
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (_) => CancelBookingRequest(
+              bookingId: controller.jobDetails?.id ?? 0,
+              bookingItem: controller.jobDetails,
+            ),
+          );
+        }),
           // onTap: () => controller.refreshPostAllFields()),
       if (visible.contains(_aReason))
         _bottomAction(_aReason,
@@ -2422,10 +2641,31 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
         _bottomAction(_aPay,
             tab: 43.2, color: _purple, onTap: () => _onActionPending(_aPay)),
       if (visible.contains(_aReceipt))
-        _bottomAction(_aReceipt,
-            tab: 43.3,
-            color: _purple,
-            onTap: () => _onActionPending(_aReceipt)),
+        PopupMenuButton<String>(
+          tooltip: '',
+          offset: const Offset(40, 40),
+          onSelected: (action) => _onReceiptAction(action),
+          itemBuilder: (context) => const [
+            PopupMenuItem(value: 'VIEW', child: Text('VIEW', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
+            PopupMenuItem(value: 'EMAIL', child: Text('EMAIL', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
+            PopupMenuItem(value: 'EXPORT TO PDF', child: Text('EXPORT TO PDF', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
+          ],
+          child: IgnorePointer(
+            child: _bottomAction(
+              _aReceipt,
+              tab: 43.3,
+              color: _purple,
+              onTap: () {},
+            ),
+          ),
+        ),
+
+
+      // if (visible.contains(_aReceipt))
+      //   _bottomAction(_aReceipt,
+      //       tab: 43.3,
+      //       color: _purple,
+      //       onTap: () => _onActionPending(_aReceipt)),
       if (visible.contains(_aMapReport))
         _bottomAction(_aMapReport,
             tab: 43.4,
@@ -2564,7 +2804,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       label,
       FocusTraversalOrder(
         order: NumericFocusOrder(tab.toDouble()),
-        child: _CustomerModelAutocomplete(
+        child: CustomerModelAutocomplete(
           controller: controller,
           items: customers,
           onSelected: onPicked,
@@ -3550,13 +3790,13 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
 // ════════════════════════════════════════════════════════════════════
 // Autocomplete: backed by CustomerObject (mobile + name + email)
 // ════════════════════════════════════════════════════════════════════
-class _CustomerModelAutocomplete extends StatefulWidget {
-  const _CustomerModelAutocomplete({
+class CustomerModelAutocomplete extends StatefulWidget {
+  const CustomerModelAutocomplete({
     required this.controller,
     required this.items,
     required this.decoration,
     this.onChanged,
-    this.onSelected,
+    this.onSelected, FocusNode? focusNode,
   });
   final TextEditingController controller;
   final List<CustomerObject> items;
@@ -3564,11 +3804,10 @@ class _CustomerModelAutocomplete extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final ValueChanged<CustomerObject>? onSelected;
   @override
-  State<_CustomerModelAutocomplete> createState() =>
-      _CustomerModelAutocompleteState();
+  State<CustomerModelAutocomplete> createState() =>
+      CustomerModelAutocompleteState();
 }
-class _CustomerModelAutocompleteState
-    extends State<_CustomerModelAutocomplete> {
+class CustomerModelAutocompleteState extends State<CustomerModelAutocomplete> {
   final _layerLink = LayerLink();
   final _focusNode = FocusNode();
   final _fieldKey = GlobalKey();
@@ -3590,7 +3829,7 @@ class _CustomerModelAutocompleteState
     widget.controller.addListener(_onText);
   }
   @override
-  void didUpdateWidget(covariant _CustomerModelAutocomplete oldWidget) {
+  void didUpdateWidget(covariant CustomerModelAutocomplete oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.items != widget.items && _userTyped) {
       WidgetsBinding.instance.addPostFrameCallback((_) {

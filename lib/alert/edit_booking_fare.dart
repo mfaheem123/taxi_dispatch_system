@@ -54,7 +54,7 @@ class _EditBookingFareState extends State<EditBookingFare> {
                         const TextSpan(text: "EDIT BOOKING FARE ("),
                         TextSpan(
                           text: widget.bookingItem?.referenceNumber ?? "N/A",
-                          style: TextStyle(color: DynamicColors.primaryClr, fontWeight: FontWeight.bold),
+                          style: outFitRegular(color: DynamicColors.primaryClr, fontWeight: FontWeight.bold),
                         ),
                         const TextSpan(text: ")"),
                       ],
@@ -69,15 +69,15 @@ class _EditBookingFareState extends State<EditBookingFare> {
               ),
             ),
             const Divider(height: 1, thickness: 1),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
 
             Padding(
-              padding: EdgeInsetsGeometry.symmetric(horizontal: 24, vertical: 30),
+              padding: EdgeInsetsGeometry.symmetric(horizontal: 24, vertical: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("DRIVER FARE (£)",
-                    style: TextStyle(
+                    style: mozillaTextSemiBoldText(
                         fontSize: 14,
                         fontWeight: FontWeight.bold
                     ),
@@ -86,12 +86,10 @@ class _EditBookingFareState extends State<EditBookingFare> {
                   TextField(
                     controller: fareController,
                     keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-                    ],
+                    inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))],
                     decoration: InputDecoration(
                       hintText: "0.00",
-                      hintStyle: TextStyle(color: Colors.grey),
+                      hintStyle: outFitRegular(color: Colors.grey, fontSize: 13),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -118,11 +116,11 @@ class _EditBookingFareState extends State<EditBookingFare> {
                     height: 28,
                     verticalPadding: 0.0,
                     btnText: "CANCEL",
-                    btnColor: Colors.grey.shade300,
+                    btnColor: Colors.red,
                     borderRadius: 4,
                     style: mozillaTextSemiBoldText(
-                        fontSize: 14,
-                        color: Colors.black87,
+                        fontSize: 13,
+                        color: Colors.white,
                         fontWeight: FontWeight.bold
                     ),
                     onTap: () => Get.back(),
@@ -135,7 +133,7 @@ class _EditBookingFareState extends State<EditBookingFare> {
                     icon: const Icon(Icons.save, size: 16),
                     label: Text(
                       "UPDATE FARE",
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                      style: mozillaTextSemiBoldText(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: DynamicColors.primaryClr,

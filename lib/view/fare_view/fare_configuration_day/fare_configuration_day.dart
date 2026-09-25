@@ -8,6 +8,7 @@ import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
 import '../../../component/datatable_widget.dart';
@@ -54,6 +55,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
     return PageScrollWrapper(
       child: GetBuilder<FareController>(
           initState: (v) {
+            controller.getFareConfigMileage();
         if (controller.fareGetVehicleTypeAccount == null) {
           controller.getFareGetVehicleTypeAccount();
         } else {
@@ -82,6 +84,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                     children: [
                       Container(
                         width: Get.width / 1.5,
+                        padding: const EdgeInsets.only(bottom: 16.0),
                         decoration: BoxDecoration(
                             border: Border.all(color: DynamicColors.gryClr)),
                         child: Column(
@@ -371,6 +374,10 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                               verticalDirection: VerticalDirection.down,
                               runSpacing: 15,
                               spacing: fieldWidth / 2,
+                              crossAxisAlignment: WrapCrossAlignment.end,
+                              alignment: controller.fareConfiguration != "NORMAL"
+                                  ? WrapAlignment.center
+                                  : WrapAlignment.start,
                               children: [
                                 CustomTextField(
                                   borderRadius: 4,
@@ -410,28 +417,26 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                   height: 35,
                                 ),
 
-                                Visibility(
-                                  visible: controller.fareConfiguration != "NORMAL"
-                                      ? true
-                                      : false,
-                                  child: CustomTextField(
+                                if(controller.fareConfiguration != "NORMAL")
+                                  CustomTextField(
                                     inputFormatters: [
                                       UpperCaseTextFormatter(),
                                     ],
                                     borderRadius: 4,
                                     controller: controller.titleController,
                                     width: fieldWidth,
-                                    hintText: "Title",
+                                    hintText: "TITLE",
                                     columnText: true,
                                     height: 35,
                                   ),
-                                ),
-                              ],
-                            ),
-                            if(permissions.contains('create_fare_configuration')) Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
-                              child: CustomButton(
-                                height: 30,
+
+
+                            if(permissions.contains('create_fare_configuration'))
+                              // Padding(
+                              // padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              // child:
+                              CustomButton(
+                                height: 35,
                                 onTap: () {
                                   // if (
                                   // controller.accountValue == null ||
@@ -474,7 +479,9 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                     fontSize: 13,
                                     color: DynamicColors.whiteClr
                                 ),
-                              ),
+                              // ),
+                            ),
+                              ],
                             ),
                           ],
                         ),
@@ -617,6 +624,10 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                       inputFormatters: [
                                         FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
                                       ],
+                                      suffixIcon: _buildStepperIcons(
+                                        onIncrement: () => controller.incrementValue(controller.minimumMilesController),
+                                        onDecrement: () => controller.decrementValue(controller.minimumMilesController),
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(width: 10),
@@ -630,6 +641,9 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                       inputFormatters: [
                                         FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
                                       ],
+                                      suffixIcon: _buildStepperIcons(
+                                          onIncrement: () => controller.incrementValue(controller.maximumMilesController), 
+                                          onDecrement: () => controller.decrementValue(controller.maximumMilesController)),
                                     ),
                                   ),
                                   const SizedBox(width: 10),
@@ -643,6 +657,9 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                       inputFormatters: [
                                         FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
                                       ],
+                                      suffixIcon: _buildStepperIcons(
+                                          onIncrement: () =>  controller.incrementValue(controller.mileageFareController), 
+                                          onDecrement: () => controller.decrementValue(controller.mileageFareController)),
                                     ),
                                   ),
                                   const SizedBox(width: 15),
@@ -650,9 +667,9 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                     height: 35,
                                     width: 120,
                                     onTap: () {
-
+                                      controller.postFareMileage();
                                     },
-                                    btnText: AppText.save,
+                                    btnText: controller.updateFareMileageValue.value == false ? AppText.save : AppText.update,
                                     verticalPadding: 0.0,
                                     borderRadius: 4,
                                     style: mozillaTextRegularText(
@@ -671,22 +688,91 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
 
                       Center(
                           child: SizedBox(
-                        width: Get.width / 1.5,
-                        child: DatatableWidget(
-                          columns: [
-                            buildHeaderWithSearch(title: "FROM MILES", removeSearching: true),
-                            buildHeaderWithSearch(title: "TO MILES", removeSearching: true),
-                            buildHeaderWithSearch(title: "FARES", removeSearching: true),
-                            buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
-                          ],
-                          rows: [],
-                        ),
-                      )),
+                              width: Get.width/ 1.5,
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(maxHeight: 282),
+                                child: SingleChildScrollView(
+                                    scrollDirection: Axis.vertical,
+                                    child: SizedBox(
+                                        width: double.infinity,
+                                        child: DatatableWidget(
+                                          columns: [
+                                            buildHeaderWithSearch(title: "FROM MILES", removeSearching: true),
+                                            buildHeaderWithSearch(title: "TO MILES", removeSearching: true),
+                                            buildHeaderWithSearch(title: "FARES", removeSearching: true),
+                                            buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
+                                          ],
+                                          rows: controller.getFareMileageModel?.fareConfigurationsMileage?.map((data) =>
+                                              DataRow(
+                                                cells: [
+                                                  DataCell(Center(child: Text(data.minimumMiles ?? "0.00"))),
+                                                  DataCell(Center(child: Text(data.maximumMiles ?? "0.00"))),
+                                                  DataCell(Center(child: Text(data.fares ?? "0.00"))),
+                                                  DataCell(
+                                                    Center(
+                                                      child: Row(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        children: [
+                                                          OutlinedButton(
+                                                            style: OutlinedButton.styleFrom(
+                                                              padding: EdgeInsets.zero,
+                                                              minimumSize: const Size(32, 32),
+                                                              side: const BorderSide(color: Colors.transparent),
+                                                            ),
+                                                            onPressed: () {
+                                                              controller.bindFareMileage(data);
+                                                              },
+                                                            child: Icon(Icons.edit_calendar, size: 20, color: DynamicColors.primaryClr),
+                                                          ),
+
+                                                          OutlinedButton(
+                                                            style: OutlinedButton.styleFrom(
+                                                              padding: EdgeInsets.zero,
+                                                              minimumSize: const Size(32, 32),
+                                                              side: const BorderSide(color: Colors.transparent),
+                                                            ),
+                                                            onPressed: () {
+                                                              controller.deleteFareConfigMileage(data.id);
+                                                              },
+                                                            child: Icon(Icons.delete_forever, size: 20, color: DynamicColors.redClr),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              )).toList(),
+                                        ))),
+                              ))),
                     ],
                   ),
                 );
               });
       }),
+    );
+  }
+  Widget _buildStepperIcons({required VoidCallback onIncrement, required VoidCallback onDecrement}) {
+    return SizedBox(
+      width: 20,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: 14,
+            child: InkWell(
+              onTap: onIncrement,
+              child: const Icon(Icons.arrow_drop_up, size: 16),
+            ),
+          ),
+          SizedBox(
+            height: 14,
+            child: InkWell(
+              onTap: onDecrement,
+              child: const Icon(Icons.arrow_drop_down, size: 16),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -19,6 +19,7 @@ class SendEmailAlert extends StatefulWidget {
 }
 
 class _SendEmailAlertState extends State<SendEmailAlert> {
+  final recipientController = TextEditingController();
   final dashBoardCntrl = Get.find<DashboardController>();
 
   @override
@@ -45,7 +46,7 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: SizedBox(
             // height: 390,
-            width: 650,
+            width: 500,
             child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,11 +65,7 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                           const SizedBox(width: 10),
                           Text(
                             "COMPOSE EMAIL",
-                            style: mozillaTextSemiBoldText(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
+                            style: titleDesign()),
                           const Spacer(),
                           FocusTraversalOrder(
                             order: const NumericFocusOrder(999),
@@ -77,13 +74,14 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                         ],
                       )),
                   Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildFieldLabel("FROM"),
                         CustomTextField(
                           hintText: "NEXUSTECHNOLOGYGROUPS@GMAIL.COM",
+                          hintStyle: outFitRegular(fontSize: 11),
                           controller: dashBoardCntrl.sendEmailController,
                           borderRadius: 6,
                           readOnly: true,
@@ -101,24 +99,27 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                             children: [
                               _buildFieldLabel("SEARCH RECIPIENT"),
                               Row(
+                                // mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Flexible(
                                     flex: 3,
                                     child: CustomTextField(
                                       hintText: "NAME OR EMAIL...",
-                                      controller:
-                                          dashBoardCntrl.emailToController,
+                                      hintStyle: outFitRegular(fontSize: 11),
+                                      controller: dashBoardCntrl.emailToController,
                                       borderRadius: 6,
+                                      inputFormatters: [UpperCaseTextFormatter()],
                                     ),
                                   ),
                                   const SizedBox(width: 8),
                                   SizedBox(
                                       width: 140,
-                                      height: 36,
+                                      height: 30,
                                       child: CustomDropdownField<String>(
                                         label: "SELECT",
                                         width: 140,
-                                        height: 36,
+                                        height: 30,
                                         items: sendEmailRoleList,
                                         value: selectedRole,
                                         itemLabel: (role) => role,
@@ -128,10 +129,11 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                                           });
                                         },
                                       )),
+                                  const SizedBox(width: 8),
                                   InkWell(
                                     onTap: () {},
                                     child: Container(
-                                      height: 36,
+                                      height: 30,
                                       width: 50,
                                       decoration: BoxDecoration(
                                         color: DynamicColors.primaryClr,
@@ -151,25 +153,33 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                         CustomTextField(
                             borderRadius: 6,
                             hintText: "RECIPIENT@EXAMPLE.COM",
-                            controller: dashBoardCntrl.subjectController),
+                            hintStyle: outFitRegular(fontSize: 11),
+                            controller: recipientController,
+                          inputFormatters: [UpperCaseTextFormatter()]
+                        ),
                         const SizedBox(height: 14),
                         _buildFieldLabel("SUBJECT"),
                         CustomTextField(
                           hintText: "ENTER SUBJECT...",
+                          hintStyle: outFitRegular(fontSize: 11),
                           controller: dashBoardCntrl.subjectController,
                           borderRadius: 6,
+                          inputFormatters: [UpperCaseTextFormatter()],
                         ),
                         const SizedBox(height: 14),
                         _buildFieldLabel("EMAIL CONTENT"),
                         CustomTextField(
                           hintText: "TYPE YOUR MESSAGE HERE...",
+                          hintStyle: outFitRegular(fontSize: 11),
                           controller: dashBoardCntrl.typeEmailController,
                           maxLines: 4,
                           height: 90,
                           borderRadius: 6,
                           contentPadding: const EdgeInsets.all(10),
+                          inputFormatters: [UpperCaseTextFormatter()],
                         ),
-                        const SizedBox(height: 20),
+                        // const SizedBox(height: 5),
+
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -178,11 +188,11 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                               height: 28,
                               verticalPadding: 0.0,
                               btnText: "CANCEL",
-                              btnColor: Colors.grey.shade300,
+                              btnColor: Colors.red,
                               borderRadius: 4,
                               style: mozillaTextSemiBoldText(
                                   fontSize: 14,
-                                  color: Colors.black87,
+                                  color: Colors.white,
                                   fontWeight: FontWeight.bold),
                               onTap: () => Get.back(),
                             ),
@@ -192,13 +202,13 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                               icon: const Icon(Icons.send, size: 16),
                               label: Text(
                                 "SEND EMAIL",
-                                style: const TextStyle(
-                                    fontSize: 13, fontWeight: FontWeight.bold),
+                                style: mozillaTextSemiBoldText(
+                                    fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white),
                               ),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: DynamicColors.primaryClr,
                                 foregroundColor: Colors.white,
-                                minimumSize: const Size(200, 38),
+                                minimumSize: const Size(150, 38),
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 12),
                                 shape: RoundedRectangleBorder(
@@ -219,11 +229,10 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
       padding: const EdgeInsets.only(bottom: 6.0),
       child: Text(
         labelText,
-        style: const TextStyle(
+        style: outFitRegular(
           fontSize: 12,
           fontWeight: FontWeight.bold,
-          color: Color(0xFF475569),
-          letterSpacing: 0.5,
+          color: Colors.black,
         ),
       ),
     );
@@ -262,7 +271,7 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: SizedBox(
-            width: 580,
+            width: 450,
             child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,11 +287,7 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
                           const SizedBox(width: 8),
                           Text(
                             "COMPOSE TEXT MESSAGE",
-                            style: mozillaTextSemiBoldText(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 18,
-                            ),
-                          ),
+                            style: titleDesign()),
                           const Spacer(),
                           FocusTraversalOrder(
                             order: const NumericFocusOrder(999),
@@ -291,7 +296,7 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
                         ],
                       )),
                   Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -308,23 +313,25 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
                             children: [
                               _buildFieldLabel("SEARCH CONTACT"),
                               Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Expanded(
                                     child: CustomTextField(
                                       hintText: "NAME OR MOBILE #...",
-                                      controller:
-                                          dashBoardCntrl.mobileNoController,
+                                      hintStyle: outFitRegular(fontSize: 11),
+                                      controller: dashBoardCntrl.mobileNoController,
                                       borderRadius: 6,
+                                      inputFormatters: [UpperCaseTextFormatter()],
                                     ),
                                   ),
                                   const SizedBox(width: 8),
                                   SizedBox(
                                       width: 120,
-                                      height: 35,
+                                      height: 30,
                                       child: CustomDropdownField<String>(
                                         label: "SELECT",
                                         width: 100,
-                                        height: 32,
+                                        height: 30,
                                         items: sendEmailRoleList,
                                         value: selectedRole,
                                         itemLabel: (role) => role,
@@ -336,11 +343,9 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
                                       )),
                                   const SizedBox(width: 8),
                                   InkWell(
-                                    onTap: () {
-                                      // Search action
-                                    },
+                                    onTap: () {},
                                     child: Container(
-                                      height: 36,
+                                      height: 30,
                                       width: 48,
                                       decoration: BoxDecoration(
                                         color: DynamicColors.primaryClr,
@@ -360,8 +365,10 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
                         _buildFieldLabel("CONTACT NUMBER"),
                         CustomTextField(
                           hintText: "ENTER MOBILE NUMBER...",
+                          hintStyle: outFitRegular(fontSize: 11),
                           controller: dashBoardCntrl.smsToController,
                           borderRadius: 6,
+                          inputFormatters: [UpperCaseTextFormatter()],
                         ),
                         const SizedBox(height: 16),
 
@@ -369,13 +376,15 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
                         _buildFieldLabel("MESSAGE CONTENT"),
                         CustomTextField(
                           hintText: "TYPE YOUR MESSAGE HERE...",
+                          hintStyle: outFitRegular(fontSize: 11),
                           controller: dashBoardCntrl.typeYourMessageController,
                           maxLines: 5,
                           height: 110,
                           borderRadius: 6,
                           contentPadding: const EdgeInsets.all(10),
+                          inputFormatters: [UpperCaseTextFormatter()],
                         ),
-                        const SizedBox(height: 20),
+                        // const SizedBox(height: 5),
 
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -385,11 +394,11 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
                               height: 28,
                               verticalPadding: 0.0,
                               btnText: "CANCEL",
-                              btnColor: Colors.grey.shade300,
+                              btnColor: Colors.red,
                               borderRadius: 4,
                               style: mozillaTextSemiBoldText(
                                   fontSize: 14,
-                                  color: Colors.black87,
+                                  color: Colors.white,
                                   fontWeight: FontWeight.bold),
                               onTap: () => Get.back(),
                             ),
@@ -399,13 +408,13 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
                               icon: const Icon(Icons.send, size: 16),
                               label: Text(
                                 "SEND SMS",
-                                style: const TextStyle(
-                                    fontSize: 13, fontWeight: FontWeight.bold),
+                                style: mozillaTextSemiBoldText(
+                                    fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white),
                               ),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: DynamicColors.primaryClr,
                                 foregroundColor: Colors.white,
-                                minimumSize: const Size(200, 38),
+                                minimumSize: const Size(130, 38),
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 12),
                                 shape: RoundedRectangleBorder(
@@ -426,11 +435,10 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
       padding: const EdgeInsets.only(bottom: 6.0),
       child: Text(
         labelText,
-        style: const TextStyle(
+        style: outFitRegular(
           fontSize: 12,
           fontWeight: FontWeight.bold,
-          color: Color(0xFF475569),
-          letterSpacing: 0.5,
+          color: Colors.black,
         ),
       ),
     );

@@ -62,7 +62,7 @@ class _DispatchBookingState extends State<DispatchBooking> {
                           const TextSpan(text: "DISPATCH BOOKING ("),
                           TextSpan(
                             text: widget.bookingItem?.referenceNumber ?? "N/A",
-                            style: TextStyle(color: DynamicColors.primaryClr, fontWeight: FontWeight.bold),
+                            style: outFitRegular(color: DynamicColors.primaryClr, fontWeight: FontWeight.bold),
                           ),
                           const TextSpan(text: ")"),
                         ],
@@ -76,7 +76,7 @@ class _DispatchBookingState extends State<DispatchBooking> {
                   ],
                 )),
                 const Divider(height: 1, thickness: 1),
-                SizedBox(height: 30),
+                SizedBox(height: 18),
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -107,7 +107,7 @@ class _DispatchBookingState extends State<DispatchBooking> {
                     Text("SELECT DRIVER TO DISPATCH",
                         style: mozillaTextSemiBoldText(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black)),
                     Text("CHOOSE A DRIVER, THEN PRESS DISPATCH",
-                      style: mozillaTextRegularText(fontSize: 12, color: Colors.grey.shade600),
+                      style: outFitRegular(fontSize: 12, color: Colors.grey.shade600),
                     ),
                     ]),
                     const Spacer(),
@@ -118,7 +118,7 @@ class _DispatchBookingState extends State<DispatchBooking> {
                           Icons.route, size: 16),
                       label: Text(
                         "CALCULATE DISTANCE",
-                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                        style: mozillaTextSemiBoldText(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: DynamicColors.primaryClr,
@@ -156,18 +156,18 @@ class _DispatchBookingState extends State<DispatchBooking> {
                       rows: controller.drivers.map((driver) {
                         return DataRow(
                           cells: [
-                            DataCell(Text("${(driver.username ?? '').toUpperCase()}", style: mozillaTextRegularText(fontSize: 14))),
-                            DataCell(Text((driver.name ?? '').toUpperCase(), style: mozillaTextRegularText(fontSize: 14))),
-                            DataCell(Text((driver.subsidiary?.name ?? '').toUpperCase(), style: mozillaTextRegularText(fontSize: 14))),
-                            DataCell(Text((driver.bookingStatus ?? '').toUpperCase(), style: mozillaTextRegularText(fontSize: 14, color: Colors.green))),
-                            DataCell(Center(child: Text("-", style: mozillaTextRegularText(fontSize: 14)))),
-                            DataCell(Center(child: Text("-", style: mozillaTextRegularText(fontSize: 14)))),
+                            DataCell(Text("${(driver.username ?? '').toUpperCase()}", style: outFitRegular(fontSize: 14))),
+                            DataCell(Text((driver.name ?? '').toUpperCase(), style: outFitRegular(fontSize: 14))),
+                            DataCell(Text((driver.subsidiary?.name ?? '').toUpperCase(), style: outFitRegular(fontSize: 14))),
+                            DataCell(Text((driver.bookingStatus ?? '').toUpperCase(), style: outFitRegular(fontSize: 14, color: Colors.green))),
+                            DataCell(Center(child: Text("-", style: outFitRegular(fontSize: 14)))),
+                            DataCell(Center(child: Text("-", style: outFitRegular(fontSize: 14)))),
                             DataCell(
                               Center(
                                 child: CustomButton(
                                   width: 80, height: 28, verticalPadding: 0.0, borderRadius: 4,
                                   btnText: "DISPATCH",
-                                  style: mozillaTextSemiBoldText(fontSize: 14, color: Colors.white),
+                                  style: mozillaTextSemiBoldText(fontSize: 13, color: Colors.white),
                                   onTap: () {
                                     print(widget.bookingItem.id);
                                    controller.assignDriverToBooking(widget.bookingItem.id, driver.id);
@@ -197,18 +197,18 @@ class _DispatchBookingState extends State<DispatchBooking> {
               ],
             ),
           ),
-                SizedBox(height: 30),
+                SizedBox(height: 5),
                 const Divider(height: 1),
 
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Align(
                     alignment: Alignment.centerRight,
                     child: CustomButton(
-                      width: 100,
-                      height: 35,
+                      width: 65,
+                      height: 30,
                       btnText: "CLOSE",
-                      btnColor: DynamicColors.primaryClr,
+                      btnColor: Colors.red,
                       verticalPadding: 0.0,
                       borderRadius: 6,
                       onTap: () => Get.back(),

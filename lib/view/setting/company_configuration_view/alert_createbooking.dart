@@ -47,7 +47,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
       child: TimePickerField(
         controller: controller,
         accent: DynamicColors.primaryClr,
-        textStyle: const TextStyle(fontSize: 12, color: Colors.black87),
+        textStyle: outFitRegular(fontSize: 12, color: Colors.black87),
         // The field writes the value itself; this just refreshes the alert.
         onChanged: onChanged,
         decoration: InputDecoration(
@@ -126,7 +126,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                      Icon(Icons.calendar_month, color: DynamicColors.primaryClr, size: 20),
                                     const SizedBox(width: 8),
                                     Text("MULTI-BOOKING CONFIGURATION",
-                                      style: titleDesign()),
+                                      style: titleDesign()
+                                    ),
                                     Spacer(),
                                     Focus(
                                       onKeyEvent: (node, event) {
@@ -299,8 +300,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                 const SizedBox(width: 4),
                                 Text(
                                   "ADD",
-                                  style: TextStyle(
-                                    fontSize: 10,
+                                  style: mozillaTextSemiBoldText(
+                                    fontSize: 12,
                                     color: DynamicColors.whiteClr,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -331,8 +332,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                 const SizedBox(width: 4),
                                 Text(
                                   AppText.clear,
-                                  style: TextStyle(
-                                    fontSize: 10,
+                                  style: mozillaTextSemiBoldText(
+                                    fontSize: 12,
                                     color: DynamicColors.whiteClr,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -362,9 +363,9 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                          const Text(
+                           Text(
                           "SELECT DAYS",
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF64748B)),
+                          style: outFitRegular(fontSize: 12, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8),
                         Wrap(
@@ -607,7 +608,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                         ),
                                       ),
                                     ),
-                                    DataCell(Center(child: Text(object.day??""))),
+                                    DataCell(Center(child: Text((object.day??"").toUpperCase()))),
                                     DataCell(Center(child: Text(object.startDate??""))),
                                     DataCell(
                                       Center(
@@ -617,7 +618,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                           child: TimePickerField(
                                             controller: TextEditingController(text: object.returnTime ?? ""),
                                             accent: DynamicColors.primaryClr,
-                                            textStyle: const TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
+                                            textStyle: outFitRegular(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
                                             onChanged: (val) {
                                               object.returnTime = val;
                                             },
@@ -643,7 +644,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                           child: TimePickerField(
                                             controller: TextEditingController(text: object.endTime ?? ""),
                                             accent: DynamicColors.primaryClr,
-                                            textStyle: const TextStyle(
+                                            textStyle: outFitRegular(
                                               fontSize: 12,
                                               color: Colors.black,
                                               fontWeight: FontWeight.bold,
@@ -686,11 +687,11 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                   height: 28,
                                   verticalPadding: 0.0,
                                   btnText: "DISCARD",
-                                  btnColor: Colors.grey.shade300,
+                                  btnColor: Colors.red,
                                   borderRadius: 4,
                                   style: mozillaTextSemiBoldText(
-                                      fontSize: 14,
-                                      color: Colors.black87,
+                                      fontSize: 12,
+                                      color: Colors.white,
                                       fontWeight: FontWeight.bold
                                   ),
                                   onTap: () => Get.back(),
@@ -717,8 +718,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                     Get.back();
                                     },
                                   icon: const Icon(Icons.check_circle, size: 16),
-                                  label: const Text("CONFIRM SELECTION",
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                  label: Text("CONFIRM SELECTION",
+                                      style: mozillaTextSemiBoldText (fontWeight: FontWeight.bold, fontSize: 12, color: Colors.white)),
                                 ),
                           // CustomButton(
                           //   onTap: () async{

@@ -9,8 +9,30 @@ import '../../routes/app_pages.dart'; // Apni Api class ka correct path yahan de
 class SubscriptionSocketService {
   static WebSocketChannel? _channel;
 
+  /// Closes [sink] without letting its failure escape.
+  ///
+  /// A channel that never finished connecting completes this future with the
+  /// connection's own WebSocketChannelException, and it is the close - not the
+  /// connect - that surfaces it. Not awaited by callers: on web the future
+  /// only completes once the browser has run the close handshake, and a socket
+  /// that is still CONNECTING never does, which would park logout before it
+  /// could navigate.
+  static Future<void> _closeQuietly(WebSocketSink sink) async {
+    try {
+      await sink.close();
+    } catch (e) {
+      print("Socket close error: $e");
+    }
+  }
+
   /// WebSocket connect karne aur listen karne ka main function
   static void initSocket() {
+    // Both postLoginDetails and checkUserStatus call this on the way in, and
+    // [_channel] only ever holds the last connection made - so without closing
+    // first, every sign-in orphans a socket that closeSocket can no longer
+    // reach and that keeps answering for a session that has ended.
+    closeSocket();
+
     try {
       final String companyId = Api.singleton.globalCompanyId;
       final String baseUrl = socketUrl;
@@ -19,6 +41,14 @@ class SubscriptionSocketService {
       print("Connecting to WebSocket: $fullUrl");
 
       _channel = WebSocketChannel.connect(Uri.parse(fullUrl));
+
+      // connect() returns before the handshake completes, so a failure never
+      // reaches the try below - it lands on `ready`. Unhandled, it reaches the
+      // zone as "WebSocketChannelException: Failed to connect WebSocket". The
+      // listener's onError covers the stream; this covers the handshake.
+      _channel!.ready.catchError((Object e) {
+        print("WebSocket Connection Exception: $e");
+      });
 
       _channel!.stream.listen(
             (message) {
@@ -204,7 +234,8 @@ class SubscriptionSocketService {
 
   /// Socket manually disconnect
   static void closeSocket() {
-    _channel?.sink.close();
+    final channel = _channel;
     _channel = null;
+    if (channel != null) _closeQuietly(channel.sink);
   }
 }

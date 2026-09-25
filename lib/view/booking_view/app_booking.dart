@@ -249,7 +249,7 @@ class _AppBookingState extends State<AppBooking> {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: DynamicColors.whiteClr,
-                            fontSize: 9,
+                            fontSize: 11,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

@@ -140,7 +140,7 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
                                     children: [
                                       Text(
                                         "ADD VEHICLE TYPE",
-                                        style: TextStyle(
+                                        style: outFitRegular(
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.black87,
@@ -150,49 +150,62 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
                                       SizedBox(
                                         // width: fieldWidth,
                                         height: 35,
-                                        child: DropdownButtonFormField<
-                                            DashboardVehicleTypeObject>(
-                                          decoration: InputDecoration(
-                                            isDense: true,
-                                            contentPadding: EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 8,
-                                            ),
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(4),
-                                              borderSide: const BorderSide(color: Colors.blue),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(4),
-                                              borderSide: const BorderSide(color: Colors.blue),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(4),
-                                              borderSide: const BorderSide(color: Colors.blue, width: 2),
-                                            ),
-                                          ),
+                                        child: CustomDropdownField<DashboardVehicleTypeObject>(
+                                          height: 35,
+                                          // text: AppText.subsidiary,
+                                          // width: fieldWidth / 1.5,
+                                          // label: AppText.subsidiary,
+                                          items: controller.dashboardAllData!.vehicleTypes!,
                                           value: controller.selectMultiVehicleValue,
-                                          items: controller.dashboardAllData!.vehicleTypes!
-                                              .map((vehicle) =>
-                                                  DropdownMenuItem<DashboardVehicleTypeObject>(
-                                                    value: vehicle,
-                                                    child: Text(
-                                                      vehicle.name ?? "",
-                                                      style:
-                                                          mozillaTextRegularText(
-                                                        fontSize: 12,
-                                                        color: DynamicColors
-                                                            .textClr,
-                                                      ),
-                                                    ),
-                                                  ))
-                                              .toList(),
-                                          onChanged: (v) {
+                                          itemLabel: (item) => item.name ?? "",
+                                          onChanged: (val) {
                                             controller.selectMultiVehicleValue =
-                                                v;
+                                                val;
                                             controller.update();
                                           },
                                         ),
+                                        // DropdownButtonFormField<
+                                        //     DashboardVehicleTypeObject>(
+                                        //   decoration: InputDecoration(
+                                        //     isDense: true,
+                                        //     contentPadding: EdgeInsets.symmetric(
+                                        //       horizontal: 10,
+                                        //       vertical: 8,
+                                        //     ),
+                                        //     border: OutlineInputBorder(
+                                        //       borderRadius: BorderRadius.circular(4),
+                                        //       borderSide: const BorderSide(color: Colors.blue),
+                                        //     ),
+                                        //     enabledBorder: OutlineInputBorder(
+                                        //       borderRadius: BorderRadius.circular(4),
+                                        //       borderSide: const BorderSide(color: Colors.blue),
+                                        //     ),
+                                        //     focusedBorder: OutlineInputBorder(
+                                        //       borderRadius: BorderRadius.circular(4),
+                                        //       borderSide: const BorderSide(color: Colors.blue, width: 2),
+                                        //     ),
+                                        //   ),
+                                        //   value: controller.selectMultiVehicleValue,
+                                        //   items: controller.dashboardAllData!.vehicleTypes!
+                                        //       .map((vehicle) =>
+                                        //           DropdownMenuItem<DashboardVehicleTypeObject>(
+                                        //             value: vehicle,
+                                        //             child: Text(
+                                        //               vehicle.name ?? "",
+                                        //               style: TextStyle(
+                                        //                 fontFamily: _kFontFamily,
+                                        //                 fontSize: 12,
+                                        //                 color: DynamicColors.textClr,
+                                        //               ),
+                                        //             ),
+                                        //           ))
+                                        //       .toList(),
+                                        //   onChanged: (v) {
+                                        //     controller.selectMultiVehicleValue =
+                                        //         v;
+                                        //     controller.update();
+                                        //   },
+                                        // ),
                                       ),
                                     ],
                                   ),
@@ -200,7 +213,7 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
                                 const SizedBox(width: 12),
                                 SizedBox(
                                   height: 33,
-                                  child: ElevatedButton(
+                                  child: ElevatedButton.icon(
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: DynamicColors.primaryClr,
                                       elevation: 0,
@@ -215,9 +228,11 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
                                       controller.selectMultiVehicleValue = null;
                                       controller.update();
                                     },
-                                    child: Text(
-                                      "Add",
-                                      style: TextStyle(
+                                    icon: Icon(Icons.add, color: Colors.white, size: 16),
+                                    label: Text(
+                                      "ADD",
+                                      style: mozillaTextSemiBoldText(
+                                        fontWeight: FontWeight.bold,
                                         color: DynamicColors.whiteClr,
                                         fontSize: 12,
                                       ),
@@ -303,11 +318,11 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
                           height: 28,
                           verticalPadding: 0.0,
                           btnText: "CLOSE",
-                          btnColor: Colors.grey.shade300,
+                          btnColor: Colors.red,
                           borderRadius: 4,
                           style: mozillaTextSemiBoldText(
                               fontSize: 14,
-                              color: Colors.black87,
+                              color: Colors.white,
                               fontWeight: FontWeight.bold
                           ),
                           onTap: () => Get.back(),

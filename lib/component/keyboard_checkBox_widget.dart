@@ -54,7 +54,8 @@ class KeyboardCheckbox extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             label!,
-            style: textStyle ?? mozillaTextRegularText(fontSize: 12),
+            // style: textStyle ?? mozillaTextRegularText(fontSize: 12),
+            style: textStyle ?? outFitRegular(fontSize: 12),
           ),
         ],
       ),

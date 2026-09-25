@@ -107,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     children: [
                       OpenPagesTabStrip(controller: controller),
                       Obx(() =>
-                          controller.currentPage.value ?? ByDefaultDashboard()),
+                      controller.currentPage.value ?? ByDefaultDashboard()),
                     ],
                   ),
                 ),

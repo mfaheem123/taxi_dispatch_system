@@ -48,7 +48,7 @@ TextStyle mozillaTextSemiBoldText({
     fontSize: finalFontSize,
     color: color ?? DynamicColors.textClr,
     fontWeight: fontWeight ?? FontWeight.w900,
-    fontFamily: "MozillaText-SemiBold"
+    fontFamily: "Outfit-SemiBold"
   );
 }
 
@@ -81,6 +81,40 @@ TextStyle mozillaTextRegularText({
     color: color ?? DynamicColors.textClr,
     fontWeight: fontWeight ?? FontWeight.w900,
     fontFamily: "MozillaText-Regular"
+  );
+}
+
+
+TextStyle outFitRegular({
+  BuildContext? context,
+  double? fontSize,
+  Color? color,
+  FontWeight? fontWeight,
+}) {
+
+  double finalFontSize = fontSize ?? 20;
+
+  if (context != null) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    // Responsive font size
+    if (screenWidth < 600) {
+      // Mobile
+      finalFontSize = fontSize ?? 16;
+    } else if (screenWidth >= 600 && screenWidth < 1024) {
+      // Tablet
+      finalFontSize = fontSize ?? 18;
+    } else {
+      // Desktop / Web
+      finalFontSize = fontSize ?? 20;
+    }
+  }
+
+  return TextStyle(
+      fontSize: finalFontSize,
+      color: color ?? DynamicColors.textClr,
+      fontWeight: fontWeight ?? FontWeight.w900,
+      fontFamily: "Outfit-Regular"
   );
 }
 

@@ -126,7 +126,7 @@ class _DriverAttributesAlertState extends State<DriverAttributesAlert> {
       alignment: centerAlign ? Alignment.center : Alignment.centerLeft,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Text(text,
-        style: TextStyle(
+        style: outFitRegular(
           fontSize: 12,
           fontWeight: isHeader ? FontWeight.bold : FontWeight.w600,
           color: const Color(0xFF1E293B),

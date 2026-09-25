@@ -30,19 +30,19 @@ class BackSlashAlert extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             // ─── Header ───
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: DynamicColors.gryClr.withOpacity(0.5),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+              ),
               child: Row(
                 children: [
                   Icon(Icons.keyboard, size: 22, color: Colors.black87),
                   const SizedBox(width: 10),
                   Text(
                     "SYSTEM SHORTCUTS",
-                    style: mozillaTextSemiBoldText(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
+                    style: titleDesign()
                   ),
                   const Spacer(),
                   FocusTraversalOrder(
@@ -65,7 +65,7 @@ class BackSlashAlert extends StatelessWidget {
                       // ⚡ Quick Access Keys
                       Row(
                         children: [
-                          Text("⚡ ", style: TextStyle(fontSize: 16)),
+                          Text("⚡ ", style: outFitRegular(fontSize: 16)),
                           Text(
                             "QUICK ACCESS KEYS",
                             style: mozillaTextSemiBoldText(
@@ -202,7 +202,7 @@ class BackSlashAlert extends StatelessWidget {
       margin: const EdgeInsets.only(left: 4),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: DynamicColors.greenClr,
+        color: DynamicColors.primaryClr,
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(

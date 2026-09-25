@@ -1318,7 +1318,7 @@ class KeyboardDatePicker extends StatefulWidget {
     this.fontSize = 12,
     this.iconSize = 14,
     this.allowPastDates = true,
-    this.allowFutureDates = true,
+    this.allowFutureDates = true, FocusNode? focusNode,
   })  : initialDate = initialDate ?? DateTime(2000, 1, 1),
         super(key: key);
 
@@ -1346,6 +1346,37 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
 
     _focusNode.addListener(_onFocusChange);
     _iconFocusNode.addListener(_onFocusChange);
+  }
+
+  /// Follows [KeyboardDatePicker.initialDate] when the parent changes it.
+  ///
+  /// The date is read in [initState] only, so a form that fills itself AFTER
+  /// its first frame — a booking handed over from another window, a record
+  /// fetched from the API — left the field sitting on the date it was born
+  /// with, which is today for most callers. The value the form then submitted
+  /// and the value on screen were two different dates.
+  ///
+  /// Only a genuinely different day is followed. A parent that rebuilds while
+  /// passing the same date (`DateTime.now()` recomputed on every build, a
+  /// value echoed back through onChanged) must not yank the digits out from
+  /// under someone who is typing them.
+  @override
+  void didUpdateWidget(covariant KeyboardDatePicker oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final DateTime incoming = widget.initialDate;
+    final DateTime previous = oldWidget.initialDate;
+    if (incoming.year == previous.year &&
+        incoming.month == previous.month &&
+        incoming.day == previous.day) {
+      return;
+    }
+    setState(() {
+      day = incoming.day;
+      month = incoming.month;
+      year = incoming.year;
+      _clampDay();
+      _clampToBounds();
+    });
   }
 
   @override

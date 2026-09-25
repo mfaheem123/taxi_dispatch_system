@@ -64,8 +64,8 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
               height: 200,
               child: Center(
                 child: Text(
-                  "No Drivers Found",
-                  style: mozillaTextSemiBoldText(fontSize: 16),
+                  "NO DRIVERS FOUND",
+                  style: outFitRegular(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             );
@@ -95,12 +95,7 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                   children: [
                     Text(
                       AppText.driverInfo,
-                      style: mozillaTextSemiBoldText(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
+                      style: titleDesign()),
                     const Spacer(),
                     FocusTraversalOrder(
                       order: const NumericFocusOrder(999),
@@ -291,8 +286,9 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
                                           Expanded(
                                             child: Text(
                                               isDriverSelected ? (currentDriver.mobile ?? "-") : "-",
-                                              style: mozillaTextRegularText(
+                                              style: outFitRegular(
                                                 fontSize: 13,
+                                                fontWeight: FontWeight.bold,
                                                 color: Colors.black87,
                                               ),
                                               overflow: TextOverflow.ellipsis,
@@ -362,7 +358,7 @@ class _DriverInfoAlertState extends State<DriverInfoAlert> {
         Expanded(
           child: Text(
             value,
-            style: mozillaTextRegularText(
+            style: outFitRegular(
               fontSize: 13,
               color: Colors.black87,
             ),

@@ -192,7 +192,7 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
         children: [
           Text(
             label,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Color(0xFF374151)),
+            style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 11, color: Color(0xFF374151)),
           ),
           const SizedBox(height: 4),
           CustomTextField(
@@ -221,10 +221,10 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                   bottom: BorderSide(color: DynamicColors.primaryClr),
                 ),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
                   '£',
-                  style: TextStyle(
+                  style: outFitRegular(
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
                   ),

@@ -70,7 +70,9 @@ class Api {
       } on SocketException {
         BotToast.showText(text: 'No Internet connection');
       } on DioException catch (e) {
-        return returnResponse(e.response!);
+        final failed = e.response;
+        if (failed == null) return handleResponselessError(e);
+        return returnResponse(failed);
       }
     }
   }
@@ -137,7 +139,9 @@ class Api {
     } on SocketException {
       BotToast.showText(text: 'No Internet connection');
     } on DioException catch (e) {
-      return returnResponse(e.response!);
+      final failed = e.response;
+      if (failed == null) return handleResponselessError(e);
+      return returnResponse(failed);
     }
     // }
   }
@@ -193,7 +197,9 @@ Future<dynamic> delete(String url, {isProgressShow = false, formData}) async {
         }
       });
 
-      return returnResponse(e.response!);
+      final failed = e.response;
+      if (failed == null) return handleResponselessError(e);
+      return returnResponse(failed);
     }
   }
 
@@ -225,7 +231,14 @@ Future<dynamic> delete(String url, {isProgressShow = false, formData}) async {
         print("Files: ${formData.files}");
         print("----------------------");
       }
-      dynamic response = await Dio().post(fullUrl ?? apiUrl + url,
+      // Timeouts, which a bare Dio() does not have: without them a host that
+      // accepts the socket and then goes quiet leaves the request hanging on
+      // the OS TCP timeout, and every screen awaiting it hangs with it.
+      final dio = Dio(BaseOptions(
+        connectTimeout: const Duration(seconds: 20),
+        receiveTimeout: const Duration(seconds: 50),
+      ));
+      dynamic response = await dio.post(fullUrl ?? apiUrl + url,
           data: formData,
           options: Options(
             method: "POST",
@@ -254,12 +267,43 @@ Future<dynamic> delete(String url, {isProgressShow = false, formData}) async {
         BotToast.closeAllLoading();
       }
 
-      if (e.type == DioExceptionType.unknown) {
-        BotToast.showText(text: 'No Internet connection');
-      } else {
-        return returnResponse(e.response!);
-      }
+      final failed = e.response;
+      if (failed == null) return handleResponselessError(e);
+      return returnResponse(failed);
     }
+  }
+
+  /// Handles a DioException that never got a response.
+  ///
+  /// Connection-level failures - a host that accepts nothing, a handshake that
+  /// times out, DNS - arrive as a DioException whose `response` is null. Every
+  /// call site used to force-unwrap that response inside the catch block, and
+  /// the null check threw "Unexpected null value" from there, so what reached
+  /// the caller was not a null response but an exception complaining about
+  /// null. That is how a flaky backend turned into a login button that spins
+  /// and reports nothing at all.
+  ///
+  /// Returns null, which callers already have to cope with: the `unknown`
+  /// branch has always returned it.
+  dynamic handleResponselessError(DioException e) {
+    BotToast.closeAllLoading();
+    switch (e.type) {
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.sendTimeout:
+      case DioExceptionType.receiveTimeout:
+        BotToast.showText(text: 'The server took too long to respond. Please try again.');
+        break;
+      case DioExceptionType.connectionError:
+      case DioExceptionType.unknown:
+        BotToast.showText(text: 'Could not reach the server. Please check your connection.');
+        break;
+      case DioExceptionType.cancel:
+        break;
+      default:
+        BotToast.showText(text: 'Something went wrong. Please try again.');
+    }
+    print("Request failed without a response: ${e.type} ${e.message}");
+    return null;
   }
 
   dynamic returnResponse(Response? response) {
