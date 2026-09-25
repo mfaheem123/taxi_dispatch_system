@@ -105,6 +105,7 @@ class DriverSinBinController extends GetxController {
     isDriverSinBinLoading = true;
     update();
 
+
     final String finalMessage =
         mesg ?? (isActive ? "YOU ARE IN SINBIN" : "DRIVER REMOVED FROM SINBIN");
 
