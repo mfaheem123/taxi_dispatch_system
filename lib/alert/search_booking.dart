@@ -15,15 +15,15 @@ import '../view/dashboard_view/models/pick_booking_alert_model.dart';
 import '../view/dashboard_view/models/users_phone_numbers_model.dart';
 
 class SearchBookingAlert extends StatefulWidget {
-  final String? pickMobileNumber; // Add this line
-  final String? pickName; // Add this line
-  final String? pickTeleNumber; // Add this line
+  final String? pickMobileNumber;
+  final String? pickName;
+  final String? pickTeleNumber;
 
   const SearchBookingAlert({
     Key? key,
     this.pickMobileNumber,
     this.pickName,
-    this.pickTeleNumber, // Add this line
+    this.pickTeleNumber,
   }) : super(key: key);
 
   @override
@@ -64,9 +64,13 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
   final FocusNode _clearButtonFocusNode = FocusNode();
   final FocusNode _fromDateFocusNode = FocusNode();
   final FocusNode _toDateFocusNode = FocusNode();
-  int _selectedRowIndex = 0; // Current highlighted row index
-  final FocusNode _tableFocusNode = FocusNode(); // Table navigation FocusNode
-  // ── GetX Reactive Variables for Search & Data ──
+
+  int selectedRowIndex = 0;
+  List<Bookings> selectedBookings = [];
+  final FocusNode _tableFocusNode = FocusNode();
+  List<FocusNode> _rowFocusNodes = [];
+
+  // GetX Reactive Variables for Search & Data
   PickBookingModel? _bookingModel;
   RxList<Bookings> PickBookingListAll = <Bookings>[].obs;
   RxList<Bookings> PickBookingfiltered = <Bookings>[].obs;
@@ -102,7 +106,6 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
         firstDayOfMonth.toIso8601String().split("T").first;
     _toDateController.text = now.toIso8601String().split("T").first;
 
-    // Pre-fill mobile number if passed from Dashboard
     if (widget.pickMobileNumber != null &&
         widget.pickMobileNumber!.isNotEmpty) {
       _mobileController.text = widget.pickMobileNumber!;
@@ -140,10 +143,6 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     super.dispose();
   }
 
-  int selectedRowIndex = -1;
-
-  List<FocusNode> _rowFocusNodes = [];
-
   void _syncRowFocusNodes(int count) {
     if (_rowFocusNodes.length < count) {
       for (int i = _rowFocusNodes.length; i < count; i++) {
@@ -173,7 +172,43 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     });
   }
 
-// ── Shared Pick Action ──
+  KeyEventResult _handleArrowKeys(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+      return KeyEventResult.ignored;
+    }
+
+    if (PickBookingfiltered.isEmpty) {
+      return KeyEventResult.ignored;
+    }
+    final lastIndex = PickBookingfiltered.length - 1;
+
+    if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+      final next = selectedRowIndex < 0 ? 0 : (selectedRowIndex + 1).clamp(0, lastIndex);
+      setState(() => selectedRowIndex = next);
+      if (next < _rowFocusNodes.length) _rowFocusNodes[next].requestFocus();
+      _ensureRowVisible(next, movingDown: true);
+      return KeyEventResult.handled;
+    }
+
+    if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+      final prev = selectedRowIndex <= 0 ? 0 : (selectedRowIndex - 1).clamp(0, lastIndex);
+      setState(() => selectedRowIndex = prev);
+      if (prev < _rowFocusNodes.length) _rowFocusNodes[prev].requestFocus();
+      _ensureRowVisible(prev, movingDown: false);
+      return KeyEventResult.handled;
+    }
+
+    if (event.logicalKey == LogicalKeyboardKey.enter ||
+        event.logicalKey == LogicalKeyboardKey.numpadEnter) {
+      if (selectedRowIndex >= 0 && selectedRowIndex < PickBookingfiltered.length) {
+        _pickBookingAction(PickBookingfiltered[selectedRowIndex]);
+        return KeyEventResult.handled;
+      }
+    }
+
+    return KeyEventResult.ignored;
+  }
+
   Future<void> _pickBookingAction(dynamic booking) async {
     showDialog(
       context: context,
@@ -200,7 +235,6 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     }
   }
 
-  // ── Customer Phone Search API (Local Method)
   Future<void> getPhoneNumbersOfUsers({
     required String fieldsName,
     required String searchingText,
@@ -229,7 +263,6 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     }
   }
 
-  // ── Search & Fetch Function
   Future<void> fetchBookings() async {
     try {
       isLoading.value = true;
@@ -251,7 +284,6 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
         "search_driver": searchDriver.value.toLowerCase(),
       };
 
-      // Remove Empty Query Params
       queryParams
           .removeWhere((key, value) => value == '' || value == "MM/DD/YYYY");
 
@@ -265,6 +297,8 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
         _bookingModel = PickBookingModel.fromJson(response.data);
         PickBookingListAll.value = _bookingModel!.bookings ?? [];
         PickBookingfiltered.value = PickBookingListAll;
+        selectedBookings.clear();
+        selectedRowIndex = 0;
       }
     } catch (e) {
       debugPrint("API Fetch Error: $e");
@@ -273,7 +307,6 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     }
   }
 
-  // Trigger search on change/submit
   void onSearchBooking() {
     searchName.value = _nameController.text.trim();
     searchMobile.value = _mobileController.text.trim();
@@ -296,7 +329,6 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
   }
 
   void _clearFilters() {
-    // 1. All text controllers clear karein
     _nameController.clear();
     _mobileController.clear();
     _telephoneController.clear();
@@ -313,11 +345,9 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     _searchPaymentTypeController.clear();
     _searchStatusController.clear();
 
-    // 2. Dates calculation
     DateTime now = DateTime.now();
     DateTime firstDayOfMonth = DateTime(now.year, now.month, 1);
 
-    // 3. setState ke andar controllers & reactive values update karein
     setState(() {
       _fromDateController.text =
           firstDayOfMonth.toIso8601String().split("T").first;
@@ -326,9 +356,32 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
       searchFromDate.value = _fromDateController.text;
       searchToDate.value = _toDateController.text;
     });
+  }
 
-    // 4. API Search call trigger karein
-    // onSearchBooking();
+  /// Extracts via addresses from a booking defensively.
+  /// Works whether `via` is a List of objects/strings or a plain string.
+  List<String> _viaAddresses(Bookings booking) {
+    try {
+      final dynamic via = booking.toJson()['via'];
+      if (via == null) return const [];
+      if (via is String) {
+        return via.trim().isEmpty ? const [] : [via.trim()];
+      }
+      if (via is List) {
+        return via
+            .map((e) {
+          if (e is String) return e.trim();
+          if (e is Map) {
+            final addr = e['address'] ?? e['via'] ?? e['name'] ?? e['value'];
+            return addr == null ? '' : addr.toString().trim();
+          }
+          return e.toString().trim();
+        })
+            .where((s) => s.isNotEmpty)
+            .toList();
+      }
+    } catch (_) {}
+    return const [];
   }
 
   @override
@@ -346,18 +399,12 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
           DismissIntent: CallbackAction<DismissIntent>(
             onInvoke: (intent) => Navigator.of(context).pop(),
           ),
-          ActivateIntent: CallbackAction<ActivateIntent>(
-            onInvoke: (intent) {
-              onSearchBooking();
-              return null;
-            },
-          ),
         },
         child: FocusScope(
           autofocus: true,
           child: Dialog(
             shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             insetPadding: const EdgeInsets.all(10),
             backgroundColor: Colors.white,
             child: Container(
@@ -408,7 +455,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                   ),
                   const Divider(height: 1, color: Colors.black12),
 
-                    /// ── Top Filter Section ──
+                  /// ── Top Filter Section ──
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12.0, vertical: 12.0),
@@ -437,10 +484,10 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                               },
                               onPicked: (c) {
                                 setState(() {
-                                  _mobileController.text = c.mobile ?? '';
-                                  _nameController.text = c.name ?? '';
-                                  _emailController.text = c.email ?? '';
-                                  _telephoneController.text = c.telephone ?? '';
+                                  _mobileController.text = (c.mobile ?? '').toUpperCase();
+                                  _nameController.text = (c.name ?? '').toUpperCase();
+                                  _emailController.text = (c.email ?? '').toUpperCase();
+                                  _telephoneController.text = (c.telephone ?? '').toUpperCase();
                                 });
                               },
                             ),
@@ -479,87 +526,20 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                   ),
 
                   const Divider(height: 1, color: Colors.black12),
+
                   /// ── Dynamic Data Table Section ──
                   Flexible(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Focus(
                         focusNode: _tableFocusNode,
-                        onFocusChange: (hasFocus) {
-                          if (hasFocus &&
-                              selectedRowIndex < 0 &&
-                              PickBookingfiltered.isNotEmpty) {
-                            setState(() {
-                              selectedRowIndex = 0;
-                            });
-                            _scrollToIndex(0);
-                          } else {
-                            setState(() {});
-                          }
-                        },
-                        onKeyEvent: (node, event) {
-                          if (event is! KeyDownEvent &&
-                              event is! KeyRepeatEvent) {
-                            return KeyEventResult.ignored;
-                          }
-
-                          if (PickBookingfiltered.isEmpty) {
-                            return KeyEventResult.ignored;
-                          }
-                          final lastIndex = PickBookingfiltered.length - 1;
-
-// ── Arrow Down Navigation ──
-                          if (event.logicalKey ==
-                              LogicalKeyboardKey.arrowDown) {
-                            if (selectedRowIndex < lastIndex) {
-                              setState(() {
-                                selectedRowIndex = selectedRowIndex < 0
-                                    ? 0
-                                    : selectedRowIndex + 1;
-                              });
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                _scrollToIndex(selectedRowIndex);
-                              });
-                            }
-                            return KeyEventResult.handled;
-                          }
-
-// ── Arrow Up Navigation ──
-                          if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                            if (selectedRowIndex > 0) {
-                              setState(() {
-                                selectedRowIndex = selectedRowIndex - 1;
-                              });
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                _scrollToIndex(selectedRowIndex);
-                              });
-                            }
-                            return KeyEventResult.handled;
-                          }
-
-// ── Enter / Numpad Enter Key Action ──
-                          if (event.logicalKey == LogicalKeyboardKey.enter ||
-                              event.logicalKey ==
-                                  LogicalKeyboardKey.numpadEnter) {
-                            if (selectedRowIndex >= 0 &&
-                                selectedRowIndex < PickBookingfiltered.length) {
-                              _pickBookingAction(
-                                  PickBookingfiltered[selectedRowIndex]);
-                              return KeyEventResult.handled;
-                            }
-                          }
-
-                          return KeyEventResult.ignored;
-                        },
+                        onKeyEvent: _handleArrowKeys,
                         child: Container(
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            border: _tableFocusNode.hasFocus
-                                ? Border.all(
-                                    color: const Color(0xFF00569A), width: 1.5)
-                                : Border.all(
-                                    color: Colors.transparent, width: 1.5),
+                            border:
+                            Border.all(color: Colors.transparent, width: 1.5),
                           ),
                           child: RawScrollbar(
                             controller: _scrollController,
@@ -573,86 +553,102 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                               controller: _scrollController,
                               scrollDirection: Axis.vertical,
                               physics: const AlwaysScrollableScrollPhysics(),
-                              child: SingleChildScrollView(
-                                controller: _horizontalScrollController,
-                                scrollDirection: Axis.horizontal,
-                                child: SizedBox(
-                                  width: screenWidth * 0.96 - 20,
-                                  child: Obx(() {
-                                    _syncRowFocusNodes(
-                                        PickBookingfiltered.length);
-                                    return DatatableWidget(
-                                      columnSpacing: 10,
-                                      horizontalMargin: 8,
-                                      headingRowHeight: 60,
-                                      dataRowMinHeight: 50,
-                                      dataRowMaxHeight: 65,
-                                      columns: [
-                                        buildHeaderWithSearch(
-                                          title: "REF #",
-                                          controller: _searchRefController,
-                                          onChanged: (v) => onSearchBooking(),
+                              child: SizedBox(
+                                width: screenWidth * 0.96 - 20,
+                                child: Obx(() {
+                                  _syncRowFocusNodes(
+                                      PickBookingfiltered.length);
+                                  return DatatableWidget(
+                                    columnSpacing: 10,
+                                    horizontalMargin: 8,
+                                    headingRowHeight: 60,
+                                    dataRowMinHeight: 50,
+                                    dataRowMaxHeight: 65,
+                                    columns: [
+                                      buildHeaderWithSearch(
+                                        widget: SizedBox(
+                                          width: 20,
+                                          child: Checkbox(
+                                            value: false,
+                                            onChanged: (v) {},
+                                          ),
                                         ),
-                                        buildHeaderWithSearch(
-                                          title: "DATE/TIME",
-                                          controller: _searchDateTimeController,
-                                          onChanged: (v) => onSearchBooking(),
-                                        ),
-                                        buildHeaderWithSearch(
-                                          title: "VEHICLE",
-                                          controller: _searchVehicleController,
-                                          onChanged: (v) => onSearchBooking(),
-                                        ),
-                                        buildHeaderWithSearch(
-                                          title: "PICKUP",
-                                          controller: _searchPickupController,
-                                          onChanged: (v) => onSearchBooking(),
-                                        ),
-                                        buildHeaderWithSearch(
-                                          title: "DROPOFF",
-                                          controller: _searchDropoffController,
-                                          onChanged: (v) => onSearchBooking(),
-                                        ),
-                                        buildHeaderWithSearch(
-                                          title: "FARES",
-                                          controller: _searchFareController,
-                                          onChanged: (v) => onSearchBooking(),
-                                        ),
-                                        buildHeaderWithSearch(
-                                          title: "CUST",
-                                          controller: _searchCustomerController,
-                                          onChanged: (v) => onSearchBooking(),
-                                        ),
-                                        buildHeaderWithSearch(
-                                          title: "ACC",
-                                          controller: _searchAccountController,
-                                          onChanged: (v) => onSearchBooking(),
-                                        ),
-                                        buildHeaderWithSearch(
-                                          title: "DRIVER",
-                                          controller: _searchDriverController,
-                                          onChanged: (v) => onSearchBooking(),
-                                        ),
-                                        buildHeaderWithSearch(
-                                          title: "P/T",
-                                          controller:
-                                              _searchPaymentTypeController,
-                                          onChanged: (v) => onSearchBooking(),
-                                        ),
-                                        buildHeaderWithSearch(
-                                          title: "STATUS",
-                                          controller: _searchStatusController,
-                                          onChanged: (v) => onSearchBooking(),
-                                        ),
-                                        buildHeaderWithSearch(
-                                          title: "ACTION",
-                                          removeSearching: true,
-                                        ),
-                                      ],
-                                      rows: _buildTableRows(),
-                                    );
-                                  }),
-                                ),
+                                      ),
+                                      buildHeaderWithSearch(
+                                        title: "REF #",
+                                        controller: _searchRefController,
+                                        onChanged: (v) => onSearchBooking(),
+                                        widhtss: 65,
+                                      ),
+                                      buildHeaderWithSearch(
+                                        title: "DATE/TIME",
+                                        controller: _searchDateTimeController,
+                                        onChanged: (v) => onSearchBooking(),
+                                        widhtss: 95,
+                                      ),
+                                      buildHeaderWithSearch(
+                                        title: "VEHICLE",
+                                        controller: _searchVehicleController,
+                                        onChanged: (v) => onSearchBooking(),
+                                        widhtss: 55,
+                                      ),
+                                      buildHeaderWithSearch(
+                                        title: "PICKUP",
+                                        controller: _searchPickupController,
+                                        onChanged: (v) => onSearchBooking(),
+                                        widhtss: 180,
+                                      ),
+                                      buildHeaderWithSearch(
+                                        title: "DROPOFF",
+                                        controller: _searchDropoffController,
+                                        onChanged: (v) => onSearchBooking(),
+                                        widhtss: 200,
+                                      ),
+                                      buildHeaderWithSearch(
+                                        title: "FARES",
+                                        controller: _searchFareController,
+                                        onChanged: (v) => onSearchBooking(),
+                                        widhtss: 50,
+                                      ),
+                                      buildHeaderWithSearch(
+                                        title: "CUST",
+                                        controller: _searchCustomerController,
+                                        onChanged: (v) => onSearchBooking(),
+                                        widhtss: 80,
+                                      ),
+                                      buildHeaderWithSearch(
+                                        title: "ACC",
+                                        controller: _searchAccountController,
+                                        onChanged: (v) => onSearchBooking(),
+                                        widhtss: 65,
+                                      ),
+                                      buildHeaderWithSearch(
+                                        title: "DRIVER",
+                                        controller: _searchDriverController,
+                                        onChanged: (v) => onSearchBooking(),
+                                        widhtss: 65,
+                                      ),
+                                      buildHeaderWithSearch(
+                                        title: "P/T",
+                                        controller:
+                                        _searchPaymentTypeController,
+                                        onChanged: (v) => onSearchBooking(),
+                                        widhtss: 55,
+                                      ),
+                                      buildHeaderWithSearch(
+                                        title: "STATUS",
+                                        controller: _searchStatusController,
+                                        onChanged: (v) => onSearchBooking(),
+                                        widhtss: 70,
+                                      ),
+                                      buildHeaderWithSearch(
+                                        title: "ACTION",
+                                        removeSearching: true,
+                                      ),
+                                    ],
+                                    rows: _buildTableRows(),
+                                  );
+                                }),
                               ),
                             ),
                           ),
@@ -663,7 +659,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
 
                   const Divider(height: 1, color: Colors.black12),
 
-                    /// ── Footer Section ──
+                  /// ── Footer Section ──
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16.0, vertical: 8.0),
@@ -685,53 +681,19 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     );
   }
 
-// ── Smooth Vertical Scroll helper ──
-  void _scrollToIndex(int index) {
-    if (!_scrollController.hasClients) return;
-
-    const double rowHeight = 65.0;
-    const double headerHeight = 60.0;
-
-    final double targetTop = index * rowHeight;
-    final double targetBottom = targetTop + rowHeight;
-
-    final double currentScrollOffset = _scrollController.offset;
-    final double viewportHeight = _scrollController.position.viewportDimension;
-
-    final double visibleTop = currentScrollOffset;
-    final double visibleBottom =
-        currentScrollOffset + viewportHeight - headerHeight;
-
-    if (targetBottom > visibleBottom) {
-      double newOffset = targetBottom - (viewportHeight - headerHeight);
-      _scrollController.animateTo(
-        newOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
-        duration: const Duration(milliseconds: 120),
-        curve: Curves.easeOutCubic,
-      );
-    } else if (targetTop < visibleTop) {
-      _scrollController.animateTo(
-        targetTop.clamp(0.0, _scrollController.position.maxScrollExtent),
-        duration: const Duration(milliseconds: 120),
-        curve: Curves.easeOutCubic,
-      );
-    }
-  }
-
-// ── Unified Highlight Row Builder ──
   List<DataRow> _buildTableRows() {
     if (isLoading.value) {
       return [
         DataRow(
           cells: List.generate(
-            12,
-            (index) => DataCell(
-              index == 5
+            13,
+                (index) => DataCell(
+              index == 6
                   ? const SizedBox(
-                      height: 25,
-                      width: 25,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
+                height: 25,
+                width: 25,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
                   : const SizedBox.shrink(),
             ),
           ),
@@ -743,15 +705,15 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
       return [
         DataRow(
           cells: List.generate(
-            12,
-            (index) => DataCell(
-              index == 5
+            13,
+                (index) => DataCell(
+              index == 6
                   ? Center(
-                      child: Text(
-                        "No bookings found.",
-                        style: _kOutfitStyle(fontSize: 12, color: Colors.grey),
-                      ),
-                    )
+                child: Text(
+                  ("No bookings found.").toUpperCase(),
+                  style: _kOutfitStyle(fontSize: 12, color: Colors.grey),
+                ),
+              )
                   : const SizedBox.shrink(),
             ),
           ),
@@ -762,25 +724,16 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     return PickBookingfiltered.asMap().entries.map((entry) {
       int index = entry.key;
       var booking = entry.value;
-
       bool isSelected = index == selectedRowIndex;
+      final viaList = _viaAddresses(booking);
 
       return DataRow(
         key: ValueKey(booking.referenceNumber ?? booking.id),
         selected: isSelected,
-        onSelectChanged: (bool? selected) {
-          if (selected == true) {
-            setState(() {
-              selectedRowIndex = index;
-            });
-            _scrollToIndex(index);
-          }
-        },
         color:
-            WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
-// Single unified highlight color for selected state
+        WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
           if (isSelected) {
-            return const Color(0xFF4085BA);
+            return Colors.blue.withOpacity(0.2);
           }
           if (states.contains(WidgetState.hovered)) {
             return DynamicColors.secondaryClr;
@@ -789,55 +742,143 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
         }),
         cells: [
           DataCell(
-            Center(
-              child: _buildCellText(booking.referenceNumber ?? '',
-                  width: 90, isSmall: false),
+            Builder(
+              builder: (context) {
+                return Focus(
+                  focusNode: _rowFocusNodes.length > index
+                      ? _rowFocusNodes[index]
+                      : null,
+                  onKeyEvent: (node, event) {
+                    if (event is KeyDownEvent &&
+                        (event.logicalKey == LogicalKeyboardKey.enter ||
+                            event.logicalKey == LogicalKeyboardKey.space)) {
+                      final bool isCurrentlySelected =
+                      selectedBookings.contains(booking);
+                      setState(() {
+                        if (isCurrentlySelected) {
+                          selectedBookings.remove(booking);
+                          selectedRowIndex = -1;
+                        } else {
+                          selectedBookings.add(booking);
+                          selectedRowIndex = index;
+                        }
+                      });
+                      return KeyEventResult.handled;
+                    }
+                    return KeyEventResult.ignored;
+                  },
+                  child: Builder(
+                    builder: (context) {
+                      final hasFocus = Focus.of(context).hasFocus;
+                      return Container(
+                        decoration: hasFocus
+                            ? BoxDecoration(
+                          border:
+                          Border.all(color: Colors.blue, width: 2),
+                          borderRadius: BorderRadius.circular(4),
+                        )
+                            : null,
+                        child: Checkbox(
+                          focusNode: FocusNode(skipTraversal: true),
+                          value: selectedBookings.contains(booking),
+                          onChanged: (bool? value) {
+                            if (value == null) return;
+                            setState(() {
+                              if (value) {
+                                selectedBookings.add(booking);
+                                selectedRowIndex = index;
+                              } else {
+                                selectedBookings.remove(booking);
+                                selectedRowIndex = -1;
+                              }
+                            });
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
             ),
           ),
+          DataCell(
+            Center(
+              child: _buildCellText(booking.referenceNumber ?? '',
+                  width: 60, isSmall: true),
+            ),
+          ),
+          // DATE/TIME in a single row
           DataCell(
             Center(
               child: _buildCellText(
-                  "${booking.pickupDate ?? ''}\n${booking.pickupTime ?? ''}",
-                  width: 95,
-                  isSmall: false),
+                "${booking.pickupDate ?? ''} ${booking.pickupTime ?? ''}",
+                width: 95,
+                isSmall: true,
+                maxLines: 1,
+              ),
             ),
           ),
           DataCell(
             Center(
-              child: _buildCellText(booking.vehicleType?.name ?? '', width: 65),
+              child: _buildCellText(booking.vehicleType?.name ?? '', width: 55, isSmall: true),
             ),
           ),
           DataCell(
             Center(child: _buildCellText(booking.pickup ?? '', width: 180)),
           ),
+          // DROPOFF + small VIA box (only when via exists)
           DataCell(
-            Center(child: _buildCellText(booking.dropoff ?? '', width: 180)),
+            Center(
+              child: SizedBox(
+                width: 200,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      (booking.dropoff ?? '').toUpperCase(),
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                      style: _kOutfitStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.normal,
+                        color: DynamicColors.textClr,
+                      ),
+                    ),
+                    if (viaList.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      _buildViaBox(viaList),
+                    ],
+                  ],
+                ),
+              ),
+            ),
           ),
           DataCell(
             Center(
                 child:
-                    _buildCellText("£${booking.fares ?? '0.00'}", width: 65)),
+                _buildCellText("£${booking.fares ?? '0.00'}", width: 50, isSmall: true)),
           ),
           DataCell(
-            Center(child: _buildCellText(booking.name ?? '', width: 100)),
-          ),
-          DataCell(
-            Center(
-                child: _buildCellText(booking.account?.name ?? '-', width: 80)),
+            Center(child: _buildCellText(booking.name ?? '', width: 80)),
           ),
           DataCell(
             Center(
-                child: _buildCellText(booking.driver?.name ?? '-', width: 80)),
+                child: _buildCellText(booking.account?.name ?? '-', width: 65, isSmall: true)),
           ),
           DataCell(
             Center(
-              child: _buildCellText(booking.paymentType?.name ?? '', width: 70),
+                child: _buildCellText(booking.driver?.name ?? '-', width: 65, isSmall: true)),
+          ),
+          DataCell(
+            Center(
+              child: _buildCellText(booking.paymentType?.name ?? '', width: 55, isSmall: true),
             ),
           ),
           DataCell(
             Center(
               child: _buildCellText(booking.bookingStatus?.bookingStatus ?? '',
-                  width: 80),
+                  width: 70, isSmall: true),
             ),
           ),
           DataCell(
@@ -866,16 +907,50 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     }).toList();
   }
 
-// ── Customer Autocomplete Field Wrapper ──
+  /// Small VIA badge — hover par saare via addresses dikhata hai.
+  Widget _buildViaBox(List<String> viaAddresses) {
+    return Tooltip(
+      message: viaAddresses
+          .asMap()
+          .entries
+          .map((e) => "VIA ${e.key + 1}: ${e.value.toUpperCase()}")
+          .join("\n"),
+      waitDuration: const Duration(milliseconds: 100),
+      showDuration: const Duration(seconds: 5),
+      preferBelow: false,
+      textStyle: _kOutfitStyle(fontSize: 12, color: Colors.white),
+      decoration: BoxDecoration(
+        color: const Color(0xFF101B2E),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+        decoration: BoxDecoration(
+          color: const Color(0xFF00569A).withOpacity(0.08),
+          border: Border.all(color: const Color(0xFF00569A), width: 1),
+          borderRadius: BorderRadius.circular(3),
+        ),
+        child: Text(
+          "VIA${viaAddresses.length > 1 ? ' ${viaAddresses.length}' : ''}",
+          style: _kOutfitStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF00569A),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _customerAutocompleteField(
-    String label, {
-    required int tab,
-    required TextEditingController controller,
-    required List<CustomerObject> customers,
-    required ValueChanged<CustomerObject> onPicked,
-    FocusNode? focusNode,
-    ValueChanged<String>? onChanged,
-  }) {
+      String label, {
+        required int tab,
+        required TextEditingController controller,
+        required List<CustomerObject> customers,
+        required ValueChanged<CustomerObject> onPicked,
+        FocusNode? focusNode,
+        ValueChanged<String>? onChanged,
+      }) {
     return FocusTraversalOrder(
       order: NumericFocusOrder(tab.toDouble()),
       child: SizedBox(
@@ -893,11 +968,10 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     );
   }
 
-// ── Common Input Decoration ──
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
       isDense: false,
-      hintText: hint,
+      hintText: hint.toUpperCase(),
       hintStyle: _kOutfitStyle(
           fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black54),
       contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
@@ -915,13 +989,13 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
   }
 
   Widget _buildCellText(String text,
-      {required double width, bool isSmall = false}) {
+      {required double width, bool isSmall = false, int maxLines = 2}) {
     return SizedBox(
       width: width,
       child: Center(
         child: Text(
-          text,
-          maxLines: 2,
+          text.toUpperCase(),
+          maxLines: maxLines,
           textAlign: TextAlign.center,
           overflow: TextOverflow.ellipsis,
           style: _kOutfitStyle(
@@ -936,8 +1010,8 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
 
   TextStyle _kOutfitStyle(
       {double fontSize = 12,
-      FontWeight fontWeight = FontWeight.normal,
-      Color color = Colors.black}) {
+        FontWeight fontWeight = FontWeight.normal,
+        Color color = Colors.black}) {
     return TextStyle(
       fontFamily: 'Outfit-Regular',
       fontSize: fontSize,
@@ -946,30 +1020,35 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     );
   }
 
+  // Top filter inputs now use the same Outfit font as the table,
+  // and force typed text to UPPERCASE.
   Widget _buildInputWithLabel(String label, TextEditingController controller,
       {FocusNode? focusNode, double width = 120}) {
-    return CustomTextField(
-      borderRadius: 4,
-      controller: controller,
-      focusNode: focusNode,
+    return SizedBox(
       width: width,
       height: 32,
-      hintText: label,
-      columnText: true,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+      child: TextField(
+        controller: controller,
+        focusNode: focusNode,
+        textCapitalization: TextCapitalization.characters,
+        style: _kOutfitStyle(
+            fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black87),
+        decoration: _inputDecoration(label),
+        onSubmitted: (_) => onSearchBooking(),
+      ),
     );
   }
 
   Widget _buildDatePickerWithLabel(
-    String label,
-    TextEditingController controller, {
-    FocusNode? focusNode,
-  }) {
+      String label,
+      TextEditingController controller, {
+        FocusNode? focusNode,
+      }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          label,
+          label.toUpperCase(),
           style: _kOutfitStyle(fontSize: 10, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
@@ -980,9 +1059,9 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
             key: ValueKey(label),
             focusNode: focusNode,
             initialDate:
-                controller.text.isNotEmpty && controller.text != "MM/DD/YYYY"
-                    ? DateTime.tryParse(controller.text) ?? DateTime.now()
-                    : DateTime.now(),
+            controller.text.isNotEmpty && controller.text != "MM/DD/YYYY"
+                ? DateTime.tryParse(controller.text) ?? DateTime.now()
+                : DateTime.now(),
             borderClr: Colors.grey.shade300,
             fontSize: 12,
             iconSize: 14,
@@ -998,15 +1077,14 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     );
   }
 
-// ── Button with Focus Glow Highlight ──
   Widget _buildButton(
-    String text,
-    Color bgColor,
-    Color textColor, {
-    FocusNode? focusNode,
-    bool isWide = false,
-    VoidCallback? onTap,
-  }) {
+      String text,
+      Color bgColor,
+      Color textColor, {
+        FocusNode? focusNode,
+        bool isWide = false,
+        VoidCallback? onTap,
+      }) {
     return FocusableActionDetector(
       focusNode: focusNode,
       actions: <Type, Action<Intent>>{
@@ -1034,23 +1112,23 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                   color: isFocused
                       ? const Color(0xFF00569A)
                       : (bgColor == Colors.white ||
-                              bgColor == Colors.grey.shade100
-                          ? Colors.grey.shade300
-                          : bgColor),
+                      bgColor == Colors.grey.shade100
+                      ? Colors.grey.shade300
+                      : bgColor),
                   width: isFocused ? 2 : 1,
                 ),
                 boxShadow: isFocused
                     ? [
-                        BoxShadow(
-                          color: const Color(0xFF00569A).withOpacity(0.35),
-                          blurRadius: 4,
-                          spreadRadius: 1,
-                        )
-                      ]
+                  BoxShadow(
+                    color: const Color(0xFF00569A).withOpacity(0.35),
+                    blurRadius: 4,
+                    spreadRadius: 1,
+                  )
+                ]
                     : null,
               ),
               child: Text(
-                text,
+                text.toUpperCase(),
                 style: _kOutfitStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -1062,4 +1140,52 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
       ),
     );
   }
+}
+
+DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget? widget, textFieldHeight, double? fontSize, Widget? customWidget, Function(String)? onChanged,
+  TextEditingController? controller,
+  FocusNode? focusNode,
+  double? widhtss
+}) {
+  return DataColumn(
+    label: Expanded(
+      child: widget?? Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(title!.toUpperCase(), style: TextStyle(fontWeight: FontWeight.bold,
+              fontSize: fontSize ?? 13
+          )),
+          SizedBox(height: 4),
+          title == "CHECKBOX" || removeSearching == true
+              ? SizedBox.shrink()
+              : customWidget
+              ?? SizedBox(
+                width: widhtss??100,
+                height: textFieldHeight??28,
+                child: TextField(
+                  focusNode: focusNode,
+                  controller: controller,
+                  onChanged: onChanged,
+                  onTap: () {},
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w800, fontSize: 12),
+                  decoration: InputDecoration(
+                    hintText: "SEARCH",
+                    hintStyle: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        color: DynamicColors.textClr.withOpacity(0.8),
+                        fontSize: 12),
+                    contentPadding:
+                    EdgeInsets.symmetric(horizontal: 6, vertical: 0),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                  ),
+                ),
+              ),
+        ],
+      ),
+    ),
+  );
 }

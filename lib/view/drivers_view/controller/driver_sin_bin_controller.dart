@@ -6,8 +6,7 @@ import 'package:get/get.dart';
 import '../model/driver_sin_bin_setting_model.dart';
 import '../model/get_driver_sinbin_model.dart';
 
-class DriverSinBinController extends GetxController{
-
+class DriverSinBinController extends GetxController {
   // @override
   // void onInit() {
   //   super.onInit();
@@ -25,22 +24,25 @@ class DriverSinBinController extends GetxController{
     isLoadingSinBinSetting = true;
     update();
 
-    var response = await Api().get("sinbin/driver-sinbin-settings/get", sendCompanyId: true);
+    var response = await Api()
+        .get("sinbin/driver-sinbin-settings/get", sendCompanyId: true);
     if (response.statusCode == 200) {
-      driverSinBinSettingModel = DriverSinBinSettingModel.fromJson(response.data);
+      driverSinBinSettingModel =
+          DriverSinBinSettingModel.fromJson(response.data);
 
-      if(driverSinBinSettingModel?.sinbin != null) {
-        recoverJobController.text = driverSinBinSettingModel?.sinbin?.recoverjob.toString() ?? "";
-        rejectJobController.text = driverSinBinSettingModel?.sinbin?.rejectjob.toString() ?? "";
-        ignoreJobController.text = driverSinBinSettingModel?.sinbin?.ignorejob?.toString() ?? "";
+      if (driverSinBinSettingModel?.sinbin != null) {
+        recoverJobController.text =
+            driverSinBinSettingModel?.sinbin?.recoverjob.toString() ?? "";
+        rejectJobController.text =
+            driverSinBinSettingModel?.sinbin?.rejectjob.toString() ?? "";
+        ignoreJobController.text =
+            driverSinBinSettingModel?.sinbin?.ignorejob?.toString() ?? "";
       }
     }
     print("API Response: ${response.data}");
     isLoadingSinBinSetting = false;
     update();
   }
-
-
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>post sinBinSetting
 
@@ -57,10 +59,9 @@ class DriverSinBinController extends GetxController{
     };
 
     print("Submitting Payload: $formData");
-    
-    var response = await Api().post(
-        formData,
-        "sinbin/driver-sinbin-settings", sendCompanyId: true, auth: true);
+
+    var response = await Api().post(formData, "sinbin/driver-sinbin-settings",
+        sendCompanyId: true, auth: true);
 
     if (response.statusCode == 200) {
       BotToast.showText(text: "DRIVER SINBIN ADDED SUCCESSFULLY!");
@@ -69,14 +70,13 @@ class DriverSinBinController extends GetxController{
     update();
   }
 
-
   void updateValue(TextEditingController textController, int change) {
     int currentVal = int.tryParse(textController.text) ?? 0;
     textController.text = (currentVal + change).toString();
     update();
   }
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>get all driver sinBin
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>get all driver sinBin
 
   bool isLoadingGetSinBin = false;
   GetDriverSinBin? getDriverSinBinModel;
@@ -85,8 +85,9 @@ class DriverSinBinController extends GetxController{
   getDriverSinBin() async {
     isLoadingGetSinBin = true;
     update();
-    
-    var response = await Api().get("sinbin/sinbin-drivers/get", sendCompanyId: true);
+
+    var response =
+        await Api().get("sinbin/sinbin-drivers/get", sendCompanyId: true);
     if (response.statusCode == 200) {
       getDriverSinBinModel = GetDriverSinBin.fromJson(response.data);
       sinBinDriversList = getDriverSinBinModel?.drivers ?? [];
@@ -95,34 +96,42 @@ class DriverSinBinController extends GetxController{
     update();
   }
 
-
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>post driver sinBin
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>post driver sinBin
 
   bool isDriverSinBinLoading = false;
+  bool isActive = true;
 
-  addDriverSinBin(driverId, sinbinTime, {bool isActive = true}) async {
+  addDriverSinBin(dynamic driverId, dynamic sinbinTime, {String? mesg}) async {
     isDriverSinBinLoading = true;
     update();
 
+
+    final String finalMessage =
+        mesg ?? (isActive ? "YOU ARE IN SINBIN" : "DRIVER REMOVED FROM SINBIN");
+
     var formData = {
       "driver_id": driverId,
-      // "message": "You are in Sin Bin",
+      "message": finalMessage,
       "sinbin_time": sinbinTime,
       "is_active": isActive,
     };
+
     print("Submitting Payload: $formData");
 
     var response = await Api().post(
-        formData,
-        "sinbin/driver-sinbin/add", sendCompanyId: true, auth: true);
+      formData,
+      "sinbin/driver-sinbin/add",
+      sendCompanyId: true,
+      auth: true,
+    );
 
     if (response.statusCode == 200) {
-      BotToast.showText(text: isActive ? "YOU ARE IN SINBIN" : "DRIVER REMOVED FROM SINBIN");
+      BotToast.showText(
+          text: isActive ? "YOU ARE IN SINBIN" : "DRIVER REMOVED FROM SINBIN");
       getDriverSinBin();
     }
 
     isDriverSinBinLoading = false;
     update();
   }
-
 }
