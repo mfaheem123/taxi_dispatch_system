@@ -239,6 +239,7 @@ class DashboardController extends GetxController {
     }
     return finalUrl;
   }
+
   // 1. Connect To CLI
   void connectToCli(String extension, {bool sendCompanyId = false}) {
     final String path = "/cli?extension=$extension";
@@ -297,7 +298,8 @@ class DashboardController extends GetxController {
             dashboardAllData!.drivers!.add(driver);
             onlineDriversList.add(driver);
             update();
-          } else if (data['event'] == "DRIVER_BREAK_STATUS_UPDATE") {
+          } else if (data['event'] == "DRIVER_BREAK_STATUS_UPDATE" ||
+              data['event'] == "DRIVER_SIN_BIN_STATUS_UPDATE") {
             final driverData = data['data'];
 
             int index = onlineDriversList.indexWhere(
@@ -305,11 +307,32 @@ class DashboardController extends GetxController {
             );
 
             if (index != -1) {
-              onlineDriversList[index].driverStatus =
-              driverData['driver_status'];
+              onlineDriversList[index].driverStatus = driverData['driver_status'];
+              onlineDriversList[index].bookingStatus = driverData['booking_status'];
 
-              onlineDriversList[index].bookingStatus =
-              driverData['booking_status'];
+              // Agar dashboardAllData.drivers mein bhi update karna ho:
+              if (dashboardAllData?.drivers != null) {
+                int dashboardIndex = dashboardAllData!.drivers!.indexWhere(
+                      (e) => e.id.toString() == driverData['id'].toString(),
+                );
+                if (dashboardIndex != -1) {
+                  dashboardAllData!.drivers![dashboardIndex].driverStatus = driverData['driver_status'];
+                  dashboardAllData!.drivers![dashboardIndex].bookingStatus = driverData['booking_status'];
+                }
+              }
+          // else if (data['event'] == "DRIVER_BREAK_STATUS_UPDATE") {
+          //   final driverData = data['data'];
+          //
+          //   int index = onlineDriversList.indexWhere(
+          //         (e) => e.id.toString() == driverData['id'].toString(),
+          //   );
+          //
+          //   if (index != -1) {
+          //     onlineDriversList[index].driverStatus =
+          //     driverData['driver_status'];
+          //
+          //     onlineDriversList[index].bookingStatus =
+          //     driverData['booking_status'];
 
               update();
             }
@@ -2171,7 +2194,7 @@ class DashboardController extends GetxController {
   void startBookingCountTimer() {
     _bookingCountTimer?.cancel();
     _bookingCountTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
-      // await getBookingCounts();
+      await getBookingCounts();
     });
   }
 
@@ -2340,7 +2363,7 @@ class DashboardController extends GetxController {
       _checkBookingsTimeAndPlaySound(dashboardTableModelData?.data ?? []);
       _timer?.cancel();
       _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-        // getDashboardTableData(tableId: selectedTabId);
+        getDashboardTableData(tableId: selectedTabId);
       });
       update();
     }

@@ -155,7 +155,7 @@ class _DriverSinBinSettingState extends State<DriverSinBinSetting> {
                                     child: InkWell(
                                       borderRadius: BorderRadius.circular(6),
                                       onTap: () {
-                                        controller.addDriverSinBin(driver.id, 0, isActive: false);
+                                        controller.addDriverSinBin(driver.id, 0);
                                       },
                                       child: AnimatedContainer(
                                         duration: const Duration(milliseconds: 150),
