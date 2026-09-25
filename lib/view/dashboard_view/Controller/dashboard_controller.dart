@@ -2878,7 +2878,7 @@ class DashboardController extends GetxController {
     update();
   }
 
-  final passController = TextEditingController();
+  TextEditingController passController = TextEditingController(text: '1');
   final luggController = TextEditingController();
   final sluggController = TextEditingController();
   List restrictedDrivers = [];
@@ -3955,25 +3955,71 @@ class DashboardController extends GetxController {
   RxBool isPassengerError = false.obs;
 
 // 1. Text field typing/onChanged check + Popup
+//   bool validatePassengerLimit(String value) {
+//     if (value.isEmpty || selectVehicleValue == null) {
+//       isPassengerError.value = false;
+//       return true;
+//     }
+//
+//     int enteredCount = int.tryParse(value) ?? 0;
+//     int maxLimit = selectVehicleValue?.passengers ?? 0;
+//
+//     if (enteredCount > maxLimit) {
+//       isPassengerError.value = true;
+//
+//       Get.defaultDialog(
+//         title: "Limit Exceeded",
+//         middleText: "Maximum passenger limit exceeded.",
+//         textConfirm: "OK",
+//         confirmTextColor: Colors.white,
+//         buttonColor: DynamicColors.primaryClr,
+//         onConfirm: () => Get.back(),
+//       );
+//       return false;
+//     } else {
+//       isPassengerError.value = false;
+//       return true;
+//     }
+//   }
+
   bool validatePassengerLimit(String value) {
-    if (value.isEmpty || selectVehicleValue == null) {
+    // Agar input empty hai to filhal error clear karein taake typing disrupt na ho
+    if (value.isEmpty) {
       isPassengerError.value = false;
       return true;
     }
 
     int enteredCount = int.tryParse(value) ?? 0;
+
+    // Vehicle select na hui ho to 0, aksar API se max limit milti hai
     int maxLimit = selectVehicleValue?.passengers ?? 0;
 
-    if (enteredCount > maxLimit) {
+    // Check 1: Minimum 1 passenger check (0 enter karne par)
+    if (enteredCount < 1) {
+      isPassengerError.value = true;
+      return false;
+    }
+
+    // Check 2: Maximum Limit Validation (API Vehicle Limit)
+    if (maxLimit > 0 && enteredCount > maxLimit) {
       isPassengerError.value = true;
 
+      // Value ko exceed hone par automatically Max Limit par clamp kar dein
+      passController.text = maxLimit.toString();
+      passController.selection = TextSelection.fromPosition(
+        TextPosition(offset: passController.text.length),
+      );
+
+      // Dialog Popup
       Get.defaultDialog(
         title: "Limit Exceeded",
-        middleText: "Maximum passenger limit exceeded.",
+        middleText: "Maximum limit for selected vehicle is $maxLimit passengers.",
         textConfirm: "OK",
         confirmTextColor: Colors.white,
         buttonColor: DynamicColors.primaryClr,
-        onConfirm: () => Get.back(),
+        onConfirm: () {
+          Get.back();
+        },
       );
       return false;
     } else {
@@ -3981,6 +4027,8 @@ class DashboardController extends GetxController {
       return true;
     }
   }
+
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo passenger function
 
   /// Closes every socket and stops every poll this controller owns.

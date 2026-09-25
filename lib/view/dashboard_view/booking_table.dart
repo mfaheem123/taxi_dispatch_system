@@ -549,25 +549,58 @@ class _BookingTableState extends State<BookingTable> {
                                     onRightClick: () {
                                       print("RIGHT CLICK DATETIME: ${item.pickupDate}");
                                     },
-                                    child: Container(
-                                      width: widthss/20.5,
-                                      height: double.infinity,
-                                      alignment: Alignment.center,
-                                      // APPLY YOUR COLOR HERE
-                                      decoration: BoxDecoration(
-                                        color: DynamicColors.secondaryClr.withOpacity(0.7),
-                                        // Optional: borderRadius: BorderRadius.circular(2),
-                                      ),
-                                      child: Text("${DateFormat('dd-MM-yyyy')
-                                          .format(item.pickupDate!)} ${item.pickupTime}",
-                                        style: TextStyle(
-                                          fontSize: widthss/140,
-                                        ),
-                                      ),
+                                    child: Builder(
+                                      builder: (context) {
+                                        bool isPastOrNear = false;
+
+                                        // Check 1: Tab ID 1 honi chahiye
+                                        if (controller.selectedTabId == 1 && item.pickupDate != null && item.pickupTime != null) {
+                                          try {
+                                            final timeParts = item.pickupTime!.split(':');
+                                            int hour = int.parse(timeParts[0]);
+                                            int minute = int.parse(timeParts[1].split(' ')[0]);
+
+                                            final pickupDateTime = DateTime(
+                                              item.pickupDate!.year,
+                                              item.pickupDate!.month,
+                                              item.pickupDate!.day,
+                                              hour,
+                                              minute,
+                                            );
+
+                                            final differenceInMinutes = pickupDateTime.difference(DateTime.now()).inMinutes;
+
+                                            // Check 2: Time 15 min se kam ho ya guzar chuka ho
+                                            if (differenceInMinutes <= 15) {
+                                              isPastOrNear = true;
+                                            }
+                                          } catch (e) {
+                                            print("Error parsing time: $e");
+                                          }
+                                        }
+
+                                        return Container(
+                                          width: widthss / 20.5,
+                                          height: double.infinity,
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                            // Red tab 1 par aur condition true hone par hi hoga
+                                            color: isPastOrNear
+                                                ? Colors.red.withOpacity(0.8)
+                                                : DynamicColors.secondaryClr.withOpacity(0.7),
+                                          ),
+                                          child: Text(
+                                            "${item.pickupDate != null ? DateFormat('dd-MM-yyyy').format(item.pickupDate!) : ''} ${item.pickupTime ?? ''}",
+                                            style: TextStyle(
+                                              fontSize: widthss / 140,
+                                              color: isPastOrNear ? Colors.white : Colors.black,
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     ),
                                   ),
                                 ),
-
                                 /// CUSTOMER ✅
                                 DataCell(
                                   SizedBox(
