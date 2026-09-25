@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../component/alert_close_button.dart';
 import '../component/color.dart';
 import '../component/datatable_widget.dart';
 import '../component/textStyle.dart';
@@ -35,7 +36,7 @@ class _LostPropertyBookingAlertState extends State<LostPropertyBookingAlert> {
       insetPadding: const EdgeInsets.symmetric(horizontal: 1, vertical: 20),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       titlePadding: EdgeInsets.zero,
-      contentPadding: const EdgeInsets.only(top: 42, left: 12, right: 12, bottom: 30),
+      contentPadding: const EdgeInsets.only(top: 30, left: 12, right: 12, bottom: 30),
       clipBehavior: Clip.antiAlias,
       title: Container(
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 18),
@@ -45,10 +46,15 @@ class _LostPropertyBookingAlertState extends State<LostPropertyBookingAlert> {
           children: [
             Text("BOOKINGS",
                 style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900, fontSize: 23)),
-            IconButton(
-                visualDensity: VisualDensity.compact,
-                onPressed: () => Get.back(),
-                icon: const Icon(Icons.close, size: 20))
+            const Spacer(),
+            FocusTraversalOrder(
+              order: const NumericFocusOrder(999),
+              child: const AlertCloseButton(),
+            ),
+            // IconButton(
+            //     visualDensity: VisualDensity.compact,
+            //     onPressed: () => Get.back(),
+            //     icon: const Icon(Icons.close, size: 20))
           ],
         ),
       ),
@@ -73,10 +79,7 @@ class _LostPropertyBookingAlertState extends State<LostPropertyBookingAlert> {
 
           return SingleChildScrollView(
             scrollDirection: Axis.vertical,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
+            child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.85,
                   child: DatatableWidget(
                     columns: [
@@ -136,8 +139,6 @@ class _LostPropertyBookingAlertState extends State<LostPropertyBookingAlert> {
                     }).toList(),
                   ),
                 ),
-              ],
-            ),
           );
         }),
       ),

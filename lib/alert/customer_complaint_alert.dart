@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../component/alert_close_button.dart';
 import '../component/color.dart';
 import '../component/datatable_widget.dart';
 import '../component/textStyle.dart';
@@ -54,10 +55,15 @@ class _ComplaintBookingAlertState extends State<ComplaintBookingAlert> {
                 fontSize: 23,
               ),
             ),
-            IconButton(
-              onPressed: () => Get.back(),
-              icon: const Icon(Icons.close, size: 20),
-            )
+            const Spacer(),
+            FocusTraversalOrder(
+              order: const NumericFocusOrder(999),
+              child: const AlertCloseButton(),
+            ),
+            // IconButton(
+            //   onPressed: () => Get.back(),
+            //   icon: const Icon(Icons.close, size: 20),
+            // )
           ],
         ),
       ),
