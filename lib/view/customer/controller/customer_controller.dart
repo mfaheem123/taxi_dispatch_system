@@ -47,6 +47,7 @@ class CustomerController extends GetxController {
     update();
   }
 
+  List<Map<String, String>> selectedRestrictedDrivers = [];
   List<Map<String, dynamic>> get apiDriversList {
     if (restricDriverModel == null || restricDriverModel!.drivers!.isEmpty) {
       return [];

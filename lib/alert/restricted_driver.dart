@@ -7,8 +7,10 @@ import '../component/dropdown_button.dart';
 
 class RestrictedDriversDialog extends StatefulWidget {
   final List<Map<String, String>> drivers;
+  final List<Map<String, String>> initialRestrictedDrivers;
+  final ValueChanged<List<Map<String, String>>> onDriversChanged;
 
-  const RestrictedDriversDialog({super.key, required this.drivers});
+  const RestrictedDriversDialog({super.key, required this.drivers, required this.initialRestrictedDrivers, required this.onDriversChanged});
 
   @override
   State<RestrictedDriversDialog> createState() => _RestrictedDriversDialogState();
@@ -16,7 +18,14 @@ class RestrictedDriversDialog extends StatefulWidget {
 
 class _RestrictedDriversDialogState extends State<RestrictedDriversDialog> {
   Map<String, String>? selectedDriver;
-  List<Map<String, String>> restrictedDrivers = [];
+  late List<Map<String, String>> restrictedDrivers;
+
+  @override
+  void initState() {
+    super.initState();
+    restrictedDrivers = List.from(widget.initialRestrictedDrivers);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -121,6 +130,7 @@ class _RestrictedDriversDialogState extends State<RestrictedDriversDialog> {
                                         restrictedDrivers.add(selectedDriver!);
                                         selectedDriver = null;
                                       });
+                                      widget.onDriversChanged(restrictedDrivers);
                                     }
                                   },
                                   child: const Padding(
@@ -227,6 +237,7 @@ class _RestrictedDriversDialogState extends State<RestrictedDriversDialog> {
                                         onTap: () {
                                           setState(() {restrictedDrivers.removeAt(index);
                                           });
+                                          widget.onDriversChanged(restrictedDrivers);
                                         },
                                         child: const Padding(
                                           padding: EdgeInsets.all(8),
