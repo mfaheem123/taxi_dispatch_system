@@ -109,7 +109,9 @@ class _SinbinDriverAlertState extends State<SinbinDriverAlert> {
                           onPressed: () {
                             if (_durationController.text.trim().isNotEmpty) {
                               var driverId = widget.driver?.id ?? widget.driver?.driverId;
-                              controller.addDriverSinBin(driverId, _durationController.text.trim());
+                              controller.addDriverSinBin(driverId, _durationController.text.trim(),
+
+                              );
                               Navigator.pop(context);
                             }
                           },
