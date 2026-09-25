@@ -40,9 +40,8 @@ class _LostPropertyBookingAlertState extends State<LostPropertyBookingAlert> {
       clipBehavior: Clip.antiAlias,
       title: Container(
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 18),
-        color: DynamicColors.secondaryClr,
+        color: DynamicColors.gryClr.withOpacity(0.5),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text("BOOKINGS",
                 style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900, fontSize: 23)),
@@ -125,9 +124,10 @@ class _LostPropertyBookingAlertState extends State<LostPropertyBookingAlert> {
                             },
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                              child: const Text(
+                              child: Text(
                                 "PICK",
-                                style: TextStyle(
+                                style: outFitRegular(
+                                  fontSize: 14,
                                   color: Colors.green,
                                   fontWeight: FontWeight.bold,
                                 ),
