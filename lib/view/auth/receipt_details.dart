@@ -210,7 +210,7 @@ class _BookingReceiptScreenState extends State<BookingReceiptScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('TOTAL CHARGES', style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 14)),
-                    Text('£ ${widget.bookingItem?.totalCharges ?? widget.bookingItem?.fares ?? '0.00'}',
+                    Text('£ ${widget.bookingItem?.totalCharges ?? '0.00'}',
                         style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 14)),
 
                   ],

@@ -189,6 +189,7 @@ class DashboardController extends GetxController {
   /// Pending driver-login reconnect, so [disposeSockets] can cancel one that
   /// is waiting rather than let it fire into a session that has ended.
   Timer? _driverLoginRetry;
+  Timer? _busyDriverRetry;
 
   /// How long to wait before retrying the driver-login socket.
   static const Duration _reconnectDelay = Duration(seconds: 5);
@@ -395,11 +396,13 @@ class DashboardController extends GetxController {
   // 3. Connect To Busy Driver
   void connectToBusyDriver({bool sendCompanyId = false}) {
     final url = Uri.parse(_buildSocketUrl("/driver-busy", sendCompanyId: sendCompanyId));
+    final generation = _socketGeneration;
     try {
-      _channel = WebSocketChannel.connect(url);
-      _trackSocket(_channel!, "Driver busy");
+      final channel = WebSocketChannel.connect(url);
+      _channel = channel;
+      _trackSocket(channel, "Driver busy");
 
-      _channel!.stream.listen(
+      channel.stream.listen(
             (message) {
           final data = jsonDecode(message);
           print("EVENT => ${data['event']}");
@@ -497,8 +500,19 @@ class DashboardController extends GetxController {
         },
         onError: (error) => print("Connection Error: $error"),
         onDone: () {
-          connectToBusyDriver(sendCompanyId: sendCompanyId);
           print("🔌 Socket Disconnected");
+          print("Close Code: ${channel.closeCode}");
+          print("Close Reason: ${channel.closeReason}");
+
+          _openSockets.remove(channel);
+
+          if (_socketsDisposed || generation != _socketGeneration) return;
+
+          _busyDriverRetry?.cancel();
+          _busyDriverRetry = Timer(_reconnectDelay, () {
+            if (_socketsDisposed || generation != _socketGeneration) return;
+            connectToBusyDriver(sendCompanyId: sendCompanyId);
+          });
         },
       );
     } catch (e) {
@@ -3988,6 +4002,8 @@ class DashboardController extends GetxController {
     _socketGeneration++;
     _driverLoginRetry?.cancel();
     _driverLoginRetry = null;
+    _busyDriverRetry?.cancel();
+    _busyDriverRetry = null;
 
     for (final socket in _openSockets) {
       // Started, not awaited - see _closeQuietly. Awaiting a socket that never
