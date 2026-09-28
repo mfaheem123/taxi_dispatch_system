@@ -27,7 +27,6 @@ import '../dashboard_view/widgets/via_location.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
 import '../locations_view/controller/locations_controller.dart';
 
-
 // ════════════════════════════════════════════════════════════════════
 // Typography
 // ════════════════════════════════════════════════════════════════════
@@ -77,31 +76,31 @@ const _kLabelTextStyle = TextStyle(
 /// label. Lives at top level so the dropdowns can be decorated from the same
 /// place as the text fields instead of drawing a look-alike box of their own.
 InputDecoration _kFieldDecoration() => InputDecoration(
-  isDense: true,
-  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
-  // Focused fields tint their background. InputDecorator resolves fillColor
-  // against its own state set (which carries WidgetState.focused), so this
-  // covers every field, dropdown, the date field and the time field in one
-  // place. The unfocused value is white — the same as the card behind it —
-  // so nothing looks different until focus actually arrives.
-  filled: true,
-  fillColor: WidgetStateColor.resolveWith((states) =>
-      states.contains(WidgetState.focused) ? _kFocusFill : Colors.white),
-  hintStyle: _kHintTextStyle,
-  labelStyle: _kLabelTextStyle,
-  border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(6),
-      borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
-  enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(6),
-      borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
-  disabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(6),
-      borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
-  focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(6),
-      borderSide: const BorderSide(color: _kPurple, width: 2)),
-);
+      isDense: true,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
+      // Focused fields tint their background. InputDecorator resolves fillColor
+      // against its own state set (which carries WidgetState.focused), so this
+      // covers every field, dropdown, the date field and the time field in one
+      // place. The unfocused value is white — the same as the card behind it —
+      // so nothing looks different until focus actually arrives.
+      filled: true,
+      fillColor: WidgetStateColor.resolveWith((states) =>
+          states.contains(WidgetState.focused) ? _kFocusFill : Colors.white),
+      hintStyle: _kHintTextStyle,
+      labelStyle: _kLabelTextStyle,
+      border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(6),
+          borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
+      enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(6),
+          borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
+      disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(6),
+          borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
+      focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(6),
+          borderSide: const BorderSide(color: _kPurple, width: 2)),
+    );
 
 const _kPurple = Color(0xFF312E81);
 
@@ -137,9 +136,11 @@ Widget _withFormFont(BuildContext context, Widget child) {
 
 class BookingFormScreen extends StatefulWidget {
   const BookingFormScreen({super.key});
+
   @override
   State<BookingFormScreen> createState() => _BookingFormScreenState();
 }
+
 class _BookingFormScreenState extends State<BookingFormScreen> {
   // ────────── palette
   static const _purple = Color(0xFF312E81);
@@ -149,6 +150,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   static const _surface = Color(0xFFF5F6FA);
   static const _red = Color(0xFFEF4444);
   static const _green = Color(0xFF22C55E);
+
   // ────────── font sizes (compact)
   static const _fsLabel = 11.0;
 
@@ -160,13 +162,16 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   static const _fsField = 12.0;
   static const _fsSection = 12.0;
   static const _fsTab = 12.0;
+
   // ────────── state
   String? driver;
+
   // String? account = 'DEMO';
   // String? vehicleType = 'Saloon';
   // bool quotation = true;
   AllAddressesModel? _selectedPickup;
   AllAddressesModel? _selectedDrop;
+
   // Kept focused (instead of a plain unfocus()) when the PICKUP/DROP
   // autocomplete is dismissed by a tap outside it, so the arrow-key page
   // scrolling below keeps working — unfocus() moves primary focus to the
@@ -180,9 +185,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   /// the caret into the first field of a fresh booking.
   final FocusNode _pickupFieldFocusNode = FocusNode();
 
-
   // ────────── return-journey state
   ZoneObject? returnDropZone;
+
   // DashboardVehicleTypeObject? returnVehicleValue;
   // DashboardDriverObject? returnDriverValue;
   // late final _rDropoff = TextEditingController();
@@ -192,25 +197,33 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   // late final _rFare = TextEditingController(text: '4.9');
   bool get _isReturnJourney {
     final j =
-    controller.selectJourneyTypeValue?.journeyType?.toUpperCase().trim();
+        controller.selectJourneyTypeValue?.journeyType?.toUpperCase().trim();
     return j == 'R/N' || j == 'RETURN';
   }
+
   // late final _pass = TextEditingController(text: '0');
   // late final _lugg = TextEditingController(text: '0');
   // late final _slugg = TextEditingController(text: '0');
   //_isReturnJourney ? 46 : 31
   void _onMultiReservation() => debugPrint('F8 / Multi Reservation tapped');
+
   void _onAddVehicles() => debugPrint('F9 / Vehicles tapped');
+
   void _onVia() => debugPrint('Via tapped');
+
   void _onClear() => debugPrint('F7 / Clear tapped');
+
   void _showPickBookingAlert() {
     showDialog(
       context: context,
-      builder: (ctx) => SearchBookingAlert(pickMobileNumber:  controller.mobileController.text,
+      builder: (ctx) => SearchBookingAlert(
+        pickMobileNumber: controller.mobileController.text,
         pickName: controller.nameController.text,
-        pickTeleNumber: controller.telController.text,),
+        pickTeleNumber: controller.telController.text,
+      ),
     );
   }
+
   final DashboardController controller = Get.isRegistered<DashboardController>()
       ? Get.find<DashboardController>()
       : Get.put(DashboardController());
@@ -228,6 +241,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       controller.dashboardData();
     }
   }
+
   @override
   void dispose() {
     // Only clear it if it is still ours: a newer form instance may already have
@@ -245,6 +259,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     if (!mounted) return;
     FocusScope.of(context).requestFocus(_pickupFieldFocusNode);
   }
+
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
@@ -282,7 +297,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             }
           },
           builder: (controller) {
-            return  SafeArea(
+            return SafeArea(
               child: SizedBox(
                 width: formWidth,
                 child: SingleChildScrollView(
@@ -303,7 +318,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                         children: [
                           _topTabs(isMobile),
                           Padding(
-                            padding: EdgeInsets.symmetric(horizontal:isMobile ? 12 : 16,vertical: 6),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: isMobile ? 12 : 16, vertical: 6),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
@@ -313,16 +329,19 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   controller.pickupController,
                                   controller.allAddressesData,
                                   controller.dashboardZoneValue,
-                                  _controller.updateLocationValue.value == true || _controller.locationtypezoneModel == null
+                                  _controller.updateLocationValue.value ==
+                                              true ||
+                                          _controller.locationtypezoneModel ==
+                                              null
                                       ? []
-                                      : _controller.locationtypezoneModel!.zonesList!,
-                                      (v) => setState(
-                                          () {
-                                            controller.dashboardZoneValue = v;
-                                        controller.getFaresCalculation();
-                                      }),
+                                      : _controller
+                                          .locationtypezoneModel!.zonesList!,
+                                  (v) => setState(() {
+                                    controller.dashboardZoneValue = v;
+                                    controller.getFaresCalculation();
+                                  }),
                                   isMobile,
-                                      (value) {
+                                  (value) {
                                     WidgetsBinding.instance
                                         .addPostFrameCallback((_) {
                                       if (value.isEmpty) {
@@ -335,7 +354,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                           searchingText: value);
                                     });
                                   },
-                                      (addr) =>
+                                  (addr) =>
                                       setState(() => _selectedPickup = addr),
                                   1,
                                   zoneLabel: (z) => z.name!,
@@ -343,15 +362,19 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.tapSelect(index);
                                   },
                                   onPressed: () {
-                                    final pickupPolylineIndex = controller.polyLineMarkerInfo
-                                        .indexWhere((e) => e.markerType == "PICKUP LOCATION");
+                                    final pickupPolylineIndex = controller
+                                        .polyLineMarkerInfo
+                                        .indexWhere((e) =>
+                                            e.markerType == "PICKUP LOCATION");
                                     if (pickupPolylineIndex >= 0) {
-                                      controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
+                                      controller.polyLineMarkerInfo
+                                          .removeAt(pickupPolylineIndex);
                                     }
-                                    final pickupMarkerIndex =
-                                    controller.markers.indexWhere((e) => e.type == "pickup");
+                                    final pickupMarkerIndex = controller.markers
+                                        .indexWhere((e) => e.type == "pickup");
                                     if (pickupMarkerIndex >= 0) {
-                                      controller.markers.removeAt(pickupMarkerIndex);
+                                      controller.markers
+                                          .removeAt(pickupMarkerIndex);
                                     }
                                     controller.pickupController.clear();
                                     // controller.dropOffController.clear();
@@ -359,7 +382,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.suggestions.clear();
                                     controller.clearViaIfNoPickupAndDrop();
                                     controller.totalDistance.value = "0.00";
-                                    controller.totalTimeDuration.value = "0 min";
+                                    controller.totalTimeDuration.value =
+                                        "0 min";
                                     controller.fixedFare.value = "0";
                                     controller.returnFareValue = "0";
                                     controller.tempStoreViaMils = "0";
@@ -367,10 +391,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.slugControllerReturn.clear();
                                     controller.tempStoreMils = null;
                                     controller.fetchRouteFromOSRM();
-                                    FocusScope.of(Get.context!).requestFocus(_pickupFieldFocusNode);
+                                    FocusScope.of(Get.context!)
+                                        .requestFocus(_pickupFieldFocusNode);
                                     controller.update();
                                   },
-                                  notesController: controller.pickUpNoteController,
+                                  notesController:
+                                      controller.pickUpNoteController,
                                   addressFocusNode: _pickupFieldFocusNode,
                                   onCurrentLocation: () {
                                     controller.swapeToChangeLocation();
@@ -382,64 +408,76 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     padding: const EdgeInsets.only(top: 4),
                                     child: isMobile
                                         ? Column(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                      children: [
-                                        _field('FL',
-                                            tab: 4.3,
-                                            controller: controller
-                                                .selectAirportController),
-                                        const SizedBox(height: 4),
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.stretch,
+                                            children: [
+                                              _field('FL',
+                                                  tab: 4.3,
+                                                  controller: controller
+                                                      .selectAirportController),
+                                              const SizedBox(height: 4),
 
-                                        _field('ARP',
-                                            tab: 4.6,
-                                            controller: controller
-                                                .arrivalTimeController),
-                                        // _timeField('ARP',
-                                        //     tab: 4.6,
-                                        //     controller: controller
-                                        //         .arrivalTimeController,
-                                        //     onPicked: () => controller
-                                        //         .arrivalTimePicked = true),
-                                      ],
-                                    )
-                                        :
-                                    Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        SizedBox(width: _kLabelColumnWidth - 2, child:  Row(mainAxisSize: MainAxisSize.min, children: [
-                                          Icon(Icons.circle, size: 9, color: Colors.green),
-                                          const SizedBox(width: 6),
-                                          Text("FL",
-                                              style:
-                                              const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsLabel)),
-                                        ])),
-                                        const SizedBox(width: 2),
-                                        Expanded(
-                                          flex: 3,
-                                          child: _field('FL',
-                                              tab: 4.3,
-                                              controller: controller
-                                                  .selectAirportController),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          flex: 1,
-                                          child:
-                                          _field('ARP',
-                                              tab: 4.6,
-                                              controller: controller
-                                                  .arrivalTimeController),
-
+                                              _field('ARP',
+                                                  tab: 4.6,
+                                                  controller: controller
+                                                      .arrivalTimeController),
                                               // _timeField('ARP',
-                                              // tab: 4.6,
-                                              // controller: controller
-                                              //     .arrivalTimeController,
-                                              // onPicked: () => controller
-                                              //     .arrivalTimePicked = true),
-                                        ),
-                                      ],
-                                    ),
+                                              //     tab: 4.6,
+                                              //     controller: controller
+                                              //         .arrivalTimeController,
+                                              //     onPicked: () => controller
+                                              //         .arrivalTimePicked = true),
+                                            ],
+                                          )
+                                        : Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              SizedBox(
+                                                  width: _kLabelColumnWidth - 2,
+                                                  child: Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        Icon(Icons.circle,
+                                                            size: 9,
+                                                            color:
+                                                                Colors.green),
+                                                        const SizedBox(
+                                                            width: 6),
+                                                        Text("FL",
+                                                            style: const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700,
+                                                                fontSize:
+                                                                    _fsLabel)),
+                                                      ])),
+                                              const SizedBox(width: 2),
+                                              Expanded(
+                                                flex: 3,
+                                                child: _field('FL',
+                                                    tab: 4.3,
+                                                    controller: controller
+                                                        .selectAirportController),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                flex: 1,
+                                                child: _field('ARP',
+                                                    tab: 4.6,
+                                                    controller: controller
+                                                        .arrivalTimeController),
+
+                                                // _timeField('ARP',
+                                                // tab: 4.6,
+                                                // controller: controller
+                                                //     .arrivalTimeController,
+                                                // onPicked: () => controller
+                                                //     .arrivalTimePicked = true),
+                                              ),
+                                            ],
+                                          ),
                                   ),
                                 ),
                                 const SizedBox(height: 4),
@@ -449,17 +487,19 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   controller.dropOffController,
                                   controller.allAddressesData,
                                   controller.dashboardDZoneValue,
-                                  _controller.updateLocationValue.value == true || _controller.locationtypezoneModel == null
+                                  _controller.updateLocationValue.value ==
+                                              true ||
+                                          _controller.locationtypezoneModel ==
+                                              null
                                       ? []
                                       : _controller
-                                      .locationtypezoneModel!.zonesList!,
-                                      (v) => setState(
-                                          () {
-                                            controller.dashboardDZoneValue = v;
-                                            controller.getFaresCalculation();
-                                          }),
+                                          .locationtypezoneModel!.zonesList!,
+                                  (v) => setState(() {
+                                    controller.dashboardDZoneValue = v;
+                                    controller.getFaresCalculation();
+                                  }),
                                   isMobile,
-                                      (value) {
+                                  (value) {
                                     WidgetsBinding.instance
                                         .addPostFrameCallback((_) {
                                       if (value.isEmpty) {
@@ -472,24 +512,29 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                           searchingText: value);
                                     });
                                   },
-                                      (addr) =>
+                                  (addr) =>
                                       setState(() => _selectedDrop = addr),
                                   4,
                                   zoneLabel: (z) => z.name!,
                                   onPickIndex: (index) =>
                                       controller.tapSelect(index),
                                   onPressed: () {
-                                    final dropPolylineIndex = controller.polyLineMarkerInfo
-                                        .indexWhere((e) => e.markerType == "DROP LOCATION");
+                                    final dropPolylineIndex = controller
+                                        .polyLineMarkerInfo
+                                        .indexWhere((e) =>
+                                            e.markerType == "DROP LOCATION");
 
                                     if (dropPolylineIndex >= 0) {
-                                      controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
+                                      controller.polyLineMarkerInfo
+                                          .removeAt(dropPolylineIndex);
                                     }
-                                    final dropOffMarkerIndex =
-                                    controller.markers.indexWhere((e) => e.type == "dropOff");
+                                    final dropOffMarkerIndex = controller
+                                        .markers
+                                        .indexWhere((e) => e.type == "dropOff");
 
                                     if (dropOffMarkerIndex >= 0) {
-                                      controller.markers.removeAt(dropOffMarkerIndex);
+                                      controller.markers
+                                          .removeAt(dropOffMarkerIndex);
                                     }
                                     // controller.viaPoints.clear();
                                     // controller.viaTextEditingController.clear();
@@ -500,7 +545,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.suggestions.clear();
                                     // controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "DROP LOCATION" || item.markerType == "Create Booking DROP LOCATION");
                                     controller.totalDistance.value = "0.00";
-                                    controller.totalTimeDuration.value = "0 min";
+                                    controller.totalTimeDuration.value =
+                                        "0 min";
                                     controller.fixedFare.value = "0";
                                     controller.returnFareValue = "0";
                                     controller.tempStoreViaMils = "0";
@@ -508,18 +554,22 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.slugControllerReturn.clear();
                                     controller.tempStoreMils = null;
                                     controller.fetchRouteFromOSRM();
-                                    FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
+                                    FocusScope.of(Get.context!).requestFocus(
+                                        controller.dropOffTextFieldFocusNode);
                                     controller.update();
                                   },
-                                  notesController: controller.dropUpNoteController,
-                                  addressFocusNode: controller.dropOffTextFieldFocusNode,
+                                  notesController:
+                                      controller.dropUpNoteController,
+                                  addressFocusNode:
+                                      controller.dropOffTextFieldFocusNode,
                                   // The route button opens the via-points
                                   // dialog. PICK's swap button keeps calling
                                   // swapeToChangeLocation() — no branch on the
                                   // icon is needed, because each row chooses
                                   // both its glyph and its handler here.
                                   onCurrentLocation: () {
-                                    if (controller.pickupController.text.isEmpty) {
+                                    if (controller
+                                        .pickupController.text.isEmpty) {
                                       BotToast.showText(
                                           text:
                                               "Please write pickup and dropoff location");
@@ -553,7 +603,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     tab: 10,
                                     controller: controller.mobileController,
                                     customers: controller.customerPhoneNumber
-                                        ?.customerInfo ??
+                                            ?.customerInfo ??
                                         const [],
                                     onChanged: (q) {
                                       if (q.trim().isEmpty) return;
@@ -597,16 +647,23 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                               color: Colors.white),
                                         ),
                                         style: ButtonStyle(
-                                          backgroundColor: WidgetStateProperty.all(_purple),
-                                          padding: WidgetStateProperty.all(EdgeInsets.zero),
+                                          backgroundColor:
+                                              WidgetStateProperty.all(_purple),
+                                          padding: WidgetStateProperty.all(
+                                              EdgeInsets.zero),
                                           shape: WidgetStateProperty.all(
                                             RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(6),
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
                                             ),
                                           ),
-                                          side: WidgetStateProperty.resolveWith((states) {
-                                            if (states.contains(WidgetState.focused)) {
-                                              return const BorderSide(color: Colors.white, width: 2);
+                                          side: WidgetStateProperty.resolveWith(
+                                              (states) {
+                                            if (states.contains(
+                                                WidgetState.focused)) {
+                                              return const BorderSide(
+                                                  color: Colors.white,
+                                                  width: 2);
                                             }
                                             return BorderSide.none;
                                           }),
@@ -625,15 +682,16 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       // string in the field AND the popup, so
                                       // the family lands in one place instead
                                       // of per slot.
-                                      baseTextStyle:
-                                          const TextStyle(fontFamily: _kFontFamily),
+                                      baseTextStyle: const TextStyle(
+                                          fontFamily: _kFontFamily),
                                       textStyle: _kValueTextStyle,
                                       // fieldTextColor is what the package
                                       // paints the value with while the field
                                       // is at rest (black87 by default); the
                                       // focused/open value stays the accent.
                                       style: WebDatePickerStyle.of(context)
-                                          .copyWith(fieldTextColor: Colors.black),
+                                          .copyWith(
+                                              fieldTextColor: Colors.black),
                                       // Unfocused / disabled border comes from
                                       // the form's own decoration (grey 0.7) —
                                       // the package default leaves it to the
@@ -647,80 +705,86 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   _timeField('Time',
                                       tab: 13,
                                       controller:
-                                      controller.pickUpTimeController,
+                                          controller.pickUpTimeController,
                                       onPicked: () =>
                                           controller.pickUpTimePicked = true),
                                   _dropdown<JourneyTypeObject>(
-                                    'Journey Type'.toUpperCase(),
-                                    controller.selectJourneyTypeValue,
-                                    controller.dashboardAllData!.journeyTypes ?? const [],
-                                        (v) {
-                                      // 1. Validation check for pickup and dropoff locations
-                                      if (controller.pickupController.text.isNotEmpty &&
-                                          controller.dropOffController.text.isNotEmpty) {
-                                        setState(() {
-                                          // Dropdown menu close
-                                          controller.dropDownShow.value = false;
+                                      'Journey Type'.toUpperCase(),
+                                      controller.selectJourneyTypeValue,
+                                      controller
+                                              .dashboardAllData!.journeyTypes ??
+                                          const [], (v) {
+                                    // 1. Validation check for pickup and dropoff locations
+                                    if (controller
+                                            .pickupController.text.isNotEmpty &&
+                                        controller.dropOffController.text
+                                            .isNotEmpty) {
+                                      setState(() {
+                                        // Dropdown menu close
+                                        controller.dropDownShow.value = false;
 
-                                          // Selected value assign
-                                          controller.selectJourneyTypeValue = v;
+                                        // Selected value assign
+                                        controller.selectJourneyTypeValue = v;
 
-                                          // Debug prints
-                                          print("RAW journeyType from API => '${v?.journeyType}'");
+                                        // Debug prints
+                                        print(
+                                            "RAW journeyType from API => '${v?.journeyType}'");
 
-                                          // String normalization (trim + lowercase)
-                                          final type = (v?.journeyType ?? "").trim().toLowerCase();
-                                          print("NORMALIZED type => '$type'");
+                                        // String normalization (trim + lowercase)
+                                        final type = (v?.journeyType ?? "")
+                                            .trim()
+                                            .toLowerCase();
+                                        print("NORMALIZED type => '$type'");
 
-                                          // Map journeyType value
-                                          if (type == "o/w") {
-                                            controller.jourValue = "O/W";
-                                            controller.changeJourneyFtn();
-                                          } else if (type == "r/n") {
-                                            controller.jourValue = "R/N";
-                                          } else if (type == "w/r") {
-                                            controller.jourValue = "W/R";
-                                            controller.changeJourneyFtn();
+                                        // Map journeyType value
+                                        if (type == "o/w") {
+                                          controller.jourValue = "O/W";
+                                          controller.changeJourneyFtn();
+                                        } else if (type == "r/n") {
+                                          controller.jourValue = "R/N";
+                                        } else if (type == "w/r") {
+                                          controller.jourValue = "W/R";
+                                          controller.changeJourneyFtn();
+                                        } else {
+                                          controller.jourValue = null;
+                                          print(
+                                              "⚠️ NO MATCH FOUND for type: '$type' — jourValue set to null");
+                                        }
 
-                                          } else {
-                                            controller.jourValue = null;
-                                            print("⚠️ NO MATCH FOUND for type: '$type' — jourValue set to null");
-                                          }
+                                        print(
+                                            "FINAL controller.jourValue => ${controller.jourValue}");
+                                      });
 
-                                          print("FINAL controller.jourValue => ${controller.jourValue}");
-                                        });
-
-                                        // 2. Fares calculation trigger
-                                        controller.getFaresCalculation();
-                                      } else {
-                                        // 3. Validation fail warning
-                                        BotToast.showText(text: "Please select pickup and drop location first");
-                                      }
-                                    },
-                                    14,
-                                    itemLabel: (p) => p.journeyType!,
-                                    allowUnselect: false
-                                  ),
+                                      // 2. Fares calculation trigger
+                                      controller.getFaresCalculation();
+                                    } else {
+                                      // 3. Validation fail warning
+                                      BotToast.showText(
+                                          text:
+                                              "Please select pickup and drop location first");
+                                    }
+                                  }, 14,
+                                      itemLabel: (p) => p.journeyType!,
+                                      allowUnselect: false),
                                   _field('Lead Time',
                                       tab: 15,
                                       controller: controller.minController),
                                 ]),
                                 _grid(isMobile ? 1 : 3, [
-                                    Obx(
+                                  Obx(
                                     () => _field(
-                            'No. of Passengers',
-                            tab: 16,
-                            prefix: Icons.person_outline,
-                            controller: controller.passController,
-                            isError: controller.isPassengerError.value,
-                            onChanged: (val) => controller.validatePassengerLimit(val),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                              LengthLimitingTextInputFormatter(2),
-                            ],
-                          ),
-                    ),
-
+                                      'No. of Passengers',
+                                      tab: 16,
+                                      prefix: Icons.person_outline,
+                                      controller: controller.passController,
+                                      isError: controller.isPassengerError.value,
+                                      onChanged: (val) => controller.validatePassengerLimit(val),
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                        LengthLimitingTextInputFormatter(2),
+                                      ],
+                                    ),
+                                  ),
                                   _field('FARE',
                                       tab: 17,
                                       prefix: Icons.currency_pound,
@@ -730,7 +794,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.selectAccountValue,
                                     controller.dashboardAccountData?.accounts ??
                                         const [],
-                                        (v) {
+                                    (v) {
                                       setState(() {
                                         controller.selectAccountValue = v;
                                         controller.selectDepartmentData = null;
@@ -741,72 +805,64 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   ),
                                 ]),
                                 if (_isReturnJourney)
-                                  _returnJourneySection(isMobile, cols,controller),
+                                  _returnJourneySection(
+                                      isMobile, cols, controller),
                                 const Divider(height: 10),
                                 _sectionHeader(
                                     Icons.directions_car, 'VEHICLE & PAYMENT'),
                                 const SizedBox(height: 4),
                                 _grid(isMobile ? 1 : (isTablet ? 2 : 4), [
                                   _dropdown<PaymentTypeObject>(
-                                    'Pay By',
-                                    controller.selectPaymentTypeValue,
-                                    controller.dashboardAllData!.paymentTypes ??
-                                        const [],
-                                        (v) => setState(() =>
-                                    controller.selectPaymentTypeValue = v),
-                                    _isReturnJourney?34:19,
-                                    itemLabel: (p) => p.name!,
-                                      allowUnselect: false
-                                  ),
+                                      'Pay By',
+                                      controller.selectPaymentTypeValue,
+                                      controller
+                                              .dashboardAllData!.paymentTypes ??
+                                          const [],
+                                      (v) => setState(() => controller
+                                          .selectPaymentTypeValue = v),
+                                      _isReturnJourney ? 34 : 19,
+                                      itemLabel: (p) => p.name!,
+                                      allowUnselect: false),
                                   _dropdown<DashboardVehicleTypeObject>(
                                     'Vehicle Type',
                                     controller.selectVehicleValue,
                                     controller.dashboardAllData!.vehicleTypes!,
-                                        (v) => setState(() {
+                                    (v) => setState(() {
                                       controller.selectVehicleValue = v;
 
                                       // Auto fill passenger count from API
                                       if (v != null && v.passengers != null) {
-                                        controller.passController.text = v.passengers.toString();
+                                        controller.passController.text =
+                                            v.passengers.toString();
                                       }
 
                                       // Auto-fill ke baad validation update karein
-                                      controller.validatePassengerLimit(controller.passController.text);
+                                      controller.validatePassengerLimit(
+                                          controller.passController.text);
                                       controller.getFaresCalculation();
                                     }),
                                     _isReturnJourney ? 35 : 20,
                                     itemLabel: (p) => p.name!,
                                     allowUnselect: false,
                                   ),
-                                  // _dropdown<DashboardVehicleTypeObject>(
-                                  //   'Vehicle Type',
-                                  //   controller.selectVehicleValue,
-                                  //   controller.dashboardAllData!.vehicleTypes!,
-                                  //       (v) => setState(() {
-                                  //     controller.selectVehicleValue = v;
-                                  //     controller.getFaresCalculation();
-                                  //   }),
-                                  //   _isReturnJourney?35:20,
-                                  //   itemLabel: (p) => p.name!,
-                                  //   allowUnselect: false,
-                                  // ),
+
                                   _dropdown<DepartmentObject>(
                                     'Select Department',
                                     controller.selectDepartmentData,
                                     controller.selectAccountValue == null
                                         ? []
                                         : controller
-                                        .selectAccountValue!.departments!,
-                                        (v) => setState(() {
+                                            .selectAccountValue!.departments!,
+                                    (v) => setState(() {
                                       controller.selectDepartmentData = v;
                                       controller.update();
                                     }),
-
-                                    _isReturnJourney?36:21,
+                                    _isReturnJourney ? 36 : 21,
                                     itemLabel: (p) => p.name ?? "",
                                   ),
                                   _quotationToggle(),
                                 ]),
+
                                 ///todo multi reservation
                                 // _grid(cols, [
                                 //   WebDateField('Date',
@@ -886,17 +942,20 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ),
     );
   }
+
   // ────────── RETURN JOURNEY SECTION
   /// Shared cleanup for two-way pickup/drop clear buttons.
   void _clearTwoWayData(DashboardController ctrl, {bool recalcRoute = false}) {
     // Remove two-way polyline markers
     ctrl.polyLineMarkerInfo.removeWhere(
-          (e) => e.markerType == "PICKUP TWO WAY LOCATION" ||
+      (e) =>
+          e.markerType == "PICKUP TWO WAY LOCATION" ||
           e.markerType == "DROP TWO WAY LOCATION",
     );
     // Remove two-way map markers
     ctrl.markers.removeWhere(
-          (m) => m.type == "pickup two way" ||
+      (m) =>
+          m.type == "pickup two way" ||
           m.type == "dropOff two way" ||
           m.type == "via with return",
     );
@@ -921,7 +980,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     ctrl.update();
   }
 
-  Widget _returnJourneySection(bool isMobile, int cols, DashboardController controller) {
+  Widget _returnJourneySection(
+      bool isMobile, int cols, DashboardController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -929,225 +989,225 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         _sectionHeader(Icons.swap_horiz, 'RETURN JOURNEY'),
         const SizedBox(height: 8),
         _locationRow<ZoneObject>(
-          'PICK',
-          _green,
-          controller.pickupTwoWayController,
-          controller.allAddressesData,
-          _controller.RNzoneValue,
-          _controller.updateLocationValue.value == true
-              ? []
-              : _controller.locationtypezoneModel!.zonesList!,
-              (v) => setState(() {
-                controller.dashboardRNZoneValue = v;
-                _controller.RNzoneValue = v;
-              }),
-          isMobile,
-              (value) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              controller.onChangeHandler(
-                  fieldName: "PICKUP TWO WAY LOCATION", searchingText: value);
-            });
-          },
-              (addr) {
-            setState(() => _selectedDrop = addr);
-          },
-          19,
-          zoneLabel: (z) => z.name!,
-          onPickIndex: (index) => controller.tapSelect(index),
-          onPressed: () {
-            FocusScope.of(Get.context!).requestFocus(controller.pickupTwoTextFieldFocusNode);
-
-            final pickupPolylineIndex = controller.polyLineMarkerInfo
-                .indexWhere((e) => e.markerType == "PICKUP TWO WAY LOCATION");
-
-            if (pickupPolylineIndex >= 0) {
-              controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
-            }
-            final pickupMarkerIndex =
-            controller.markers.indexWhere((e) => e.type == "pickup two way");
-            if (pickupMarkerIndex >= 0) {
-              controller.markers.removeAt(pickupMarkerIndex);
-            }
-            controller.pickupTwoWayController.clear();
-            controller.clearReturnViaIfNoPickupAndDrop();
-            controller.selectAirportControllerReturn.clear();
-            controller.arrivalReturnTimeController.clear();
-            controller.isAirportResponseReturn.value = false;
-            // controller.dropOffTwoWayController.clear();
-            controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "PICKUP TWO WAY LOCATION");
-            if (controller.markers is List<CustomMarker>) {
-              controller.markers.removeWhere((marker) => marker.type == "PICKUP TWO WAY LOCATION");
-            }
-            // controller.tempStoreReturnMils = null;
-            // controller.fixedFare.value = "0";
-            // controller.returnFareValue = "";
-            // controller.slugControllerReturn.clear();
-            // // controller.slugController.clear();
-            controller.dropDownShow.value = false;
-            // controller.tempStoreMils = null;
-            controller.fetchRouteFromOSRM();
-            controller.update();
-            // FocusScope.of(Get.context!)
-            //     .requestFocus(controller.pickupTwoTextFieldFocusNode);
-            // _clearTwoWayData(controller);
-          },
-          addressFocusNode: controller.pickupTwoTextFieldFocusNode,
-          onCurrentLocation: () async {
-            controller.swapeToChangeReturnLocation();
+            'PICK',
+            _green,
+            controller.pickupTwoWayController,
+            controller.allAddressesData,
+            _controller.RNzoneValue,
+            _controller.updateLocationValue.value == true
+                ? []
+                : _controller.locationtypezoneModel!.zonesList!,
+            (v) => setState(() {
+                  controller.dashboardRNZoneValue = v;
+                  _controller.RNzoneValue = v;
+                }),
+            isMobile,
+            (value) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                controller.onChangeHandler(
+                    fieldName: "PICKUP TWO WAY LOCATION", searchingText: value);
+              });
             },
-          notesController: controller.returnPickUpNoteController
-        ),
+            (addr) {
+              setState(() => _selectedDrop = addr);
+            },
+            19,
+            zoneLabel: (z) => z.name!,
+            onPickIndex: (index) => controller.tapSelect(index),
+            onPressed: () {
+              FocusScope.of(Get.context!)
+                  .requestFocus(controller.pickupTwoTextFieldFocusNode);
+
+              final pickupPolylineIndex = controller.polyLineMarkerInfo
+                  .indexWhere((e) => e.markerType == "PICKUP TWO WAY LOCATION");
+
+              if (pickupPolylineIndex >= 0) {
+                controller.polyLineMarkerInfo.removeAt(pickupPolylineIndex);
+              }
+              final pickupMarkerIndex = controller.markers
+                  .indexWhere((e) => e.type == "pickup two way");
+              if (pickupMarkerIndex >= 0) {
+                controller.markers.removeAt(pickupMarkerIndex);
+              }
+              controller.pickupTwoWayController.clear();
+              controller.clearReturnViaIfNoPickupAndDrop();
+              controller.selectAirportControllerReturn.clear();
+              controller.arrivalReturnTimeController.clear();
+              controller.isAirportResponseReturn.value = false;
+              // controller.dropOffTwoWayController.clear();
+              controller.polyLineMarkerInfo.removeWhere(
+                  (item) => item.markerType == "PICKUP TWO WAY LOCATION");
+              if (controller.markers is List<CustomMarker>) {
+                controller.markers.removeWhere(
+                    (marker) => marker.type == "PICKUP TWO WAY LOCATION");
+              }
+              // controller.tempStoreReturnMils = null;
+              // controller.fixedFare.value = "0";
+              // controller.returnFareValue = "";
+              // controller.slugControllerReturn.clear();
+              // // controller.slugController.clear();
+              controller.dropDownShow.value = false;
+              // controller.tempStoreMils = null;
+              controller.fetchRouteFromOSRM();
+              controller.update();
+              // FocusScope.of(Get.context!)
+              //     .requestFocus(controller.pickupTwoTextFieldFocusNode);
+              // _clearTwoWayData(controller);
+            },
+            addressFocusNode: controller.pickupTwoTextFieldFocusNode,
+            onCurrentLocation: () async {
+              controller.swapeToChangeReturnLocation();
+            },
+            notesController: controller.returnPickUpNoteController),
         Visibility(
           visible: controller.isAirportResponseReturn.value,
           child: Padding(
             padding: const EdgeInsets.only(top: 4),
             child: isMobile
                 ? Column(
-              crossAxisAlignment:
-              CrossAxisAlignment.stretch,
-              children: [
-                _field('FL',
-                    tab: 22.3,
-                    controller: controller
-                        .selectAirportControllerReturn),
-                const SizedBox(height: 4),
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _field('FL',
+                          tab: 22.3,
+                          controller: controller.selectAirportControllerReturn),
+                      const SizedBox(height: 4),
 
-                _field('ARP',
-                    tab: 22.6,
-                    controller: controller
-                        .arrivalReturnTimeController),
-                // _timeField('ARP',
-                //     tab: 22.6,
-                //     controller: controller
-                //         .arrivalReturnTimeController,
-                //     onPicked: () =>
-                //         controller.arrivalReturnTimePicked = true),
-              ],
-            )
-                :
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(width: _kLabelColumnWidth - 2, child:  Row(mainAxisSize: MainAxisSize.min, children: [
-                  Icon(Icons.circle, size: 9, color: Colors.green),
-                  const SizedBox(width: 6),
-                  Text("FL",
-                      style:
-                      const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsLabel)),
-                ])),
-                const SizedBox(width: 2),
-                Expanded(
-                  flex: 3,
-                  child: _field('FL',
-                      tab: 22.3,
-                      controller: controller
-                          .selectAirportControllerReturn),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 1,
-                  child:
-                  _field('ARP',
-                      tab: 22.6,
-                      controller: controller
-                          .arrivalReturnTimeController),
+                      _field('ARP',
+                          tab: 22.6,
+                          controller: controller.arrivalReturnTimeController),
+                      // _timeField('ARP',
+                      //     tab: 22.6,
+                      //     controller: controller
+                      //         .arrivalReturnTimeController,
+                      //     onPicked: () =>
+                      //         controller.arrivalReturnTimePicked = true),
+                    ],
+                  )
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                          width: _kLabelColumnWidth - 2,
+                          child: Row(mainAxisSize: MainAxisSize.min, children: [
+                            Icon(Icons.circle, size: 9, color: Colors.green),
+                            const SizedBox(width: 6),
+                            Text("FL",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: _fsLabel)),
+                          ])),
+                      const SizedBox(width: 2),
+                      Expanded(
+                        flex: 3,
+                        child: _field('FL',
+                            tab: 22.3,
+                            controller:
+                                controller.selectAirportControllerReturn),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        flex: 1,
+                        child: _field('ARP',
+                            tab: 22.6,
+                            controller: controller.arrivalReturnTimeController),
 
-                  // _timeField('ARP',
-                  //     tab: 22.6,
-                  //     controller: controller
-                  //         .arrivalReturnTimeController,
-                  //     onPicked: () => controller.arrivalTimePicked = true),
-                ),
-              ],
-            ),
+                        // _timeField('ARP',
+                        //     tab: 22.6,
+                        //     controller: controller
+                        //         .arrivalReturnTimeController,
+                        //     onPicked: () => controller.arrivalTimePicked = true),
+                      ),
+                    ],
+                  ),
           ),
         ),
         const SizedBox(height: 4),
         _locationRow<ZoneObject>(
-          'DROP',
-          _red,
-          controller.dropOffTwoWayController,
-          controller.allAddressesData,
-          _controller.RN1zoneValue,
-          _controller.updateLocationValue.value == true
-              ? []
-              : _controller.locationtypezoneModel!.zonesList!,
-              (v) => setState(() {
-                controller.dashboardRN1ZoneValue = v;
-                _controller.RN1zoneValue = v;
-              }),
-          isMobile,
-              (value) {
-            controller.onChangeHandler(
-                fieldName: "DROP TWO WAY LOCATION", searchingText: value);
-          },
-              (addr) {
-            setState(() => _selectedDrop = addr);
-          },
-          23,
-          zoneLabel: (z) => z.name!,
-          onPickIndex: (index) => controller.tapSelect(index),
-          onPressed: () {
-            FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
+            'DROP',
+            _red,
+            controller.dropOffTwoWayController,
+            controller.allAddressesData,
+            _controller.RN1zoneValue,
+            _controller.updateLocationValue.value == true
+                ? []
+                : _controller.locationtypezoneModel!.zonesList!,
+            (v) => setState(() {
+                  controller.dashboardRN1ZoneValue = v;
+                  _controller.RN1zoneValue = v;
+                }),
+            isMobile,
+            (value) {
+              controller.onChangeHandler(
+                  fieldName: "DROP TWO WAY LOCATION", searchingText: value);
+            },
+            (addr) {
+              setState(() => _selectedDrop = addr);
+            },
+            23,
+            zoneLabel: (z) => z.name!,
+            onPickIndex: (index) => controller.tapSelect(index),
+            onPressed: () {
+              FocusScope.of(Get.context!)
+                  .requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
 
-            final dropPolylineIndex = controller.polyLineMarkerInfo
-                .indexWhere((e) => e.markerType == "DROP TWO WAY LOCATION");
+              final dropPolylineIndex = controller.polyLineMarkerInfo
+                  .indexWhere((e) => e.markerType == "DROP TWO WAY LOCATION");
 
-            if (dropPolylineIndex >= 0) {
-              controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
-            }
-            final dropOffMarkerIndex =
-            controller.markers.indexWhere((e) => e.type == "dropOff two way");
+              if (dropPolylineIndex >= 0) {
+                controller.polyLineMarkerInfo.removeAt(dropPolylineIndex);
+              }
+              final dropOffMarkerIndex = controller.markers
+                  .indexWhere((e) => e.type == "dropOff two way");
 
-            if (dropOffMarkerIndex >= 0) {
-              controller.markers.removeAt(dropOffMarkerIndex);
-            }
-            controller.markers.removeWhere((marker) => marker.type == "via with return");
-            // 1. Only Two-Way controllers clear karein
-            controller.dropOffTwoWayController.clear();
-            controller.clearReturnViaIfNoPickupAndDrop();
-            // 3. Fares aur temporaries reset
-            // controller.tempStoreMils = null;
-            // // controller.fixedFare.value = "0";
-            // controller.returnFareValue = "";
-            // controller.tempStoreReturnMils = null;
-            // controller.slugControllerReturn.clear();
-            // // controller.slugController.clear();
-            // // controller.totalDistance.value = "0";
-            // // controller.totalTimeDuration.value = "0";
-            controller.dropDownShow.value = false;
-            //  Route API
-            controller.fetchRouteFromOSRM();
-            controller.update();
-            // FocusScope.of(Get.context!)
-            //     .requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
-            // _clearTwoWayData(controller, recalcRoute: true);
-          },
-          addressFocusNode: controller.dropOffTwoWayTextFieldFocusNode,
-          // The return row's route button opens the same via dialog the
-          // outbound DROP does. R/PICK keeps the swap arrows and
-          // swapeToChangeReturnLocation().
-          onCurrentLocation: () {
-            if (controller.pickupTwoWayController.text.isEmpty) {
-              BotToast.showText(
-                  text: "Please write return pickup and dropoff location");
-              return;
-            }
-            // ViaLocation takes no outbound/return argument — it reads
-            // viaSelectionOneWay, the toggle inside the dialog, to decide
-            // whether a point is added as 'via' or 'via with return'. Opened
-            // off the RETURN row it should land on the return side, so set it
-            // first; the user can still flip it in the dialog.
-            controller.viaSelectionOneWay.value = false;
-            showDialog(
-              context: context,
-              builder: (_) => ViaLocation(),
-            );
-          },
-          actionIcon: LucideIcons.route,
-          actionTooltip: 'Via locations',
-            notesController: controller.returnDropUpNoteController
-        ),
+              if (dropOffMarkerIndex >= 0) {
+                controller.markers.removeAt(dropOffMarkerIndex);
+              }
+              controller.markers
+                  .removeWhere((marker) => marker.type == "via with return");
+              // 1. Only Two-Way controllers clear karein
+              controller.dropOffTwoWayController.clear();
+              controller.clearReturnViaIfNoPickupAndDrop();
+              // 3. Fares aur temporaries reset
+              // controller.tempStoreMils = null;
+              // // controller.fixedFare.value = "0";
+              // controller.returnFareValue = "";
+              // controller.tempStoreReturnMils = null;
+              // controller.slugControllerReturn.clear();
+              // // controller.slugController.clear();
+              // // controller.totalDistance.value = "0";
+              // // controller.totalTimeDuration.value = "0";
+              controller.dropDownShow.value = false;
+              //  Route API
+              controller.fetchRouteFromOSRM();
+              controller.update();
+              // FocusScope.of(Get.context!)
+              //     .requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
+              // _clearTwoWayData(controller, recalcRoute: true);
+            },
+            addressFocusNode: controller.dropOffTwoWayTextFieldFocusNode,
+            // The return row's route button opens the same via dialog the
+            // outbound DROP does. R/PICK keeps the swap arrows and
+            // swapeToChangeReturnLocation().
+            onCurrentLocation: () {
+              if (controller.pickupTwoWayController.text.isEmpty) {
+                BotToast.showText(
+                    text: "Please write return pickup and dropoff location");
+                return;
+              }
+              // ViaLocation takes no outbound/return argument — it reads
+              // viaSelectionOneWay, the toggle inside the dialog, to decide
+              // whether a point is added as 'via' or 'via with return'. Opened
+              // off the RETURN row it should land on the return side, so set it
+              // first; the user can still flip it in the dialog.
+              controller.viaSelectionOneWay.value = false;
+              showDialog(
+                context: context,
+                builder: (_) => ViaLocation(),
+              );
+            },
+            actionIcon: LucideIcons.route,
+            actionTooltip: 'Via locations',
+            notesController: controller.returnDropUpNoteController),
         const SizedBox(height: 8),
         _grid(cols, [
           WebDateField('R/Date',
@@ -1175,121 +1235,119 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         const SizedBox(height: 6),
         isMobile
             ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          _addReturnFareCheckbox(),
-          const SizedBox(height: 8),
-          _dropdown<DashboardVehicleTypeObject>(
-            'Select R/VEH',
-            controller.selectVehicleValueReturn,
-            controller.dashboardAllData!.vehicleTypes!,
-                (v) {
-              print('tap 01');
-              setState(() async{
-
-                print('tap 02');
-                // controller.selectVehicleValueReturn = v;
-                if (v == null) return;
-
-                print('tap 03');
-                controller.selectVehicleValueReturn = v;
-                controller.dropDownShow.value = false;
-                controller.getFaresCalculation();
-
-                // // Jab user khud badlega tab naye wale ki ID direct jayegi
-                // final fare = await getActiveFareForVehicle(
-                //   controller.dashboardAllData!.fareConfigurations!,
-                //   v.id!,
-                // );
-                // print('tap 04');
-                // if (fare != null) {
-                //   print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}');
-                //   controller.getFaresCalculation();
-                //   print('tap 05');
-                //   double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
-                //   controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
-                //   print('tap 06');
-                // } else {
-                //   print('tap 07');
-                //   print('No active fare found for this vehicle');
-                // }
-                print('tap 08');
-                controller.update();
-              }
-              );},
-            32,
-            itemLabel: (p) => p.name!,
-            allowUnselect: false,
-          ),
-          const SizedBox(height: 8),
-          _dropdown<DashboardDriverObject>(
-            'Select R/DRV',
-            controller.selectDriverValueReturn,
-            controller.dashboardAllData!.drivers ?? const [],
-                (v) => setState(() => controller.selectDriverValueReturn = v),
-            33,
-            itemLabel: (p) => p.name ?? '',
-          ),
-        ])
-            : Row(children: [
-          _addReturnFareCheckbox(),
-          const SizedBox(width: 16),
-          Expanded(
-            child: _dropdown<DashboardVehicleTypeObject>(
-              'Select R/VEH',
-              controller.selectVehicleValueReturn,
-              controller.dashboardAllData!.vehicleTypes!,
+                _addReturnFareCheckbox(),
+                const SizedBox(height: 8),
+                _dropdown<DashboardVehicleTypeObject>(
+                  'Select R/VEH',
+                  controller.selectVehicleValueReturn,
+                  controller.dashboardAllData!.vehicleTypes!,
                   (v) {
-                print('tap 01');
-                setState(() async{
+                    print('tap 01');
+                    setState(() async {
+                      print('tap 02');
+                      // controller.selectVehicleValueReturn = v;
+                      if (v == null) return;
 
-                  print('tap 02');
-                  // controller.selectVehicleValueReturn = v;
-                  if (v == null) return;
+                      print('tap 03');
+                      controller.selectVehicleValueReturn = v;
+                      controller.dropDownShow.value = false;
+                      controller.getFaresCalculation();
 
-                  print('tap 03');
-                  controller.selectVehicleValueReturn = v;
-                  controller.getFaresCalculation();
-
-                  controller.dropDownShow.value = false;
-                //
-                //   // Jab user khud badlega tab naye wale ki ID direct jayegi
-                //   final fare = await getActiveFareForVehicle(
-                //     controller.dashboardAllData!.fareConfigurations!,
-                //     v.id!,
-                //   );
-                //   print('tap 04');
-                //   if (fare != null) {
-                //     print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}');
-                //     controller.getFaresCalculation();
-                //     print('tap 05');
-                //     double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
-                //     controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
-                //     print('tap 06');
-                //   } else {
-                //     print('tap 07');
-                //     print('No active fare found for this vehicle');
-                //   }
-                //   print('tap 08');
-                //   controller.update();
-                }
-                );
-                },
-              32,
-              itemLabel: (p) => p.name!,
-              allowUnselect: false,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _dropdown<DashboardDriverObject>(
-              'Select R/DRV',
-              controller.selectDriverValueReturn,
-              controller.dashboardAllData!.drivers ?? const [],
+                      // // Jab user khud badlega tab naye wale ki ID direct jayegi
+                      // final fare = await getActiveFareForVehicle(
+                      //   controller.dashboardAllData!.fareConfigurations!,
+                      //   v.id!,
+                      // );
+                      // print('tap 04');
+                      // if (fare != null) {
+                      //   print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}');
+                      //   controller.getFaresCalculation();
+                      //   print('tap 05');
+                      //   double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+                      //   controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+                      //   print('tap 06');
+                      // } else {
+                      //   print('tap 07');
+                      //   print('No active fare found for this vehicle');
+                      // }
+                      print('tap 08');
+                      controller.update();
+                    });
+                  },
+                  32,
+                  itemLabel: (p) => p.name!,
+                  allowUnselect: false,
+                ),
+                const SizedBox(height: 8),
+                _dropdown<DashboardDriverObject>(
+                  'Select R/DRV',
+                  controller.selectDriverValueReturn,
+                  controller.dashboardAllData!.drivers ?? const [],
                   (v) => setState(() => controller.selectDriverValueReturn = v),
-              33,
-              itemLabel: (p) => p.name ?? '',
-            ),
-          ),
-        ]),
+                  33,
+                  itemLabel: (p) => p.name ?? '',
+                ),
+              ])
+            : Row(children: [
+                _addReturnFareCheckbox(),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _dropdown<DashboardVehicleTypeObject>(
+                    'Select R/VEH',
+                    controller.selectVehicleValueReturn,
+                    controller.dashboardAllData!.vehicleTypes!,
+                    (v) {
+                      print('tap 01');
+                      setState(() async {
+                        print('tap 02');
+                        // controller.selectVehicleValueReturn = v;
+                        if (v == null) return;
+
+                        print('tap 03');
+                        controller.selectVehicleValueReturn = v;
+                        controller.getFaresCalculation();
+
+                        controller.dropDownShow.value = false;
+                        //
+                        //   // Jab user khud badlega tab naye wale ki ID direct jayegi
+                        //   final fare = await getActiveFareForVehicle(
+                        //     controller.dashboardAllData!.fareConfigurations!,
+                        //     v.id!,
+                        //   );
+                        //   print('tap 04');
+                        //   if (fare != null) {
+                        //     print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}');
+                        //     controller.getFaresCalculation();
+                        //     print('tap 05');
+                        //     double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+                        //     controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+                        //     print('tap 06');
+                        //   } else {
+                        //     print('tap 07');
+                        //     print('No active fare found for this vehicle');
+                        //   }
+                        //   print('tap 08');
+                        //   controller.update();
+                      });
+                    },
+                    32,
+                    itemLabel: (p) => p.name!,
+                    allowUnselect: false,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _dropdown<DashboardDriverObject>(
+                    'Select R/DRV',
+                    controller.selectDriverValueReturn,
+                    controller.dashboardAllData!.drivers ?? const [],
+                    (v) =>
+                        setState(() => controller.selectDriverValueReturn = v),
+                    33,
+                    itemLabel: (p) => p.name ?? '',
+                  ),
+                ),
+              ]),
       ],
     );
   }
@@ -1303,15 +1361,15 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           child: GlowFocus(
             radius: 4,
             child: SizedBox(
-            width: 20,
-            height: 20,
-            child: Checkbox(
-              value: controller.addReturnFare.value,
-              onChanged: (v) =>
-                  setState(() => controller.addReturnFare.value = v ?? false),
-              activeColor: _purple,
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
+              width: 20,
+              height: 20,
+              child: Checkbox(
+                value: controller.addReturnFare.value,
+                onChanged: (v) =>
+                    setState(() => controller.addReturnFare.value = v ?? false),
+                activeColor: _purple,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
             ),
           ),
         ),
@@ -1326,7 +1384,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     // (order 1). Without an explicit order OrderedTraversalPolicy pushes these
     // InkWells behind every numbered field, i.e. to the end of the form.
     Widget tab(String label,
-        {required double order, bool active = false, VoidCallback? onTap}) =>
+            {required double order,
+            bool active = false,
+            VoidCallback? onTap}) =>
         Padding(
           padding: const EdgeInsets.only(right: 6),
           child: Material(
@@ -1334,29 +1394,29 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             child: FocusTraversalOrder(
               order: NumericFocusOrder(order),
               child: GlowFocus(
-              radius: 8,
-              child: InkWell(
-              onTap: onTap,
-              borderRadius: BorderRadius.circular(8),
-              mouseCursor: SystemMouseCursors.click,
-              child: Container(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                decoration: BoxDecoration(
-                  color: active ? _purple : Colors.white,
-                  border: Border.all(color: active ? _purple : _border),
+                radius: 8,
+                child: InkWell(
+                  onTap: onTap,
                   borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    color: active ? Colors.white : Colors.black87,
-                    fontWeight: FontWeight.w600,
-                    fontSize: _fsTab,
+                  mouseCursor: SystemMouseCursors.click,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: active ? _purple : Colors.white,
+                      border: Border.all(color: active ? _purple : _border),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        color: active ? Colors.white : Colors.black87,
+                        fontWeight: FontWeight.w600,
+                        fontSize: _fsTab,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-              ),
               ),
             ),
           ),
@@ -1386,13 +1446,16 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                       DashboardF9Alert.show();
                     }
                   }),
-                  tab('Via (${controller.viaPoints.length})', order: 0.4, onTap: () {
+                  tab('Via (${controller.viaPoints.length})', order: 0.4,
+                      onTap: () {
                     if (controller.pickupController.text.isNotEmpty
-                    // &&    controller.dropOffController.text.isNotEmpty
-                    ) {
-                      showDialog(context: context, builder: (_) => ViaLocation());
-                    }else{
-                      BotToast.showText(text: "Please write pickup and dropoff location");
+                        // &&    controller.dropOffController.text.isNotEmpty
+                        ) {
+                      showDialog(
+                          context: context, builder: (_) => ViaLocation());
+                    } else {
+                      BotToast.showText(
+                          text: "Please write pickup and dropoff location");
                     }
                   }),
                   const Padding(
@@ -1410,20 +1473,16 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   SizedBox(
                     width: 220,
                     child: _dropdown<DashboardSubsidiaryObject>(
-                      null,
-                      controller.selectSubsidiariesValue,
-                      controller.dashboardAllData?.subsidiaries ?? const [],
-                          (v) {
-                        if (v == null) return;
-                        setState(() {
-                          controller.selectSubsidiariesValue = v;
-                          controller.getAccountData(subsidiariesId: v.id);
-                        });
-                      },
-                      1,
-                      itemLabel: (p) => p.name ?? '',
-                        allowUnselect: false
-                    ),
+                        null,
+                        controller.selectSubsidiariesValue,
+                        controller.dashboardAllData?.subsidiaries ?? const [],
+                        (v) {
+                      if (v == null) return;
+                      setState(() {
+                        controller.selectSubsidiariesValue = v;
+                        controller.getAccountData(subsidiariesId: v.id);
+                      });
+                    }, 1, itemLabel: (p) => p.name ?? '', allowUnselect: false),
                   ),
                 ]),
           ),
@@ -1435,36 +1494,36 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
 
 // ────────── location row
   Widget _locationRow<T>(
-      String label,
-      Color dot,
-      TextEditingController controller,
-      List<AllAddressesModel> addresses,
-      T? zone,
-      List<T> zoneItems,
-      ValueChanged<T?> onZone,
-      bool isMobile,
-      ValueChanged<String>? onChanged,
-      ValueChanged<AllAddressesModel>? onAddressSelected,
-      int tabBase, {
-        String Function(T)? zoneLabel,
-        VoidCallback? onCurrentLocation,
-        ValueChanged<int>? onPickIndex,
-        TextEditingController? notesController, // ← notes field controller
-        VoidCallback? onPressed,
-        FocusNode? addressFocusNode, // ← lets F2 focus the PICKUP field
-        // The glyph on the button at the end of the field. PICK carries the
-        // swap arrows; DROP carries LucideIcons.route — the two pins joined by
-        // a winding path. Both still run [onCurrentLocation], so each row picks
-        // its glyph and its handler together at the call site.
-        IconData actionIcon = LucideIcons.arrowDownUp,
-        String actionTooltip = 'Use current location',
-      }) {
+    String label,
+    Color dot,
+    TextEditingController controller,
+    List<AllAddressesModel> addresses,
+    T? zone,
+    List<T> zoneItems,
+    ValueChanged<T?> onZone,
+    bool isMobile,
+    ValueChanged<String>? onChanged,
+    ValueChanged<AllAddressesModel>? onAddressSelected,
+    int tabBase, {
+    String Function(T)? zoneLabel,
+    VoidCallback? onCurrentLocation,
+    ValueChanged<int>? onPickIndex,
+    TextEditingController? notesController, // ← notes field controller
+    VoidCallback? onPressed,
+    FocusNode? addressFocusNode, // ← lets F2 focus the PICKUP field
+    // The glyph on the button at the end of the field. PICK carries the
+    // swap arrows; DROP carries LucideIcons.route — the two pins joined by
+    // a winding path. Both still run [onCurrentLocation], so each row picks
+    // its glyph and its handler together at the call site.
+    IconData actionIcon = LucideIcons.arrowDownUp,
+    String actionTooltip = 'Use current location',
+  }) {
     final tag = Row(mainAxisSize: MainAxisSize.min, children: [
       Icon(Icons.circle, size: 9, color: dot),
       const SizedBox(width: 6),
       Text(label,
           style:
-          const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsLabel)),
+              const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsLabel)),
     ]);
     final address = FocusTraversalOrder(
       order: NumericFocusOrder((tabBase + 1).toDouble()),
@@ -1486,9 +1545,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         fallbackFocusNode: _shortcutFocusNode,
         decoration: _inputDecoration().copyWith(
           contentPadding:
-          const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+              const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
           suffixIconConstraints:
-          const BoxConstraints(minWidth: 60, minHeight: 32),
+              const BoxConstraints(minWidth: 60, minHeight: 32),
           suffixIcon: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
@@ -1499,21 +1558,21 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               // between the address field and the zone dropdown (tabBase + 2).
               controller.text.isNotEmpty
                   ? FocusTraversalOrder(
-                order: NumericFocusOrder(tabBase + 1.3),
-                child: GlowFocus(
-                  radius: 14,
-                  child: IconButton(
-                    tooltip: 'Clear',
-                    onPressed: onPressed,
-                    icon:
-                    const Icon(Icons.close, size: 16, color: Colors.grey),
-                    padding: EdgeInsets.zero,
-                    constraints:
-                    const BoxConstraints(minWidth: 28, minHeight: 28),
-                    splashRadius: 16,
-                  ),
-                ),
-              )
+                      order: NumericFocusOrder(tabBase + 1.3),
+                      child: GlowFocus(
+                        radius: 14,
+                        child: IconButton(
+                          tooltip: 'Clear',
+                          onPressed: onPressed,
+                          icon: const Icon(Icons.close,
+                              size: 16, color: Colors.grey),
+                          padding: EdgeInsets.zero,
+                          constraints:
+                              const BoxConstraints(minWidth: 28, minHeight: 28),
+                          splashRadius: 16,
+                        ),
+                      ),
+                    )
                   : const SizedBox.shrink(),
               FocusTraversalOrder(
                 order: NumericFocusOrder(tabBase + 1.6),
@@ -1522,10 +1581,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   child: IconButton(
                     tooltip: actionTooltip,
                     onPressed: onCurrentLocation,
-                    icon:
-                    Icon(actionIcon, size: 16, color: Colors.grey),
+                    icon: Icon(actionIcon, size: 16, color: Colors.grey),
                     padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                    constraints:
+                        const BoxConstraints(minWidth: 28, minHeight: 28),
                     splashRadius: 16,
                   ),
                 ),
@@ -1597,9 +1656,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ],
     );
   }
+
   // ────────── comms + luggage (PASS=22, LUGG=23, SLUGG=24)
   Widget _commsAndLuggageRow(bool isMobile) {
-    Widget checkbox(String label, bool value, ValueChanged<bool?> onChanged, {required num tab}) =>
+    Widget checkbox(String label, bool value, ValueChanged<bool?> onChanged,
+            {required num tab}) =>
         FocusTraversalOrder(
           order: NumericFocusOrder(tab.toDouble()),
           child: GlowFocus(
@@ -1622,11 +1683,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           ),
         );
     Widget luggageField(String label, IconData icon,
-        TextEditingController controller, int tab) =>
+            TextEditingController controller, int tab) =>
         SizedBox(
           width: 150,
           child:
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             // Text(label,
             //     style:
             //     const TextStyle(fontSize: _fsLabel, color: Colors.black)),
@@ -1638,7 +1699,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   controller: controller,
                   style: _kValueTextStyle,
                   keyboardType:
-                  const TextInputType.numberWithOptions(decimal: false),
+                      const TextInputType.numberWithOptions(decimal: false),
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
                     LengthLimitingTextInputFormatter(2),
@@ -1646,7 +1707,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   decoration: _inputDecoration().copyWith(
                     label: Text(label, style: _kLabelTextStyle),
                     prefixIconConstraints:
-                    const BoxConstraints(minWidth: 26, minHeight: 0),
+                        const BoxConstraints(minWidth: 26, minHeight: 0),
                     prefixIcon: Padding(
                       padding: const EdgeInsets.only(left: 6, right: 2),
                       child: Icon(icon, size: 13, color: Colors.grey),
@@ -1658,7 +1719,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           ]),
         );
 
-    Widget iconBtn(IconData icon, {VoidCallback? onPressed, required int tab}) =>
+    Widget iconBtn(IconData icon,
+            {VoidCallback? onPressed, required int tab}) =>
         FocusTraversalOrder(
           order: NumericFocusOrder(tab.toDouble()),
           child: GlowFocus(
@@ -1693,8 +1755,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                       size: 17,
                       color: Colors.black,
                     ),
-                  )
-              ),
+                  )),
             ),
           ),
         );
@@ -1708,25 +1769,39 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         // row above — a duplicate order leaves the relative position of the
         // colliding pair up to a geometry tie-break instead of to us.
         checkbox('SMS', controller.smsCheckbox.value,
-                (v) => setState(() => controller.smsCheckbox.value = v ?? false), tab: _isReturnJourney ? 36.2 : 21.2),
+            (v) => setState(() => controller.smsCheckbox.value = v ?? false),
+            tab: _isReturnJourney ? 36.2 : 21.2),
         checkbox('EMAIL', controller.emailCheckbox.value,
-                (v) => setState(() => controller.emailCheckbox.value = v ?? false), tab: _isReturnJourney ? 36.4 : 21.4),
+            (v) => setState(() => controller.emailCheckbox.value = v ?? false),
+            tab: _isReturnJourney ? 36.4 : 21.4),
         // luggageField('Passenger'.toUpperCase(), Icons.work, controller.passController, _isReturnJourney?37:22,),
-        luggageField('luggage'.toUpperCase(), Icons.luggage, controller.luggController,  _isReturnJourney?37:22,),
-        luggageField('small luggage'.toUpperCase(), Icons.luggage, controller.sluggController,  _isReturnJourney?38:23,),
+        luggageField(
+          'luggage'.toUpperCase(),
+          Icons.luggage,
+          controller.luggController,
+          _isReturnJourney ? 37 : 22,
+        ),
+        luggageField(
+          'small luggage'.toUpperCase(),
+          Icons.luggage,
+          controller.sluggController,
+          _isReturnJourney ? 38 : 23,
+        ),
       ],
     );
     final right = Row(mainAxisSize: MainAxisSize.min, children: [
       // iconBtn(Icons.person, tab: _isReturnJourney ? 39 : 24, onPressed: () {
       //   showDialog(context: context, builder: (_) => RestrictDriversAlert());
       // }),
-      iconBtn(Icons.settings_suggest, tab: _isReturnJourney ? 39 : 24, onPressed: () {
+      iconBtn(Icons.settings_suggest, tab: _isReturnJourney ? 39 : 24,
+          onPressed: () {
         showDialog(
           context: context,
           builder: (_) => SettingsDialog(),
         );
       }),
-      iconBtn(Icons.attach_money, tab: _isReturnJourney ? 40 : 25, onPressed: () {
+      iconBtn(Icons.attach_money, tab: _isReturnJourney ? 40 : 25,
+          onPressed: () {
         showDialog(
           context: context,
           builder: (_) => ChildSeatsAlert(),
@@ -1739,7 +1814,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       //     builder: (_) => ExtraFaresAlert(),
       //   );
       // }),
-      iconBtn(Icons.sticky_note_2, tab: _isReturnJourney ? 41 : 26, onPressed: () {
+      iconBtn(Icons.sticky_note_2, tab: _isReturnJourney ? 41 : 26,
+          onPressed: () {
         showDialog(
           context: context,
           builder: (_) => ExtraInfoAlert(),
@@ -1755,6 +1831,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     }
     return Row(children: [Expanded(child: left), right]);
   }
+
   // ────────── status cards
   Widget _statusCards(bool isMobile) {
     Widget card({
@@ -1795,6 +1872,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         ]),
       );
     }
+
     final cards = [
       card(
           icon: Icons.schedule,
@@ -1809,7 +1887,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           icon: Icons.payments_outlined,
           label: 'FARE',
           value:
-          '£ ${double.parse(controller.fixedFare.value).toStringAsFixed(1)}',
+              '£ ${double.parse(controller.fixedFare.value).toStringAsFixed(1)}',
           emphasized: true),
     ];
     if (isMobile) {
@@ -1829,13 +1907,14 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ],
     ]);
   }
+
   // ────────── driver row (Driver dd → tab 25)
   Widget _driverRow(bool isMobile) {
     final dd = _dropdown<DashboardDriverObject>(
       null,
       controller.selectDriverValue,
       controller.dashboardAllData!.drivers ?? const [],
-          (v) => setState(() => controller.selectDriverValue = v),
+      (v) => setState(() => controller.selectDriverValue = v),
       _isReturnJourney ? 43 : 28,
       itemLabel: (p) => p.name ?? '',
       hint: 'Select Driver',
@@ -1851,9 +1930,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             backgroundColor: _red,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-            textStyle:
-            const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsField),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+            textStyle: const TextStyle(
+                fontWeight: FontWeight.w700, fontSize: _fsField),
           ),
           child: Text('CLEAR [F7]'.toUpperCase()),
         ),
@@ -1900,8 +1980,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   id: controller.jobDetails == null
                       ? null
                       : controller.cliJobHit == true
-                      ? null
-                      : int.parse(controller.jobDetails!.id!));
+                          ? null
+                          : int.parse(controller.jobDetails!.id!));
             },
             icon: const Icon(Icons.home_outlined, size: 16),
             label: const Text('SAVE [HOME]'),
@@ -1909,9 +1989,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               backgroundColor: _purple,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-              textStyle:
-              const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsField),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6)),
+              textStyle: const TextStyle(
+                  fontWeight: FontWeight.w700, fontSize: _fsField),
             ),
           ),
         ),
@@ -1944,17 +2025,19 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       home,
     ]);
   }
+
   // ────────── shared primitives
   Widget _sectionHeader(IconData icon, String title) => Row(children: [
-    Icon(icon, size: 16, color: _purple),
-    const SizedBox(width: 6),
-    Text(title.toUpperCase(),
-        style: const TextStyle(
-            fontFamily: _kChromeFontFamily,
-            color: _purple,
-            fontWeight: FontWeight.w700,
-            fontSize: _fsSection)),
-  ]);
+        Icon(icon, size: 16, color: _purple),
+        const SizedBox(width: 6),
+        Text(title.toUpperCase(),
+            style: const TextStyle(
+                fontFamily: _kChromeFontFamily,
+                color: _purple,
+                fontWeight: FontWeight.w700,
+                fontSize: _fsSection)),
+      ]);
+
   Widget _grid(int cols, List<Widget> children) {
     final rows = <Widget>[];
     for (var i = 0; i < children.length; i += cols) {
@@ -1975,15 +2058,16 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     }
     return Column(children: rows);
   }
+
   Widget _customerAutocompleteField(
-      String label, {
-        required int tab,
-        required TextEditingController controller,
-        required List<CustomerObject> customers,
-        required ValueChanged<CustomerObject> onPicked,
-        ValueChanged<String>? onChanged,
-        IconData? prefix,
-      }) {
+    String label, {
+    required int tab,
+    required TextEditingController controller,
+    required List<CustomerObject> customers,
+    required ValueChanged<CustomerObject> onPicked,
+    ValueChanged<String>? onChanged,
+    IconData? prefix,
+  }) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       // Text(label.toUpperCase(),
       //     style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
@@ -1996,15 +2080,17 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           onSelected: onPicked,
           onChanged: onChanged,
           decoration: _inputDecoration().copyWith(
-            label: Text(label.toUpperCase(),),
+            label: Text(
+              label.toUpperCase(),
+            ),
             labelStyle: _kLabelTextStyle,
             prefixIconConstraints:
-            const BoxConstraints(minWidth: 28, minHeight: 0),
+                const BoxConstraints(minWidth: 28, minHeight: 0),
             prefixIcon: prefix != null
                 ? Padding(
-              padding: const EdgeInsets.only(left: 8, right: 4),
-              child: Icon(prefix, size: 15, color: Colors.grey),
-            )
+                    padding: const EdgeInsets.only(left: 8, right: 4),
+                    child: Icon(prefix, size: 15, color: Colors.grey),
+                  )
                 : null,
           ),
         ),
@@ -2016,8 +2102,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   /// the controller can tell a chosen time apart from the pre-filled "now".
   Widget _timeField(String label,
       {required num tab,
-        required TextEditingController controller,
-        VoidCallback? onPicked}) {
+      required TextEditingController controller,
+      VoidCallback? onPicked}) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       // Text(label.toUpperCase(),
       //     style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
@@ -2037,15 +2123,17 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ),
     ]);
   }
-  Widget _field(String label,
-      {required num tab,
-        IconData? prefix,
-        VoidCallback? onPrefixTap,
-        TextEditingController? controller,
-        List<TextInputFormatter>? inputFormatters,
-        bool isError = false,                  // New parameter
-        ValueChanged<String>? onChanged,          // New parameter
-      }) {
+
+  Widget _field(
+    String label, {
+    required num tab,
+    IconData? prefix,
+    VoidCallback? onPrefixTap,
+    TextEditingController? controller,
+    List<TextInputFormatter>? inputFormatters,
+    bool isError = false, // New parameter
+    ValueChanged<String>? onChanged, // New parameter
+  }) {
     Widget? prefixWidget;
     if (prefix != null) {
       final iconPadding = Padding(
@@ -2054,10 +2142,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       );
       prefixWidget = onPrefixTap != null
           ? InkWell(
-        onTap: onPrefixTap,
-        borderRadius: BorderRadius.circular(4),
-        child: iconPadding,
-      )
+              onTap: onPrefixTap,
+              borderRadius: BorderRadius.circular(4),
+              child: iconPadding,
+            )
           : iconPadding;
     }
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -2069,7 +2157,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         child: GlowFocus(
           child: TextField(
             controller: controller,
-            onChanged: onChanged, // Listener added
+            onChanged: onChanged,
+            // Listener added
             textCapitalization: TextCapitalization.characters,
             inputFormatters: inputFormatters ??
                 [
@@ -2079,17 +2168,21 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => onPrefixTap?.call(),
             decoration: _inputDecoration().copyWith(
-              label: Text(label.toUpperCase(),),
+              label: Text(
+                label.toUpperCase(),
+              ),
               labelStyle: _kLabelTextStyle,
               prefixIconConstraints:
-              const BoxConstraints(minWidth: 28, minHeight: 0),
+                  const BoxConstraints(minWidth: 28, minHeight: 0),
               prefixIcon: prefixWidget,
               // Border handling for Red error indicator
               enabledBorder: isError
-                  ? const OutlineInputBorder(borderSide: BorderSide(color: Colors.red, width: 2.0))
+                  ? const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red, width: 2.0))
                   : null,
               focusedBorder: isError
-                  ? const OutlineInputBorder(borderSide: BorderSide(color: Colors.red, width: 2.0))
+                  ? const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red, width: 2.0))
                   : null,
             ),
           ),
@@ -2097,17 +2190,18 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ),
     ]);
   }
+
   Widget _dropdown<T>(
-      String? label,
-      T? value,
-      List<T> items,
-      ValueChanged<T?> onChanged,
-      int tab, {
-        String Function(T item)? itemLabel,
-        String? hint,
-        bool isExpanded = true,
-        bool allowUnselect = true,
-      }) {
+    String? label,
+    T? value,
+    List<T> items,
+    ValueChanged<T?> onChanged,
+    int tab, {
+    String Function(T item)? itemLabel,
+    String? hint,
+    bool isExpanded = true,
+    bool allowUnselect = true,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -2133,6 +2227,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ],
     );
   }
+
   Widget _quotationToggle() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       // const SizedBox(height: 16),
@@ -2154,10 +2249,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               child: GlowFocus(
                 radius: 20,
                 child: Obx(() => Switch(
-                  value: controller.dropDownShow.value,
-                  onChanged: (v) => controller.dropDownShow.value = v,
-                  activeColor: _purple,
-                )),
+                      value: controller.dropDownShow.value,
+                      onChanged: (v) => controller.dropDownShow.value = v,
+                      activeColor: _purple,
+                    )),
               ),
             ),
           ),
@@ -2168,8 +2263,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ]),
     ]);
   }
+
   InputDecoration _inputDecoration() => _kFieldDecoration();
 }
+
 // ════════════════════════════════════════════════════════════════════
 // Focus-aware dropdown with unselect support (matches f3_alert.dart pattern)
 // ════════════════════════════════════════════════════════════════════
@@ -2208,8 +2305,7 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
     super.dispose();
   }
 
-  String _labelOf(T item) =>
-      widget.itemLabel?.call(item) ?? item.toString();
+  String _labelOf(T item) => widget.itemLabel?.call(item) ?? item.toString();
 
   @override
   Widget build(BuildContext context) {
@@ -2267,18 +2363,18 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
               selectedItemBuilder: (context) => [
                 if (widget.allowUnselect) const SizedBox.shrink(),
                 ...widget.items.map((e) => Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      _labelOf(e).toUpperCase(),
-                      maxLines: 1,
-                      softWrap: false,
-                      style: _kValueTextStyle,
-                    ),
-                  ),
-                )),
+                      alignment: AlignmentDirectional.centerStart,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          _labelOf(e).toUpperCase(),
+                          maxLines: 1,
+                          softWrap: false,
+                          style: _kValueTextStyle,
+                        ),
+                      ),
+                    )),
               ],
               items: [
                 // Placeholder item: allows the user to unselect / reset. It
@@ -2303,18 +2399,18 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
                   ),
                 // Actual items
                 ...widget.items.map((e) => DropdownMenuItem<T?>(
-                  value: e,
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      _labelOf(e).toUpperCase(),
-                      maxLines: 1,
-                      softWrap: false,
-                      style: const TextStyle(fontSize: _fsField),
-                    ),
-                  ),
-                )),
+                      value: e,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          _labelOf(e).toUpperCase(),
+                          maxLines: 1,
+                          softWrap: false,
+                          style: const TextStyle(fontSize: _fsField),
+                        ),
+                      ),
+                    )),
               ],
               onChanged: (T? newValue) {
                 widget.onChanged(newValue);
@@ -2326,6 +2422,7 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
     );
   }
 }
+
 // ════════════════════════════════════════════════════════════════════
 // Autocomplete: backed by AllAddressesModel (name + postcode + lat/lon)
 // ════════════════════════════════════════════════════════════════════
@@ -2340,15 +2437,18 @@ class _AddressModelAutocomplete extends StatefulWidget {
     this.focusNode,
     this.fallbackFocusNode,
   });
+
   final TextEditingController controller;
   final List<AllAddressesModel> items;
   final InputDecoration decoration;
   final ValueChanged<String>? onChanged;
   final ValueChanged<AllAddressesModel>? onSelected;
   final ValueChanged<int>? onPickIndex;
+
   /// Supplied by the parent when it needs to focus this field from the outside
   /// (F2 → PICKUP). Null means the field owns — and disposes — its own node.
   final FocusNode? focusNode;
+
   // Focus is redirected here instead of being dropped, so the CallbackShortcuts
   // (F7/F8/F9) ancestor stays in the focused chain after a pick / tap-outside.
   final FocusNode? fallbackFocusNode;
@@ -2357,6 +2457,7 @@ class _AddressModelAutocomplete extends StatefulWidget {
   State<_AddressModelAutocomplete> createState() =>
       _AddressModelAutocompleteState();
 }
+
 class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
   final _layerLink = LayerLink();
   late final FocusNode _focusNode = widget.focusNode ?? FocusNode();
@@ -2376,6 +2477,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
   /// runs on every GetBuilder rebuild of the form, not just on new results.
   bool _refilterScheduled = false;
   late final ScrollController _scrollController;
+
   static String _display(AllAddressesModel a) {
     final n = a.name ?? '';
     final p = a.postcode ?? '';
@@ -2383,6 +2485,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     if (p.isEmpty) return n;
     return '$n, $p';
   }
+
   @override
   void initState() {
     super.initState();
@@ -2390,6 +2493,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     _focusNode.addListener(_onFocus);
     widget.controller.addListener(_onText);
   }
+
   @override
   void didUpdateWidget(covariant _AddressModelAutocomplete oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -2411,6 +2515,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
       _filter(widget.controller.text, preserveHighlight: true);
     });
   }
+
   @override
   void dispose() {
     _hide();
@@ -2421,9 +2526,11 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     _scrollController.dispose();
     super.dispose();
   }
+
   void _onFocus() {
     if (!_focusNode.hasFocus) _hide();
   }
+
   void _onText() {
     if (_picking || !_focusNode.hasFocus) return;
     final text = widget.controller.text.trim();
@@ -2436,12 +2543,13 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     _filter(widget.controller.text);
     _show();
   }
+
   void _filter(String q, {bool preserveHighlight = false}) {
     final query = q.trim().toLowerCase();
     // Remember the currently highlighted item so a list refresh can keep it.
     final AllAddressesModel? current = (preserveHighlight &&
-        _highlighted >= 0 &&
-        _highlighted < _filtered.length)
+            _highlighted >= 0 &&
+            _highlighted < _filtered.length)
         ? _filtered[_highlighted]
         : null;
 
@@ -2453,10 +2561,10 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
       // them, so the panel said "No data" over a perfectly good response.
       _filtered = widget.items
           .where((a) => addressMatchesQuery(
-        name: a.name,
-        postcode: a.postcode,
-        query: query,
-      ))
+                name: a.name,
+                postcode: a.postcode,
+                query: query,
+              ))
           .toList();
     }
 
@@ -2465,21 +2573,24 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     } else if (preserveHighlight) {
       final idx = current == null ? -1 : _filtered.indexOf(current);
       _highlighted =
-      idx >= 0 ? idx : _highlighted.clamp(0, _filtered.length - 1);
+          idx >= 0 ? idx : _highlighted.clamp(0, _filtered.length - 1);
     } else {
       _highlighted = 0;
     }
     _entry?.markNeedsBuild();
   }
+
   void _show() {
     if (_entry != null) return;
     _entry = OverlayEntry(builder: _buildPanel);
     Overlay.of(context).insert(_entry!);
   }
+
   void _hide() {
     _entry?.remove();
     _entry = null;
   }
+
   void _pick(AllAddressesModel a) {
     final text = _display(a);
     _userTyped = false;
@@ -2503,6 +2614,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     _hide();
     if (!_focusNode.hasFocus) _focusNode.requestFocus();
   }
+
   void _moveHighlight(int delta) {
     if (_filtered.isEmpty) return;
     final next = (_highlighted + delta).clamp(0, _filtered.length - 1);
@@ -2511,6 +2623,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     _entry?.markNeedsBuild();
     _scrollHighlightedIntoView();
   }
+
   void _scrollHighlightedIntoView() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -2530,6 +2643,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
       }
     });
   }
+
   KeyEventResult _handleKey(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
       return KeyEventResult.ignored;
@@ -2567,6 +2681,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     }
     return KeyEventResult.ignored;
   }
+
   Widget _buildPanel(BuildContext context) =>
       _withFormFont(context, _buildPanelContent(context));
 
@@ -2600,67 +2715,68 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
               ),
               child: _filtered.isEmpty
                   ? const Padding(
-                padding: EdgeInsets.all(12),
-                child: Text('No data',
-                    style: TextStyle(color: Colors.black, fontSize: 12)),
-              )
+                      padding: EdgeInsets.all(12),
+                      child: Text('No data',
+                          style: TextStyle(color: Colors.black, fontSize: 12)),
+                    )
                   : ListView.builder(
-                controller: _scrollController,
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                itemCount: _filtered.length,
-                itemBuilder: (_, i) {
-                  final a = _filtered[i];
-                  final active = _highlighted == i;
-                  return MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    onEnter: (_) {
-                      if (_highlighted == i) return;
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (!mounted) return;
-                        _highlighted = i;
-                        _entry?.markNeedsBuild();
-                      });
-                    },
-                    child: InkWell(
-                      canRequestFocus: false,
-                      onTap: () => _pick(a),
-                      child: Container(
-                        width: double.infinity,
-                        height: 48,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        color: active
-                            ? const Color(0xFFEEF2FF)
-                            : Colors.white,
-                        alignment: Alignment.centerLeft,
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            "${a.name} ${a.postcode}",
-                            maxLines: 1,
-                            softWrap: false,
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: active
-                                  ? FontWeight.w600
-                                  : FontWeight.w500,
-                              color: Colors.black87,
+                      controller: _scrollController,
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      itemCount: _filtered.length,
+                      itemBuilder: (_, i) {
+                        final a = _filtered[i];
+                        final active = _highlighted == i;
+                        return MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          onEnter: (_) {
+                            if (_highlighted == i) return;
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (!mounted) return;
+                              _highlighted = i;
+                              _entry?.markNeedsBuild();
+                            });
+                          },
+                          child: InkWell(
+                            canRequestFocus: false,
+                            onTap: () => _pick(a),
+                            child: Container(
+                              width: double.infinity,
+                              height: 48,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              color: active
+                                  ? const Color(0xFFEEF2FF)
+                                  : Colors.white,
+                              alignment: Alignment.centerLeft,
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  "${a.name} ${a.postcode}",
+                                  maxLines: 1,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: active
+                                        ? FontWeight.w600
+                                        : FontWeight.w500,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ),
         ),
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
@@ -2694,6 +2810,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     );
   }
 }
+
 // ════════════════════════════════════════════════════════════════════
 // String-based autocomplete (kept for Mobile field)
 // ════════════════════════════════════════════════════════════════════
@@ -2707,9 +2824,11 @@ class _StringAutocomplete extends StatefulWidget {
   final List<String> suggestions;
   final InputDecoration decoration;
   final ValueChanged<String>? onChanged;
+
   @override
   State<_StringAutocomplete> createState() => _StringAutocompleteState();
 }
+
 class _StringAutocompleteState extends State<_StringAutocomplete> {
   final _layerLink = LayerLink();
   final _focusNode = FocusNode();
@@ -2718,6 +2837,7 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
   List<String> _filtered = const [];
   int _highlighted = -1;
   late final ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
@@ -2726,6 +2846,7 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
     widget.controller.addListener(_onText);
     _filtered = widget.suggestions;
   }
+
   @override
   void dispose() {
     _hide();
@@ -2735,6 +2856,7 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
     _scrollController.dispose();
     super.dispose();
   }
+
   void _onFocus() {
     if (_focusNode.hasFocus) {
       _filter(widget.controller.text);
@@ -2743,34 +2865,40 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
       _hide();
     }
   }
+
   void _onText() {
     _filter(widget.controller.text);
     if (_focusNode.hasFocus) _show();
   }
+
   void _filter(String q) {
     final query = q.trim().toLowerCase();
     _filtered = query.isEmpty
         ? widget.suggestions
         : widget.suggestions
-        .where((s) => s.toLowerCase().contains(query))
-        .toList();
+            .where((s) => s.toLowerCase().contains(query))
+            .toList();
     _highlighted = _filtered.isEmpty ? -1 : 0;
     _entry?.markNeedsBuild();
   }
+
   void _show() {
     if (_entry != null) return;
     _entry = OverlayEntry(builder: _buildPanel);
     Overlay.of(context).insert(_entry!);
   }
+
   void _hide() {
     _entry?.remove();
     _entry = null;
   }
+
   void _pick(String value) {
     widget.controller.text = value;
     widget.controller.selection = TextSelection.collapsed(offset: value.length);
     _focusNode.unfocus();
   }
+
   void _moveHighlight(int delta) {
     if (_filtered.isEmpty) return;
     final next = (_highlighted + delta).clamp(0, _filtered.length - 1);
@@ -2778,6 +2906,7 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
     _highlighted = next;
     _entry?.markNeedsBuild();
   }
+
   KeyEventResult _handleKey(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
       return KeyEventResult.ignored;
@@ -2811,6 +2940,7 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
     }
     return KeyEventResult.ignored;
   }
+
   Widget _buildPanel(BuildContext context) =>
       _withFormFont(context, _buildPanelContent(context));
 
@@ -2838,74 +2968,75 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
               ),
               child: _filtered.isEmpty
                   ? const Padding(
-                padding: EdgeInsets.all(12),
-                child: Text('No matches',
-                    style: TextStyle(color: Colors.black, fontSize: 12)),
-              )
+                      padding: EdgeInsets.all(12),
+                      child: Text('No matches',
+                          style: TextStyle(color: Colors.black, fontSize: 12)),
+                    )
                   : ListView.builder(
-                controller: _scrollController,
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                itemCount: _filtered.length,
-                itemBuilder: (_, i) {
-                  final s = _filtered[i];
-                  final active = _highlighted == i;
-                  return MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    onEnter: (_) {
-                      if (_highlighted == i) return;
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (!mounted) return;
-                        _highlighted = i;
-                        _entry?.markNeedsBuild();
-                      });
-                    },
-                    child: InkWell(
-                      canRequestFocus: false,
-                      onTap: () => _pick(s),
-                      child: Container(
-                        width: double.infinity,
-                        height: 34,
-                        padding:
-                        const EdgeInsets.symmetric(horizontal: 12),
-                        color: active
-                            ? const Color(0xFFEEF2FF)
-                            : Colors.white,
-                        alignment: Alignment.centerLeft,
-                        child: Row(children: [
-                          Icon(Icons.place_outlined,
-                              size: 14,
+                      controller: _scrollController,
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      itemCount: _filtered.length,
+                      itemBuilder: (_, i) {
+                        final s = _filtered[i];
+                        final active = _highlighted == i;
+                        return MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          onEnter: (_) {
+                            if (_highlighted == i) return;
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (!mounted) return;
+                              _highlighted = i;
+                              _entry?.markNeedsBuild();
+                            });
+                          },
+                          child: InkWell(
+                            canRequestFocus: false,
+                            onTap: () => _pick(s),
+                            child: Container(
+                              width: double.infinity,
+                              height: 34,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
                               color: active
-                                  ? const Color(0xFF4F46E5)
-                                  : Colors.grey),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
+                                  ? const Color(0xFFEEF2FF)
+                                  : Colors.white,
                               alignment: Alignment.centerLeft,
-                              child: Text(s,
-                                  maxLines: 1,
-                                  softWrap: false,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: active
-                                        ? FontWeight.w600
-                                        : FontWeight.w400,
-                                  )),
+                              child: Row(children: [
+                                Icon(Icons.place_outlined,
+                                    size: 14,
+                                    color: active
+                                        ? const Color(0xFF4F46E5)
+                                        : Colors.grey),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(s,
+                                        maxLines: 1,
+                                        softWrap: false,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: active
+                                              ? FontWeight.w600
+                                              : FontWeight.w400,
+                                        )),
+                                  ),
+                                ),
+                              ]),
                             ),
                           ),
-                        ]),
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ),
         ),
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
@@ -2935,6 +3066,7 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
     );
   }
 }
+
 // ════════════════════════════════════════════════════════════════════
 // Autocomplete: backed by CustomerObject (mobile + name + email)
 // ════════════════════════════════════════════════════════════════════
@@ -2946,15 +3078,18 @@ class _CustomerModelAutocomplete extends StatefulWidget {
     this.onChanged,
     this.onSelected,
   });
+
   final TextEditingController controller;
   final List<CustomerObject> items;
   final InputDecoration decoration;
   final ValueChanged<String>? onChanged;
   final ValueChanged<CustomerObject>? onSelected;
+
   @override
   State<_CustomerModelAutocomplete> createState() =>
       _CustomerModelAutocompleteState();
 }
+
 class _CustomerModelAutocompleteState
     extends State<_CustomerModelAutocomplete> {
   final _layerLink = LayerLink();
@@ -2970,6 +3105,7 @@ class _CustomerModelAutocompleteState
   /// the panel over a field the user just finished with.
   bool _picking = false;
   late final ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
@@ -2977,6 +3113,7 @@ class _CustomerModelAutocompleteState
     _focusNode.addListener(_onFocus);
     widget.controller.addListener(_onText);
   }
+
   @override
   void didUpdateWidget(covariant _CustomerModelAutocomplete oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -2989,6 +3126,7 @@ class _CustomerModelAutocompleteState
       });
     }
   }
+
   @override
   void dispose() {
     _hide();
@@ -2998,9 +3136,11 @@ class _CustomerModelAutocompleteState
     _scrollController.dispose();
     super.dispose();
   }
+
   void _onFocus() {
     if (!_focusNode.hasFocus) _hide();
   }
+
   void _onText() {
     if (_picking || !_focusNode.hasFocus) return;
     final text = widget.controller.text.trim();
@@ -3013,12 +3153,13 @@ class _CustomerModelAutocompleteState
     _filter(widget.controller.text);
     _show();
   }
+
   void _filter(String q, {bool preserveHighlight = false}) {
     final query = q.trim().toLowerCase();
     // Remember the currently highlighted item so a list refresh can keep it.
     final CustomerObject? current = (preserveHighlight &&
-        _highlighted >= 0 &&
-        _highlighted < _filtered.length)
+            _highlighted >= 0 &&
+            _highlighted < _filtered.length)
         ? _filtered[_highlighted]
         : null;
 
@@ -3038,21 +3179,24 @@ class _CustomerModelAutocompleteState
     } else if (preserveHighlight) {
       final idx = current == null ? -1 : _filtered.indexOf(current);
       _highlighted =
-      idx >= 0 ? idx : _highlighted.clamp(0, _filtered.length - 1);
+          idx >= 0 ? idx : _highlighted.clamp(0, _filtered.length - 1);
     } else {
       _highlighted = 0;
     }
     _entry?.markNeedsBuild();
   }
+
   void _show() {
     if (_entry != null) return;
     _entry = OverlayEntry(builder: _buildPanel);
     Overlay.of(context).insert(_entry!);
   }
+
   void _hide() {
     _entry?.remove();
     _entry = null;
   }
+
   void _pick(CustomerObject c) {
     final text = c.mobile ?? '';
     _userTyped = false;
@@ -3072,6 +3216,7 @@ class _CustomerModelAutocompleteState
     _hide();
     if (!_focusNode.hasFocus) _focusNode.requestFocus();
   }
+
   void _moveHighlight(int delta) {
     if (_filtered.isEmpty) return;
     final next = (_highlighted + delta).clamp(0, _filtered.length - 1);
@@ -3080,6 +3225,7 @@ class _CustomerModelAutocompleteState
     _entry?.markNeedsBuild();
     _scrollHighlightedIntoView();
   }
+
   void _scrollHighlightedIntoView() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -3099,6 +3245,7 @@ class _CustomerModelAutocompleteState
       }
     });
   }
+
   KeyEventResult _handleKey(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
       return KeyEventResult.ignored;
@@ -3135,6 +3282,7 @@ class _CustomerModelAutocompleteState
     }
     return KeyEventResult.ignored;
   }
+
   Widget _buildPanel(BuildContext context) =>
       _withFormFont(context, _buildPanelContent(context));
 
@@ -3170,107 +3318,108 @@ class _CustomerModelAutocompleteState
               ),
               child: _filtered.isEmpty
                   ? const Padding(
-                padding: EdgeInsets.all(12),
-                child: Text('No data',
-                    style: TextStyle(color: Colors.black, fontSize: 12)),
-              )
+                      padding: EdgeInsets.all(12),
+                      child: Text('No data',
+                          style: TextStyle(color: Colors.black, fontSize: 12)),
+                    )
                   : ListView.builder(
-                controller: _scrollController,
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                itemCount: _filtered.length,
-                itemBuilder: (_, i) {
-                  final c = _filtered[i];
-                  final active = _highlighted == i;
-                  return MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    onEnter: (_) {
-                      if (_highlighted == i) return;
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (!mounted) return;
-                        _highlighted = i;
-                        _entry?.markNeedsBuild();
-                      });
-                    },
-                    child: InkWell(
-                      canRequestFocus: false,
-                      onTap: () => _pick(c),
-                      child: Container(
-                        width: double.infinity,
-                        height: 48,
-                        // 8/6 instead of 12/8: the panel is only as wide as
-                        // the Mobile cell, so every pixel of chrome came
-                        // straight out of the text.
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 6),
-                        color: active
-                            ? const Color(0xFFEEF2FF)
-                            : Colors.white,
-                        alignment: Alignment.centerLeft,
-                        child: Row(children: [
-                          Icon(Icons.person_outline,
-                              size: 14,
+                      controller: _scrollController,
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      itemCount: _filtered.length,
+                      itemBuilder: (_, i) {
+                        final c = _filtered[i];
+                        final active = _highlighted == i;
+                        return MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          onEnter: (_) {
+                            if (_highlighted == i) return;
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (!mounted) return;
+                              _highlighted = i;
+                              _entry?.markNeedsBuild();
+                            });
+                          },
+                          child: InkWell(
+                            canRequestFocus: false,
+                            onTap: () => _pick(c),
+                            child: Container(
+                              width: double.infinity,
+                              height: 48,
+                              // 8/6 instead of 12/8: the panel is only as wide as
+                              // the Mobile cell, so every pixel of chrome came
+                              // straight out of the text.
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 6),
                               color: active
-                                  ? const Color(0xFF4F46E5)
-                                  : Colors.grey),
-                          const SizedBox(width: 6),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                // FittedBox, not ellipsis: the number and the
-                                // name are what the user picks by, so a row
-                                // too narrow for them shrinks the text to fit
-                                // instead of cutting it off. maxLines/softWrap
-                                // keep each on one line; nothing can overflow
-                                // once it is scaled, so no ellipsis is needed.
-                                FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    c.mobile ?? '',
-                                    maxLines: 1,
-                                    softWrap: false,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: active
-                                          ? FontWeight.w600
-                                          : FontWeight.w500,
-                                      color: Colors.black87,
-                                    ),
+                                  ? const Color(0xFFEEF2FF)
+                                  : Colors.white,
+                              alignment: Alignment.centerLeft,
+                              child: Row(children: [
+                                Icon(Icons.person_outline,
+                                    size: 14,
+                                    color: active
+                                        ? const Color(0xFF4F46E5)
+                                        : Colors.grey),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      // FittedBox, not ellipsis: the number and the
+                                      // name are what the user picks by, so a row
+                                      // too narrow for them shrinks the text to fit
+                                      // instead of cutting it off. maxLines/softWrap
+                                      // keep each on one line; nothing can overflow
+                                      // once it is scaled, so no ellipsis is needed.
+                                      FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          c.mobile ?? '',
+                                          maxLines: 1,
+                                          softWrap: false,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: active
+                                                ? FontWeight.w600
+                                                : FontWeight.w500,
+                                            color: Colors.black87,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          c.name ?? '',
+                                          maxLines: 1,
+                                          softWrap: false,
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(height: 2),
-                                FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    c.name ?? '',
-                                    maxLines: 1,
-                                    softWrap: false,
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ]),
                             ),
                           ),
-                        ]),
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ),
         ),
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return CompositedTransformTarget(

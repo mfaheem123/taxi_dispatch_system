@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../component/alert_close_button.dart';
 import '../component/color.dart';
 import '../component/datatable_widget.dart';
 import '../component/textStyle.dart';
@@ -43,9 +44,8 @@ class _ComplaintBookingAlertState extends State<ComplaintBookingAlert> {
 
       title: Container(
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 18),
-        color: DynamicColors.secondaryClr,
+        color: DynamicColors.gryClr.withOpacity(0.5),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               "COMPLAINT BOOKINGS",
@@ -54,10 +54,15 @@ class _ComplaintBookingAlertState extends State<ComplaintBookingAlert> {
                 fontSize: 23,
               ),
             ),
-            IconButton(
-              onPressed: () => Get.back(),
-              icon: const Icon(Icons.close, size: 20),
-            )
+            const Spacer(),
+            FocusTraversalOrder(
+              order: const NumericFocusOrder(999),
+              child: const AlertCloseButton(),
+            ),
+            // IconButton(
+            //   onPressed: () => Get.back(),
+            //   icon: const Icon(Icons.close, size: 20),
+            // )
           ],
         ),
       ),
@@ -147,9 +152,10 @@ class _ComplaintBookingAlertState extends State<ComplaintBookingAlert> {
                               onTap: () => Get.back(result: booking),
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                child: const Text(
+                                child: Text(
                                   "PICK",
-                                  style: TextStyle(
+                                  style: outFitRegular(
+                                    fontSize: 14,
                                     color: Colors.green,
                                     fontWeight: FontWeight.bold,
                                   ),

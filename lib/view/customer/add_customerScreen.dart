@@ -121,19 +121,31 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                                       showDialog(
                                         context: context,
                                         builder: (_) => RestrictedDriversDialog(
-                                          drivers: controller.apiDriversList
-                                              .map((e) => {
-                                                    'id': e['id'].toString(),
-                                                    'username': e['username']
-                                                        .toString()
-                                                        .toUpperCase(),
-                                                    'name': e['name']
-                                                        .toString()
-                                                        .toUpperCase(),
-                                                  })
-                                              .toList(),
+                                          drivers: controller.apiDriversList.map((e) => {
+                                            'id': e['id'].toString(),
+                                            'username': e['username'].toString().toUpperCase(),
+                                            'name': e['name'].toString().toUpperCase(),
+                                          }).toList(),
+                                          initialRestrictedDrivers: controller.selectedRestrictedDrivers,
+                                          onDriversChanged: (updatedList) {
+                                            controller.selectedRestrictedDrivers = updatedList;
+                                            controller.update();
+                                          },
                                         ),
                                       );
+                                      //     drivers: controller.apiDriversList
+                                      //         .map((e) => {
+                                      //               'id': e['id'].toString(),
+                                      //               'username': e['username']
+                                      //                   .toString()
+                                      //                   .toUpperCase(),
+                                      //               'name': e['name']
+                                      //                   .toString()
+                                      //                   .toUpperCase(),
+                                      //             })
+                                      //         .toList(),
+                                      //   ),
+                                      // );
                                     },
                                     child: CustomButton(
                                       height: 30,
