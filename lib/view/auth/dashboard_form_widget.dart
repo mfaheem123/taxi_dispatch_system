@@ -302,7 +302,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 width: formWidth,
                 child: SingleChildScrollView(
                   padding: EdgeInsets.symmetric(
-                    horizontal: isMobile ? 0 : 12,
+                    horizontal: isMobile ? 0 : 3,
                     vertical: isMobile ? 0 : 12,
                   ),
                   child: Container(
@@ -319,7 +319,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                           _topTabs(isMobile),
                           Padding(
                             padding: EdgeInsets.symmetric(
-                                horizontal: isMobile ? 12 : 16, vertical: 6),
+                                horizontal: isMobile ? 12 : 4, vertical: 6),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
@@ -2311,8 +2311,8 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
     final isMobile = w < 640;
-    final isTablet = w >= 640 && w < 1024;
-    final double responsiveFontSize = isMobile ? 10.0 : (isTablet ? 11.0 : 12.0);
+    final isTablet = w >= 640 && w < 1200;
+    final double responsiveFontSize = isMobile ? 10.0 : (isTablet ? 10.5 : 11.0);
 
     return AnimatedBuilder(
       animation: _dropdownFocusNode,
