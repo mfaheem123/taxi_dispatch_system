@@ -2309,6 +2309,11 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
 
   @override
   Widget build(BuildContext context) {
+    final w = MediaQuery.of(context).size.width;
+    final isMobile = w < 640;
+    final isTablet = w >= 640 && w < 1024;
+    final double responsiveFontSize = isMobile ? 10.0 : (isTablet ? 11.0 : 12.0);
+
     return AnimatedBuilder(
       animation: _dropdownFocusNode,
       builder: (context, child) {
@@ -2344,8 +2349,8 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
               icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
               // Ambient style for the open menu. The closed field is styled
               // separately below.
-              style: const TextStyle(
-                fontSize: _fsField,
+              style: TextStyle(
+                fontSize: responsiveFontSize,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
               ),
@@ -2368,7 +2373,7 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
                         _labelOf(e).toUpperCase(),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: _kValueTextStyle,
+                        style: _kValueTextStyle.copyWith(fontSize: responsiveFontSize),
                       ),
                     )),
               ],
@@ -2385,7 +2390,7 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontFamily: _kChromeFontFamily,
-                        fontSize: _fsField,
+                        fontSize: responsiveFontSize,
                         fontWeight: FontWeight.w600,
                         color: Colors.grey.shade700,
                       ),
@@ -2398,7 +2403,7 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
                         _labelOf(e).toUpperCase(),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: _fsField),
+                        style: TextStyle(fontSize: responsiveFontSize),
                       ),
                     )),
               ],
@@ -2682,8 +2687,8 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
 
     final w = MediaQuery.of(context).size.width;
     final isMobile = w < 640;
-    final isTablet = w >= 640 && w < 1024;
-    final double responsiveFontSize = isMobile ? 10.0 : (isTablet ? 11.0 : 12.0);
+    final isTablet = w >= 640 && w < 1200;
+    final double responsiveFontSize = isMobile ? 10.0 : (isTablet ? 10.5 : 11.0);
 
     return Positioned(
       width: width,
@@ -2747,8 +2752,6 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
                               alignment: Alignment.centerLeft,
                               child: Text(
                                 "${a.name} ${a.postcode}",
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: responsiveFontSize,
                                   fontWeight: active
@@ -2942,8 +2945,8 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
 
     final w = MediaQuery.of(context).size.width;
     final isMobile = w < 640;
-    final isTablet = w >= 640 && w < 1024;
-    final double responsiveFontSize = isMobile ? 10.0 : (isTablet ? 11.0 : 12.0);
+    final isTablet = w >= 640 && w < 1200;
+    final double responsiveFontSize = isMobile ? 10.0 : (isTablet ? 10.5 : 11.0);
 
     return Positioned(
       width: width,
@@ -3008,8 +3011,6 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(s,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         fontSize: responsiveFontSize,
                                         fontWeight: active
@@ -3362,8 +3363,6 @@ class _CustomerModelAutocompleteState
                                     children: [
                                       Text(
                                         c.mobile ?? '',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           fontSize: 12,
                                           fontWeight: active
@@ -3375,8 +3374,6 @@ class _CustomerModelAutocompleteState
                                       const SizedBox(height: 2),
                                       Text(
                                         c.name ?? '',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
                                           fontSize: 10,
                                           color: Colors.black,
