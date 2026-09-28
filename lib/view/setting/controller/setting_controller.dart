@@ -326,8 +326,7 @@ class SettingController extends GetxController {
     update();
 
     var formData = {
-      "subsidiary_id": int.tryParse(selectSubsidiaryValue ?? "1") ?? 1,
-      "company_id": 1,
+      "subsidiary_id": int.tryParse(selectSubsidiaryValue ?? ""),
       "email_username": userNameController.text,
       "email_password": passwordController.text,
       "email_service": emailServiceValue,
@@ -394,7 +393,7 @@ class SettingController extends GetxController {
     };
 
     try {
-      var response = await Api().post(formData, "company-configuration/add");
+      var response = await Api().post(formData, "company-configuration/add", sendCompanyId: true);
 
       print(" SAVE CONFIG RESPONSE STATUS: ${response.statusCode}");
       print(" SAVE CONFIG RESPONSE DATA: ${response.data}");
@@ -617,17 +616,16 @@ class SettingController extends GetxController {
       "document_table": selectedTable.toString(),
       "document_column": selectedColumn.toString().trim(),
       "prefix": prefixController.text,
-      "start_number": int.tryParse(startNumberController.text) ?? 1,
-      "increment_value": int.tryParse(incrementController.text) ?? 1,
+      "start_number": int.tryParse(startNumberController.text),
+      "increment_value": int.tryParse(incrementController.text),
       "auto_increment": true,
-      "company_id": 1,
     };
     try {
       var response = await Api().post(
           formData,
           updateDocumentNumber.value == false
               ? "document/document_numbers/add"
-              : "document/document_numbers/update/${documentUpdateId.value}"
+              : "document/document_numbers/update/${documentUpdateId.value},", sendCompanyId: true,
       );
 
       print("SERVER RESPONSE: ${response.statusCode} -> ${response.data}");

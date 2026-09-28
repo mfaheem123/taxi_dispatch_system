@@ -39,7 +39,7 @@ class ShiftAlert {
                 return GetBuilder<DriverController>(
                   builder: (controller) {
                     return Container(
-                      width: Get.width * 0.5,
+                      width: Get.width * 0.4,
                       // padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -66,6 +66,8 @@ class ShiftAlert {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
+                              Icon(Icons.watch_later_rounded, color: DynamicColors.primaryClr),
+                              const SizedBox(width: 10),
                               Text(
                                 "SHIFTS",
                                 style: titleDesign()
@@ -77,137 +79,179 @@ class ShiftAlert {
                               ),
                             ],
                           )),
+                          const Divider(height: 1, thickness: 1),
+                          SizedBox(height: 15),
 
-                              const Divider(height: 1, thickness: 1),
-                              SizedBox(height: 15),
+                          Padding(padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(color: Colors.grey.shade50,
+                                    borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.grey.shade200)),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Expanded(
+                                          flex: 3,
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text("SHIFT NAME", style: outFitRegular(fontSize: 13)),
+                                            const SizedBox(height: 6),
+                                            _buildField("SHIFT", shiftCtrl),
+                                          ],
+                                          )),
+                                      const SizedBox(width: 12),
 
-                          Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 26.0),
-                              child: Row(
-                            children: [
-                              Expanded(
-                                  flex: 2, child: _buildField("SHIFT", shiftCtrl)),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                  flex: 2,
-                                  child:
-                                  SizedBox(
-                                    height: 30,
-                                    child: CustomTimePicker(
-                                      controller: startTimeCtrl, // optional
-                                      onTimeSelected: (time) {
-                                        print(time);
-                                        print(startTimeCtrl.text);
-                                        // print(row.expiryTime!.text);
-                                        // controller.updateExpiryTime(index, time);
-                                      },
-                                    ),
-                                  ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                  flex: 2,
-                                  child:
-                                  SizedBox(
-                                    height: 30,
-                                    child: CustomTimePicker(
-                                      controller: endTimeCtrl, // optional
-                                      onTimeSelected: (time) {
-                                        print(time);
-                                        print(startTimeCtrl.text);
-                                        // print(row.expiryTime!.text);
-                                        // controller.updateExpiryTime(index, time);
-                                      },
-                                    ),
-                                  ),
-                              ),
-                              const SizedBox(width: 8),
-                              if(permissions.contains('create_driver_shift')|| permissions.contains('update_driver_shift'))  Expanded(
-                                flex: 2,
-                                child: SizedBox(
-                                  height: 34,
-                                  child: CustomButton(
-                                    width: 150,
-                                    height: 35,
-                                    verticalPadding: 0.0,
-                                    btnText: editingIndex != null? "UPDATE" : "SAVE",
-                                    borderRadius: 4,
-                                    style: mozillaTextRegularText(
-                                        fontSize: 14, color: DynamicColors.whiteClr),
-                                    onTap: () {
-                                      if (editingIndex != null) {
-                                        controller.shiftList[editingIndex!] = ShiftAlertClass(
-                                          shiftTitle: shiftCtrl.text,
-                                          startTime: startTimeCtrl.text,
-                                          endTime: endTimeCtrl.text,
-                                        );
-                                        editingIndex = null;
-                                      } else {
-                                        controller.shiftList.add(
-                                          ShiftAlertClass(
-                                            shiftTitle: shiftCtrl.text,
-                                            startTime: startTimeCtrl.text,
-                                            endTime: endTimeCtrl.text,
+                                      Expanded(
+                                          flex: 3,
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text("START TIME", style: outFitRegular(fontSize: 13)),
+                                              const SizedBox(height: 6),
+                                              SizedBox(
+                                                height: 30,
+                                                child: CustomTimePicker(
+                                                  controller: startTimeCtrl,
+                                                  onTimeSelected: (time) {
+                                                    // controller.updateExpiryTime(index, time);
+                                                    },
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        );
-                                      }
+                                      ),
+                                          const SizedBox(width: 12),
 
-                                      shiftCtrl.clear();
-                                      startTimeCtrl.clear();
-                                      endTimeCtrl.clear();
-                                      controller.update();
-                                      // saveShift;
-                                    },
-                                  ),
+                                          Expanded(
+                                            flex: 3,
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text("END TIME", style: outFitRegular(fontSize: 13)),
+                                                  const SizedBox(height: 6),
+                                                  SizedBox(
+                                                    height: 30,
+                                                    child: CustomTimePicker(
+                                                      controller: endTimeCtrl,
+                                                      onTimeSelected: (time) {
+                                                        // controller.updateExpiryTime(index, time);
+                                                        },
+                                                    ),
+                                                  ),
+                                                ],
+                                              )),
+                                      const SizedBox(width: 8),
 
-                                ),
-                              ),
+                                      if(permissions.contains('create_driver_shift')|| permissions.contains('update_driver_shift'))
+                                        Expanded(
+                                          flex: 3,
+                                          child: SizedBox(
+                                            height: 34,
+                                            child: CustomButton(
+                                              width: 150,
+                                              height: 35,
+                                              verticalPadding: 0.0,
+                                              btnText: editingIndex != null? "UPDATE" : "SAVE",
+                                              borderRadius: 4,
+                                              style: outFitRegular(
+                                                  fontSize: 14, color: DynamicColors.whiteClr),
+                                              onTap: () {
+                                                if (editingIndex != null) {
+                                                  controller.shiftList[editingIndex!] = ShiftAlertClass(
+                                                    shiftTitle: shiftCtrl.text,
+                                                    startTime: startTimeCtrl.text,
+                                                    endTime: endTimeCtrl.text,
+                                                  );
+                                                  editingIndex = null;
+                                                } else {
+                                                  controller.shiftList.add(
+                                                    ShiftAlertClass(
+                                                      shiftTitle: shiftCtrl.text,
+                                                      startTime: startTimeCtrl.text,
+                                                      endTime: endTimeCtrl.text,
+                                                    ),
+                                                  );
+                                                }
 
+                                                shiftCtrl.clear();
+                                                startTimeCtrl.clear();
+                                                endTimeCtrl.clear();
+                                                controller.update();
+                                                // saveShift;
+                                                },
+                                            ),
+                                          ),
+                                        ),
                               ///-------------------
                             ],
-                          )),
+                          ))),
 
                           const SizedBox(height: 14),
 
                           // Table Header
+                          // Table Header with Vertical Dividers
                           Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 26.0),
-                              child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 6, horizontal: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
-                              borderRadius: BorderRadius.circular(4),
+                            padding: const EdgeInsets.symmetric(horizontal: 26.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF1F3F5),
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              child: IntrinsicHeight(
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 3,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                                        child: Text(
+                                          "SHIFT NAME",
+                                          style: outFitRegular(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey.shade800),
+                                        ),
+                                      ),
+                                    ),
+                                    VerticalDivider(width: 1, thickness: 1, color: Colors.grey.shade300),
+                                    Expanded(
+                                      flex: 3,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                                        child: Text(
+                                          "START TIME",
+                                          style: outFitRegular(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey.shade800),
+                                        ),
+                                      ),
+                                    ),
+                                    VerticalDivider(width: 1, thickness: 1, color: Colors.grey.shade300),
+                                    Expanded(
+                                      flex: 3,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                                        child: Text(
+                                          "END TIME",
+                                          style: outFitRegular(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey.shade800),
+                                        ),
+                                      ),
+                                    ),
+                                    VerticalDivider(width: 1, thickness: 1, color: Colors.grey.shade300),
+                                    Expanded(
+                                      flex: 2,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                                        child: Center(
+                                          child: Text(
+                                            "ACTION",
+                                            style: outFitRegular(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey.shade800),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                            child: Row(
-                              children: const [
-                                Expanded(
-                                    flex: 2,
-                                    child: Text("SHIFT NAME",
-                                        style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.bold))),
-                                Expanded(
-                                    flex: 2,
-                                    child: Text("START TIME",
-                                        style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.bold))),
-                                Expanded(
-                                    flex: 2,
-                                    child: Text("END TIME",
-                                        style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.bold))),
-                                Expanded(
-                                    flex: 2,
-                                    child: Text("ACTIONS",
-                                        style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.bold))),
-                              ],
-                            ),
-                          )),
+                          ),
 
                           // Table Body
                         // Table Body Row section in ShiftAlert
@@ -216,63 +260,93 @@ class ShiftAlert {
                       var row = entry.value;
                       bool isSelected = editingIndex == index; // <-- Track active selection
 
-                      return Padding( padding: const EdgeInsets.symmetric(horizontal: 26.0),
-                          child:
-                        Container(
-                        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-                        decoration: BoxDecoration(
-                          color: isSelected ? Colors.indigo.shade50 : Colors.transparent, // <-- Selected highlight color
-                          border: Border(
-                            bottom: BorderSide(
-                              color: isSelected ? DynamicColors.primaryClr : Colors.grey.shade200,
-                              width: isSelected ? 1.5 : 1.0,
+                      return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 26.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: isSelected ? Colors.indigo.shade50 : Colors.transparent,
+                              border: Border(
+                                left: BorderSide(color: Colors.grey.shade300),
+                                right: BorderSide(color: Colors.grey.shade300),
+                                bottom: BorderSide(
+                                  color: isSelected ? DynamicColors.primaryClr : Colors.grey.shade300,
+                                  width: isSelected ? 1.5 : 1.0,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(flex: 2, child: Text(row.shiftTitle)),
-                            Expanded(flex: 2, child: Text(row.startTime ?? "")),
-                            Expanded(flex: 2, child: Text(row.endTime ?? "")),
-                            Expanded(
-                              flex: 2,
+
+                            child: IntrinsicHeight(
                               child: Row(
                                 children: [
-                                  IconButton(
-                                    icon: Icon(
-                                      Icons.edit,
-                                      size: 18,
-                                      color: isSelected ? Colors.orange : const Color(0xFF43489A), // <-- Highlight Icon Color
+                                  Expanded(
+                                    flex: 3,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                                      child: Text(row.shiftTitle, style: outFitRegular(fontSize: 12)),
                                     ),
-                                    onPressed: () {
-                                      setState(() {
-                                        editingIndex = index;
-                                        shiftCtrl.text = row.shiftTitle;
-                                        startTimeCtrl.text = row.startTime ?? "";
-                                        endTimeCtrl.text = row.endTime ?? "";
-                                      });
-                                      controller.update();
-                                    },
                                   ),
-                                  if (permissions.contains('delete_driver_shift'))
-                                    IconButton(
-                                      icon: const Icon(Icons.delete, size: 18, color: Colors.red),
-                                      onPressed: () {
-                                        setState(() {
-                                          if (editingIndex == index) editingIndex = null;
-                                          controller.shiftList.removeAt(index);
-                                        });
-                                        controller.update();
-                                      },
+                                  VerticalDivider(width: 1, thickness: 1, color: Colors.grey.shade300),
+                                  Expanded(
+                                    flex: 3,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                                      child: Text(row.startTime ?? "", style: outFitRegular(fontSize: 12)),
                                     ),
+                                  ),
+                                  VerticalDivider(width: 1, thickness: 1, color: Colors.grey.shade300),
+                                  Expanded(
+                                    flex: 3,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                                      child: Text(row.endTime ?? "", style: outFitRegular(fontSize: 12)),
+                                    ),
+                                  ),
+                                  VerticalDivider(width: 1, thickness: 1, color: Colors.grey.shade300),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        IconButton(
+                                          constraints: const BoxConstraints(),
+                                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                                          icon: Icon(
+                                            Icons.edit,
+                                            size: 18,
+                                            color: isSelected ? Colors.orange : const Color(0xFF43489A),
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              editingIndex = index;
+                                              shiftCtrl.text = row.shiftTitle;
+                                              startTimeCtrl.text = row.startTime ?? "";
+                                              endTimeCtrl.text = row.endTime ?? "";
+                                            });
+                                            controller.update();
+                                          },
+                                        ),
+                                        if (permissions.contains('delete_driver_shift'))
+                                          IconButton(
+                                            constraints: const BoxConstraints(),
+                                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                                            icon: const Icon(Icons.delete, size: 18, color: Colors.red),
+                                            onPressed: () {
+                                              setState(() {
+                                                if (editingIndex == index) editingIndex = null;
+                                                controller.shiftList.removeAt(index);
+                                              });
+                                              controller.update();
+                                            },
+                                          ),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
-                          ],
-                        ),
-                      ));
-                    }),
-
+                          ),
+                      );
+                        }),
                           Padding(
                               padding: const EdgeInsets.all(16.0),
                               child: Row(
@@ -288,8 +362,7 @@ class ShiftAlert {
                                       style: mozillaTextSemiBoldText(
                                           fontSize: 13,
                                           color: Colors.white,
-                                          fontWeight: FontWeight.bold
-                                      ),
+                                          fontWeight: FontWeight.bold),
                                       onTap: () => Get.back(),
                                     )])),
 
@@ -319,10 +392,10 @@ class ShiftAlert {
             selection: controller.selection,
           );
         },
-        style: const TextStyle(fontSize: 12),
+        style: outFitRegular(fontSize: 12),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(fontSize: 11),
+          labelStyle: outFitRegular(fontSize: 11),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6),
             borderSide: BorderSide(
@@ -332,7 +405,7 @@ class ShiftAlert {
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6),
             borderSide: BorderSide(
-              color: hasError ? Colors.red : Colors.grey.shade300,
+              color: hasError ? Colors.red : Colors.grey,
               width: hasError ? 2 : 1,
             ),
           ),
@@ -393,24 +466,37 @@ class NoteAlert {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
+                      Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: DynamicColors.gryClr.withOpacity(0.5),
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Icon(Icons.sticky_note_2, color: DynamicColors.primaryClr),
+                          const SizedBox(width: 10),
                               const Text(
                                 "NOTES",
                                 style: TextStyle(
                                     fontSize: 15, fontWeight: FontWeight.bold),
                               ),
-                              InkWell(
-                                onTap: () => Get.back(),
-                                child: const Icon(Icons.close,
-                                    size: 20, color: Colors.black54),
-                              ),
-                            ],
+                          const Spacer(),
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(999),
+                            child: const AlertCloseButton(),
                           ),
+                            ],
+                          )),
                           const SizedBox(height: 12),
 
-                          Row(
+                          Padding(padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(color: Colors.grey.shade50,
+                          borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.grey.shade200)),
+                          child: Row(
                             children: [
                               Expanded(
                                   flex: 4, child: TextField(
@@ -434,10 +520,16 @@ class NoteAlert {
                                   contentPadding:
                                   const EdgeInsets.symmetric(horizontal: 6, vertical: 14),
                                 ),
-                              )),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                flex: 1,
+                              )
+                              )
+                            ]))),
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                              Align(
+                                alignment: Alignment.bottomRight,
                                 child: SizedBox(
                                   height: 34,
                                   child: CustomButton(
@@ -473,10 +565,10 @@ class NoteAlert {
 
                                 ),
                               ),
+                              ]),
 
                               ///-------------------
-                            ],
-                          ),
+
 
                           const SizedBox(height: 14),
 
