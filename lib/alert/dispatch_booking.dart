@@ -147,6 +147,7 @@ class _DispatchBookingState extends State<DispatchBooking> {
                       columns: [
                         _buildDataColumn("ID", Icons.badge_outlined),
                         _buildDataColumn("DRIVER NAME", Icons.person_outline),
+                        _buildDataColumn("VEHICLE", Icons.person_outline),
                         _buildDataColumn("SUBSIDIARY", Icons.apartment_rounded),
                         _buildDataColumn("STATUS", Icons.bar_chart_rounded),
                         _buildDataColumn("ATTRIBUTES", Icons.local_offer_outlined),
@@ -156,10 +157,11 @@ class _DispatchBookingState extends State<DispatchBooking> {
                       rows: controller.drivers.map((driver) {
                         return DataRow(
                           cells: [
-                            DataCell(Text("${(driver.username ?? '').toUpperCase()}", style: outFitRegular(fontSize: 14))),
-                            DataCell(Text((driver.name ?? '').toUpperCase(), style: outFitRegular(fontSize: 14))),
-                            DataCell(Text((driver.subsidiary?.name ?? '').toUpperCase(), style: outFitRegular(fontSize: 14))),
-                            DataCell(Text((driver.bookingStatus ?? '').toUpperCase(), style: outFitRegular(fontSize: 14, color: Colors.green))),
+                            DataCell(Center(child: Text("${(driver.username ?? '').toUpperCase()}", style: outFitRegular(fontSize: 14)))),
+                            DataCell(Center(child: Text((driver.name ?? '').toUpperCase(), style: outFitRegular(fontSize: 14)))),
+                            DataCell(Center(child: Text((driver.vehicle?.vehicleType?.name ?? '').toUpperCase(), style: outFitRegular(fontSize: 14)))),
+                            DataCell(Center(child: Text((driver.subsidiary?.name ?? '').toUpperCase(), style: outFitRegular(fontSize: 14)))),
+                            DataCell(Center(child: Text((driver.bookingStatus ?? '').toUpperCase(), style: outFitRegular(fontSize: 14, color: Colors.green)))),
                             DataCell(Center(child: Text("-", style: outFitRegular(fontSize: 14)))),
                             DataCell(Center(child: Text("-", style: outFitRegular(fontSize: 14)))),
                             DataCell(
