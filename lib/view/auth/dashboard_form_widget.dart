@@ -765,9 +765,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                         (v) => setState(() {
                                       controller.selectVehicleValue = v;
 
-                                      // Auto fill passenger count from API
-                                      if (v != null && v.passengers != null) {
-                                        controller.passController.text = v.passengers.toString();
+                                      // Default passengers to 1 when vehicle is selected
+                                      if (v != null) {
+                                        controller.passController.text = '1';
                                       }
 
                                       // Auto-fill ke baad validation update karein
