@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide FormData;
 import 'package:get_storage/get_storage.dart';
 
+import '../../../alert/add_postcode_alert.dart';
 import '../../../component/networks/api.dart';
 import '../../../component/text_field.dart';
 
@@ -78,7 +79,16 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
                   const SizedBox(width: 10),
                   if(permissions.contains('create_localization_detail'))  CustomButton(
                     width: 30,
-                    onTap: () => _showAddDialog(context),
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => AddPostcodeDialog(
+                          onSave: (String code) async {
+                            await _addPostcodeApi(code);
+                          },
+                        ),
+                      );
+                    },
                     height: 30,
                     verticalPadding: 0.0,
                     widget: Icon(
@@ -214,82 +224,82 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
   }
 
   /// 📌 Dialog open
-  void _showAddDialog(BuildContext context) {
-    final TextEditingController textController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(6),
-        ),
-        title: const Text(
-          "POSTCODE",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "ENTER POSTCODE",
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: textController,
-              inputFormatters: [UpperCaseTextFormatter()],
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.zero,
-                ),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            style: TextButton.styleFrom(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero,
-              ),
-            ),
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              "CLOSE",
-              style: TextStyle(color: Colors.black87),
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero,
-              ),
-            ),
-            onPressed: () async {
-              final code = textController.text.trim();
-              if (code.isNotEmpty) {
-                await _addPostcodeApi(code);
-                Navigator.pop(context);
-              }
-            },
-            child: const Text(
-              "SAVE",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showAddDialog(BuildContext context) {
+  //   final TextEditingController textController = TextEditingController();
+  //
+  //   showDialog(
+  //     context: context,
+  //     builder: (_) => AlertDialog(
+  //       backgroundColor: Colors.white,
+  //       shape: RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.circular(6),
+  //       ),
+  //       title: const Text(
+  //         "POSTCODE",
+  //         style: TextStyle(
+  //           fontWeight: FontWeight.bold,
+  //           fontSize: 16,
+  //         ),
+  //       ),
+  //       content: Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           const Text(
+  //             "ENTER POSTCODE",
+  //             style: TextStyle(
+  //               fontWeight: FontWeight.w500,
+  //               fontSize: 14,
+  //             ),
+  //           ),
+  //           const SizedBox(height: 8),
+  //           TextField(
+  //             controller: textController,
+  //             inputFormatters: [UpperCaseTextFormatter()],
+  //             decoration: const InputDecoration(
+  //               border: OutlineInputBorder(
+  //                 borderRadius: BorderRadius.zero,
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           style: TextButton.styleFrom(
+  //             shape: const RoundedRectangleBorder(
+  //               borderRadius: BorderRadius.zero,
+  //             ),
+  //           ),
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text(
+  //             "CLOSE",
+  //             style: TextStyle(color: Colors.black87),
+  //           ),
+  //         ),
+  //         ElevatedButton(
+  //           style: ElevatedButton.styleFrom(
+  //             backgroundColor: Colors.green,
+  //             shape: const RoundedRectangleBorder(
+  //               borderRadius: BorderRadius.zero,
+  //             ),
+  //           ),
+  //           onPressed: () async {
+  //             final code = textController.text.trim();
+  //             if (code.isNotEmpty) {
+  //               await _addPostcodeApi(code);
+  //               Navigator.pop(context);
+  //             }
+  //           },
+  //           child: const Text(
+  //             "SAVE",
+  //             style: TextStyle(color: Colors.white),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   /// 📌 GET API - fetch list from server
   Future<void> _fetchPostcodes() async {

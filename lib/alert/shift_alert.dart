@@ -4,6 +4,7 @@ import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../component/alert_close_button.dart';
 import '../component/networks/api.dart';
 import '../view/dashboard_view/widgets/time_picker_widget.dart';
 import '../view/drivers_view/controller/driver_controller.dart';
@@ -38,8 +39,8 @@ class ShiftAlert {
                 return GetBuilder<DriverController>(
                   builder: (controller) {
                     return Container(
-                      width: Get.width * 0.7,
-                      padding: const EdgeInsets.all(14),
+                      width: Get.width * 0.5,
+                      // padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(8),
@@ -56,28 +57,33 @@ class ShiftAlert {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
+                          Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: DynamicColors.gryClr.withOpacity(0.5),
+                                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                              ),
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text(
+                              Text(
                                 "SHIFTS",
-                                style: TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.bold),
+                                style: titleDesign()
                               ),
-                              InkWell(
-                                onTap: () {
-                                  print(controller.shiftList);
-                                  Get.back();
-                                  },
-                                child: const Icon(Icons.close,
-                                    size: 20, color: Colors.black54),
+                              const Spacer(),
+                              FocusTraversalOrder(
+                                order: const NumericFocusOrder(999),
+                                child: const AlertCloseButton(),
                               ),
                             ],
-                          ),
+                          )),
 
-                          const SizedBox(height: 12),
+                              const Divider(height: 1, thickness: 1),
+                              SizedBox(height: 15),
 
-                          Row(
+                          Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 26.0),
+                              child: Row(
                             children: [
                               Expanded(
                                   flex: 2, child: _buildField("SHIFT", shiftCtrl)),
@@ -159,12 +165,14 @@ class ShiftAlert {
 
                               ///-------------------
                             ],
-                          ),
+                          )),
 
                           const SizedBox(height: 14),
 
                           // Table Header
-                          Container(
+                          Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 26.0),
+                              child: Container(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 6, horizontal: 4),
                             decoration: BoxDecoration(
@@ -199,7 +207,7 @@ class ShiftAlert {
                                             fontWeight: FontWeight.bold))),
                               ],
                             ),
-                          ),
+                          )),
 
                           // Table Body
                         // Table Body Row section in ShiftAlert
@@ -208,7 +216,9 @@ class ShiftAlert {
                       var row = entry.value;
                       bool isSelected = editingIndex == index; // <-- Track active selection
 
-                      return Container(
+                      return Padding( padding: const EdgeInsets.symmetric(horizontal: 26.0),
+                          child:
+                        Container(
                         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
                         decoration: BoxDecoration(
                           color: isSelected ? Colors.indigo.shade50 : Colors.transparent, // <-- Selected highlight color
@@ -260,8 +270,28 @@ class ShiftAlert {
                             ),
                           ],
                         ),
-                      );
+                      ));
                     }),
+
+                          Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    CustomButton(
+                                      width: 80,
+                                      height: 28,
+                                      verticalPadding: 0.0,
+                                      btnText: "CLOSE",
+                                      btnColor: Colors.red,
+                                      borderRadius: 4,
+                                      style: mozillaTextSemiBoldText(
+                                          fontSize: 13,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold
+                                      ),
+                                      onTap: () => Get.back(),
+                                    )])),
 
                         ],
                       ),
