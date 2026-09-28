@@ -302,7 +302,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 width: formWidth,
                 child: SingleChildScrollView(
                   padding: EdgeInsets.symmetric(
-                    horizontal: isMobile ? 0 : 12,
+                    horizontal: isMobile ? 0 : 3,
                     vertical: isMobile ? 0 : 12,
                   ),
                   child: Container(
@@ -319,7 +319,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                           _topTabs(isMobile),
                           Padding(
                             padding: EdgeInsets.symmetric(
-                                horizontal: isMobile ? 12 : 16, vertical: 6),
+                                horizontal: isMobile ? 12 : 4, vertical: 6),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
@@ -1520,7 +1520,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   }) {
     final tag = Row(mainAxisSize: MainAxisSize.min, children: [
       Icon(Icons.circle, size: 9, color: dot),
-      const SizedBox(width: 6),
+      const SizedBox(width: 4),
       Text(label,
           style:
               const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsLabel)),
@@ -1544,10 +1544,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         focusNode: addressFocusNode,
         fallbackFocusNode: _shortcutFocusNode,
         decoration: _inputDecoration().copyWith(
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
           suffixIconConstraints:
-              const BoxConstraints(minWidth: 60, minHeight: 32),
+              const BoxConstraints(minHeight: 29),
           suffixIcon: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
@@ -1560,32 +1558,31 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   ? FocusTraversalOrder(
                       order: NumericFocusOrder(tabBase + 1.3),
                       child: GlowFocus(
-                        radius: 14,
+                        radius: 12,
                         child: IconButton(
                           tooltip: 'Clear',
                           onPressed: onPressed,
                           icon: const Icon(Icons.close,
                               size: 16, color: Colors.grey),
                           padding: EdgeInsets.zero,
-                          constraints:
-                              const BoxConstraints(minWidth: 28, minHeight: 28),
-                          splashRadius: 16,
+                          constraints: const BoxConstraints(),
+                          splashRadius: 14,
                         ),
                       ),
                     )
                   : const SizedBox.shrink(),
+              const SizedBox(width: 2),
               FocusTraversalOrder(
                 order: NumericFocusOrder(tabBase + 1.6),
                 child: GlowFocus(
-                  radius: 14,
+                  radius: 12,
                   child: IconButton(
                     tooltip: actionTooltip,
                     onPressed: onCurrentLocation,
                     icon: Icon(actionIcon, size: 16, color: Colors.grey),
                     padding: EdgeInsets.zero,
-                    constraints:
-                        const BoxConstraints(minWidth: 28, minHeight: 28),
-                    splashRadius: 16,
+                    constraints: const BoxConstraints(),
+                    splashRadius: 14,
                   ),
                 ),
               ),
@@ -1650,9 +1647,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         SizedBox(width: _kLabelColumnWidth, child: tag),
         Expanded(flex: 5, child: address),
         const SizedBox(width: _kFieldGap),
-        SizedBox(width: 130, child: zoneDd),
+        SizedBox(width: 110, child: zoneDd),
         const SizedBox(width: _kFieldGap),
-        SizedBox(width: 130, child: notes), // gave the field a bounded width
+        SizedBox(width: 95, child: notes), // gave the field a bounded width
       ],
     );
   }
@@ -2311,6 +2308,11 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
 
   @override
   Widget build(BuildContext context) {
+    final w = MediaQuery.of(context).size.width;
+    final isMobile = w < 640;
+    final isTablet = w >= 640 && w < 1200;
+    final double responsiveFontSize = isMobile ? 10.0 : (isTablet ? 10.5 : 11.0);
+
     return AnimatedBuilder(
       animation: _dropdownFocusNode,
       builder: (context, child) {
@@ -2346,8 +2348,8 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
               icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
               // Ambient style for the open menu. The closed field is styled
               // separately below.
-              style: const TextStyle(
-                fontSize: _fsField,
+              style: TextStyle(
+                fontSize: responsiveFontSize,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
               ),
@@ -2366,15 +2368,11 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
                 if (widget.allowUnselect) const SizedBox.shrink(),
                 ...widget.items.map((e) => Align(
                       alignment: AlignmentDirectional.centerStart,
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          _labelOf(e).toUpperCase(),
-                          maxLines: 1,
-                          softWrap: false,
-                          style: _kValueTextStyle,
-                        ),
+                      child: Text(
+                        _labelOf(e).toUpperCase(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: _kValueTextStyle.copyWith(fontSize: responsiveFontSize),
                       ),
                     )),
               ],
@@ -2385,32 +2383,26 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
                 if (widget.allowUnselect)
                   DropdownMenuItem<T?>(
                     value: null,
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        widget.labelText,
-                        style: TextStyle(
-                          fontFamily: _kChromeFontFamily,
-                          fontSize: _fsField,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey.shade700,
-                        ),
+                    child: Text(
+                      widget.labelText,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: _kChromeFontFamily,
+                        fontSize: responsiveFontSize,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey.shade700,
                       ),
                     ),
                   ),
                 // Actual items
                 ...widget.items.map((e) => DropdownMenuItem<T?>(
                       value: e,
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          _labelOf(e).toUpperCase(),
-                          maxLines: 1,
-                          softWrap: false,
-                          style: const TextStyle(fontSize: _fsField),
-                        ),
+                      child: Text(
+                        _labelOf(e).toUpperCase(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: responsiveFontSize),
                       ),
                     )),
               ],
@@ -2691,6 +2683,12 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     final width = box?.size.width ?? 280;
     final height = box?.size.height ?? 48;
+
+    final w = MediaQuery.of(context).size.width;
+    final isMobile = w < 640;
+    final isTablet = w >= 640 && w < 1200;
+    final double responsiveFontSize = isMobile ? 10.0 : (isTablet ? 10.5 : 11.0);
+
     return Positioned(
       width: width,
       child: CompositedTransformFollower(
@@ -2744,27 +2742,21 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
                             onTap: () => _pick(a),
                             child: Container(
                               width: double.infinity,
-                              height: 48,
+                              constraints: const BoxConstraints(minHeight: 26),
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
+                                  horizontal: 8, vertical: 2),
                               color: active
                                   ? const Color(0xFFEEF2FF)
                                   : Colors.white,
                               alignment: Alignment.centerLeft,
-                              child: FittedBox(
-                                fit: BoxFit.scaleDown,
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  "${a.name} ${a.postcode}",
-                                  maxLines: 1,
-                                  softWrap: false,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: active
-                                        ? FontWeight.w600
-                                        : FontWeight.w500,
-                                    color: Colors.black87,
-                                  ),
+                              child: Text(
+                                "${a.name} ${a.postcode}",
+                                style: TextStyle(
+                                  fontSize: responsiveFontSize,
+                                  fontWeight: active
+                                      ? FontWeight.w400
+                                      : FontWeight.w600,
+                                  color: Colors.black87,
                                 ),
                               ),
                             ),
@@ -2781,6 +2773,11 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
 
   @override
   Widget build(BuildContext context) {
+    final w = MediaQuery.of(context).size.width;
+    final isMobile = w < 640;
+    final isTablet = w >= 640 && w < 1200;
+    final double baseFontSize = isMobile ? 10.0 : (isTablet ? 10.5 : 11.0);
+
     return CompositedTransformTarget(
       link: _layerLink,
       child: GlowFocus(
@@ -2791,21 +2788,40 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
           // where typing does nothing. Key events still bubble up to here.
           canRequestFocus: false,
           onKeyEvent: _handleKey,
-          child: TextField(
-            textCapitalization: TextCapitalization.characters,
-            inputFormatters: [
-              UpperCaseTextFormatter(),
-            ],
-            key: _fieldKey,
-            onChanged: widget.onChanged,
-            controller: widget.controller,
-            focusNode: _focusNode,
-            style: _kValueTextStyle,
-            maxLines: null,
-            minLines: 1,
-            textInputAction: TextInputAction.done,
-            keyboardType: TextInputType.multiline,
-            decoration: widget.decoration,
+          child: ValueListenableBuilder<TextEditingValue>(
+            valueListenable: widget.controller,
+            builder: (context, value, child) {
+              final textLength = value.text.length;
+              double responsiveFontSize = baseFontSize;
+
+              // Estimate how many characters fit based on screen width.
+              // Uppercase characters are wider, approx 75% of font size.
+              // The field width is approximately 45-50% of the screen width.
+              double approxFieldWidth = w * 0.45; 
+              double maxCharsForBaseSize = approxFieldWidth / (baseFontSize * 0.75);
+
+              if (textLength > maxCharsForBaseSize && textLength > 0) {
+                // Scale down font size smoothly
+                responsiveFontSize = baseFontSize * (maxCharsForBaseSize / textLength);
+                if (responsiveFontSize < 7.0) responsiveFontSize = 7.0; // minimum readable size
+              }
+
+              return TextField(
+                textCapitalization: TextCapitalization.characters,
+                inputFormatters: [
+                  UpperCaseTextFormatter(),
+                ],
+                key: _fieldKey,
+                onChanged: widget.onChanged,
+                controller: widget.controller,
+                focusNode: _focusNode,
+                style: _kValueTextStyle.copyWith(fontSize: responsiveFontSize),
+                maxLines: 1,
+                textInputAction: TextInputAction.done,
+                keyboardType: TextInputType.text,
+                decoration: widget.decoration,
+              );
+            },
           ),
         ),
       ),
@@ -2950,6 +2966,12 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
     final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     final width = box?.size.width ?? 280;
     final height = box?.size.height ?? 48;
+
+    final w = MediaQuery.of(context).size.width;
+    final isMobile = w < 640;
+    final isTablet = w >= 640 && w < 1200;
+    final double responsiveFontSize = isMobile ? 10.0 : (isTablet ? 10.5 : 11.0);
+
     return Positioned(
       width: width,
       child: CompositedTransformFollower(
@@ -2997,9 +3019,9 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
                             onTap: () => _pick(s),
                             child: Container(
                               width: double.infinity,
-                              height: 34,
+                              constraints: const BoxConstraints(minHeight: 26),
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 12),
+                                  const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                               color: active
                                   ? const Color(0xFFEEF2FF)
                                   : Colors.white,
@@ -3012,19 +3034,13 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
                                         : Colors.grey),
                                 const SizedBox(width: 8),
                                 Expanded(
-                                  child: FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(s,
-                                        maxLines: 1,
-                                        softWrap: false,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: active
-                                              ? FontWeight.w600
-                                              : FontWeight.w400,
-                                        )),
-                                  ),
+                                  child: Text(s,
+                                      style: TextStyle(
+                                        fontSize: responsiveFontSize,
+                                        fontWeight: active
+                                            ? FontWeight.w400
+                                            : FontWeight.w600,
+                                      )),
                                 ),
                               ]),
                             ),
@@ -3057,10 +3073,9 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
             controller: widget.controller,
             focusNode: _focusNode,
             style: _kValueTextStyle,
-            maxLines: null,
-            minLines: 1,
+            maxLines: 1,
             textInputAction: TextInputAction.done,
-            keyboardType: TextInputType.multiline,
+            keyboardType: TextInputType.text,
             decoration: widget.decoration,
           ),
         ),
@@ -3347,12 +3362,12 @@ class _CustomerModelAutocompleteState
                             onTap: () => _pick(c),
                             child: Container(
                               width: double.infinity,
-                              height: 48,
+                              constraints: const BoxConstraints(minHeight: 36),
                               // 8/6 instead of 12/8: the panel is only as wide as
                               // the Mobile cell, so every pixel of chrome came
                               // straight out of the text.
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 6),
+                                  horizontal: 8, vertical: 4),
                               color: active
                                   ? const Color(0xFFEEF2FF)
                                   : Colors.white,
@@ -3370,40 +3385,22 @@ class _CustomerModelAutocompleteState
                                         CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      // FittedBox, not ellipsis: the number and the
-                                      // name are what the user picks by, so a row
-                                      // too narrow for them shrinks the text to fit
-                                      // instead of cutting it off. maxLines/softWrap
-                                      // keep each on one line; nothing can overflow
-                                      // once it is scaled, so no ellipsis is needed.
-                                      FittedBox(
-                                        fit: BoxFit.scaleDown,
-                                        alignment: Alignment.centerLeft,
-                                        child: Text(
-                                          c.mobile ?? '',
-                                          maxLines: 1,
-                                          softWrap: false,
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: active
-                                                ? FontWeight.w600
-                                                : FontWeight.w500,
-                                            color: Colors.black87,
-                                          ),
+                                      Text(
+                                        c.mobile ?? '',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: active
+                                              ? FontWeight.w400
+                                              : FontWeight.w600,
+                                          color: Colors.black87,
                                         ),
                                       ),
                                       const SizedBox(height: 2),
-                                      FittedBox(
-                                        fit: BoxFit.scaleDown,
-                                        alignment: Alignment.centerLeft,
-                                        child: Text(
-                                          c.name ?? '',
-                                          maxLines: 1,
-                                          softWrap: false,
-                                          style: const TextStyle(
-                                            fontSize: 10,
-                                            color: Colors.black,
-                                          ),
+                                      Text(
+                                        c.name ?? '',
+                                        style: const TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.black,
                                         ),
                                       ),
                                     ],
