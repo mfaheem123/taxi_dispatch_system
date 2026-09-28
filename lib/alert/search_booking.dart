@@ -223,6 +223,8 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
       await deshController.dashBoardDataBinding(
         id: booking.id,
         pickBooking: true,
+
+
       );
       await Future.delayed(const Duration(seconds: 1));
     } catch (e) {

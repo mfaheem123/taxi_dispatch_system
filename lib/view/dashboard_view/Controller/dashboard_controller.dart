@@ -2890,7 +2890,7 @@ class DashboardController extends GetxController {
   List multiReservationTemp = [];
   List<DashboardVehicleTypeObject> multiVehicleList = [];
   List multiVehicleTempList = [];
-
+  bool isPickBooking = false;
   /// Validates the booking form and, when it passes, posts it.
   ///
   /// Returns `true` only when the booking actually reached the backend with a
@@ -3157,7 +3157,11 @@ class DashboardController extends GetxController {
     };
     print(markers);
     print("------------------------- ${formData}");
-    var response = await Api().post(formData,  id == null ? "bookings/add" : "bookings/update/$id",auth: true, sendCompanyId: true, );
+    var response = await Api().post(formData,  id == null ?
+    "bookings/add" :
+    "bookings/update/$id",
+      auth: true,
+      sendCompanyId: true, );
     // Null-checked: Api.post returns nothing on the "No Internet connection"
     // branch, so reading statusCode straight off it threw instead of failing
     // the save.
@@ -3435,6 +3439,9 @@ class DashboardController extends GetxController {
     String? swappedPickup,
     String? swappedDropoff,
   }) async {
+    this.isPickBooking = pickBooking;
+
+
     var response = await Api().get("bookings/getbyid/$id");
 
     if (response.statusCode == 200) {
@@ -3746,6 +3753,13 @@ class DashboardController extends GetxController {
         getFaresCalculation();
       }
 
+      if (pickBooking) {
+        // Agar controller me booking ID store ki jaa rahi ho to usko null kar dein
+        // Example: selectedBookingId = null;
+
+        // Pick booking k waqt ensure karein driver reset ho
+        selectDriverValue = null;
+      }
 
       if (hitAddBooking == true) {
         dashBoardApiValidation();
@@ -3881,6 +3895,7 @@ class DashboardController extends GetxController {
   }
 
   bool cliJobHit = false;
+
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo data binding for update
 
