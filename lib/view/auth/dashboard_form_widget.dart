@@ -2777,7 +2777,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     final w = MediaQuery.of(context).size.width;
     final isMobile = w < 640;
     final isTablet = w >= 640 && w < 1200;
-    final double responsiveFontSize = isMobile ? 10.0 : (isTablet ? 10.5 : 11.0);
+    final double baseFontSize = isMobile ? 10.0 : (isTablet ? 10.5 : 11.0);
 
     return CompositedTransformTarget(
       link: _layerLink,
@@ -2789,20 +2789,40 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
           // where typing does nothing. Key events still bubble up to here.
           canRequestFocus: false,
           onKeyEvent: _handleKey,
-          child: TextField(
-            textCapitalization: TextCapitalization.characters,
-            inputFormatters: [
-              UpperCaseTextFormatter(),
-            ],
-            key: _fieldKey,
-            onChanged: widget.onChanged,
-            controller: widget.controller,
-            focusNode: _focusNode,
-            style: _kValueTextStyle.copyWith(fontSize: responsiveFontSize),
-            maxLines: 1,
-            textInputAction: TextInputAction.done,
-            keyboardType: TextInputType.text,
-            decoration: widget.decoration,
+          child: ValueListenableBuilder<TextEditingValue>(
+            valueListenable: widget.controller,
+            builder: (context, value, child) {
+              final textLength = value.text.length;
+              double responsiveFontSize = baseFontSize;
+
+              // Estimate how many characters fit based on screen width.
+              // Uppercase characters are wider, approx 75% of font size.
+              // The field width is approximately 45-50% of the screen width.
+              double approxFieldWidth = w * 0.45; 
+              double maxCharsForBaseSize = approxFieldWidth / (baseFontSize * 0.75);
+
+              if (textLength > maxCharsForBaseSize && textLength > 0) {
+                // Scale down font size smoothly
+                responsiveFontSize = baseFontSize * (maxCharsForBaseSize / textLength);
+                if (responsiveFontSize < 7.0) responsiveFontSize = 7.0; // minimum readable size
+              }
+
+              return TextField(
+                textCapitalization: TextCapitalization.characters,
+                inputFormatters: [
+                  UpperCaseTextFormatter(),
+                ],
+                key: _fieldKey,
+                onChanged: widget.onChanged,
+                controller: widget.controller,
+                focusNode: _focusNode,
+                style: _kValueTextStyle.copyWith(fontSize: responsiveFontSize),
+                maxLines: 1,
+                textInputAction: TextInputAction.done,
+                keyboardType: TextInputType.text,
+                decoration: widget.decoration,
+              );
+            },
           ),
         ),
       ),
