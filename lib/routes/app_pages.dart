@@ -1,4 +1,3 @@
-import 'package:dashboard_new1/view/vehicles_view/create_vehicleScreen.dart';
 import 'package:dashboard_new1/view/vehicles_view/create_vehicle_types.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,25 +6,17 @@ import '../view/auth/edit_jobs.dart';
 import '../view/auth/new_login_screen.dart';
 import '../view/auth/receipt_details.dart';
 import '../view/booking_view/complete_bookingview.dart';
-import '../view/booking_view/update_booking.dart';
-import '../view/cli_Screen.dart';
 import '../view/customer/add_customerScreen.dart';
 import '../view/customer/create_complaint.dart';
 import '../view/customer/create_lost_propertyScreen.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
-import '../view/booking_view/craate_booking.dart';
 import '../view/dashboard_view/widgets/view_drivers_map.dart';
 import '../view/main_appbar/main_appbar.dart';
-import '../view/new_cli_screen.dart' hide ResponsivePassengerScreen;
 part 'app_routes.dart';
 
 class AppPages {
   AppPages._();
-
-  // static const initial = Routes.myHomePage;
   static const initial = Routes.loginScreen;
-  // static const initial = Routes.ResponsivePassengerScreen;
-  // static const initial = Routes.createBooking;
 
   /// Where an unmatched route name lands.
   ///
@@ -45,43 +36,15 @@ class AppPages {
     GetPage(
       name: _Paths.myHomePage,
       page: () => MyHomePage(),
-      // binding: DashBoardBindings(),
     ),
     GetPage(
       name: _Paths.loginScreen,
       page: () => NewLoginScreen(),
-      // binding: DashBoardBindings(),
     ),
-    // GetPage(
-    //   name: _Paths.loginScreen,
-    //   page: () => NewLoginScreen(),
-    //   // binding: DashBoardBindings(),
-    // ),
-    // GetPage(
-    //   name: _Paths.ResponsivePassengerScreen,
-    //   page: () => ResponsivePassengerScreen(),
-    //   // binding: DashBoardBindings(),
-    // ),
-    // GetPage(
-    //   name: _Paths.ResponsivePassengerScreen,
-    //   page: () => ResponsivePassengerScreen(extensionNumber: '200',),
-    //   // binding: DashBoardBindings(),
-    // ),
     GetPage(
       name: _Paths.completeBookingsScreen,
       page: () => CompleteBookingsScreen(),
       // binding: DashBoardBindings(),
-    ),
-    GetPage(
-      name: _Paths.createBooking,
-      page: () => CreateBooking(),
-      binding: DashBoardBindings(),
-      // middlewares: [AuthMiddleware()],
-    ),
-    GetPage(
-      name: _Paths.updateBooking,
-      page: () => UpdateBooking(),
-      binding: DashBoardBindings(),
     ),
     GetPage(
       name: _Paths.editJobs,

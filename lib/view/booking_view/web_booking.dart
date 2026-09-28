@@ -1,27 +1,17 @@
 import 'package:dashboard_new1/component/networks/api.dart';
-import 'package:dashboard_new1/view/booking_view/reusable_widget.dart';
-import 'package:dashboard_new1/view/booking_view/update_booking.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
 import '../../alert/delete_permission_alert.dart';
-import '../../alert/restrict_drivers_alert.dart';
 import '../../component/color.dart';
 import '../../component/customButton.dart';
-import '../../component/datatable_widget.dart';
 import '../../component/pagination.dart';
 import '../../component/responsive_datatable_widget.dart';
 import '../../component/textStyle.dart';
-import '../../component/text_field.dart';
 import '../../component/text_widget.dart';
-import '../../routes/app_pages.dart';
 import '../../utils/open_edit_booking_tab.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
-import '../dashboard_view/booking_table.dart';
-import '../dashboard_view/widgets/time_picker_widget.dart';
-import '../dashboard_view/widgets/user_info_widget.dart';
 import 'controller.dart';
 
 
