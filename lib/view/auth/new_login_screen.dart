@@ -390,7 +390,7 @@ class _NewLoginScreenState extends State<NewLoginScreen> {
                                     //   height: 45,
                                     //   child: ElevatedButton(
                                     //     onPressed: (){
-                                    //       Get.toNamed(Routes.editJobs);
+                                    //       // Get.toNamed(Routes.editJobs);
                                     //     },
                                     //     style: ElevatedButton.styleFrom(
                                     //       backgroundColor: DynamicColors.primaryClr,

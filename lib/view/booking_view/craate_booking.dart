@@ -1,8 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
-import 'package:dashboard_new1/view/dashboard_view/dashboard/F8_widget_alert.dart';
-import 'package:dashboard_new1/view/dashboard_view/dashboard/F9_widget_alert.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/pickup_widget.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/quotation_widget.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/time_picker_widget.dart';
@@ -3089,151 +3087,52 @@ class _CreateBookingState extends State<CreateBooking> {
                                         const EdgeInsets.symmetric(vertical: 8),
                                     decoration: BoxDecoration(
                                         color: DynamicColors.secondaryClr),
-                                    child: Wrap(
-                                      spacing: 10,
-                                      runSpacing: 16,
-                                      children: [
-                                        SizedBox(width: 20),
-                                        // FocusTraversalOrder(
-                                        //   order: NumericFocusOrder(
-                                        //       controller.jourValue == 'W/R'
-                                        //           ? 40
-                                        //           : 27
-                                        //   ),
-                                        //   child: labeledField(
-                                        //     context: context,
-                                        //     isMobile: isMobile,
-                                        //     label: AppText.driver,
-                                        //     width: fieldWidth / 2.3,
-                                        //     child: Container(
-                                        //       height: 30,
-                                        //       decoration: BoxDecoration(
-                                        //         borderRadius:
-                                        //             BorderRadius.circular(4),
-                                        //         border: Border.all(
-                                        //             color:
-                                        //                 DynamicColors.primaryClr),
-                                        //       ),
-                                        //       child: RestrictedDrivers(
-                                        //         width: fieldWidth / 2.3,
-                                        //         height: 30,
-                                        //         padding: 0.0,
-                                        //         titleText:
-                                        //             controller.selectedDriver,
-                                        //         driversList: [
-                                        //           "Driver 01",
-                                        //           "Driver 02",
-                                        //           "Driver 03",
-                                        //           "Driver 04"
-                                        //         ],
-                                        //       ),
-                                        //     ),
-                                        //   ),
-                                        // ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            if (controller.pickupController.text
-                                                    .isNotEmpty &&
-                                                controller.dropOffController.text
-                                                    .isNotEmpty) {
-                                              DashboardF8Alert.show();
-                                            }
-                                          },
-                                          child: Container(
-                                            // margin: EdgeInsets.symmetric(
-                                            //     horizontal: 16, vertical: 3),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 8, vertical: 3),
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  controller.isHoveredF8.value ==
-                                                          true
-                                                      ? Colors.cyanAccent.shade400
-                                                      : Colors.transparent,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                            child: Text(
-                                              '+ MULTI RESERVATION [F8]',
-                                              style: TextStyle(
-                                                color: DynamicColors.primaryClr,
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20),
+                                      child: Row(
+                                        children: [
+                                          CustomButton(
+                                            btnText: "CLEAR [F7]",
+                                            width: 110,
+                                            height: 30,
+                                            fontSize: 11,
+                                            btnColor: DynamicColors.redClr,
+                                            verticalPadding: 0.0,
+                                            borderRadius: 4,
+                                            onTap: () {
+                                              controller.refreshPostAllFields();
+                                            },
                                           ),
-                                        ),
-
-                                        GestureDetector(
-                                          onTap: () {
-                                            if (controller.pickupController.text
-                                                    .isNotEmpty &&
-                                                controller.dropOffController.text
-                                                    .isNotEmpty) {
-                                              DashboardF9Alert.show();
-                                            }
-                                          },
-                                          child: Container(
-                                            // margin: EdgeInsets.symmetric(
-                                            //     horizontal: 16, vertical: 3),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 8, vertical: 3),
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  controller.isHoveredF9.value ==
-                                                          true
-                                                      ? Colors.cyanAccent.shade400
-                                                      : Colors.transparent,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
+                                          if (permissions
+                                              .contains('create_booking_route')) ...[
+                                            SizedBox(width: 10),
+                                            CustomButton(
+                                              onTap: () {
+                                                if (controller.jourValue == 'W/R' &&
+                                                    controller.pickupTwoWayController
+                                                        .text.isEmpty &&
+                                                    controller
+                                                        .dropOffTwoWayController
+                                                        .text
+                                                        .isEmpty) {
+                                                  BotToast.showText(
+                                                      text:
+                                                          "please enter waiting return pickup and dropoff");
+                                                  return;
+                                                }
+                                                controller.dashBoardApiValidation();
+                                              },
+                                              btnText: "SAVE[HOME]",
+                                              width: 110,
+                                              height: 30,
+                                              fontSize: 11,
+                                              verticalPadding: 0.0,
+                                              borderRadius: 4,
                                             ),
-                                            child: Text(
-                                              '+ VEHICLES [F9]',
-                                              style: TextStyle(
-                                                color: DynamicColors.primaryClr,
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 15,
-                                        ),
-                                        CustomButton(
-                                          btnText: "CLEAR [F7]",
-                                          width: 110,
-                                          height: 30,
-                                          fontSize: 11,
-                                          btnColor: DynamicColors.redClr,
-                                          verticalPadding: 0.0,
-                                          borderRadius: 4,
-                                          onTap: () {
-                                            controller.refreshPostAllFields();
-                                          },
-                                        ),
-                                        if(permissions.contains('create_booking_route'))  CustomButton(
-                                          onTap: () {
-                                            if (controller.jourValue == 'W/R' &&
-                                                controller.pickupTwoWayController
-                                                    .text.isEmpty &&
-                                                controller.dropOffTwoWayController
-                                                    .text.isEmpty) {
-                                              BotToast.showText(
-                                                  text:
-                                                      "please enter waiting return pickup and dropoff");
-                                              return;
-                                            }
-                                            controller.dashBoardApiValidation();
-                                          },
-                                          btnText: "SAVE[HOME]",
-                                          width: 110,
-                                          height: 30,
-                                          fontSize: 11,
-                                          verticalPadding: 0.0,
-                                          borderRadius: 4,
-                                        ),
-                                      ],
+                                          ],
+                                        ],
+                                      ),
                                     ),
                                   ),
                                   SizedBox(

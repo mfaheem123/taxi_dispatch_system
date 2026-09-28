@@ -3,7 +3,6 @@ import 'package:dashboard_new1/view/vehicles_view/create_vehicle_types.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import '../view/auth/login_screen.dart';
 import '../view/auth/edit_jobs.dart';
 import '../view/auth/new_login_screen.dart';
 import '../view/auth/receipt_details.dart';

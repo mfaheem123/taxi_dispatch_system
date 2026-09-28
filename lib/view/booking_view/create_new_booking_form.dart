@@ -24,6 +24,7 @@ import '../../alert/extra_fares_alert.dart';
 import '../../alert/extra_info_alert.dart';
 import '../../alert/restrict_drivers_alert.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
+import '../dashboard_view/dashboard/map_view_widget.dart';
 import '../dashboard_view/models/all_addresses_model.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
 import '../locations_view/controller/locations_controller.dart';
@@ -535,6 +536,14 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
 
                             // ---- Action buttons ----
                             const ActionButtons(),
+
+                            // ---- Map (same widget as the dashboard) ----
+                            // Fixed height because the form scrolls, same as
+                            // craate_booking.dart.
+                            SizedBox(
+                              height: Get.height / 2.1,
+                              child: MapViewWidget(createBooking: true),
+                            ),
                           ],
                         ),
                         ),

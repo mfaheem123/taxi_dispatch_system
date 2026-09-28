@@ -129,37 +129,18 @@ class ActionButtons extends StatelessWidget {
   const ActionButtons({super.key});
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final wide = constraints.maxWidth >= Breakpoints.tablet;
-        // 700+ keeps the buttons last in the tab order, after every field.
-        final buttons = <Widget>[
-          _btn(700, 'MULTI BOOKING [F8]', const Color(0xFFBDBDBD),
-              Colors.black87),
-          _btn(701, 'MULTI VEHICLE [F9]', const Color(0xFFBDBDBD),
-              Colors.black87),
-          _btn(702, 'CLEAR [F7]', const Color(0xFFD32F2F), Colors.white),
-          _btn(703, 'SAVE [HOME]', const Color(0xFF312E81), Colors.white),
-        ];
-        return wide
-            ? Row(
-                children: [
-                  for (final b in buttons)
-                    Expanded(
-                        child: Padding(
-                            padding: const EdgeInsets.all(3), child: b)),
-                ],
-              )
-            : Column(
-                children: [
-                  for (final b in buttons)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 3),
-                      child: SizedBox(width: double.infinity, child: b),
-                    ),
-                ],
-              );
-      },
+    // 700+ keeps the buttons last in the tab order, after every field.
+    final buttons = <Widget>[
+      _btn(700, 'CLEAR [F7]', const Color(0xFFD32F2F), Colors.white),
+      _btn(701, 'SAVE [HOME]', const Color(0xFF312E81), Colors.white),
+    ];
+    // Two buttons fit side by side at any width, so phone and web share one row.
+    return Row(
+      children: [
+        for (final b in buttons)
+          Expanded(
+              child: Padding(padding: const EdgeInsets.all(3), child: b)),
+      ],
     );
   }
 
@@ -174,7 +155,8 @@ class ActionButtons extends StatelessWidget {
             // The height comes from minimumSize, not the padding — so the row
             // follows the one button knob instead of drifting with the font.
             padding: const EdgeInsets.symmetric(vertical: 4),
-            minimumSize: const Size(0, Density.buttonHeight),
+            // Taller than Density.buttonHeight so CLEAR / SAVE stand out.
+            minimumSize: const Size(0, 40),
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
