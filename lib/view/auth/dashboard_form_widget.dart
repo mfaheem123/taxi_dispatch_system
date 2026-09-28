@@ -2743,9 +2743,9 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
                             onTap: () => _pick(a),
                             child: Container(
                               width: double.infinity,
-                              constraints: const BoxConstraints(minHeight: 48),
+                              constraints: const BoxConstraints(minHeight: 34),
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
+                                  horizontal: 12, vertical: 4),
                               color: active
                                   ? const Color(0xFFEEF2FF)
                                   : Colors.white,
@@ -2755,8 +2755,8 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
                                 style: TextStyle(
                                   fontSize: responsiveFontSize,
                                   fontWeight: active
-                                      ? FontWeight.w600
-                                      : FontWeight.w500,
+                                      ? FontWeight.w400
+                                      : FontWeight.w600,
                                   color: Colors.black87,
                                 ),
                               ),
@@ -2774,6 +2774,11 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
 
   @override
   Widget build(BuildContext context) {
+    final w = MediaQuery.of(context).size.width;
+    final isMobile = w < 640;
+    final isTablet = w >= 640 && w < 1200;
+    final double responsiveFontSize = isMobile ? 10.0 : (isTablet ? 10.5 : 11.0);
+
     return CompositedTransformTarget(
       link: _layerLink,
       child: GlowFocus(
@@ -2793,7 +2798,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
             onChanged: widget.onChanged,
             controller: widget.controller,
             focusNode: _focusNode,
-            style: _kValueTextStyle,
+            style: _kValueTextStyle.copyWith(fontSize: responsiveFontSize),
             maxLines: 1,
             textInputAction: TextInputAction.done,
             keyboardType: TextInputType.text,
@@ -3014,8 +3019,8 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
                                       style: TextStyle(
                                         fontSize: responsiveFontSize,
                                         fontWeight: active
-                                            ? FontWeight.w600
-                                            : FontWeight.w400,
+                                            ? FontWeight.w400
+                                            : FontWeight.w600,
                                       )),
                                 ),
                               ]),
@@ -3366,8 +3371,8 @@ class _CustomerModelAutocompleteState
                                         style: TextStyle(
                                           fontSize: 12,
                                           fontWeight: active
-                                              ? FontWeight.w600
-                                              : FontWeight.w500,
+                                              ? FontWeight.w400
+                                              : FontWeight.w600,
                                           color: Colors.black87,
                                         ),
                                       ),
