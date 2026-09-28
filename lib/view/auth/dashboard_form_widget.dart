@@ -1547,7 +1547,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
           suffixIconConstraints:
-              const BoxConstraints(minWidth: 60, minHeight: 32),
+              const BoxConstraints(minHeight: 24),
           suffixIcon: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
@@ -1560,32 +1560,31 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   ? FocusTraversalOrder(
                       order: NumericFocusOrder(tabBase + 1.3),
                       child: GlowFocus(
-                        radius: 14,
+                        radius: 12,
                         child: IconButton(
                           tooltip: 'Clear',
                           onPressed: onPressed,
                           icon: const Icon(Icons.close,
                               size: 16, color: Colors.grey),
                           padding: EdgeInsets.zero,
-                          constraints:
-                              const BoxConstraints(minWidth: 28, minHeight: 28),
-                          splashRadius: 16,
+                          constraints: const BoxConstraints(),
+                          splashRadius: 14,
                         ),
                       ),
                     )
                   : const SizedBox.shrink(),
+              const SizedBox(width: 2),
               FocusTraversalOrder(
                 order: NumericFocusOrder(tabBase + 1.6),
                 child: GlowFocus(
-                  radius: 14,
+                  radius: 12,
                   child: IconButton(
                     tooltip: actionTooltip,
                     onPressed: onCurrentLocation,
                     icon: Icon(actionIcon, size: 16, color: Colors.grey),
                     padding: EdgeInsets.zero,
-                    constraints:
-                        const BoxConstraints(minWidth: 28, minHeight: 28),
-                    splashRadius: 16,
+                    constraints: const BoxConstraints(),
+                    splashRadius: 14,
                   ),
                 ),
               ),
