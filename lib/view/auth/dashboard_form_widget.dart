@@ -1544,10 +1544,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         focusNode: addressFocusNode,
         fallbackFocusNode: _shortcutFocusNode,
         decoration: _inputDecoration().copyWith(
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
           suffixIconConstraints:
-              const BoxConstraints(minHeight: 24),
+              const BoxConstraints(minHeight: 29),
           suffixIcon: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
@@ -2742,9 +2740,9 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
                             onTap: () => _pick(a),
                             child: Container(
                               width: double.infinity,
-                              constraints: const BoxConstraints(minHeight: 34),
+                              constraints: const BoxConstraints(minHeight: 26),
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 4),
+                                  horizontal: 8, vertical: 2),
                               color: active
                                   ? const Color(0xFFEEF2FF)
                                   : Colors.white,
@@ -3019,9 +3017,9 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
                             onTap: () => _pick(s),
                             child: Container(
                               width: double.infinity,
-                              constraints: const BoxConstraints(minHeight: 34),
+                              constraints: const BoxConstraints(minHeight: 26),
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                               color: active
                                   ? const Color(0xFFEEF2FF)
                                   : Colors.white,
@@ -3362,12 +3360,12 @@ class _CustomerModelAutocompleteState
                             onTap: () => _pick(c),
                             child: Container(
                               width: double.infinity,
-                              height: 48,
+                              constraints: const BoxConstraints(minHeight: 36),
                               // 8/6 instead of 12/8: the panel is only as wide as
                               // the Mobile cell, so every pixel of chrome came
                               // straight out of the text.
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 6),
+                                  horizontal: 8, vertical: 4),
                               color: active
                                   ? const Color(0xFFEEF2FF)
                                   : Colors.white,
