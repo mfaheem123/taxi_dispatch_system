@@ -5,7 +5,9 @@ import 'package:dashboard_new1/view/accounts/controller/account_controller.dart'
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../component/color.dart';
 import '../../component/networks/api.dart';
+import '../../component/textStyle.dart';
 
 class DepartmentAlert {
   static void show() {
@@ -29,8 +31,8 @@ class DepartmentAlert {
               return FocusTraversalGroup(
                 policy: OrderedTraversalPolicy(),
                 child: Container(
-                  width: Get.width * 0.6,
-                  padding: const EdgeInsets.all(14),
+                  width: Get.width * 0.3,
+                  // padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(8),
@@ -47,12 +49,18 @@ class DepartmentAlert {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: DynamicColors.gryClr.withOpacity(0.5),
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                          ),
+                          child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                           Text(
                             "DEPARTMENT",
-                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                            style: titleDesign()
                           ),
                           FocusTraversalOrder(
                             order: const NumericFocusOrder(999),
@@ -64,19 +72,25 @@ class DepartmentAlert {
                             ),
                           ),
                         ],
-                      ),
+                      )),
 
                       const SizedBox(height: 10),
 
-                      Row(
+                      Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Row(
                         children: [
-                          _buildField("DEPARTMENT", controller.dpartmentCtrl, autofocus: true, order: 1),
+                          _buildField("DEPARTMENT NAME", controller.dpartmentCtrl, autofocus: true, order: 1),
                           const SizedBox(width: 8),
 
                           if(permissions.contains('create_account_department')) FocusTraversalOrder(
                             order: const NumericFocusOrder(2),
-                            child: SizedBox(
-                              width: 100,
+                            child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                const SizedBox(height: 18),
+                            SizedBox(
+                              width: 150,
                               height: 34,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -84,9 +98,7 @@ class DepartmentAlert {
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                                 ),
                                 onPressed: (){
-
                                   if (controller.dpartmentCtrl.text.isEmpty ) return;
-
                                   setState(() {
                                     if (editingIndex == null) {
                                       controller.accountDepartmentList.add(controller.dpartmentCtrl.text);
@@ -95,66 +107,85 @@ class DepartmentAlert {
                                       editingIndex = null;
                                     }
                                   });
-
                                   print(controller.accountDepartmentList);
-
-                                    // clear fields
                                     controller.dpartmentCtrl.clear();
-
                                 },
-                                // onPressed: saveRow,
                                 child: Text(
                                   editingIndex == null ? "SAVE" : "UPDATE",
-                                  style: const TextStyle(fontSize: 13, color: Colors.white),
+                                  style: mozillaTextSemiBoldText(fontSize: 13, color: Colors.white),
                                 ),
                               ),
                             ),
+                            ]),
                           ),
                         ],
-                      ),
+                      )),
 
 
 
                     const SizedBox(height: 12),
 
                     // Table Header
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
+                        color: const Color(0xFFF1F3F5),
                         borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: Colors.grey.shade300),
                       ),
+                      child: IntrinsicHeight(
                       child: Row(
-                        children: const [
-
-                          Expanded(child: Text("DEPARTMENT", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
-
-                          Expanded(child: Text("ACTIONS", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
-
+                        children: [
+                          Expanded(flex: 3,
+                        child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                            child: Center(child: Text("DEPARTMENT", style: outFitRegular(fontSize: 13, fontWeight: FontWeight.bold)))
+                        )),
+                          VerticalDivider(
+                              width: 1,
+                              thickness: 1,
+                              color: Colors.grey.shade300),
+                          Expanded(flex: 3,
+                            child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                                child: Center(child: Text("ACTIONS", style: outFitRegular(fontSize: 13, fontWeight: FontWeight.bold)))
+                            )),
                         ],
                       ),
-                    ),
+                    ))),
 
                     // Table Body
                     ...controller.accountDepartmentList.asMap().entries.map((entry) {
                       int index = entry.key;
                       var row = entry.value;
-                      return Container(
-                        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(color: Colors.grey.shade200),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(child: Text(row)),
+                      return  Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              child: IntrinsicHeight(
+                                child: Row(
+                                  children: [
+                                    Expanded(flex: 3,
+                                  child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                                      child: Center(child: Text(row)))),
+
+                                    VerticalDivider(
+                                        width: 1,
+                                        thickness: 1,
+                                        color: Colors.grey.shade300),
 
                             Expanded(
+                              flex: 3,
                               child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     if(permissions.contains('update_account_department')) ActionIconButton(
-                                      icon: Icons.edit,
+                                      icon: Icons.edit_calendar,
                                       color: const Color(0xFF43489A),
                                       order: 10.0 + index * 2.0,
                                       onPressed: () {
@@ -167,7 +198,7 @@ class DepartmentAlert {
                                     ),
                                     const SizedBox(width: 4),
                                     if(permissions.contains('delete_account_department')) ActionIconButton(
-                                      icon: Icons.delete,
+                                      icon: Icons.delete_forever,
                                       color: Colors.red,
                                       order: 10.0 + index * 2.0 + 1.0,
                                       onPressed: () {
@@ -186,8 +217,11 @@ class DepartmentAlert {
                             ),
                           ],
                         ),
+                              )),
                       );
                     }),
+
+                      SizedBox(height: 20),
                   ],
                 ),
               )
@@ -201,23 +235,29 @@ class DepartmentAlert {
   }
 
   static Widget _buildField(String label, TextEditingController controller, {bool autofocus = false, double? order}) {
-    Widget field = SizedBox(
+    Widget field = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+      Text(label, style: outFitRegular(fontSize: 13, fontWeight: FontWeight.bold),
+    ),
+    const SizedBox(height: 4),
+    SizedBox(
       height: 32,
       child: TextField(
         autofocus: autofocus,
         controller: controller,
         textCapitalization: TextCapitalization.characters,
         inputFormatters: [UpperCaseTextFormatter()],
-        style: const TextStyle(fontSize: 12),
+        style: outFitRegular(fontSize: 12),
         decoration: InputDecoration(
-          labelText: label,
-          labelStyle: const TextStyle(fontSize: 11),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6),
           ),
           contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         ),
       ),
+    )]
     );
 
     if (order != null) {
