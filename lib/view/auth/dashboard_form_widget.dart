@@ -195,6 +195,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   /// cannot drift apart one edit at a time.
   static const _kLabelColumnWidth = 62.0;
   static const _kFieldGap = 4.0;
+
+  /// Width the slot between the tag column and the PICKUP / DROP field opens
+  /// to while the search loader shows. It is 0 the rest of the time, so the
+  /// field only gives up this width while a search is running.
+  static const _kLoaderSlotWidth = 22.0;
   static const _fsField = 12.0;
   static const _fsSection = 12.0;
   static const _fsTab = 12.0;
@@ -402,6 +407,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       setState(() => _selectedPickup = addr),
                                   1,
                                   zoneLabel: (z) => z.name!,
+                                  searchFieldName: "PICKUP LOCATION",
                                   onPickIndex: (index) {
                                     controller.tapSelect(index);
                                   },
@@ -560,6 +566,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       setState(() => _selectedDrop = addr),
                                   4,
                                   zoneLabel: (z) => z.name!,
+                                  searchFieldName: "DROP LOCATION",
                                   onPickIndex: (index) =>
                                       controller.tapSelect(index),
                                   onPressed: () {
@@ -1057,6 +1064,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             },
             19,
             zoneLabel: (z) => z.name!,
+            searchFieldName: "PICKUP TWO WAY LOCATION",
             onPickIndex: (index) => controller.tapSelect(index),
             onPressed: () {
               FocusScope.of(Get.context!)
@@ -1189,6 +1197,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             },
             23,
             zoneLabel: (z) => z.name!,
+            searchFieldName: "DROP TWO WAY LOCATION",
             onPickIndex: (index) => controller.tapSelect(index),
             onPressed: () {
               FocusScope.of(Get.context!)
@@ -1550,6 +1559,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ValueChanged<AllAddressesModel>? onAddressSelected,
       int tabBase, {
         String Function(T)? zoneLabel,
+        // The fieldName this row searches under (e.g. "PICKUP LOCATION"); the
+        // loader in front of the text shows while that search is running.
+        String? searchFieldName,
         VoidCallback? onCurrentLocation,
         ValueChanged<int>? onPickIndex,
         TextEditingController? notesController, // ← notes field controller
@@ -1639,6 +1651,54 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         ),
       ),
     );
+    // Small loader shown OUTSIDE the field, just before it, while this row's
+    // address search (debounce + API call) is waiting on results.
+    // `this.controller` is the DashboardController — the `controller`
+    // parameter here is the row's TextEditingController.
+    bool isSearching() =>
+        searchFieldName != null &&
+        this.controller.addressSearchField.value == searchFieldName;
+    final spinner = SizedBox(
+      width: _sz(16),
+      height: _sz(16),
+      // Stroke drawn INSIDE the 14px box: centred on the edge (the default
+      // here), half of it spilled outside and the slot's ClipRect cut it off.
+      child: const CircularProgressIndicator(
+        strokeWidth: 2.6,
+        strokeAlign: CircularProgressIndicator.strokeAlignInside,
+        color: _purple,
+      ),
+    );
+    final loader = Obx(
+            () => isSearching() ? spinner : const SizedBox.shrink());
+    // Desktop slot: animates open to _kLoaderSlotWidth while searching and
+    // back to 0 after, so the address field shrinks a little for the loader
+    // and gets its full width back once results land. OverflowBox keeps the
+    // spinner at full size while the slot animates; ClipRect hides the part
+    // outside the slot.
+    final loaderSlot = Obx(() {
+      final on = isSearching();
+      return ClipRect(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          curve: Curves.easeOut,
+          width: on ? _sz(_kLoaderSlotWidth) : 0,
+          // A fixed height is required: this sits in a Row inside the form's
+          // scroll view, so the incoming max height is infinite, and
+          // OverflowBox sizes itself to the biggest size it is allowed — an
+          // unbounded slot made the whole form infinitely tall.
+          height: _sz(14),
+          child: OverflowBox(
+            alignment: Alignment.centerLeft,
+            minWidth: 0,
+            minHeight: 0,
+            maxWidth: _sz(_kLoaderSlotWidth),
+            // The spinner hugs the tag side, leaving a gap before the field.
+            child: on ? spinner : const SizedBox.shrink(),
+          ),
+        ),
+      );
+    });
     final zoneDd = _dropdown<T>(
       null,
       zone,
@@ -1671,7 +1731,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     );
     if (isMobile) {
       return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        tag,
+        Row(children: [tag, const SizedBox(width: 6), loader]),
         const SizedBox(height: 4),
         address,
         const SizedBox(height: 4),
@@ -1692,6 +1752,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         // The FL/ARP rows below use the same 62 so the whole form shares one
         // left edge.
         SizedBox(width: _sz(_kLabelColumnWidth), child: tag),
+        loaderSlot,
         Expanded(flex: 5, child: address),
         const SizedBox(width: _kFieldGap),
         // Zone and notes are kept narrow so the Expanded address field gets

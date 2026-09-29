@@ -997,10 +997,18 @@ class DashboardController extends GetxController {
   RxString selectedTextFieldsValue = "".obs;
   RxBool dropDownShow = false.obs;
 
+  /// fieldName of the address search currently waiting on results (debounce +
+  /// API call), or '' when none is. The PICKUP / DROP fields watch it to show
+  /// a small loader in front of the text.
+  RxString addressSearchField = ''.obs;
+
   Future<void> onChangeHandler(
       {required String fieldName, required String searchingText}) async {
     const duration = Duration(milliseconds: 350); // 350ms ka delay
     selectedTextFieldsValue.value = fieldName;
+    // Loader starts with the keystroke, not the request, so it also covers the
+    // debounce gap where the list still shows the previous results.
+    addressSearchField.value = searchingText.trim().isEmpty ? '' : fieldName;
     //  Agar pehle se koi timer chal raha ho to usse cancel karo
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     //  Naya timer start karo
@@ -1093,6 +1101,16 @@ class DashboardController extends GetxController {
 
   getAddresses({fieldsName, searchingText}) async {
     final seq = ++_addressSearchSeq;
+    try {
+      await _searchAddresses(seq, searchingText);
+    } finally {
+      // Only the newest search clears the loader; an older one finishing late
+      // must not hide it while the newer request is still in flight.
+      if (seq == _addressSearchSeq) addressSearchField.value = '';
+    }
+  }
+
+  Future<void> _searchAddresses(int seq, searchingText) async {
     var response = await Api().get(
         "services/search?search=${searchingText.toString().toUpperCase()}",
         auth: true);
@@ -1133,7 +1151,9 @@ class DashboardController extends GetxController {
         print("searching result list ${allAddressesData.length}");
         update();
       } else {
-        openStreetMapApi(searchingText: searchingText.toString().toUpperCase());
+        // Awaited so the loader stays up through the postcode fallback too.
+        await openStreetMapApi(
+            searchingText: searchingText.toString().toUpperCase());
       }
     }
   }
@@ -1149,7 +1169,7 @@ class DashboardController extends GetxController {
 
     if (response.statusCode == 200) {
       allAddressesData.clear();
-      pickLocationAddress(response.data['result']['latitude'],
+      await pickLocationAddress(response.data['result']['latitude'],
           response.data['result']['longitude']);
     }
   }
