@@ -1,3 +1,4 @@
+import 'package:dashboard_new1/component/action_icon_button.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
@@ -189,7 +190,7 @@ class ShiftAlert {
 
                         // Table Header
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 26.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: Container(
                             decoration: BoxDecoration(
                               color: const Color(0xFFF1F3F5),
@@ -251,7 +252,7 @@ class ShiftAlert {
 
                           return Padding(
                             padding:
-                                const EdgeInsets.symmetric(horizontal: 26.0),
+                                const EdgeInsets.symmetric(horizontal: 20.0),
                             child: Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,
@@ -296,11 +297,9 @@ class ShiftAlert {
                                         mainAxisAlignment:
                                         MainAxisAlignment.center,
                                         children: [
-                                          IconButton(
-                                            constraints: const BoxConstraints(),
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 4),
-                                            icon: Icon(Icons.edit_calendar, size: 18, color: DynamicColors.primaryClr),
+                                          ActionIconButton(
+                                            icon: Icons.edit_calendar,
+                                            color: DynamicColors.primaryClr,
                                             onPressed: () {
                                               setState(() {
                                                 editingIndex = index;
@@ -313,10 +312,9 @@ class ShiftAlert {
                                           ),
                                           if (permissions
                                               .contains('delete_driver_shift'))
-                                            IconButton(
-                                              constraints: const BoxConstraints(),
-                                              padding: const EdgeInsets.symmetric(horizontal: 4),
-                                              icon: const Icon(Icons.delete_forever, size: 18, color: Colors.red),
+                                            ActionIconButton(
+                                              icon: Icons.delete_forever,
+                                              color: Colors.red,
                                               onPressed: () {
                                                 setState(() {
                                                   if (editingIndex == index)
@@ -569,7 +567,7 @@ class NoteAlert {
 
                       // Table Header
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 26.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
                         child: Container(
                           decoration: BoxDecoration(
                             color: const Color(0xFFF1F3F5),
@@ -628,7 +626,7 @@ class NoteAlert {
 
                         return Padding(
                             padding:
-                                const EdgeInsets.symmetric(horizontal: 26.0),
+                                const EdgeInsets.symmetric(horizontal: 20.0),
                             child: Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,
@@ -673,8 +671,9 @@ class NoteAlert {
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        IconButton(
-                                          icon: const Icon(Icons.edit_calendar, size: 18, color: Color(0xFF43489A)),
+                                        ActionIconButton(
+                                          icon: Icons.edit_calendar,
+                                          color: DynamicColors.primaryClr,
                                           onPressed: () {
                                             setState(() {
                                               editingIndex = index;
@@ -682,8 +681,9 @@ class NoteAlert {
                                             });
                                           },
                                         ),
-                                        IconButton(
-                                          icon: const Icon(Icons.delete_forever, size: 18, color: Colors.red),
+                                        ActionIconButton(
+                                          icon: Icons.delete_forever,
+                                          color: Colors.red,
                                           onPressed: () {
                                             setState(() {
                                               controller.noteList.removeAt(index);
