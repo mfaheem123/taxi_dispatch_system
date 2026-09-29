@@ -147,7 +147,7 @@ class _DispatchBookingState extends State<DispatchBooking> {
                       columns: [
                         _buildDataColumn("ID", Icons.badge_outlined),
                         _buildDataColumn("DRIVER NAME", Icons.person_outline),
-                        _buildDataColumn("VEHICLE", Icons.person_outline),
+                        _buildDataColumn("VEHICLE", Icons.car_rental_sharp),
                         _buildDataColumn("SUBSIDIARY", Icons.apartment_rounded),
                         _buildDataColumn("STATUS", Icons.bar_chart_rounded),
                         _buildDataColumn("ATTRIBUTES", Icons.local_offer_outlined),

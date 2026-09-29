@@ -2084,11 +2084,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 return;
               }
               controller.dashBoardApiValidation(
-                  id: controller.jobDetails == null
-                      ? null
-                      : controller.cliJobHit == true
-                      ? null
-                      : int.parse(controller.jobDetails!.id!));
+                id: (controller.jobDetails == null ||
+                    controller.cliJobHit == true ||
+                    controller.isPickBooking == true) // <-- Yahan check add karein
+                    ? null
+                    : int.parse(controller.jobDetails!.id!),
+              );
             },
             icon: const Icon(Icons.home_outlined, size: 16),
             label: const Text('SAVE [HOME]'),

@@ -30,7 +30,6 @@ class DispatchController extends GetxController {
       BotToast.showText(text: 'Booking or Driver ID is missing');
       return;
     }
-
       isAssigning(true);
       var formData = {
         "booking_id": bookingId.toString(),

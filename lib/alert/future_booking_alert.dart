@@ -129,9 +129,9 @@ class _FutureBookingAlertState extends State<FutureBookingAlert> {
                                 headingRowColor: WidgetStateProperty.all(Colors.grey.shade50),
                                 border: TableBorder.all(color: Colors.grey.shade300, width: 1),
                                 columns: [
-                                  _buildDataColumn("ID", Icons.badge_outlined),
+                                  _buildDataColumn("USERNAME", Icons.badge_outlined),
                                   _buildDataColumn("DRIVER NAME", Icons.person_outline),
-                                  _buildDataColumn("VEHICLE", Icons.person_outline),
+                                  _buildDataColumn("VEHICLE", Icons.car_rental_sharp),
                                   _buildDataColumn("STATUS", Icons.bar_chart_rounded),
                                   _buildDataColumn("ATTRIBUTES", Icons.local_offer_outlined),
                                   _buildDataColumn("ACTION", Icons.bolt_rounded),
