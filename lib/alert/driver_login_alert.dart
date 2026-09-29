@@ -30,7 +30,7 @@ class DriverExpiryDocumentsAlert {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         child: Container(
           width: 1000,
-          height: 400,
+          // height: 400,
           // padding: const EdgeInsets.all(20),
           padding: const EdgeInsets.only(bottom: 10),
           child: Column(
@@ -61,7 +61,10 @@ class DriverExpiryDocumentsAlert {
               )),
               const SizedBox(height: 10),
 
-              Flexible(
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.3,
+                ),
                 child: RawScrollbar(
                   controller: scrollController,
                   thumbVisibility: true,

@@ -132,68 +132,70 @@ class _DriverFormState extends State<DriverForm> {
                                   Container(
                                     height: 35,
                                     width: 145,
-                                    padding: const EdgeInsets.only(left: 8),
                                     decoration: BoxDecoration(
                                       color: DynamicColors.primaryClr,
                                       borderRadius: BorderRadius.circular(4),
                                     ),
-                                    child: DropdownButtonHideUnderline(
-                                      child: DropdownButton<String>(
-                                        isExpanded: true,
-                                        icon: Icon(Icons.arrow_drop_down,
-                                            color: DynamicColors.whiteClr,
-                                            size: 20),
-                                        dropdownColor: Colors.white,
-                                        focusColor: Colors.transparent,
-                                        hint: Center(
-                                          child: Text("DOWNLOAD PDF",
-                                              style: mozillaTextRegularText(
-                                                  fontSize: 12,
-                                                  color: DynamicColors.whiteClr)),
-                                        ),
-                                        items: [
-                                          DropdownMenuItem<String>(
-                                            value: 'driver',
-                                            child: Text('DRIVER INFORMATION',
-                                                style: mozillaTextRegularText(
-                                                    fontSize: 12,
-                                                    color: Colors.black)),
-                                          ),
-                                          DropdownMenuItem<String>(
-                                            value: 'vehicle',
-                                            child: Text('VEHICLE INFORMATION',
-                                                style: mozillaTextRegularText(
-                                                    fontSize: 12,
-                                                    color: Colors.black)),
-                                          ),
-                                        ],
-                                        onChanged: (String? value) {
-                                          if (value == 'driver') {
-                                            controller.downloadDriverInfoPdf();
-                                          } else if (value == 'vehicle') {
-                                            controller.downloadVehicleInfoPdf();
-                                          }
-                                        },
-                                        selectedItemBuilder:
-                                            (BuildContext context) {
-                                          return [
-                                            Center(
-                                              child: Text("DOWNLOAD PDF",
-                                                  style: mozillaTextRegularText(
-                                                      fontSize: 12,
-                                                      color: DynamicColors
-                                                          .whiteClr)),
-                                            ),
-                                            Center(
-                                              child: Text("DOWNLOAD PDF",
-                                                  style: mozillaTextRegularText(
-                                                      fontSize: 12,
-                                                      color: DynamicColors
-                                                          .whiteClr)),
-                                            ),
-                                          ];
-                                        },
+                                    child: PopupMenuButton<String>(
+                                      offset: const Offset(0, 40),
+                                      color: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(4),
                                       ),
+                                      tooltip: '',
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Expanded(
+                                              child: Center(
+                                                child: Text(
+                                                  "DOWNLOAD PDF",
+                                                  style: mozillaTextRegularText(
+                                                    fontSize: 12,
+                                                    color: DynamicColors.whiteClr,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Icon(
+                                              Icons.arrow_drop_down,
+                                              color: DynamicColors.whiteClr,
+                                              size: 20,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      onSelected: (String value) {
+                                        if (value == 'driver') {
+                                          controller.downloadDriverInfoPdf();
+                                        } else if (value == 'vehicle') {
+                                          controller.downloadVehicleInfoPdf();
+                                        }
+                                      },
+                                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                                        PopupMenuItem<String>(
+                                          value: 'driver',
+                                          child: Text(
+                                            'DRIVER INFORMATION',
+                                            style: mozillaTextRegularText(
+                                              fontSize: 12,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                        PopupMenuItem<String>(
+                                          value: 'vehicle',
+                                          child: Text(
+                                            'VEHICLE INFORMATION',
+                                            style: mozillaTextRegularText(
+                                              fontSize: 12,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],

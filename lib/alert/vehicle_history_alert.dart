@@ -3,6 +3,8 @@ import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../component/alert_close_button.dart';
+
 class VehicleHistoryAlert {
   static void show() {
     Get.dialog(
@@ -12,12 +14,12 @@ class VehicleHistoryAlert {
         child: Align(
           alignment: Alignment.topCenter,
           child: Container(
-            width: Get.width * 0.9,
+            width: 1000,
             constraints: BoxConstraints(
               minHeight: 200,
               maxHeight: Get.height * 0.8,
             ),
-            padding: const EdgeInsets.all(14),
+            // padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(8),
@@ -34,7 +36,13 @@ class VehicleHistoryAlert {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: DynamicColors.gryClr.withOpacity(0.5),
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                    ),
+                    child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
@@ -42,66 +50,90 @@ class VehicleHistoryAlert {
                       style: mozillaTextSemiBoldText(
                           fontSize: 15, color: DynamicColors.textClr),
                     ),
-                    InkWell(
-                      onTap: () {
-                        Get.back();
-                      },
-                      child: const Icon(Icons.close,
-                          size: 20, color: Colors.black54),
+                    const Spacer(),
+                    FocusTraversalOrder(
+                      order: const NumericFocusOrder(999),
+                      child: const AlertCloseButton(),
                     ),
                   ],
-                ),
+                )),
                 const SizedBox(height: 20),
                 
                 // Table Header
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Row(
+                Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF1F3F5),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: Colors.grey.shade300),
+                        ),
+                        child: IntrinsicHeight(
+                          child: Row(
                     children: [
                       Expanded(
-                          child: Text("START DATE",
-                              style: mozillaTextSemiBoldText(
-                                  fontSize: 12))),
+                        flex: 3,
+                          child: Center(child: Text("START DATE", style: mozillaTextSemiBoldText(fontSize: 12)))),
+                      VerticalDivider(
+                          width: 1,
+                          thickness: 1,
+                          color: Colors.grey.shade300),
                       Expanded(
-                          child: Text("END DATE",
-                              style: mozillaTextSemiBoldText(
-                                  fontSize: 12))),
+                        flex: 3,
+                          child: Center(child: Text("END DATE", style: mozillaTextSemiBoldText(fontSize: 12)))),
+                      VerticalDivider(
+                          width: 1,
+                          thickness: 1,
+                          color: Colors.grey.shade300),
                       Expanded(
-                          child: Text("VEHICLE #",
-                              style: mozillaTextSemiBoldText(
-                                  fontSize: 12))),
+                        flex: 3,
+                          child: Center(child: Text("VEHICLE #", style: mozillaTextSemiBoldText(fontSize: 12)))),
+                      VerticalDivider(
+                          width: 1,
+                          thickness: 1,
+                          color: Colors.grey.shade300),
                       Expanded(
-                          child: Text("VEHICLE TYPE",
-                              style: mozillaTextSemiBoldText(
-                                  fontSize: 12))),
+                        flex: 3,
+                          child: Center(child: Text("VEHICLE TYPE", style: mozillaTextSemiBoldText(fontSize: 12)))),
+                      VerticalDivider(
+                          width: 1,
+                          thickness: 1,
+                          color: Colors.grey.shade300),
                       Expanded(
-                          child: Text("OWNER",
-                              style: mozillaTextSemiBoldText(
-                                  fontSize: 12))),
+                        flex: 3,
+                          child: Center(child: Text("OWNER", style: mozillaTextSemiBoldText(fontSize: 12)))),
+                      VerticalDivider(
+                          width: 1,
+                          thickness: 1,
+                          color: Colors.grey.shade300),
                       Expanded(
-                          child: Text("MAKE",
-                              style: mozillaTextSemiBoldText(
-                                  fontSize: 12))),
+                        flex: 3,
+                          child: Center(child: Text("MAKE", style: mozillaTextSemiBoldText(fontSize: 12)))),
+                      VerticalDivider(
+                          width: 1,
+                          thickness: 1,
+                          color: Colors.grey.shade300),
                       Expanded(
-                          child: Text("MODEL",
-                              style: mozillaTextSemiBoldText(
-                                  fontSize: 12))),
+                        flex: 3,
+                          child: Center(child: Text("MODEL", style: mozillaTextSemiBoldText(fontSize: 12)))),
+                      VerticalDivider(
+                          width: 1,
+                          thickness: 1,
+                          color: Colors.grey.shade300),
                       Expanded(
-                          child: Text("LOG BOOK #",
-                              style: mozillaTextSemiBoldText(
-                                  fontSize: 12))),
+                        flex: 3,
+                          child: Center(child: Text("LOG BOOK #", style: mozillaTextSemiBoldText(fontSize: 12)))),
+                      VerticalDivider(
+                          width: 1,
+                          thickness: 1,
+                          color: Colors.grey.shade300),
                       Expanded(
-                          flex: 2,
-                          child: Text("LOG BOOK DOCUMENT",
-                              style: mozillaTextSemiBoldText(
-                                  fontSize: 12))),
+                          flex: 3,
+                          child: Center(child: Text("LOG BOOK DOCUMENT", style: mozillaTextSemiBoldText(fontSize: 12)))),
                     ],
                   ),
-                ),
+                ))
+                    ),
                 
                 const SizedBox(height: 10),
                 
