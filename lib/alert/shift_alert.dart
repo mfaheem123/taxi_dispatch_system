@@ -146,15 +146,24 @@ class ShiftAlert {
                                       Expanded(
                                         flex: 3,
                                         child: SizedBox(
-                                          height: 34,
-                                          child: CustomButton(
-                                            width: 150,
-                                            height: 30,
-                                            verticalPadding: 0.0,
-                                            btnText: editingIndex != null ? "UPDATE" : "SAVE",
-                                            borderRadius: 4,
-                                            style: outFitRegular(fontSize: 14, color: DynamicColors.whiteClr),
-                                            onTap: () {
+                                          height: 30,
+                                          child:  ElevatedButton.icon(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: DynamicColors.primaryClr,
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(6)),
+                                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                                            ),
+                                            icon: Icon(Icons.add_circle, size: 16),
+                                            label: Text(
+                                              editingIndex != null ? "UPDATE SHIFT" : "ADD SHIFT",
+                                              style: outFitRegular(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 13,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            onPressed: () {
                                               if (editingIndex != null) {
                                                 controller.shiftList[editingIndex!] =
                                                     ShiftAlertClass(
