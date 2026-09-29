@@ -42,7 +42,7 @@ const _kChromeFontFamily = 'Outfit-Regular';
 /// What the user typed or picked: bold, tracked, pure black — so a filled
 /// field reads apart from an empty one at a glance.
 const _kValueTextStyle = TextStyle(
-  fontSize: 12,
+  fontSize: 11,
   fontWeight: FontWeight.w700,
   letterSpacing: 0.5,
   color: Colors.black,
@@ -76,31 +76,31 @@ const _kLabelTextStyle = TextStyle(
 /// label. Lives at top level so the dropdowns can be decorated from the same
 /// place as the text fields instead of drawing a look-alike box of their own.
 InputDecoration _kFieldDecoration() => InputDecoration(
-      isDense: true,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
-      // Focused fields tint their background. InputDecorator resolves fillColor
-      // against its own state set (which carries WidgetState.focused), so this
-      // covers every field, dropdown, the date field and the time field in one
-      // place. The unfocused value is white — the same as the card behind it —
-      // so nothing looks different until focus actually arrives.
-      filled: true,
-      fillColor: WidgetStateColor.resolveWith((states) =>
-          states.contains(WidgetState.focused) ? _kFocusFill : Colors.white),
-      hintStyle: _kHintTextStyle,
-      labelStyle: _kLabelTextStyle,
-      border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(6),
-          borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
-      enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(6),
-          borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
-      disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(6),
-          borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
-      focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(6),
-          borderSide: const BorderSide(color: _kPurple, width: 2)),
-    );
+  isDense: true,
+  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
+  // Focused fields tint their background. InputDecorator resolves fillColor
+  // against its own state set (which carries WidgetState.focused), so this
+  // covers every field, dropdown, the date field and the time field in one
+  // place. The unfocused value is white — the same as the card behind it —
+  // so nothing looks different until focus actually arrives.
+  filled: true,
+  fillColor: WidgetStateColor.resolveWith((states) =>
+  states.contains(WidgetState.focused) ? _kFocusFill : Colors.white),
+  hintStyle: _kHintTextStyle,
+  labelStyle: _kLabelTextStyle,
+  border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(6),
+      borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
+  enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(6),
+      borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
+  disabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(6),
+      borderSide: BorderSide(color: Colors.grey.withOpacity(0.7))),
+  focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(6),
+      borderSide: const BorderSide(color: _kPurple, width: 2)),
+);
 
 const _kPurple = Color(0xFF312E81);
 
@@ -120,19 +120,55 @@ const _kFocusFill = Color(0xFFE0E7FF);
 /// Needed a second time inside every suggestion panel: those are hand-rolled
 /// [OverlayEntry]s, so they hang off the Overlay — not off the field that
 /// opened them — and inherit nothing from the screen.
+///
+/// It also applies [_formTextScale], so every text on the form — fields,
+/// dropdowns, buttons, labels and the suggestion panels — grows or shrinks
+/// with the screen from this one place.
 Widget _withFormFont(BuildContext context, Widget child) {
   final base = Theme.of(context);
-  return Theme(
-    data: base.copyWith(
-      textTheme: base.textTheme.apply(fontFamily: _kFontFamily),
-      primaryTextTheme: base.primaryTextTheme.apply(fontFamily: _kFontFamily),
-    ),
-    child: DefaultTextStyle.merge(
-      style: const TextStyle(fontFamily: _kFontFamily),
-      child: child,
+  final mq = MediaQuery.of(context);
+  return MediaQuery(
+    data: mq.copyWith(textScaler: _formTextScaler(mq)),
+    child: Theme(
+      data: base.copyWith(
+        textTheme: base.textTheme.apply(fontFamily: _kFontFamily),
+        primaryTextTheme: base.primaryTextTheme.apply(fontFamily: _kFontFamily),
+      ),
+      child: DefaultTextStyle.merge(
+        style: const TextStyle(fontFamily: _kFontFamily),
+        child: child,
+      ),
     ),
   );
 }
+
+/// How much the form's text is scaled for the current screen. The font sizes
+/// above were tuned on a 1440×900 screen; bigger screens scale up, smaller ones
+/// down, taking the tighter of width and height so a wide-but-short screen
+/// does not overflow vertically. Clamped so text never gets unreadable or
+/// oversized. Phones keep 1.0 — the mobile layout is already stacked.
+double _formTextScale(Size size) {
+  if (size.width < 640) return 1.0;
+  final byWidth = size.width / 1440;
+  final byHeight = size.height / 900;
+  return (byWidth < byHeight ? byWidth : byHeight).clamp(0.9, 1.3);
+}
+
+/// The system text scale (accessibility setting) times [_formTextScale].
+///
+/// Only [_withFormFont] calls this, always with a MediaQuery from OUTSIDE the
+/// form (the screen root, or the Overlay a suggestion panel hangs off), so the
+/// factor is applied exactly once.
+TextScaler _formTextScaler(MediaQueryData mq) {
+  final system = mq.textScaler.scale(100) / 100;
+  return TextScaler.linear(system * _formTextScale(mq.size));
+}
+
+/// Scales a fixed box dimension that holds text (a label column, a
+/// fixed-width field, a list row) by the same factor as the text, so bigger
+/// text does not get clipped. [context] must sit inside [_withFormFont].
+double _sp(BuildContext context, double px) =>
+    MediaQuery.textScalerOf(context).scale(px);
 
 class BookingFormScreen extends StatefulWidget {
   const BookingFormScreen({super.key});
@@ -162,6 +198,13 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   static const _fsField = 12.0;
   static const _fsSection = 12.0;
   static const _fsTab = 12.0;
+
+  /// Same scaler [_withFormFont] hands the form, captured in [build] because
+  /// this State's own context sits above that MediaQuery override.
+  TextScaler _scaler = TextScaler.noScaling;
+
+  /// A fixed box size that holds text, scaled with the form's text.
+  double _sz(double px) => _scaler.scale(px);
 
   // ────────── state
   String? driver;
@@ -197,7 +240,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   // late final _rFare = TextEditingController(text: '4.9');
   bool get _isReturnJourney {
     final j =
-        controller.selectJourneyTypeValue?.journeyType?.toUpperCase().trim();
+    controller.selectJourneyTypeValue?.journeyType?.toUpperCase().trim();
     return j == 'R/N' || j == 'RETURN';
   }
 
@@ -268,6 +311,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     final isDesktop = w >= 1024;
     final cols = isMobile ? 1 : (isTablet ? 2 : 4);
     final formWidth = isDesktop ? w * 0.5 : double.infinity;
+    _scaler = _formTextScaler(MediaQuery.of(context));
     // The F1-F12 / "/" shortcuts used to be declared here, so they only fired
     // while focus sat inside this form. They now live in DashboardShortcuts,
     // wrapped around the whole dashboard screen, so the same keys also work
@@ -302,7 +346,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 width: formWidth,
                 child: SingleChildScrollView(
                   padding: EdgeInsets.symmetric(
-                    horizontal: isMobile ? 0 : 3,
+                    horizontal: isMobile ? 0 : 4,
                     vertical: isMobile ? 0 : 12,
                   ),
                   child: Container(
@@ -330,18 +374,18 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   controller.allAddressesData,
                                   controller.dashboardZoneValue,
                                   _controller.updateLocationValue.value ==
-                                              true ||
-                                          _controller.locationtypezoneModel ==
-                                              null
+                                      true ||
+                                      _controller.locationtypezoneModel ==
+                                          null
                                       ? []
                                       : _controller
-                                          .locationtypezoneModel!.zonesList!,
-                                  (v) => setState(() {
+                                      .locationtypezoneModel!.zonesList!,
+                                      (v) => setState(() {
                                     controller.dashboardZoneValue = v;
                                     controller.getFaresCalculation();
                                   }),
                                   isMobile,
-                                  (value) {
+                                      (value) {
                                     WidgetsBinding.instance
                                         .addPostFrameCallback((_) {
                                       if (value.isEmpty) {
@@ -354,7 +398,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                           searchingText: value);
                                     });
                                   },
-                                  (addr) =>
+                                      (addr) =>
                                       setState(() => _selectedPickup = addr),
                                   1,
                                   zoneLabel: (z) => z.name!,
@@ -365,7 +409,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     final pickupPolylineIndex = controller
                                         .polyLineMarkerInfo
                                         .indexWhere((e) =>
-                                            e.markerType == "PICKUP LOCATION");
+                                    e.markerType == "PICKUP LOCATION");
                                     if (pickupPolylineIndex >= 0) {
                                       controller.polyLineMarkerInfo
                                           .removeAt(pickupPolylineIndex);
@@ -383,7 +427,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.clearViaIfNoPickupAndDrop();
                                     controller.totalDistance.value = "0.00";
                                     controller.totalTimeDuration.value =
-                                        "0 min";
+                                    "0 min";
                                     controller.fixedFare.value = "0";
                                     controller.returnFareValue = "0";
                                     controller.tempStoreViaMils = "0";
@@ -396,7 +440,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.update();
                                   },
                                   notesController:
-                                      controller.pickUpNoteController,
+                                  controller.pickUpNoteController,
                                   addressFocusNode: _pickupFieldFocusNode,
                                   onCurrentLocation: () {
                                     controller.swapeToChangeLocation();
@@ -408,76 +452,76 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     padding: const EdgeInsets.only(top: 4),
                                     child: isMobile
                                         ? Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.stretch,
-                                            children: [
-                                              _field('FL',
-                                                  tab: 4.3,
-                                                  controller: controller
-                                                      .selectAirportController),
-                                              const SizedBox(height: 4),
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                      children: [
+                                        _field('FL',
+                                            tab: 4.3,
+                                            controller: controller
+                                                .selectAirportController),
+                                        const SizedBox(height: 4),
 
-                                              _field('ARP',
-                                                  tab: 4.6,
-                                                  controller: controller
-                                                      .arrivalTimeController),
-                                              // _timeField('ARP',
-                                              //     tab: 4.6,
-                                              //     controller: controller
-                                              //         .arrivalTimeController,
-                                              //     onPicked: () => controller
-                                              //         .arrivalTimePicked = true),
-                                            ],
-                                          )
+                                        _field('ARP',
+                                            tab: 4.6,
+                                            controller: controller
+                                                .arrivalTimeController),
+                                        // _timeField('ARP',
+                                        //     tab: 4.6,
+                                        //     controller: controller
+                                        //         .arrivalTimeController,
+                                        //     onPicked: () => controller
+                                        //         .arrivalTimePicked = true),
+                                      ],
+                                    )
                                         : Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              SizedBox(
-                                                  width: _kLabelColumnWidth - 2,
-                                                  child: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        Icon(Icons.circle,
-                                                            size: 9,
-                                                            color:
-                                                                Colors.green),
-                                                        const SizedBox(
-                                                            width: 6),
-                                                        Text("FL",
-                                                            style: const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w700,
-                                                                fontSize:
-                                                                    _fsLabel)),
-                                                      ])),
-                                              const SizedBox(width: 2),
-                                              Expanded(
-                                                flex: 3,
-                                                child: _field('FL',
-                                                    tab: 4.3,
-                                                    controller: controller
-                                                        .selectAirportController),
-                                              ),
-                                              const SizedBox(width: 12),
-                                              Expanded(
-                                                flex: 1,
-                                                child: _field('ARP',
-                                                    tab: 4.6,
-                                                    controller: controller
-                                                        .arrivalTimeController),
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                            width: _sz(_kLabelColumnWidth - 2),
+                                            child: Row(
+                                                mainAxisSize:
+                                                MainAxisSize.min,
+                                                children: [
+                                                  Icon(Icons.circle,
+                                                      size: 9,
+                                                      color:
+                                                      Colors.green),
+                                                  const SizedBox(
+                                                      width: 6),
+                                                  Text("FL",
+                                                      style: const TextStyle(
+                                                          fontWeight:
+                                                          FontWeight
+                                                              .w700,
+                                                          fontSize:
+                                                          _fsLabel)),
+                                                ])),
+                                        const SizedBox(width: 2),
+                                        Expanded(
+                                          flex: 3,
+                                          child: _field('FL',
+                                              tab: 4.3,
+                                              controller: controller
+                                                  .selectAirportController),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          flex: 1,
+                                          child: _field('ARP',
+                                              tab: 4.6,
+                                              controller: controller
+                                                  .arrivalTimeController),
 
-                                                // _timeField('ARP',
-                                                // tab: 4.6,
-                                                // controller: controller
-                                                //     .arrivalTimeController,
-                                                // onPicked: () => controller
-                                                //     .arrivalTimePicked = true),
-                                              ),
-                                            ],
-                                          ),
+                                          // _timeField('ARP',
+                                          // tab: 4.6,
+                                          // controller: controller
+                                          //     .arrivalTimeController,
+                                          // onPicked: () => controller
+                                          //     .arrivalTimePicked = true),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 4),
@@ -488,18 +532,18 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   controller.allAddressesData,
                                   controller.dashboardDZoneValue,
                                   _controller.updateLocationValue.value ==
-                                              true ||
-                                          _controller.locationtypezoneModel ==
-                                              null
+                                      true ||
+                                      _controller.locationtypezoneModel ==
+                                          null
                                       ? []
                                       : _controller
-                                          .locationtypezoneModel!.zonesList!,
-                                  (v) => setState(() {
+                                      .locationtypezoneModel!.zonesList!,
+                                      (v) => setState(() {
                                     controller.dashboardDZoneValue = v;
                                     controller.getFaresCalculation();
                                   }),
                                   isMobile,
-                                  (value) {
+                                      (value) {
                                     WidgetsBinding.instance
                                         .addPostFrameCallback((_) {
                                       if (value.isEmpty) {
@@ -512,7 +556,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                           searchingText: value);
                                     });
                                   },
-                                  (addr) =>
+                                      (addr) =>
                                       setState(() => _selectedDrop = addr),
                                   4,
                                   zoneLabel: (z) => z.name!,
@@ -522,7 +566,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     final dropPolylineIndex = controller
                                         .polyLineMarkerInfo
                                         .indexWhere((e) =>
-                                            e.markerType == "DROP LOCATION");
+                                    e.markerType == "DROP LOCATION");
 
                                     if (dropPolylineIndex >= 0) {
                                       controller.polyLineMarkerInfo
@@ -546,7 +590,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     // controller.polyLineMarkerInfo.removeWhere((item) => item.markerType == "DROP LOCATION" || item.markerType == "Create Booking DROP LOCATION");
                                     controller.totalDistance.value = "0.00";
                                     controller.totalTimeDuration.value =
-                                        "0 min";
+                                    "0 min";
                                     controller.fixedFare.value = "0";
                                     controller.returnFareValue = "0";
                                     controller.tempStoreViaMils = "0";
@@ -559,9 +603,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.update();
                                   },
                                   notesController:
-                                      controller.dropUpNoteController,
+                                  controller.dropUpNoteController,
                                   addressFocusNode:
-                                      controller.dropOffTextFieldFocusNode,
+                                  controller.dropOffTextFieldFocusNode,
                                   // The route button opens the via-points
                                   // dialog. PICK's swap button keeps calling
                                   // swapeToChangeLocation() — no branch on the
@@ -572,7 +616,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                         .pickupController.text.isEmpty) {
                                       BotToast.showText(
                                           text:
-                                              "Please write pickup and dropoff location");
+                                          "Please write pickup and dropoff location");
                                       return;
                                     }
                                     // No formController: this screen runs on
@@ -603,7 +647,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     tab: 10,
                                     controller: controller.mobileController,
                                     customers: controller.customerPhoneNumber
-                                            ?.customerInfo ??
+                                        ?.customerInfo ??
                                         const [],
                                     onChanged: (q) {
                                       if (q.trim().isEmpty) return;
@@ -631,7 +675,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   FocusTraversalOrder(
                                     order: const NumericFocusOrder(11.5),
                                     child: SizedBox(
-                                      height: 32,
+                                      height: _sz(32),
                                       width: double.infinity,
                                       child: ElevatedButton.icon(
                                         onPressed: () {
@@ -648,25 +692,25 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                         ),
                                         style: ButtonStyle(
                                           backgroundColor:
-                                              WidgetStateProperty.all(_purple),
+                                          WidgetStateProperty.all(_purple),
                                           padding: WidgetStateProperty.all(
                                               EdgeInsets.zero),
                                           shape: WidgetStateProperty.all(
                                             RoundedRectangleBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(6),
+                                              BorderRadius.circular(6),
                                             ),
                                           ),
                                           side: WidgetStateProperty.resolveWith(
-                                              (states) {
-                                            if (states.contains(
-                                                WidgetState.focused)) {
-                                              return const BorderSide(
-                                                  color: Colors.white,
-                                                  width: 2);
-                                            }
-                                            return BorderSide.none;
-                                          }),
+                                                  (states) {
+                                                if (states.contains(
+                                                    WidgetState.focused)) {
+                                                  return const BorderSide(
+                                                      color: Colors.white,
+                                                      width: 2);
+                                                }
+                                                return BorderSide.none;
+                                              }),
                                         ),
                                       ),
                                     ),
@@ -691,7 +735,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       // focused/open value stays the accent.
                                       style: WebDatePickerStyle.of(context)
                                           .copyWith(
-                                              fieldTextColor: Colors.black),
+                                          fieldTextColor: Colors.black),
                                       // Unfocused / disabled border comes from
                                       // the form's own decoration (grey 0.7) —
                                       // the package default leaves it to the
@@ -699,24 +743,24 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       decoration: _inputDecoration(),
                                       value: controller.pickUpDate,
                                       onChanged: (d) => setState(() {
-                                            controller.pickUpDate = d;
-                                            controller.pickUpDatePicked = true;
-                                          })),
+                                        controller.pickUpDate = d;
+                                        controller.pickUpDatePicked = true;
+                                      })),
                                   _timeField('Time',
                                       tab: 13,
                                       controller:
-                                          controller.pickUpTimeController,
+                                      controller.pickUpTimeController,
                                       onPicked: () =>
-                                          controller.pickUpTimePicked = true),
+                                      controller.pickUpTimePicked = true),
                                   _dropdown<JourneyTypeObject>(
                                       'Journey Type'.toUpperCase(),
                                       controller.selectJourneyTypeValue,
                                       controller
-                                              .dashboardAllData!.journeyTypes ??
+                                          .dashboardAllData!.journeyTypes ??
                                           const [], (v) {
                                     // 1. Validation check for pickup and dropoff locations
                                     if (controller
-                                            .pickupController.text.isNotEmpty &&
+                                        .pickupController.text.isNotEmpty &&
                                         controller.dropOffController.text
                                             .isNotEmpty) {
                                       setState(() {
@@ -761,7 +805,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       // 3. Validation fail warning
                                       BotToast.showText(
                                           text:
-                                              "Please select pickup and drop location first");
+                                          "Please select pickup and drop location first");
                                     }
                                   }, 14,
                                       itemLabel: (p) => p.journeyType!,
@@ -772,7 +816,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                 ]),
                                 _grid(isMobile ? 1 : 3, [
                                   Obx(
-                                    () => _field(
+                                        () => _field(
                                       'No. of Passengers',
                                       tab: 16,
                                       prefix: Icons.person_outline,
@@ -794,7 +838,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.selectAccountValue,
                                     controller.dashboardAccountData?.accounts ??
                                         const [],
-                                    (v) {
+                                        (v) {
                                       setState(() {
                                         controller.selectAccountValue = v;
                                         controller.selectDepartmentData = null;
@@ -816,9 +860,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       'Pay By',
                                       controller.selectPaymentTypeValue,
                                       controller
-                                              .dashboardAllData!.paymentTypes ??
+                                          .dashboardAllData!.paymentTypes ??
                                           const [],
-                                      (v) => setState(() => controller
+                                          (v) => setState(() => controller
                                           .selectPaymentTypeValue = v),
                                       _isReturnJourney ? 34 : 19,
                                       itemLabel: (p) => p.name!,
@@ -827,7 +871,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     'Vehicle Type',
                                     controller.selectVehicleValue,
                                     controller.dashboardAllData!.vehicleTypes!,
-                                    (v) => setState(() {
+                                        (v) => setState(() {
                                       controller.selectVehicleValue = v;
 
                                       // Auto fill passenger count from API
@@ -852,8 +896,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     controller.selectAccountValue == null
                                         ? []
                                         : controller
-                                            .selectAccountValue!.departments!,
-                                    (v) => setState(() {
+                                        .selectAccountValue!.departments!,
+                                        (v) => setState(() {
                                       controller.selectDepartmentData = v;
                                       controller.update();
                                     }),
@@ -948,14 +992,14 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   void _clearTwoWayData(DashboardController ctrl, {bool recalcRoute = false}) {
     // Remove two-way polyline markers
     ctrl.polyLineMarkerInfo.removeWhere(
-      (e) =>
-          e.markerType == "PICKUP TWO WAY LOCATION" ||
+          (e) =>
+      e.markerType == "PICKUP TWO WAY LOCATION" ||
           e.markerType == "DROP TWO WAY LOCATION",
     );
     // Remove two-way map markers
     ctrl.markers.removeWhere(
-      (m) =>
-          m.type == "pickup two way" ||
+          (m) =>
+      m.type == "pickup two way" ||
           m.type == "dropOff two way" ||
           m.type == "via with return",
     );
@@ -997,18 +1041,18 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             _controller.updateLocationValue.value == true
                 ? []
                 : _controller.locationtypezoneModel!.zonesList!,
-            (v) => setState(() {
-                  controller.dashboardRNZoneValue = v;
-                  _controller.RNzoneValue = v;
-                }),
+                (v) => setState(() {
+              controller.dashboardRNZoneValue = v;
+              _controller.RNzoneValue = v;
+            }),
             isMobile,
-            (value) {
+                (value) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 controller.onChangeHandler(
                     fieldName: "PICKUP TWO WAY LOCATION", searchingText: value);
               });
             },
-            (addr) {
+                (addr) {
               setState(() => _selectedDrop = addr);
             },
             19,
@@ -1036,10 +1080,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               controller.isAirportResponseReturn.value = false;
               // controller.dropOffTwoWayController.clear();
               controller.polyLineMarkerInfo.removeWhere(
-                  (item) => item.markerType == "PICKUP TWO WAY LOCATION");
+                      (item) => item.markerType == "PICKUP TWO WAY LOCATION");
               if (controller.markers is List<CustomMarker>) {
                 controller.markers.removeWhere(
-                    (marker) => marker.type == "PICKUP TWO WAY LOCATION");
+                        (marker) => marker.type == "PICKUP TWO WAY LOCATION");
               }
               // controller.tempStoreReturnMils = null;
               // controller.fixedFare.value = "0";
@@ -1065,60 +1109,60 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             padding: const EdgeInsets.only(top: 4),
             child: isMobile
                 ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _field('FL',
-                          tab: 22.3,
-                          controller: controller.selectAirportControllerReturn),
-                      const SizedBox(height: 4),
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _field('FL',
+                    tab: 22.3,
+                    controller: controller.selectAirportControllerReturn),
+                const SizedBox(height: 4),
 
-                      _field('ARP',
-                          tab: 22.6,
-                          controller: controller.arrivalReturnTimeController),
-                      // _timeField('ARP',
-                      //     tab: 22.6,
-                      //     controller: controller
-                      //         .arrivalReturnTimeController,
-                      //     onPicked: () =>
-                      //         controller.arrivalReturnTimePicked = true),
-                    ],
-                  )
+                _field('ARP',
+                    tab: 22.6,
+                    controller: controller.arrivalReturnTimeController),
+                // _timeField('ARP',
+                //     tab: 22.6,
+                //     controller: controller
+                //         .arrivalReturnTimeController,
+                //     onPicked: () =>
+                //         controller.arrivalReturnTimePicked = true),
+              ],
+            )
                 : Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                          width: _kLabelColumnWidth - 2,
-                          child: Row(mainAxisSize: MainAxisSize.min, children: [
-                            Icon(Icons.circle, size: 9, color: Colors.green),
-                            const SizedBox(width: 6),
-                            Text("FL",
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: _fsLabel)),
-                          ])),
-                      const SizedBox(width: 2),
-                      Expanded(
-                        flex: 3,
-                        child: _field('FL',
-                            tab: 22.3,
-                            controller:
-                                controller.selectAirportControllerReturn),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        flex: 1,
-                        child: _field('ARP',
-                            tab: 22.6,
-                            controller: controller.arrivalReturnTimeController),
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                    width: _sz(_kLabelColumnWidth - 2),
+                    child: Row(mainAxisSize: MainAxisSize.min, children: [
+                      Icon(Icons.circle, size: 9, color: Colors.green),
+                      const SizedBox(width: 6),
+                      Text("FL",
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: _fsLabel)),
+                    ])),
+                const SizedBox(width: 2),
+                Expanded(
+                  flex: 3,
+                  child: _field('FL',
+                      tab: 22.3,
+                      controller:
+                      controller.selectAirportControllerReturn),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  flex: 1,
+                  child: _field('ARP',
+                      tab: 22.6,
+                      controller: controller.arrivalReturnTimeController),
 
-                        // _timeField('ARP',
-                        //     tab: 22.6,
-                        //     controller: controller
-                        //         .arrivalReturnTimeController,
-                        //     onPicked: () => controller.arrivalTimePicked = true),
-                      ),
-                    ],
-                  ),
+                  // _timeField('ARP',
+                  //     tab: 22.6,
+                  //     controller: controller
+                  //         .arrivalReturnTimeController,
+                  //     onPicked: () => controller.arrivalTimePicked = true),
+                ),
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 4),
@@ -1131,16 +1175,16 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             _controller.updateLocationValue.value == true
                 ? []
                 : _controller.locationtypezoneModel!.zonesList!,
-            (v) => setState(() {
-                  controller.dashboardRN1ZoneValue = v;
-                  _controller.RN1zoneValue = v;
-                }),
+                (v) => setState(() {
+              controller.dashboardRN1ZoneValue = v;
+              _controller.RN1zoneValue = v;
+            }),
             isMobile,
-            (value) {
+                (value) {
               controller.onChangeHandler(
                   fieldName: "DROP TWO WAY LOCATION", searchingText: value);
             },
-            (addr) {
+                (addr) {
               setState(() => _selectedDrop = addr);
             },
             23,
@@ -1219,9 +1263,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               decoration: _inputDecoration(),
               value: controller.pickUpDateReturn,
               onChanged: (d) => setState(() {
-                    controller.pickUpDateReturn = d;
-                    controller.pickUpDateReturnPicked = true;
-                  })),
+                controller.pickUpDateReturn = d;
+                controller.pickUpDateReturnPicked = true;
+              })),
           _timeField('R/Time',
               tab: 29,
               controller: controller.pickUpTimeControllerReturn,
@@ -1235,119 +1279,119 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         const SizedBox(height: 6),
         isMobile
             ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                _addReturnFareCheckbox(),
-                const SizedBox(height: 8),
-                _dropdown<DashboardVehicleTypeObject>(
-                  'Select R/VEH',
-                  controller.selectVehicleValueReturn,
-                  controller.dashboardAllData!.vehicleTypes!,
-                  (v) {
-                    print('tap 01');
-                    setState(() async {
-                      print('tap 02');
-                      // controller.selectVehicleValueReturn = v;
-                      if (v == null) return;
+          _addReturnFareCheckbox(),
+          const SizedBox(height: 8),
+          _dropdown<DashboardVehicleTypeObject>(
+            'Select R/VEH',
+            controller.selectVehicleValueReturn,
+            controller.dashboardAllData!.vehicleTypes!,
+                (v) {
+              print('tap 01');
+              setState(() async {
+                print('tap 02');
+                // controller.selectVehicleValueReturn = v;
+                if (v == null) return;
 
-                      print('tap 03');
-                      controller.selectVehicleValueReturn = v;
-                      controller.dropDownShow.value = false;
-                      controller.getFaresCalculation();
+                print('tap 03');
+                controller.selectVehicleValueReturn = v;
+                controller.dropDownShow.value = false;
+                controller.getFaresCalculation();
 
-                      // // Jab user khud badlega tab naye wale ki ID direct jayegi
-                      // final fare = await getActiveFareForVehicle(
-                      //   controller.dashboardAllData!.fareConfigurations!,
-                      //   v.id!,
-                      // );
-                      // print('tap 04');
-                      // if (fare != null) {
-                      //   print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}');
-                      //   controller.getFaresCalculation();
-                      //   print('tap 05');
-                      //   double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
-                      //   controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
-                      //   print('tap 06');
-                      // } else {
-                      //   print('tap 07');
-                      //   print('No active fare found for this vehicle');
-                      // }
-                      print('tap 08');
-                      controller.update();
-                    });
-                  },
-                  32,
-                  itemLabel: (p) => p.name!,
-                  allowUnselect: false,
-                ),
-                const SizedBox(height: 8),
-                _dropdown<DashboardDriverObject>(
-                  'Select R/DRV',
-                  controller.selectDriverValueReturn,
-                  controller.dashboardAllData!.drivers ?? const [],
-                  (v) => setState(() => controller.selectDriverValueReturn = v),
-                  33,
-                  itemLabel: (p) => p.name ?? '',
-                ),
-              ])
+                // // Jab user khud badlega tab naye wale ki ID direct jayegi
+                // final fare = await getActiveFareForVehicle(
+                //   controller.dashboardAllData!.fareConfigurations!,
+                //   v.id!,
+                // );
+                // print('tap 04');
+                // if (fare != null) {
+                //   print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}');
+                //   controller.getFaresCalculation();
+                //   print('tap 05');
+                //   double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+                //   controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+                //   print('tap 06');
+                // } else {
+                //   print('tap 07');
+                //   print('No active fare found for this vehicle');
+                // }
+                print('tap 08');
+                controller.update();
+              });
+            },
+            32,
+            itemLabel: (p) => p.name!,
+            allowUnselect: false,
+          ),
+          const SizedBox(height: 8),
+          _dropdown<DashboardDriverObject>(
+            'Select R/DRV',
+            controller.selectDriverValueReturn,
+            controller.dashboardAllData!.drivers ?? const [],
+                (v) => setState(() => controller.selectDriverValueReturn = v),
+            33,
+            itemLabel: (p) => p.name ?? '',
+          ),
+        ])
             : Row(children: [
-                _addReturnFareCheckbox(),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _dropdown<DashboardVehicleTypeObject>(
-                    'Select R/VEH',
-                    controller.selectVehicleValueReturn,
-                    controller.dashboardAllData!.vehicleTypes!,
-                    (v) {
-                      print('tap 01');
-                      setState(() async {
-                        print('tap 02');
-                        // controller.selectVehicleValueReturn = v;
-                        if (v == null) return;
+          _addReturnFareCheckbox(),
+          const SizedBox(width: 16),
+          Expanded(
+            child: _dropdown<DashboardVehicleTypeObject>(
+              'Select R/VEH',
+              controller.selectVehicleValueReturn,
+              controller.dashboardAllData!.vehicleTypes!,
+                  (v) {
+                print('tap 01');
+                setState(() async {
+                  print('tap 02');
+                  // controller.selectVehicleValueReturn = v;
+                  if (v == null) return;
 
-                        print('tap 03');
-                        controller.selectVehicleValueReturn = v;
-                        controller.getFaresCalculation();
+                  print('tap 03');
+                  controller.selectVehicleValueReturn = v;
+                  controller.getFaresCalculation();
 
-                        controller.dropDownShow.value = false;
-                        //
-                        //   // Jab user khud badlega tab naye wale ki ID direct jayegi
-                        //   final fare = await getActiveFareForVehicle(
-                        //     controller.dashboardAllData!.fareConfigurations!,
-                        //     v.id!,
-                        //   );
-                        //   print('tap 04');
-                        //   if (fare != null) {
-                        //     print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}');
-                        //     controller.getFaresCalculation();
-                        //     print('tap 05');
-                        //     double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
-                        //     controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
-                        //     print('tap 06');
-                        //   } else {
-                        //     print('tap 07');
-                        //     print('No active fare found for this vehicle');
-                        //   }
-                        //   print('tap 08');
-                        //   controller.update();
-                      });
-                    },
-                    32,
-                    itemLabel: (p) => p.name!,
-                    allowUnselect: false,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _dropdown<DashboardDriverObject>(
-                    'Select R/DRV',
-                    controller.selectDriverValueReturn,
-                    controller.dashboardAllData!.drivers ?? const [],
-                    (v) =>
-                        setState(() => controller.selectDriverValueReturn = v),
-                    33,
-                    itemLabel: (p) => p.name ?? '',
-                  ),
-                ),
-              ]),
+                  controller.dropDownShow.value = false;
+                  //
+                  //   // Jab user khud badlega tab naye wale ki ID direct jayegi
+                  //   final fare = await getActiveFareForVehicle(
+                  //     controller.dashboardAllData!.fareConfigurations!,
+                  //     v.id!,
+                  //   );
+                  //   print('tap 04');
+                  //   if (fare != null) {
+                  //     print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}');
+                  //     controller.getFaresCalculation();
+                  //     print('tap 05');
+                  //     double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+                  //     controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+                  //     print('tap 06');
+                  //   } else {
+                  //     print('tap 07');
+                  //     print('No active fare found for this vehicle');
+                  //   }
+                  //   print('tap 08');
+                  //   controller.update();
+                });
+              },
+              32,
+              itemLabel: (p) => p.name!,
+              allowUnselect: false,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: _dropdown<DashboardDriverObject>(
+              'Select R/DRV',
+              controller.selectDriverValueReturn,
+              controller.dashboardAllData!.drivers ?? const [],
+                  (v) =>
+                  setState(() => controller.selectDriverValueReturn = v),
+              33,
+              itemLabel: (p) => p.name ?? '',
+            ),
+          ),
+        ]),
       ],
     );
   }
@@ -1384,9 +1428,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     // (order 1). Without an explicit order OrderedTraversalPolicy pushes these
     // InkWells behind every numbered field, i.e. to the end of the form.
     Widget tab(String label,
-            {required double order,
-            bool active = false,
-            VoidCallback? onTap}) =>
+        {required double order,
+          bool active = false,
+          VoidCallback? onTap}) =>
         Padding(
           padding: const EdgeInsets.only(right: 6),
           child: Material(
@@ -1401,7 +1445,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   mouseCursor: SystemMouseCursors.click,
                   child: Container(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                     decoration: BoxDecoration(
                       color: active ? _purple : Colors.white,
                       border: Border.all(color: active ? _purple : _border),
@@ -1448,16 +1492,16 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   }),
                   tab('Via (${controller.viaPoints.length})', order: 0.4,
                       onTap: () {
-                    if (controller.pickupController.text.isNotEmpty
+                        if (controller.pickupController.text.isNotEmpty
                         // &&    controller.dropOffController.text.isNotEmpty
                         ) {
-                      showDialog(
-                          context: context, builder: (_) => ViaLocation());
-                    } else {
-                      BotToast.showText(
-                          text: "Please write pickup and dropoff location");
-                    }
-                  }),
+                          showDialog(
+                              context: context, builder: (_) => ViaLocation());
+                        } else {
+                          BotToast.showText(
+                              text: "Please write pickup and dropoff location");
+                        }
+                      }),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                     child: Text(
@@ -1471,18 +1515,18 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   ),
                   const SizedBox(width: 6),
                   SizedBox(
-                    width: 220,
+                    width: _sz(220),
                     child: _dropdown<DashboardSubsidiaryObject>(
                         null,
                         controller.selectSubsidiariesValue,
                         controller.dashboardAllData?.subsidiaries ?? const [],
-                        (v) {
-                      if (v == null) return;
-                      setState(() {
-                        controller.selectSubsidiariesValue = v;
-                        controller.getAccountData(subsidiariesId: v.id);
-                      });
-                    }, 1, itemLabel: (p) => p.name ?? '', allowUnselect: false),
+                            (v) {
+                          if (v == null) return;
+                          setState(() {
+                            controller.selectSubsidiariesValue = v;
+                            controller.getAccountData(subsidiariesId: v.id);
+                          });
+                        }, 1, itemLabel: (p) => p.name ?? '', allowUnselect: false),
                   ),
                 ]),
           ),
@@ -1494,36 +1538,36 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
 
 // ────────── location row
   Widget _locationRow<T>(
-    String label,
-    Color dot,
-    TextEditingController controller,
-    List<AllAddressesModel> addresses,
-    T? zone,
-    List<T> zoneItems,
-    ValueChanged<T?> onZone,
-    bool isMobile,
-    ValueChanged<String>? onChanged,
-    ValueChanged<AllAddressesModel>? onAddressSelected,
-    int tabBase, {
-    String Function(T)? zoneLabel,
-    VoidCallback? onCurrentLocation,
-    ValueChanged<int>? onPickIndex,
-    TextEditingController? notesController, // ← notes field controller
-    VoidCallback? onPressed,
-    FocusNode? addressFocusNode, // ← lets F2 focus the PICKUP field
-    // The glyph on the button at the end of the field. PICK carries the
-    // swap arrows; DROP carries LucideIcons.route — the two pins joined by
-    // a winding path. Both still run [onCurrentLocation], so each row picks
-    // its glyph and its handler together at the call site.
-    IconData actionIcon = LucideIcons.arrowDownUp,
-    String actionTooltip = 'Use current location',
-  }) {
+      String label,
+      Color dot,
+      TextEditingController controller,
+      List<AllAddressesModel> addresses,
+      T? zone,
+      List<T> zoneItems,
+      ValueChanged<T?> onZone,
+      bool isMobile,
+      ValueChanged<String>? onChanged,
+      ValueChanged<AllAddressesModel>? onAddressSelected,
+      int tabBase, {
+        String Function(T)? zoneLabel,
+        VoidCallback? onCurrentLocation,
+        ValueChanged<int>? onPickIndex,
+        TextEditingController? notesController, // ← notes field controller
+        VoidCallback? onPressed,
+        FocusNode? addressFocusNode, // ← lets F2 focus the PICKUP field
+        // The glyph on the button at the end of the field. PICK carries the
+        // swap arrows; DROP carries LucideIcons.route — the two pins joined by
+        // a winding path. Both still run [onCurrentLocation], so each row picks
+        // its glyph and its handler together at the call site.
+        IconData actionIcon = LucideIcons.arrowDownUp,
+        String actionTooltip = 'Use current location',
+      }) {
     final tag = Row(mainAxisSize: MainAxisSize.min, children: [
       Icon(Icons.circle, size: 9, color: dot),
-      const SizedBox(width: 4),
+      const SizedBox(width: 6),
       Text(label,
           style:
-              const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsLabel)),
+          const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsLabel)),
     ]);
     final address = FocusTraversalOrder(
       order: NumericFocusOrder((tabBase + 1).toDouble()),
@@ -1544,8 +1588,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         focusNode: addressFocusNode,
         fallbackFocusNode: _shortcutFocusNode,
         decoration: _inputDecoration().copyWith(
+          contentPadding:
+          const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
           suffixIconConstraints:
-              const BoxConstraints(minHeight: 29),
+          const BoxConstraints(minWidth: 60, minHeight: 32),
           suffixIcon: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
@@ -1556,33 +1602,34 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               // between the address field and the zone dropdown (tabBase + 2).
               controller.text.isNotEmpty
                   ? FocusTraversalOrder(
-                      order: NumericFocusOrder(tabBase + 1.3),
-                      child: GlowFocus(
-                        radius: 12,
-                        child: IconButton(
-                          tooltip: 'Clear',
-                          onPressed: onPressed,
-                          icon: const Icon(Icons.close,
-                              size: 16, color: Colors.grey),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          splashRadius: 14,
-                        ),
-                      ),
-                    )
+                order: NumericFocusOrder(tabBase + 1.3),
+                child: GlowFocus(
+                  radius: 14,
+                  child: IconButton(
+                    tooltip: 'Clear',
+                    onPressed: onPressed,
+                    icon: const Icon(Icons.close,
+                        size: 16, color: Colors.grey),
+                    padding: EdgeInsets.zero,
+                    constraints:
+                    const BoxConstraints(minWidth: 28, minHeight: 28),
+                    splashRadius: 16,
+                  ),
+                ),
+              )
                   : const SizedBox.shrink(),
-              const SizedBox(width: 2),
               FocusTraversalOrder(
                 order: NumericFocusOrder(tabBase + 1.6),
                 child: GlowFocus(
-                  radius: 12,
+                  radius: 14,
                   child: IconButton(
                     tooltip: actionTooltip,
                     onPressed: onCurrentLocation,
                     icon: Icon(actionIcon, size: 16, color: Colors.grey),
                     padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    splashRadius: 14,
+                    constraints:
+                    const BoxConstraints(minWidth: 28, minHeight: 28),
+                    splashRadius: 16,
                   ),
                 ),
               ),
@@ -1644,12 +1691,14 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         // any wider than the text needs is dead space in front of every row.
         // The FL/ARP rows below use the same 62 so the whole form shares one
         // left edge.
-        SizedBox(width: _kLabelColumnWidth, child: tag),
+        SizedBox(width: _sz(_kLabelColumnWidth), child: tag),
         Expanded(flex: 5, child: address),
         const SizedBox(width: _kFieldGap),
-        SizedBox(width: 110, child: zoneDd),
+        // Zone and notes are kept narrow so the Expanded address field gets
+        // the leftover width.
+        SizedBox(width: _sz(110), child: zoneDd),
         const SizedBox(width: _kFieldGap),
-        SizedBox(width: 95, child: notes), // gave the field a bounded width
+        SizedBox(width: _sz(90), child: notes), // gave the field a bounded width
       ],
     );
   }
@@ -1657,7 +1706,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   // ────────── comms + luggage (PASS=22, LUGG=23, SLUGG=24)
   Widget _commsAndLuggageRow(bool isMobile) {
     Widget checkbox(String label, bool value, ValueChanged<bool?> onChanged,
-            {required num tab}) =>
+        {required num tab}) =>
         FocusTraversalOrder(
           order: NumericFocusOrder(tab.toDouble()),
           child: GlowFocus(
@@ -1680,11 +1729,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           ),
         );
     Widget luggageField(String label, IconData icon,
-            TextEditingController controller, int tab) =>
+        TextEditingController controller, int tab) =>
         SizedBox(
-          width: 150,
+          width: _sz(150),
           child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             // Text(label,
             //     style:
             //     const TextStyle(fontSize: _fsLabel, color: Colors.black)),
@@ -1696,7 +1745,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   controller: controller,
                   style: _kValueTextStyle,
                   keyboardType:
-                      const TextInputType.numberWithOptions(decimal: false),
+                  const TextInputType.numberWithOptions(decimal: false),
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
                     LengthLimitingTextInputFormatter(2),
@@ -1704,7 +1753,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   decoration: _inputDecoration().copyWith(
                     label: Text(label, style: _kLabelTextStyle),
                     prefixIconConstraints:
-                        const BoxConstraints(minWidth: 26, minHeight: 0),
+                    const BoxConstraints(minWidth: 26, minHeight: 0),
                     prefixIcon: Padding(
                       padding: const EdgeInsets.only(left: 6, right: 2),
                       child: Icon(icon, size: 13, color: Colors.grey),
@@ -1717,7 +1766,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         );
 
     Widget iconBtn(IconData icon,
-            {VoidCallback? onPressed, required int tab}) =>
+        {VoidCallback? onPressed, required int tab}) =>
         FocusTraversalOrder(
           order: NumericFocusOrder(tab.toDouble()),
           child: GlowFocus(
@@ -1766,10 +1815,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         // row above — a duplicate order leaves the relative position of the
         // colliding pair up to a geometry tie-break instead of to us.
         checkbox('SMS', controller.smsCheckbox.value,
-            (v) => setState(() => controller.smsCheckbox.value = v ?? false),
+                (v) => setState(() => controller.smsCheckbox.value = v ?? false),
             tab: _isReturnJourney ? 36.2 : 21.2),
         checkbox('EMAIL', controller.emailCheckbox.value,
-            (v) => setState(() => controller.emailCheckbox.value = v ?? false),
+                (v) => setState(() => controller.emailCheckbox.value = v ?? false),
             tab: _isReturnJourney ? 36.4 : 21.4),
         // luggageField('Passenger'.toUpperCase(), Icons.work, controller.passController, _isReturnJourney?37:22,),
         luggageField(
@@ -1792,18 +1841,18 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       // }),
       iconBtn(Icons.settings_suggest, tab: _isReturnJourney ? 39 : 24,
           onPressed: () {
-        showDialog(
-          context: context,
-          builder: (_) => SettingsDialog(),
-        );
-      }),
+            showDialog(
+              context: context,
+              builder: (_) => SettingsDialog(),
+            );
+          }),
       iconBtn(Icons.attach_money, tab: _isReturnJourney ? 40 : 25,
           onPressed: () {
-        showDialog(
-          context: context,
-          builder: (_) => ChildSeatsAlert(),
-        );
-      }),
+            showDialog(
+              context: context,
+              builder: (_) => ChildSeatsAlert(),
+            );
+          }),
       // iconBtn(Icons.note_add, tab: _isReturnJourney ? 41 : 26, onPressed: () {
       //   showDialog(
       //     context: context,
@@ -1813,11 +1862,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       // }),
       iconBtn(Icons.sticky_note_2, tab: _isReturnJourney ? 41 : 26,
           onPressed: () {
-        showDialog(
-          context: context,
-          builder: (_) => ExtraInfoAlert(),
-        );
-      }),
+            showDialog(
+              context: context,
+              builder: (_) => ExtraInfoAlert(),
+            );
+          }),
     ]);
     if (isMobile) {
       return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -1884,7 +1933,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           icon: Icons.payments_outlined,
           label: 'FARE',
           value:
-              '£ ${double.parse(controller.fixedFare.value).toStringAsFixed(1)}',
+          '£ ${double.parse(controller.fixedFare.value).toStringAsFixed(1)}',
           emphasized: true),
     ];
     if (isMobile) {
@@ -1911,7 +1960,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       null,
       controller.selectDriverValue,
       controller.dashboardAllData!.drivers ?? const [],
-      (v) => setState(() => controller.selectDriverValue = v),
+          (v) => setState(() => controller.selectDriverValue = v),
       _isReturnJourney ? 43 : 28,
       itemLabel: (p) => p.name ?? '',
       hint: 'Select Driver',
@@ -1928,7 +1977,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
             shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
             textStyle: const TextStyle(
                 fontWeight: FontWeight.w700, fontSize: _fsField),
           ),
@@ -1974,13 +2023,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 return;
               }
               controller.dashBoardApiValidation(
-                id: (controller.jobDetails == null ||
-                    controller.cliJobHit == true ||
-                    controller.isPickBooking == true) // <-- Yahan check add karein
-                    ? null
-                    : int.parse(controller.jobDetails!.id!),
-              );
-
+                  id: controller.jobDetails == null
+                      ? null
+                      : controller.cliJobHit == true
+                      ? null
+                      : int.parse(controller.jobDetails!.id!));
             },
             icon: const Icon(Icons.home_outlined, size: 16),
             label: const Text('SAVE [HOME]'),
@@ -2012,9 +2059,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ]);
     }
     return Row(children: [
-      const SizedBox(
-        width: 70,
-        child: Text('Driver',
+      SizedBox(
+        width: _sz(70),
+        child: const Text('Driver',
             style: TextStyle(fontSize: _fsField, fontWeight: FontWeight.w600)),
       ),
       Expanded(child: dd),
@@ -2027,15 +2074,15 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
 
   // ────────── shared primitives
   Widget _sectionHeader(IconData icon, String title) => Row(children: [
-        Icon(icon, size: 16, color: _purple),
-        const SizedBox(width: 6),
-        Text(title.toUpperCase(),
-            style: const TextStyle(
-                fontFamily: _kChromeFontFamily,
-                color: _purple,
-                fontWeight: FontWeight.w700,
-                fontSize: _fsSection)),
-      ]);
+    Icon(icon, size: 16, color: _purple),
+    const SizedBox(width: 6),
+    Text(title.toUpperCase(),
+        style: const TextStyle(
+            fontFamily: _kChromeFontFamily,
+            color: _purple,
+            fontWeight: FontWeight.w700,
+            fontSize: _fsSection)),
+  ]);
 
   Widget _grid(int cols, List<Widget> children) {
     final rows = <Widget>[];
@@ -2059,14 +2106,14 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   }
 
   Widget _customerAutocompleteField(
-    String label, {
-    required int tab,
-    required TextEditingController controller,
-    required List<CustomerObject> customers,
-    required ValueChanged<CustomerObject> onPicked,
-    ValueChanged<String>? onChanged,
-    IconData? prefix,
-  }) {
+      String label, {
+        required int tab,
+        required TextEditingController controller,
+        required List<CustomerObject> customers,
+        required ValueChanged<CustomerObject> onPicked,
+        ValueChanged<String>? onChanged,
+        IconData? prefix,
+      }) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       // Text(label.toUpperCase(),
       //     style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
@@ -2084,12 +2131,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             ),
             labelStyle: _kLabelTextStyle,
             prefixIconConstraints:
-                const BoxConstraints(minWidth: 28, minHeight: 0),
+            const BoxConstraints(minWidth: 28, minHeight: 0),
             prefixIcon: prefix != null
                 ? Padding(
-                    padding: const EdgeInsets.only(left: 8, right: 4),
-                    child: Icon(prefix, size: 15, color: Colors.grey),
-                  )
+              padding: const EdgeInsets.only(left: 8, right: 4),
+              child: Icon(prefix, size: 15, color: Colors.grey),
+            )
                 : null,
           ),
         ),
@@ -2101,8 +2148,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   /// the controller can tell a chosen time apart from the pre-filled "now".
   Widget _timeField(String label,
       {required num tab,
-      required TextEditingController controller,
-      VoidCallback? onPicked}) {
+        required TextEditingController controller,
+        VoidCallback? onPicked}) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       // Text(label.toUpperCase(),
       //     style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
@@ -2124,15 +2171,15 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   }
 
   Widget _field(
-    String label, {
-    required num tab,
-    IconData? prefix,
-    VoidCallback? onPrefixTap,
-    TextEditingController? controller,
-    List<TextInputFormatter>? inputFormatters,
-    bool isError = false, // New parameter
-    ValueChanged<String>? onChanged, // New parameter
-  }) {
+      String label, {
+        required num tab,
+        IconData? prefix,
+        VoidCallback? onPrefixTap,
+        TextEditingController? controller,
+        List<TextInputFormatter>? inputFormatters,
+        bool isError = false, // New parameter
+        ValueChanged<String>? onChanged, // New parameter
+      }) {
     Widget? prefixWidget;
     if (prefix != null) {
       final iconPadding = Padding(
@@ -2141,10 +2188,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       );
       prefixWidget = onPrefixTap != null
           ? InkWell(
-              onTap: onPrefixTap,
-              borderRadius: BorderRadius.circular(4),
-              child: iconPadding,
-            )
+        onTap: onPrefixTap,
+        borderRadius: BorderRadius.circular(4),
+        child: iconPadding,
+      )
           : iconPadding;
     }
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -2172,16 +2219,16 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               ),
               labelStyle: _kLabelTextStyle,
               prefixIconConstraints:
-                  const BoxConstraints(minWidth: 28, minHeight: 0),
+              const BoxConstraints(minWidth: 28, minHeight: 0),
               prefixIcon: prefixWidget,
               // Border handling for Red error indicator
               enabledBorder: isError
                   ? const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.red, width: 2.0))
+                  borderSide: BorderSide(color: Colors.red, width: 2.0))
                   : null,
               focusedBorder: isError
                   ? const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.red, width: 2.0))
+                  borderSide: BorderSide(color: Colors.red, width: 2.0))
                   : null,
             ),
           ),
@@ -2191,16 +2238,16 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   }
 
   Widget _dropdown<T>(
-    String? label,
-    T? value,
-    List<T> items,
-    ValueChanged<T?> onChanged,
-    int tab, {
-    String Function(T item)? itemLabel,
-    String? hint,
-    bool isExpanded = true,
-    bool allowUnselect = true,
-  }) {
+      String? label,
+      T? value,
+      List<T> items,
+      ValueChanged<T?> onChanged,
+      int tab, {
+        String Function(T item)? itemLabel,
+        String? hint,
+        bool isExpanded = true,
+        bool allowUnselect = true,
+      }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -2248,10 +2295,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               child: GlowFocus(
                 radius: 20,
                 child: Obx(() => Switch(
-                      value: controller.dropDownShow.value,
-                      onChanged: (v) => controller.dropDownShow.value = v,
-                      activeColor: _purple,
-                    )),
+                  value: controller.dropDownShow.value,
+                  onChanged: (v) => controller.dropDownShow.value = v,
+                  activeColor: _purple,
+                )),
               ),
             ),
           ),
@@ -2294,7 +2341,9 @@ class _DropdownField<T> extends StatefulWidget {
 }
 
 class _DropdownFieldState<T> extends State<_DropdownField<T>> {
-  static const _fsField = 12.0;
+  /// Text size of the open menu's items — a step below the field value so a
+  /// long list reads compact. The closed field keeps [_kValueTextStyle].
+  static const _fsMenu = 11.0;
 
   final FocusNode _dropdownFocusNode = FocusNode();
 
@@ -2308,11 +2357,6 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
 
   @override
   Widget build(BuildContext context) {
-    final w = MediaQuery.of(context).size.width;
-    final isMobile = w < 640;
-    final isTablet = w >= 640 && w < 1200;
-    final double responsiveFontSize = isMobile ? 10.0 : (isTablet ? 10.5 : 11.0);
-
     return AnimatedBuilder(
       animation: _dropdownFocusNode,
       builder: (context, child) {
@@ -2333,7 +2377,7 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
             // so the vertical padding drops by the difference to keep the two
             // controls the same overall height.
             contentPadding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+            const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<T?>(
@@ -2348,8 +2392,8 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
               icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
               // Ambient style for the open menu. The closed field is styled
               // separately below.
-              style: TextStyle(
-                fontSize: responsiveFontSize,
+              style: const TextStyle(
+                fontSize: _fsMenu,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
               ),
@@ -2367,14 +2411,18 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
               selectedItemBuilder: (context) => [
                 if (widget.allowUnselect) const SizedBox.shrink(),
                 ...widget.items.map((e) => Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: Text(
-                        _labelOf(e).toUpperCase(),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: _kValueTextStyle.copyWith(fontSize: responsiveFontSize),
-                      ),
-                    )),
+                  alignment: AlignmentDirectional.centerStart,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      _labelOf(e).toUpperCase(),
+                      maxLines: 1,
+                      softWrap: false,
+                      style: _kValueTextStyle,
+                    ),
+                  ),
+                )),
               ],
               items: [
                 // Placeholder item: allows the user to unselect / reset. It
@@ -2383,28 +2431,34 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
                 if (widget.allowUnselect)
                   DropdownMenuItem<T?>(
                     value: null,
-                    child: Text(
-                      widget.labelText,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontFamily: _kChromeFontFamily,
-                        fontSize: responsiveFontSize,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey.shade700,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        widget.labelText,
+                        style: TextStyle(
+                          fontFamily: _kChromeFontFamily,
+                          fontSize: _fsMenu,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey.shade700,
+                        ),
                       ),
                     ),
                   ),
                 // Actual items
                 ...widget.items.map((e) => DropdownMenuItem<T?>(
-                      value: e,
-                      child: Text(
-                        _labelOf(e).toUpperCase(),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: responsiveFontSize),
-                      ),
-                    )),
+                  value: e,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      _labelOf(e).toUpperCase(),
+                      maxLines: 1,
+                      softWrap: false,
+                      style: const TextStyle(fontSize: _fsMenu),
+                    ),
+                  ),
+                )),
               ],
               onChanged: (T? newValue) {
                 widget.onChanged(newValue);
@@ -2420,6 +2474,11 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
 // ════════════════════════════════════════════════════════════════════
 // Autocomplete: backed by AllAddressesModel (name + postcode + lat/lon)
 // ════════════════════════════════════════════════════════════════════
+/// Height of one row in the PICKUP / DROP suggestion panel — room for two
+/// lines of 12px text. Used as the ListView's itemExtent and by the
+/// arrow-key scroll-into-view math.
+const double _kAddressRowHeight = 38;
+
 class _AddressModelAutocomplete extends StatefulWidget {
   const _AddressModelAutocomplete({
     required this.controller,
@@ -2542,8 +2601,8 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     final query = q.trim().toLowerCase();
     // Remember the currently highlighted item so a list refresh can keep it.
     final AllAddressesModel? current = (preserveHighlight &&
-            _highlighted >= 0 &&
-            _highlighted < _filtered.length)
+        _highlighted >= 0 &&
+        _highlighted < _filtered.length)
         ? _filtered[_highlighted]
         : null;
 
@@ -2555,10 +2614,10 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
       // them, so the panel said "No data" over a perfectly good response.
       _filtered = widget.items
           .where((a) => addressMatchesQuery(
-                name: a.name,
-                postcode: a.postcode,
-                query: query,
-              ))
+        name: a.name,
+        postcode: a.postcode,
+        query: query,
+      ))
           .toList();
     }
 
@@ -2567,7 +2626,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     } else if (preserveHighlight) {
       final idx = current == null ? -1 : _filtered.indexOf(current);
       _highlighted =
-          idx >= 0 ? idx : _highlighted.clamp(0, _filtered.length - 1);
+      idx >= 0 ? idx : _highlighted.clamp(0, _filtered.length - 1);
     } else {
       _highlighted = 0;
     }
@@ -2623,17 +2682,25 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
       if (!mounted) return;
       final c = _scrollController;
       if (!c.hasClients || _highlighted < 0) return;
-      const itemHeight = 48.0;
-      const panelHeight = 260.0;
+      final itemHeight = _sp(context, _kAddressRowHeight);
+      final panelHeight = c.position.viewportDimension;
       final itemTop = _highlighted * itemHeight;
       final itemBottom = itemTop + itemHeight;
       final viewTop = c.offset;
       final viewBottom = viewTop + panelHeight;
       final maxScroll = c.position.maxScrollExtent;
+      double? target;
       if (itemTop < viewTop) {
-        c.jumpTo(itemTop.clamp(0.0, maxScroll));
+        target = itemTop.clamp(0.0, maxScroll);
       } else if (itemBottom > viewBottom) {
-        c.jumpTo((itemBottom - panelHeight).clamp(0.0, maxScroll));
+        target = (itemBottom - panelHeight).clamp(0.0, maxScroll);
+      }
+      // A short animation instead of jumpTo so arrow-key navigation glides;
+      // a held arrow key just retargets the running animation.
+      if (target != null) {
+        c.animateTo(target,
+            duration: const Duration(milliseconds: 90),
+            curve: Curves.easeOut);
       }
     });
   }
@@ -2683,12 +2750,6 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     final width = box?.size.width ?? 280;
     final height = box?.size.height ?? 48;
-
-    final w = MediaQuery.of(context).size.width;
-    final isMobile = w < 640;
-    final isTablet = w >= 640 && w < 1200;
-    final double responsiveFontSize = isMobile ? 10.0 : (isTablet ? 10.5 : 11.0);
-
     return Positioned(
       width: width,
       child: CompositedTransformFollower(
@@ -2707,7 +2768,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
             elevation: 6,
             borderRadius: BorderRadius.circular(8),
             child: Container(
-              constraints: const BoxConstraints(maxHeight: 260),
+              constraints: BoxConstraints(maxHeight: _sp(this.context, 260)),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(color: const Color(0xFFE5E7EB)),
@@ -2715,55 +2776,70 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
               ),
               child: _filtered.isEmpty
                   ? const Padding(
-                      padding: EdgeInsets.all(12),
-                      child: Text('No data',
-                          style: TextStyle(color: Colors.black, fontSize: 12)),
-                    )
-                  : ListView.builder(
-                      controller: _scrollController,
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      itemCount: _filtered.length,
-                      itemBuilder: (_, i) {
-                        final a = _filtered[i];
-                        final active = _highlighted == i;
-                        return MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          onEnter: (_) {
-                            if (_highlighted == i) return;
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (!mounted) return;
-                              _highlighted = i;
-                              _entry?.markNeedsBuild();
-                            });
-                          },
-                          child: InkWell(
-                            canRequestFocus: false,
-                            onTap: () => _pick(a),
-                            child: Container(
-                              width: double.infinity,
-                              constraints: const BoxConstraints(minHeight: 26),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 2),
-                              color: active
-                                  ? const Color(0xFFEEF2FF)
-                                  : Colors.white,
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                "${a.name} ${a.postcode}",
-                                style: TextStyle(
-                                  fontSize: responsiveFontSize,
-                                  fontWeight: active
-                                      ? FontWeight.w400
-                                      : FontWeight.w600,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ),
+                padding: EdgeInsets.all(12),
+                child: Text('No data',
+                    style: TextStyle(color: Colors.black, fontSize: 12)),
+              )
+                  : Scrollbar(
+                controller: _scrollController,
+                thumbVisibility: _filtered.length *
+                    _sp(this.context, _kAddressRowHeight) >
+                    _sp(this.context, 260),
+                child: ListView.builder(
+                controller: _scrollController,
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                // Every row is the same height, so the list can lay out
+                // without measuring each child.
+                itemExtent: _sp(this.context, _kAddressRowHeight),
+                itemCount: _filtered.length,
+                itemBuilder: (_, i) {
+                  final a = _filtered[i];
+                  final active = _highlighted == i;
+                  return MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    onEnter: (_) {
+                      if (_highlighted == i) return;
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (!mounted) return;
+                        _highlighted = i;
+                        _entry?.markNeedsBuild();
+                      });
+                    },
+                    child: InkWell(
+                      canRequestFocus: false,
+                      onTap: () => _pick(a),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 2),
+                        color: active
+                            ? const Color(0xFFEEF2FF)
+                            : Colors.white,
+                        alignment: Alignment.centerLeft,
+                        // Fixed font size for every row: long addresses wrap
+                        // onto a second line (ellipsis only past that) instead
+                        // of being scaled down. Every row is
+                        // _kAddressRowHeight tall (ListView.itemExtent).
+                        // The highlighted row is normal weight, the rest bold.
+                        child: Text(
+                          "${a.name} ${a.postcode}",
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: active
+                                ? FontWeight.w400
+                                : FontWeight.w600,
+                            color: Colors.black87,
                           ),
-                        );
-                      },
+                        ),
+                      ),
                     ),
+                  );
+                },
+              ),
+              ),
             ),
           ),
         ),
@@ -2773,11 +2849,6 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
 
   @override
   Widget build(BuildContext context) {
-    final w = MediaQuery.of(context).size.width;
-    final isMobile = w < 640;
-    final isTablet = w >= 640 && w < 1200;
-    final double baseFontSize = isMobile ? 10.0 : (isTablet ? 10.5 : 11.0);
-
     return CompositedTransformTarget(
       link: _layerLink,
       child: GlowFocus(
@@ -2788,40 +2859,25 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
           // where typing does nothing. Key events still bubble up to here.
           canRequestFocus: false,
           onKeyEvent: _handleKey,
-          child: ValueListenableBuilder<TextEditingValue>(
-            valueListenable: widget.controller,
-            builder: (context, value, child) {
-              final textLength = value.text.length;
-              double responsiveFontSize = baseFontSize;
-
-              // Estimate how many characters fit based on screen width.
-              // Uppercase characters are wider, approx 75% of font size.
-              // The field width is approximately 45-50% of the screen width.
-              double approxFieldWidth = w * 0.45; 
-              double maxCharsForBaseSize = approxFieldWidth / (baseFontSize * 0.75);
-
-              if (textLength > maxCharsForBaseSize && textLength > 0) {
-                // Scale down font size smoothly
-                responsiveFontSize = baseFontSize * (maxCharsForBaseSize / textLength);
-                if (responsiveFontSize < 7.0) responsiveFontSize = 7.0; // minimum readable size
-              }
-
-              return TextField(
-                textCapitalization: TextCapitalization.characters,
-                inputFormatters: [
-                  UpperCaseTextFormatter(),
-                ],
-                key: _fieldKey,
-                onChanged: widget.onChanged,
-                controller: widget.controller,
-                focusNode: _focusNode,
-                style: _kValueTextStyle.copyWith(fontSize: responsiveFontSize),
-                maxLines: 1,
-                textInputAction: TextInputAction.done,
-                keyboardType: TextInputType.text,
-                decoration: widget.decoration,
-              );
-            },
+          child: TextField(
+            textCapitalization: TextCapitalization.characters,
+            inputFormatters: [
+              UpperCaseTextFormatter(),
+            ],
+            key: _fieldKey,
+            onChanged: widget.onChanged,
+            controller: widget.controller,
+            focusNode: _focusNode,
+            // Single line with a smaller, tighter font so a full address fits
+            // on one row; anything longer scrolls horizontally in the field.
+            style: _kValueTextStyle.copyWith(fontSize: 11, letterSpacing: 0.1),
+            maxLines: 1,
+            textInputAction: TextInputAction.done,
+            keyboardType: TextInputType.text,
+            // A single-line field unfocuses on Enter by default; keep focus here
+            // as the old multiline field did (Enter still picks via _handleKey).
+            onEditingComplete: () {},
+            decoration: widget.decoration,
           ),
         ),
       ),
@@ -2894,8 +2950,8 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
     _filtered = query.isEmpty
         ? widget.suggestions
         : widget.suggestions
-            .where((s) => s.toLowerCase().contains(query))
-            .toList();
+        .where((s) => s.toLowerCase().contains(query))
+        .toList();
     _highlighted = _filtered.isEmpty ? -1 : 0;
     _entry?.markNeedsBuild();
   }
@@ -2966,12 +3022,6 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
     final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     final width = box?.size.width ?? 280;
     final height = box?.size.height ?? 48;
-
-    final w = MediaQuery.of(context).size.width;
-    final isMobile = w < 640;
-    final isTablet = w >= 640 && w < 1200;
-    final double responsiveFontSize = isMobile ? 10.0 : (isTablet ? 10.5 : 11.0);
-
     return Positioned(
       width: width,
       child: CompositedTransformFollower(
@@ -2984,7 +3034,7 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
             elevation: 6,
             borderRadius: BorderRadius.circular(8),
             child: Container(
-              constraints: const BoxConstraints(maxHeight: 220),
+              constraints: BoxConstraints(maxHeight: _sp(this.context, 220)),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(color: const Color(0xFFE5E7EB)),
@@ -2992,62 +3042,68 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
               ),
               child: _filtered.isEmpty
                   ? const Padding(
-                      padding: EdgeInsets.all(12),
-                      child: Text('No matches',
-                          style: TextStyle(color: Colors.black, fontSize: 12)),
-                    )
+                padding: EdgeInsets.all(12),
+                child: Text('No matches',
+                    style: TextStyle(color: Colors.black, fontSize: 12)),
+              )
                   : ListView.builder(
-                      controller: _scrollController,
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      itemCount: _filtered.length,
-                      itemBuilder: (_, i) {
-                        final s = _filtered[i];
-                        final active = _highlighted == i;
-                        return MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          onEnter: (_) {
-                            if (_highlighted == i) return;
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (!mounted) return;
-                              _highlighted = i;
-                              _entry?.markNeedsBuild();
-                            });
-                          },
-                          child: InkWell(
-                            canRequestFocus: false,
-                            onTap: () => _pick(s),
-                            child: Container(
-                              width: double.infinity,
-                              constraints: const BoxConstraints(minHeight: 26),
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                controller: _scrollController,
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: _filtered.length,
+                itemBuilder: (_, i) {
+                  final s = _filtered[i];
+                  final active = _highlighted == i;
+                  return MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    onEnter: (_) {
+                      if (_highlighted == i) return;
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (!mounted) return;
+                        _highlighted = i;
+                        _entry?.markNeedsBuild();
+                      });
+                    },
+                    child: InkWell(
+                      canRequestFocus: false,
+                      onTap: () => _pick(s),
+                      child: Container(
+                        width: double.infinity,
+                        height: _sp(this.context, 34),
+                        padding:
+                        const EdgeInsets.symmetric(horizontal: 12),
+                        color: active
+                            ? const Color(0xFFEEF2FF)
+                            : Colors.white,
+                        alignment: Alignment.centerLeft,
+                        child: Row(children: [
+                          Icon(Icons.place_outlined,
+                              size: 14,
                               color: active
-                                  ? const Color(0xFFEEF2FF)
-                                  : Colors.white,
+                                  ? const Color(0xFF4F46E5)
+                                  : Colors.grey),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
                               alignment: Alignment.centerLeft,
-                              child: Row(children: [
-                                Icon(Icons.place_outlined,
-                                    size: 14,
-                                    color: active
-                                        ? const Color(0xFF4F46E5)
-                                        : Colors.grey),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(s,
-                                      style: TextStyle(
-                                        fontSize: responsiveFontSize,
-                                        fontWeight: active
-                                            ? FontWeight.w400
-                                            : FontWeight.w600,
-                                      )),
-                                ),
-                              ]),
+                              child: Text(s,
+                                  maxLines: 1,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: active
+                                        ? FontWeight.w600
+                                        : FontWeight.w400,
+                                  )),
                             ),
                           ),
-                        );
-                      },
+                        ]),
+                      ),
                     ),
+                  );
+                },
+              ),
             ),
           ),
         ),
@@ -3073,9 +3129,10 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
             controller: widget.controller,
             focusNode: _focusNode,
             style: _kValueTextStyle,
-            maxLines: 1,
+            maxLines: null,
+            minLines: 1,
             textInputAction: TextInputAction.done,
-            keyboardType: TextInputType.text,
+            keyboardType: TextInputType.multiline,
             decoration: widget.decoration,
           ),
         ),
@@ -3175,8 +3232,8 @@ class _CustomerModelAutocompleteState
     final query = q.trim().toLowerCase();
     // Remember the currently highlighted item so a list refresh can keep it.
     final CustomerObject? current = (preserveHighlight &&
-            _highlighted >= 0 &&
-            _highlighted < _filtered.length)
+        _highlighted >= 0 &&
+        _highlighted < _filtered.length)
         ? _filtered[_highlighted]
         : null;
 
@@ -3196,7 +3253,7 @@ class _CustomerModelAutocompleteState
     } else if (preserveHighlight) {
       final idx = current == null ? -1 : _filtered.indexOf(current);
       _highlighted =
-          idx >= 0 ? idx : _highlighted.clamp(0, _filtered.length - 1);
+      idx >= 0 ? idx : _highlighted.clamp(0, _filtered.length - 1);
     } else {
       _highlighted = 0;
     }
@@ -3248,8 +3305,8 @@ class _CustomerModelAutocompleteState
       if (!mounted) return;
       final c = _scrollController;
       if (!c.hasClients || _highlighted < 0) return;
-      const itemHeight = 48.0;
-      const panelHeight = 260.0;
+      final itemHeight = _sp(context, 48.0);
+      final panelHeight = _sp(context, 260.0);
       final itemTop = _highlighted * itemHeight;
       final itemBottom = itemTop + itemHeight;
       final viewTop = c.offset;
@@ -3327,7 +3384,7 @@ class _CustomerModelAutocompleteState
             elevation: 6,
             borderRadius: BorderRadius.circular(8),
             child: Container(
-              constraints: const BoxConstraints(maxHeight: 260),
+              constraints: BoxConstraints(maxHeight: _sp(this.context, 260)),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(color: const Color(0xFFE5E7EB)),
@@ -3335,83 +3392,101 @@ class _CustomerModelAutocompleteState
               ),
               child: _filtered.isEmpty
                   ? const Padding(
-                      padding: EdgeInsets.all(12),
-                      child: Text('No data',
-                          style: TextStyle(color: Colors.black, fontSize: 12)),
-                    )
+                padding: EdgeInsets.all(12),
+                child: Text('No data',
+                    style: TextStyle(color: Colors.black, fontSize: 12)),
+              )
                   : ListView.builder(
-                      controller: _scrollController,
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      itemCount: _filtered.length,
-                      itemBuilder: (_, i) {
-                        final c = _filtered[i];
-                        final active = _highlighted == i;
-                        return MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          onEnter: (_) {
-                            if (_highlighted == i) return;
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (!mounted) return;
-                              _highlighted = i;
-                              _entry?.markNeedsBuild();
-                            });
-                          },
-                          child: InkWell(
-                            canRequestFocus: false,
-                            onTap: () => _pick(c),
-                            child: Container(
-                              width: double.infinity,
-                              constraints: const BoxConstraints(minHeight: 36),
-                              // 8/6 instead of 12/8: the panel is only as wide as
-                              // the Mobile cell, so every pixel of chrome came
-                              // straight out of the text.
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
+                controller: _scrollController,
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: _filtered.length,
+                itemBuilder: (_, i) {
+                  final c = _filtered[i];
+                  final active = _highlighted == i;
+                  return MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    onEnter: (_) {
+                      if (_highlighted == i) return;
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (!mounted) return;
+                        _highlighted = i;
+                        _entry?.markNeedsBuild();
+                      });
+                    },
+                    child: InkWell(
+                      canRequestFocus: false,
+                      onTap: () => _pick(c),
+                      child: Container(
+                        width: double.infinity,
+                        height: _sp(this.context, 48),
+                        // 8/6 instead of 12/8: the panel is only as wide as
+                        // the Mobile cell, so every pixel of chrome came
+                        // straight out of the text.
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 6),
+                        color: active
+                            ? const Color(0xFFEEF2FF)
+                            : Colors.white,
+                        alignment: Alignment.centerLeft,
+                        child: Row(children: [
+                          Icon(Icons.person_outline,
+                              size: 14,
                               color: active
-                                  ? const Color(0xFFEEF2FF)
-                                  : Colors.white,
-                              alignment: Alignment.centerLeft,
-                              child: Row(children: [
-                                Icon(Icons.person_outline,
-                                    size: 14,
-                                    color: active
-                                        ? const Color(0xFF4F46E5)
-                                        : Colors.grey),
-                                const SizedBox(width: 6),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        c.mobile ?? '',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: active
-                                              ? FontWeight.w400
-                                              : FontWeight.w600,
-                                          color: Colors.black87,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        c.name ?? '',
-                                        style: const TextStyle(
-                                          fontSize: 10,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ],
+                                  ? const Color(0xFF4F46E5)
+                                  : Colors.grey),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                // FittedBox, not ellipsis: the number and the
+                                // name are what the user picks by, so a row
+                                // too narrow for them shrinks the text to fit
+                                // instead of cutting it off. maxLines/softWrap
+                                // keep each on one line; nothing can overflow
+                                // once it is scaled, so no ellipsis is needed.
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    c.mobile ?? '',
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: active
+                                          ? FontWeight.w600
+                                          : FontWeight.w500,
+                                      color: Colors.black87,
+                                    ),
                                   ),
                                 ),
-                              ]),
+                                const SizedBox(height: 2),
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    c.name ?? '',
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        );
-                      },
+                        ]),
+                      ),
                     ),
+                  );
+                },
+              ),
             ),
           ),
         ),

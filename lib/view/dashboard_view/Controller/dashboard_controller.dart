@@ -999,7 +999,7 @@ class DashboardController extends GetxController {
 
   Future<void> onChangeHandler(
       {required String fieldName, required String searchingText}) async {
-    const duration = Duration(milliseconds: 800); // 800ms ka delay
+    const duration = Duration(milliseconds: 350); // 350ms ka delay
     selectedTextFieldsValue.value = fieldName;
     //  Agar pehle se koi timer chal raha ho to usse cancel karo
     if (_debounce?.isActive ?? false) _debounce!.cancel();
@@ -1087,10 +1087,16 @@ class DashboardController extends GetxController {
   var isAirportResponseReturn = false.obs;
   List<AllAddressesModel> allAddressesData = <AllAddressesModel>[].obs;
 
+  /// Bumped per search so a slow, older response can't overwrite the results
+  /// of a newer query that already came back.
+  int _addressSearchSeq = 0;
+
   getAddresses({fieldsName, searchingText}) async {
+    final seq = ++_addressSearchSeq;
     var response = await Api().get(
         "services/search?search=${searchingText.toString().toUpperCase()}",
         auth: true);
+    if (seq != _addressSearchSeq) return;
     if (response.statusCode == 200) {
       // source "airport"
       if (response.data['source'] == "airport" &&
