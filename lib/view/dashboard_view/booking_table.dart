@@ -14,6 +14,7 @@ import '../../alert/delete_permission_alert.dart';
 import '../../alert/dispatch_booking.dart';
 import '../../alert/edit_booking_fare.dart';
 import '../../alert/fob_alert.dart';
+import '../../alert/future_booking_alert.dart';
 import '../../component/networks/api.dart';
 import '../../component/pagination.dart';
 import '../../component/text_field.dart';
@@ -1278,6 +1279,8 @@ class _BookingTableState extends State<BookingTable> {
         context: context,
         builder: (context) => DispatchBooking(bookingItem: item), // Aapki existing class
       );
+    } else if (title == "FUTURE") {
+      showFutureBookingAlert(item);
     } else if (title == "SMS") {
       // SMS wala Alert
       showShortcutDialog(

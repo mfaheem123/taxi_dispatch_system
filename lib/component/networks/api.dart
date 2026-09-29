@@ -262,7 +262,7 @@ Future<dynamic> delete(String url, {isProgressShow = false, formData}) async {
       print(apiUrl + url);
       return response;
     } on DioException catch (e) {
-      print("erro hide");
+      print("erro hide $e");
       if (isProgressShow == false) {
         BotToast.closeAllLoading();
       }

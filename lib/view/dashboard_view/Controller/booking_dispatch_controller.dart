@@ -30,29 +30,26 @@ class DispatchController extends GetxController {
       BotToast.showText(text: 'Booking or Driver ID is missing');
       return;
     }
-    try {
+
       isAssigning(true);
       var formData = {
         "booking_id": bookingId.toString(),
         "driver_id": driverId,
       };
       print("Sending Data: $formData");
-      var response = await Api().post(
-        formData,
-        "bookings/assign-driver",
+      var response = await Api().post(formData,
+        "bookings/assign-future-booking",
         auth: true,
         sendCompanyId: true,
       );
       if (response.statusCode == 200) {
         BotToast.showText(text: 'Driver Assigned Successfully');
+        print('Driver Assigned Successfully');
         Get.back();
+        isAssigning(false);
       } else {
         BotToast.showText(text: response.data['message']);
+        print("Error: ${response.data['message']}");
       }
-    } catch (e) {
-      print("Error: $e");
-    } finally {
-      isAssigning(false);
     }
   }
-}

@@ -1,155 +1,221 @@
-import 'package:dashboard_new1/component/color.dart';
-import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:get/get.dart';
+import '../component/alert_close_button.dart';
+import '../component/color.dart';
+import '../component/customButton.dart';
+import '../component/textStyle.dart';
+import '../view/dashboard_view/Controller/booking_dispatch_controller.dart';
+import '../view/dashboard_view/Controller/dashboard_controller.dart';
 
-void showFutureBookingAlert() {
+void showFutureBookingAlert(dynamic bookingItem, {bool isDispatch = false}) {
   Get.dialog(
-    FutureBookingAlert(),
+    FutureBookingAlert(bookingItem: bookingItem),
     barrierColor: Colors.black54,
   );
 }
 
 class FutureBookingAlert extends StatefulWidget {
-  const FutureBookingAlert({super.key});
+  final dynamic bookingItem;
+  const FutureBookingAlert({super.key, this.bookingItem});
 
   @override
   State<FutureBookingAlert> createState() => _FutureBookingAlertState();
 }
 
 class _FutureBookingAlertState extends State<FutureBookingAlert> {
+  final controller = Get.put(DispatchController());
+  final _controller = Get.find<DashboardController>();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.getDispatchDrivers();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      insetPadding: const EdgeInsets.only(top: 100, left: 40, right: 40),
       backgroundColor: Colors.transparent,
-      insetPadding: EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        width: 650,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12)
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(padding: EdgeInsetsGeometry.all(16.0),
-              child: Row(
-                children: [
-                  Text("DISPATCH FB ()",
-                    style: mozillaTextSemiBoldText(
-                      fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87
-                    ),
-                  ),
-                  const Spacer(),
-                  InkWell(
-                    onTap: () => Get.back(),
-                    child: const Icon(Icons.close, size: 22, color: Colors.grey),
-                  ),
-                ],
-              ),
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: IntrinsicWidth(
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
             ),
-            const Divider(height: 1),
-            Padding(padding: EdgeInsetsGeometry.all(20.0),
-              child: Column(
-                children: [
-                  Container(
-                    padding: EdgeInsetsGeometry.all(12),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsetsGeometry.all(8),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade100),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(Icons.person_outline, color: Colors.black54),
-                        ),
-                        SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: DynamicColors.gryClr.withOpacity(0.5),
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.near_me_rounded, color: DynamicColors.primaryClr),
+                      const SizedBox(width: 10),
+                      RichText(
+                        text: TextSpan(
+                          style: mozillaTextSemiBoldText(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
                           children: [
-                            Text("SELECT DRIVER TO DISPATCH",
-                            style: mozillaTextSemiBoldText(
-                              fontSize: 16, fontWeight: FontWeight.bold)),
-                            Text("FUTURE BOOKING DISPATCH LIST",
-                              style: mozillaTextRegularText(
-                                fontSize: 13, color: Colors.grey
+                            const TextSpan(text: "DISPATCH FUTURE BOOKING ("),
+                            TextSpan(
+                              text: widget.bookingItem?.referenceNumber ?? "N/A",
+                              style: outFitRegular(color: DynamicColors.primaryClr, fontWeight: FontWeight.bold),
+                            ),
+                            const TextSpan(text: ")"),
+                          ],
+                        ),
+                      ),
+                      const Spacer(),
+                      FocusTraversalOrder(
+                        order: const NumericFocusOrder(999),
+                        child: const AlertCloseButton(),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1, thickness: 1),
+                const SizedBox(height: 18),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey.shade300),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade200,
+                                borderRadius: BorderRadius.circular(6),
                               ),
+                              child: const Icon(Icons.person, size: 20, color: Colors.black87),
+                            ),
+                            const SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("SELECT DRIVER TO DISPATCH",
+                                    style: mozillaTextSemiBoldText(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black)),
+                                Text("CHOOSE A DRIVER, THEN PRESS DISPATCH",
+                                  style: outFitRegular(fontSize: 12, color: Colors.grey.shade600),
+                                ),
+                              ],
                             ),
                           ],
-                        )
-                      ],
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                      Obx(() {
+                        return Column(
+                          children: [
+                            SingleChildScrollView(
+                              child: DataTable(
+                                headingRowHeight: 45,
+                                columnSpacing: 25,
+                                headingRowColor: WidgetStateProperty.all(Colors.grey.shade50),
+                                border: TableBorder.all(color: Colors.grey.shade300, width: 1),
+                                columns: [
+                                  _buildDataColumn("ID", Icons.badge_outlined),
+                                  _buildDataColumn("DRIVER NAME", Icons.person_outline),
+                                  _buildDataColumn("VEHICLE", Icons.person_outline),
+                                  _buildDataColumn("STATUS", Icons.bar_chart_rounded),
+                                  _buildDataColumn("ATTRIBUTES", Icons.local_offer_outlined),
+                                  _buildDataColumn("ACTION", Icons.bolt_rounded),
+                                ],
+                                rows: controller.drivers.map((driver) {
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(Center(child: Text("${(driver.username ?? '').toUpperCase()}", style: outFitRegular(fontSize: 14)))),
+                                      DataCell(Center(child: Text((driver.name ?? '').toUpperCase(), style: outFitRegular(fontSize: 14)))),
+                                      DataCell(Center(child: Text((driver.vehicle?.vehicleType?.name ?? '').toUpperCase(), style: outFitRegular(fontSize: 14)))),
+                                      DataCell(Center(child: Text((driver.bookingStatus ?? '').toUpperCase(), style: outFitRegular(fontSize: 14, color: Colors.green)))),
+                                      DataCell(Center(child: Text("-", style: outFitRegular(fontSize: 14)))),
+                                      DataCell(
+                                        Center(
+                                          child: CustomButton(
+                                            width: 80,
+                                            height: 28,
+                                            verticalPadding: 0.0,
+                                            borderRadius: 4,
+                                            btnText: "DISPATCH",
+                                            style: mozillaTextSemiBoldText(fontSize: 13, color: Colors.white),
+                                            onTap: () {
+                                              controller.assignDriverToBooking(widget.bookingItem.id, driver.id);
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                            if (controller.isLoading.value)
+                              const Padding(
+                                padding: EdgeInsets.all(20.0),
+                                child: Center(child: CircularProgressIndicator()),
+                              )
+                            else if (controller.drivers.isEmpty)
+                              const Padding(
+                                padding: EdgeInsets.all(20.0),
+                                child: Center(child: Text("No drivers found")),
+                              ),
+                          ],
+                        );
+                      }),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 5),
+                const Divider(height: 1),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: CustomButton(
+                      width: 65,
+                      height: 30,
+                      btnText: "CLOSE",
+                      btnColor: Colors.red,
+                      verticalPadding: 0.0,
+                      borderRadius: 6,
+                      onTap: () => Get.back(),
+                      style: mozillaTextSemiBoldText(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  SizedBox(height: 20),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: DataTable(
-                        headingRowHeight: 45,
-                        columnSpacing: 45,
-                        headingRowColor: WidgetStateProperty.all(Colors.grey
-                            .shade50),
-                        border: TableBorder.all(color: Colors.grey.shade300,
-                            width: 1),
-                        columns: [
-                          _buildDataColumn("ID"),
-                          _buildDataColumn("DRIVER"),
-                          _buildDataColumn("ATTRIBUTES"),
-                          _buildDataColumn("STATUS"),
-                          _buildDataColumn("ACTION"),
-                        ],
-                         rows: [
-                           _buildStaticRow("101", "John Doe", "Saloon, AC", "Available"),
-                           _buildStaticRow("102", "Ali Khan", "SUV, 7 Seater", "Available"),
-                           _buildStaticRow("103", "David Smith", "Executive", "Busy"),
-                         ],
-                    ),
-                  ),
-                ],
-              ),
-
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
-
     );
   }
-  DataRow _buildStaticRow(String id, String driver, String attr, String status) {
-    return DataRow(cells: [
-      DataCell(Text(id)),
-      DataCell(Text(driver, style: const TextStyle(fontWeight: FontWeight.w600))),
-      DataCell(Text(attr)),
-      DataCell(
-          Text(status,
-              style: TextStyle(color: status == "Available" ? Colors.green : Colors.red, fontWeight: FontWeight.bold)
-          )
-      ),
-      DataCell(
-        ElevatedButton(
-          onPressed: () {
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: DynamicColors.primaryClr,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-          ),
-          child: const Text("DISPATCH", style: TextStyle(fontSize: 11)),
-        ),
-      ),
-    ]);
-  }
 
-  DataColumn _buildDataColumn(String label) {
+  DataColumn _buildDataColumn(String label, IconData icon) {
     return DataColumn(
-      label: Text(label, style: mozillaTextSemiBoldText(
-          fontWeight: FontWeight.bold, fontSize: 16)),
+      label: Row(
+        children: [
+          Icon(icon, size: 16, color: Colors.black87),
+          const SizedBox(width: 6),
+          Text(label, style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 16)),
+        ],
+      ),
     );
   }
 }
