@@ -145,7 +145,7 @@ class _DispatchBookingState extends State<DispatchBooking> {
                       headingRowColor: WidgetStateProperty.all(Colors.grey.shade50),
                       border: TableBorder.all(color: Colors.grey.shade300, width: 1),
                       columns: [
-                        _buildDataColumn("ID", Icons.badge_outlined),
+                        _buildDataColumn("USERNAME", Icons.badge_outlined),
                         _buildDataColumn("DRIVER NAME", Icons.person_outline),
                         _buildDataColumn("VEHICLE", Icons.car_rental_sharp),
                         _buildDataColumn("SUBSIDIARY", Icons.apartment_rounded),

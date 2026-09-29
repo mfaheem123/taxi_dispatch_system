@@ -3351,7 +3351,7 @@ class DashboardController extends GetxController {
     telController.clear();
     minController.clear();
     minControllerReturn.clear();
-    passController.clear();
+    passController.text = "1";
     luggController.clear();
     sluggController.clear();
     parkingChargesController.clear();

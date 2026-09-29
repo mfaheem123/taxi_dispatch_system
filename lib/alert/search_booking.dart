@@ -896,7 +896,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                       style: _kOutfitStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: isSelected ? Colors.white : Colors.blue,
+                        color: isSelected ? Colors.black : Colors.blue,
                       ),
                     ),
                   ),
