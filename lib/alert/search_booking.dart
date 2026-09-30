@@ -568,9 +568,13 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                                     dataRowMaxHeight: 65,
                                     columns: [
                                       buildHeaderWithSearch(
+                                        widhtss: 30, // Header width set to 30px
                                         widget: SizedBox(
                                           width: 20,
                                           child: Checkbox(
+                                            materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                            visualDensity: VisualDensity.compact,
                                             value: false,
                                             onChanged: (v) {},
                                           ),
@@ -743,64 +747,73 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
           return null;
         }),
         cells: [
+          // FIXED DATACELL: Wraps inside UnconstrainedBox & explicit SizedBox
           DataCell(
-            Builder(
-              builder: (context) {
-                return Focus(
-                  focusNode: _rowFocusNodes.length > index
-                      ? _rowFocusNodes[index]
-                      : null,
-                  onKeyEvent: (node, event) {
-                    if (event is KeyDownEvent &&
-                        (event.logicalKey == LogicalKeyboardKey.enter ||
-                            event.logicalKey == LogicalKeyboardKey.space)) {
-                      final bool isCurrentlySelected =
-                      selectedBookings.contains(booking);
-                      setState(() {
-                        if (isCurrentlySelected) {
-                          selectedBookings.remove(booking);
-                          selectedRowIndex = -1;
-                        } else {
-                          selectedBookings.add(booking);
-                          selectedRowIndex = index;
+            UnconstrainedBox(
+              child: SizedBox(
+                width: 30,
+                child: Builder(
+                  builder: (context) {
+                    return Focus(
+                      focusNode: _rowFocusNodes.length > index
+                          ? _rowFocusNodes[index]
+                          : null,
+                      onKeyEvent: (node, event) {
+                        if (event is KeyDownEvent &&
+                            (event.logicalKey == LogicalKeyboardKey.enter ||
+                                event.logicalKey == LogicalKeyboardKey.space)) {
+                          final bool isCurrentlySelected =
+                          selectedBookings.contains(booking);
+                          setState(() {
+                            if (isCurrentlySelected) {
+                              selectedBookings.remove(booking);
+                              selectedRowIndex = -1;
+                            } else {
+                              selectedBookings.add(booking);
+                              selectedRowIndex = index;
+                            }
+                          });
+                          return KeyEventResult.handled;
                         }
-                      });
-                      return KeyEventResult.handled;
-                    }
-                    return KeyEventResult.ignored;
+                        return KeyEventResult.ignored;
+                      },
+                      child: Builder(
+                        builder: (context) {
+                          final hasFocus = Focus.of(context).hasFocus;
+                          return Container(
+                            decoration: hasFocus
+                                ? BoxDecoration(
+                              border:
+                              Border.all(color: Colors.blue, width: 2),
+                              borderRadius: BorderRadius.circular(4),
+                            )
+                                : null,
+                            child: Checkbox(
+                              materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                              visualDensity: VisualDensity.compact,
+                              focusNode: FocusNode(skipTraversal: true),
+                              value: selectedBookings.contains(booking),
+                              onChanged: (bool? value) {
+                                if (value == null) return;
+                                setState(() {
+                                  if (value) {
+                                    selectedBookings.add(booking);
+                                    selectedRowIndex = index;
+                                  } else {
+                                    selectedBookings.remove(booking);
+                                    selectedRowIndex = -1;
+                                  }
+                                });
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    );
                   },
-                  child: Builder(
-                    builder: (context) {
-                      final hasFocus = Focus.of(context).hasFocus;
-                      return Container(
-                        decoration: hasFocus
-                            ? BoxDecoration(
-                          border:
-                          Border.all(color: Colors.blue, width: 2),
-                          borderRadius: BorderRadius.circular(4),
-                        )
-                            : null,
-                        child: Checkbox(
-                          focusNode: FocusNode(skipTraversal: true),
-                          value: selectedBookings.contains(booking),
-                          onChanged: (bool? value) {
-                            if (value == null) return;
-                            setState(() {
-                              if (value) {
-                                selectedBookings.add(booking);
-                                selectedRowIndex = index;
-                              } else {
-                                selectedBookings.remove(booking);
-                                selectedRowIndex = -1;
-                              }
-                            });
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                );
-              },
+                ),
+              ),
             ),
           ),
           DataCell(

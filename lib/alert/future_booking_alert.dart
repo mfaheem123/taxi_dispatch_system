@@ -192,7 +192,7 @@ class _FutureBookingAlertState extends State<FutureBookingAlert> {
                                             btnText: "DISPATCH",
                                             style: mozillaTextSemiBoldText(fontSize: 13, color: Colors.white),
                                             onTap: () {
-                                              controller.assignDriverToBooking(widget.bookingItem.id, driver.id);
+                                              controller.assignFutureDriverToBooking(widget.bookingItem.id, driver.id);
                                             },
                                           ),
                                         ),

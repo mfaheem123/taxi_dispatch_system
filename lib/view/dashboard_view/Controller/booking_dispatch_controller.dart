@@ -6,9 +6,9 @@ import '../models/dashboard_table_model.dart' hide Driver;
 import 'dashboard_controller.dart';
 class DispatchController extends GetxController {
   var drivers = <Driver>[].obs;
+  var isFutureAssigning = false.obs;
   var isLoading = false.obs;
-  var isAssigning = false.obs; // Isse class ke andar hona chahiye
-
+  var isAssigning = false.obs;
 
 
   void getDispatchDrivers() async {
@@ -24,13 +24,13 @@ class DispatchController extends GetxController {
     }
   }
 
-
-  Future<void> assignDriverToBooking(dynamic bookingId, dynamic driverId) async {
+///======================================
+    assignFutureDriverToBooking(dynamic bookingId, dynamic driverId) async {
     if (bookingId == null || driverId == null) {
       BotToast.showText(text: 'Booking or Driver ID is missing');
       return;
     }
-      isAssigning(true);
+      isFutureAssigning(true);
       var formData = {
         "booking_id": bookingId.toString(),
         "driver_id": driverId,
@@ -45,10 +45,49 @@ class DispatchController extends GetxController {
         BotToast.showText(text: 'Driver Assigned Successfully');
         print('Driver Assigned Successfully');
         Get.back();
-        isAssigning(false);
+        isFutureAssigning(false);
       } else {
         BotToast.showText(text: response.data['message']);
         print("Error: ${response.data['message']}");
       }
     }
+
+
+
+
+
+
+
+
+   assignDriverToBooking(dynamic bookingId, dynamic driverId) async {
+    if (bookingId == null || driverId == null) {
+      BotToast.showText(text: 'Booking or Driver ID is missing');
+      return;
+    }
+    try {
+      isAssigning(true);
+      var formData = {
+        "booking_id": bookingId.toString(),
+        "driver_id": driverId,
+      };
+      print("Sending Data: $formData");
+      var response = await Api().post(
+        formData,
+        "bookings/assign-driver",
+        auth: true,
+        sendCompanyId: true,
+      );
+      if (response.statusCode == 200) {
+        BotToast.showText(text: 'Driver Assigned Successfully');
+        Get.back();
+      } else {
+        BotToast.showText(text: response.data['message']);
+      }
+    } catch (e) {
+      print("Error: $e");
+    } finally {
+      isAssigning(false);
+    }
+  }
+
   }
