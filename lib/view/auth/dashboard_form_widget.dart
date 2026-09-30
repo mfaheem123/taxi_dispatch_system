@@ -2536,11 +2536,6 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
 // ════════════════════════════════════════════════════════════════════
 // Autocomplete: backed by AllAddressesModel (name + postcode + lat/lon)
 // ════════════════════════════════════════════════════════════════════
-/// Height of one row in the PICKUP / DROP suggestion panel — room for two
-/// lines of 12px text. Used as the ListView's itemExtent and by the
-/// arrow-key scroll-into-view math.
-const double _kAddressRowHeight = 38;
-
 class _AddressModelAutocomplete extends StatefulWidget {
   const _AddressModelAutocomplete({
     required this.controller,
@@ -2592,6 +2587,15 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
   /// runs on every GetBuilder rebuild of the form, not just on new results.
   bool _refilterScheduled = false;
   late final ScrollController _scrollController;
+
+  /// One key per suggestion row. Rows size to their text (one line, or two
+  /// for a long address), so there is no fixed row height to compute a scroll
+  /// offset from — arrow-key navigation scrolls the keyed row into view.
+  List<GlobalKey> _rowKeys = const [];
+
+  /// Direction of the last arrow-key move, so the highlighted row is kept
+  /// visible at the edge it is moving towards.
+  int _lastMoveDelta = 1;
 
   static String _display(AllAddressesModel a) {
     final n = a.name ?? '';
@@ -2734,6 +2738,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     if (_filtered.isEmpty) return;
     final next = (_highlighted + delta).clamp(0, _filtered.length - 1);
     if (next == _highlighted) return;
+    _lastMoveDelta = delta;
     _highlighted = next;
     _entry?.markNeedsBuild();
     _scrollHighlightedIntoView();
@@ -2742,28 +2747,20 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
   void _scrollHighlightedIntoView() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final c = _scrollController;
-      if (!c.hasClients || _highlighted < 0) return;
-      final itemHeight = _sp(context, _kAddressRowHeight);
-      final panelHeight = c.position.viewportDimension;
-      final itemTop = _highlighted * itemHeight;
-      final itemBottom = itemTop + itemHeight;
-      final viewTop = c.offset;
-      final viewBottom = viewTop + panelHeight;
-      final maxScroll = c.position.maxScrollExtent;
-      double? target;
-      if (itemTop < viewTop) {
-        target = itemTop.clamp(0.0, maxScroll);
-      } else if (itemBottom > viewBottom) {
-        target = (itemBottom - panelHeight).clamp(0.0, maxScroll);
-      }
-      // A short animation instead of jumpTo so arrow-key navigation glides;
-      // a held arrow key just retargets the running animation.
-      if (target != null) {
-        c.animateTo(target,
-            duration: const Duration(milliseconds: 90),
-            curve: Curves.easeOut);
-      }
+      if (_highlighted < 0 || _highlighted >= _rowKeys.length) return;
+      final rowContext = _rowKeys[_highlighted].currentContext;
+      if (rowContext == null) return;
+      // Scrolls only when the row is (partly) out of view, and just far
+      // enough to show it at the edge it is moving towards. A short animation
+      // instead of a jump so arrow-key navigation glides.
+      Scrollable.ensureVisible(
+        rowContext,
+        duration: const Duration(milliseconds: 90),
+        curve: Curves.easeOut,
+        alignmentPolicy: _lastMoveDelta > 0
+            ? ScrollPositionAlignmentPolicy.keepVisibleAtEnd
+            : ScrollPositionAlignmentPolicy.keepVisibleAtStart,
+      );
     });
   }
 
@@ -2809,6 +2806,9 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
       _withFormFont(context, _buildPanelContent(context));
 
   Widget _buildPanelContent(BuildContext context) {
+    if (_rowKeys.length != _filtered.length) {
+      _rowKeys = List.generate(_filtered.length, (_) => GlobalKey());
+    }
     final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     final width = box?.size.width ?? 280;
     final height = box?.size.height ?? 48;
@@ -2844,21 +2844,21 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
               )
                   : Scrollbar(
                 controller: _scrollController,
-                thumbVisibility: _filtered.length *
-                    _sp(this.context, _kAddressRowHeight) >
-                    _sp(this.context, 260),
-                child: ListView.builder(
+                // Only drawn when the list actually overflows the panel.
+                thumbVisibility: true,
+                // A plain Column rather than ListView.builder: rows size to
+                // their own text, and every row must be built so its key can
+                // be scrolled to. The list is one page of search hits, so
+                // building all of it is cheap.
+                child: SingleChildScrollView(
                 controller: _scrollController,
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                // Every row is the same height, so the list can lay out
-                // without measuring each child.
-                itemExtent: _sp(this.context, _kAddressRowHeight),
-                itemCount: _filtered.length,
-                itemBuilder: (_, i) {
+                child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(_filtered.length, (i) {
                   final a = _filtered[i];
                   final active = _highlighted == i;
                   return MouseRegion(
+                    key: _rowKeys[i],
                     cursor: SystemMouseCursors.click,
                     onEnter: (_) {
                       if (_highlighted == i) return;
@@ -2873,16 +2873,17 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
                       onTap: () => _pick(a),
                       child: Container(
                         width: double.infinity,
+                        // No fixed height: a short address takes one line, a
+                        // long one wraps to a second, so short rows carry no
+                        // empty space.
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 2),
+                            horizontal: 10, vertical: 5),
                         color: active
                             ? const Color(0xFFEEF2FF)
                             : Colors.white,
-                        alignment: Alignment.centerLeft,
                         // Fixed font size for every row: long addresses wrap
                         // onto a second line (ellipsis only past that) instead
-                        // of being scaled down. Every row is
-                        // _kAddressRowHeight tall (ListView.itemExtent).
+                        // of being scaled down.
                         // The highlighted row is normal weight, the rest bold.
                         child: Text(
                           "${a.name} ${a.postcode}",
@@ -2899,7 +2900,8 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
                       ),
                     ),
                   );
-                },
+                }),
+              ),
               ),
               ),
             ),
