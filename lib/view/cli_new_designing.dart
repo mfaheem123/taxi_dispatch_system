@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -44,6 +45,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
     'Past Booking',
     'Quoted Booking'
   ];
+
   final List<String> columns = [
     'DATETIME',
     'PICKUP',
@@ -240,25 +242,25 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
           const SizedBox(width: 16),
           Container(width: 1, height: 32, color: Colors.white38),
           const SizedBox(width: 16),
-          const Text(
+          Text(
             'NADEM | 07590455507',
-            style: TextStyle(
+            style: outFitRegular(
               color: Colors.white,
               fontSize: 20,
               fontWeight: FontWeight.w800,
-              letterSpacing: 0.3,
+              // letterSpacing: 0.3,
             ),
           ),
           const Spacer(),
           const Icon(Icons.phone_in_talk, color: Color(0xFF4ADE80), size: 22),
           const SizedBox(width: 8),
-          const Text(
+           Text(
             'INCOMING / ACTIVE CALL',
-            style: TextStyle(
+            style: outFitRegular(
               color: Colors.white,
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
+              // letterSpacing: 0.5,
             ),
           ),
           const SizedBox(width: 12),
@@ -270,7 +272,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
             ),
             child: Text(
               DateFormat('dd-MM-yyyy HH:mm').format(DateTime.now()),
-              style: const TextStyle(
+              style: outFitRegular(
                 color: Color(0xFF166534),
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
@@ -336,6 +338,9 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                 pickupController, 'Enter pickup location', Icons.my_location),
           ),
         ),
+
+        SizedBox(height: 20),
+
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Tooltip(
@@ -467,7 +472,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                   ),
                   child: Text(
                     tabs[i],
-                    style: TextStyle(
+                    style: outFitRegular(
                       color:
                       isSelected ? Colors.white : const Color(0xFF334155),
                       fontWeight: FontWeight.w600,
@@ -506,10 +511,10 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                     flex: columnFlex[i],
                     child: Text(
                       columns[i],
-                      style: const TextStyle(
+                      style: outFitRegular(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        letterSpacing: 0.5,
+                        // letterSpacing: 0.5,
                         color: Color(0xFF475569),
                       ),
                     ),
@@ -565,7 +570,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                     values[i],
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
+                    style: outFitRegular(
                       fontSize: 13,
                       color: isStatus
                           ? _statusColor(values[i])
@@ -618,15 +623,15 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
   }
 
   Widget _emptyTable() {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.inbox_outlined, size: 40, color: subtle),
-          SizedBox(height: 8),
+          const Icon(Icons.inbox_outlined, size: 40, color: subtle),
+          const SizedBox(height: 8),
           Text(
             'No bookings found',
-            style: TextStyle(color: subtle, fontSize: 14),
+            style: outFitRegular(color: subtle, fontSize: 14),
           ),
         ],
       ),
@@ -652,7 +657,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
         children: [
           Text(
             'TOTAL BOOKINGS: $total',
-            style: const TextStyle(
+            style: outFitRegular(
               fontSize: 17,
               fontWeight: FontWeight.w800,
               color: Color(0xFF1E293B),
@@ -691,17 +696,17 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: outFitRegular(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
-                letterSpacing: 0.3,
+                // letterSpacing: 0.3,
                 color: Color(0xFF334155),
               ),
             ),
             const SizedBox(height: 6),
             Text(
               '$count',
-              style: const TextStyle(
+              style: outFitRegular(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
                 color: Color(0xFF1E293B),
@@ -721,7 +726,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: outFitRegular(
             fontSize: 13,
             fontWeight: FontWeight.w600,
             color: Color(0xFF334155),
@@ -736,7 +741,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
   InputDecoration _inputDecoration(String hint, {IconData? icon}) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: subtle, fontSize: 14),
+      hintStyle: outFitRegular(color: subtle, fontSize: 14),
       prefixIcon: icon != null ? Icon(icon, size: 20, color: subtle) : null,
       filled: true,
       fillColor: fieldFill,
@@ -763,7 +768,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
       height: 48,
       child: TextField(
         controller: controller,
-        style: const TextStyle(fontSize: 14),
+        style: outFitRegular(fontSize: 14),
         decoration: _inputDecoration(hint, icon: icon),
       ),
     );
@@ -784,8 +789,8 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
         isExpanded: true,
         icon: const Icon(Icons.arrow_drop_down, color: subtle),
         decoration: _inputDecoration(hint),
-        hint: Text(hint, style: const TextStyle(color: subtle, fontSize: 14)),
-        style: const TextStyle(fontSize: 14, color: Color(0xFF1E293B)),
+        hint: Text(hint, style: outFitRegular(color: subtle, fontSize: 14)),
+        style: outFitRegular(fontSize: 14, color: Color(0xFF1E293B)),
         items: items
             .map((e) => DropdownMenuItem(value: e, child: Text(e)))
             .toList(),
