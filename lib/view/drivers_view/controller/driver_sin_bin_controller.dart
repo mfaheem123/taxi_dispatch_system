@@ -99,21 +99,26 @@ class DriverSinBinController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>post driver sinBin
 
   bool isDriverSinBinLoading = false;
-  bool isActive = true;
+  bool isActive = false;
+
 
   addDriverSinBin(dynamic driverId, dynamic sinbinTime, {String? mesg}) async {
     isDriverSinBinLoading = true;
     update();
 
+    bool effectiveIsActive = sinbinTime != 0 && sinbinTime != "0" && sinbinTime != null;
+
+
+    isActive = effectiveIsActive;
 
     final String finalMessage =
-        mesg ?? (isActive ? "YOU ARE IN SINBIN" : "DRIVER REMOVED FROM SINBIN");
+        mesg ?? (effectiveIsActive ? "YOU ARE IN SINBIN" : "DRIVER REMOVED FROM SINBIN");
 
     var formData = {
       "driver_id": driverId,
       "message": finalMessage,
       "sinbin_time": sinbinTime,
-      "is_active": isActive,
+      "is_active": effectiveIsActive,
     };
 
     print("Submitting Payload: $formData");
