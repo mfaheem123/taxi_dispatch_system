@@ -1,4 +1,3 @@
-
 // class CliController extends GetxController {
 //
 //   WebSocketChannel? channel;
@@ -291,7 +290,8 @@ class CliController extends GetxController {
         if (cliCustomerModel?.bookings != null) {
           currentBookings.assignAll(cliCustomerModel!.bookings!.current ?? []);
           pastBookings.assignAll(cliCustomerModel!.bookings!.past ?? []);
-          quotedBookings.assignAll(cliCustomerModel!.bookings!.quoted ?? []);
+          quotedBookings.assignAll(List.from(cliCustomerModel!.bookings!.quoted ?? []));
+
         }
         // if (jsonData["success"] == true) {
         //   customerName.value = jsonData["customer"]?["name"] ?? "";

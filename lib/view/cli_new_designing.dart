@@ -289,7 +289,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
           const Spacer(),
           const Icon(Icons.phone_in_talk, color: Color(0xFF4ADE80), size: 22),
           const SizedBox(width: 8),
-           Text(
+          Text(
             'INCOMING / ACTIVE CALL',
             style: outFitRegular(
               color: Colors.white,
@@ -602,9 +602,9 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                       'vehicle': booking.vehicleType?.name?.toString() ?? '',
                       'fare': "£ ${booking.fares ?? '0'}",
                       'account': booking.account?.name?.toString() ?? '',
-                      'drv': booking.driverId ?? '',
-                      'pt': booking.paymentType ?? '',
-                      'status': booking.bookingStatus?.bookingStatus ?? '',
+                      'drv': booking.driverId?.toString() ?? '',
+                      'pt': (booking.paymentType?.name?.toString() ?? '').toUpperCase(),
+                      'status': (booking.bookingStatus?.bookingStatus ?? '').toUpperCase(),
                     };
 
                     return _tableRow(bookingData, index);
@@ -727,43 +727,43 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
       final total = controller.totalStats.value != 0
           ? controller.totalStats.value
           : (current + completed + cancelled + quoted);
-    // final current = bookings[0].length;
-    // final completed =
-    //     bookings[1].where((b) => b['status'] == 'COMPLETED').length;
-    // final cancelled =
-    //     bookings[1].where((b) => b['status'] == 'CANCELLED').length;
-    // final quoted = bookings[2].length;
-    // final total = current + completed + cancelled + quoted;
+      // final current = bookings[0].length;
+      // final completed =
+      //     bookings[1].where((b) => b['status'] == 'COMPLETED').length;
+      // final cancelled =
+      //     bookings[1].where((b) => b['status'] == 'CANCELLED').length;
+      // final quoted = bookings[2].length;
+      // final total = current + completed + cancelled + quoted;
 
-    return Container(
-      color: const Color(0xFFF8FAFC),
-      padding: const EdgeInsets.fromLTRB(20, 14, 20, 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'TOTAL BOOKINGS: $total',
-            style: outFitRegular(
-              fontSize: 17,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF1E293B),
+      return Container(
+        color: const Color(0xFFF8FAFC),
+        padding: const EdgeInsets.fromLTRB(20, 14, 20, 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'TOTAL BOOKINGS: $total',
+              style: outFitRegular(
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF1E293B),
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              _statCard('CURRENT BOOKINGS', current),
-              const SizedBox(width: 12),
-              _statCard('COMPLETED BOOKINGS', completed),
-              const SizedBox(width: 12),
-              _statCard('CANCELLED BOOKINGS', cancelled),
-              const SizedBox(width: 12),
-              _statCard('QUOTED BOOKINGS', quoted),
-            ],
-          ),
-        ],
-      ),
-    );
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                _statCard('CURRENT BOOKINGS', current),
+                const SizedBox(width: 12),
+                _statCard('COMPLETED BOOKINGS', completed),
+                const SizedBox(width: 12),
+                _statCard('CANCELLED BOOKINGS', cancelled),
+                const SizedBox(width: 12),
+                _statCard('QUOTED BOOKINGS', quoted),
+              ],
+            ),
+          ],
+        ),
+      );
     });
   }
 
