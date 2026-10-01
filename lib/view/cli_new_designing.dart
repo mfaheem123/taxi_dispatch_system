@@ -6,22 +6,32 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../component/color.dart';
+import 'controller/cli_controller.dart';
 
-void showCliNewDesigningAlert() {
-  Get.dialog(
-    const CliNewDesigning(),
+Future<void> showCliNewDesigningAlert(String extensionNumber) async {
+  await Get.dialog(
+    CliNewDesigning(extensionNumber: extensionNumber),
     barrierColor: Colors.black54,
   );
 }
 
+String temMobileNumber = "";
+
 class CliNewDesigning extends StatefulWidget {
-  const CliNewDesigning({super.key});
+  const CliNewDesigning({super.key, required this.extensionNumber});
+
+  final String extensionNumber;
 
   @override
   State<CliNewDesigning> createState() => _CliNewDesigningState();
 }
 
 class _CliNewDesigningState extends State<CliNewDesigning> {
+
+  CliController controller = Get.isRegistered<CliController>()
+      ? Get.find<CliController>()
+      : Get.put(CliController());
+
   static const Color border = Color(0xFFE1E7F0);
   static const Color fieldFill = Color(0xFFF2F5F9);
   static const Color subtle = Color(0xFF6B7C8F);
@@ -60,102 +70,110 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
   ];
   final List<int> columnFlex = [3, 4, 4, 2, 2, 2, 1, 2, 2, 2];
 
-  // Dummy bookings per tab (index matches `tabs`)
-  final List<List<Map<String, String>>> bookings = [
-    [
-      {
-        'dateTime': '18-09-2026 17:31',
-        'pickup': 'Flat 19, Bentley Court',
-        'dropoff': 'Bentley Road, Slough',
-        'vehicle': 'SALOON',
-        'fare': '£ 34.20',
-        'account': '',
-        'drv': '',
-        'pt': 'CASH',
-        'status': 'WAITING'
-      },
-      {
-        'dateTime': '18-09-2026 17:45',
-        'pickup': 'Flat 14, Aclane House',
-        'dropoff': 'Aclane Street, Slough',
-        'vehicle': 'SALOON',
-        'fare': '£ 19.20',
-        'account': '',
-        'drv': '',
-        'pt': 'CASH',
-        'status': 'WAITING'
-      },
-      {
-        'dateTime': '18-09-2026 18:10',
-        'pickup': 'Aclane Street, Slough',
-        'dropoff': 'Flat 14, Aclane House',
-        'vehicle': 'SALOON',
-        'fare': '£ 19.20',
-        'account': '',
-        'drv': '',
-        'pt': 'CASH',
-        'status': 'WAITING'
-      },
-      {
-        'dateTime': '18-09-2026 18:30',
-        'pickup': 'Bentley Road, Slough',
-        'dropoff': 'Flat 19, Bentley Court',
-        'vehicle': 'SALOON',
-        'fare': '£ 34.20',
-        'account': '',
-        'drv': '',
-        'pt': 'CASH',
-        'status': 'WAITING'
-      },
-    ],
-    [
-      {
-        'dateTime': '17-09-2026 09:15',
-        'pickup': 'Heathrow Airport T5',
-        'dropoff': 'Flat 19, Bentley Court',
-        'vehicle': 'EXECUTIVE',
-        'fare': '£ 45.00',
-        'account': 'ACC01',
-        'drv': 'D07',
-        'pt': 'ACCOUNT',
-        'status': 'COMPLETED'
-      },
-      {
-        'dateTime': '16-09-2026 18:40',
-        'pickup': 'Slough Station',
-        'dropoff': 'Aclane Street, Slough',
-        'vehicle': 'SALOON',
-        'fare': '£ 12.50',
-        'account': '',
-        'drv': 'D15',
-        'pt': 'CASH',
-        'status': 'COMPLETED'
-      },
-      {
-        'dateTime': '15-09-2026 07:05',
-        'pickup': 'Flat 14, Aclane House',
-        'dropoff': 'Windsor Castle',
-        'vehicle': 'ESTATE',
-        'fare': '£ 22.00',
-        'account': '',
-        'drv': 'D03',
-        'pt': 'CARD',
-        'status': 'CANCELLED'
-      },
-      {
-        'dateTime': '14-09-2026 21:30',
-        'pickup': 'The Curve, Slough',
-        'dropoff': 'Bentley Road, Slough',
-        'vehicle': 'MPV',
-        'fare': '£ 16.60',
-        'account': '',
-        'drv': 'D12',
-        'pt': 'CASH',
-        'status': 'COMPLETED'
-      },
-    ],
-    [],
-  ];
+  // final List<List<Map<String, String>>> bookings = [
+  //   [
+  //     {
+  //       'dateTime': '18-09-2026 17:31',
+  //       'pickup': 'Flat 19, Bentley Court',
+  //       'dropoff': 'Bentley Road, Slough',
+  //       'vehicle': 'SALOON',
+  //       'fare': '£ 34.20',
+  //       'account': '',
+  //       'drv': '',
+  //       'pt': 'CASH',
+  //       'status': 'WAITING'
+  //     },
+  //     {
+  //       'dateTime': '18-09-2026 17:45',
+  //       'pickup': 'Flat 14, Aclane House',
+  //       'dropoff': 'Aclane Street, Slough',
+  //       'vehicle': 'SALOON',
+  //       'fare': '£ 19.20',
+  //       'account': '',
+  //       'drv': '',
+  //       'pt': 'CASH',
+  //       'status': 'WAITING'
+  //     },
+  //     {
+  //       'dateTime': '18-09-2026 18:10',
+  //       'pickup': 'Aclane Street, Slough',
+  //       'dropoff': 'Flat 14, Aclane House',
+  //       'vehicle': 'SALOON',
+  //       'fare': '£ 19.20',
+  //       'account': '',
+  //       'drv': '',
+  //       'pt': 'CASH',
+  //       'status': 'WAITING'
+  //     },
+  //     {
+  //       'dateTime': '18-09-2026 18:30',
+  //       'pickup': 'Bentley Road, Slough',
+  //       'dropoff': 'Flat 19, Bentley Court',
+  //       'vehicle': 'SALOON',
+  //       'fare': '£ 34.20',
+  //       'account': '',
+  //       'drv': '',
+  //       'pt': 'CASH',
+  //       'status': 'WAITING'
+  //     },
+  //   ],
+  //   [
+  //     {
+  //       'dateTime': '17-09-2026 09:15',
+  //       'pickup': 'Heathrow Airport T5',
+  //       'dropoff': 'Flat 19, Bentley Court',
+  //       'vehicle': 'EXECUTIVE',
+  //       'fare': '£ 45.00',
+  //       'account': 'ACC01',
+  //       'drv': 'D07',
+  //       'pt': 'ACCOUNT',
+  //       'status': 'COMPLETED'
+  //     },
+  //     {
+  //       'dateTime': '16-09-2026 18:40',
+  //       'pickup': 'Slough Station',
+  //       'dropoff': 'Aclane Street, Slough',
+  //       'vehicle': 'SALOON',
+  //       'fare': '£ 12.50',
+  //       'account': '',
+  //       'drv': 'D15',
+  //       'pt': 'CASH',
+  //       'status': 'COMPLETED'
+  //     },
+  //     {
+  //       'dateTime': '15-09-2026 07:05',
+  //       'pickup': 'Flat 14, Aclane House',
+  //       'dropoff': 'Windsor Castle',
+  //       'vehicle': 'ESTATE',
+  //       'fare': '£ 22.00',
+  //       'account': '',
+  //       'drv': 'D03',
+  //       'pt': 'CARD',
+  //       'status': 'CANCELLED'
+  //     },
+  //     {
+  //       'dateTime': '14-09-2026 21:30',
+  //       'pickup': 'The Curve, Slough',
+  //       'dropoff': 'Bentley Road, Slough',
+  //       'vehicle': 'MPV',
+  //       'fare': '£ 16.60',
+  //       'account': '',
+  //       'drv': 'D12',
+  //       'pt': 'CASH',
+  //       'status': 'COMPLETED'
+  //     },
+  //   ],
+  //   [],
+  // ];
+
+  @override
+  void initState() {
+    super.initState();
+    temMobileNumber = widget.extensionNumber;
+    if (temMobileNumber.isNotEmpty) {
+      controller.findCustomerApi(temMobileNumber);
+    }
+  }
 
   @override
   void dispose() {
@@ -242,19 +260,36 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
           const SizedBox(width: 16),
           Container(width: 1, height: 32, color: Colors.white38),
           const SizedBox(width: 16),
-          Text(
-            'NADEM | 07590455507',
-            style: outFitRegular(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              // letterSpacing: 0.3,
-            ),
-          ),
+          Obx(() {
+            final name = controller.customerName.value.isEmpty
+                ? 'UNKNOWN'
+                : controller.customerName.value.toUpperCase();
+            final mobile = controller.customerMobile.value.isEmpty
+                ? temMobileNumber
+                : controller.customerMobile.value;
+
+            return Text(
+              '$name | $mobile',
+              style: outFitRegular(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+              ),
+            );
+          }),
+          // Text(
+          //   'NADEM | 07590455507',
+          //   style: outFitRegular(
+          //     color: Colors.white,
+          //     fontSize: 20,
+          //     fontWeight: FontWeight.w800,
+          //     // letterSpacing: 0.3,
+          //   ),
+          // ),
           const Spacer(),
           const Icon(Icons.phone_in_talk, color: Color(0xFF4ADE80), size: 22),
           const SizedBox(width: 8),
-           Text(
+          Text(
             'INCOMING / ACTIVE CALL',
             style: outFitRegular(
               color: Colors.white,
@@ -488,6 +523,19 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
     );
   }
 
+  List<dynamic> get currentTabBookings {
+    switch (selectedTab) {
+      case 0:
+        return controller.currentBookings;
+      case 1:
+        return controller.pastBookings;
+      case 2:
+        return controller.quotedBookings;
+      default:
+        return controller.currentBookings;
+    }
+  }
+
   // ───────────────────────── Table ─────────────────────────
 
   Widget _buildTable() {
@@ -501,6 +549,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
         clipBehavior: Clip.antiAlias,
         child: Column(
           children: [
+            // Table Header
             Container(
               height: 44,
               color: const Color(0xFFF1F5F9),
@@ -514,8 +563,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                       style: outFitRegular(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        // letterSpacing: 0.5,
-                        color: Color(0xFF475569),
+                        color: const Color(0xFF475569),
                       ),
                     ),
                   );
@@ -523,16 +571,46 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
               ),
             ),
             const Divider(height: 1, thickness: 1, color: border),
+
             Expanded(
-              child: bookings[selectedTab].isEmpty
-                  ? _emptyTable()
-                  : ListView.separated(
-                itemCount: bookings[selectedTab].length,
-                separatorBuilder: (_, __) =>
-                const Divider(height: 1, thickness: 1, color: border),
-                itemBuilder: (context, index) =>
-                    _tableRow(bookings[selectedTab][index], index),
-              ),
+              child: Obx(() {
+                //  Loading State Check
+                if (controller.isLoading.value) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                final activeList = currentTabBookings;
+
+                //  Empty State Check
+                if (activeList.isEmpty) {
+                  return _emptyTable();
+                }
+
+                return ListView.separated(
+                  itemCount: activeList.length,
+                  separatorBuilder: (_, __) =>
+                  const Divider(height: 1, thickness: 1, color: border),
+                  itemBuilder: (context, index) {
+                    final booking = activeList[index];
+
+                    final Map<String, String> bookingData = {
+                      'dateTime': "${booking.pickupDate ?? ''} ${booking.pickupTime ?? ''}",
+                      'pickup': booking.pickup ?? '-',
+                      'dropoff': booking.dropoff ?? '-',
+                      'vehicle': booking.vehicleType?.name?.toString() ?? '',
+                      'fare': "£ ${booking.fares ?? '0'}",
+                      'account': booking.account?.name?.toString() ?? '',
+                      'drv': booking.driverId?.toString() ?? '',
+                      'pt': (booking.paymentType?.name?.toString() ?? '').toUpperCase(),
+                      'status': (booking.bookingStatus?.bookingStatus ?? '').toUpperCase(),
+                    };
+
+                    return _tableRow(bookingData, index);
+                  },
+                );
+              }),
             ),
           ],
         ),
@@ -641,43 +719,52 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
   // ───────────────────────── Footer ─────────────────────────
 
   Widget _buildFooter() {
-    final current = bookings[0].length;
-    final completed =
-        bookings[1].where((b) => b['status'] == 'COMPLETED').length;
-    final cancelled =
-        bookings[1].where((b) => b['status'] == 'CANCELLED').length;
-    final quoted = bookings[2].length;
-    final total = current + completed + cancelled + quoted;
+    return Obx(() {
+      final current = controller.currentStats.value;
+      final completed = controller.completedStats.value;
+      final cancelled = controller.cancelledStats.value;
+      final quoted = controller.quotedStats.value;
+      final total = controller.totalStats.value != 0
+          ? controller.totalStats.value
+          : (current + completed + cancelled + quoted);
+      // final current = bookings[0].length;
+      // final completed =
+      //     bookings[1].where((b) => b['status'] == 'COMPLETED').length;
+      // final cancelled =
+      //     bookings[1].where((b) => b['status'] == 'CANCELLED').length;
+      // final quoted = bookings[2].length;
+      // final total = current + completed + cancelled + quoted;
 
-    return Container(
-      color: const Color(0xFFF8FAFC),
-      padding: const EdgeInsets.fromLTRB(20, 14, 20, 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'TOTAL BOOKINGS: $total',
-            style: outFitRegular(
-              fontSize: 17,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF1E293B),
+      return Container(
+        color: const Color(0xFFF8FAFC),
+        padding: const EdgeInsets.fromLTRB(20, 14, 20, 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'TOTAL BOOKINGS: $total',
+              style: outFitRegular(
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF1E293B),
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              _statCard('CURRENT BOOKINGS', current),
-              const SizedBox(width: 12),
-              _statCard('COMPLETED BOOKINGS', completed),
-              const SizedBox(width: 12),
-              _statCard('CANCELLED BOOKINGS', cancelled),
-              const SizedBox(width: 12),
-              _statCard('QUOTED BOOKINGS', quoted),
-            ],
-          ),
-        ],
-      ),
-    );
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                _statCard('CURRENT BOOKINGS', current),
+                const SizedBox(width: 12),
+                _statCard('COMPLETED BOOKINGS', completed),
+                const SizedBox(width: 12),
+                _statCard('CANCELLED BOOKINGS', cancelled),
+                const SizedBox(width: 12),
+                _statCard('QUOTED BOOKINGS', quoted),
+              ],
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _statCard(String label, int count) {

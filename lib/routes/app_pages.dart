@@ -49,7 +49,7 @@ class AppPages {
     GetPage(
       name: _Paths.editJobs,
       // The booking id rides in the route ("/EditJobs?id=1667") rather than in
-      // a constructor argument, so the screen can be rebuilt from its name
+      // a constructor argument, so the screen can be rebuilt from its name 
       // alone. That is what lets a hot restart or a browser reload come back
       // to the booking that was open instead of dropping to the login screen —
       // a `Get.to(EditJobsWidget(...))` page has no name to come back to.

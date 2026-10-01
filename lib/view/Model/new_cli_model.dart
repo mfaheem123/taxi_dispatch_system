@@ -43,7 +43,7 @@ class CliCustomerModel {
 class Bookings {
   List<Current>? current;
   List<Past>? past;
-  List<Past>? quoted;
+  List<dynamic>? quoted;
 
   Bookings({
     this.current,
@@ -54,13 +54,13 @@ class Bookings {
   factory Bookings.fromJson(Map<String, dynamic> json) => Bookings(
     current: json["current"] == null ? [] : List<Current>.from(json["current"]!.map((x) => Current.fromJson(x))),
     past: json["past"] == null ? [] : List<Past>.from(json["past"]!.map((x) => Past.fromJson(x))),
-    quoted: json["quoted"] == null ? [] : List<Past>.from(json["quoted"]!.map((x) => Past.fromJson(x))),
+    quoted: json["quoted"] == null ? [] : List<dynamic>.from(json["quoted"]!.map((x) => x)),
   );
 
   Map<String, dynamic> toJson() => {
     "current": current == null ? [] : List<dynamic>.from(current!.map((x) => x.toJson())),
     "past": past == null ? [] : List<dynamic>.from(past!.map((x) => x.toJson())),
-    "quoted": quoted == null ? [] : List<dynamic>.from(quoted!.map((x) => x.toJson())),
+    "quoted": quoted == null ? [] : List<dynamic>.from(quoted!.map((x) => x)),
   };
 }
 
@@ -71,7 +71,7 @@ class Current {
   int? bookingTypeId;
   int? bookingStatusId;
   int? journeyTypeId;
-  dynamic accountId;
+  int? accountId;
   int? customerId;
   int? employeeId;
   String? pickup;
@@ -96,7 +96,7 @@ class Current {
   dynamic arrivingFrom;
   int? vehicleTypeId;
   dynamic vehicleId;
-  int? driverId;
+  dynamic driverId;
   int? passengers;
   dynamic luggages;
   dynamic handLuggages;
@@ -119,7 +119,7 @@ class Current {
   String? congestionCharges;
   String? miles;
   String? meetAndGreet;
-  dynamic department;
+  String? department;
   dynamic escortId;
   dynamic orderNumber;
   dynamic bookedBy;
@@ -151,14 +151,14 @@ class Current {
   bool? completed;
   bool? controllerCompleted;
   dynamic driverWaitingTime;
-  DateTime? dispatchedAt;
-  DateTime? bookedAt;
+  dynamic dispatchedAt;
+  String? bookedAt;
   dynamic stripeCustomerId;
   dynamic stripePaymentId;
   dynamic invoiceNumber;
   dynamic initialSubsidiaryId;
-  DateTime? createdAt;
-  DateTime? updatedAt;
+  String? createdAt;
+  String? updatedAt;
   String? eta;
   bool? fob;
   bool? future;
@@ -166,10 +166,10 @@ class Current {
   BookingType? bookingType;
   JourneyType? journeyType;
   Subsidiary? subsidiary;
-  Type? vehicleType;
-  Type? paymentType;
-  Account? account;
-  Driver? driver;
+  VehicleType? vehicleType;
+  PaymentType? paymentType;
+  CurrentAccount? account;
+  CurrentDriver? driver;
   CurrentCustomer? customer;
   Employee? employee;
   Airport? airport;
@@ -372,14 +372,14 @@ class Current {
     completed: json["completed"],
     controllerCompleted: json["controller_completed"],
     driverWaitingTime: json["driver_waiting_time"],
-    dispatchedAt: json["dispatched_at"] == null ? null : DateTime.parse(json["dispatched_at"]),
-    bookedAt: json["booked_at"] == null ? null : DateTime.parse(json["booked_at"]),
+    dispatchedAt: json["dispatched_at"],
+    bookedAt: json["booked_at"],
     stripeCustomerId: json["stripe_customer_id"],
     stripePaymentId: json["stripe_payment_id"],
     invoiceNumber: json["invoice_number"],
     initialSubsidiaryId: json["initial_subsidiary_id"],
-    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
-    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+    createdAt: json["created_at"],
+    updatedAt: json["updated_at"],
     eta: json["eta"],
     fob: json["fob"],
     future: json["future"],
@@ -387,10 +387,10 @@ class Current {
     bookingType: json["booking_type"] == null ? null : BookingType.fromJson(json["booking_type"]),
     journeyType: json["journey_type"] == null ? null : JourneyType.fromJson(json["journey_type"]),
     subsidiary: json["subsidiary"] == null ? null : Subsidiary.fromJson(json["subsidiary"]),
-    vehicleType: json["vehicle_type"] == null ? null : Type.fromJson(json["vehicle_type"]),
-    paymentType: json["payment_type"] == null ? null : Type.fromJson(json["payment_type"]),
-    account: json["account"] == null ? null : Account.fromJson(json["account"]),
-    driver: json["driver"] == null ? null : Driver.fromJson(json["driver"]),
+    vehicleType: json["vehicle_type"] == null ? null : VehicleType.fromJson(json["vehicle_type"]),
+    paymentType: json["payment_type"] == null ? null : PaymentType.fromJson(json["payment_type"]),
+    account: json["account"] == null ? null : CurrentAccount.fromJson(json["account"]),
+    driver: json["driver"] == null ? null : CurrentDriver.fromJson(json["driver"]),
     customer: json["customer"] == null ? null : CurrentCustomer.fromJson(json["customer"]),
     employee: json["employee"] == null ? null : Employee.fromJson(json["employee"]),
     airport: json["airport"] == null ? null : Airport.fromJson(json["airport"]),
@@ -483,14 +483,14 @@ class Current {
     "completed": completed,
     "controller_completed": controllerCompleted,
     "driver_waiting_time": driverWaitingTime,
-    "dispatched_at": dispatchedAt?.toIso8601String(),
-    "booked_at": bookedAt?.toIso8601String(),
+    "dispatched_at": dispatchedAt,
+    "booked_at": bookedAt,
     "stripe_customer_id": stripeCustomerId,
     "stripe_payment_id": stripePaymentId,
     "invoice_number": invoiceNumber,
     "initial_subsidiary_id": initialSubsidiaryId,
-    "created_at": createdAt?.toIso8601String(),
-    "updated_at": updatedAt?.toIso8601String(),
+    "created_at": createdAt,
+    "updated_at": updatedAt,
     "eta": eta,
     "fob": fob,
     "future": future,
@@ -508,11 +508,11 @@ class Current {
   };
 }
 
-class Account {
+class CurrentAccount {
   int? id;
   String? name;
-  GroundColor? backgroundColor;
-  GroundColor? foregroundColor;
+  String? backgroundColor;
+  String? foregroundColor;
   bool? hasVat;
   bool? bankInformation;
   bool? fareController;
@@ -520,7 +520,7 @@ class Account {
   int? accountFees;
   bool? accountFeesVat;
 
-  Account({
+  CurrentAccount({
     this.id,
     this.name,
     this.backgroundColor,
@@ -533,11 +533,11 @@ class Account {
     this.accountFeesVat,
   });
 
-  factory Account.fromJson(Map<String, dynamic> json) => Account(
+  factory CurrentAccount.fromJson(Map<String, dynamic> json) => CurrentAccount(
     id: json["id"],
     name: json["name"],
-    backgroundColor: groundColorValues.map[json["background_color"]],
-    foregroundColor: groundColorValues.map[json["foreground_color"]],
+    backgroundColor: json["background_color"],
+    foregroundColor: json["foreground_color"],
     hasVat: json["has_vat"],
     bankInformation: json["bank_information"],
     fareController: json["fare_controller"],
@@ -549,8 +549,8 @@ class Account {
   Map<String, dynamic> toJson() => {
     "id": id,
     "name": name,
-    "background_color": groundColorValues.reverse[backgroundColor],
-    "foreground_color": groundColorValues.reverse[foregroundColor],
+    "background_color": backgroundColor,
+    "foreground_color": foregroundColor,
     "has_vat": hasVat,
     "bank_information": bankInformation,
     "fare_controller": fareController,
@@ -559,18 +559,6 @@ class Account {
     "account_fees_vat": accountFeesVat,
   };
 }
-
-enum GroundColor {
-  THE_0_BEFDF,
-  THE_1215_A5,
-  THE_2196_F3
-}
-
-final groundColorValues = EnumValues({
-  "0befdf": GroundColor.THE_0_BEFDF,
-  "#1215a5": GroundColor.THE_1215_A5,
-  "2196f3": GroundColor.THE_2196_F3
-});
 
 class Airport {
   Dropoff? pickup;
@@ -595,7 +583,7 @@ class Airport {
 class Dropoff {
   dynamic id;
   dynamic name;
-  Type? locationType;
+  LocationType? locationType;
 
   Dropoff({
     this.id,
@@ -606,7 +594,7 @@ class Dropoff {
   factory Dropoff.fromJson(Map<String, dynamic> json) => Dropoff(
     id: json["id"],
     name: json["name"],
-    locationType: json["location_type"] == null ? null : Type.fromJson(json["location_type"]),
+    locationType: json["location_type"] == null ? null : LocationType.fromJson(json["location_type"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -616,57 +604,33 @@ class Dropoff {
   };
 }
 
-class Type {
-  int? id;
-  Name? name;
-  GroundColor? backgroundColor;
-  ForegroundColor? foregroundColor;
+class LocationType {
+  dynamic id;
+  dynamic name;
+  dynamic backgroundColor;
+  dynamic foregroundColor;
 
-  Type({
+  LocationType({
     this.id,
     this.name,
     this.backgroundColor,
     this.foregroundColor,
   });
 
-  factory Type.fromJson(Map<String, dynamic> json) => Type(
+  factory LocationType.fromJson(Map<String, dynamic> json) => LocationType(
     id: json["id"],
-    name: nameValues.map[json["name"]],
-    backgroundColor: groundColorValues.map[json["background_color"]],
-    foregroundColor: foregroundColorValues.map[json["foreground_color"]],
+    name: json["name"],
+    backgroundColor: json["background_color"],
+    foregroundColor: json["foreground_color"],
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
-    "name": nameValues.reverse[name],
-    "background_color": groundColorValues.reverse[backgroundColor],
-    "foreground_color": foregroundColorValues.reverse[foregroundColor],
+    "name": name,
+    "background_color": backgroundColor,
+    "foreground_color": foregroundColor,
   };
 }
-
-enum ForegroundColor {
-  CC3336,
-  THE_2196_F3,
-  THE_972222
-}
-
-final foregroundColorValues = EnumValues({
-  "cc3336": ForegroundColor.CC3336,
-  "2196f3": ForegroundColor.THE_2196_F3,
-  "#972222": ForegroundColor.THE_972222
-});
-
-enum Name {
-  AS,
-  CASH,
-  SEDAN
-}
-
-final nameValues = EnumValues({
-  "AS": Name.AS,
-  "cash": Name.CASH,
-  "SEDAN": Name.SEDAN
-});
 
 class BookingStatus {
   String? bookingStatus;
@@ -728,19 +692,19 @@ class CurrentCustomer {
   };
 }
 
-class Driver {
-  int? id;
-  String? username;
-  String? name;
+class CurrentDriver {
+  dynamic id;
+  dynamic username;
+  dynamic name;
   dynamic mobileDeviceId;
   dynamic phcVehicleNumber;
   dynamic phcDriverNumber;
-  int? vehicleId;
-  int? driverCommission;
-  String? sessionStatus;
-  Vehicle? vehicle;
+  dynamic vehicleId;
+  dynamic driverCommission;
+  dynamic sessionStatus;
+  PurpleVehicle? vehicle;
 
-  Driver({
+  CurrentDriver({
     this.id,
     this.username,
     this.name,
@@ -753,7 +717,7 @@ class Driver {
     this.vehicle,
   });
 
-  factory Driver.fromJson(Map<String, dynamic> json) => Driver(
+  factory CurrentDriver.fromJson(Map<String, dynamic> json) => CurrentDriver(
     id: json["id"],
     username: json["username"],
     name: json["name"],
@@ -763,7 +727,7 @@ class Driver {
     vehicleId: json["vehicle_id"],
     driverCommission: json["driver_commission"],
     sessionStatus: json["session_status"],
-    vehicle: json["vehicle"] == null ? null : Vehicle.fromJson(json["vehicle"]),
+    vehicle: json["vehicle"] == null ? null : PurpleVehicle.fromJson(json["vehicle"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -780,20 +744,20 @@ class Driver {
   };
 }
 
-class Vehicle {
-  String? make;
-  String? model;
-  String? color;
-  String? vehicleNumber;
+class PurpleVehicle {
+  dynamic make;
+  dynamic model;
+  dynamic color;
+  dynamic vehicleNumber;
 
-  Vehicle({
+  PurpleVehicle({
     this.make,
     this.model,
     this.color,
     this.vehicleNumber,
   });
 
-  factory Vehicle.fromJson(Map<String, dynamic> json) => Vehicle(
+  factory PurpleVehicle.fromJson(Map<String, dynamic> json) => PurpleVehicle(
     make: json["make"],
     model: json["model"],
     color: json["color"],
@@ -844,6 +808,34 @@ class JourneyType {
   };
 }
 
+class PaymentType {
+  int? id;
+  String? name;
+  String? backgroundColor;
+  String? foregroundColor;
+
+  PaymentType({
+    this.id,
+    this.name,
+    this.backgroundColor,
+    this.foregroundColor,
+  });
+
+  factory PaymentType.fromJson(Map<String, dynamic> json) => PaymentType(
+    id: json["id"],
+    name: json["name"],
+    backgroundColor: json["background_color"],
+    foregroundColor: json["foreground_color"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "background_color": backgroundColor,
+    "foreground_color": foregroundColor,
+  };
+}
+
 class Subsidiary {
   int? id;
   String? name;
@@ -868,6 +860,30 @@ class Subsidiary {
   };
 }
 
+class VehicleType {
+  String? name;
+  String? backgroundColor;
+  String? foregroundColor;
+
+  VehicleType({
+    this.name,
+    this.backgroundColor,
+    this.foregroundColor,
+  });
+
+  factory VehicleType.fromJson(Map<String, dynamic> json) => VehicleType(
+    name: json["name"],
+    backgroundColor: json["background_color"],
+    foregroundColor: json["foreground_color"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "name": name,
+    "background_color": backgroundColor,
+    "foreground_color": foregroundColor,
+  };
+}
+
 class Past {
   String? id;
   String? referenceNumber;
@@ -875,7 +891,7 @@ class Past {
   int? bookingTypeId;
   int? bookingStatusId;
   int? journeyTypeId;
-  int? accountId;
+  dynamic accountId;
   int? customerId;
   int? employeeId;
   String? pickup;
@@ -955,14 +971,14 @@ class Past {
   bool? completed;
   bool? controllerCompleted;
   dynamic driverWaitingTime;
-  DateTime? dispatchedAt;
-  DateTime? bookedAt;
+  String? dispatchedAt;
+  String? bookedAt;
   dynamic stripeCustomerId;
   dynamic stripePaymentId;
   dynamic invoiceNumber;
   dynamic initialSubsidiaryId;
-  DateTime? createdAt;
-  DateTime? updatedAt;
+  String? createdAt;
+  String? updatedAt;
   String? eta;
   bool? fob;
   bool? future;
@@ -970,10 +986,10 @@ class Past {
   BookingType? bookingType;
   JourneyType? journeyType;
   Subsidiary? subsidiary;
-  Type? vehicleType;
-  Type? paymentType;
-  Account? account;
-  Driver? driver;
+  VehicleType? vehicleType;
+  PaymentType? paymentType;
+  PastAccount? account;
+  PastDriver? driver;
   CurrentCustomer? customer;
   Employee? employee;
   Airport? airport;
@@ -1176,14 +1192,14 @@ class Past {
     completed: json["completed"],
     controllerCompleted: json["controller_completed"],
     driverWaitingTime: json["driver_waiting_time"],
-    dispatchedAt: json["dispatched_at"] == null ? null : DateTime.parse(json["dispatched_at"]),
-    bookedAt: json["booked_at"] == null ? null : DateTime.parse(json["booked_at"]),
+    dispatchedAt: json["dispatched_at"],
+    bookedAt: json["booked_at"],
     stripeCustomerId: json["stripe_customer_id"],
     stripePaymentId: json["stripe_payment_id"],
     invoiceNumber: json["invoice_number"],
     initialSubsidiaryId: json["initial_subsidiary_id"],
-    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
-    updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+    createdAt: json["created_at"],
+    updatedAt: json["updated_at"],
     eta: json["eta"],
     fob: json["fob"],
     future: json["future"],
@@ -1191,10 +1207,10 @@ class Past {
     bookingType: json["booking_type"] == null ? null : BookingType.fromJson(json["booking_type"]),
     journeyType: json["journey_type"] == null ? null : JourneyType.fromJson(json["journey_type"]),
     subsidiary: json["subsidiary"] == null ? null : Subsidiary.fromJson(json["subsidiary"]),
-    vehicleType: json["vehicle_type"] == null ? null : Type.fromJson(json["vehicle_type"]),
-    paymentType: json["payment_type"] == null ? null : Type.fromJson(json["payment_type"]),
-    account: json["account"] == null ? null : Account.fromJson(json["account"]),
-    driver: json["driver"] == null ? null : Driver.fromJson(json["driver"]),
+    vehicleType: json["vehicle_type"] == null ? null : VehicleType.fromJson(json["vehicle_type"]),
+    paymentType: json["payment_type"] == null ? null : PaymentType.fromJson(json["payment_type"]),
+    account: json["account"] == null ? null : PastAccount.fromJson(json["account"]),
+    driver: json["driver"] == null ? null : PastDriver.fromJson(json["driver"]),
     customer: json["customer"] == null ? null : CurrentCustomer.fromJson(json["customer"]),
     employee: json["employee"] == null ? null : Employee.fromJson(json["employee"]),
     airport: json["airport"] == null ? null : Airport.fromJson(json["airport"]),
@@ -1287,14 +1303,14 @@ class Past {
     "completed": completed,
     "controller_completed": controllerCompleted,
     "driver_waiting_time": driverWaitingTime,
-    "dispatched_at": dispatchedAt?.toIso8601String(),
-    "booked_at": bookedAt?.toIso8601String(),
+    "dispatched_at": dispatchedAt,
+    "booked_at": bookedAt,
     "stripe_customer_id": stripeCustomerId,
     "stripe_payment_id": stripePaymentId,
     "invoice_number": invoiceNumber,
     "initial_subsidiary_id": initialSubsidiaryId,
-    "created_at": createdAt?.toIso8601String(),
-    "updated_at": updatedAt?.toIso8601String(),
+    "created_at": createdAt,
+    "updated_at": updatedAt,
     "eta": eta,
     "fob": fob,
     "future": future,
@@ -1309,6 +1325,138 @@ class Past {
     "customer": customer?.toJson(),
     "employee": employee?.toJson(),
     "airport": airport?.toJson(),
+  };
+}
+
+class PastAccount {
+  dynamic id;
+  dynamic name;
+  dynamic backgroundColor;
+  dynamic foregroundColor;
+  dynamic hasVat;
+  dynamic bankInformation;
+  dynamic fareController;
+  dynamic accountFeesType;
+  dynamic accountFees;
+  dynamic accountFeesVat;
+
+  PastAccount({
+    this.id,
+    this.name,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.hasVat,
+    this.bankInformation,
+    this.fareController,
+    this.accountFeesType,
+    this.accountFees,
+    this.accountFeesVat,
+  });
+
+  factory PastAccount.fromJson(Map<String, dynamic> json) => PastAccount(
+    id: json["id"],
+    name: json["name"],
+    backgroundColor: json["background_color"],
+    foregroundColor: json["foreground_color"],
+    hasVat: json["has_vat"],
+    bankInformation: json["bank_information"],
+    fareController: json["fare_controller"],
+    accountFeesType: json["account_fees_type"],
+    accountFees: json["account_fees"],
+    accountFeesVat: json["account_fees_vat"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "background_color": backgroundColor,
+    "foreground_color": foregroundColor,
+    "has_vat": hasVat,
+    "bank_information": bankInformation,
+    "fare_controller": fareController,
+    "account_fees_type": accountFeesType,
+    "account_fees": accountFees,
+    "account_fees_vat": accountFeesVat,
+  };
+}
+
+class PastDriver {
+  int? id;
+  String? username;
+  String? name;
+  dynamic mobileDeviceId;
+  dynamic phcVehicleNumber;
+  dynamic phcDriverNumber;
+  int? vehicleId;
+  int? driverCommission;
+  String? sessionStatus;
+  FluffyVehicle? vehicle;
+
+  PastDriver({
+    this.id,
+    this.username,
+    this.name,
+    this.mobileDeviceId,
+    this.phcVehicleNumber,
+    this.phcDriverNumber,
+    this.vehicleId,
+    this.driverCommission,
+    this.sessionStatus,
+    this.vehicle,
+  });
+
+  factory PastDriver.fromJson(Map<String, dynamic> json) => PastDriver(
+    id: json["id"],
+    username: json["username"],
+    name: json["name"],
+    mobileDeviceId: json["mobile_device_id"],
+    phcVehicleNumber: json["phc_vehicle_number"],
+    phcDriverNumber: json["phc_driver_number"],
+    vehicleId: json["vehicle_id"],
+    driverCommission: json["driver_commission"],
+    sessionStatus: json["session_status"],
+    vehicle: json["vehicle"] == null ? null : FluffyVehicle.fromJson(json["vehicle"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "username": username,
+    "name": name,
+    "mobile_device_id": mobileDeviceId,
+    "phc_vehicle_number": phcVehicleNumber,
+    "phc_driver_number": phcDriverNumber,
+    "vehicle_id": vehicleId,
+    "driver_commission": driverCommission,
+    "session_status": sessionStatus,
+    "vehicle": vehicle?.toJson(),
+  };
+}
+
+class FluffyVehicle {
+  String? make;
+  String? model;
+  String? color;
+  String? vehicleNumber;
+
+  FluffyVehicle({
+    this.make,
+    this.model,
+    this.color,
+    this.vehicleNumber,
+  });
+
+  factory FluffyVehicle.fromJson(Map<String, dynamic> json) => FluffyVehicle(
+    make: json["make"],
+    model: json["model"],
+    color: json["color"],
+    vehicleNumber: json["vehicle_number"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "make": make,
+    "model": model,
+    "color": color,
+    "vehicle_number": vehicleNumber,
   };
 }
 
@@ -1378,16 +1526,4 @@ class Stats {
     "cancelled": cancelled,
     "quoted": quoted,
   };
-}
-
-class EnumValues<T> {
-  Map<String, T> map;
-  late Map<T, String> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String> get reverse {
-    reverseMap = map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
-  }
 }
