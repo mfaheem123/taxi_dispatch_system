@@ -290,7 +290,7 @@ class CliController extends GetxController {
         if (cliCustomerModel?.bookings != null) {
           currentBookings.assignAll(cliCustomerModel!.bookings!.current ?? []);
           pastBookings.assignAll(cliCustomerModel!.bookings!.past ?? []);
-          quotedBookings.assignAll(List.from(cliCustomerModel!.bookings!.quoted ?? []));
+          quotedBookings.assignAll(cliCustomerModel!.bookings!.quoted ?? []);
 
         }
         // if (jsonData["success"] == true) {

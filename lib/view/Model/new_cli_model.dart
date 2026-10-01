@@ -43,7 +43,7 @@ class CliCustomerModel {
 class Bookings {
   List<Current>? current;
   List<Past>? past;
-  List<dynamic>? quoted;
+  List<Past>? quoted;
 
   Bookings({
     this.current,
@@ -54,13 +54,13 @@ class Bookings {
   factory Bookings.fromJson(Map<String, dynamic> json) => Bookings(
     current: json["current"] == null ? [] : List<Current>.from(json["current"]!.map((x) => Current.fromJson(x))),
     past: json["past"] == null ? [] : List<Past>.from(json["past"]!.map((x) => Past.fromJson(x))),
-    quoted: json["quoted"] == null ? [] : List<dynamic>.from(json["quoted"]!.map((x) => x)),
+    quoted: json["quoted"] == null ? [] : List<Past>.from(json["quoted"]!.map((x) => Past.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
     "current": current == null ? [] : List<dynamic>.from(current!.map((x) => x.toJson())),
     "past": past == null ? [] : List<dynamic>.from(past!.map((x) => x.toJson())),
-    "quoted": quoted == null ? [] : List<dynamic>.from(quoted!.map((x) => x)),
+    "quoted": quoted == null ? [] : List<dynamic>.from(quoted!.map((x) => x.toJson())),
   };
 }
 
