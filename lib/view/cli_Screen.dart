@@ -1668,7 +1668,7 @@ class _WideLayout extends StatelessWidget {
         SizedBox(
             width: centerWidth > 400 ? centerWidth : 400, child: _CenterArea()),
         Container(width: 1.5, color: const Color(0xFFE1E7F0)),
-        SizedBox(width: rightWidth, child: _RightSidebar()),
+        // SizedBox(width: rightWidth, child: _RightSidebar()),
       ],
     );
   }
@@ -1689,7 +1689,7 @@ class _MobileLayout extends StatelessWidget {
         const Divider(height: 2, thickness: 2, color: Color(0xFFE1E7F0)),
         _CenterArea(),
         const Divider(height: 2, thickness: 2, color: Color(0xFFE1E7F0)),
-        SizedBox(width: double.infinity, child: _RightSidebar()),
+        // SizedBox(width: double.infinity, child: _RightSidebar()),
       ],
     );
   }
@@ -3870,95 +3870,95 @@ class _CenterAreaState extends State<_CenterArea> {
 }
 
 /// --------- RIGHT SIDEBAR ----------
-class _RightSidebar extends StatelessWidget {
-  final CliController controller = Get.find<CliController>();
-  DashboardController dashboard = Get.find();
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
-      color: Colors.white,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundColor: const Color(0xFFF4F6FA),
-                child: IconButton(
-                  color: const Color(0xFF6B7C8F),
-                  icon: const Icon(Icons.close),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-
-          Row(
-            children: [
-              const Icon(Icons.history, color: Color(0xFF1E40AF), size: 24),
-              const SizedBox(width: 8),
-              Text(
-                "Ride History",
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: const Color(0xFF374151),
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _kv(
-              "Used",
-              (controller.cliCustomerModel?.rideHistory?.used ?? 0).toString(),
-              valueColor: Colors.green.shade600
-          ),
-          const SizedBox(height: 12),
-
-          _kv(
-              "Cancelled",
-              (controller.cliCustomerModel?.rideHistory?.cancelled ?? 0).toString(),
-              valueColor: Colors.red.shade600
-          ),
-          const SizedBox(height: 12),
-          // _kv("Balance Amount", "£0.00"),
-          const Spacer(),
-
-          Container(
-            height: 2,
-            decoration: BoxDecoration(
-              color: const Color(0xFFE1E7F0),
-              borderRadius: BorderRadius.circular(4),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _kv(String k, String v, {Color? valueColor}) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            k,
-            style: const TextStyle(
-                color: Color(0xFF6B7280), fontWeight: FontWeight.w600),
-          ),
-        ),
-        Text(
-          v,
-          style: TextStyle(
-            color: valueColor ?? const Color(0xFF1F2937),
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ],
-    );
-  }
-}
+// class _RightSidebar extends StatelessWidget {
+//   final CliController controller = Get.find<CliController>();
+//   DashboardController dashboard = Get.find();
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
+//       color: Colors.white,
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.end,
+//             children: [
+//               CircleAvatar(
+//                 radius: 20,
+//                 backgroundColor: const Color(0xFFF4F6FA),
+//                 child: IconButton(
+//                   color: const Color(0xFF6B7C8F),
+//                   icon: const Icon(Icons.close),
+//                   onPressed: () {
+//                     Navigator.pop(context);
+//                   },
+//                 ),
+//               ),
+//             ],
+//           ),
+//           const SizedBox(height: 24),
+//
+//           Row(
+//             children: [
+//               const Icon(Icons.history, color: Color(0xFF1E40AF), size: 24),
+//               const SizedBox(width: 8),
+//               Text(
+//                 "Ride History",
+//                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
+//                   color: const Color(0xFF374151),
+//                   fontWeight: FontWeight.w700,
+//                 ),
+//               ),
+//             ],
+//           ),
+//           const SizedBox(height: 16),
+//           _kv(
+//               "Used",
+//               (controller.cliCustomerModel?.rideHistory?.used ?? 0).toString(),
+//               valueColor: Colors.green.shade600
+//           ),
+//           const SizedBox(height: 12),
+//
+//           _kv(
+//               "Cancelled",
+//               (controller.cliCustomerModel?.rideHistory?.cancelled ?? 0).toString(),
+//               valueColor: Colors.red.shade600
+//           ),
+//           const SizedBox(height: 12),
+//           // _kv("Balance Amount", "£0.00"),
+//           const Spacer(),
+//
+//           Container(
+//             height: 2,
+//             decoration: BoxDecoration(
+//               color: const Color(0xFFE1E7F0),
+//               borderRadius: BorderRadius.circular(4),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   Widget _kv(String k, String v, {Color? valueColor}) {
+//     return Row(
+//       children: [
+//         Expanded(
+//           child: Text(
+//             k,
+//             style: const TextStyle(
+//                 color: Color(0xFF6B7280), fontWeight: FontWeight.w600),
+//           ),
+//         ),
+//         Text(
+//           v,
+//           style: TextStyle(
+//             color: valueColor ?? const Color(0xFF1F2937),
+//             fontWeight: FontWeight.w700,
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
