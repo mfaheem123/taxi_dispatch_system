@@ -51,9 +51,9 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
   final List<String> drivers = ['Driver 1', 'Driver 2', 'Driver 3'];
   final List<String> vehicles = ['Saloon', 'Estate', 'MPV', 'Executive'];
   final List<String> tabs = [
-    'Current Booking',
-    'Past Booking',
-    'Quoted Booking'
+    'CURRENT BOOKING',
+    'PAST BOOKING',
+    'QUOTED BOOKING'
   ];
 
   final List<String> columns = [
@@ -368,9 +368,9 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
       children: [
         Expanded(
           child: _labeled(
-            'Pickup Location',
+            'PICKUP LOCATION',
             _textField(
-                pickupController, 'Enter pickup location', Icons.my_location),
+                pickupController, 'ENTER PICKUP LOCATION', Icons.my_location),
           ),
         ),
 
@@ -379,7 +379,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Tooltip(
-            message: 'Swap locations',
+            message: 'SWAP LOCATIONS',
             child: InkWell(
               onTap: swapLocations,
               borderRadius: BorderRadius.circular(24),
@@ -398,8 +398,8 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
         ),
         Expanded(
           child: _labeled(
-            'Drop Off Location',
-            _textField(dropoffController, 'Enter drop off location',
+            'DROPOFF LOCATION',
+            _textField(dropoffController, 'ENTER DROPOFF LOCATION',
                 Icons.location_on_outlined),
           ),
         ),
@@ -411,15 +411,15 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
 
   Widget _buildDriverVehicleRow() {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      // crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Expanded(
           flex: 3,
           child: _labeled(
-            'Select Driver',
+            'SELECT DRIVER',
             _dropdown(
               value: selectedDriver,
-              hint: 'Choose driver',
+              hint: 'CHOOSE DRIVER',
               items: drivers,
               onChanged: (v) => setState(() => selectedDriver = v),
             ),
@@ -429,22 +429,26 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
         Expanded(
           flex: 3,
           child: _labeled(
-            'Select Vehicle',
+            'SELECT VEHICLE',
             _dropdown(
               value: selectedVehicle,
-              hint: 'Choose vehicle',
+              hint: 'CHOOSE VEHICLE',
               items: vehicles,
               onChanged: (v) => setState(() => selectedVehicle = v),
             ),
           ),
         ),
         const SizedBox(width: 16),
-        SizedBox(
-          height: 48,
+        Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+         const SizedBox(height: 15),
+              SizedBox(
+          height: 42,
           child: OutlinedButton.icon(
             onPressed: resetForm,
             icon: const Icon(Icons.add, size: 18),
-            label: const Text('New Booking'),
+            label: const Text('NEW BOOKING'),
             style: OutlinedButton.styleFrom(
               foregroundColor: DynamicColors.primaryClr,
               side: BorderSide(color: DynamicColors.primaryClr),
@@ -455,13 +459,18 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
             ),
           ),
         ),
+        ]),
         const SizedBox(width: 12),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 15),
         SizedBox(
-          height: 48,
+          height: 42,
           child: ElevatedButton.icon(
             onPressed: () {},
             icon: const Icon(Icons.check, size: 18),
-            label: const Text('Submit'),
+            label: const Text('SUBMIT'),
             style: ElevatedButton.styleFrom(
               backgroundColor: DynamicColors.primaryClr,
               foregroundColor: Colors.white,
@@ -472,6 +481,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
             ),
           ),
         ),
+        ])
       ],
     );
   }
@@ -506,7 +516,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                         color: isSelected ? DynamicColors.primaryClr : border),
                   ),
                   child: Text(
-                    tabs[i],
+                    (tabs[i]).toUpperCase(),
                     style: outFitRegular(
                       color:
                       isSelected ? Colors.white : const Color(0xFF334155),
@@ -708,7 +718,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
           const Icon(Icons.inbox_outlined, size: 40, color: subtle),
           const SizedBox(height: 8),
           Text(
-            'No bookings found',
+            'NO BOOKINGS FOUND',
             style: outFitRegular(color: subtle, fontSize: 14),
           ),
         ],
