@@ -2385,7 +2385,7 @@ class DashboardController extends GetxController {
     if (response.statusCode == 200) {
       selectedTabId = tableId;
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
-      dashboardTableTotalPages.value = dashboardTableModelData!.total!;
+      dashboardTableTotalPages.value = dashboardTableModelData!.totalPages!;
       _checkBookingsTimeAndPlaySound(dashboardTableModelData?.data ?? []);
       _timer?.cancel();
       _timer = Timer.periodic(const Duration(seconds: 5), (timer) {

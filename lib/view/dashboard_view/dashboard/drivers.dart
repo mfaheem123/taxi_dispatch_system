@@ -645,7 +645,8 @@ class _DriversViewState extends State<DriversView> {
                                           driver.bookingStatus == "On Route"?Colors.red:
                                           driver.bookingStatus == "STC"?Colors.blue:
                                           driver.driverStatus == "On Break"? Colors.red:
-                                          driver.driverStatus == "SinBin"? Color(0xFF2D4151):
+                                          driver.driverStatus == "SinBin"? Color(
+                                              0xFF6287A6):
                                           Colors.green,
                                           border: isDriverSelected
                                               ? Border.all(
