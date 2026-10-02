@@ -8,6 +8,15 @@ import '../../../component/textStyle.dart';
 import '../../administration/model/user_model.dart';
 import '../../auth/Controller/auth_controller.dart';
 
+/// Whether the driver / passenger chat panel is open. Toggled by the MESSAGES
+/// button below and watched by the shell (main_appbar.dart), which shows the
+/// panel over the page.
+///
+/// Top-level on purpose: the bottom bar is rebuilt every second for the clock,
+/// so a field on one of its widgets would be recreated — and reset to false —
+/// on every tick, and the shell could not see it anyway.
+final RxBool messagesShow = false.obs;
+
 /// The status bar along the bottom of the shell: who is logged in, the brand
 /// line, and the clock next to the operator's extension.
 ///
@@ -105,6 +114,48 @@ class _ClockAndExtension extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
+        GestureDetector(
+          onTap: () {
+            messagesShow.value = !messagesShow.value;
+          },
+          // Obx: the button shows whether the chat panel is open.
+          child: Obx(() {
+            final open = messagesShow.value;
+            return Container(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: open
+                    ? const Color(0xff424899)
+                    : const Color(0xFFE8F2EF),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                    color: open
+                        ? const Color(0xff424899)
+                        : const Color(0xFFC4D9D4),
+                    width: 1),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.message,
+                    size: 16,
+                    color: open ? Colors.white : const Color(0xff424899),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    "MESSAGES",
+                    style: mozillaTextRegularText(
+                        color: open ? Colors.white : const Color(0xFF4A4A4A),
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ),
+        const SizedBox(width: 16),
         Text(
           DateFormat("EEE, MMM dd yyyy").format(now).toUpperCase(),
           style: mozillaTextRegularText(

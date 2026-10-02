@@ -58,28 +58,102 @@ class ChatWithDriverAndPassengerState
   Widget build(BuildContext context) {
     return GetBuilder<SettingController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
-        final double maxWidth = constraints.maxWidth;
-        final bool isMobile = maxWidth < 600;
-        final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+        // Hosted two ways: as the bottom-right MESSAGES panel in the shell
+        // (bounded height — fill it exactly) and as a settings page inside
+        // the shell's scroll view (unbounded — keep the full-page height).
+        final double height = constraints.hasBoundedHeight
+            ? constraints.maxHeight
+            : Get.height / 1.14;
 
-        final double fieldWidth = isMobile
-            ? maxWidth
-            : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
+        // Width left for the content after the outer and card padding.
+        final bool isNarrow = constraints.maxWidth - 64 < 600;
 
         final bool isDriver = controller.selectMessageRole == "Driver";
-
         final currentItems = isDriver ? driverItems : passengerItems;
         final currentSelections =
             isDriver ? driverSelections : passengerSelections;
 
-        return SingleChildScrollView(
+        final sidebar = Container(
+          width: isNarrow ? double.infinity : 280,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade50,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
+          child: Column(
+            children: [
+              CustomDropdownField<String>(
+                text: AppText.selectMessage,
+                width: double.infinity,
+                label: AppText.selectMessage,
+                items: ["Driver", "Passenger"],
+                value: controller.selectMessageRole,
+                itemLabel: (val) => val,
+                onChanged: (val) {
+                  controller.selectMessageRole = val!;
+                  controller.update();
+                },
+              ),
+              const SizedBox(height: 15),
+
+              // Checkbox (Send to all)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: KeyboardCheckbox(
+                  onChanged: (v) {
+                    controller.sendToAllValue.value = v;
+                    controller.update();
+                  },
+                  label: AppText.sendAll,
+                  value: controller.sendToAllValue.value,
+                  focusNode: controller.sendToAllNode,
+                  width: double.infinity,
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // ===== Dynamic Message List =====
+              Expanded(
+                child: ListView.builder(
+                  itemCount: currentItems.length,
+                  itemBuilder: (context, index) {
+                    final item = currentItems[index];
+                    final isSelected = currentSelections[item] ?? false;
+                    return _messageListWithCheckbox(
+                      item,
+                      isChecked: isSelected,
+                      selected: item == selectedMenu,
+                      onTap: () => setState(() => selectedMenu = item),
+                      onCheckChanged: (val) =>
+                          setState(() => currentSelections[item] = val!),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+
+        final chat = Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
+          child: const Column(
+            children: [
+              Expanded(child: ChatMessagesArea()),
+              ChatInputBox(),
+            ],
+          ),
+        );
+
+        return SizedBox(
+          height: height,
           child: Padding(
-            padding: EdgeInsetsGeometry.all(16),
+            padding: const EdgeInsets.all(16),
             child: Container(
-              width: Get.width,
-              height: Get.height / 1.14,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
@@ -93,119 +167,24 @@ class ChatWithDriverAndPassengerState
                 ],
               ),
               padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              // Wide: fixed-width sidebar beside the chat. Narrow: stacked,
+              // splitting the height 2:3 — both must be flexed there, or the
+              // sidebar's Expanded message list gets unbounded height.
+              child: isNarrow
+                  ? Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final bool isMobile = constraints.maxWidth < 600;
-
-                        return Flex(
-                          direction: isMobile ? Axis.vertical : Axis.horizontal,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // ===== Left Sidebar =====
-                            Container(
-                              width: isMobile ? double.infinity : 280,
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade50,
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: Colors.grey.shade200),
-                              ),
-                              child: Column(
-                                children: [
-                                  CustomDropdownField<String>(
-                                    text: AppText.selectMessage,
-                                    width: double.infinity,
-                                    label: AppText.selectMessage,
-                                    items: ["Driver", "Passenger"],
-                                    value: controller.selectMessageRole,
-                                    itemLabel: (val) => val,
-                                    onChanged: (val) {
-                                      controller.selectMessageRole = val!;
-                                      controller.update();
-                                    },
-                                  ),
-
-                                  const SizedBox(height: 15),
-
-                                  // Checkbox (Send to all)
-                                  Padding(
-                                    padding: EdgeInsetsGeometry.symmetric(
-                                        horizontal: 4),
-                                    child: KeyboardCheckbox(
-                                      onChanged: (v) {
-                                        controller.sendToAllValue.value = v;
-                                        controller.update();
-                                      },
-                                      label: AppText.sendAll,
-                                      value: controller.sendToAllValue.value,
-                                      focusNode: controller.sendToAllNode,
-                                      width: double.infinity,
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 30),
-
-                                  // ===== Dynamic Message List =====
-                                  Expanded(
-                                    child: ListView.builder(
-                                      itemCount: currentItems.length,
-                                      itemBuilder: (context, index) {
-                                        final item = currentItems[index];
-                                        final isSelected =
-                                            currentSelections[item] ?? false;
-                                        return _messageListWithCheckbox(
-                                          item,
-                                          isChecked: isSelected,
-                                          selected: item == selectedMenu,
-                                          onTap: () {
-                                            setState(() {
-                                              selectedMenu = item;
-                                            });
-                                          },
-                                          onCheckChanged: (val) {
-                                            setState(() {
-                                              currentSelections[item] = val!;
-                                            });
-                                          },
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            SizedBox(
-                                width: isMobile ? 0 : 16,
-                                height: isMobile ? 16 : 0),
-
-                            // ===== Right Chat Section =====
-                            Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  border:
-                                      Border.all(color: Colors.grey.shade200),
-                                ),
-                                child: const Column(
-                                  children: [
-                                    Expanded(child: ChatMessagesArea()),
-                                    ChatInputBox(),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 20),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
+                  Expanded(flex: 2, child: sidebar),
+                  const SizedBox(height: 16),
+                  Expanded(flex: 3, child: chat),
+                ],
+              )
+                  : Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  sidebar,
+                  const SizedBox(width: 16),
+                  Expanded(child: chat),
                 ],
               ),
             ),

@@ -8,6 +8,7 @@ import '../../component/color.dart';
 import '../auth/Controller/auth_controller.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/dashboard/defult_dashboard_view.dart';
+import '../setting/chat_with_driver_passenger.dart';
 import 'components/main_appbar_header.dart';
 import 'components/main_bottom_bar.dart';
 import 'components/open_pages_tab_strip.dart';
@@ -100,6 +101,11 @@ class _MyHomePageState extends State<MyHomePage> {
           body: GetBuilder<DashboardController>(builder: (controller) {
             return Stack(
               alignment: Alignment.bottomCenter,
+              // Fill the whole body: by default a Stack is only as tall as the
+              // page content, so on a short page the chat panel's bottom: 0
+              // sat at the end of the content, leaving a gap above the
+              // bottom bar.
+              fit: StackFit.expand,
               children: [
                 SingleChildScrollView(
                   controller: _keyboard.bodyScrollController,
@@ -111,6 +117,25 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   ),
                 ),
+                // Driver / passenger chat, docked to the bottom-right corner
+                // over the page (just above the bottom bar) while MESSAGES is
+                // on. At least 680px wide: narrower than ~664px the chat
+                // widget switches to its stacked phone layout, which does not
+                // fit a side panel. Taller content scrolls inside the panel.
+                Obx(() => messagesShow.value
+                    ? Positioned(
+                  bottom: 0,
+                  right: 0,
+                  height: MediaQuery.sizeOf(context).height * 0.6,
+                  width: (MediaQuery.sizeOf(context).width * 0.4)
+                      .clamp(680.0, MediaQuery.sizeOf(context).width),
+                  child: const Material(
+                    elevation: 12,
+                    color: Colors.white,
+                    child: ChatWithDriverAndPassenger(),
+                  ),
+                )
+                    : const SizedBox.shrink()),
               ],
             );
           }),
