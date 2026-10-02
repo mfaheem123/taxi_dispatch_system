@@ -1335,8 +1335,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           _dropdown<DashboardDriverObject>(
             'Select R/DRV',
             controller.selectDriverValueReturn,
-            controller.dashboardAllData!.drivers ?? const [],
-                (v) => setState(() => controller.selectDriverValueReturn = v),
+            controller.dashboardAllData?.drivers ?? const [],
+                (v) {
+              // Direct call karein, setState ke andar wraps na karein
+              controller.checkDriverSinBinStatus(v, isReturn: true);
+            },
             33,
             itemLabel: (p) => p.name ?? '',
           ),
@@ -1389,17 +1392,20 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             ),
           ),
           const SizedBox(width: 12),
-          Expanded(
-            child: _dropdown<DashboardDriverObject>(
-              'Select R/DRV',
-              controller.selectDriverValueReturn,
-              controller.dashboardAllData!.drivers ?? const [],
-                  (v) =>
-                  setState(() => controller.selectDriverValueReturn = v),
-              33,
-              itemLabel: (p) => p.name ?? '',
-            ),
-          ),
+    Expanded(
+    child: GetBuilder<DashboardController>(
+    builder: (controller) {
+    return _dropdown<DashboardDriverObject>(
+    'Select R/DRV',
+    controller.selectDriverValueReturn, // Jab ye null hoga to Hint Text dikhega
+    controller.dashboardAllData?.drivers ?? const [],
+    (v) => controller.checkDriverSinBinStatus(v, isReturn: true), // Directly call method
+    33,
+    itemLabel: (p) => p.name ?? '',
+    );
+    },
+    ),
+    ),
         ]),
       ],
     );
@@ -2021,7 +2027,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       null,
       controller.selectDriverValue,
       controller.dashboardAllData!.drivers ?? const [],
-          (v) => setState(() => controller.selectDriverValue = v),
+          (v) =>
+          setState(() =>
+               controller.checkDriverSinBinStatus(v), // isse replace karein
+
+              // controller.selectDriverValue = v
+          ),
       _isReturnJourney ? 43 : 28,
       itemLabel: (p) => p.name ?? '',
       hint: 'Select Driver',
