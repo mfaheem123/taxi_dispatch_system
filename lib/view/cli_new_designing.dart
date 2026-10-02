@@ -470,7 +470,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
             child: Padding(
               padding: EdgeInsets.only(right: i == tabs.length - 1 ? 0 : 6),
               child: InkWell(
-                onTap: () => setState(() => selectedTab = i),
+                onTap: () => controller.selectTab(i),
                 borderRadius: BorderRadius.circular(8),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),

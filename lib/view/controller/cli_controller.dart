@@ -152,6 +152,7 @@ import 'package:dashboard_new1/component/networks/api.dart';
 import '../Model/new_cli_model.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/models/dashboard_model.dart';
+import '../dashboard_view/models/dashboard_table_model.dart';
 
 class CliController extends GetxController {
   CliCustomerModel? cliCustomerModel;
@@ -175,9 +176,9 @@ class CliController extends GetxController {
   RxInt quotedStats = 0.obs;
 
   // 🔹 Typed List from Model
-  RxList<Current> currentBookings = <Current>[].obs;
-  RxList<Past> pastBookings = <Past>[].obs;
-  RxList<Past> quotedBookings = <Past>[].obs;
+  RxList<BookingObjectData> currentBookings = <BookingObjectData>[].obs;
+  RxList<BookingObjectData> pastBookings = <BookingObjectData>[].obs;
+  RxList<BookingObjectData> quotedBookings = <BookingObjectData>[].obs;
 
   RxList bookings = [].obs;
 
