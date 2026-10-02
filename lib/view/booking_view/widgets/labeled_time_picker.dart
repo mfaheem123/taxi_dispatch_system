@@ -14,16 +14,22 @@ class LabeledTimePicker extends StatefulWidget implements LabelledField {
   final String label;
   final String? initialTime; // 'HH:mm'
   final ValueChanged<String>? onChanged;
+
+  /// Binds the field to an outside controller (e.g. the dashboard's
+  /// pickUpTimeController) instead of an internal one. Not disposed here.
+  final TextEditingController? controller;
   const LabeledTimePicker(this.label,
-      {super.key, this.initialTime, this.onChanged});
+      {super.key, this.initialTime, this.onChanged, this.controller});
 
   @override
   State<LabeledTimePicker> createState() => _LabeledTimePickerState();
 }
 
 class _LabeledTimePickerState extends State<LabeledTimePicker> {
-  late final TextEditingController _controller =
+  late final TextEditingController _own =
       TextEditingController(text: widget.initialTime ?? _now());
+
+  TextEditingController get _controller => widget.controller ?? _own;
 
   static String _now() {
     final n = TimeOfDay.now();
@@ -33,7 +39,7 @@ class _LabeledTimePickerState extends State<LabeledTimePicker> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _own.dispose();
     super.dispose();
   }
 

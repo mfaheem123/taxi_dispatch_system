@@ -32,6 +32,14 @@ class LabeledCheckbox extends StatefulWidget implements LabelledField {
 class _LabeledCheckboxState extends State<LabeledCheckbox> {
   late bool _v = widget.value;
 
+  @override
+  void didUpdateWidget(LabeledCheckbox oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Bound checkboxes (SMS, EMAIL, ADD RETURN FARE) can be reset from
+    // outside — CLEAR, a booking being loaded — so follow the new value.
+    if (widget.value != oldWidget.value) _v = widget.value;
+  }
+
   void _set(bool v) {
     setState(() => _v = v);
     widget.onChanged?.call(v);

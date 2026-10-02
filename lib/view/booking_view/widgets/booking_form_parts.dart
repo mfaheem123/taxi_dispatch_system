@@ -22,11 +22,43 @@ class HeaderTitle extends StatelessWidget {
   }
 }
 
+/// One entry in [TopTabs]: a key badge ("F8"), its label, and what it does.
+class TopTab {
+  final String keyLabel;
+  final String label;
+  final bool active;
+  final VoidCallback? onTap;
+  const TopTab(this.keyLabel, this.label, {this.active = false, this.onTap});
+}
+
 class TopTabs extends StatelessWidget {
-  const TopTabs({super.key});
+  /// Defaults to the create form's original three tabs.
+  final List<TopTab> tabs;
+
+  static const List<TopTab> _defaults = [
+    TopTab('F1', 'BASE ADDRESS'),
+    TopTab('F2', 'BOOKING FORM', active: true),
+    TopTab('F6', 'QUOTATION'),
+  ];
+
+  const TopTabs({super.key, this.tabs = _defaults});
   @override
   Widget build(BuildContext context) {
-    Widget tab(String key, String label, {bool active = false}) => Container(
+    Widget tab(TopTab t) => Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: t.onTap,
+        borderRadius: BorderRadius.circular(6),
+        child: tabBody(t.keyLabel, t.label, active: t.active),
+      ),
+    );
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Wrap(children: [for (final t in tabs) tab(t)]),
+    );
+  }
+
+  Widget tabBody(String key, String label, {bool active = false}) => Container(
           margin: const EdgeInsets.only(right: 6, bottom: 6),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
@@ -56,18 +88,6 @@ class TopTabs extends StatelessWidget {
             ],
           ),
         );
-
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Wrap(
-        children: [
-          tab('F1', 'BASE ADDRESS'),
-          tab('F2', 'BOOKING FORM', active: true),
-          tab('F6', 'QUOTATION'),
-        ],
-      ),
-    );
-  }
 }
 
 /// One read-only figure in a [StatStrip] — ETA, distance, total fares.
@@ -126,13 +146,15 @@ class StatStrip extends StatelessWidget {
 }
 
 class ActionButtons extends StatelessWidget {
-  const ActionButtons({super.key});
+  final VoidCallback? onClear;
+  final VoidCallback? onSave;
+  const ActionButtons({super.key, this.onClear, this.onSave});
   @override
   Widget build(BuildContext context) {
     // 700+ keeps the buttons last in the tab order, after every field.
     final buttons = <Widget>[
-      _btn(700, 'CLEAR [F7]', const Color(0xFFD32F2F), Colors.white),
-      _btn(701, 'SAVE [HOME]', const Color(0xFF312E81), Colors.white),
+      _btn(700, 'CLEAR [F7]', const Color(0xFFD32F2F), Colors.white, onClear),
+      _btn(701, 'SAVE [HOME]', const Color(0xFF312E81), Colors.white, onSave),
     ];
     // Two buttons fit side by side at any width, so phone and web share one row.
     return Row(
@@ -144,11 +166,12 @@ class ActionButtons extends StatelessWidget {
     );
   }
 
-  Widget _btn(int order, String label, Color bg, Color fg) =>
+  Widget _btn(int order, String label, Color bg, Color fg,
+          VoidCallback? onPressed) =>
       FocusTraversalOrder(
         order: NumericFocusOrder(order.toDouble()),
         child: ElevatedButton(
-          onPressed: () {},
+          onPressed: onPressed ?? () {},
           style: ElevatedButton.styleFrom(
             backgroundColor: bg,
             foregroundColor: fg,

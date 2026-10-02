@@ -290,6 +290,22 @@ class _MapViewWidgetState extends State<MapViewWidget> {
   /// ancestor, and initState runs before the element can depend on one.
   late final DashboardController controller;
   bool _controllerResolved = false;
+
+  /// This map's own camera controller. A MapController can drive only one
+  /// FlutterMap: the create-booking form is pushed over the dashboard, whose
+  /// map stays mounted underneath, and both used to share
+  /// `controller.mapController` — a camera change from one map then rebuilt
+  /// the other mid-build ("setState() or markNeedsBuild() called during
+  /// build" from MapInteractiveViewer). Each map now owns one and lends it to
+  /// the controller while it is the newest map on screen.
+  final MapController _ownMap = MapController();
+
+  @override
+  void dispose() {
+    if (_controllerResolved) controller.detachMap(_ownMap);
+    _ownMap.dispose();
+    super.dispose();
+  }
   final List<Polygon> zonePolygons = [];
 
   @override
@@ -298,6 +314,9 @@ class _MapViewWidgetState extends State<MapViewWidget> {
     if (_controllerResolved) return;
     _controllerResolved = true;
     controller = BookingFormScope.of(context);
+    // Make this map the one the controller's camera calls (route fit, zoom)
+    // drive, until it is disposed — see [_ownMap].
+    controller.attachMap(_ownMap);
     poligonFun();
     if (controller.seeZoneOnMapModel == null) {
       methodHit();
@@ -358,7 +377,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
               Positioned.fill(
                 child: ClipRRect(
                   child: FlutterMap(
-                    mapController: controller.mapController,
+                    mapController: _ownMap,
                     options: MapOptions(
                       initialCenter:polylinePoints.isEmpty?LatLng(51.2709722, 0.1893883): polylinePoints.first,
                       // Whichever form owns this map decides how close it

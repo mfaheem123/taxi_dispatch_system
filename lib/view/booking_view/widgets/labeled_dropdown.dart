@@ -136,3 +136,63 @@ class LabeledZoneDropdown extends StatelessWidget implements LabelledField {
     );
   }
 }
+
+/// Dropdown bound to a list of model objects (vehicle types, accounts,
+/// drivers, ...) and to whichever controller field holds the selection.
+///
+/// Stateless for the same reason as [LabeledZoneDropdown]: it must always show
+/// what the bound field currently holds, since that field is also changed from
+/// outside (CLEAR, a booking being loaded, a journey-type reset).
+class LabeledObjectDropdown<T> extends StatelessWidget implements LabelledField {
+  @override
+  final String label;
+  final List<T> items;
+  final T? value;
+  final String Function(T item) itemLabel;
+  final ValueChanged<T?>? onChanged;
+
+  /// Shown while nothing is selected.
+  final String? hint;
+
+  const LabeledObjectDropdown(this.label,
+      {super.key,
+      required this.items,
+      required this.itemLabel,
+      this.value,
+      this.onChanged,
+      this.hint});
+
+  @override
+  Widget build(BuildContext context) {
+    // A value missing from `items` (list reloading, nothing loaded yet) would
+    // make DropdownButtonFormField assert — show no selection instead.
+    final selected = value != null && items.contains(value) ? value : null;
+    return FieldShell(
+      label: label,
+      child: DropdownButtonFormField<T>(
+        initialValue: selected,
+        isExpanded: true,
+        isDense: true,
+        itemHeight: null,
+        iconSize: 16,
+        hint: Text(hint ?? 'SELECT',
+            style: const TextStyle(
+                fontSize: Density.fieldFont, color: Colors.black45)),
+        decoration: const InputDecoration(
+          contentPadding:
+              EdgeInsets.symmetric(horizontal: 8, vertical: Density.dropPadY),
+        ),
+        style:
+            const TextStyle(fontSize: Density.fieldFont, color: Colors.black87),
+        items: [
+          for (final i in items)
+            DropdownMenuItem<T>(
+              value: i,
+              child: Text(itemLabel(i), overflow: TextOverflow.ellipsis),
+            ),
+        ],
+        onChanged: onChanged,
+      ),
+    );
+  }
+}

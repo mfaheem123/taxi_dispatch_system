@@ -44,7 +44,22 @@ class LabeledInput extends StatelessWidget implements LabelledField {
       this.uppercase = false,
       this.prefixIcon,
       this.prefixText,
-      this.readOnly = false});
+      this.readOnly = false,
+      this.onChanged,
+      this.inputFormatters,
+      this.isError = false});
+
+  /// Fired on every edit (e.g. the passenger-limit check on PASS).
+  final ValueChanged<String>? onChanged;
+
+  /// Replaces the default formatting (upper-casing when [uppercase]).
+  final List<TextInputFormatter>? inputFormatters;
+
+  /// Draws the field's border red — e.g. too many passengers for the vehicle.
+  final bool isError;
+
+  static const _errorBorder = OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.red, width: 1.5));
 
   /// The prefix row, or null when this field has neither part of one.
   /// Built as a single widget so the two can share one width constraint.
@@ -78,7 +93,9 @@ class LabeledInput extends StatelessWidget implements LabelledField {
         readOnly: readOnly,
         textCapitalization:
             uppercase ? TextCapitalization.characters : TextCapitalization.none,
-        inputFormatters: uppercase ? const [UpperCaseTextFormatter()] : null,
+        inputFormatters: inputFormatters ??
+            (uppercase ? const [UpperCaseTextFormatter()] : null),
+        onChanged: onChanged,
         style: const TextStyle(fontSize: Density.fieldFont),
         // So the on-screen keyboard's "next" key walks the form too, not
         // just a hardware Tab.
@@ -90,6 +107,8 @@ class LabeledInput extends StatelessWidget implements LabelledField {
           prefixIconConstraints:
               const BoxConstraints(minWidth: 24, minHeight: 0),
           prefixIcon: _prefix(),
+          enabledBorder: isError ? _errorBorder : null,
+          focusedBorder: isError ? _errorBorder : null,
         ),
       ),
     );

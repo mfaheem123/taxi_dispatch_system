@@ -1236,7 +1236,36 @@ class DashboardController extends GetxController {
   /// map built. A MapController is inert until a FlutterMap attaches to it, so
   /// there is nothing to defer; and being `late final` it would also have
   /// thrown on a second init, which the appbar remounting can cause.
-  final MapController mapController = MapController();
+  /// The camera controller of the map currently on top. Each MapViewWidget
+  /// owns its own MapController and swaps it in here while mounted (one
+  /// MapController can drive only one FlutterMap), so camera calls such as
+  /// [focusMapOnJourney] always reach the visible map.
+  MapController mapController = MapController();
+
+  /// Mounted maps' controllers, oldest first; the last one is [mapController].
+  final List<MapController> _attachedMaps = [];
+
+  /// Called by a MapViewWidget as it mounts: it becomes the map camera calls
+  /// go to.
+  void attachMap(MapController map) {
+    _attachedMaps.remove(map);
+    _attachedMaps.add(map);
+    mapController = map;
+  }
+
+  /// Called as a MapViewWidget is disposed: camera calls go back to the newest
+  /// map still mounted, which is re-framed since it missed every fit while it
+  /// was covered.
+  void detachMap(MapController map) {
+    final wasActive = identical(mapController, map);
+    _attachedMaps.remove(map);
+    if (!wasActive) return;
+    mapController =
+        _attachedMaps.isNotEmpty ? _attachedMaps.last : MapController();
+    if (_attachedMaps.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => focusMapOnJourney());
+    }
+  }
   MapController? mapTrackingController;
   final List<ViaPoint> viaPoints = [];
   List<ViaTextEditingControllerClass> viaTextEditingController = [];
