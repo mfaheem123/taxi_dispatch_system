@@ -1,12 +1,18 @@
+import 'dart:async';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:dashboard_new1/component/textStyle.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../component/color.dart';
+import '../component/dropdown_button.dart';
 import 'controller/cli_controller.dart';
+import 'dashboard_view/Controller/dashboard_controller.dart';
+import 'dashboard_view/models/dashboard_model.dart';
 
 Future<void> showCliNewDesigningAlert(String extensionNumber) async {
   await Get.dialog(
@@ -27,7 +33,6 @@ class CliNewDesigning extends StatefulWidget {
 }
 
 class _CliNewDesigningState extends State<CliNewDesigning> {
-
   CliController controller = Get.isRegistered<CliController>()
       ? Get.find<CliController>()
       : Get.put(CliController());
@@ -36,20 +41,16 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
   static const Color fieldFill = Color(0xFFF2F5F9);
   static const Color subtle = Color(0xFF6B7C8F);
 
-  final TextEditingController pickupController = TextEditingController();
-  final TextEditingController dropoffController = TextEditingController();
-
-  String? selectedDriver;
-  String? selectedVehicle;
   int selectedTab = 0;
   bool isFullScreen = false;
+
+  DateTime _now = DateTime.now();
+  Timer? _clock;
 
   // Checked table rows, keyed as "tabIndex-rowIndex"
   final Set<String> checkedRows = {};
 
   // Placeholder data for design only
-  final List<String> drivers = ['Driver 1', 'Driver 2', 'Driver 3'];
-  final List<String> vehicles = ['Saloon', 'Estate', 'MPV', 'Executive'];
   final List<String> tabs = [
     'CURRENT BOOKING',
     'PAST BOOKING',
@@ -70,131 +71,86 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
   ];
   final List<int> columnFlex = [3, 4, 4, 2, 2, 2, 1, 2, 2, 2];
 
-  // final List<List<Map<String, String>>> bookings = [
-  //   [
-  //     {
-  //       'dateTime': '18-09-2026 17:31',
-  //       'pickup': 'Flat 19, Bentley Court',
-  //       'dropoff': 'Bentley Road, Slough',
-  //       'vehicle': 'SALOON',
-  //       'fare': '£ 34.20',
-  //       'account': '',
-  //       'drv': '',
-  //       'pt': 'CASH',
-  //       'status': 'WAITING'
-  //     },
-  //     {
-  //       'dateTime': '18-09-2026 17:45',
-  //       'pickup': 'Flat 14, Aclane House',
-  //       'dropoff': 'Aclane Street, Slough',
-  //       'vehicle': 'SALOON',
-  //       'fare': '£ 19.20',
-  //       'account': '',
-  //       'drv': '',
-  //       'pt': 'CASH',
-  //       'status': 'WAITING'
-  //     },
-  //     {
-  //       'dateTime': '18-09-2026 18:10',
-  //       'pickup': 'Aclane Street, Slough',
-  //       'dropoff': 'Flat 14, Aclane House',
-  //       'vehicle': 'SALOON',
-  //       'fare': '£ 19.20',
-  //       'account': '',
-  //       'drv': '',
-  //       'pt': 'CASH',
-  //       'status': 'WAITING'
-  //     },
-  //     {
-  //       'dateTime': '18-09-2026 18:30',
-  //       'pickup': 'Bentley Road, Slough',
-  //       'dropoff': 'Flat 19, Bentley Court',
-  //       'vehicle': 'SALOON',
-  //       'fare': '£ 34.20',
-  //       'account': '',
-  //       'drv': '',
-  //       'pt': 'CASH',
-  //       'status': 'WAITING'
-  //     },
-  //   ],
-  //   [
-  //     {
-  //       'dateTime': '17-09-2026 09:15',
-  //       'pickup': 'Heathrow Airport T5',
-  //       'dropoff': 'Flat 19, Bentley Court',
-  //       'vehicle': 'EXECUTIVE',
-  //       'fare': '£ 45.00',
-  //       'account': 'ACC01',
-  //       'drv': 'D07',
-  //       'pt': 'ACCOUNT',
-  //       'status': 'COMPLETED'
-  //     },
-  //     {
-  //       'dateTime': '16-09-2026 18:40',
-  //       'pickup': 'Slough Station',
-  //       'dropoff': 'Aclane Street, Slough',
-  //       'vehicle': 'SALOON',
-  //       'fare': '£ 12.50',
-  //       'account': '',
-  //       'drv': 'D15',
-  //       'pt': 'CASH',
-  //       'status': 'COMPLETED'
-  //     },
-  //     {
-  //       'dateTime': '15-09-2026 07:05',
-  //       'pickup': 'Flat 14, Aclane House',
-  //       'dropoff': 'Windsor Castle',
-  //       'vehicle': 'ESTATE',
-  //       'fare': '£ 22.00',
-  //       'account': '',
-  //       'drv': 'D03',
-  //       'pt': 'CARD',
-  //       'status': 'CANCELLED'
-  //     },
-  //     {
-  //       'dateTime': '14-09-2026 21:30',
-  //       'pickup': 'The Curve, Slough',
-  //       'dropoff': 'Bentley Road, Slough',
-  //       'vehicle': 'MPV',
-  //       'fare': '£ 16.60',
-  //       'account': '',
-  //       'drv': 'D12',
-  //       'pt': 'CASH',
-  //       'status': 'COMPLETED'
-  //     },
-  //   ],
-  //   [],
-  // ];
+
+  /// Right-click on a pickup / dropoff cell: use that address as this call's
+  /// pickup or dropoff. The menu is UI; the change itself is the controller's.
+  void _showAddressMenu(Offset globalPosition, String address, bool isDropoffCell) {
+    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox?;
+    if (overlay == null) return;
+
+    showMenu<String>(
+      context: context,
+      position: RelativeRect.fromRect(
+        Rect.fromPoints(globalPosition, globalPosition),
+        Offset.zero & overlay.size,
+      ),
+      items: const [
+        PopupMenuItem<String>(
+          value: 'pickup',
+          child: Row(
+            children: [
+              Icon(Icons.location_on, color: Color(0xFF059669), size: 18),
+              SizedBox(width: 8),
+              Text('SET AS PICKUP'),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'dropoff',
+          child: Row(
+            children: [
+              Icon(Icons.location_on, color: Color(0xFFDC2626), size: 18),
+              SizedBox(width: 8),
+              Text('SET AS DROPOFF'),
+            ],
+          ),
+        ),
+      ],
+    ).then((value) {
+      if (value == null || !mounted || address.isEmpty || address == '-') return;
+
+      setState(() {
+        if (value == 'pickup') {
+          controller.pickupController.text = address;
+        } else if (value == 'dropoff') {
+          controller.dropoffController.text = address;
+        }
+      });
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    final dashboard = Get.find<DashboardController>();
+    dashboard.selectDriverValue = null;
+    dashboard.selectVehicleValue = null;
     temMobileNumber = widget.extensionNumber;
     if (temMobileNumber.isNotEmpty) {
       controller.findCustomerApi(temMobileNumber);
     }
+    _clock = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (mounted) setState(() => _now = DateTime.now());
+    });
   }
 
   @override
   void dispose() {
-    pickupController.dispose();
-    dropoffController.dispose();
+    _clock?.cancel();
+    controller.pickupController.dispose();
+    controller.dropoffController.dispose();
     super.dispose();
   }
 
   void swapLocations() {
-    final temp = pickupController.text;
-    pickupController.text = dropoffController.text;
-    dropoffController.text = temp;
+    final temp = controller.pickupController.text;
+    controller.pickupController.text = controller.dropoffController.text;
+    controller.dropoffController.text = temp;
   }
 
   void resetForm() {
-    pickupController.clear();
-    dropoffController.clear();
-    setState(() {
-      selectedDriver = null;
-      selectedVehicle = null;
-    });
+    controller.pickupController.clear();
+    controller.dropoffController.clear();
   }
 
   @override
@@ -306,7 +262,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              DateFormat('dd-MM-yyyy HH:mm').format(DateTime.now()),
+              DateFormat('dd-MM-yyyy HH:mm').format(_now),
               style: outFitRegular(
                 color: Color(0xFF166534),
                 fontSize: 12,
@@ -370,7 +326,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
           child: _labeled(
             'PICKUP LOCATION',
             _textField(
-                pickupController, 'ENTER PICKUP LOCATION', Icons.my_location),
+                controller.pickupController, 'ENTER PICKUP LOCATION', Icons.my_location),
           ),
         ),
 
@@ -399,7 +355,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
         Expanded(
           child: _labeled(
             'DROPOFF LOCATION',
-            _textField(dropoffController, 'ENTER DROPOFF LOCATION',
+            _textField(controller.dropoffController, 'ENTER DROPOFF LOCATION',
                 Icons.location_on_outlined),
           ),
         ),
@@ -408,81 +364,92 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
   }
 
   // ─────────────── Driver / Vehicle / Buttons ───────────────
-
   Widget _buildDriverVehicleRow() {
-    return Row(
-      // crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Expanded(
-          flex: 3,
-          child: _labeled(
-            'SELECT DRIVER',
-            _dropdown(
-              value: selectedDriver,
-              hint: 'CHOOSE DRIVER',
-              items: drivers,
-              onChanged: (v) => setState(() => selectedDriver = v),
-            ),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          flex: 3,
-          child: _labeled(
-            'SELECT VEHICLE',
-            _dropdown(
-              value: selectedVehicle,
-              hint: 'CHOOSE VEHICLE',
-              items: vehicles,
-              onChanged: (v) => setState(() => selectedVehicle = v),
-            ),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-         const SizedBox(height: 15),
-              SizedBox(
-          height: 42,
-          child: OutlinedButton.icon(
-            onPressed: resetForm,
-            icon: const Icon(Icons.add, size: 18),
-            label: const Text('NEW BOOKING'),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: DynamicColors.primaryClr,
-              side: BorderSide(color: DynamicColors.primaryClr),
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-        ),
-        ]),
-        const SizedBox(width: 12),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 15),
-        SizedBox(
-          height: 42,
-          child: ElevatedButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.check, size: 18),
-            label: const Text('SUBMIT'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: DynamicColors.primaryClr,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 28),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-        ),
-        ])
-      ],
+    return GetBuilder<DashboardController>(
+      builder: (home) {
+        return LayoutBuilder(
+          builder: (context, constraints) {
+
+            final parentWidth = constraints.maxWidth;
+            final dynamicFieldWidth = (parentWidth * 0.28).clamp(220.0, 500.0);
+            return Row(
+                children: [
+                  SizedBox(
+                    width: dynamicFieldWidth,
+                    child: _labeled(
+                      'SELECT DRIVER',
+                      _dropdown<DashboardDriverObject>(
+                        value: home.selectDriverValue,
+                        hint: 'CHOOSE DRIVER',
+                        items: home.dashboardAllData?.drivers ?? const [],
+                        label: (d) => '${d.username ?? ''} ${d.name ?? ''}'.trim().toUpperCase(),
+                        onChanged: controller.selectDriver,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  SizedBox(
+                    width: dynamicFieldWidth,
+                    child: _labeled(
+                      'SELECT VEHICLE',
+                      _dropdown<DashboardVehicleTypeObject>(
+                        value: home.selectVehicleValue,
+                        hint: 'CHOOSE VEHICLE',
+                        items: home.dashboardAllData?.vehicleTypes ?? const [],
+                        label: (v) => v.name ?? '',
+                        onChanged: controller.selectVehicle,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 15),
+                        SizedBox(
+                          height: 42,
+                          child: OutlinedButton.icon(
+                            onPressed: resetForm,
+                            icon: const Icon(Icons.add, size: 18),
+                            label: const Text('NEW BOOKING'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: DynamicColors.primaryClr,
+                              side: BorderSide(color: DynamicColors.primaryClr),
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ]),
+                  const SizedBox(width: 16),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(height: 15),
+                      SizedBox(
+                        height: 42,
+                        child: ElevatedButton.icon(
+                          onPressed: () {},
+                          icon: const Icon(Icons.check, size: 18),
+                          label: const Text('SUBMIT'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: DynamicColors.primaryClr,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 28),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                ]);
+          },
+        );
+      },
     );
   }
 
@@ -533,18 +500,18 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
     );
   }
 
-  List<dynamic> get currentTabBookings {
-    switch (selectedTab) {
-      case 0:
-        return controller.currentBookings;
-      case 1:
-        return controller.pastBookings;
-      case 2:
-        return controller.quotedBookings;
-      default:
-        return controller.currentBookings;
-    }
-  }
+  // List<dynamic> get currentTabBookings {
+  //   switch (selectedTab) {
+  //     case 0:
+  //       return controller.currentBookings;
+  //     case 1:
+  //       return controller.pastBookings;
+  //     case 2:
+  //       return controller.quotedBookings;
+  //     default:
+  //       return controller.currentBookings;
+  //   }
+  // }
 
   // ───────────────────────── Table ─────────────────────────
 
@@ -591,7 +558,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                   );
                 }
 
-                final activeList = currentTabBookings;
+                final activeList = controller.currentTabBookings;
 
                 //  Empty State Check
                 if (activeList.isEmpty) {
@@ -640,34 +607,60 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
       booking['pt']!,
       booking['status']!,
     ];
+
+    final String rowKey = '$selectedTab-$index';
+    final bool isChecked = checkedRows.contains(rowKey);
+
+    Widget buildCellContent(int columnIndex, String text) {
+      final isPickup = columnIndex == 1;
+      final isDropoff = columnIndex == 2;
+      final isStatus = columnIndex == 8;
+
+      final childWidget = Text(
+        text,
+        maxLines: (isPickup || isDropoff) ? 3 : 1,
+        overflow: (isPickup || isDropoff) ? TextOverflow.visible : TextOverflow.ellipsis,
+        style: outFitRegular(
+          fontSize: 12,
+          color: isStatus ? _statusColor(text) : const Color(0xFF1E293B),
+          fontWeight: columnIndex == 4 || isStatus ? FontWeight.w600 : FontWeight.w400,
+        ),
+      );
+
+      if (isPickup || isDropoff) {
+        return Listener(
+          behavior: HitTestBehavior.opaque,
+          onPointerDown: (e) {
+            if (e.kind == PointerDeviceKind.mouse && e.buttons == kSecondaryMouseButton) {
+              _showAddressMenu(e.position, text, isDropoff);
+            }
+          },
+          child: Tooltip(
+            message: text,
+            waitDuration: const Duration(milliseconds: 500),
+            child: childWidget,
+          ),
+        );
+      }
+
+      return childWidget;
+    }
+
     return Material(
-      color: index.isEven ? Colors.white : const Color(0xFFF8FAFC),
+      color: isChecked ? const Color(0xFFEFF4FF) : (index.isEven ? Colors.white : const Color(0xFFF8FAFC)),
       child: InkWell(
         onTap: () {},
         hoverColor: const Color(0xFFEFF4FF),
         child: Container(
-          height: 44,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          constraints: const BoxConstraints(minHeight: 44),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ...List.generate(values.length, (i) {
-                final isStatus = i == 8;
                 return Expanded(
                   flex: columnFlex[i],
-                  child: Text(
-                    values[i],
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: outFitRegular(
-                      fontSize: 13,
-                      color: isStatus
-                          ? _statusColor(values[i])
-                          : const Color(0xFF1E293B),
-                      fontWeight: i == 4 || isStatus
-                          ? FontWeight.w600
-                          : FontWeight.w400,
-                    ),
-                  ),
+                  child: buildCellContent(i, values[i]),
                 );
               }),
               Expanded(
@@ -675,7 +668,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Checkbox(
-                    value: checkedRows.contains('$selectedTab-$index'),
+                    value: isChecked,
                     activeColor: DynamicColors.primaryClr,
                     side: const BorderSide(color: subtle, width: 1.5),
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -683,12 +676,25 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    onChanged: (v) => setState(() {
-                      final key = '$selectedTab-$index';
-                      v == true
-                          ? checkedRows.add(key)
-                          : checkedRows.remove(key);
-                    }),
+                    onChanged: (v) {
+                      setState(() {
+                        if (v == true) {
+                          checkedRows.clear();
+                          checkedRows.add(rowKey);
+
+                          controller.pickupController.text = (booking['pickup'] != null && booking['pickup'] != '-')
+                              ? booking['pickup']!
+                              : '';
+                          controller.dropoffController.text = (booking['dropoff'] != null && booking['dropoff'] != '-')
+                              ? booking['dropoff']!
+                              : '';
+                        } else {
+                          checkedRows.remove(rowKey);
+                          controller.pickupController.clear();
+                          controller.dropoffController.clear();
+                        }
+                      });
+                    },
                   ),
                 ),
               ),
@@ -871,28 +877,49 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
     );
   }
 
-  Widget _dropdown({
-    required String? value,
+  Widget _dropdown<T>({
+    required T? value,
     required String hint,
-    required List<String> items,
-    required ValueChanged<String?> onChanged,
+    required List<T> items,
+    required String Function(T) label,
+    required ValueChanged<T?> onChanged,
+    double? width,
+    double height = 40,
   }) {
-    return SizedBox(
-      height: 48,
-      child: DropdownButtonFormField<String>(
-        // Key forces a rebuild so "New Booking" can reset the selection
-        key: ValueKey(value),
-        initialValue: value,
-        isExpanded: true,
-        icon: const Icon(Icons.arrow_drop_down, color: subtle),
-        decoration: _inputDecoration(hint),
-        hint: Text(hint, style: outFitRegular(color: subtle, fontSize: 14)),
-        style: outFitRegular(fontSize: 14, color: Color(0xFF1E293B)),
-        items: items
-            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-            .toList(),
-        onChanged: onChanged,
-      ),
+    return CustomDropdownField<T>(
+      height: height,
+      width: width,
+      // text: "",
+      label: hint,
+      items: items,
+      value: value,
+      itemLabel: label,
+      onChanged: onChanged,
     );
   }
+
+  // Widget _dropdown({
+  //   required String? value,
+  //   required String hint,
+  //   required List<String> items,
+  //   required ValueChanged<String?> onChanged,
+  // }) {
+  //   return SizedBox(
+  //     height: 48,
+  //     child: DropdownButtonFormField<String>(
+  //       // Key forces a rebuild so "New Booking" can reset the selection
+  //       key: ValueKey(value),
+  //       initialValue: value,
+  //       isExpanded: true,
+  //       icon: const Icon(Icons.arrow_drop_down, color: subtle),
+  //       decoration: _inputDecoration(hint),
+  //       hint: Text(hint, style: outFitRegular(color: subtle, fontSize: 14)),
+  //       style: outFitRegular(fontSize: 14, color: Color(0xFF1E293B)),
+  //       items: items
+  //           .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+  //           .toList(),
+  //       onChanged: onChanged,
+  //     ),
+  //   );
+  // }
 }
