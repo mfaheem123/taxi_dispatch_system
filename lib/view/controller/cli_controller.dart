@@ -136,19 +136,14 @@
 // }
 
 import 'dart:async';
-import 'dart:convert';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart'; // Ensure intl package is imported
+import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
-// import 'package:get/get.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:web_socket_channel/web_socket_channel.dart';
-
-// import '../Model/cli_Customer_DetailModel.dart';
 import '../Model/new_cli_model.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/models/dashboard_model.dart';
@@ -179,6 +174,8 @@ class CliController extends GetxController {
   RxList<BookingObjectData> currentBookings = <BookingObjectData>[].obs;
   RxList<BookingObjectData> pastBookings = <BookingObjectData>[].obs;
   RxList<BookingObjectData> quotedBookings = <BookingObjectData>[].obs;
+  // var stats = Rxn<Stats>();
+  final Rx<Stats> stats = Stats().obs;
 
   RxList bookings = [].obs;
 
@@ -339,18 +336,74 @@ class CliController extends GetxController {
       ? Get.find<DashboardController>()
       : Get.put(DashboardController());
 
+  String extensionNumber = '';
+
   final TextEditingController pickupController = TextEditingController();
   final TextEditingController dropoffController = TextEditingController();
 
   bool isSwapped = false;
+  bool _newBookingBusy = false;
   int? selectedDriverId;
   int? selectedVehicleId;
   int selectedTab = 0;
-  dynamic selectedBooking;
+
+  /// Passenger details carried over from a right-clicked booking.
+  String? passengerName;
+  String? passengerEmail;
+  String? passengerMobile;
+  String? passengerTelephone;
+
+  BookingObjectData? selectedBooking;
+  String? selectedBookingId;
 
   LatLng? pickupPoints;
   LatLng? dropoffPoints;
 
+  LatLng? _parseLatLng(dynamic lat, dynamic lng) {
+    final la = double.tryParse('${lat ?? ''}');
+    final lo = double.tryParse('${lng ?? ''}');
+    return la != null && lo != null ? LatLng(la, lo) : null;
+  }
+
+
+  void startCall(String extension) {
+    extensionNumber = extension;
+    pickupController.clear();
+    dropoffController.clear();
+    pickupPoints = null;
+    dropoffPoints = null;
+    passengerName = null;
+    passengerEmail = null;
+    passengerMobile = null;
+    passengerTelephone = null;
+    selectedBooking = null;
+    selectedBookingId = null;
+    selectedDriverId = null;
+    selectedVehicleId = null;
+    isSwapped = false;
+    selectedTab = 0;
+    _bindBookings(null, null);
+
+    findCustomerApi(extension);
+    _dashboard.cliJobHit = false;
+    if (_dashboard.dashboardAllData == null) {
+      _dashboard.dashboardData().then((_) {
+        _setDefaultVehicle();
+        update();
+      });
+    } else {
+      _setDefaultVehicle();
+    }
+    update();
+  }
+
+  void _setDefaultVehicle() {
+    final types = _dashboard.dashboardAllData?.vehicleTypes;
+    if (types != null && types.isNotEmpty) {
+      _dashboard.selectVehicleValue ??= types.first;
+      selectedVehicleId = _dashboard.selectVehicleValue?.id;
+    }
+  }
 
   void selectTab(int tab) {
     selectedTab = tab;
@@ -371,47 +424,206 @@ class CliController extends GetxController {
     update();
   }
 
-  List<dynamic> get currentTabBookings {
-    switch (selectedTab) {
+  String bookingStatusText(BookingObjectData b) =>
+      (b.bookingStatus?.bookingStatus ?? '').toUpperCase();
+
+  List<BookingObjectData> bookingsForTab(int tab) {
+    switch (tab) {
       case 0:
         return currentBookings;
       case 1:
         return pastBookings;
-      case 2:
-        return quotedBookings;
       default:
-        return currentBookings;
+        return quotedBookings;
     }
   }
-
-  //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>SWAP
-  // void swapLocations() {
-  //   isSwapped = !isSwapped;
-  //   final tempText = pickupController.text;
-  //   pickupController.text = dropoffController.text;
-  //   dropoffController.text = tempText;
-  //
-  //   final tempPoints = pickupPoints;
-  //   pickupPoints = dropoffPoints;
-  //   dropoffPoints = tempPoints;
-  //
-  //   final b = selectedBooking;
-  //   if (b != null) {
-  //     final p = b.pickup, pLat = b.pickupLatitude, pLng = b.pickupLongitude;
-  //     b.pickup = b.dropoff;
-  //     b.pickupLatitude = b.dropoffLatitude;
-  //     b.pickupLongitude = b.dropoffLongitude;
-  //     b.dropoff = p;
-  //     b.dropoffLatitude = pLat;
-  //     b.dropoffLongitude = pLng;
+  // List<dynamic> get currentTabBookings {
+  //   switch (selectedTab) {
+  //     case 0:
+  //       return currentBookings;
+  //     case 1:
+  //       return pastBookings;
+  //     case 2:
+  //       return quotedBookings;
+  //     default:
+  //       return currentBookings;
   //   }
-  //
-  //   // Keep the main dashboard form in step, then re-route.
-  //   _dashboard.pickupController.text = pickupController.text;
-  //   _dashboard.dropOffController.text = dropoffController.text;
-  //   update();
-  //   _dashboard.fetchRouteFromOSRM();
   // }
+
+  // ---------- actions ----------
+
+  void swapLocations() {
+    isSwapped = !isSwapped;
+    final tempText = pickupController.text;
+    pickupController.text = dropoffController.text;
+    dropoffController.text = tempText;
+
+    final tempPoints = pickupPoints;
+    pickupPoints = dropoffPoints;
+    dropoffPoints = tempPoints;
+
+    final b = selectedBooking;
+    if (b != null) {
+      final p = b.pickup, pLat = b.pickupLatitude, pLng = b.pickupLongitude;
+      b.pickup = b.dropoff;
+      b.pickupLatitude = b.dropoffLatitude;
+      b.pickupLongitude = b.dropoffLongitude;
+      b.dropoff = p;
+      b.dropoffLatitude = pLat;
+      b.dropoffLongitude = pLng;
+    }
+
+    // Keep the main dashboard form in step, then re-route.
+    _dashboard.pickupController.text = pickupController.text;
+    _dashboard.dropOffController.text = dropoffController.text;
+    update();
+    _dashboard.fetchRouteFromOSRM();
+  }
+
+  void toggleBooking(BookingObjectData b) {
+    if (selectedBookingId == b.id) {
+      selectedBookingId = null;
+      selectedBooking = null;
+      pickupController.clear();
+      dropoffController.clear();
+    } else {
+      selectedBookingId = b.id;
+      selectedBooking = b;
+      pickupController.text = b.pickup ?? '';
+      dropoffController.text = b.dropoff ?? '';
+    }
+    update();
+  }
+
+
+  void setAddressFromBooking(BookingObjectData b,
+      {required bool fromDropoff, required bool asPickup}) {
+    final text = (fromDropoff ? b.dropoff : b.pickup) ?? '';
+    final points = fromDropoff
+        ? _parseLatLng(b.dropoffLatitude, b.dropoffLongitude)
+        : _parseLatLng(b.pickupLatitude, b.pickupLongitude);
+    if (asPickup) {
+      pickupController.text = text;
+      pickupPoints = points;
+    } else {
+      dropoffController.text = text;
+      dropoffPoints = points;
+    }
+    passengerName = b.name;
+    passengerEmail = b.email;
+    passengerMobile = b.mobile?.toString();
+    passengerTelephone = b.telephone;
+    update();
+  }
+
+  void _bindBookings(dynamic rawBookings, dynamic rawStats) {
+    List<dynamic> rawList(dynamic v) => v is List ? v : const [];
+
+    final List<dynamic> current, past, quoted;
+    if (rawBookings is Map) {
+      current = rawList(rawBookings['current']);
+      past = rawList(rawBookings['past']);
+      quoted = rawList(rawBookings['quoted']);
+    } else {
+      current = rawList(rawBookings);
+      past = const [];
+      quoted = const [];
+    }
+
+    currentBookings.assignAll(_parseBookings(current));
+    pastBookings.assignAll(_parseBookings(past));
+    quotedBookings.assignAll(_parseBookings(quoted));
+
+    // A quoted booking can also appear under past — list it once here.
+    final seen = <dynamic>{};
+    bookings.assignAll([...current, ...past, ...quoted]
+        .where((e) => e is Map && seen.add(e['id'])));
+
+    stats.value = rawStats is Map
+        ? Stats.fromJson(Map<String, dynamic>.from(rawStats))
+        : Stats(
+      total: bookings.length,
+      current: currentBookings.length,
+      quoted: quotedBookings.length,
+    );
+  }
+
+  List<BookingObjectData> _parseBookings(List<dynamic> raw) {
+    final out = <BookingObjectData>[];
+    for (final e in raw) {
+      if (e is! Map) continue;
+      try {
+        out.add(BookingObjectData.fromJson(Map<String, dynamic>.from(e)));
+      } catch (err) {
+        debugPrint('CLI booking parse error (${e['id']}): $err');
+      }
+    }
+    return out;
+  }
+
+  Future<void> newBooking() async {
+    if (_newBookingBusy) return;
+    try {
+      _newBookingBusy = true;
+      print("------------------ [NEW BOOKING TRACE START] ------------------");
+      print("pickupController: '${pickupController.text}'");
+      print("dropoffController: '${dropoffController.text}'");
+      print("pickupPoints: $pickupPoints");
+      print("dropoffPoints: $dropoffPoints");
+      print("selectedBooking ID: ${selectedBooking?.id}");
+      print("extensionNumber: '$extensionNumber'");
+      print("---------------------------------------------------------------");
+
+      if (pickupController.text.isNotEmpty &&
+          dropoffController.text.isNotEmpty &&
+          selectedBooking == null) {
+        if (pickupController.text == dropoffController.text) {
+          BotToast.showText(text: 'Please write different address');
+          return;
+        }
+        if (pickupPoints == null || dropoffPoints == null) {
+          BotToast.showText(text: 'Location data missing');
+          print("ERROR: pickupPoints or dropoffPoints is null!");
+          return;
+        }
+        await _dashboard.cliDataBinding(
+          pickup: pickupController.text,
+          dropoff: dropoffController.text,
+          pickupLatitude: pickupPoints!.latitude.toString(),
+          pickupLongitude: pickupPoints!.longitude.toString(),
+          dropoffLatitude: dropoffPoints!.latitude.toString(),
+          dropoffLongitude: dropoffPoints!.longitude.toString(),
+          name: passengerName,
+          mobile: passengerMobile,
+          email: passengerEmail,
+          phoneNumber: passengerTelephone,
+        );
+      } else {
+        if (selectedBooking == null) {
+          _dashboard.mobileController.text = extensionNumber;
+          Get.back();
+          return;
+        }
+        _dashboard.cliJobHit = true;
+        await _dashboard.dashBoardDataBinding(
+          id: selectedBooking!.id,
+          jobData: selectedBooking,
+          cliHit: true,
+          swappedPickup: pickupController.text,
+          swappedDropoff: dropoffController.text,
+        );
+        Get.back();
+      }
+    } catch (e, stackTrace) {
+      // Full exception print with StackTrace
+      print("EXCEPTION IN newBooking(): $e");
+      print("FULL STACK TRACE:\n$stackTrace");
+      BotToast.showText(text: 'Something went wrong');
+      debugPrint('$e');
+    } finally {
+      _newBookingBusy = false;
+    }
+  }
 
   @override
   void onClose() {

@@ -13,6 +13,7 @@ import '../component/dropdown_button.dart';
 import 'controller/cli_controller.dart';
 import 'dashboard_view/Controller/dashboard_controller.dart';
 import 'dashboard_view/models/dashboard_model.dart';
+import 'dashboard_view/models/dashboard_table_model.dart';
 
 Future<void> showCliNewDesigningAlert(String extensionNumber) async {
   await Get.dialog(
@@ -21,7 +22,7 @@ Future<void> showCliNewDesigningAlert(String extensionNumber) async {
   );
 }
 
-String temMobileNumber = "";
+// String temMobileNumber = "";
 
 class CliNewDesigning extends StatefulWidget {
   const CliNewDesigning({super.key, required this.extensionNumber});
@@ -41,14 +42,11 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
   static const Color fieldFill = Color(0xFFF2F5F9);
   static const Color subtle = Color(0xFF6B7C8F);
 
-  int selectedTab = 0;
+  int get selectedTab => controller.selectedTab;
   bool isFullScreen = false;
 
   DateTime _now = DateTime.now();
   Timer? _clock;
-
-  // Checked table rows, keyed as "tabIndex-rowIndex"
-  final Set<String> checkedRows = {};
 
   // Placeholder data for design only
   final List<String> tabs = [
@@ -71,64 +69,16 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
   ];
   final List<int> columnFlex = [3, 4, 4, 2, 2, 2, 1, 2, 2, 2];
 
-
-  /// Right-click on a pickup / dropoff cell: use that address as this call's
-  /// pickup or dropoff. The menu is UI; the change itself is the controller's.
-  void _showAddressMenu(Offset globalPosition, String address, bool isDropoffCell) {
-    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox?;
-    if (overlay == null) return;
-
-    showMenu<String>(
-      context: context,
-      position: RelativeRect.fromRect(
-        Rect.fromPoints(globalPosition, globalPosition),
-        Offset.zero & overlay.size,
-      ),
-      items: const [
-        PopupMenuItem<String>(
-          value: 'pickup',
-          child: Row(
-            children: [
-              Icon(Icons.location_on, color: Color(0xFF059669), size: 18),
-              SizedBox(width: 8),
-              Text('SET AS PICKUP'),
-            ],
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'dropoff',
-          child: Row(
-            children: [
-              Icon(Icons.location_on, color: Color(0xFFDC2626), size: 18),
-              SizedBox(width: 8),
-              Text('SET AS DROPOFF'),
-            ],
-          ),
-        ),
-      ],
-    ).then((value) {
-      if (value == null || !mounted || address.isEmpty || address == '-') return;
-
-      setState(() {
-        if (value == 'pickup') {
-          controller.pickupController.text = address;
-        } else if (value == 'dropoff') {
-          controller.dropoffController.text = address;
-        }
-      });
-    });
-  }
-
   @override
   void initState() {
     super.initState();
     final dashboard = Get.find<DashboardController>();
     dashboard.selectDriverValue = null;
     dashboard.selectVehicleValue = null;
-    temMobileNumber = widget.extensionNumber;
-    if (temMobileNumber.isNotEmpty) {
-      controller.findCustomerApi(temMobileNumber);
-    }
+    controller.startCall(widget.extensionNumber);
+    // if (temMobileNumber.isNotEmpty) {
+    //   controller.findCustomerApi(temMobileNumber);
+    // }
     _clock = Timer.periodic(const Duration(seconds: 30), (_) {
       if (mounted) setState(() => _now = DateTime.now());
     });
@@ -137,21 +87,48 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
   @override
   void dispose() {
     _clock?.cancel();
-    controller.pickupController.dispose();
-    controller.dropoffController.dispose();
+    controller.disconnectSocket();
     super.dispose();
   }
 
-  void swapLocations() {
-    final temp = controller.pickupController.text;
-    controller.pickupController.text = controller.dropoffController.text;
-    controller.dropoffController.text = temp;
+
+
+  /// Right-click on a pickup / dropoff cell: use that address as this call's
+  /// pickup or dropoff. The menu is UI; the change itself is the controller's.
+  void _showAddressMenu(
+      Offset globalPosition, BookingObjectData b, bool isDropoffCell) {
+    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox?;
+    if (overlay == null) return;
+    showMenu<String>(
+      context: context,
+      position: RelativeRect.fromRect(
+          Rect.fromPoints(globalPosition, globalPosition),
+          Offset.zero & overlay.size),
+      items: const [
+        PopupMenuItem<String>(
+          value: 'pickup',
+          child: Row(children: [
+            Icon(Icons.location_on, color: Color(0xFF059669), size: 18),
+            SizedBox(width: 8),
+            Text('Set as Pickup'),
+          ]),
+        ),
+        PopupMenuItem<String>(
+          value: 'dropoff',
+          child: Row(children: [
+            Icon(Icons.location_on, color: Color(0xFFDC2626), size: 18),
+            SizedBox(width: 8),
+            Text('Set as Dropoff'),
+          ]),
+        ),
+      ],
+    ).then((value) {
+      if (value == null || !mounted) return;
+      controller.setAddressFromBooking(b,
+          fromDropoff: isDropoffCell, asPickup: value == 'pickup');
+    });
   }
 
-  void resetForm() {
-    controller.pickupController.clear();
-    controller.dropoffController.clear();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -221,7 +198,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                 ? 'UNKNOWN'
                 : controller.customerName.value.toUpperCase();
             final mobile = controller.customerMobile.value.isEmpty
-                ? temMobileNumber
+                ? controller.extensionNumber
                 : controller.customerMobile.value;
 
             return Text(
@@ -337,7 +314,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
           child: Tooltip(
             message: 'SWAP LOCATIONS',
             child: InkWell(
-              onTap: swapLocations,
+              onTap: controller.swapLocations,
               borderRadius: BorderRadius.circular(24),
               child: Container(
                 width: 44,
@@ -409,7 +386,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                         SizedBox(
                           height: 42,
                           child: OutlinedButton.icon(
-                            onPressed: resetForm,
+                            onPressed: controller.newBooking,
                             icon: const Icon(Icons.add, size: 18),
                             label: const Text('NEW BOOKING'),
                             style: OutlinedButton.styleFrom(
@@ -516,6 +493,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
   // ───────────────────────── Table ─────────────────────────
 
   Widget _buildTable() {
+    final rows = controller.bookingsForTab(selectedTab);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
       child: Container(
@@ -549,45 +527,58 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
             ),
             const Divider(height: 1, thickness: 1, color: border),
 
+            // Expanded(
+            //   child: Obx(() {
+            //     //  Loading State Check
+            //     if (controller.isLoading.value) {
+            //       return const Center(
+            //         child: CircularProgressIndicator(),
+            //       );
+            //     }
+            //
+            //     final activeList = controller.bookingsForTab;
+            //
+            //     //  Empty State Check
+            //     if (activeList.isEmpty) {
+            //       return _emptyTable();
+            //     }
+            //
+            //     return ListView.separated(
+            //       itemCount: activeList.length,
+            //       separatorBuilder: (_, __) =>
+            //       const Divider(height: 1, thickness: 1, color: border),
+            //       itemBuilder: (context, index) {
+            //         final booking = activeList[index];
+            //
+            //         final Map<String, String> bookingData = {
+            //           'dateTime': "${booking.pickupDate ?? ''} ${booking.pickupTime ?? ''}",
+            //           'pickup': booking.pickup ?? '-',
+            //           'dropoff': booking.dropoff ?? '-',
+            //           'vehicle': booking.vehicleType?.name?.toString() ?? '',
+            //           'fare': "£ ${booking.fares ?? '0'}",
+            //           'account': booking.account?.name?.toString() ?? '',
+            //           'drv': booking.driverId?.toString() ?? '',
+            //           'pt': (booking.paymentType?.name?.toString() ?? '').toUpperCase(),
+            //           'status': (booking.bookingStatus?.bookingStatus ?? '').toUpperCase(),
+            //         };
+            //
+            //         return _tableRow(bookingData, index);
+            //       },
+            //     );
+            //   }),
+            // ),
             Expanded(
-              child: Obx(() {
-                //  Loading State Check
-                if (controller.isLoading.value) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-
-                final activeList = controller.currentTabBookings;
-
-                //  Empty State Check
-                if (activeList.isEmpty) {
-                  return _emptyTable();
-                }
-
-                return ListView.separated(
-                  itemCount: activeList.length,
-                  separatorBuilder: (_, __) =>
-                  const Divider(height: 1, thickness: 1, color: border),
-                  itemBuilder: (context, index) {
-                    final booking = activeList[index];
-
-                    final Map<String, String> bookingData = {
-                      'dateTime': "${booking.pickupDate ?? ''} ${booking.pickupTime ?? ''}",
-                      'pickup': booking.pickup ?? '-',
-                      'dropoff': booking.dropoff ?? '-',
-                      'vehicle': booking.vehicleType?.name?.toString() ?? '',
-                      'fare': "£ ${booking.fares ?? '0'}",
-                      'account': booking.account?.name?.toString() ?? '',
-                      'drv': booking.driverId?.toString() ?? '',
-                      'pt': (booking.paymentType?.name?.toString() ?? '').toUpperCase(),
-                      'status': (booking.bookingStatus?.bookingStatus ?? '').toUpperCase(),
-                    };
-
-                    return _tableRow(bookingData, index);
-                  },
-                );
-              }),
+              child: controller.isLoading.value
+                  ? const Center(child: CircularProgressIndicator())
+                  : rows.isEmpty
+                  ? _emptyTable()
+                  : ListView.separated(
+                itemCount: rows.length,
+                separatorBuilder: (_, __) => const Divider(
+                    height: 1, thickness: 1, color: border),
+                itemBuilder: (context, index) =>
+                    _tableRow(rows[index], index),
+              ),
             ),
           ],
         ),
@@ -595,74 +586,106 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
     );
   }
 
-  Widget _tableRow(Map<String, String> booking, int index) {
-    final values = [
-      booking['dateTime']!,
-      booking['pickup']!,
-      booking['dropoff']!,
-      booking['vehicle']!,
-      booking['fare']!,
-      booking['account']!,
-      booking['drv']!,
-      booking['pt']!,
-      booking['status']!,
-    ];
+  Widget _tableRow(BookingObjectData b, int index) {
+    final date = b.pickupDate != null
+        ? DateFormat('dd-MM-yyyy').format(b.pickupDate!)
+        : '';
+    final dateTime = '$date ${b.pickupTime ?? ''}'.trim();
+    final status = controller.bookingStatusText(b);
+    final isChecked =
+        controller.selectedBookingId != null && controller.selectedBookingId == b.id;
+    final hasVia = b.viapoints != null && b.viapoints!.isNotEmpty;
 
-    final String rowKey = '$selectedTab-$index';
-    final bool isChecked = checkedRows.contains(rowKey);
-
-    Widget buildCellContent(int columnIndex, String text) {
-      final isPickup = columnIndex == 1;
-      final isDropoff = columnIndex == 2;
-      final isStatus = columnIndex == 8;
-
-      final childWidget = Text(
-        text,
-        maxLines: (isPickup || isDropoff) ? 3 : 1,
-        overflow: (isPickup || isDropoff) ? TextOverflow.visible : TextOverflow.ellipsis,
-        style: outFitRegular(
-          fontSize: 12,
-          color: isStatus ? _statusColor(text) : const Color(0xFF1E293B),
-          fontWeight: columnIndex == 4 || isStatus ? FontWeight.w600 : FontWeight.w400,
-        ),
-      );
-
-      if (isPickup || isDropoff) {
-        return Listener(
-          behavior: HitTestBehavior.opaque,
-          onPointerDown: (e) {
-            if (e.kind == PointerDeviceKind.mouse && e.buttons == kSecondaryMouseButton) {
-              _showAddressMenu(e.position, text, isDropoff);
-            }
-          },
-          child: Tooltip(
-            message: text,
-            waitDuration: const Duration(milliseconds: 500),
-            child: childWidget,
+    Widget cell(String text,
+        {FontWeight weight = FontWeight.w400, Color? color}) =>
+        Text(
+          text,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: 13,
+            color: color ?? const Color(0xFF1E293B),
+            fontWeight: weight,
           ),
         );
-      }
 
-      return childWidget;
-    }
+    Widget addressCell(String text, bool isDropoff) => Listener(
+      behavior: HitTestBehavior.opaque,
+      onPointerDown: (e) {
+        if (e.kind == PointerDeviceKind.mouse &&
+            e.buttons == kSecondaryMouseButton) {
+          _showAddressMenu(e.position, b, isDropoff);
+        }
+      },
+      child: Tooltip(
+        message: text,
+        waitDuration: const Duration(milliseconds: 500),
+        child: cell(text),
+      ),
+    );
+
+    final cells = <Widget>[
+      cell(dateTime),
+      addressCell((b.pickup ?? '').toUpperCase(), false),
+      Row(children: [
+        if (hasVia) ...[
+          Tooltip(
+            // Indexed numbering
+            message: b.viapoints != null ? b.viapoints!.where((v) => (v.viapoint ?? '').isNotEmpty).toList().asMap().entries
+                .map((e) => '${e.key + 1}. ${(e.value.viapoint ?? '').toUpperCase()}').join('\n')
+                : '',
+            // message: b.viapoints!.map((v) => v.viapoint.toString().toUpperCase()).join('\n'),
+            child: Container(
+              margin: const EdgeInsets.only(right: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE5E7EB),
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: const Color(0xFFD1D5DB)),
+              ),
+              child: const Text(
+                'VIA',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF374151),
+                ),
+              ),
+            ),
+          ),
+        ],
+        Expanded(child: addressCell((b.dropoff ?? '').toUpperCase(), true)),
+      ]),
+      cell((b.vehicleType?.name ?? '').toUpperCase()),
+      cell('£ ${b.fares ?? 0}', weight: FontWeight.w600),
+      cell((b.account?.name ?? '').toUpperCase()),
+      cell((b.driver?.username ?? '').toUpperCase()),
+      cell((b.paymentType?.name ?? '').toUpperCase()),
+      cell(status,
+          weight: FontWeight.w600, color: _statusColor(status)),
+    ];
 
     return Material(
-      color: isChecked ? const Color(0xFFEFF4FF) : (index.isEven ? Colors.white : const Color(0xFFF8FAFC)),
+      color: isChecked
+          ? const Color(0xFFEFF4FF)
+          : index.isEven
+          ? Colors.white
+          : const Color(0xFFF8FAFC),
       child: InkWell(
-        onTap: () {},
+        onTap: () => controller.toggleBooking(b),
         hoverColor: const Color(0xFFEFF4FF),
         child: Container(
-          constraints: const BoxConstraints(minHeight: 44),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          height: 44,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              ...List.generate(values.length, (i) {
-                return Expanded(
-                  flex: columnFlex[i],
-                  child: buildCellContent(i, values[i]),
-                );
-              }),
+              ...List.generate(cells.length, (i) => Expanded(
+                flex: columnFlex[i],
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: cells[i],
+                ),
+              )),
               Expanded(
                 flex: columnFlex.last,
                 child: Align(
@@ -676,25 +699,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    onChanged: (v) {
-                      setState(() {
-                        if (v == true) {
-                          checkedRows.clear();
-                          checkedRows.add(rowKey);
-
-                          controller.pickupController.text = (booking['pickup'] != null && booking['pickup'] != '-')
-                              ? booking['pickup']!
-                              : '';
-                          controller.dropoffController.text = (booking['dropoff'] != null && booking['dropoff'] != '-')
-                              ? booking['dropoff']!
-                              : '';
-                        } else {
-                          checkedRows.remove(rowKey);
-                          controller.pickupController.clear();
-                          controller.dropoffController.clear();
-                        }
-                      });
-                    },
+                    onChanged: (_) => controller.toggleBooking(b),
                   ),
                 ),
               ),
