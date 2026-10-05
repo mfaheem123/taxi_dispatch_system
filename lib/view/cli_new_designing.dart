@@ -346,7 +346,6 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                         value: home.selectDriverValue,
                         hint: 'CHOOSE DRIVER',
                         items: home.dashboardAllData?.drivers ?? const [],
-
                         label: (d) => '${d.username ?? ''} ${d.name ?? ''}'.trim().toUpperCase(),
                         onChanged: controller.selectDriver,
                       ),
