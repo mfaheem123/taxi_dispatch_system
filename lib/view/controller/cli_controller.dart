@@ -137,9 +137,11 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart'; // Ensure intl package is imported
+import 'package:latlong2/latlong.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 // import 'package:get/get.dart';
@@ -148,6 +150,7 @@ import 'package:dashboard_new1/component/networks/api.dart';
 
 // import '../Model/cli_Customer_DetailModel.dart';
 import '../Model/new_cli_model.dart';
+import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/models/dashboard_model.dart';
 
 class CliController extends GetxController {
@@ -161,6 +164,8 @@ class CliController extends GetxController {
   /// 🔹 Customer Data
   RxString customerName = "".obs;
   RxString customerMobile = "".obs;
+  RxString customerEmail = "".obs;
+  RxString customerTelephone = "".obs;
 
   // Stats Observables
   RxInt totalStats = 0.obs;
@@ -327,6 +332,85 @@ class CliController extends GetxController {
     pastBookings.clear();
     quotedBookings.clear();
   }
+
+  // ================= CLI SCREEN (cli_new_designing.dart) =================
+  DashboardController get _dashboard => Get.isRegistered<DashboardController>()
+      ? Get.find<DashboardController>()
+      : Get.put(DashboardController());
+
+  final TextEditingController pickupController = TextEditingController();
+  final TextEditingController dropoffController = TextEditingController();
+
+  bool isSwapped = false;
+  int? selectedDriverId;
+  int? selectedVehicleId;
+  int selectedTab = 0;
+  dynamic selectedBooking;
+
+  LatLng? pickupPoints;
+  LatLng? dropoffPoints;
+
+
+  void selectTab(int tab) {
+    selectedTab = tab;
+    update();
+  }
+
+  void selectDriver(DashboardDriverObject? driver) {
+    _dashboard.selectDriverValue = driver;
+    selectedDriverId = driver?.id;
+    _dashboard.update();
+    update();
+  }
+
+  void selectVehicle(DashboardVehicleTypeObject? vehicle) {
+    _dashboard.selectVehicleValue = vehicle;
+    selectedVehicleId = vehicle?.id;
+    _dashboard.update();
+    update();
+  }
+
+  List<dynamic> get currentTabBookings {
+    switch (selectedTab) {
+      case 0:
+        return currentBookings;
+      case 1:
+        return pastBookings;
+      case 2:
+        return quotedBookings;
+      default:
+        return currentBookings;
+    }
+  }
+
+  //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>SWAP
+  // void swapLocations() {
+  //   isSwapped = !isSwapped;
+  //   final tempText = pickupController.text;
+  //   pickupController.text = dropoffController.text;
+  //   dropoffController.text = tempText;
+  //
+  //   final tempPoints = pickupPoints;
+  //   pickupPoints = dropoffPoints;
+  //   dropoffPoints = tempPoints;
+  //
+  //   final b = selectedBooking;
+  //   if (b != null) {
+  //     final p = b.pickup, pLat = b.pickupLatitude, pLng = b.pickupLongitude;
+  //     b.pickup = b.dropoff;
+  //     b.pickupLatitude = b.dropoffLatitude;
+  //     b.pickupLongitude = b.dropoffLongitude;
+  //     b.dropoff = p;
+  //     b.dropoffLatitude = pLat;
+  //     b.dropoffLongitude = pLng;
+  //   }
+  //
+  //   // Keep the main dashboard form in step, then re-route.
+  //   _dashboard.pickupController.text = pickupController.text;
+  //   _dashboard.dropOffController.text = dropoffController.text;
+  //   update();
+  //   _dashboard.fetchRouteFromOSRM();
+  // }
 
   @override
   void onClose() {

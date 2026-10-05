@@ -24,6 +24,7 @@ import '../../../component/time_duration_method.dart';
 import '../../../tabbarview.dart';
 import '../../../utils/open_edit_booking_tab.dart';
 import '../../cli_Screen.dart';
+import '../../cli_new_designing.dart';
 import '../../locations_view/Model/location_types_zoneModel.dart';
 import '../../locations_view/controller/locations_controller.dart';
 import '../../setting/company_configuration_view/alert_createbooking.dart';
@@ -256,11 +257,15 @@ class DashboardController extends GetxController {
           if (data['event'] == "CLI_OPEN") {
             print(data['data']);
             print(data['data']['callerId']);
-            Get.to(() => ResponsivePassengerScreen(
-              extensionNumber: data['data']['callerId'],
-            ))?.then((value) {
+            showCliNewDesigningAlert('${data['data']['callerId']}')
+                .then((value) {
               connectToCli("200", sendCompanyId: sendCompanyId);
             });
+            // Get.to(() => ResponsivePassengerScreen(
+            //   extensionNumber: data['data']['callerId'],
+            // ))?.then((value) {
+            //   connectToCli("200", sendCompanyId: sendCompanyId);
+            // });
           }
         },
         onError: (error) => print("Connection Error: $error"),
