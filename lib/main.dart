@@ -80,6 +80,20 @@ void main() async {
   Get.put(AuthController(), permanent: true);
   Get.put(DashboardController(), permanent: true);
 
+  // TEMP (debug only): on web the widget inspector's structured error
+  // reporter crashes with "LegacyJavaScriptObject is not a subtype of
+  // DiagnosticsNode" and hides the real exception. Print it plainly instead.
+  assert(() {
+    FlutterError.onError = (FlutterErrorDetails details) {
+      debugPrint('══════ REAL FLUTTER ERROR ══════');
+      debugPrint(details.exceptionAsString());
+      debugPrint('context: ${details.context}');
+      debugPrint(details.stack.toString());
+      debugPrint('════════════════════════════════');
+    };
+    return true;
+  }());
+
   runApp(const MyApp());
 }
 

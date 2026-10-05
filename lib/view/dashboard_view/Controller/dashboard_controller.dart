@@ -242,23 +242,43 @@ class DashboardController extends GetxController {
     return finalUrl;
   }
 
+  /// The CLI socket on its own, so a reconnect can close the previous one.
+  /// Before this every reconnect stacked another live socket on top, and one
+  /// CLI_OPEN then opened the call dialog once per socket.
+  WebSocketChannel? _cliChannel;
+
+  /// True while the CLI call dialog is on screen, so a second CLI_OPEN does
+  /// not stack another dialog over it.
+  bool _cliDialogOpen = false;
+
   // 1. Connect To CLI
   void connectToCli(String extension, {bool sendCompanyId = false}) {
     final String path = "/cli?extension=$extension";
     final url = Uri.parse(_buildSocketUrl(path, sendCompanyId: sendCompanyId));
 
-    try {
-      _channel = WebSocketChannel.connect(url);
-      _trackSocket(_channel!, "CLI");
+    final previous = _cliChannel;
+    if (previous != null) {
+      _openSockets.remove(previous);
+      _closeQuietly(previous.sink);
+    }
 
-      _channel!.stream.listen(
+    try {
+      final channel = WebSocketChannel.connect(url);
+      _cliChannel = channel;
+      _channel = channel;
+      _trackSocket(channel, "CLI");
+
+      channel.stream.listen(
             (message) {
           final data = jsonDecode(message);
 
           if (data['event'] == "CLI_OPEN") {
             print(data['data']);
             print(data['data']['callerId']);
+            if (_cliDialogOpen) return;
+            _cliDialogOpen = true;
             showCliNewDesigningAlert('${data['data']['callerId']}')
+                .whenComplete(() => _cliDialogOpen = false)
                 .then((value) {
               connectToCli("200", sendCompanyId: sendCompanyId);
             });
@@ -4214,6 +4234,7 @@ class DashboardController extends GetxController {
     }
     _openSockets.clear();
     _channel = null;
+    _cliChannel = null;
     isConnected = false;
 
     // The periodic pollers. _timer is the one that matters most: it is

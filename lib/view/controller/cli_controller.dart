@@ -204,6 +204,8 @@ class CliController extends GetxController {
 
     var response = await Api().post(formData, 'bookings/cli', auth: true, sendCompanyId: true);
     if (response != null && response.statusCode == 200) {
+      // Clear the dashboard form first, then close the CLI dialog.
+      await _dashboard.refreshPostAllFields();
       Get.back();
     }
   }
@@ -459,11 +461,9 @@ class CliController extends GetxController {
       b.dropoffLongitude = pLng;
     }
 
-    // Keep the main dashboard form in step, then re-route.
-    _dashboard.pickupController.text = pickupController.text;
-    _dashboard.dropOffController.text = dropoffController.text;
+    // Dialog only: the dashboard form behind it is left untouched until
+    // NEW BOOKING hands the call over.
     update();
-    _dashboard.fetchRouteFromOSRM();
   }
 
   void toggleBooking(BookingObjectData b) {
@@ -572,10 +572,24 @@ class CliController extends GetxController {
     return out;
   }
 
+  /// Wipes whatever was already on the dashboard form so the booking NEW
+  /// BOOKING hands over is not mixed with the previous one's leftovers.
+  /// The driver / vehicle picked in this dialog are kept: the reset would
+  /// otherwise put them back to their defaults.
+  Future<void> _clearDashboardForm() async {
+    final driver = _dashboard.selectDriverValue;
+    final vehicle = _dashboard.selectVehicleValue;
+    await _dashboard.refreshPostAllFields();
+    _dashboard.selectDriverValue = driver;
+    if (vehicle != null) _dashboard.selectVehicleValue = vehicle;
+    _dashboard.update();
+  }
+
   Future<void> newBooking() async {
     if (_newBookingBusy) return;
     try {
       _newBookingBusy = true;
+      BotToast.showLoading();
 
       if (pickupController.text.isNotEmpty &&
           dropoffController.text.isNotEmpty &&
@@ -588,6 +602,7 @@ class CliController extends GetxController {
           BotToast.showText(text: 'LOCATION DATA MISSING');
           return;
         }
+        await _clearDashboardForm();
         await _dashboard.cliDataBinding(
           pickup: pickupController.text,
           dropoff: dropoffController.text,
@@ -600,8 +615,9 @@ class CliController extends GetxController {
           email: passengerEmail,
           phoneNumber: passengerTelephone,
         );
-        Get.back();
+        // cliDataBinding closes the dialog itself.
       } else {
+        await _clearDashboardForm();
         if (selectedBooking == null) {
           _dashboard.mobileController.text = extensionNumber;
           Get.back();
@@ -623,6 +639,7 @@ class CliController extends GetxController {
       BotToast.showText(text: 'SOMETHING WENT WRONG');
       debugPrint('$e');
     } finally {
+      BotToast.closeAllLoading();
       _newBookingBusy = false;
     }
   }
