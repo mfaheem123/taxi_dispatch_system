@@ -136,15 +136,20 @@
 // }
 
 import 'dart:async';
+import 'dart:convert';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' show LatLng;
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:intl/intl.dart'; // Ensure intl package is imported
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
-import '../Model/new_cli_model.dart';
+// import 'package:get/get.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:web_socket_channel/web_socket_channel.dart';
+
+import '../Model/cli_Customer_DetailModel.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/models/dashboard_model.dart';
 import '../dashboard_view/models/dashboard_table_model.dart';
@@ -155,31 +160,28 @@ class CliController extends GetxController {
   RxBool isConnected = false.obs;
   RxBool isLoading = false.obs;
 
-  var customerData = Rxn<CliCustomerModel>();
-
   /// 🔹 Customer Data
   RxString customerName = "".obs;
   RxString customerMobile = "".obs;
   RxString customerEmail = "".obs;
   RxString customerTelephone = "".obs;
 
-  // Stats Observables
-  RxInt totalStats = 0.obs;
-  RxInt currentStats = 0.obs;
-  RxInt completedStats = 0.obs;
-  RxInt cancelledStats = 0.obs;
-  RxInt quotedStats = 0.obs;
-
-  // 🔹 Typed List from Model
-  RxList<BookingObjectData> currentBookings = <BookingObjectData>[].obs;
-  RxList<BookingObjectData> pastBookings = <BookingObjectData>[].obs;
-  RxList<BookingObjectData> quotedBookings = <BookingObjectData>[].obs;
-  // var stats = Rxn<Stats>();
-  final Rx<Stats> stats = Stats().obs;
-
+  /// Raw booking maps, all tabs together (deduplicated by id). Kept for the
+  /// old cli_Screen.dart, which reads this list directly.
   RxList bookings = [].obs;
 
+  /// find-customer splits the caller's bookings server-side:
+  /// `bookings: {current: [...], past: [...], quoted: [...]}`.
+  final RxList<BookingObjectData> currentBookings = <BookingObjectData>[].obs;
+  final RxList<BookingObjectData> pastBookings = <BookingObjectData>[].obs;
+  final RxList<BookingObjectData> quotedBookings = <BookingObjectData>[].obs;
+
+  /// The response's `stats` block (the footer cards).
+  final Rx<CliBookingStats> stats = const CliBookingStats().obs;
+
   RxBool CLIJOBLoader = false.obs;
+
+
 
 
   /// 🔹 POST CLI JOB WITH CURRENT DATE & TIME
@@ -251,16 +253,22 @@ class CliController extends GetxController {
 
   // ================= API METHOD ONLY =======================
 
-  Future<void>findCustomerApi(String phone) async {
+  Future<void> findCustomerApi(String phone) async {
     try {
       isLoading.value = true;
+      Map<String, dynamic> queryParams = {
+        "phone": phone,
+      };
+      dynamic response = await Api().get(
+        "cli/find-customer",
+        queryParameters: queryParams,
+        sendCompanyId: true,
+      );
 
-      var response = await Api().get("cli/find-customer?phone=$phone", sendCompanyId: true);
+      final uri = Uri.parse(
+        "${baseUrl}cli/find-customer",
+      );
 
-      // final uri = Uri.parse(
-      //   "${baseUrl}cli/find-customer",
-      // );
-      //
       // final response = await http.post(
       //   uri,
       //   body: {
@@ -270,81 +278,55 @@ class CliController extends GetxController {
       // );
 
       if (response.statusCode == 200) {
-        cliCustomerModel = CliCustomerModel.fromJson(response.data);
+        // final jsonData = jsonDecode(response.data);
 
-
-        if (cliCustomerModel?.customer != null) {
-          customerName.value = cliCustomerModel?.customer?.name ?? "";
-          customerMobile.value = cliCustomerModel?.customer?.mobile ?? "";
+        if (response.data["success"] == true) {
+          // final customer = jsonData["customer"];
+          // customerName.value = customer?["name"] ?? "";
+          // customerMobile.value = phone;
+          // customerEmail.value = customer?["email"] ?? "";
+          // customerTelephone.value = customer?["telephone"] ?? "";
+          _bindBookings(response.data["bookings"], response.data["stats"]);
+          print("✅ Customer Loaded");
+        } else {
+          customerName.value = "No Customer Found";
+          customerMobile.value = "";
+          customerEmail.value = "";
+          customerTelephone.value = "";
+          _bindBookings(null, null);
         }
-
-        // Stats Assigning
-        if (cliCustomerModel?.stats != null) {
-          totalStats.value = cliCustomerModel?.stats?.total ?? 0;
-          currentStats.value = cliCustomerModel?.stats?.current ?? 0;
-          completedStats.value = cliCustomerModel?.stats?.completed ?? 0;
-          cancelledStats.value = cliCustomerModel?.stats?.cancelled ?? 0;
-          quotedStats.value = cliCustomerModel?.stats?.quoted ?? 0;
-        }
-
-        if (cliCustomerModel?.bookings != null) {
-          currentBookings.assignAll(cliCustomerModel!.bookings!.current ?? []);
-          pastBookings.assignAll(cliCustomerModel!.bookings!.past ?? []);
-          quotedBookings.assignAll(cliCustomerModel!.bookings!.quoted ?? []);
-
-        }
-        // if (jsonData["success"] == true) {
-        //   customerName.value = jsonData["customer"]?["name"] ?? "";
-        //   customerMobile.value = phone;
-        //   bookings.value = jsonData["bookings"] ?? [];
-        //   print("✅ Customer Loaded");
-        // } else {
-        //   customerName.value = "No Customer Found";
-        //   customerMobile.value = "";
-        //   bookings.clear();
-        // }
-        print("✅ Customer Header & Stats Loaded Successfully");
       } else {
         print("❌ Server Error: ${response.statusCode}");
       }
     } catch (e) {
       print("❌ API ERROR: $e");
-      _clearHeaderData();
     } finally {
       isLoading.value = false;
     }
   }
 
-  void _clearHeaderData() {
-    customerName.value = "No Customer Found";
-    customerMobile.value = "";
-    totalStats.value = 0;
-    currentStats.value = 0;
-    completedStats.value = 0;
-    cancelledStats.value = 0;
-    quotedStats.value = 0;
-    currentBookings.clear();
-    pastBookings.clear();
-    quotedBookings.clear();
-  }
-
   // ================= CLI SCREEN (cli_new_designing.dart) =================
+  //
+  // Booking state and actions for the new CLI screen. This controller is
+  // registered permanent, so [startCall] resets all of it for every call.
+  // Plain fields + update(): the screen listens with GetBuilder<CliController>
+  // (and Obx for the Rx fields above).
+
   DashboardController get _dashboard => Get.isRegistered<DashboardController>()
       ? Get.find<DashboardController>()
       : Get.put(DashboardController());
 
+  /// The caller's phone number for the current call.
   String extensionNumber = '';
 
   final TextEditingController pickupController = TextEditingController();
   final TextEditingController dropoffController = TextEditingController();
 
-  bool isSwapped = false;
-  bool _newBookingBusy = false;
-  int? selectedDriverId;
-  int? selectedVehicleId;
-  int selectedTab = 0;
-
-  bool get canSubmit => selectedBooking != null && !isSwapped;
+  /// Coordinates of whatever is in the pickup / dropoff fields. Only set when
+  /// the address came from a booking (checkbox or right-click), which is what
+  /// a new booking from this screen needs.
+  LatLng? pickupPoints;
+  LatLng? dropoffPoints;
 
   /// Passenger details carried over from a right-clicked booking.
   String? passengerName;
@@ -352,19 +334,26 @@ class CliController extends GetxController {
   String? passengerMobile;
   String? passengerTelephone;
 
+  /// The ticked booking (one at a time). Swapping mutates this copy so the
+  /// swapped addresses travel with it into the booking form.
   BookingObjectData? selectedBooking;
   String? selectedBookingId;
 
-  LatLng? pickupPoints;
-  LatLng? dropoffPoints;
+  int? selectedDriverId;
+  int? selectedVehicleId;
 
-  LatLng? _parseLatLng(dynamic lat, dynamic lng) {
-    final la = double.tryParse('${lat ?? ''}');
-    final lo = double.tryParse('${lng ?? ''}');
-    return la != null && lo != null ? LatLng(la, lo) : null;
-  }
+  /// Once pickup and dropoff are swapped the booking no longer matches the
+  /// server's copy, so SUBMIT (which re-dispatches it as-is) is disabled and
+  /// the swapped job has to go through NEW BOOKING.
+  bool isSwapped = false;
+  bool _newBookingBusy = false;
 
+  /// 0 current, 1 past, 2 quoted.
+  int selectedTab = 0;
 
+  bool get canSubmit => selectedBooking != null && !isSwapped;
+
+  /// Resets the screen state for a new call and loads the caller's data.
   void startCall(String extension) {
     extensionNumber = extension;
     pickupController.clear();
@@ -423,9 +412,62 @@ class CliController extends GetxController {
     update();
   }
 
+  // ---------- booking data ----------
+
+  /// Fills the three tab lists, [stats] and the legacy [bookings] list from
+  /// the find-customer response. Also accepts the older response shape,
+  /// where `bookings` was one flat list (it all lands in "current").
+  void _bindBookings(dynamic rawBookings, dynamic rawStats) {
+    List<dynamic> rawList(dynamic v) => v is List ? v : const [];
+
+    final List<dynamic> current, past, quoted;
+    if (rawBookings is Map) {
+      current = rawList(rawBookings['current']);
+      past = rawList(rawBookings['past']);
+      quoted = rawList(rawBookings['quoted']);
+    } else {
+      current = rawList(rawBookings);
+      past = const [];
+      quoted = const [];
+    }
+
+    currentBookings.assignAll(_parseBookings(current));
+    pastBookings.assignAll(_parseBookings(past));
+    quotedBookings.assignAll(_parseBookings(quoted));
+
+    // A quoted booking can also appear under past — list it once here.
+    final seen = <dynamic>{};
+    bookings.assignAll([...current, ...past, ...quoted]
+        .where((e) => e is Map && seen.add(e['id'])));
+
+    stats.value = rawStats is Map
+        ? CliBookingStats.fromJson(Map<String, dynamic>.from(rawStats))
+        : CliBookingStats(
+      total: bookings.length,
+      current: currentBookings.length,
+      quoted: quotedBookings.length,
+    );
+  }
+
+  /// Parses each booking on its own so one malformed row does not empty the
+  /// whole tab.
+  List<BookingObjectData> _parseBookings(List<dynamic> raw) {
+    final out = <BookingObjectData>[];
+    for (final e in raw) {
+      if (e is! Map) continue;
+      try {
+        out.add(BookingObjectData.fromJson(Map<String, dynamic>.from(e)));
+      } catch (err) {
+        debugPrint('CLI booking parse error (${e['id']}): $err');
+      }
+    }
+    return out;
+  }
+
   String bookingStatusText(BookingObjectData b) =>
       (b.bookingStatus?.bookingStatus ?? '').toUpperCase();
 
+  /// Bookings for tab [tab]: 0 current, 1 past, 2 quoted.
   List<BookingObjectData> bookingsForTab(int tab) {
     switch (tab) {
       case 0:
@@ -436,6 +478,13 @@ class CliController extends GetxController {
         return quotedBookings;
     }
   }
+
+  LatLng? _parseLatLng(dynamic lat, dynamic lng) {
+    final la = double.tryParse('${lat ?? ''}');
+    final lo = double.tryParse('${lng ?? ''}');
+    return la != null && lo != null ? LatLng(la, lo) : null;
+  }
+
   // ---------- actions ----------
 
   void swapLocations() {
@@ -466,6 +515,7 @@ class CliController extends GetxController {
     _dashboard.fetchRouteFromOSRM();
   }
 
+  /// Ticks / unticks [b] (single selection) and loads its addresses.
   void toggleBooking(BookingObjectData b) {
     if (selectedBookingId == b.id) {
       selectedBookingId = null;
@@ -481,7 +531,9 @@ class CliController extends GetxController {
     update();
   }
 
-
+  /// Right-click "Set as Pickup / Dropoff": copies the address of the
+  /// clicked cell (the booking's dropoff when [fromDropoff], else its pickup)
+  /// into this call's pickup ([asPickup]) or dropoff field.
   void setAddressFromBooking(BookingObjectData b,
       {required bool fromDropoff, required bool asPickup}) {
     final text = (fromDropoff ? b.dropoff : b.pickup) ?? '';
@@ -502,7 +554,8 @@ class CliController extends GetxController {
     update();
   }
 
-  /// SUBMIT: re-dispatch the ticked booking now with the chosen driver and vehicle.
+  /// SUBMIT: re-dispatch the ticked booking now with the chosen driver and
+  /// vehicle.
   void submitSelectedBooking() {
     if (selectedBooking == null) {
       Get.snackbar('Error', 'Select booking first');
@@ -526,65 +579,22 @@ class CliController extends GetxController {
     );
   }
 
-  void _bindBookings(dynamic rawBookings, dynamic rawStats) {
-    List<dynamic> rawList(dynamic v) => v is List ? v : const [];
-
-    final List<dynamic> current, past, quoted;
-    if (rawBookings is Map) {
-      current = rawList(rawBookings['current']);
-      past = rawList(rawBookings['past']);
-      quoted = rawList(rawBookings['quoted']);
-    } else {
-      current = rawList(rawBookings);
-      past = const [];
-      quoted = const [];
-    }
-
-    currentBookings.assignAll(_parseBookings(current));
-    pastBookings.assignAll(_parseBookings(past));
-    quotedBookings.assignAll(_parseBookings(quoted));
-
-    // A quoted booking can also appear under past — list it once here.
-    final seen = <dynamic>{};
-    bookings.assignAll([...current, ...past, ...quoted]
-        .where((e) => e is Map && seen.add(e['id'])));
-
-    stats.value = rawStats is Map
-        ? Stats.fromJson(Map<String, dynamic>.from(rawStats))
-        : Stats(
-      total: bookings.length,
-      current: currentBookings.length,
-      quoted: quotedBookings.length,
-    );
-  }
-
-  List<BookingObjectData> _parseBookings(List<dynamic> raw) {
-    final out = <BookingObjectData>[];
-    for (final e in raw) {
-      if (e is! Map) continue;
-      try {
-        out.add(BookingObjectData.fromJson(Map<String, dynamic>.from(e)));
-      } catch (err) {
-        debugPrint('CLI booking parse error (${e['id']}): $err');
-      }
-    }
-    return out;
-  }
-
+  /// NEW BOOKING: hands the call over to the main booking form — either the
+  /// typed / right-clicked addresses as a fresh job, the ticked booking
+  /// (possibly swapped), or just the caller's number.
   Future<void> newBooking() async {
     if (_newBookingBusy) return;
     try {
       _newBookingBusy = true;
-
       if (pickupController.text.isNotEmpty &&
           dropoffController.text.isNotEmpty &&
           selectedBooking == null) {
         if (pickupController.text == dropoffController.text) {
-          BotToast.showText(text: 'PLEASE WRITE DIFFERENT ADDRESS');
+          BotToast.showText(text: 'Please write different address');
           return;
         }
         if (pickupPoints == null || dropoffPoints == null) {
-          BotToast.showText(text: 'LOCATION DATA MISSING');
+          BotToast.showText(text: 'Location data missing');
           return;
         }
         await _dashboard.cliDataBinding(
@@ -599,7 +609,6 @@ class CliController extends GetxController {
           email: passengerEmail,
           phoneNumber: passengerTelephone,
         );
-        Get.back();
       } else {
         if (selectedBooking == null) {
           _dashboard.mobileController.text = extensionNumber;
@@ -616,10 +625,8 @@ class CliController extends GetxController {
         );
         Get.back();
       }
-    } catch (e, stackTrace) {
-      print("EXCEPTION IN newBooking(): $e");
-      print("FULL STACK TRACE:\n$stackTrace");
-      BotToast.showText(text: 'SOMETHING WENT WRONG');
+    } catch (e) {
+      BotToast.showText(text: 'Something went wrong');
       debugPrint('$e');
     } finally {
       _newBookingBusy = false;
@@ -629,6 +636,36 @@ class CliController extends GetxController {
   @override
   void onClose() {
     disconnectSocket();
+    pickupController.dispose();
+    dropoffController.dispose();
     super.onClose();
   }
+}
+
+/// The `stats` block of the cli/find-customer response.
+class CliBookingStats {
+  const CliBookingStats({
+    this.total = 0,
+    this.current = 0,
+    this.completed = 0,
+    this.cancelled = 0,
+    this.quoted = 0,
+  });
+
+  final int total;
+  final int current;
+  final int completed;
+  final int cancelled;
+  final int quoted;
+
+  static int _int(dynamic v) => v is num ? v.toInt() : int.tryParse('$v') ?? 0;
+
+  factory CliBookingStats.fromJson(Map<String, dynamic> json) =>
+      CliBookingStats(
+        total: _int(json['total']),
+        current: _int(json['current']),
+        completed: _int(json['completed']),
+        cancelled: _int(json['cancelled']),
+        quoted: _int(json['quoted']),
+      );
 }
