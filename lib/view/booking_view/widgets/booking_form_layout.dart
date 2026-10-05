@@ -318,7 +318,13 @@ class SpanField {
   /// in a section whose field list can change.
   final Object? id;
 
-  SpanField(this.child, {this.span = 1, this.widths, this.id});
+  /// On the desktop grid (4 columns) take 1/[desktopPerRow] of the row instead
+  /// of [span] columns, for a group that must share one row there — e.g. the
+  /// five contact fields. Phone and tablet ignore it and keep using [span].
+  final int? desktopPerRow;
+
+  SpanField(this.child,
+      {this.span = 1, this.widths, this.id, this.desktopPerRow});
 
   /// Null for a child with no identity — those still match by position, which
   /// is fine as long as they are not in a list that grows and shrinks.
@@ -371,6 +377,17 @@ class ResponsiveGrid extends StatelessWidget {
           return colWidth * s + spacing * (s - 1);
         }
 
+        double widthFor(SpanField f) {
+          if (f.widths != null) return f.widths!;
+          final perRow = f.desktopPerRow;
+          if (perRow != null && columns >= 4) {
+            // A hair under the exact share, so rounding can never push the
+            // last one of the group onto a line of its own.
+            return (width - spacing * (perRow - 1)) / perRow - 0.5;
+          }
+          return widthForSpan(f.span);
+        }
+
         return Wrap(
           spacing: spacing,
           runSpacing: runSpacing,
@@ -380,7 +397,7 @@ class ResponsiveGrid extends StatelessWidget {
                 // Keyed by the field, not by its slot, so a section can drop a
                 // field without the ones after it picking up its State.
                 key: f.cellKey,
-                width: f.widths ?? widthForSpan(f.span),
+                width: widthFor(f),
                 child: FocusTraversalOrder(
                   order: NumericFocusOrder((orderBase + i).toDouble()),
                   child: f.child,

@@ -19,11 +19,17 @@ class SearchBookingAlert extends StatefulWidget {
   final String? pickName;
   final String? pickTeleNumber;
 
+  /// The form a picked booking is loaded into. Null means the dashboard's
+  /// permanent instance; a screen running its own tagged DashboardController
+  /// passes it in, since a dialog sits outside that screen's BookingFormScope.
+  final DashboardController? formController;
+
   const SearchBookingAlert({
     Key? key,
     this.pickMobileNumber,
     this.pickName,
     this.pickTeleNumber,
+    this.formController,
   }) : super(key: key);
 
   @override
@@ -53,7 +59,8 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
   final TextEditingController _searchStatusController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final ScrollController _horizontalScrollController = ScrollController();
-  DashboardController deshController = Get.put(DashboardController());
+  late final DashboardController deshController =
+      widget.formController ?? Get.put(DashboardController());
 
   // Focus Nodes for Keyboard Navigation & Glow Effect
   final FocusNode _dialogFocusNode = FocusNode();

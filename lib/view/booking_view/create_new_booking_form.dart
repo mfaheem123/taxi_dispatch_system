@@ -17,8 +17,10 @@
 //
 // Behaviour mirrors the dashboard booking form (auth/dashboard_form_widget.dart)
 // field for field: every input reads and writes the same DashboardController
-// field, and every action (address pick, clear, swap, via, journey type,
-// vehicle, fares, CLEAR, SAVE) runs the same controller calls.
+// fields, and every action (address pick, clear, swap, via, journey type,
+// vehicle, fares, CLEAR, SAVE) runs the same controller calls — but on a
+// DashboardController of this screen's OWN (see [_formTag]), so nothing typed
+// here shows up on the dashboard form or the other way round.
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
@@ -31,6 +33,7 @@ import '../../alert/extra_info_alert.dart';
 import '../../alert/search_booking.dart';
 import '../../alert/setting_dialog.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
+import '../dashboard_view/booking_form_scope.dart';
 import '../dashboard_view/dashboard/F8_widget_alert.dart';
 import '../dashboard_view/dashboard/F9_widget_alert.dart';
 import '../dashboard_view/dashboard/map_view_widget.dart';
@@ -62,12 +65,15 @@ class CreateNewBookingForm extends StatefulWidget {
 }
 
 class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
-  // Same controller the dashboard booking form uses, so every field and action
-  // lands in the same state and hits the same backend calls.
-  final DashboardController controller =
-      Get.isRegistered<DashboardController>()
-          ? Get.find<DashboardController>()
-          : Get.put(DashboardController());
+  /// Tag this screen's private DashboardController is registered under.
+  late final String _formTag;
+
+  /// This screen's OWN form — a second DashboardController under [_formTag],
+  /// as the edit screen does. Sharing the dashboard's permanent instance meant
+  /// both screens edited the very same TextEditingControllers, so text typed
+  /// on one appeared on the other. Created in initState and deleted in
+  /// dispose, so every visit starts empty and leaving clears it.
+  late final DashboardController controller;
 
   // Same zone/location-type controller the dashboard form reads
   // locationtypezoneModel.zonesList from for its zone dropdowns.
@@ -79,13 +85,48 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
   @override
   void initState() {
     super.initState();
-    if (controller.dashboardAllData == null) {
-      controller.dashboardData();
-    }
-    controller.seeZoneOnMapp();
+    _formTag = DashboardController.newEditFormTag(null);
+    controller = Get.put(
+      DashboardController(formTag: _formTag),
+      tag: _formTag,
+    );
     if (_locationController.locationtypezoneModel == null) {
       _locationController.getLocationTypeZone();
     }
+    // After the first frame: seeding ends in update(), which cannot run while
+    // the route that pushed this screen is still building.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _seedFromDashboard();
+    });
+  }
+
+  /// Borrows the read-only lookups (dropdown lists, accounts, zone overlay)
+  /// off the dashboard's instance instead of refetching them; everything the
+  /// operator can change stays this screen's own.
+  Future<void> _seedFromDashboard() async {
+    final dashboard = Get.isRegistered<DashboardController>()
+        ? Get.find<DashboardController>()
+        : null;
+    if (dashboard != null) {
+      if (dashboard.dashboardAllData == null) {
+        await dashboard.dashboardData();
+      }
+      if (!mounted) return;
+      controller.seedReferenceDataFrom(dashboard);
+    } else if (controller.dashboardAllData == null) {
+      await controller.dashboardData();
+      if (!mounted) return;
+    }
+    if (controller.seeZoneOnMapModel == null) controller.seeZoneOnMapp();
+    controller.update();
+  }
+
+  @override
+  void dispose() {
+    // Runs the instance's onClose, which disposes its text controllers — so
+    // whatever was typed here is gone, and the dashboard form is untouched.
+    Get.delete<DashboardController>(tag: _formTag);
+    super.dispose();
   }
 
   // The zone list feeding all four zone dropdowns — empty until the fetch
@@ -197,7 +238,9 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
       BotToast.showText(text: "Please write pickup and dropoff location");
       return;
     }
-    showDialog(context: context, builder: (_) => ViaLocation());
+    showDialog(
+        context: context,
+        builder: (_) => ViaLocation(formController: controller));
   }
 
   /// R/DROP's route button: the same dialog, opened on the return side.
@@ -208,7 +251,9 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
       return;
     }
     controller.viaSelectionOneWay.value = false;
-    showDialog(context: context, builder: (_) => ViaLocation());
+    showDialog(
+        context: context,
+        builder: (_) => ViaLocation(formController: controller));
   }
 
   // ---- Customer lookup -----------------------------------------------------
@@ -247,6 +292,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
         pickMobileNumber: controller.mobileController.text,
         pickName: controller.nameController.text,
         pickTeleNumber: controller.telController.text,
+        formController: controller,
       ),
     );
   }
@@ -357,6 +403,15 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
 
   @override
   Widget build(BuildContext context) {
+    // Everything below — the map above all — resolves the form from this
+    // scope instead of a bare Get.find, so it follows THIS screen's instance.
+    return BookingFormScope(
+      controller: controller,
+      child: _buildPage(context),
+    );
+  }
+
+  Widget _buildPage(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -390,6 +445,8 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                       child: PageScrollWrapper(
                         child: GetBuilder<LocationController>(
                           builder: (_) => GetBuilder<DashboardController>(
+                            // This screen's instance, not the dashboard's.
+                            tag: _formTag,
                             builder: (controller) =>
                                 controller.dashboardAllData == null
                                     ? const Padding(
@@ -529,26 +586,37 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
               SpanField(LabeledInput('DROPOFF NOTES',
                   controller: controller.dropUpNoteController,
                   uppercase: true)),
+              // Contact: one row of five on laptop / PC, stacked on phone.
               SpanField(
-                  LabeledInput('NAME', controller: controller.nameController)),
-              SpanField(LabeledInput('EMAIL',
-                  controller: controller.emailController,
-                  keyboardType: TextInputType.emailAddress)),
-              SpanField(LabeledMobileField(
-                'MOBILE',
-                controller: controller.mobileController,
-                customers: _customers,
-                onSearch: _onMobileSearch,
-                onPicked: _onCustomerPicked,
-              )),
-              SpanField(LabeledInput('TEL',
-                  controller: controller.telController,
-                  keyboardType: TextInputType.phone)),
-              SpanField(LabeledActionButton(
-                text: 'PICK BOOKING',
-                icon: Icons.search,
-                onPressed: _showPickBooking,
-              ), id: 'PICK BOOKING'),
+                  LabeledInput('NAME', controller: controller.nameController),
+                  desktopPerRow: 5),
+              SpanField(
+                  LabeledInput('EMAIL',
+                      controller: controller.emailController,
+                      keyboardType: TextInputType.emailAddress),
+                  desktopPerRow: 5),
+              SpanField(
+                  LabeledMobileField(
+                    'MOBILE',
+                    controller: controller.mobileController,
+                    customers: _customers,
+                    onSearch: _onMobileSearch,
+                    onPicked: _onCustomerPicked,
+                  ),
+                  desktopPerRow: 5),
+              SpanField(
+                  LabeledInput('TEL',
+                      controller: controller.telController,
+                      keyboardType: TextInputType.phone),
+                  desktopPerRow: 5),
+              SpanField(
+                  LabeledActionButton(
+                    text: 'PICK BOOKING',
+                    icon: Icons.search,
+                    onPressed: _showPickBooking,
+                  ),
+                  id: 'PICK BOOKING',
+                  desktopPerRow: 5),
             ],
           ),
         ),
@@ -728,6 +796,32 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                     FilteringTextInputFormatter.digitsOnly,
                     LengthLimitingTextInputFormatter(2),
                   ])),
+              // Fares and drivers, right after the luggage fields.
+              SpanField(LabeledInput('FARE (£)',
+                  controller: controller.slugController,
+                  keyboardType: TextInputType.number)),
+              ..._ifReturn(SpanField(LabeledInput('R/FARE (£)',
+                  controller: controller.slugControllerReturn,
+                  keyboardType: TextInputType.number))),
+              SpanField(LabeledObjectDropdown<DashboardDriverObject>(
+                'DRV',
+                items: drivers,
+                value: controller.selectDriverValue,
+                itemLabel: driverLabel,
+                hint: 'SELECT DRIVER',
+                onChanged: (v) =>
+                    setState(() => controller.selectDriverValue = v),
+              )),
+              ..._ifReturn(
+                  SpanField(LabeledObjectDropdown<DashboardDriverObject>(
+                'R/DRV',
+                items: drivers,
+                value: controller.selectDriverValueReturn,
+                itemLabel: driverLabel,
+                hint: 'SELECT DRIVER',
+                onChanged: (v) =>
+                    setState(() => controller.selectDriverValueReturn = v),
+              ))),
             ],
           ),
         ),
@@ -782,13 +876,17 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                     icon: Icons.attach_money,
                     tooltip: 'CHILD SEATS',
                     onTap: () => showDialog(
-                        context: context, builder: (_) => ChildSeatsAlert()),
+                        context: context,
+                        builder: (_) =>
+                            ChildSeatsAlert(formController: controller)),
                   ),
                   IconAction(
                     icon: Icons.sticky_note_2,
                     tooltip: 'EXTRA INFO',
                     onTap: () => showDialog(
-                        context: context, builder: (_) => ExtraInfoAlert()),
+                        context: context,
+                        builder: (_) =>
+                            ExtraInfoAlert(formController: controller)),
                   ),
                 ]),
                 widths: LabeledIconActions.width(3),
@@ -803,61 +901,50 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
           ),
         ),
 
-        // ---- Fares row ----
+        // ---- Fares row + action buttons ----
+        // Laptop / PC: ETA, JOURNEY, DISTANCE, T/FARES and CLEAR / SAVE share
+        // one row. Below the desktop breakpoint the buttons keep their own
+        // full-width row under the card, as before.
+        LayoutBuilder(builder: (context, constraints) {
+          final isDesktop = constraints.maxWidth >= Breakpoints.desktop;
+          final stats = Obx(() => StatStrip(stats: [
+                BookingStat(Icons.info_outline, 'ETA:',
+                    '${controller.totalTimeDuration}'),
+                // Hard-coded on the dashboard form as well.
+                const BookingStat(
+                    Icons.timer_outlined, 'JOURNEY:', '0.0 mins'),
+                BookingStat(Icons.route, 'DISTANCE:',
+                    '${controller.totalDistance}'),
+                BookingStat(
+                    Icons.payments_outlined, 'T/FARES:', _fareText()),
+              ]));
+          final buttons = ActionButtons(
+            onClear: controller.refreshPostAllFields,
+            onSave: _onSave,
+          );
+          return Column(children: [
         SectionCard(
           child: Column(
             children: [
-              Obx(() => StatStrip(stats: [
-                    BookingStat(Icons.info_outline, 'ETA:',
-                        '${controller.totalTimeDuration}'),
-                    // Hard-coded on the dashboard form as well.
-                    const BookingStat(
-                        Icons.timer_outlined, 'JOURNEY:', '0.0 mins'),
-                    BookingStat(Icons.route, 'DISTANCE:',
-                        '${controller.totalDistance}'),
-                    BookingStat(
-                        Icons.payments_outlined, 'T/FARES:', _fareText()),
-                  ])),
-              const SizedBox(height: Density.gridSpacing),
-              ResponsiveGrid(
-                orderBase: 600,
-                children: [
-                  SpanField(LabeledInput('FARE (£)',
-                      controller: controller.slugController,
-                      keyboardType: TextInputType.number)),
-                  ..._ifReturn(SpanField(LabeledInput('R/FARE (£)',
-                      controller: controller.slugControllerReturn,
-                      keyboardType: TextInputType.number))),
-                  SpanField(LabeledObjectDropdown<DashboardDriverObject>(
-                    'DRV',
-                    items: drivers,
-                    value: controller.selectDriverValue,
-                    itemLabel: driverLabel,
-                    hint: 'SELECT DRIVER',
-                    onChanged: (v) =>
-                        setState(() => controller.selectDriverValue = v),
-                  )),
-                  ..._ifReturn(
-                      SpanField(LabeledObjectDropdown<DashboardDriverObject>(
-                    'R/DRV',
-                    items: drivers,
-                    value: controller.selectDriverValueReturn,
-                    itemLabel: driverLabel,
-                    hint: 'SELECT DRIVER',
-                    onChanged: (v) =>
-                        setState(() => controller.selectDriverValueReturn = v),
-                  ))),
-                ],
-              ),
+              if (isDesktop)
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(child: stats),
+                    const SizedBox(width: Density.gridSpacing),
+                    // Half the bar, matching the two grid columns below.
+                    SizedBox(width: constraints.maxWidth / 2, child: buttons),
+                  ],
+                )
+              else
+                stats,
             ],
           ),
         ),
 
-        // ---- Action buttons ----
-        ActionButtons(
-          onClear: controller.refreshPostAllFields,
-          onSave: _onSave,
-        ),
+        if (!isDesktop) buttons,
+          ]);
+        }),
 
         // ---- Map (same widget as the dashboard) ----
         // Fixed height because the form scrolls, same as craate_booking.dart.
