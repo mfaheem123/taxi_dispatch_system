@@ -26,6 +26,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_web_date_picker/flutter_web_date_picker.dart';
 import 'package:get/get.dart';
 
 import '../../alert/child_seats_alert.dart';
@@ -955,4 +956,150 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
       ],
     );
   }
+}
+
+
+
+TextScaler _scaler = TextScaler.noScaling;
+
+/// A fixed box size that holds text, scaled with the form's text.
+double _sz(double px) => _scaler.scale(px); 
+class GradleWidgets extends StatelessWidget {
+  const GradleWidgets({super.key});
+  static const _purple = Color(0xFF312E81);
+  static const _purpleSoft = Color(0xFFEEF2FF);
+  static const _border = Colors.black;
+  static const _fsField = 12.0;
+
+
+  @override
+  Widget build(BuildContext context) {
+    return _commsAndLuggageRow(true);
+  }
+
+  Widget _commsAndLuggageRow(bool isMobile) {
+    Widget checkbox(String label, bool value, ValueChanged<bool?> onChanged,
+        {required num tab}) =>
+        FocusTraversalOrder(
+          order: NumericFocusOrder(tab.toDouble()),
+          child: GlowFocus(
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              SizedBox(
+                width: 20,
+                height: 20,
+                child: Checkbox(
+                  value: value,
+                  onChanged: onChanged,
+                  activeColor: _purple,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(label,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w500, fontSize: _fsField)),
+            ]),
+          ),
+        );
+    Widget luggageField(String label, IconData icon,
+        TextEditingController controller, int tab) =>
+        SizedBox(
+          width: _sz(150),
+          child:
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            // Text(label,
+            //     style:
+            //     const TextStyle(fontSize: _fsLabel, color: Colors.black)),
+            const SizedBox(height: 2),
+            FocusTraversalOrder(
+              order: NumericFocusOrder(tab.toDouble()),
+              child: GlowFocus(
+                child: TextField(
+                  controller: controller,
+                  // style: _kValueTextStyle,
+                  keyboardType:
+                  const TextInputType.numberWithOptions(decimal: false),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(2),
+                  ],
+                  decoration: InputDecoration()
+                ),
+              ),
+            ),
+          ]),
+        );
+
+    Widget iconBtn(IconData icon,
+        {VoidCallback? onPressed, required int tab}) =>
+        FocusTraversalOrder(
+          order: NumericFocusOrder(tab.toDouble()),
+          child: GlowFocus(
+            child: Focus(
+              // Key-handling only: the inner IconButton is the single Tab stop.
+              // A focusable wrapper here would double every Tab press, and key
+              // events still bubble up to this node from the button.
+              canRequestFocus: false,
+              onKeyEvent: (node, event) {
+                if (event is KeyDownEvent &&
+                    (event.logicalKey == LogicalKeyboardKey.enter ||
+                        event.logicalKey == LogicalKeyboardKey.space)) {
+                  onPressed?.call();
+                  return KeyEventResult.handled;
+                }
+                return KeyEventResult.ignored;
+              },
+              child: Container(
+                  margin: const EdgeInsets.only(left: 6),
+                  decoration: BoxDecoration(
+                    color: _purpleSoft,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: _border),
+                  ),
+                  child: IconButton(
+                    onPressed: onPressed,
+                    padding: const EdgeInsets.all(4),
+                    visualDensity: VisualDensity.compact,
+                    splashRadius: 18,
+                    icon: Icon(
+                      icon,
+                      size: 17,
+                      color: Colors.black,
+                    ),
+                  )),
+            ),
+          ),
+        );
+    final right = Row(mainAxisSize: MainAxisSize.min, children: [
+      // iconBtn(Icons.person, tab: _isReturnJourney ? 39 : 24, onPressed: () {
+      //   showDialog(context: context, builder: (_) => RestrictDriversAlert());
+      // }),
+      iconBtn(Icons.settings_suggest, tab: 24,
+          onPressed: () {
+
+          }),
+      iconBtn(Icons.attach_money, tab: 25,
+          onPressed: () {
+
+          }),
+      // iconBtn(Icons.note_add, tab: _isReturnJourney ? 41 : 26, onPressed: () {
+      //   showDialog(
+      //     context: context,
+      //     barrierDismissible: false,
+      //     builder: (_) => ExtraFaresAlert(),
+      //   );
+      // }),
+      iconBtn(Icons.sticky_note_2, tab: 26,
+          onPressed: () {
+          }),
+    ]);
+    if (isMobile) {
+      return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const SizedBox(height: 10),
+        right,
+      ]);
+    }
+    return Row(children: [ right]);
+  }
+
 }
