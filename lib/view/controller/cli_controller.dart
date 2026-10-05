@@ -526,6 +526,7 @@ class CliController extends GetxController {
     );
   }
 
+
   void _bindBookings(dynamic rawBookings, dynamic rawStats) {
     List<dynamic> rawList(dynamic v) => v is List ? v : const [];
 
