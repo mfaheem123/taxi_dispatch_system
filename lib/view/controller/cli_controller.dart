@@ -153,8 +153,8 @@ class CliController extends GetxController {
   CliCustomerModel? cliCustomerModel;
   WebSocketChannel? channel;
   RxBool isConnected = false.obs;
-
   RxBool isLoading = false.obs;
+
   var customerData = Rxn<CliCustomerModel>();
 
   /// 🔹 Customer Data
@@ -180,8 +180,6 @@ class CliController extends GetxController {
   RxList bookings = [].obs;
 
   RxBool CLIJOBLoader = false.obs;
-
-
 
 
   /// 🔹 POST CLI JOB WITH CURRENT DATE & TIME
@@ -272,7 +270,6 @@ class CliController extends GetxController {
       // );
 
       if (response.statusCode == 200) {
-        // final jsonData = jsonDecode(response.body);
         cliCustomerModel = CliCustomerModel.fromJson(response.data);
 
 
@@ -346,6 +343,8 @@ class CliController extends GetxController {
   int? selectedDriverId;
   int? selectedVehicleId;
   int selectedTab = 0;
+
+  bool get canSubmit => selectedBooking != null && !isSwapped;
 
   /// Passenger details carried over from a right-clicked booking.
   String? passengerName;
@@ -437,19 +436,6 @@ class CliController extends GetxController {
         return quotedBookings;
     }
   }
-  // List<dynamic> get currentTabBookings {
-  //   switch (selectedTab) {
-  //     case 0:
-  //       return currentBookings;
-  //     case 1:
-  //       return pastBookings;
-  //     case 2:
-  //       return quotedBookings;
-  //     default:
-  //       return currentBookings;
-  //   }
-  // }
-
   // ---------- actions ----------
 
   void swapLocations() {
@@ -516,6 +502,31 @@ class CliController extends GetxController {
     update();
   }
 
+  /// SUBMIT: re-dispatch the ticked booking now with the chosen driver and vehicle.
+  void submitSelectedBooking() {
+    if (selectedBooking == null) {
+      Get.snackbar('Error', 'Select booking first');
+      return;
+    }
+    final types = _dashboard.dashboardAllData?.vehicleTypes;
+    if (selectedVehicleId == null && types != null && types.isNotEmpty) {
+      selectedVehicleId = types.first.id;
+    }
+    if (selectedDriverId == null || selectedVehicleId == null) {
+      Get.snackbar('Error', 'Select driver & vehicle');
+      return;
+    }
+    final now = DateTime.now();
+    postCLIJob(
+      selectedBooking!.id,
+      DateFormat('yyyy-MM-dd').format(now),
+      DateFormat('HH:mm').format(now),
+      selectedDriverId,
+      selectedVehicleId,
+    );
+  }
+
+
   void _bindBookings(dynamic rawBookings, dynamic rawStats) {
     List<dynamic> rawList(dynamic v) => v is List ? v : const [];
 
@@ -565,25 +576,16 @@ class CliController extends GetxController {
     if (_newBookingBusy) return;
     try {
       _newBookingBusy = true;
-      print("------------------ [NEW BOOKING TRACE START] ------------------");
-      print("pickupController: '${pickupController.text}'");
-      print("dropoffController: '${dropoffController.text}'");
-      print("pickupPoints: $pickupPoints");
-      print("dropoffPoints: $dropoffPoints");
-      print("selectedBooking ID: ${selectedBooking?.id}");
-      print("extensionNumber: '$extensionNumber'");
-      print("---------------------------------------------------------------");
 
       if (pickupController.text.isNotEmpty &&
           dropoffController.text.isNotEmpty &&
           selectedBooking == null) {
         if (pickupController.text == dropoffController.text) {
-          BotToast.showText(text: 'Please write different address');
+          BotToast.showText(text: 'PLEASE WRITE DIFFERENT ADDRESS');
           return;
         }
         if (pickupPoints == null || dropoffPoints == null) {
-          BotToast.showText(text: 'Location data missing');
-          print("ERROR: pickupPoints or dropoffPoints is null!");
+          BotToast.showText(text: 'LOCATION DATA MISSING');
           return;
         }
         await _dashboard.cliDataBinding(
@@ -598,6 +600,7 @@ class CliController extends GetxController {
           email: passengerEmail,
           phoneNumber: passengerTelephone,
         );
+        Get.back();
       } else {
         if (selectedBooking == null) {
           _dashboard.mobileController.text = extensionNumber;
@@ -615,10 +618,9 @@ class CliController extends GetxController {
         Get.back();
       }
     } catch (e, stackTrace) {
-      // Full exception print with StackTrace
       print("EXCEPTION IN newBooking(): $e");
       print("FULL STACK TRACE:\n$stackTrace");
-      BotToast.showText(text: 'Something went wrong');
+      BotToast.showText(text: 'SOMETHING WENT WRONG');
       debugPrint('$e');
     } finally {
       _newBookingBusy = false;

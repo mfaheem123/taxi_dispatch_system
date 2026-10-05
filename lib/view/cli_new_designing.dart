@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
-
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
 import '../component/color.dart';
 import '../component/dropdown_button.dart';
 import 'controller/cli_controller.dart';
@@ -21,8 +19,6 @@ Future<void> showCliNewDesigningAlert(String extensionNumber) async {
     barrierColor: Colors.black54,
   );
 }
-
-// String temMobileNumber = "";
 
 class CliNewDesigning extends StatefulWidget {
   const CliNewDesigning({super.key, required this.extensionNumber});
@@ -42,13 +38,11 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
   static const Color fieldFill = Color(0xFFF2F5F9);
   static const Color subtle = Color(0xFF6B7C8F);
 
-  int get selectedTab => controller.selectedTab;
   bool isFullScreen = false;
 
   DateTime _now = DateTime.now();
   Timer? _clock;
 
-  // Placeholder data for design only
   final List<String> tabs = [
     'CURRENT BOOKING',
     'PAST BOOKING',
@@ -72,15 +66,18 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
   @override
   void initState() {
     super.initState();
-    final dashboard = Get.find<DashboardController>();
-    dashboard.selectDriverValue = null;
-    dashboard.selectVehicleValue = null;
-    controller.startCall(widget.extensionNumber);
-    // if (temMobileNumber.isNotEmpty) {
-    //   controller.findCustomerApi(temMobileNumber);
-    // }
+
     _clock = Timer.periodic(const Duration(seconds: 30), (_) {
       if (mounted) setState(() => _now = DateTime.now());
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final dashboard = Get.find<DashboardController>();
+      dashboard.selectDriverValue = null;
+      dashboard.selectVehicleValue = null;
+
+      final cliController = Get.find<CliController>();
+      cliController.startCall(widget.extensionNumber);
     });
   }
 
@@ -90,8 +87,6 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
     controller.disconnectSocket();
     super.dispose();
   }
-
-
 
   /// Right-click on a pickup / dropoff cell: use that address as this call's
   /// pickup or dropoff. The menu is UI; the change itself is the controller's.
@@ -110,7 +105,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
           child: Row(children: [
             Icon(Icons.location_on, color: Color(0xFF059669), size: 18),
             SizedBox(width: 8),
-            Text('Set as Pickup'),
+            Text('SET AS PICKUP'),
           ]),
         ),
         PopupMenuItem<String>(
@@ -118,7 +113,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
           child: Row(children: [
             Icon(Icons.location_on, color: Color(0xFFDC2626), size: 18),
             SizedBox(width: 8),
-            Text('Set as Dropoff'),
+            Text('SET AS DROPOFF'),
           ]),
         ),
       ],
@@ -128,7 +123,6 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
           fromDropoff: isDropoffCell, asPickup: value == 'pickup');
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -210,15 +204,6 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
               ),
             );
           }),
-          // Text(
-          //   'NADEM | 07590455507',
-          //   style: outFitRegular(
-          //     color: Colors.white,
-          //     fontSize: 20,
-          //     fontWeight: FontWeight.w800,
-          //     // letterSpacing: 0.3,
-          //   ),
-          // ),
           const Spacer(),
           const Icon(Icons.phone_in_talk, color: Color(0xFF4ADE80), size: 22),
           const SizedBox(width: 8),
@@ -344,6 +329,8 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
   Widget _buildDriverVehicleRow() {
     return GetBuilder<DashboardController>(
       builder: (home) {
+        final canSubmit = controller.canSubmit;
+
         return LayoutBuilder(
           builder: (context, constraints) {
 
@@ -405,18 +392,25 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const SizedBox(height: 15),
-                      SizedBox(
-                        height: 42,
-                        child: ElevatedButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.check, size: 18),
-                          label: const Text('SUBMIT'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: DynamicColors.primaryClr,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 28),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                      Tooltip(
+                        message: canSubmit
+                            ? 'DISPATCH THE SELECTED BOOKING NOW'
+                            : controller.isSwapped
+                            ? 'SWAPPED BOOKINGS GO THROUGH NEW BOOKING'
+                            : 'TICK A BOOKING FIRST',
+                        child: SizedBox(
+                          height: 42,
+                          child: ElevatedButton.icon(
+                            onPressed: canSubmit ? controller.submitSelectedBooking : null,
+                            icon: const Icon(Icons.check, size: 18),
+                            label: const Text('SUBMIT'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: DynamicColors.primaryClr,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 28),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                             ),
                           ),
                         ),
@@ -433,6 +427,8 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
   // ───────────────────────── Tabs ─────────────────────────
 
   Widget _buildTabs() {
+    return GetBuilder<CliController>(
+        builder: (cli) {
     return Container(
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
@@ -442,12 +438,12 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
       ),
       child: Row(
         children: List.generate(tabs.length, (i) {
-          final isSelected = selectedTab == i;
+          final isSelected = cli.selectedTab == i;
           return Expanded(
             child: Padding(
               padding: EdgeInsets.only(right: i == tabs.length - 1 ? 0 : 6),
               child: InkWell(
-                onTap: () => controller.selectTab(i),
+                onTap: () => cli.selectTab(i),
                 borderRadius: BorderRadius.circular(8),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
@@ -475,25 +471,12 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
         }),
       ),
     );
+  });
   }
-
-  // List<dynamic> get currentTabBookings {
-  //   switch (selectedTab) {
-  //     case 0:
-  //       return controller.currentBookings;
-  //     case 1:
-  //       return controller.pastBookings;
-  //     case 2:
-  //       return controller.quotedBookings;
-  //     default:
-  //       return controller.currentBookings;
-  //   }
-  // }
 
   // ───────────────────────── Table ─────────────────────────
 
   Widget _buildTable() {
-    final rows = controller.bookingsForTab(selectedTab);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
       child: Container(
@@ -527,57 +510,28 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
             ),
             const Divider(height: 1, thickness: 1, color: border),
 
-            // Expanded(
-            //   child: Obx(() {
-            //     //  Loading State Check
-            //     if (controller.isLoading.value) {
-            //       return const Center(
-            //         child: CircularProgressIndicator(),
-            //       );
-            //     }
-            //
-            //     final activeList = controller.bookingsForTab;
-            //
-            //     //  Empty State Check
-            //     if (activeList.isEmpty) {
-            //       return _emptyTable();
-            //     }
-            //
-            //     return ListView.separated(
-            //       itemCount: activeList.length,
-            //       separatorBuilder: (_, __) =>
-            //       const Divider(height: 1, thickness: 1, color: border),
-            //       itemBuilder: (context, index) {
-            //         final booking = activeList[index];
-            //
-            //         final Map<String, String> bookingData = {
-            //           'dateTime': "${booking.pickupDate ?? ''} ${booking.pickupTime ?? ''}",
-            //           'pickup': booking.pickup ?? '-',
-            //           'dropoff': booking.dropoff ?? '-',
-            //           'vehicle': booking.vehicleType?.name?.toString() ?? '',
-            //           'fare': "£ ${booking.fares ?? '0'}",
-            //           'account': booking.account?.name?.toString() ?? '',
-            //           'drv': booking.driverId?.toString() ?? '',
-            //           'pt': (booking.paymentType?.name?.toString() ?? '').toUpperCase(),
-            //           'status': (booking.bookingStatus?.bookingStatus ?? '').toUpperCase(),
-            //         };
-            //
-            //         return _tableRow(bookingData, index);
-            //       },
-            //     );
-            //   }),
-            // ),
             Expanded(
-              child: controller.isLoading.value
-                  ? const Center(child: CircularProgressIndicator())
-                  : rows.isEmpty
-                  ? _emptyTable()
-                  : ListView.separated(
-                itemCount: rows.length,
-                separatorBuilder: (_, __) => const Divider(
-                    height: 1, thickness: 1, color: border),
-                itemBuilder: (context, index) =>
-                    _tableRow(rows[index], index),
+              child: GetBuilder<CliController>(
+                builder: (cli) {
+                  return Obx(() {
+                    if (cli.isLoading.value) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    final rows = cli.bookingsForTab(cli.selectedTab);
+
+                    if (rows.isEmpty) {
+                      return _emptyTable();
+                    }
+                    return ListView.separated(
+                      itemCount: rows.length,
+                      separatorBuilder: (_, __) =>
+                      const Divider(height: 1, thickness: 1, color: border),
+                      itemBuilder: (context, index) =>
+                          _tableRow(rows[index], index),
+                    );
+                  });
+                },
               ),
             ),
           ],
@@ -634,7 +588,6 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
             message: b.viapoints != null ? b.viapoints!.where((v) => (v.viapoint ?? '').isNotEmpty).toList().asMap().entries
                 .map((e) => '${e.key + 1}. ${(e.value.viapoint ?? '').toUpperCase()}').join('\n')
                 : '',
-            // message: b.viapoints!.map((v) => v.viapoint.toString().toUpperCase()).join('\n'),
             child: Container(
               margin: const EdgeInsets.only(right: 6),
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -748,13 +701,6 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
       final total = controller.totalStats.value != 0
           ? controller.totalStats.value
           : (current + completed + cancelled + quoted);
-      // final current = bookings[0].length;
-      // final completed =
-      //     bookings[1].where((b) => b['status'] == 'COMPLETED').length;
-      // final cancelled =
-      //     bookings[1].where((b) => b['status'] == 'CANCELLED').length;
-      // final quoted = bookings[2].length;
-      // final total = current + completed + cancelled + quoted;
 
       return Container(
         color: const Color(0xFFF8FAFC),
@@ -902,29 +848,4 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
       onChanged: onChanged,
     );
   }
-
-  // Widget _dropdown({
-  //   required String? value,
-  //   required String hint,
-  //   required List<String> items,
-  //   required ValueChanged<String?> onChanged,
-  // }) {
-  //   return SizedBox(
-  //     height: 48,
-  //     child: DropdownButtonFormField<String>(
-  //       // Key forces a rebuild so "New Booking" can reset the selection
-  //       key: ValueKey(value),
-  //       initialValue: value,
-  //       isExpanded: true,
-  //       icon: const Icon(Icons.arrow_drop_down, color: subtle),
-  //       decoration: _inputDecoration(hint),
-  //       hint: Text(hint, style: outFitRegular(color: subtle, fontSize: 14)),
-  //       style: outFitRegular(fontSize: 14, color: Color(0xFF1E293B)),
-  //       items: items
-  //           .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-  //           .toList(),
-  //       onChanged: onChanged,
-  //     ),
-  //   );
-  // }
 }
