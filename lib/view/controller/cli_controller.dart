@@ -414,6 +414,7 @@ class CliController extends GetxController {
   void selectDriver(DashboardDriverObject? driver) {
     _dashboard.selectDriverValue = driver;
     selectedDriverId = driver?.id;
+    _dashboard.checkDriverSinBinStatus(driver);
     _dashboard.update();
     update();
   }
@@ -505,7 +506,7 @@ class CliController extends GetxController {
   /// SUBMIT: re-dispatch the ticked booking now with the chosen driver and vehicle.
   void submitSelectedBooking() {
     if (selectedBooking == null) {
-      Get.snackbar('Error', 'Select booking first');
+      Get.snackbar('ERROR', 'SELECT BOOKING FIRST');
       return;
     }
     final types = _dashboard.dashboardAllData?.vehicleTypes;
@@ -513,7 +514,7 @@ class CliController extends GetxController {
       selectedVehicleId = types.first.id;
     }
     if (selectedDriverId == null || selectedVehicleId == null) {
-      Get.snackbar('Error', 'Select driver & vehicle');
+      Get.snackbar('ERROR', 'SELECT DRIVER & VEHICLE');
       return;
     }
     final now = DateTime.now();

@@ -74,7 +74,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final dashboard = Get.find<DashboardController>();
       dashboard.selectDriverValue = null;
-      dashboard.selectVehicleValue = null;
+      // dashboard.selectVehicleValue = null;
 
       final cliController = Get.find<CliController>();
       cliController.startCall(widget.extensionNumber);
@@ -346,6 +346,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                         value: home.selectDriverValue,
                         hint: 'CHOOSE DRIVER',
                         items: home.dashboardAllData?.drivers ?? const [],
+
                         label: (d) => '${d.username ?? ''} ${d.name ?? ''}'.trim().toUpperCase(),
                         onChanged: controller.selectDriver,
                       ),
@@ -840,7 +841,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
     return CustomDropdownField<T>(
       height: height,
       width: width,
-      // text: "",
+      //text: "",
       label: hint,
       items: items,
       value: value,
