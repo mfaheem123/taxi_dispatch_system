@@ -563,6 +563,20 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
           ),
         );
 
+    // Widget addressCell(String text, bool isDropoff) => Listener(
+    //   behavior: HitTestBehavior.opaque,
+    //   onPointerDown: (e) {
+    //     if (e.kind == PointerDeviceKind.mouse &&
+    //         e.buttons == kSecondaryMouseButton) {
+    //       _showAddressMenu(e.position, b, isDropoff);
+    //     }
+    //   },
+    //   child: Tooltip(
+    //     message: text,
+    //     waitDuration: const Duration(milliseconds: 500),
+    //     child: cell(text),
+    //   ),
+    // );
     Widget addressCell(String text, bool isDropoff) => Listener(
       behavior: HitTestBehavior.opaque,
       onPointerDown: (e) {
@@ -574,7 +588,17 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
       child: Tooltip(
         message: text,
         waitDuration: const Duration(milliseconds: 500),
-        child: cell(text),
+        child: Text(
+          text,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontSize: 13,
+            color: Color(0xFF1E293B),
+            fontWeight: FontWeight.w400,
+            height: 1.2,
+          ),
+        ),
       ),
     );
 
@@ -628,8 +652,8 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
         onTap: () => controller.toggleBooking(b),
         hoverColor: const Color(0xFFEFF4FF),
         child: Container(
-          height: 44,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          constraints: const BoxConstraints(minHeight: 48),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(
             children: [
               ...List.generate(cells.length, (i) => Expanded(
