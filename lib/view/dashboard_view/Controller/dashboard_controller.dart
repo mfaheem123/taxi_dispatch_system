@@ -32,6 +32,7 @@ import '../dashboard/defult_dashboard_view.dart';
 import '../models/account_darshboard_model.dart';
 import '../models/all_addresses_model.dart';
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
+import '../models/checkDriverSinBinModel.dart';
 import '../models/dashboard_table_model.dart' hide Employee;
 import '../models/jobs_details_model.dart';
 import '../models/tracking_drivers_model.dart';
@@ -2799,6 +2800,84 @@ class DashboardController extends GetxController {
 
     return dates;
   }
+
+
+  Future<void> checkDriverSinBinStatus(DashboardDriverObject? driver, {bool isReturn = false}) async {
+    if (driver == null) {
+      if (isReturn) {
+        selectDriverValueReturn = null;
+      } else {
+        selectDriverValue = null;
+      }
+      update();
+      return;
+    }
+
+    BotToast.showLoading();
+    try {
+      // driver.id is either a String or incessantly parse/cast  String to int
+      final dynamic driverId = driver.id is String ? int.tryParse(driver.id.toString()) ?? driver.id : driver.id;
+
+      var response = await Api().get(
+        "sinbin/driver-check",
+        sendCompanyId: true,
+        queryParameters: {"driver_id": driverId},
+      ).timeout(const Duration(seconds: 20));
+
+      BotToast.closeAllLoading();
+
+      if (response.statusCode == 200) {
+        final sinBinData = CheckSinBinDriver.fromJson(response.data);
+        if (sinBinData.isInSinbin) {
+          Get.defaultDialog(
+            title: "SinBin Alert",
+            middleText: "This driver is in SinBin. Are you sure to dispatch this driver?",
+            textConfirm: "Yes",
+            textCancel: "No",
+            confirmTextColor: Colors.white,
+            buttonColor: DynamicColors.primaryClr,
+            onConfirm: () {
+              if (isReturn) {
+                selectDriverValueReturn = driver;
+              } else {
+                selectDriverValue = driver;
+              }
+              Get.back();
+              update();
+            },
+            onCancel: () {
+              if (isReturn) {
+                selectDriverValueReturn = null;
+              } else {
+                selectDriverValue = null;
+              }
+              update();
+            },
+          );
+        } else {
+          if (isReturn) {
+            selectDriverValueReturn = driver;
+          } else {
+            selectDriverValue = driver;
+          }
+          update();
+        }
+      }
+    } catch (e) {
+      BotToast.closeAllLoading();
+      print("API Error or Timeout: $e");
+
+      // Timeout or parsing failure fallback
+      if (isReturn) {
+        selectDriverValueReturn = driver;
+      } else {
+        selectDriverValue = driver;
+      }
+      update();
+      BotToast.showText(text: "Check SinBin failed (Timeout). Driver selected by default.");
+    }
+  }
+
 
   addToMultiReservation({
     DateTime? startTime,

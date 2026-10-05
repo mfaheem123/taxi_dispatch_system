@@ -504,15 +504,18 @@ class _BookingTableState extends State<BookingTable> {
 
                                 /// TYPE ❌
                                 DataCell(
-                                  Icon(
-                                    switch (item.bookingSource) {
-                                      'web' => Icons.language,
-                                      'app' => Icons.phone_android,
-                                      'ivr' => Icons.phone_in_talk,
-                                      'dashboard' => Icons.laptop_chromebook,
-                                      _ => Icons.help_outline,
-                                    },
-                                    color: Colors.blue,
+                                  Tooltip(
+                                    message: "SOURCE: ${item.bookingSource?.toUpperCase() ?? "UNKNOWN"}",
+                                    child: Icon(
+                                      switch (item.bookingSource) {
+                                        'web' => Icons.language,
+                                        'app' => Icons.phone_android,
+                                        'ivr' => Icons.phone_in_talk,
+                                        'dashboard' => Icons.laptop_chromebook,
+                                        _ => Icons.help_outline,
+                                      },
+                                      color: Colors.blue,
+                                    ),
                                   ),
                                 ),
 
@@ -524,9 +527,12 @@ class _BookingTableState extends State<BookingTable> {
                                     onRightClick: () {
                                       print("RIGHT CLICK REF #: ${item.referenceNumber}");
                                     },
-                                    child: Text(item.referenceNumber ?? "-",
-                                      style: TextStyle(
-                                        fontSize: widthss/140,
+                                    child: Tooltip(
+                                      message: "REFERENCE: ${item.referenceNumber ?? "-"}",
+                                      child: Text(item.referenceNumber ?? "-",
+                                        style: TextStyle(
+                                          fontSize: widthss/140,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -570,21 +576,25 @@ class _BookingTableState extends State<BookingTable> {
                                           }
                                         }
 
-                                        return Container(
-                                          width: widthss / 20.5,
-                                          height: double.infinity,
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                            // Red tab 1 par aur condition true hone par hi hoga
-                                            color: isPastOrNear
-                                                ? Colors.red.withOpacity(0.8)
-                                                : DynamicColors.secondaryClr.withOpacity(0.7),
-                                          ),
-                                          child: Text(
-                                            "${item.pickupDate != null ? DateFormat('dd-MM-yyyy').format(item.pickupDate!) : ''} ${item.pickupTime ?? ''}",
-                                            style: TextStyle(
-                                              fontSize: widthss / 140,
-                                              color: isPastOrNear ? Colors.white : Colors.black,
+                                        String dtText = "${item.pickupDate != null ? DateFormat('dd-MM-yyyy').format(item.pickupDate!) : ''} ${item.pickupTime ?? ''}";
+                                        return Tooltip(
+                                          message: "DATETIME: $dtText",
+                                          child: Container(
+                                            width: widthss / 20.5,
+                                            height: double.infinity,
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                              // Red tab 1 par aur condition true hone par hi hoga
+                                              color: isPastOrNear
+                                                  ? Colors.red.withOpacity(0.8)
+                                                  : DynamicColors.secondaryClr.withOpacity(0.7),
+                                            ),
+                                            child: Text(
+                                              dtText,
+                                              style: TextStyle(
+                                                fontSize: widthss / 140,
+                                                color: isPastOrNear ? Colors.white : Colors.black,
+                                              ),
                                             ),
                                           ),
                                         );
@@ -602,9 +612,12 @@ class _BookingTableState extends State<BookingTable> {
                                       onRightClick: () {
                                         print("RIGHT CLICK CUSTOMER: ${item.name}");
                                       },
-                                      child: Text(item.name?.toUpperCase() ?? "-".toUpperCase(),
-                                        style: TextStyle(
-                                          fontSize: widthss/140,
+                                      child: Tooltip(
+                                        message: "CUSTOMER: ${item.name?.toUpperCase() ?? "-"}",
+                                        child: Text(item.name?.toUpperCase() ?? "-".toUpperCase(),
+                                          style: TextStyle(
+                                            fontSize: widthss/140,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -616,44 +629,65 @@ class _BookingTableState extends State<BookingTable> {
                                   rightClickTextCell(
                                     item: item,
                                     tabIndex: controller.selectionIndex,
-                                    // onRightClick: () {
-                                    //   print("RIGHT CLICK PICKUP: ${item.pickup}");
-                                    //   showMenu(
-                                    //     context: context,
-                                    //     position: RelativeRect.fromLTRB(
-                                    //       // event.position.dx,
-                                    //       // event.position.dy,
-                                    //       15,
-                                    //       0,
-                                    //       0,
-                                    //       0,
-                                    //     ),
-                                    //     items: [
-                                    //       const PopupMenuItem(value: 'edit', child: Text('Edit')),
-                                    //       const PopupMenuItem(value: 'delete', child: Text('Delete')),
-                                    //     ],
-                                    //   );
-                                    //
-                                    // },
-                                    child: Container(
-                                      width: widthss/20.5,
-                                      // width: double.infinity,
-                                      height: double.infinity,
-                                      alignment: Alignment.center,
-                                      // APPLY YOUR COLOR HERE
-                                      decoration: BoxDecoration(
-                                        color: item.airport!.pickup!.locationType!.backgroundColor == null?Colors.transparent:
-                                        Color(int.parse("0xFF${item.airport!.pickup!.locationType!.backgroundColor}")),
-                                        // Optional: borderRadius: BorderRadius.circular(2),
-                                      ),
-                                      child: Text(
-                                        item.pickup?.toUpperCase() ?? "-".toUpperCase(),
-                                        style: mozillaTextRegularText(
-                                          fontSize: widthss/140,
-                                          color: item.airport!.pickup!.locationType!.foregroundColor == null?DynamicColors.black:
-                                          Color(int.parse("0xFF${item.airport!.pickup!.locationType!.foregroundColor}")),
+                                    child: Tooltip(
+                                      message: "PICKUP: ${item.pickupDoorNumber ?? ""} ${item.pickup ?? ""}".trim().toUpperCase(),
+                                      child: Container(
+                                        width: widthss/20.5,
+                                        height: double.infinity,
+                                        alignment: Alignment.center,
+                                        // APPLY YOUR COLOR HERE
+                                        decoration: BoxDecoration(
+                                          color: item.airport?.pickup?.locationType?.backgroundColor == null
+                                              ? Colors.transparent
+                                              : Color(int.parse("0xFF${item.airport!.pickup!.locationType!.backgroundColor}")),
                                         ),
-                                        overflow: TextOverflow.ellipsis,
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+
+                                            if (item.flightNumber != null && item.flightNumber!.isNotEmpty) ...[
+                                              const SizedBox(width: 4),
+                                              Tooltip(
+                                                message: "FLIGHT: ${item.flightNumber}\nARRIVAL: ${item.arrivingFrom ?? ""}".toUpperCase(),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black87,
+                                                  borderRadius: BorderRadius.circular(6),
+                                                ),
+                                                waitDuration: const Duration(milliseconds: 200),
+                                                child: Container(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.blue.shade100,
+                                                    borderRadius: BorderRadius.circular(4),
+                                                    border: Border.all(color: Colors.blue.shade300, width: 0.8),
+                                                  ),
+                                                  child: Text(
+                                                    item.arrivingFrom ?? "AIR",
+                                                    style: TextStyle(
+                                                      fontSize: widthss / 160,
+                                                      fontWeight: FontWeight.bold,
+                                                      color: Colors.blue.shade900,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+
+                                            Expanded(
+                                              child: Text(
+                                                item.pickup?.toUpperCase() ?? "-".toUpperCase(),
+                                                style: mozillaTextRegularText(
+                                                  fontSize: widthss / 140,
+                                                  color: item.airport?.pickup?.locationType?.foregroundColor == null
+                                                      ? DynamicColors.black
+                                                      : Color(int.parse("0xFF${item.airport!.pickup!.locationType!.foregroundColor}")),
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -664,86 +698,89 @@ class _BookingTableState extends State<BookingTable> {
                                   rightClickTextCell(
                                     item: item,
                                     tabIndex: controller.selectionIndex,
-                                    child: Container(
-                                      width: widthss / 20.5,
-                                      height: double.infinity,
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                        color: isSelected
-                                            ? Colors.transparent
-                                            : (item.airport!.dropoff!.locationType!.backgroundColor == null
-                                            ? Colors.transparent
-                                            : Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.backgroundColor}"))),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          // 1. Dropoff Text
-                                          Expanded(
-                                            child: Text(
-                                              (item.dropoff ?? "-").toUpperCase(),
-                                              style: mozillaTextRegularText(
-                                                fontSize: widthss / 140,
-                                                color: item.airport!.dropoff!.locationType!.foregroundColor == null
-                                                    ? DynamicColors.black
-                                                    : Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.foregroundColor}")),
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-
-                                          // 2. VIA Tag with Multi-Address Hover Tooltip
-                                          if (item.viapoints != null && item.viapoints!.isNotEmpty) ...[
-                                            const SizedBox(width: 4),
-                                            Tooltip(
-                                              richMessage: WidgetSpan(
-                                                child: Container(
-                                                  padding: const EdgeInsets.all(6),
-                                                  constraints: const BoxConstraints(maxWidth: 250),
-                                                  child: Column(
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: item.viapoints!.asMap().entries.map((entry) {
-                                                      int index = entry.key;
-                                                      var via = entry.value;
-                                                      return Padding(
-                                                        padding: const EdgeInsets.symmetric(vertical: 2.0),
-                                                        child: Text(
-                                                          "${index + 1}. ${via.viapoint ?? 'No address'}",
-                                                          style: const TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 11,
+                                    child: Tooltip(
+                                      message: "DROPOFF ADDRESS: ${item.dropoffDoorNumber ?? ""} ${item.dropoff ?? ""}".trim().toUpperCase(),
+                                      child: Container(
+                                        width: widthss / 20.5,
+                                        height: double.infinity,
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                          color: isSelected
+                                              ? Colors.transparent
+                                              : (item.airport?.dropoff?.locationType?.backgroundColor == null
+                                              ? Colors.transparent
+                                              : Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.backgroundColor}"))),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            // 2. VIA Tag with Multi-Address Hover Tooltip
+                                            if (item.viapoints != null && item.viapoints!.isNotEmpty) ...[
+                                              const SizedBox(width: 4),
+                                              Tooltip(
+                                                richMessage: WidgetSpan(
+                                                  child: Container(
+                                                    padding: const EdgeInsets.all(6),
+                                                    constraints: const BoxConstraints(maxWidth: 250),
+                                                    child: Column(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: item.viapoints!.asMap().entries.map((entry) {
+                                                        int index = entry.key;
+                                                        var via = entry.value;
+                                                        return Padding(
+                                                          padding: const EdgeInsets.symmetric(vertical: 2.0),
+                                                          child: Text(
+                                                            "${index + 1}. ${via.viapoint ?? 'No address'}",
+                                                            style: const TextStyle(
+                                                              color: Colors.white,
+                                                              fontSize: 11,
+                                                            ),
                                                           ),
-                                                        ),
-                                                      );
-                                                    }).toList(),
+                                                        );
+                                                      }).toList(),
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color: Colors.black87,
-                                                borderRadius: BorderRadius.circular(6),
-                                              ),
-                                              waitDuration: const Duration(milliseconds: 200),
-                                              child: Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                                                 decoration: BoxDecoration(
-                                                  color: Colors.blue.shade100,
-                                                  borderRadius: BorderRadius.circular(4),
-                                                  border: Border.all(color: Colors.blue.shade300, width: 0.8),
+                                                  color: Colors.black87,
+                                                  borderRadius: BorderRadius.circular(6),
                                                 ),
-                                                child: Text(
-                                                  "VIA",
-                                                  style: TextStyle(
-                                                    fontSize: widthss / 160,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.blue.shade900,
+                                                waitDuration: const Duration(milliseconds: 200),
+                                                child: Container(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.blue.shade100,
+                                                    borderRadius: BorderRadius.circular(4),
+                                                    border: Border.all(color: Colors.blue.shade300, width: 0.8),
+                                                  ),
+                                                  child: Text(
+                                                    "VIA",
+                                                    style: TextStyle(
+                                                      fontSize: widthss / 160,
+                                                      fontWeight: FontWeight.bold,
+                                                      color: Colors.blue.shade900,
+                                                    ),
                                                   ),
                                                 ),
+                                              ),
+                                            ],
+                                            // 1. Dropoff Text
+                                            Expanded(
+                                              child: Text(
+                                                (item.dropoff ?? "-").toUpperCase(),
+                                                style: mozillaTextRegularText(
+                                                  fontSize: widthss / 140,
+                                                  color: item.airport?.dropoff?.locationType?.foregroundColor == null
+                                                      ? DynamicColors.black
+                                                      : Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.foregroundColor}")),
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
                                               ),
                                             ),
+
                                           ],
-                                        ],
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -757,22 +794,25 @@ class _BookingTableState extends State<BookingTable> {
                                     onRightClick: () {
                                       print("RIGHT CLICK ACCOUNT: ${item.account?.name}");
                                     },
-                                    child: Container(
-                                        width: widthss/20.5,
-                                        height: double.infinity,
-                                        alignment: Alignment.center,
+                                    child: Tooltip(
+                                      message: "ACCOUNT: ${item.account?.name?.toUpperCase() ?? "-"}",
+                                      child: Container(
+                                          width: widthss/20.5,
+                                          height: double.infinity,
+                                          alignment: Alignment.center,
 
-                                        // APPLY YOUR COLOR HERE
-                                        decoration: BoxDecoration(
-                                          color: item.account!.backgroundColor == null?Colors.transparent: Color(int.parse("0xFF${item.account!.backgroundColor}")),
-                                          // Optional: borderRadius: BorderRadius.circular(2),
-                                        ),
-                                        child: Text(item.account?.name?.toUpperCase() ?? "".toUpperCase(),
-                                          style: mozillaTextRegularText(
-                                            fontSize: widthss/140,
-                                            color: item.account!.foregroundColor == null?DynamicColors.black: Color(int.parse("0xFF${item.account!.foregroundColor}")),
+                                          // APPLY YOUR COLOR HERE
+                                          decoration: BoxDecoration(
+                                            color: item.account!.backgroundColor == null?Colors.transparent: Color(int.parse("0xFF${item.account!.backgroundColor}")),
+                                            // Optional: borderRadius: BorderRadius.circular(2),
                                           ),
-                                        )),
+                                          child: Text(item.account?.name?.toUpperCase() ?? "".toUpperCase(),
+                                            style: mozillaTextRegularText(
+                                              fontSize: widthss/140,
+                                              color: item.account!.foregroundColor == null?DynamicColors.black: Color(int.parse("0xFF${item.account!.foregroundColor}")),
+                                            ),
+                                          )),
+                                    ),
                                   ),
                                 ),
                                 /// DRIVER ✅
@@ -785,9 +825,12 @@ class _BookingTableState extends State<BookingTable> {
                                       onRightClick: () {
                                         print("RIGHT CLICK DRIVER: ${item.driver?.name}");
                                       },
-                                      child: Text(item.driver?.name?.toUpperCase() ?? "",
-                                        style: TextStyle(
-                                          fontSize: widthss/140,
+                                      child: Tooltip(
+                                        message: "DRIVER: ${item.driver?.name?.toUpperCase() ?? "-"}",
+                                        child: Text(item.driver?.name?.toUpperCase() ?? "",
+                                          style: TextStyle(
+                                            fontSize: widthss/140,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -802,20 +845,23 @@ class _BookingTableState extends State<BookingTable> {
                                     onRightClick: () {
                                       print("RIGHT CLICK VEHICLE: ${item.vehicleType?.name}");
                                     },
-                                    child: Container(
-                                      width: widthss/20.5,
-                                      height: double.infinity,
-                                      alignment: Alignment.center,
+                                    child: Tooltip(
+                                      message: "VEHICLE: ${item.vehicleType?.name?.toUpperCase() ?? "-"}",
+                                      child: Container(
+                                        width: widthss/20.5,
+                                        height: double.infinity,
+                                        alignment: Alignment.center,
 
-                                      // APPLY YOUR COLOR HERE
-                                      decoration: BoxDecoration(
-                                        color: item.vehicleType!.backgroundColor == null?Colors.transparent: Color(int.parse("0xFF${item.vehicleType!.backgroundColor}")),
-                                        // Optional: borderRadius: BorderRadius.circular(2),
-                                      ),
-                                      child: Text(item.vehicleType?.name?.toUpperCase() ?? "-".toUpperCase(),
-                                        style: mozillaTextRegularText(
-                                          fontSize: widthss/140,
-                                          color: item.vehicleType!.foregroundColor == null?DynamicColors.black: Color(int.parse("0xFF${item.vehicleType!.foregroundColor}")),
+                                        // APPLY YOUR COLOR HERE
+                                        decoration: BoxDecoration(
+                                          color: item.vehicleType?.backgroundColor == null?Colors.transparent: Color(int.parse("0xFF${item.vehicleType!.backgroundColor}")),
+                                          // Optional: borderRadius: BorderRadius.circular(2),
+                                        ),
+                                        child: Text(item.vehicleType?.name?.toUpperCase() ?? "-".toUpperCase(),
+                                          style: mozillaTextRegularText(
+                                            fontSize: widthss/140,
+                                            color: item.vehicleType?.foregroundColor == null?DynamicColors.black: Color(int.parse("0xFF${item.vehicleType!.foregroundColor}")),
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -832,11 +878,14 @@ class _BookingTableState extends State<BookingTable> {
                                     // },
                                     child: SizedBox(
                                       width: widthss/20.5,
-                                      child: Text(
-                                        item.notes!.isEmpty ? "".toUpperCase() : item.notes![0].note?.toUpperCase() ?? "-",
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontSize: widthss/140,
+                                      child: Tooltip(
+                                        message: "NOTES:\n${item.notes?.map((e) => e.note?.toUpperCase()).join('\n') ?? "NONE"}",
+                                        child: Text(
+                                          item.notes!.isEmpty ? "".toUpperCase() : item.notes![0].note?.toUpperCase() ?? "-",
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: widthss/140,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -850,12 +899,12 @@ class _BookingTableState extends State<BookingTable> {
                                     child: rightClickTextCell(
                                       item: item,
                                       tabIndex: controller.selectionIndex,
-                                      // onRightClick: () {
-                                      //   print("RIGHT CLICK FARE: ${item.fares}");
-                                      // },
-                                      child: Text("£ ${item.fares ?? "0.00"}",
-                                        style: TextStyle(
-                                          fontSize: widthss/140,
+                                      child: Tooltip(
+                                        message: "FARE: £ ${item.fares ?? "0.00"}",
+                                        child: Text("£ ${item.fares ?? "0.00"}",
+                                          style: TextStyle(
+                                            fontSize: widthss/140,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -867,23 +916,23 @@ class _BookingTableState extends State<BookingTable> {
                                   rightClickTextCell(
                                     item: item,
                                     tabIndex: controller.selectionIndex,
-                                    // onRightClick: () {
-                                    //   print("RIGHT CLICK STATUS");
-                                    // },
-                                    child: Container(
-                                      width: widthss/20.5,
-                                      height: double.infinity,
-                                      alignment: Alignment.center,
+                                    child: Tooltip(
+                                      message: "STATUS: ${item.bookingStatus?.bookingStatus?.toUpperCase() ?? ""}",
+                                      child: Container(
+                                        width: widthss/20.5,
+                                        height: double.infinity,
+                                        alignment: Alignment.center,
 
-                                      // APPLY YOUR COLOR HERE
-                                      decoration: BoxDecoration(
-                                        color: DynamicColors.statusColor,
-                                        // Optional: borderRadius: BorderRadius.circular(2),
-                                      ),
-                                      child: Text(
-                                        "${item.bookingStatus!.bookingStatus}".toUpperCase(),
-                                        style: TextStyle(color: DynamicColors.whiteClr,
-                                          fontSize: widthss/140,
+                                        // APPLY YOUR COLOR HERE
+                                        decoration: BoxDecoration(
+                                          color: DynamicColors.statusColor,
+                                          // Optional: borderRadius: BorderRadius.circular(2),
+                                        ),
+                                        child: Text(
+                                          "${item.bookingStatus?.bookingStatus}".toUpperCase(),
+                                          style: TextStyle(color: DynamicColors.whiteClr,
+                                            fontSize: widthss/140,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -900,9 +949,12 @@ class _BookingTableState extends State<BookingTable> {
                                       onRightClick: () {
                                         print("RIGHT CLICK JOURNEY TYPE");
                                       },
-                                      child: Text(item.journeyType?.journeyType?.toUpperCase() ?? "-",
-                                        style: TextStyle(
-                                          fontSize: widthss/140,
+                                      child: Tooltip(
+                                        message: "JOURNEY TYPE: ${item.journeyType?.journeyType?.toUpperCase() ?? "-"}",
+                                        child: Text(item.journeyType?.journeyType?.toUpperCase() ?? "-",
+                                          style: TextStyle(
+                                            fontSize: widthss/140,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -918,22 +970,25 @@ class _BookingTableState extends State<BookingTable> {
 
                                       print("RIGHT CLICK PAYMENT TYPE");
                                     },
-                                    child: Container(
-                                        width: widthss/19.5,
-                                        height: double.infinity,
-                                        alignment: Alignment.center,
+                                    child: Tooltip(
+                                      message: "PAYMENT TYPE: ${item.paymentType?.name?.toUpperCase() ?? "-"}",
+                                      child: Container(
+                                          width: widthss/19.5,
+                                          height: double.infinity,
+                                          alignment: Alignment.center,
 
-                                        // APPLY YOUR COLOR HERE
-                                        decoration: BoxDecoration(
-                                          color: DynamicColors.primaryClr,
-                                          // Optional: borderRadius: BorderRadius.circular(2),
-                                        ),
-                                        child: Text(item.paymentType?.name?.toUpperCase() ?? "-",
-                                          style: TextStyle(
-                                            color: DynamicColors.whiteClr,
-                                            fontSize: widthss/140,
+                                          // APPLY YOUR COLOR HERE
+                                          decoration: BoxDecoration(
+                                            color: DynamicColors.primaryClr,
+                                            // Optional: borderRadius: BorderRadius.circular(2),
                                           ),
-                                        )),
+                                          child: Text(item.paymentType?.name?.toUpperCase() ?? "-",
+                                            style: TextStyle(
+                                              color: DynamicColors.whiteClr,
+                                              fontSize: widthss/140,
+                                            ),
+                                          )),
+                                    ),
                                   ),
                                 ),
 
