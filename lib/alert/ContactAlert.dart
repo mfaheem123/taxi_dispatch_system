@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-import '../../component/color.dart';
-import '../../component/networks/api.dart';
-import '../../component/textStyle.dart';
+import '../component/color.dart';
+import '../component/networks/api.dart';
+import '../component/textStyle.dart';
 
 class ContactAlert {
   static void show() {
@@ -102,7 +102,7 @@ class ContactAlert {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "CONTACT",
+                            "CONTACTS",
                             style: titleDesign()
                           ),
                           FocusTraversalOrder(
