@@ -199,7 +199,7 @@ class DriverCommissionAlt {
         child: Text(
           label,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: outFitRegular(
             fontWeight: FontWeight.bold,
             fontSize: fontSize,
           ),
