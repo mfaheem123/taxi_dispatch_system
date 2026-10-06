@@ -56,7 +56,7 @@ class DepartmentAlert {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text("DEPARTMENT", style: titleDesign()),
+                                Text("DEPARTMENTS", style: titleDesign()),
                                 FocusTraversalOrder(
                                   order: const NumericFocusOrder(999),
                                   child: AlertCloseButton(
