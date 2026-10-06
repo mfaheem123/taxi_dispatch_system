@@ -76,7 +76,8 @@ class _LabeledCheckboxState extends State<LabeledCheckbox> {
               child: Text(
                 widget.label,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: Density.fieldFont),
+                style: const TextStyle(
+                    fontFamily: kFormChromeFont, fontSize: Density.fieldFont),
               ),
             ),
           ],

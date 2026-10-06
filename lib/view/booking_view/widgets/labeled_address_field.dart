@@ -217,7 +217,9 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
 
   void _show() {
     if (_entry != null) return;
-    _entry = OverlayEntry(builder: _buildPanel);
+    // Wrapped again: an OverlayEntry inherits nothing from the screen.
+    _entry = OverlayEntry(
+        builder: (ctx) => withBookingFormFont(ctx, _buildPanel(ctx)));
     Overlay.of(context).insert(_entry!);
   }
 
@@ -468,7 +470,7 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
             textCapitalization: TextCapitalization.characters,
             inputFormatters: const [UpperCaseTextFormatter()],
             textInputAction: TextInputAction.next,
-            style: const TextStyle(fontSize: Density.fieldFont),
+            style: kFormValueStyle,
             decoration: InputDecoration(
               prefixIconConstraints:
                   const BoxConstraints(minWidth: 24, minHeight: 0),

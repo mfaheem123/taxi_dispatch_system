@@ -96,7 +96,7 @@ class LabeledInput extends StatelessWidget implements LabelledField {
         inputFormatters: inputFormatters ??
             (uppercase ? const [UpperCaseTextFormatter()] : null),
         onChanged: onChanged,
-        style: const TextStyle(fontSize: Density.fieldFont),
+        style: kFormValueStyle,
         // So the on-screen keyboard's "next" key walks the form too, not
         // just a hardware Tab.
         textInputAction: TextInputAction.next,

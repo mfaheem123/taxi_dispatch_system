@@ -157,7 +157,9 @@ class _LabeledMobileFieldState extends State<LabeledMobileField> {
 
   void _show() {
     if (_entry != null) return;
-    _entry = OverlayEntry(builder: _buildPanel);
+    // Wrapped again: an OverlayEntry inherits nothing from the screen.
+    _entry = OverlayEntry(
+        builder: (ctx) => withBookingFormFont(ctx, _buildPanel(ctx)));
     Overlay.of(context).insert(_entry!);
   }
 
@@ -369,7 +371,7 @@ class _LabeledMobileFieldState extends State<LabeledMobileField> {
             onChanged: widget.onSearch,
             keyboardType: TextInputType.phone,
             textInputAction: TextInputAction.next,
-            style: const TextStyle(fontSize: Density.fieldFont),
+            style: kFormValueStyle,
             decoration: const InputDecoration(
               prefixIconConstraints:
                   BoxConstraints(minWidth: 28, minHeight: 0),

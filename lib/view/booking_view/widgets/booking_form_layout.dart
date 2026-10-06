@@ -82,8 +82,93 @@ const InputDecorationTheme denseInputTheme = InputDecorationTheme(
   ),
   filled: true,
   fillColor: Colors.white,
-  hintStyle: TextStyle(fontSize: Density.fieldFont),
+  hintStyle: kFormHintStyle,
 );
+
+// ---------------------------------------------------------------------------
+// Typography — the same as the dashboard booking form
+// (auth/dashboard_form_widget.dart): values in MozillaText, the chrome around
+// them (labels, hints) in Outfit. Both are declared in pubspec.yaml.
+// ---------------------------------------------------------------------------
+const String kFormValueFont = 'MozillaText-Regular';
+const String kFormChromeFont = 'Outfit-Regular';
+
+/// What the user typed or picked: bold, tracked, pure black — so a filled
+/// field reads apart from an empty one at a glance.
+const TextStyle kFormValueStyle = TextStyle(
+  fontFamily: kFormValueFont,
+  fontSize: Density.fieldFont,
+  fontWeight: FontWeight.w700,
+  letterSpacing: 0.5,
+  color: Colors.black,
+);
+
+/// Placeholder text. Colour left null so the theme's hint colour comes through.
+const TextStyle kFormHintStyle = TextStyle(
+  fontFamily: kFormChromeFont,
+  fontSize: Density.hintFont,
+  fontWeight: FontWeight.w400,
+  letterSpacing: 0.15,
+);
+
+/// Dropdown placeholders, which draw their hint as a plain Text.
+const TextStyle kFormDropdownHintStyle = TextStyle(
+  fontFamily: kFormChromeFont,
+  fontSize: Density.hintFont,
+  fontWeight: FontWeight.w400,
+  letterSpacing: 0.15,
+  color: Colors.black45,
+);
+
+/// Field labels.
+const TextStyle kFormLabelStyle = TextStyle(
+  fontFamily: kFormChromeFont,
+  fontSize: Density.labelFont,
+  height: 1.1,
+  fontWeight: FontWeight.w400,
+  letterSpacing: 0.15,
+  color: Colors.black,
+);
+
+/// Puts a subtree in the form's font and text scale — the booking_view twin of
+/// the dashboard form's `_withFormFont`. Wrap the screen in it, and again
+/// inside every suggestion panel: those are OverlayEntries, so they hang off
+/// the Overlay and inherit nothing from the screen.
+Widget withBookingFormFont(BuildContext context, Widget child) {
+  final base = Theme.of(context);
+  final mq = MediaQuery.of(context);
+  return MediaQuery(
+    data: mq.copyWith(textScaler: _formTextScaler(mq)),
+    child: Theme(
+      data: base.copyWith(
+        textTheme: base.textTheme.apply(fontFamily: kFormValueFont),
+        primaryTextTheme:
+            base.primaryTextTheme.apply(fontFamily: kFormValueFont),
+      ),
+      child: DefaultTextStyle.merge(
+        style: const TextStyle(fontFamily: kFormValueFont),
+        child: child,
+      ),
+    ),
+  );
+}
+
+/// Same scale as the dashboard form: sizes were tuned on 1440x900, bigger
+/// screens scale up and smaller ones down (clamped), phones stay at 1.0.
+double _formTextScale(Size size) {
+  if (size.width < 640) return 1.0;
+  final byWidth = size.width / 1440;
+  final byHeight = size.height / 900;
+  return (byWidth < byHeight ? byWidth : byHeight).clamp(0.9, 1.3);
+}
+
+/// The system text scale (accessibility setting) times [_formTextScale].
+/// Always called with a MediaQuery from OUTSIDE the form, so the factor is
+/// applied exactly once.
+TextScaler _formTextScaler(MediaQueryData mq) {
+  final system = mq.textScaler.scale(100) / 100;
+  return TextScaler.linear(system * _formTextScale(mq.size));
+}
 
 /// The idle outline, shared by every non-focused state so that a disabled or
 /// read-only field is told apart by its fill, never by its border.
@@ -113,12 +198,15 @@ class Density {
 
   // A 13px line of text measures ~15.2 logical pixels, so this is the padding
   // that gets a text field to [fieldHeight].
-  static const double fieldPadY = (fieldHeight - 15.2) / 2;
+  // A line of text measures ~1.17x its font size.
+  static const double fieldPadY = (fieldHeight - fieldFont * 1.17) / 2;
   // A dense DropdownButton has a hard-coded 24px inner height, so it needs
   // correspondingly less padding to land on that same [fieldHeight].
   static const double dropPadY = (fieldHeight - 24) / 2;
-  static const double fieldFont = 13; // text inside inputs
-  static const double labelFont = 10; // the small caps labels
+  // Sizes match the dashboard form (auth/dashboard_form_widget.dart).
+  static const double fieldFont = 11; // text inside inputs
+  static const double hintFont = 12; // placeholder text
+  static const double labelFont = 11; // the field labels
   static const double labelGap = 2; // label -> input, stacked mode
   static const double labelGapX = 6; // label -> input, inline mode
   static const double labelWidth = 86; // label column width, inline mode
@@ -244,13 +332,7 @@ class FieldLabel extends StatelessWidget {
       text,
       maxLines: maxLines,
       overflow: TextOverflow.ellipsis,
-      style: const TextStyle(
-        fontSize: Density.labelFont,
-        height: 1.1,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 0.4,
-        color: Color(0xFF444444),
-      ),
+      style: kFormLabelStyle,
     );
   }
 }

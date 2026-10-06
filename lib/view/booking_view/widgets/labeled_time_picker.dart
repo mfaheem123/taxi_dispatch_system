@@ -50,7 +50,7 @@ class _LabeledTimePickerState extends State<LabeledTimePicker> {
       child: TimePickerField(
         controller: _controller,
         accent: fieldFocusColor,
-        textStyle: const TextStyle(fontSize: Density.fieldFont),
+        textStyle: kFormValueStyle,
         onChanged: widget.onChanged,
         decoration: const InputDecoration(
           // The prefix icon is drawn by the package, so only the room for it

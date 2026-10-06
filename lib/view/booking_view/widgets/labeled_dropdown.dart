@@ -62,8 +62,7 @@ class _LabeledDropdownState extends State<LabeledDropdown> {
           contentPadding:
               EdgeInsets.symmetric(horizontal: 8, vertical: Density.dropPadY),
         ),
-        style:
-            const TextStyle(fontSize: Density.fieldFont, color: Colors.black87),
+        style: kFormValueStyle,
         items: [
           for (final i in widget.items)
             DropdownMenuItem(
@@ -116,14 +115,12 @@ class LabeledZoneDropdown extends StatelessWidget implements LabelledField {
         isDense: true,
         itemHeight: null,
         iconSize: 16,
-        hint: const Text('SELECT ZONE',
-            style: TextStyle(fontSize: Density.fieldFont, color: Colors.black45)),
+        hint: const Text('SELECT ZONE', style: kFormDropdownHintStyle),
         decoration: const InputDecoration(
           contentPadding:
               EdgeInsets.symmetric(horizontal: 8, vertical: Density.dropPadY),
         ),
-        style:
-            const TextStyle(fontSize: Density.fieldFont, color: Colors.black87),
+        style: kFormValueStyle,
         items: [
           for (final z in items)
             DropdownMenuItem(
@@ -175,15 +172,12 @@ class LabeledObjectDropdown<T> extends StatelessWidget implements LabelledField 
         isDense: true,
         itemHeight: null,
         iconSize: 16,
-        hint: Text(hint ?? 'SELECT',
-            style: const TextStyle(
-                fontSize: Density.fieldFont, color: Colors.black45)),
+        hint: Text(hint ?? 'SELECT', style: kFormDropdownHintStyle),
         decoration: const InputDecoration(
           contentPadding:
               EdgeInsets.symmetric(horizontal: 8, vertical: Density.dropPadY),
         ),
-        style:
-            const TextStyle(fontSize: Density.fieldFont, color: Colors.black87),
+        style: kFormValueStyle,
         items: [
           for (final i in items)
             DropdownMenuItem<T>(

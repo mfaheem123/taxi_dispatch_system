@@ -94,8 +94,7 @@ class _LabeledDatePickerState extends State<LabeledDatePicker> {
         // 1.0 underline however bold the theme's outline gets.
         decoration:
             const InputDecoration().applyDefaults(Theme.of(context).inputDecorationTheme),
-        textStyle: const TextStyle(
-            fontSize: Density.fieldFont, color: Colors.black87),
+        textStyle: kFormValueStyle,
         onChanged: (d) {
           // Controlled: whoever owns the value rebuilds us with it. Keeping a
           // copy here as well would only go stale the moment they change it

@@ -2477,12 +2477,6 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
         controller.jobDetails,
         linked: hasReturn ? bookings.sublist(1) : const [],
       );
-      // showDialog(
-      //   context: context,
-      //   builder: (_) => BookingReceiptScreen(
-      //     bookingItem: controller.jobDetails!,
-      //   ),
-      // );
     } else if (action == 'EMAIL') {
       // EMAIL logic
     } else if (action == 'EXPORT TO PDF') {
