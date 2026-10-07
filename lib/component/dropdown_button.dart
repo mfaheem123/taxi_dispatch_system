@@ -288,51 +288,64 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
                   _openDropdown();
                 }
               },
-              child: SizedBox(
-                key: _fieldKey,
-                width: widget.width ?? Get.width / 4,
-                height: widget.height ?? 30,
-                child: InputDecorator(
-                  isFocused: isFocused,
-                  decoration: InputDecoration(
-                    hintText: widget.label,
-                    fillColor: Colors.transparent,
-                    hintStyle: mozillaTextRegularText(fontSize: 10),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: isFocused ? DynamicColors.primaryClr : Colors.grey,
-                        width: isFocused ? 2.0 : 1.0,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: DynamicColors.primaryClr,
-                        width: 2.0,
-                      ),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          widget.value != null
-                              ? widget.itemLabel(widget.value as T)
-                              : widget.label ?? "",
-                          style: mozillaTextRegularText(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w900,
-                          ),
-                          overflow: TextOverflow.ellipsis,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  boxShadow: isFocused ? [
+                    BoxShadow(
+                      color: DynamicColors.primaryClr.withOpacity(0.4),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    )
+                  ] : null,
+                ),
+                child: SizedBox(
+                  key: _fieldKey,
+                  width: widget.width ?? Get.width / 4,
+                  height: widget.height ?? 30,
+                  child: InputDecorator(
+                    isFocused: isFocused,
+                    decoration: InputDecoration(
+                      hintText: widget.label,
+                      fillColor: Colors.transparent,
+                      hintStyle: mozillaTextRegularText(fontSize: 10),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: isFocused ? DynamicColors.primaryClr : Colors.grey,
+                          width: isFocused ? 2.0 : 1.0,
                         ),
                       ),
-                      Icon(
-                        _isOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                        size: 16,
-                        color: isFocused ? DynamicColors.primaryClr : null,
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: DynamicColors.primaryClr,
+                          width: 2.0,
+                        ),
                       ),
-                    ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            widget.value != null
+                                ? widget.itemLabel(widget.value as T)
+                                : widget.label ?? "",
+                            style: mozillaTextRegularText(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Icon(
+                          _isOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                          size: 16,
+                          color: isFocused ? DynamicColors.primaryClr : null,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
