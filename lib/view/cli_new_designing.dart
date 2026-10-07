@@ -155,7 +155,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                   _buildHeader(),
                   const Divider(height: 1, thickness: 1, color: border),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+                    padding: const EdgeInsets.fromLTRB(20, 5, 20, 12),
                     child: Column(
                       children: [
                         _buildLocationRow(),
@@ -374,7 +374,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: DynamicColors.primaryClr,
                                 side: BorderSide(color: DynamicColors.primaryClr),
-                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                padding: const EdgeInsets.symmetric(horizontal: 35),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -405,7 +405,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: DynamicColors.primaryClr,
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(horizontal: 28),
+                                padding: const EdgeInsets.symmetric(horizontal: 35),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
