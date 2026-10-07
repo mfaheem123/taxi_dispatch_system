@@ -9,7 +9,7 @@ import '../component/color.dart';
 import '../component/customButton.dart';
 import '../component/text_field.dart';
 
-class EmailInvoiceAlert {
+class EmailCustomerInvoiceAlert {
   static void show() {
     final emailCtrl = TextEditingController(text: "ABC@ABC.COM");
 
@@ -35,7 +35,7 @@ class EmailInvoiceAlert {
                 ),
                 child: Row(
                   children: [
-                    Text("EMAIL ACCOUNT INVOICE", style: titleDesign()),
+                    Text("EMAIL CUSTOMER INVOICE", style: titleDesign()),
                     const Spacer(),
                     FocusTraversalOrder(
                       order: const NumericFocusOrder(999),

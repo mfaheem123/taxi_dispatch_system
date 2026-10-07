@@ -51,13 +51,13 @@ class EmailDriverCommissionAlt {
               SizedBox(height: 15),
               // Label
               Padding(
-                  padding: EdgeInsetsGeometry.symmetric(horizontal: 26),
+                  padding: EdgeInsets.symmetric(horizontal: 26),
                   child: Text("RECIPIENT",
                     style: outFitRegular(fontSize: 14, fontWeight: FontWeight.w600, color: DynamicColors.black),
                   )),
               const SizedBox(height: 8),
               Padding(
-                  padding: EdgeInsetsGeometry.symmetric(horizontal: 26),
+                  padding: EdgeInsets.symmetric(horizontal: 26),
                   child: TextField(
                     controller: emailCtrl,
                     inputFormatters: [UpperCaseTextFormatter()],

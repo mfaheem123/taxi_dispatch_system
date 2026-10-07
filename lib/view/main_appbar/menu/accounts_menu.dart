@@ -3,7 +3,7 @@ import 'package:nested_menu_bar/nested_menu_bar.dart';
 
 import '../../accounts/Invoice/create_account_invoice_screen.dart';
 import '../../accounts/Invoice/create_customer_invoice.dart';
-import '../../accounts/Invoice/list_customer_invoices.dart';
+import '../../accounts/Invoice/list_of_customer_invoice.dart';
 import '../../accounts/Invoice/list_of_account_invoice_screen.dart';
 import '../../accounts/account/account_view.dart';
 import '../../accounts/controller/account_controller.dart';

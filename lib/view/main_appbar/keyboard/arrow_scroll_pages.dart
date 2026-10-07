@@ -1,5 +1,5 @@
 import '../../../alert/back_slash_alert.dart';
-import '../../accounts/Invoice/list_customer_invoices.dart';
+import '../../accounts/Invoice/list_of_customer_invoice.dart';
 import '../../accounts/account/account_view.dart';
 import '../../accounts/list_of_accountScreen.dart';
 import '../../administration/User/create_userScreen.dart';

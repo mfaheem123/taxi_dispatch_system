@@ -108,7 +108,7 @@ class WebLoginAlert {
                        SizedBox(height: 10),
 
                       // Input Fields Row
-                      Padding(padding: EdgeInsetsGeometry.symmetric(horizontal: 15.0),
+                      Padding(padding: EdgeInsets.symmetric(horizontal: 15.0),
                       child: Row(
                         children: [
                           _buildField("ACCOUNT #", controller.webLoginaccountCtrl, autofocus: true, order: 1),
