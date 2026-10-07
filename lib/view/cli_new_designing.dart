@@ -366,6 +366,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                         _InteractiveGlow(
                           borderRadius: 8,
                           child: SizedBox(
+
                             height: 42,
                             child: OutlinedButton.icon(
                               onPressed: controller.newBooking,
