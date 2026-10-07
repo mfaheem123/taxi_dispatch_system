@@ -1,12 +1,12 @@
-
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 
+import '../component/alert_close_button.dart';
 import '../component/color.dart';
+import '../component/customButton.dart';
+import '../component/textStyle.dart';
 import '../component/text_field.dart';
 
 class EmailDriverCommissionAlt {
@@ -18,7 +18,6 @@ class EmailDriverCommissionAlt {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         child: Container(
           width: 400,
-          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(8),
@@ -28,102 +27,96 @@ class EmailDriverCommissionAlt {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "EMAIL DRIVER COMMISSION",
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: DynamicColors.gryClr.withOpacity(0.5),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      "EMAIL DRIVER COMMISSION",
+                      style: titleDesign()
                     ),
-                  ),
-                  InkWell(
-                    onTap: () => Get.back(),
-                    child: const Icon(Icons.close, size: 20, color: Colors.grey),
-                  ),
-                ],
+                    const Spacer(),
+                    FocusTraversalOrder(
+                      order: const NumericFocusOrder(999),
+                      child: const AlertCloseButton(),
+                    ),
+                  ],
+                ),
               ),
-              const Divider(height: 30),
-
+              const Divider(height: 1, thickness: 1),
+              SizedBox(height: 15),
               // Label
-              Text(
-                "RECIPIENT",
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: DynamicColors.black
-                ),
-              ),
+              Padding(
+                  padding: EdgeInsetsGeometry.symmetric(horizontal: 26),
+                  child: Text("RECIPIENT",
+                    style: outFitRegular(fontSize: 14, fontWeight: FontWeight.w600, color: DynamicColors.black),
+                  )),
               const SizedBox(height: 8),
-              TextField(
-                controller: emailCtrl,
-                inputFormatters: [
-                  UpperCaseTextFormatter(),
-                ],
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.grey, width: 2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: DynamicColors.primaryClr, width: 2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
+              Padding(
+                  padding: EdgeInsetsGeometry.symmetric(horizontal: 26),
+                  child: TextField(
+                    controller: emailCtrl,
+                    inputFormatters: [UpperCaseTextFormatter()],
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.grey, width: 2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: DynamicColors.primaryClr, width: 2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  )),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
               const Divider(),
-              const SizedBox(height: 10),
 
               // Action Buttons Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  // CANCEL Button
-                  SizedBox(
-                    width: 110,
-                    height: 40,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey.shade200,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                      ),
-                      onPressed: () => Get.back(),
-                      child: const Text(
-                        "CANCEL",
-                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                      ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    CustomButton(
+                      width: 80,
+                      height: 28,
+                      verticalPadding: 0.0,
+                      btnText: "CANCEL",
+                      btnColor: Colors.red,
+                      borderRadius: 4,
+                      style: mozillaTextSemiBoldText(
+                          fontSize: 13,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                      onTap: () => Get.back(),
                     ),
-                  ),
-                  const SizedBox(width: 10),
+                    const SizedBox(width: 12),
 
-                  // SEND Button
-                  SizedBox(
-                    width: 100,
-                    height: 40,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: DynamicColors.primaryClr,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                      ),
-                      onPressed: () {
-                        print("Email sent to: ${emailCtrl.text}");
-                        Get.back();
-                      },
-                      child: const Text(
-                        "SEND",
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                    // SEND Button
+                    CustomButton(
+                        width: 80,
+                        height: 28,
+                        verticalPadding: 0.0,
+                        btnText: "SEND",
+                        btnColor: DynamicColors.primaryClr,
+                        borderRadius: 4,
+                        style: mozillaTextSemiBoldText(
+                            fontSize: 13,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                        onTap: () {
+                          print("Email sent to: ${emailCtrl.text}");
+                          Get.back();
+                        }),
+                  ],
+                ),
+              )
             ],
           ),
         ),
