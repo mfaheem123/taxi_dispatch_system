@@ -10,6 +10,7 @@ import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:intl/intl.dart';
 
+import '../../../alert/update_customer_invoice_email.dart';
 import '../../../alert/update_invoice_email_alt.dart';
 import '../../../component/editable_cell_widget.dart';
 import '../../../component/responsive_datatable_widget.dart';
@@ -94,7 +95,7 @@ class _UpdateCustomerInvoiceState extends State<UpdateCustomerInvoice> {
                               style: mozillaTextRegularText(
                                   fontSize: 10, color: DynamicColors.whiteClr),
                               onTap: () {
-                                EmailInvoiceAlert.show();
+                                EmailCustomerInvoiceAlert.show();
                               },
                             ),
                             SizedBox(width: 5),

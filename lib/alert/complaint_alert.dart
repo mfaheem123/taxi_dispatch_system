@@ -58,7 +58,7 @@ class ComplaintAlert {
                 )),
                 const SizedBox(height: 20),
                 // Table
-                Padding(padding: EdgeInsetsGeometry.symmetric(horizontal: 10.0),
+                Padding(padding: EdgeInsets.symmetric(horizontal: 10.0),
                 child: Container(
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey.shade300),

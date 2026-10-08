@@ -191,7 +191,7 @@ class _InvoiceListState extends State<InvoiceList> {
                                               .selectedMenuItems
                                               .indexWhere((element) =>
                                           element.title ==
-                                              "CUSTOMER INVOICE UPDATE");
+                                              "UPDATE CUSTOMER INVOICE");
                                           if (index != -1) {
                                             _controller
                                                 .selectedMenuItems[index]
@@ -205,7 +205,7 @@ class _InvoiceListState extends State<InvoiceList> {
                                                 UpdateCustomerInvoice();
                                             _controller.menuBarRefresh(
                                                 title:
-                                                "CUSTOMER INVOICE UPDATE",
+                                                "UPDATE CUSTOMER INVOICE",
                                                 pageName:
                                                 UpdateCustomerInvoice());
                                           }

@@ -1,10 +1,10 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/dropdown_button.dart';
-import 'package:dashboard_new1/view/accounts/CompanyAddressAlert.dart';
-import 'package:dashboard_new1/view/accounts/ContactAlert.dart';
-import 'package:dashboard_new1/view/accounts/DepartmentAlert.dart';
-import 'package:dashboard_new1/view/accounts/OrderAlert.dart';
+import 'package:dashboard_new1/alert/CompanyAddressAlert.dart';
+import 'package:dashboard_new1/alert/ContactAlert.dart';
+import 'package:dashboard_new1/alert/DepartmentAlert.dart';
+import 'package:dashboard_new1/alert/OrderAlert.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

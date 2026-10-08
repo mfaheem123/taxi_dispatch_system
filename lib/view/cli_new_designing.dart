@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../component/color.dart';
@@ -74,8 +75,6 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final dashboard = Get.find<DashboardController>();
       dashboard.selectDriverValue = null;
-      // dashboard.selectVehicleValue = null;
-
       final cliController = Get.find<CliController>();
       cliController.startCall(widget.extensionNumber);
     });
@@ -88,8 +87,6 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
     super.dispose();
   }
 
-  /// Right-click on a pickup / dropoff cell: use that address as this call's
-  /// pickup or dropoff. The menu is UI; the change itself is the controller's.
   void _showAddressMenu(
       Offset globalPosition, BookingObjectData b, bool isDropoffCell) {
     final overlay = Overlay.of(context).context.findRenderObject() as RenderBox?;
@@ -131,39 +128,50 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
       backgroundColor: Colors.transparent,
       elevation: 0,
       insetPadding: EdgeInsets.all(isFullScreen ? 0 : 24),
-      child: SizedBox(
-        width: isFullScreen ? size.width : min(size.width, 1200),
-        height: isFullScreen ? size.height : size.height * 0.9,
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(isFullScreen ? 0 : 12),
-            border: Border.all(color: border),
-            boxShadow: const [
-              BoxShadow(blurRadius: 20, color: Color(0x14000000)),
-            ],
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: [
-              _buildHeader(),
-              const Divider(height: 1, thickness: 1, color: border),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
-                child: Column(
-                  children: [
-                    _buildLocationRow(),
-                    const SizedBox(height: 20),
-                    _buildDriverVehicleRow(),
-                    const SizedBox(height: 20),
-                    _buildTabs(),
-                  ],
-                ),
+      child: Shortcuts(
+        shortcuts: <ShortcutActivator, Intent>{
+          const SingleActivator(LogicalKeyboardKey.arrowDown): const DirectionalFocusIntent(TraversalDirection.down),
+          const SingleActivator(LogicalKeyboardKey.arrowUp): const DirectionalFocusIntent(TraversalDirection.up),
+        },
+        child: Actions(
+          actions: <Type, Action<Intent>>{
+            DirectionalFocusIntent: DirectionalFocusAction(),
+          },
+          child: SizedBox(
+            width: isFullScreen ? size.width : min(size.width, 1200),
+            height: isFullScreen ? size.height : size.height * 0.9,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(isFullScreen ? 0 : 12),
+                border: Border.all(color: border),
+                boxShadow: const [
+                  BoxShadow(blurRadius: 20, color: Color(0x14000000)),
+                ],
               ),
-              Expanded(child: _buildTable()),
-              const Divider(height: 1, thickness: 1, color: border),
-              _buildFooter(),
-            ],
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                children: [
+                  _buildHeader(),
+                  const Divider(height: 1, thickness: 1, color: border),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 5, 20, 12),
+                    child: Column(
+                      children: [
+                        _buildLocationRow(),
+                        const SizedBox(height: 20),
+                        _buildDriverVehicleRow(),
+                        const SizedBox(height: 20),
+                        _buildTabs(),
+                      ],
+                    ),
+                  ),
+                  Expanded(child: _buildTable()),
+                  const Divider(height: 1, thickness: 1, color: border),
+                  _buildFooter(),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -213,7 +221,6 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
               color: Colors.white,
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              // letterSpacing: 0.5,
             ),
           ),
           const SizedBox(width: 12),
@@ -226,7 +233,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
             child: Text(
               DateFormat('dd-MM-yyyy HH:mm').format(_now),
               style: outFitRegular(
-                color: Color(0xFF166534),
+                color: const Color(0xFF166534),
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
               ),
@@ -235,20 +242,24 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
           const SizedBox(width: 20),
           Container(width: 1, height: 32, color: Colors.white38),
           const SizedBox(width: 16),
-          _headerIconButton(
-            isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen,
-            isFullScreen ? 'Exit full screen' : 'Full screen',
-                () => setState(() => isFullScreen = !isFullScreen),
+          _HeaderButton(
+            icon: isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen,
+            tooltip: isFullScreen ? 'Exit full screen' : 'Full screen',
+            onTap: () => setState(() => isFullScreen = !isFullScreen),
           ),
           const SizedBox(width: 8),
-          _headerIconButton(
-            Icons.phone_disabled,
-            'End call',
-                () {},
+          _HeaderButton(
+            icon: Icons.phone_disabled,
+            tooltip: 'End call',
+            onTap: () {},
             iconColor: const Color(0xFFDC2626),
           ),
           const SizedBox(width: 8),
-          _headerIconButton(Icons.close, 'Close', () => Get.back()),
+          _HeaderButton(
+            icon: Icons.close,
+            tooltip: 'Close',
+            onTap: () => Get.back(),
+          ),
         ],
       ),
     );
@@ -256,26 +267,8 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
 
   Widget _headerIconButton(IconData icon, String tooltip, VoidCallback onTap,
       {Color iconColor = const Color(0xFF1E293B)}) {
-    return Tooltip(
-      message: tooltip,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(6),
-        child: Container(
-          width: 30,
-          height: 30,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: border),
-            boxShadow: const [
-              BoxShadow(blurRadius: 4, color: Color(0x1A000000)),
-            ],
-          ),
-          child: Icon(icon, size: 18, color: iconColor),
-        ),
-      ),
-    );
+    // Legacy method, now replaced by _HeaderButton widget in _buildHeader
+    return _HeaderButton(icon: icon, tooltip: tooltip, onTap: onTap, iconColor: iconColor);
   }
 
   // ───────────────────── Pickup / Dropoff ─────────────────────
@@ -291,25 +284,26 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                 controller.pickupController, 'ENTER PICKUP LOCATION', Icons.my_location),
           ),
         ),
-
-        SizedBox(height: 20),
-
+        // const SizedBox(width: 20),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Tooltip(
             message: 'SWAP LOCATIONS',
-            child: InkWell(
-              onTap: controller.swapLocations,
-              borderRadius: BorderRadius.circular(24),
-              child: Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEFF4FF),
-                  shape: BoxShape.circle,
-                  border: Border.all(color: border),
+            child: _InteractiveGlow(
+              shape: BoxShape.circle,
+              child: InkWell(
+                onTap: controller.swapLocations,
+                borderRadius: BorderRadius.circular(24),
+                child: Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEFF4FF),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: border),
+                  ),
+                  child: Icon(Icons.swap_horiz, color: DynamicColors.primaryClr),
                 ),
-                child: Icon(Icons.swap_horiz, color: DynamicColors.primaryClr),
               ),
             ),
           ),
@@ -333,7 +327,6 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
 
         return LayoutBuilder(
           builder: (context, constraints) {
-
             final parentWidth = constraints.maxWidth;
             final dynamicFieldWidth = (parentWidth * 0.28).clamp(220.0, 500.0);
             return Row(
@@ -370,18 +363,22 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const SizedBox(height: 15),
-                        SizedBox(
-                          height: 42,
-                          child: OutlinedButton.icon(
-                            onPressed: controller.newBooking,
-                            icon: const Icon(Icons.add, size: 18),
-                            label: const Text('NEW BOOKING'),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: DynamicColors.primaryClr,
-                              side: BorderSide(color: DynamicColors.primaryClr),
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                        _InteractiveGlow(
+                          borderRadius: 8,
+                          child: SizedBox(
+
+                            height: 42,
+                            child: OutlinedButton.icon(
+                              onPressed: controller.newBooking,
+                              icon: const Icon(Icons.add, size: 18),
+                              label: const Text('NEW BOOKING'),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: DynamicColors.primaryClr,
+                                side: BorderSide(color: DynamicColors.primaryClr),
+                                padding: const EdgeInsets.symmetric(horizontal: 35),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                               ),
                             ),
                           ),
@@ -398,18 +395,21 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                             : controller.isSwapped
                             ? 'SWAPPED BOOKINGS GO THROUGH NEW BOOKING'
                             : 'TICK A BOOKING FIRST',
-                        child: SizedBox(
-                          height: 42,
-                          child: ElevatedButton.icon(
-                            onPressed: canSubmit ? controller.submitSelectedBooking : null,
-                            icon: const Icon(Icons.check, size: 18),
-                            label: const Text('SUBMIT'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: DynamicColors.primaryClr,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 28),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                        child: _InteractiveGlow(
+                          borderRadius: 8,
+                          child: SizedBox(
+                            height: 42,
+                            child: ElevatedButton.icon(
+                              onPressed: canSubmit ? controller.submitSelectedBooking : null,
+                              icon: const Icon(Icons.check, size: 18),
+                              label: const Text('SUBMIT'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: DynamicColors.primaryClr,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 35),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                               ),
                             ),
                           ),
@@ -442,26 +442,29 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
           return Expanded(
             child: Padding(
               padding: EdgeInsets.only(right: i == tabs.length - 1 ? 0 : 6),
-              child: InkWell(
-                onTap: () => cli.selectTab(i),
-                borderRadius: BorderRadius.circular(8),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  height: 42,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: isSelected ? DynamicColors.primaryClr : Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                        color: isSelected ? DynamicColors.primaryClr : border),
-                  ),
-                  child: Text(
-                    (tabs[i]).toUpperCase(),
-                    style: outFitRegular(
-                      color:
-                      isSelected ? Colors.white : const Color(0xFF334155),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
+              child: _InteractiveGlow(
+                borderRadius: 8,
+                child: InkWell(
+                  onTap: () => cli.selectTab(i),
+                  borderRadius: BorderRadius.circular(8),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    height: 42,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: isSelected ? DynamicColors.primaryClr : Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                          color: isSelected ? DynamicColors.primaryClr : border),
+                    ),
+                    child: Text(
+                      (tabs[i]).toUpperCase(),
+                      style: outFitRegular(
+                        color:
+                        isSelected ? Colors.white : const Color(0xFF334155),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 ),
@@ -487,7 +490,6 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
         clipBehavior: Clip.antiAlias,
         child: Column(
           children: [
-            // Table Header
             Container(
               height: 44,
               color: const Color(0xFFF1F5F9),
@@ -509,7 +511,6 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
               ),
             ),
             const Divider(height: 1, thickness: 1, color: border),
-
             Expanded(
               child: GetBuilder<CliController>(
                 builder: (cli) {
@@ -517,171 +518,31 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
                     if (cli.isLoading.value) {
                       return const Center(child: CircularProgressIndicator());
                     }
-
                     final rows = cli.bookingsForTab(cli.selectedTab);
-
-                    if (rows.isEmpty) {
-                      return _emptyTable();
-                    }
-                    return ListView.separated(
-                      itemCount: rows.length,
-                      separatorBuilder: (_, __) =>
-                      const Divider(height: 1, thickness: 1, color: border),
-                      itemBuilder: (context, index) =>
-                          _tableRow(rows[index], index),
+                    if (rows.isEmpty) return _emptyTable();
+                    return FocusTraversalGroup(
+                      child: ListView.separated(
+                        itemCount: rows.length,
+                        separatorBuilder: (_, __) =>
+                        const Divider(height: 1, thickness: 1, color: border),
+                        itemBuilder: (context, index) =>
+                            _BookingRow(
+                              booking: rows[index],
+                              index: index,
+                              isChecked: controller.selectedBookingId == rows[index].id,
+                              onTap: () => controller.toggleBooking(rows[index]),
+                              columnFlex: columnFlex,
+                              statusText: controller.bookingStatusText(rows[index]),
+                              statusColor: _statusColor(controller.bookingStatusText(rows[index])),
+                              showAddressMenu: _showAddressMenu,
+                            ),
+                      ),
                     );
                   });
                 },
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _tableRow(BookingObjectData b, int index) {
-    final date = b.pickupDate != null
-        ? DateFormat('dd-MM-yyyy').format(b.pickupDate!)
-        : '';
-    final dateTime = '$date ${b.pickupTime ?? ''}'.trim();
-    final status = controller.bookingStatusText(b);
-    final isChecked =
-        controller.selectedBookingId != null && controller.selectedBookingId == b.id;
-    final hasVia = b.viapoints != null && b.viapoints!.isNotEmpty;
-
-    Widget cell(String text,
-        {FontWeight weight = FontWeight.w400, Color? color}) =>
-        Text(
-          text,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 13,
-            color: color ?? const Color(0xFF1E293B),
-            fontWeight: weight,
-          ),
-        );
-
-    // Widget addressCell(String text, bool isDropoff) => Listener(
-    //   behavior: HitTestBehavior.opaque,
-    //   onPointerDown: (e) {
-    //     if (e.kind == PointerDeviceKind.mouse &&
-    //         e.buttons == kSecondaryMouseButton) {
-    //       _showAddressMenu(e.position, b, isDropoff);
-    //     }
-    //   },
-    //   child: Tooltip(
-    //     message: text,
-    //     waitDuration: const Duration(milliseconds: 500),
-    //     child: cell(text),
-    //   ),
-    // );
-    Widget addressCell(String text, bool isDropoff) => Listener(
-      behavior: HitTestBehavior.opaque,
-      onPointerDown: (e) {
-        if (e.kind == PointerDeviceKind.mouse &&
-            e.buttons == kSecondaryMouseButton) {
-          _showAddressMenu(e.position, b, isDropoff);
-        }
-      },
-      child: Tooltip(
-        message: text,
-        waitDuration: const Duration(milliseconds: 500),
-        child: Text(
-          text,
-          maxLines: 3,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            fontSize: 13,
-            color: Color(0xFF1E293B),
-            fontWeight: FontWeight.w400,
-            height: 1.2,
-          ),
-        ),
-      ),
-    );
-
-    final cells = <Widget>[
-      cell(dateTime),
-      addressCell((b.pickup ?? '').toUpperCase(), false),
-      Row(children: [
-        if (hasVia) ...[
-          Tooltip(
-            // Indexed numbering
-            message: b.viapoints != null ? b.viapoints!.where((v) => (v.viapoint ?? '').isNotEmpty).toList().asMap().entries
-                .map((e) => '${e.key + 1}. ${(e.value.viapoint ?? '').toUpperCase()}').join('\n')
-                : '',
-            child: Container(
-              margin: const EdgeInsets.only(right: 6),
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE5E7EB),
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: const Color(0xFFD1D5DB)),
-              ),
-              child: const Text(
-                'VIA',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF374151),
-                ),
-              ),
-            ),
-          ),
-        ],
-        Expanded(child: addressCell((b.dropoff ?? '').toUpperCase(), true)),
-      ]),
-      cell((b.vehicleType?.name ?? '').toUpperCase()),
-      cell('£ ${b.fares ?? 0}', weight: FontWeight.w600),
-      cell((b.account?.name ?? '').toUpperCase()),
-      cell((b.driver?.username ?? '').toUpperCase()),
-      cell((b.paymentType?.name ?? '').toUpperCase()),
-      cell(status,
-          weight: FontWeight.w600, color: _statusColor(status)),
-    ];
-
-    return Material(
-      color: isChecked
-          ? const Color(0xFFEFF4FF)
-          : index.isEven
-          ? Colors.white
-          : const Color(0xFFF8FAFC),
-      child: InkWell(
-        onTap: () => controller.toggleBooking(b),
-        hoverColor: const Color(0xFFEFF4FF),
-        child: Container(
-          constraints: const BoxConstraints(minHeight: 48),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(
-            children: [
-              ...List.generate(cells.length, (i) => Expanded(
-                flex: columnFlex[i],
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: cells[i],
-                ),
-              )),
-              Expanded(
-                flex: columnFlex.last,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Checkbox(
-                    value: isChecked,
-                    activeColor: DynamicColors.primaryClr,
-                    side: const BorderSide(color: subtle, width: 1.5),
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    visualDensity: VisualDensity.compact,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    onChanged: (_) => controller.toggleBooking(b),
-                  ),
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );
@@ -737,7 +598,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
               style: outFitRegular(
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
-                color: Color(0xFF1E293B),
+                color: const Color(0xFF1E293B),
               ),
             ),
             const SizedBox(height: 12),
@@ -777,8 +638,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
               style: outFitRegular(
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
-                // letterSpacing: 0.3,
-                color: Color(0xFF334155),
+                color: const Color(0xFF334155),
               ),
             ),
             const SizedBox(height: 6),
@@ -787,7 +647,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
               style: outFitRegular(
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
-                color: Color(0xFF1E293B),
+                color: const Color(0xFF1E293B),
               ),
             ),
           ],
@@ -807,7 +667,7 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
           style: outFitRegular(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF334155),
+            color: const Color(0xFF334155),
           ),
         ),
         const SizedBox(height: 6),
@@ -835,16 +695,17 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: DynamicColors.primaryClr, width: 1.5),
+        borderSide: BorderSide(color: DynamicColors.primaryClr, width: 2),
       ),
     );
   }
 
   Widget _textField(
       TextEditingController controller, String hint, IconData icon) {
-    return SizedBox(
-      height: 48,
+    return _InteractiveGlow(
+      borderRadius: 8,
       child: TextField(
+        readOnly: true,
         controller: controller,
         style: outFitRegular(fontSize: 14),
         decoration: _inputDecoration(hint, icon: icon),
@@ -859,17 +720,293 @@ class _CliNewDesigningState extends State<CliNewDesigning> {
     required String Function(T) label,
     required ValueChanged<T?> onChanged,
     double? width,
-    double height = 40,
+    double height = 48,
   }) {
     return CustomDropdownField<T>(
       height: height,
       width: width,
-      //text: "",
       label: hint,
       items: items,
       value: value,
       itemLabel: label,
       onChanged: onChanged,
+    );
+  }
+}
+
+// ───────────────────── Support Widgets ─────────────────────
+
+class _InteractiveGlow extends StatefulWidget {
+  final Widget child;
+  final double borderRadius;
+  final BoxShape shape;
+  final List<BoxShadow>? extraShadows;
+  final Color? glowColor;
+
+  const _InteractiveGlow({
+    required this.child,
+    this.borderRadius = 8,
+    this.shape = BoxShape.rectangle,
+    this.extraShadows,
+    this.glowColor,
+  });
+
+  @override
+  State<_InteractiveGlow> createState() => _InteractiveGlowState();
+}
+
+class _InteractiveGlowState extends State<_InteractiveGlow> {
+  bool _isFocused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Focus(
+      onFocusChange: (v) => setState(() => _isFocused = v),
+      canRequestFocus: false, // Child (InkWell/Button/TextField) handles focus
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        decoration: BoxDecoration(
+          borderRadius: widget.shape == BoxShape.circle
+              ? null
+              : BorderRadius.circular(widget.borderRadius),
+          shape: widget.shape,
+          boxShadow: _isFocused
+              ? [
+                  BoxShadow(
+                    color: (widget.glowColor ?? DynamicColors.primaryClr).withOpacity(0.4),
+                    blurRadius: 8,
+                    spreadRadius: 2,
+                  ),
+                  if (widget.extraShadows != null) ...widget.extraShadows!,
+                ]
+              : widget.extraShadows,
+        ),
+        child: widget.child,
+      ),
+    );
+  }
+}
+
+class _HeaderButton extends StatefulWidget {
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onTap;
+  final Color iconColor;
+
+  const _HeaderButton({
+    required this.icon,
+    required this.tooltip,
+    required this.onTap,
+    this.iconColor = const Color(0xFF1E293B),
+  });
+
+  @override
+  State<_HeaderButton> createState() => _HeaderButtonState();
+}
+
+class _HeaderButtonState extends State<_HeaderButton> {
+  bool _isFocused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: widget.tooltip,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6),
+          boxShadow: [
+            if (_isFocused)
+              const BoxShadow(
+                color: Colors.white70,
+                blurRadius: 10,
+                spreadRadius: 3,
+              ),
+            const BoxShadow(blurRadius: 4, color: Color(0x1A000000)),
+          ],
+        ),
+        child: InkWell(
+          onTap: widget.onTap,
+          onFocusChange: (v) => setState(() => _isFocused = v),
+          borderRadius: BorderRadius.circular(6),
+          child: Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(
+                color: _isFocused ? DynamicColors.primaryClr : const Color(0xFFE1E7F0),
+                width: _isFocused ? 2 : 1,
+              ),
+            ),
+            child: Icon(widget.icon, size: 18, color: widget.iconColor),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BookingRow extends StatefulWidget {
+  final BookingObjectData booking;
+  final int index;
+  final bool isChecked;
+  final VoidCallback onTap;
+  final List<int> columnFlex;
+  final String statusText;
+  final Color statusColor;
+  final Function(Offset, BookingObjectData, bool) showAddressMenu;
+
+  const _BookingRow({
+    required this.booking,
+    required this.index,
+    required this.isChecked,
+    required this.onTap,
+    required this.columnFlex,
+    required this.statusText,
+    required this.statusColor,
+    required this.showAddressMenu,
+  });
+
+  @override
+  State<_BookingRow> createState() => _BookingRowState();
+}
+
+class _BookingRowState extends State<_BookingRow> {
+  bool _isFocused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final b = widget.booking;
+    final date = b.pickupDate != null
+        ? DateFormat('dd-MM-yyyy').format(b.pickupDate!)
+        : '';
+    final dateTime = '$date ${b.pickupTime ?? ''}'.trim();
+    final hasVia = b.viapoints != null && b.viapoints!.isNotEmpty;
+
+    Widget cell(String text, {FontWeight weight = FontWeight.w400, Color? color}) =>
+        Text(
+          text,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: 13,
+            color: color ?? const Color(0xFF1E293B),
+            fontWeight: weight,
+          ),
+        );
+
+    Widget addressCell(String text, bool isDropoff) => Listener(
+      behavior: HitTestBehavior.opaque,
+      onPointerDown: (e) {
+        if (e.kind == PointerDeviceKind.mouse &&
+            e.buttons == kSecondaryMouseButton) {
+          widget.showAddressMenu(e.position, b, isDropoff);
+        }
+      },
+      child: Tooltip(
+        message: text,
+        waitDuration: const Duration(milliseconds: 500),
+        child: Text(
+          text,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontSize: 13,
+            color: Color(0xFF1E293B),
+            fontWeight: FontWeight.w400,
+            height: 1.2,
+          ),
+        ),
+      ),
+    );
+
+    final cells = <Widget>[
+      cell(dateTime),
+      addressCell((b.pickup ?? '').toUpperCase(), false),
+      Row(children: [
+        if (hasVia) ...[
+          Tooltip(
+            message: b.viapoints != null ? b.viapoints!.where((v) => (v.viapoint ?? '').isNotEmpty).toList().asMap().entries
+                .map((e) => '${e.key + 1}. ${(e.value.viapoint ?? '').toUpperCase()}').join('\n')
+                : '',
+            child: Container(
+              margin: const EdgeInsets.only(right: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE5E7EB),
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: const Color(0xFFD1D5DB)),
+              ),
+              child: const Text('VIA', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF374151))),
+            ),
+          ),
+        ],
+        Expanded(child: addressCell((b.dropoff ?? '').toUpperCase(), true)),
+      ]),
+      cell((b.vehicleType?.name ?? '').toUpperCase()),
+      cell('£ ${b.fares ?? 0}', weight: FontWeight.w600),
+      cell((b.account?.name ?? '').toUpperCase()),
+      cell((b.driver?.username ?? '').toUpperCase()),
+      cell((b.paymentType?.name ?? '').toUpperCase()),
+      cell(widget.statusText, weight: FontWeight.w600, color: widget.statusColor),
+    ];
+
+    return Material(
+      color: widget.isChecked
+          ? const Color(0xFFEFF4FF)
+          : widget.index.isEven
+          ? Colors.white
+          : const Color(0xFFF8FAFC),
+      child: InkWell(
+        onTap: widget.onTap,
+        onFocusChange: (v) => setState(() => _isFocused = v),
+        hoverColor: const Color(0xFFEFF4FF),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          constraints: const BoxConstraints(minHeight: 48),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            border: _isFocused ? Border.all(color: DynamicColors.primaryClr, width: 2) : null,
+            boxShadow: _isFocused ? [
+              BoxShadow(
+                color: DynamicColors.primaryClr.withOpacity(0.2),
+                blurRadius: 8,
+                spreadRadius: 2,
+              )
+            ] : null,
+          ),
+          child: Row(
+            children: [
+              ...List.generate(cells.length, (i) => Expanded(
+                flex: widget.columnFlex[i],
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: cells[i],
+                ),
+              )),
+              Expanded(
+                flex: widget.columnFlex.last,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: ExcludeFocus(
+                    child: Checkbox(
+                      value: widget.isChecked,
+                      activeColor: DynamicColors.primaryClr,
+                      side: const BorderSide(color: Color(0xFF6B7C8F), width: 1.5),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: VisualDensity.compact,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                      onChanged: (_) => widget.onTap(),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

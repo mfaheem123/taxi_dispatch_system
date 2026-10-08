@@ -1,7 +1,11 @@
-
 import 'package:dashboard_new1/component/text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../component/alert_close_button.dart';
+import '../component/color.dart';
+import '../component/customButton.dart';
+import '../component/textStyle.dart';
 
 class StripePayment {
   static void show() {
@@ -16,8 +20,7 @@ class StripePayment {
         child: StatefulBuilder(
           builder: (context, setState) {
             return Container(
-              width: 450, // Fixed width for better look
-              padding: const EdgeInsets.all(20),
+              width: 450,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(8),
@@ -26,105 +29,127 @@ class StripePayment {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // Header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "STRIPE PAYMENT",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
-                      ),
-                      IconButton(
-                        onPressed: () => Get.back(),
-                        icon: const Icon(Icons.close, color: Colors.grey),
-                      ),
-                    ],
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: DynamicColors.gryClr.withOpacity(0.5),
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          "STRIPE PAYMENT",
+                          style: titleDesign()
+                        ),
+                        const Spacer(),
+                        FocusTraversalOrder(
+                          order: const NumericFocusOrder(999),
+                          child: const AlertCloseButton(),
+                        ),
+                      ],
+                    ),
                   ),
-                  const Divider(),
-                  const SizedBox(height: 15),
+                  const Divider(height: 1, thickness: 1),
+                  SizedBox(height: 15),
 
                   // Amount and Radio Row
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: CustomTextField(
-                          controller: amountCtrl,
-                          borderRadius: 5,
-                          inputFormatters: [UpperCaseTextFormatter()],
-                          // hintText: "99.87",
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      // SMS Radio
-                      Radio(
-                        value: 0,
-                        groupValue: stripRadio,
-                        activeColor: Colors.green,
-                        onChanged: (int? v) {
-                          setState(() => stripRadio = v!);
-                        },
-                      ),
-                      const Text("SMS", style: TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(width: 10),
-                      // EMAIL Radio
-                      Radio(
-                        value: 1,
-                        groupValue: stripRadio,
-                        activeColor: Colors.green,
-                        onChanged: (int? v) {
-                          setState(() => stripRadio = v!);
-                        },
-                      ),
-                      const Text("EMAIL", style: TextStyle(fontWeight: FontWeight.bold)),
-                    ],
-                  ),
+                  Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 26),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: CustomTextField(
+                              controller: amountCtrl,
+                              borderRadius: 5,
+                              inputFormatters: [UpperCaseTextFormatter()],
+                              // hintText: "99.87",
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          // SMS Radio
+                          Radio(
+                            value: 0,
+                            groupValue: stripRadio,
+                            activeColor: Colors.green,
+                            onChanged: (int? v) {
+                              setState(() => stripRadio = v!);
+                            },
+                          ),
+                          Text("SMS",
+                              style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 13)),
+                          const SizedBox(width: 10),
+                          // EMAIL Radio
+                          Radio(
+                            value: 1,
+                            groupValue: stripRadio,
+                            activeColor: Colors.green,
+                            onChanged: (int? v) {
+                              setState(() => stripRadio = v!);
+                            },
+                          ),
+                          Text("EMAIL", style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 13)),
+                        ],
+                      )),
 
                   const SizedBox(height: 15),
 
                   // Mobile Field and Generate Link Button
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: CustomTextField(
-                          controller: mobileCtrl,
-                          hintText: "MOBILE",
-                          borderRadius: 5,
-                          inputFormatters: [UpperCaseTextFormatter()],
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        flex: 2,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1B90B8), // Blue color from image
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                            padding: const EdgeInsets.symmetric(vertical: 15),
+                  Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 26),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: CustomTextField(
+                              controller: mobileCtrl,
+                              hintText: "MOBILE",
+                              borderRadius: 5,
+                              inputFormatters: [UpperCaseTextFormatter()],
+                            ),
                           ),
-                          onPressed: () {},
-                          child: const Text("GENERATE LINK", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
-                        ),
-                      ),
-                    ],
-                  ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            flex: 2,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF1B90B8), // Blue color from image
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                                padding: const EdgeInsets.symmetric(vertical: 15),
+                              ),
+                              onPressed: () {},
+                              child: Text("GENERATE LINK",
+                                  style: outFitRegular(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                            ),
+                          ),
+                        ],
+                      )),
 
                   const SizedBox(height: 30),
                   const Divider(),
 
                   // Bottom Send Button
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                      ),
-                      onPressed: () {
-                        // Your send logic here
-                      },
-                      child: const Text("SEND", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        // SEND Button
+                        CustomButton(
+                            width: 80,
+                            height: 28,
+                            verticalPadding: 0.0,
+                            btnText: "SEND",
+                            btnColor: DynamicColors.primaryClr,
+                            borderRadius: 4,
+                            style: mozillaTextSemiBoldText(
+                                fontSize: 13,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                            onTap: () {
+                              Get.back();
+                            }),
+                      ],
                     ),
                   ),
                 ],
@@ -137,5 +162,3 @@ class StripePayment {
     );
   }
 }
-
-
