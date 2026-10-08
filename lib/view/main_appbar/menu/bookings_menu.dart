@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'app_menu_item.dart';
 
@@ -13,7 +14,7 @@ import 'menu_actions.dart';
 
 /// The BOOKINGS menu.
 AppMenuItem buildBookingsMenu(MenuActions actions) {
-  return AppMenuItem(title: "BOOKINGS", children: [
+  return AppMenuItem(title: "BOOKINGS", icon: Icons.event_note, children: [
     AppMenuItem(
       title: "CREATE BOOKINGS",
       // The booking form is pushed as a route of its own instead of becoming a

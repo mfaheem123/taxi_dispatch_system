@@ -173,9 +173,18 @@ class _TopMenuState extends State<_TopMenu> {
                   ),
                 ),
               ),
-              child: Text(
-                menu.title,
-                style: const TextStyle(color: Colors.white, fontSize: 14),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (menu.icon != null) ...[
+                    Icon(menu.icon, color: Colors.white, size: 16),
+                    const SizedBox(width: 6),
+                  ],
+                  Text(
+                    menu.title,
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
+                  ),
+                ],
               ),
             ),
           ),

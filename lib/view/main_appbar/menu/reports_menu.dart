@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'app_menu_item.dart';
 
 import '../../reports/driver_booking_view/all_booking_view.dart';
@@ -15,7 +16,7 @@ import 'menu_actions.dart';
 
 /// The REPORTS menu, with its DRIVER / BOOKINGS / EMPLOYEE / INCOME sub-menus.
 AppMenuItem buildReportsMenu(MenuActions actions) {
-  return AppMenuItem(title: "REPORTS", children: [
+  return AppMenuItem(title: "REPORTS", icon: Icons.assessment, children: [
     AppMenuItem(title: "DRIVER", children: [
       AppMenuItem(
         title: "LOGIN",

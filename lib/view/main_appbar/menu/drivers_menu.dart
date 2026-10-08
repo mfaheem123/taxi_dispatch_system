@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'app_menu_item.dart';
 
 import '../../drivers_view/driver/bulk_driver_commission/bulk_driver_commission.dart';
@@ -17,7 +18,7 @@ import 'menu_actions.dart';
 
 /// The DRIVERS menu, with its DRIVER / COMMISSION / RENT sub-menus.
 AppMenuItem buildDriversMenu(MenuActions actions) {
-  return AppMenuItem(title: "DRIVERS", children: [
+  return AppMenuItem(title: "DRIVERS", icon: Icons.person, children: [
     AppMenuItem(
       title: "DRIVER",
       children: [

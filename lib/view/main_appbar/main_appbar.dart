@@ -16,6 +16,7 @@ import 'components/open_pages_tab_strip.dart';
 import 'keyboard/shell_keyboard_controller.dart';
 import 'menu/main_menu.dart';
 import 'menu/menu_actions.dart';
+import 'menu/settings_menu.dart';
 
 /// The application shell: the menu bar on top, the strip of open pages under
 /// it, whichever page is currently shown, and the status bar at the bottom.
@@ -44,6 +45,10 @@ class _MyHomePageState extends State<MyHomePage> {
   /// The menu bar's items, built once — they only close over [_menuActions].
   late final List<AppMenuItem> hoverMenu;
 
+  /// The SETTINGS menu, shown as a dropdown under the gear icon on the right
+  /// of the app bar instead of as a top-bar menu.
+  late final AppMenuItem settingsMenu;
+
   /// Shared by the menu bar (web) and the drawer (phone).
   late final MenuActions _menuActions;
 
@@ -65,6 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
       refresh: (change) => setState(change),
     );
     hoverMenu = buildMainMenu(context, _menuActions);
+    settingsMenu = buildSettingsMenu(context, _menuActions);
     controller.inItStateOFController();
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -102,7 +108,11 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: DynamicColors.whiteClr,
           appBar: isMobile
               ? const MobileAppbarHeader()
-              : MainAppbarHeader(menus: hoverMenu, onLogout: _logout),
+              : MainAppbarHeader(
+                  menus: hoverMenu,
+                  settingsMenu: settingsMenu,
+                  onLogout: _logout,
+                ),
           drawer: isMobile
               ? MainMobileDrawer(actions: _menuActions, onLogout: _logout)
               : null,

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'app_menu_item.dart';
 
@@ -11,7 +12,7 @@ import 'menu_actions.dart';
 
 /// The LOCATIONS menu.
 AppMenuItem buildLocationsMenu(MenuActions actions) {
-  return AppMenuItem(title: "LOCATIONS", children: [
+  return AppMenuItem(title: "LOCATIONS", icon: Icons.location_on, children: [
     AppMenuItem(
       title: "CREATE LOCATIONS",
       onTap: () => actions.openPage(

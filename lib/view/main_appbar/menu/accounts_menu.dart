@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'app_menu_item.dart';
 
@@ -22,7 +23,7 @@ AppMenuItem buildAccountsMenu(MenuActions actions) {
     }
   }
 
-  return AppMenuItem(title: "ACCOUNTS", children: [
+  return AppMenuItem(title: "ACCOUNTS", icon: Icons.account_circle, children: [
     AppMenuItem(
       title: "CREATE ACCOUNT",
       onTap: () => actions.openPage(

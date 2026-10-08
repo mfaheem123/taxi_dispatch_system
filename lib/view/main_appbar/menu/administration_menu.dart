@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'app_menu_item.dart';
 
@@ -21,7 +22,7 @@ AppMenuItem buildAdministrationMenu(MenuActions actions) {
     }
   }
 
-  return AppMenuItem(title: "ADMINISTRATIONS", children: [
+  return AppMenuItem(title: "ADMINISTRATIONS", icon: Icons.admin_panel_settings, children: [
     AppMenuItem(title: "USERS LIST", children: [
       AppMenuItem(
         title: "CREATE USER",

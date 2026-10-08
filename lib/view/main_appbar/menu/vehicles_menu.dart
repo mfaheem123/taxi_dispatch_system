@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'app_menu_item.dart';
 
@@ -18,7 +19,7 @@ AppMenuItem buildVehiclesMenu(MenuActions actions) {
     }
   }
 
-  return AppMenuItem(title: "VEHICLES", children: [
+  return AppMenuItem(title: "VEHICLES", icon: Icons.directions_car, children: [
     AppMenuItem(
       title: "CREATE VEHICLE TYPE",
       onTap: () => actions.openPage(

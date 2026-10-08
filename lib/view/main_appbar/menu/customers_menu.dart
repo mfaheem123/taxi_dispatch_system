@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'app_menu_item.dart';
 
@@ -20,7 +21,7 @@ AppMenuItem buildCustomersMenu(MenuActions actions) {
     }
   }
 
-  return AppMenuItem(title: "CUSTOMERS", children: [
+  return AppMenuItem(title: "CUSTOMERS", icon: Icons.groups, children: [
     AppMenuItem(
       title: "ADD CUSTOMER",
       onTap: () => actions.openPage(

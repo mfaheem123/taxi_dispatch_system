@@ -21,7 +21,7 @@ import 'menu_actions.dart';
 ///
 /// [context] is what the two dialog entries are opened from.
 AppMenuItem buildSettingsMenu(BuildContext context, MenuActions actions) {
-  return AppMenuItem(title: "SETTINGS", children: [
+  return AppMenuItem(title: "SETTINGS", icon: Icons.settings, children: [
     AppMenuItem(
       title: "COMPANY INFORMATION",
       onTap: () => actions.openPage(

@@ -13,10 +13,15 @@ class MainAppbarHeader extends StatelessWidget implements PreferredSizeWidget {
   const MainAppbarHeader({
     super.key,
     required this.menus,
+    required this.settingsMenu,
     required this.onLogout,
   });
 
   final List<AppMenuItem> menus;
+
+  /// The SETTINGS menu, opened from the gear icon in [AppbarActionIcons].
+  final AppMenuItem settingsMenu;
+
   final Future<void> Function() onLogout;
 
   @override
@@ -33,7 +38,7 @@ class MainAppbarHeader extends StatelessWidget implements PreferredSizeWidget {
             Expanded(child: MainMenuBarView(menus: menus)),
           ],
         ),
-        AppbarActionIcons(onLogout: onLogout),
+        AppbarActionIcons(onLogout: onLogout, settingsMenu: settingsMenu),
       ],
     );
   }

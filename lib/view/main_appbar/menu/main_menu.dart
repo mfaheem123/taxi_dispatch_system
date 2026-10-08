@@ -10,7 +10,6 @@ import 'fares_menu.dart';
 import 'locations_menu.dart';
 import 'menu_actions.dart';
 import 'reports_menu.dart';
-import 'settings_menu.dart';
 import 'vehicles_menu.dart';
 
 /// Every top-level menu of the shell's menu bar, in the order they are shown.
@@ -29,6 +28,8 @@ List<AppMenuItem> buildMainMenu(BuildContext context, MenuActions actions) {
     buildVehiclesMenu(actions),
     buildAdministrationMenu(actions),
     buildReportsMenu(actions),
-    buildSettingsMenu(context, actions),
+    // SETTINGS is no longer a top-bar menu — it lives behind the gear icon on
+    // the right of the app bar (see AppbarActionIcons). Built via
+    // buildSettingsMenu(context, actions) and passed there.
   ];
 }

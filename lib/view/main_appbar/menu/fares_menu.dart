@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'app_menu_item.dart';
 
 import '../../fare_view/airport_charges/airport_charges.dart';
@@ -12,7 +13,7 @@ import 'menu_actions.dart';
 
 /// The FARES menu.
 AppMenuItem buildFaresMenu(MenuActions actions) {
-  return AppMenuItem(title: "FARES", children: [
+  return AppMenuItem(title: "FARES", icon: Icons.credit_card, children: [
     AppMenuItem(
       title: "CREATE FARE SETTINGS",
       onTap: () => actions.openPage(
