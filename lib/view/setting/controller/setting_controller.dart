@@ -436,19 +436,19 @@ class SettingController extends GetxController {
       var config = companyConfigurationModel?.companyConfiguration;
 
       if (config != null) {
-        userNameController.text = config.emailUsername ?? '';
+        userNameController.text = (config.emailUsername ?? '').toUpperCase();
         passwordController.text = config.emailPassword ?? '';
-        hostController.text = config.emailHost ?? 'SMTP.GMAIL.COM';
+        hostController.text = (config.emailHost ?? 'SMTP.GMAIL.COM').toUpperCase();
         portController.text = config.emailPort ?? '465';
-        ccController.text = config.emailCc ?? '';
+        ccController.text = (config.emailCc ?? '').toUpperCase();
 
         smsHostController.text = config.smsHost ?? '';
         smsPortController.text = config.smsPort ?? '';
-        smsUserNameController.text = config.smsUsername ?? '';
+        smsUserNameController.text = (config.smsUsername ?? '').toUpperCase();
         smsPasswordController.text = config.smsPassword ?? '';
 
-        mapApiKeyController.text = config.mapApiKey ?? '';
-        geoApifyApiKeyController.text = config.mainApiKey ?? '';
+        mapApiKeyController.text = (config.mapApiKey ?? '').toUpperCase();
+        geoApifyApiKeyController.text = (config.mainApiKey ?? '').toUpperCase();
         distanceFactorController.text = config.mapDistanceFactor ?? '';
         timeFactorController.text = config.mapTimeFactor ?? '';
 
@@ -470,16 +470,16 @@ class SettingController extends GetxController {
         roundOffFares.text = config.roundoffFares?.toString() ?? '';
         flightTrackerAPI.text = config.flightTrackerApi ?? '';
 
-        stripePublicKey.text = config.stripePublicKey ?? '';
-        stripeSecretKey.text = config.stripeSecretKey ?? '';
-        endPointKey.text = config.endpointKey ?? '';
-        invoiceEndPointKey.text = config.invoiceEndpointKey ?? '';
+        stripePublicKey.text = (config.stripePublicKey ?? '').toUpperCase();
+        stripeSecretKey.text = (config.stripeSecretKey ?? '').toUpperCase();
+        endPointKey.text = (config.endpointKey ?? '').toUpperCase();
+        invoiceEndPointKey.text = (config.invoiceEndpointKey ?? '').toUpperCase();
 
-        baseAddress.text = config.baseAddress ?? '';
+        baseAddress.text = (config.baseAddress ?? '').toUpperCase();
         deadMileageMiles.text = config.deadMileageMiles ?? '';
-        deadMileageMethods.text = config.deadMileageMethods ?? '';
+        deadMileageMethods.text = (config.deadMileageMethods ?? '').toUpperCase();
         huntGroup.text = config.huntGroup?.toString() ?? '';
-        serviceApiKeyController.text = config.serviceApiKey ?? '';
+        serviceApiKeyController.text = (config.serviceApiKey ?? '').toUpperCase();
         smsServiceIpController.text = config.smsServiceIp ?? '';
 
         voipServiceValue = (config.voipService?.toUpperCase() == "V4VOIP") ? "V4VOIP" : "YESTECH";

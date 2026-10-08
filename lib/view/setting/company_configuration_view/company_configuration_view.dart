@@ -199,7 +199,7 @@ class _CompanyConfigurationViewState extends State<CompanyConfigurationView> {
         ),
         child: Text(
           title,
-          style: TextStyle(
+          style: outFitRegular(
             fontWeight: FontWeight.bold,
             color: (isSelected || isFocused) ? DynamicColors.primaryClr : Colors.black,
             fontSize: Get.width < 1200 ? 11 : 13,

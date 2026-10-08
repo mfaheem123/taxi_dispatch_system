@@ -144,7 +144,7 @@ class _ComapanyInformationScreenState extends State<ComapanyInformationScreen> {
                                     ? Center(
                                   child: Text(
                                     "UPLOAD IMAGE",
-                                    style: TextStyle(
+                                    style: outFitRegular(
                                       fontSize: 30,
                                       fontWeight: FontWeight.bold,
                                       color: focused
@@ -212,9 +212,7 @@ class _ComapanyInformationScreenState extends State<ComapanyInformationScreen> {
                               children: [
                                 Text(
                                   AppText.companyinformation,
-                                  style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
+                                  style: titleDesign()
                                 ),
                                 const Spacer(),
                                 CustomButton(
@@ -225,7 +223,7 @@ class _ComapanyInformationScreenState extends State<ComapanyInformationScreen> {
                                   height: 40,
                                   borderRadius: 4,
                                   btnText: AppText.bankDetails,
-                                  style: mozillaTextRegularText(
+                                  style: outFitRegular(
                                       fontSize: 10,
                                       color: DynamicColors.whiteClr),
                                   onTap: () {

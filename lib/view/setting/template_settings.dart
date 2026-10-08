@@ -17,6 +17,7 @@ import '../../component/text_widget.dart';
 import '../accounts/controller/account_controller.dart';
 import '../administration/User/create_userScreen.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
+import '../page_scroller.dart';
 import 'model/select_templete_type.dart';
 import 'model/templete_by_type_model.dart';
 
@@ -259,7 +260,8 @@ class _TemplateSettingsState extends State<TemplateSettings> {
     double width = WidgetsBinding
         .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
-    return GetBuilder<SettingController>(
+    return PageScrollWrapper(
+      child: GetBuilder<SettingController>(
       builder: (controller) {
         return LayoutBuilder(builder: (context, constraints) {
           final double maxWidth = constraints.maxWidth;
@@ -533,7 +535,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
           );
         });
       },
-    );
+    ));
   }
 }
 //
