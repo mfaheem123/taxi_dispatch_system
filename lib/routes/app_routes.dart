@@ -15,6 +15,7 @@ abstract class Routes {
   static const createComplaint = _Paths.createComplaint;
   static const lostProperty = _Paths.lostProperty;
   static const receiptDetails = _Paths.receiptDetails;
+  static const wallboardScreen = _Paths.wallboardScreen;
 }
 
 abstract class _Paths {
@@ -31,4 +32,5 @@ abstract class _Paths {
   static const createComplaint = '/CreateComplaint';
   static const lostProperty = '/LostProperty';
   static const receiptDetails = '/view/receipt';
+  static const wallboardScreen = '/Wallboard';
 }

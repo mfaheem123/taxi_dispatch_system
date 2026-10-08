@@ -12,6 +12,7 @@ import '../view/customer/create_lost_propertyScreen.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
 import '../view/dashboard_view/widgets/view_drivers_map.dart';
 import '../view/main_appbar/main_appbar.dart';
+import '../view/setting/wallboard_screen.dart';
 part 'app_routes.dart';
 
 class AppPages {
@@ -83,6 +84,9 @@ class AppPages {
       name: _Paths.receiptDetails,
       page: () => BookingReceiptScreen(),
     ),
+    GetPage(
+        name: _Paths.wallboardScreen,
+        page: () => WallboardScreen()),
   ];
 }
 

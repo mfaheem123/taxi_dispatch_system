@@ -51,16 +51,16 @@ class _WallboardScreenState extends State<WallboardScreen> {
                         Row(
                           children: [
                             const Image(
-                              image: AssetImage('assets/logo.jpeg'),
-                              width: 55,
+                              image: AssetImage('assets/cabflow_logo.png'),
+                              width: 150,
                               height: 55,
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: 20),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "NEXUS",
+                                  "DEMO COMPANY",
                                   style: mozillaTextSemiBoldText(
                                       fontWeight: FontWeight.w800,
                                       fontSize: 18),

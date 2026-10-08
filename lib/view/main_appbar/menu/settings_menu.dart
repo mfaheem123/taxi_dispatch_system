@@ -1,4 +1,7 @@
+import 'dart:html' as html;
+
 import 'package:flutter/material.dart';
+import '../../../routes/app_pages.dart';
 import 'app_menu_item.dart';
 
 import '../../../alert/back_slash_alert.dart';
@@ -130,10 +133,14 @@ AppMenuItem buildSettingsMenu(BuildContext context, MenuActions actions) {
     ),
     AppMenuItem(
       title: "WALLBOARD",
-      onTap: () => actions.openPage(
-        title: "WALLBOARD",
-        page: () => WallboardScreen(),
-      ),
+      onTap: () {
+        final newTabUrl = Uri.base.origin + '/#' + Routes.wallboardScreen;
+        html.window.open(newTabUrl, '_blank');
+      }
+      // => actions.openPage(
+      //   title: "WALLBOARD",
+      //   page: () => WallboardScreen(),
+      // ),
     ),
   ]);
 }
