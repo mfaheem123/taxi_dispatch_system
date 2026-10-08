@@ -1,7 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/Model/image_model.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
-import 'package:dashboard_new1/view/setting/payment_types_color.dart';
+import 'package:dashboard_new1/alert/payment_types_color_alt.dart';
 import 'package:dashboard_new1/view/setting/shortcut_model.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';

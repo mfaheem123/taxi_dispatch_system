@@ -10,7 +10,7 @@ import '../../setting/company_information_screen.dart';
 import '../../setting/document_number_screen.dart';
 import '../../setting/email_tracking.dart';
 import '../../setting/location_type_shortcuts.dart';
-import '../../setting/payment_types_color.dart';
+import '../../../alert/payment_types_color_alt.dart';
 import '../../setting/sms_tracking.dart';
 import '../../setting/template_settings.dart';
 import '../../setting/voipSetting_Screen.dart';

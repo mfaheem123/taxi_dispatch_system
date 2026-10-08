@@ -58,7 +58,7 @@ import '../../setting/call_recordings.dart';
 import '../../setting/company_configuration_view/company_configuration_view.dart';
 import '../../setting/email_tracking.dart';
 import '../../setting/location_type_shortcuts.dart';
-import '../../setting/payment_types_color.dart';
+import '../../../alert/payment_types_color_alt.dart';
 import '../../setting/sms_tracking.dart';
 import '../../setting/template_settings.dart';
 import '../../setting/wallboard_screen.dart';
