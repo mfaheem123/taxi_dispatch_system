@@ -40,11 +40,15 @@ AppMenuItem buildSettingsMenu(BuildContext context, MenuActions actions) {
     ),
     AppMenuItem(
       title: "PAYMENT TYPES COLOR CODE",
-      onTap: () => actions.openDialog(
-        context: context,
-        title: "PAYMENT TYPES COLOR CODE",
-        builder: (_) => const PaymentTypeDialog(),
-      ),
+      onTap: () {
+        showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (BuildContext context) {
+            return const PaymentTypeDialog();
+          },
+        );
+      },
     ),
     AppMenuItem(
       title: "DOCUMENT NUMBER",
@@ -107,11 +111,15 @@ AppMenuItem buildSettingsMenu(BuildContext context, MenuActions actions) {
     ),
     AppMenuItem(
       title: "HELP",
-      onTap: () => actions.openDialog(
-        context: context,
-        title: "HELP",
-        builder: (_) => const BackSlashAlert(),
-      ),
+      onTap: () {
+        showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (BuildContext context) {
+            return const BackSlashAlert();
+          },
+        );
+      },
     ),
     AppMenuItem(
       title: "CHAT WITH DRIVER AND PASSENGER",

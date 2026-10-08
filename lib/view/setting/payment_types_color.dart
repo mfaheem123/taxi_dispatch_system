@@ -40,10 +40,7 @@ class _PaymentTypeDialogState extends State<PaymentTypeDialog> {
           children: [
             Text(
               "PAYMENT TYPE COLOR CODE",
-              style: mozillaTextSemiBoldText(
-                fontSize: 18,
-                color: DynamicColors.black,
-              ),
+              style: titleDesign()
             ),
             FocusTraversalOrder(
               order: const NumericFocusOrder(999),
@@ -54,7 +51,9 @@ class _PaymentTypeDialogState extends State<PaymentTypeDialog> {
       ),
       content: GetBuilder<SettingController>(
         initState: (state) {
-          controller.getSettingPaymentTypes();
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            controller.getSettingPaymentTypes();
+          });
         },
         builder: (logic) {
           final list = logic.driverCommissionPaymentModel?.paymentTypes ?? [];
@@ -83,11 +82,16 @@ class _PaymentTypeDialogState extends State<PaymentTypeDialog> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           CustomButton(
-                            height: 35,
+                            height: 32,
                             btnText: AppText.save,
                             verticalPadding: 0.0,
                             width: 100,
                             borderRadius: 4,
+                            style: mozillaTextSemiBoldText(
+                                fontSize: 13,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold
+                            ),
                             onTap: () {
                               if (selectedPaymentId != null) {
                                 logic.updatePaymentTypeColor(selectedPaymentId!);
@@ -96,7 +100,7 @@ class _PaymentTypeDialogState extends State<PaymentTypeDialog> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 15),
+                      const SizedBox(height: 8),
                       Scrollbar(
                         thickness: 8,
                         radius: const Radius.circular(10),
@@ -124,7 +128,7 @@ class _PaymentTypeDialogState extends State<PaymentTypeDialog> {
                                   DataCell(
                                     Text(
                                       (item.name ?? "").toUpperCase(),
-                                      style: const TextStyle(
+                                      style: outFitRegular(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 13,
                                       ),
@@ -135,23 +139,19 @@ class _PaymentTypeDialogState extends State<PaymentTypeDialog> {
                                       child: ColorPickerWidget(
                                         pickerColor: logic.parseColor(item.backgroundColor, Colors.white),
                                         onColorChanged: (color) {
-                                          setState(() {
                                             String hex = '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
                                             item.backgroundColor = hex;
 
                                             logic.paymentBackgroundHex.value = hex;
                                             selectedPaymentId = item.id;
-                                          });
                                           logic.update();
                                         },
                                         onColorSelected: (color) {
-                                          setState(() {
                                             String hex = '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
                                             item.backgroundColor = hex;
 
                                             logic.paymentBackgroundHex.value = hex;
                                             selectedPaymentId = item.id;
-                                          });
                                           logic.update();
                                         },
                                         width: fieldWidth,
@@ -165,23 +165,19 @@ class _PaymentTypeDialogState extends State<PaymentTypeDialog> {
                                       child: ColorPickerWidget(
                                         pickerColor: logic.parseColor(item.foregroundColor, Colors.black),
                                         onColorChanged: (color) {
-                                          setState(() {
                                             String hex = '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
                                             item.foregroundColor = hex;
 
                                             logic.paymentForegroundHex.value = hex;
                                             selectedPaymentId = item.id;
-                                          });
                                           logic.update();
                                         },
                                         onColorSelected: (color) {
-                                          setState(() {
                                             String hex = '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
                                             item.foregroundColor = hex;
 
                                             logic.paymentForegroundHex.value = hex;
                                             selectedPaymentId = item.id;
-                                          });
                                           logic.update();
                                         },
                                         width: fieldWidth,

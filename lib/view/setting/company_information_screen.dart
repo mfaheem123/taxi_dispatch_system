@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import '../../alert/bank_details_alert.dart';
 import '../../component/networks/api.dart';
 import '../administration/controller/administration_controller.dart';
+import '../page_scroller.dart';
 
 class ComapanyInformationScreen extends StatefulWidget {
   const ComapanyInformationScreen({super.key});
@@ -48,7 +49,8 @@ class _ComapanyInformationScreenState extends State<ComapanyInformationScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return GetBuilder<SettingController>(initState: (v) {
+    return PageScrollWrapper(
+      child: GetBuilder<SettingController>(initState: (v) {
       permissions = Api().sp.read('all_permissions') ?? [];
       print(permissions);
 
@@ -436,6 +438,7 @@ class _ComapanyInformationScreenState extends State<ComapanyInformationScreen> {
           ),
         );
       });
-    });
+    }),
+    );
   }
 }

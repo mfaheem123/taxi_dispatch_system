@@ -9,6 +9,7 @@ import '../../../component/customButton.dart';
 import '../../../component/dropdown_button.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_widget.dart';
+import '../../page_scroller.dart';
 import '../controller/setting_controller.dart';
 import 'date_time_configuration_view.dart';
 import 'email_configuration_view.dart';
@@ -39,7 +40,8 @@ class _CompanyConfigurationViewState extends State<CompanyConfigurationView> {
       const PaymentConfigurationView(),
     ];
 
-    return GetBuilder<SettingController>( initState: (state)  {
+    return PageScrollWrapper(
+      child: GetBuilder<SettingController>( initState: (state)  {
       controller.getDocumentSubsidiary();
 
       // if (controller.selectSubsidiaryValue != null) {
@@ -161,7 +163,7 @@ class _CompanyConfigurationViewState extends State<CompanyConfigurationView> {
           );
         });
       },
-    );
+    ));
   }
 
   Widget _buildTabItem(String title, int index) {
@@ -211,163 +213,3 @@ class _CompanyConfigurationViewState extends State<CompanyConfigurationView> {
     );
   }
 }
-// class _CompanyConfigurationViewState extends State<CompanyConfigurationView> {
-//
-//   SettingController controller = Get.isRegistered<SettingController>()
-//       ? Get.find<SettingController>()
-//       : Get.put(SettingController());
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return DefaultTabController(
-//       length: 6,
-//       child: GetBuilder<SettingController>(
-//           builder: (controller) {
-//             return LayoutBuilder(builder: (context, constraints) {
-//               final double maxWidth = constraints.maxWidth;
-//               final bool isMobile = maxWidth < 600;
-//               final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
-//
-//               // Instead of fixed width, we calculate flexible field widths
-//               final double fieldWidth = isMobile
-//                   ? maxWidth // full width
-//                   : isTablet
-//                   ? maxWidth / 2
-//                   : maxWidth / 4;
-//
-//               final double tabViewHeight = maxWidth >= 1400
-//                   ? Get.height / 1.6
-//                   : isMobile
-//                   ? 1100
-//                   : 550;
-//
-//               return SingleChildScrollView(
-//                 child: Padding(
-//                   padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
-//                   child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   SizedBox(height: 10),
-//                   Wrap(
-//                      crossAxisAlignment: WrapCrossAlignment.center,
-//                     spacing: 20,
-//                     runSpacing: 12,
-//                     children: [
-//                       Padding(padding: EdgeInsetsGeometry.only(left: 10.0),
-//                         child: Text(AppText.companyConfigurations, style: titleDesign())),
-//                       SizedBox(width: 50),
-//                       CustomDropdownField<String>(
-//                         text: AppText.subsidiary,
-//                         width: fieldWidth/1.5,
-//                         label: AppText.selectSubsidiary,
-//                         items:[
-//                           "SUBSIDIARY 1",
-//                           "SUBSIDIARY 2",
-//                           "SUBSIDIARY 3",
-//                           "SUBSIDIARY 4",
-//                           "SUBSIDIARY 5",
-//                         ],
-//                         value: controller.selectSubsidiaryValue,
-//                         itemLabel: (val) => val, // just show the string
-//                         onChanged: (val) {
-//                           controller.selectSubsidiaryValue = val!;
-//                           controller.update();
-//                         },
-//                       ),
-//                     ],
-//                   ),
-//                   SizedBox(height: 16),
-//                   // Padding(
-//                   //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-//                   //   child: Container(
-//                   //   width: Get.width,
-//                   //   height: kToolbarHeight,
-//                   //   decoration: BoxDecoration(color: Colors.blueGrey[50]),
-//                   //   child: TabBar(
-//                   //     labelPadding: EdgeInsets.symmetric(horizontal: 70),
-//                   //     isScrollable: true,
-//                   //     labelColor: DynamicColors.primaryClr,
-//                   //     unselectedLabelColor: Colors.black,
-//                   //     indicatorColor: DynamicColors.primaryClr,
-//                   //     labelStyle: TextStyle(
-//                   //       fontWeight: FontWeight.bold,
-//                   //     ),
-//                   //     tabs: [
-//                   //       Tab(text: "GENERAL CONFIGURATIONS"),
-//                   //       Tab(text: "EMAIL CONFIGURATIONS"),
-//                   //       Tab(text: "SMS CONFIGURATIONS"),
-//                   //       Tab(text: "MAP CONFIGURATIONS"),
-//                   //       Tab(text: "DATETIME CONFIGURATIONS"),
-//                   //       Tab(text: "PAYMENT GATEWAYS"),
-//                   //     ],
-//                   //   ),
-//                   // ),
-//                   // ),
-//                   Padding(
-//                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-//                     child: Container(
-//                       width: Get.width,
-//                       height: kToolbarHeight,
-//                       decoration: BoxDecoration(color: Colors.blueGrey[50]),
-//                       child: TabBar(
-//                         isScrollable: Get.width < 1024,
-//                         labelPadding: Get.width < 1024
-//                             ? const EdgeInsets.symmetric(horizontal: 16.0)
-//                             : EdgeInsets.zero,
-//                         labelColor: DynamicColors.primaryClr,
-//                         unselectedLabelColor: Colors.black,
-//                         indicatorColor: DynamicColors.primaryClr,
-//                         labelStyle: TextStyle(
-//                           fontWeight: FontWeight.bold,
-//                           fontSize: Get.width < 1200 ? 11 : 13,
-//                         ),
-//                         tabs: const [
-//                           Tab(text: "GENERAL CONFIGURATIONS"),
-//                           Tab(text: "EMAIL CONFIGURATIONS"),
-//                           Tab(text: "SMS CONFIGURATIONS"),
-//                           Tab(text: "MAP CONFIGURATIONS"),
-//                           Tab(text: "DATETIME CONFIGURATIONS"),
-//                           Tab(text: "PAYMENT GATEWAYS"),
-//                         ],
-//                       ),
-//                     ),
-//                   ),
-//
-//
-//
-//                   /// 🔹 Neeche ka content flexible banado
-//                   Container(
-//                     height: tabViewHeight,
-//                     child: TabBarView(
-//                       children: [
-//                         GeneralConfigurationView(), // General
-//                         EmailConfigurationView(), // Email
-//                         SmsConfigurationView(), // SMS
-//                         MapConfigurationView(), // Map
-//
-//                         DateTimeConfigurationView(), // Payment
-//                         PaymentConfigurationView(), // DateTime
-//                       ],
-//                     ),
-//                   ),
-//                   // SAVE BUTTON
-//                   Align(
-//                     alignment: Alignment.center,
-//                     child: CustomButton(
-//                       height: 35,
-//                       width: fieldWidth,
-//                       fontSize: 14,
-//                       borderRadius: 4,
-//                       verticalPadding: 0.0,
-//                       btnText: AppText.save,
-//                     ),
-//                   ),
-//                 ],
-//                   ),
-//               ));
-//             });
-//           },
-//       ),
-//     );
-//   }
-// }
