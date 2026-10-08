@@ -451,19 +451,6 @@ class CliController extends GetxController {
     pickupPoints = dropoffPoints;
     dropoffPoints = tempPoints;
 
-    final b = selectedBooking;
-    if (b != null) {
-      final p = b.pickup, pLat = b.pickupLatitude, pLng = b.pickupLongitude;
-      b.pickup = b.dropoff;
-      b.pickupLatitude = b.dropoffLatitude;
-      b.pickupLongitude = b.dropoffLongitude;
-      b.dropoff = p;
-      b.dropoffLatitude = pLat;
-      b.dropoffLongitude = pLng;
-    }
-
-    // Dialog only: the dashboard form behind it is left untouched until
-    // NEW BOOKING hands the call over.
     update();
   }
 
