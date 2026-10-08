@@ -146,7 +146,7 @@ class DriverActionAlert extends StatelessWidget {
                           borderRadius: 8,
                           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                             onTap: () {
-                              controller.breakACCEPT(driverID, "Rejected", "disabled"  );
+                              controller.breakACCEPT(driverID, "Rejected",  );
                             }
                         ),
                       ),
@@ -159,7 +159,7 @@ class DriverActionAlert extends StatelessWidget {
                           borderRadius: 8,
                           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                           onTap: () {
-                            controller.breakACCEPT(driverID, "Accepted", "disabled");
+                            controller.breakACCEPT(driverID, "Accepted", );
                           }
                         ),
                       ),
