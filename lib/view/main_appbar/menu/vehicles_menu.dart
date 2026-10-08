@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:nested_menu_bar/nested_menu_bar.dart';
+import 'app_menu_item.dart';
 
 import '../../vehicles_view/company_vehiclesScreen.dart';
 import '../../vehicles_view/controller/controller.dart';
@@ -9,7 +9,7 @@ import '../../vehicles_view/list_vehicle_type.dart';
 import 'menu_actions.dart';
 
 /// The VEHICLES menu.
-NestedMenuItem buildVehiclesMenu(MenuActions actions) {
+AppMenuItem buildVehiclesMenu(MenuActions actions) {
   /// Wipes whatever the vehicle forms were left holding, so a fresh entry opens
   /// on an empty form.
   void resetVehicleForm(void Function(VehicleController) reset) {
@@ -18,8 +18,8 @@ NestedMenuItem buildVehiclesMenu(MenuActions actions) {
     }
   }
 
-  return NestedMenuItem(title: "VEHICLES", children: [
-    NestedMenuItem(
+  return AppMenuItem(title: "VEHICLES", children: [
+    AppMenuItem(
       title: "CREATE VEHICLE TYPE",
       onTap: () => actions.openPage(
         title: "CREATE VEHICLE TYPE",
@@ -28,7 +28,7 @@ NestedMenuItem buildVehiclesMenu(MenuActions actions) {
         beforeOpen: () => resetVehicleForm((c) => c.clearForm()),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "VEHICLE TYPE",
       onTap: () => actions.openPage(
         title: "VEHICLE TYPE",
@@ -36,7 +36,7 @@ NestedMenuItem buildVehiclesMenu(MenuActions actions) {
         permission: 'read_vehicle_type',
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "CREATE COMPANY VEHICLE",
       onTap: () => actions.openPage(
         title: "CREATE COMPANY VEHICLE",
@@ -45,7 +45,7 @@ NestedMenuItem buildVehiclesMenu(MenuActions actions) {
         beforeOpen: () => resetVehicleForm((c) => c.clearCompanyVehicleForm()),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "COMPANY VEHICLES LIST",
       onTap: () => actions.openPage(
         title: "COMPANY VEHICLES LIST",

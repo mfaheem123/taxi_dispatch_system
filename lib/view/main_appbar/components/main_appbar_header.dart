@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nested_menu_bar/nested_menu_bar.dart';
+import '../menu/app_menu_item.dart';
 
 import 'app_brand_logo.dart';
 import 'appbar_action_icons.dart';
@@ -16,7 +16,7 @@ class MainAppbarHeader extends StatelessWidget implements PreferredSizeWidget {
     required this.onLogout,
   });
 
-  final List<NestedMenuItem> menus;
+  final List<AppMenuItem> menus;
   final Future<void> Function() onLogout;
 
   @override

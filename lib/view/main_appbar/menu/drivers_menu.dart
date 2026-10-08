@@ -1,4 +1,4 @@
-import 'package:nested_menu_bar/nested_menu_bar.dart';
+import 'app_menu_item.dart';
 
 import '../../drivers_view/driver/bulk_driver_commission/bulk_driver_commission.dart';
 import '../../drivers_view/driver/bulk_driver_commission/bulk_driver_rent.dart';
@@ -16,12 +16,12 @@ import '../../drivers_view/driver/login_drivers/login_drivers_screen.dart';
 import 'menu_actions.dart';
 
 /// The DRIVERS menu, with its DRIVER / COMMISSION / RENT sub-menus.
-NestedMenuItem buildDriversMenu(MenuActions actions) {
-  return NestedMenuItem(title: "DRIVERS", children: [
-    NestedMenuItem(
+AppMenuItem buildDriversMenu(MenuActions actions) {
+  return AppMenuItem(title: "DRIVERS", children: [
+    AppMenuItem(
       title: "DRIVER",
       children: [
-        NestedMenuItem(
+        AppMenuItem(
           title: "ADD DRIVER",
           onTap: () => actions.openPage(
             title: "ADD DRIVER",
@@ -29,7 +29,7 @@ NestedMenuItem buildDriversMenu(MenuActions actions) {
             permission: 'create_driver',
           ),
         ),
-        NestedMenuItem(
+        AppMenuItem(
           title: "DRIVERS",
           onTap: () => actions.openPage(
             title: "DRIVERS",
@@ -37,7 +37,7 @@ NestedMenuItem buildDriversMenu(MenuActions actions) {
             permission: 'read_driver',
           ),
         ),
-        NestedMenuItem(
+        AppMenuItem(
           title: "LIST OF LOGGED IN/OUT DRIVERS",
           onTap: () => actions.openPage(
             title: "LIST OF LOGGED IN/OUT DRIVERS",
@@ -46,10 +46,10 @@ NestedMenuItem buildDriversMenu(MenuActions actions) {
         ),
       ],
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "DRIVER COMMISSION",
       children: [
-        NestedMenuItem(
+        AppMenuItem(
           title: "CREATE DRIVER COMMISSION",
           onTap: () => actions.openPage(
             title: "CREATE DRIVER COMMISSION",
@@ -57,7 +57,7 @@ NestedMenuItem buildDriversMenu(MenuActions actions) {
             permission: 'create_driver_commission',
           ),
         ),
-        NestedMenuItem(
+        AppMenuItem(
           title: "DRIVER COMMISSIONS",
           onTap: () => actions.openPage(
             title: "DRIVER COMMISSIONS",
@@ -65,14 +65,14 @@ NestedMenuItem buildDriversMenu(MenuActions actions) {
             permission: 'read_driver_commission',
           ),
         ),
-        NestedMenuItem(
+        AppMenuItem(
           title: "BULK DRIVER COMMISSION",
           onTap: () => actions.openPage(
             title: "BULK DRIVER COMMISSION",
             page: () => BulkDriverCommission(),
           ),
         ),
-        NestedMenuItem(
+        AppMenuItem(
           title: "DRIVER COMMISSION PAY",
           onTap: () => actions.openPage(
             title: "DRIVER COMMISSION PAY",
@@ -81,31 +81,31 @@ NestedMenuItem buildDriversMenu(MenuActions actions) {
         ),
       ],
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "DRIVER RENT",
       children: [
-        NestedMenuItem(
+        AppMenuItem(
           title: "CREATE DRIVER RENT",
           onTap: () => actions.openPage(
             title: "CREATE DRIVER RENT",
             page: () => CreateDriverRent(),
           ),
         ),
-        NestedMenuItem(
+        AppMenuItem(
           title: "DRIVER RENT",
           onTap: () => actions.openPage(
             title: "DRIVER RENT",
             page: () => DriverRent(),
           ),
         ),
-        NestedMenuItem(
+        AppMenuItem(
           title: "BULK DRIVER RENT",
           onTap: () => actions.openPage(
             title: "BULK DRIVER RENT",
             page: () => BulkDriverRent(),
           ),
         ),
-        NestedMenuItem(
+        AppMenuItem(
           title: "DRIVER RENT PAY",
           onTap: () => actions.openPage(
             title: "DRIVER RENT PAY",
@@ -114,7 +114,7 @@ NestedMenuItem buildDriversMenu(MenuActions actions) {
         ),
       ],
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "DRIVER APP FEATURES",
       onTap: () => actions.openPage(
         title: "DRIVER APP FEATURES",
@@ -122,7 +122,7 @@ NestedMenuItem buildDriversMenu(MenuActions actions) {
         permission: 'read_app_feature',
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "DRIVER SIN BIN SETTINGS",
       onTap: () => actions.openPage(
         title: "DRIVER SIN BIN SETTINGS",

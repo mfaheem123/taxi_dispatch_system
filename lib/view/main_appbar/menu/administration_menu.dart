@@ -1,6 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:get/get.dart';
-import 'package:nested_menu_bar/nested_menu_bar.dart';
+import 'app_menu_item.dart';
 
 import '../../../component/networks/api.dart';
 import '../../administration/User/create_subsiDiary.dart';
@@ -12,7 +12,7 @@ import '../../authorization/authorization_Screen.dart';
 import 'menu_actions.dart';
 
 /// The ADMINISTRATIONS menu.
-NestedMenuItem buildAdministrationMenu(MenuActions actions) {
+AppMenuItem buildAdministrationMenu(MenuActions actions) {
   /// Wipes whatever the administration forms were left holding, so a fresh
   /// entry opens on an empty form.
   void resetAdministrationForm(void Function(AdministrationController) reset) {
@@ -21,9 +21,9 @@ NestedMenuItem buildAdministrationMenu(MenuActions actions) {
     }
   }
 
-  return NestedMenuItem(title: "ADMINISTRATIONS", children: [
-    NestedMenuItem(title: "USERS LIST", children: [
-      NestedMenuItem(
+  return AppMenuItem(title: "ADMINISTRATIONS", children: [
+    AppMenuItem(title: "USERS LIST", children: [
+      AppMenuItem(
         title: "CREATE USER",
         onTap: () => actions.openPage(
           title: "CREATE USER",
@@ -32,7 +32,7 @@ NestedMenuItem buildAdministrationMenu(MenuActions actions) {
           beforeOpen: () => resetAdministrationForm((c) => c.clearUserForm()),
         ),
       ),
-      NestedMenuItem(
+      AppMenuItem(
         title: "USERS",
         onTap: () => actions.openPage(
           title: "USERS",
@@ -42,7 +42,7 @@ NestedMenuItem buildAdministrationMenu(MenuActions actions) {
           permission: 'read_company_information',
         ),
       ),
-      NestedMenuItem(
+      AppMenuItem(
         title: "CREATE SUBSIDIARY",
         onTap: () => actions.openPage(
           title: "CREATE SUBSIDIARY",
@@ -52,7 +52,7 @@ NestedMenuItem buildAdministrationMenu(MenuActions actions) {
               resetAdministrationForm((c) => c.clearSubsidiaryForm()),
         ),
       ),
-      NestedMenuItem(
+      AppMenuItem(
         title: "SUBSIDIARIES",
         onTap: () => actions.openPage(
           title: "SUBSIDIARIES",
@@ -60,7 +60,7 @@ NestedMenuItem buildAdministrationMenu(MenuActions actions) {
           permission: 'read_subsidiary',
         ),
       ),
-      NestedMenuItem(
+      AppMenuItem(
         title: "AUTHORIZATION",
         // Role-gated rather than permission-gated, and it stays quiet when the
         // open-page limit is reached — both as the hand-written entry was.

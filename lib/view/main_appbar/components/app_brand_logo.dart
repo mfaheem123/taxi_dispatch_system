@@ -4,7 +4,7 @@ import '../../../component/color.dart';
 
 /// CabFlow logo that fills the menu bar's brand slot.
 ///
-/// [NestedMenuItem] only takes a title / IconData, never a widget, so the logo
+/// [AppMenuItem] only takes a title, never a widget, so the logo
 /// is rendered next to the menu bar instead of as an item inside it.
 class AppBrandLogo extends StatelessWidget {
   const AppBrandLogo({super.key});

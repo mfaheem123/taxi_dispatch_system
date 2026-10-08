@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nested_menu_bar/nested_menu_bar.dart';
+import 'app_menu_item.dart';
 
 import '../../../alert/back_slash_alert.dart';
 import '../../setting/booking_clearing_utility_screen.dart';
@@ -20,9 +20,9 @@ import 'menu_actions.dart';
 /// The SETTINGS menu.
 ///
 /// [context] is what the two dialog entries are opened from.
-NestedMenuItem buildSettingsMenu(BuildContext context, MenuActions actions) {
-  return NestedMenuItem(title: "SETTINGS", children: [
-    NestedMenuItem(
+AppMenuItem buildSettingsMenu(BuildContext context, MenuActions actions) {
+  return AppMenuItem(title: "SETTINGS", children: [
+    AppMenuItem(
       title: "COMPANY INFORMATION",
       onTap: () => actions.openPage(
         title: "COMPANY INFORMATION",
@@ -30,7 +30,7 @@ NestedMenuItem buildSettingsMenu(BuildContext context, MenuActions actions) {
         permission: 'read_company_information',
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "COMPANY CONFIGURATION",
       onTap: () => actions.openPage(
         title: "COMPANY CONFIGURATION",
@@ -38,7 +38,7 @@ NestedMenuItem buildSettingsMenu(BuildContext context, MenuActions actions) {
         permission: 'read_company_configuration',
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "PAYMENT TYPES COLOR CODE",
       onTap: () => actions.openDialog(
         context: context,
@@ -46,7 +46,7 @@ NestedMenuItem buildSettingsMenu(BuildContext context, MenuActions actions) {
         builder: (_) => const PaymentTypeDialog(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "DOCUMENT NUMBER",
       onTap: () => actions.openPage(
         title: "DOCUMENT NUMBER",
@@ -54,7 +54,7 @@ NestedMenuItem buildSettingsMenu(BuildContext context, MenuActions actions) {
         permission: 'read_document_number',
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "TEMPLATE SETTINGS",
       onTap: () => actions.openPage(
         title: "TEMPLATE SETTINGS",
@@ -62,21 +62,21 @@ NestedMenuItem buildSettingsMenu(BuildContext context, MenuActions actions) {
         permission: 'read_template',
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "CLEAR BOOKINGS",
       onTap: () => actions.openPage(
         title: "CLEAR BOOKINGS",
         page: () => BookingClearingUtilityScreen(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "LOCATION TYPE SHORTCUTS",
       onTap: () => actions.openPage(
         title: "LOCATION TYPE SHORTCUTS",
         page: () => LocationTypeShortcuts(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "VOIP SETTINGS",
       onTap: () => actions.openPage(
         title: "VOIP SETTINGS",
@@ -84,28 +84,28 @@ NestedMenuItem buildSettingsMenu(BuildContext context, MenuActions actions) {
         permission: 'read_voip_settings',
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "SMS TRACKING",
       onTap: () => actions.openPage(
         title: "SMS TRACKING",
         page: () => SmsSettingsScreen(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "EMAIL TRACKING",
       onTap: () => actions.openPage(
         title: "EMAIL TRACKING",
         page: () => EmailTrackingScreen(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "CALL RECORDINGS",
       onTap: () => actions.openPage(
         title: "CALL RECORDINGS",
         page: () => CallRecordingScreen(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "HELP",
       onTap: () => actions.openDialog(
         context: context,
@@ -113,14 +113,14 @@ NestedMenuItem buildSettingsMenu(BuildContext context, MenuActions actions) {
         builder: (_) => const BackSlashAlert(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "CHAT WITH DRIVER AND PASSENGER",
       onTap: () => actions.openPage(
         title: "CHAT WITH DRIVER AND PASSENGER",
         page: () => ChatWithDriverAndPassenger(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "WALLBOARD",
       onTap: () => actions.openPage(
         title: "WALLBOARD",

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nested_menu_bar/nested_menu_bar.dart';
+import 'app_menu_item.dart';
 
 import 'accounts_menu.dart';
 import 'administration_menu.dart';
@@ -15,10 +15,10 @@ import 'vehicles_menu.dart';
 
 /// Every top-level menu of the shell's menu bar, in the order they are shown.
 ///
-/// The brand slot comes first on screen but is not a menu: [NestedMenuItem]
+/// The brand slot comes first on screen but is not a menu: [AppMenuItem]
 /// only takes a title / IconData, never a widget, so the CabFlow logo is drawn
 /// beside the bar (see `components/app_brand_logo.dart`).
-List<NestedMenuItem> buildMainMenu(BuildContext context, MenuActions actions) {
+List<AppMenuItem> buildMainMenu(BuildContext context, MenuActions actions) {
   return [
     buildBookingsMenu(actions),
     buildCustomersMenu(actions),

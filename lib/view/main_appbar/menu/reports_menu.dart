@@ -1,4 +1,4 @@
-import 'package:nested_menu_bar/nested_menu_bar.dart';
+import 'app_menu_item.dart';
 
 import '../../reports/driver_booking_view/all_booking_view.dart';
 import '../../reports/driver_booking_view/report_transfered_booking.dart';
@@ -14,31 +14,31 @@ import '../../reports/pco_view/pco_screen.dart';
 import 'menu_actions.dart';
 
 /// The REPORTS menu, with its DRIVER / BOOKINGS / EMPLOYEE / INCOME sub-menus.
-NestedMenuItem buildReportsMenu(MenuActions actions) {
-  return NestedMenuItem(title: "REPORTS", children: [
-    NestedMenuItem(title: "DRIVER", children: [
-      NestedMenuItem(
+AppMenuItem buildReportsMenu(MenuActions actions) {
+  return AppMenuItem(title: "REPORTS", children: [
+    AppMenuItem(title: "DRIVER", children: [
+      AppMenuItem(
         title: "LOGIN",
         onTap: () => actions.openPage(
           title: "LOGIN",
           page: () => DriverLoginScreen(),
         ),
       ),
-      NestedMenuItem(
+      AppMenuItem(
         title: "LOG",
         onTap: () => actions.openPage(
           title: "LOG",
           page: () => DriverLogsScreen(),
         ),
       ),
-      NestedMenuItem(
+      AppMenuItem(
         title: "EARNINGS & INFO",
         onTap: () => actions.openPage(
           title: "EARNINGS & INFO",
           page: () => EarningAndInfoScreen(),
         ),
       ),
-      NestedMenuItem(
+      AppMenuItem(
         title: "FEEDBACK",
         onTap: () => actions.openPage(
           title: "FEEDBACK",
@@ -46,15 +46,15 @@ NestedMenuItem buildReportsMenu(MenuActions actions) {
         ),
       ),
     ]),
-    NestedMenuItem(title: "BOOKINGS", children: [
-      NestedMenuItem(
+    AppMenuItem(title: "BOOKINGS", children: [
+      AppMenuItem(
         title: "ALL BOOKINGS",
         onTap: () => actions.openPage(
           title: "ALL BOOKINGS",
           page: () => AllBookingView(),
         ),
       ),
-      NestedMenuItem(
+      AppMenuItem(
         title: "TRANSFERED BOOKINGS",
         onTap: () => actions.openPage(
           title: "TRANSFERED BOOKINGS",
@@ -62,8 +62,8 @@ NestedMenuItem buildReportsMenu(MenuActions actions) {
         ),
       ),
     ]),
-    NestedMenuItem(title: "EMPLOYEE", children: [
-      NestedMenuItem(
+    AppMenuItem(title: "EMPLOYEE", children: [
+      AppMenuItem(
         title: "ACTIVITY",
         onTap: () => actions.openPage(
           title: "ACTIVITY",
@@ -71,22 +71,22 @@ NestedMenuItem buildReportsMenu(MenuActions actions) {
         ),
       ),
     ]),
-    NestedMenuItem(title: "INCOME", children: [
-      NestedMenuItem(
+    AppMenuItem(title: "INCOME", children: [
+      AppMenuItem(
         title: "INCOME",
         onTap: () => actions.openPage(
           title: "INCOME",
           page: () => IncomeScreen(),
         ),
       ),
-      NestedMenuItem(
+      AppMenuItem(
         title: "COMPANY INCOME",
         onTap: () => actions.openPage(
           title: "COMPANY INCOME",
           page: () => CompanyIncomeScreen(),
         ),
       ),
-      NestedMenuItem(
+      AppMenuItem(
         title: "CREDIT CARD PAYMENTS",
         onTap: () => actions.openPage(
           title: "CREDIT CARD PAYMENTS",
@@ -94,7 +94,7 @@ NestedMenuItem buildReportsMenu(MenuActions actions) {
         ),
       ),
     ]),
-    NestedMenuItem(
+    AppMenuItem(
       title: "PCO",
       onTap: () => actions.openPage(
         title: "PCO",

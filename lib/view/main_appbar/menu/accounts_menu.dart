@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:nested_menu_bar/nested_menu_bar.dart';
+import 'app_menu_item.dart';
 
 import '../../accounts/Invoice/create_account_invoice_screen.dart';
 import '../../accounts/Invoice/create_customer_invoice.dart';
@@ -13,7 +13,7 @@ import '../../accounts/list_of_accountScreen.dart';
 import 'menu_actions.dart';
 
 /// The ACCOUNTS menu.
-NestedMenuItem buildAccountsMenu(MenuActions actions) {
+AppMenuItem buildAccountsMenu(MenuActions actions) {
   /// Wipes whatever the account forms were left holding, so a fresh entry opens
   /// on an empty form.
   void resetAccountForm(void Function(AccountController) reset) {
@@ -22,8 +22,8 @@ NestedMenuItem buildAccountsMenu(MenuActions actions) {
     }
   }
 
-  return NestedMenuItem(title: "ACCOUNTS", children: [
-    NestedMenuItem(
+  return AppMenuItem(title: "ACCOUNTS", children: [
+    AppMenuItem(
       title: "CREATE ACCOUNT",
       onTap: () => actions.openPage(
         title: "CREATE ACCOUNT",
@@ -32,7 +32,7 @@ NestedMenuItem buildAccountsMenu(MenuActions actions) {
         beforeOpen: () => resetAccountForm((c) => c.clearAccountForm()),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "LIST OF ACCOUNTS",
       onTap: () => actions.openPage(
         title: "LIST OF ACCOUNTS",
@@ -40,7 +40,7 @@ NestedMenuItem buildAccountsMenu(MenuActions actions) {
         permission: 'read_account',
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "CREATE ESCORT",
       onTap: () => actions.openPage(
         title: "CREATE ESCORT",
@@ -49,7 +49,7 @@ NestedMenuItem buildAccountsMenu(MenuActions actions) {
         beforeOpen: () => resetAccountForm((c) => c.clearEscortFields()),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       // The trailing space is the menu label only — the chip is titled
       // "ESCORT LIST".
       title: "ESCORT LIST ",
@@ -59,7 +59,7 @@ NestedMenuItem buildAccountsMenu(MenuActions actions) {
         permission: 'read_escort',
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "CREATE CUSTOMER INVOICE",
       onTap: () => actions.openPage(
         title: "CREATE CUSTOMER INVOICE",
@@ -67,14 +67,14 @@ NestedMenuItem buildAccountsMenu(MenuActions actions) {
         permission: 'read_customer_invoice',
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "LIST OF CUSTOMER INVOICES",
       onTap: () => actions.openPage(
         title: "LIST OF CUSTOMER INVOICES",
         page: () => InvoiceList(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "CREATE ACCOUNT INVOICE",
       onTap: () => actions.openPage(
         title: "CREATE ACCOUNT INVOICE",
@@ -82,7 +82,7 @@ NestedMenuItem buildAccountsMenu(MenuActions actions) {
         permission: 'create_account_invoice',
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "LIST OF ACCOUNT INVOICES",
       onTap: () => actions.openPage(
         title: "LIST OF ACCOUNT INVOICES",

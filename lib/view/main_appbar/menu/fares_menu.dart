@@ -1,4 +1,4 @@
-import 'package:nested_menu_bar/nested_menu_bar.dart';
+import 'app_menu_item.dart';
 
 import '../../fare_view/airport_charges/airport_charges.dart';
 import '../../fare_view/fare_by_vehicle/fare_by_vehicle.dart';
@@ -11,58 +11,58 @@ import '../../fare_view/plot_fare/plot_fare.dart';
 import 'menu_actions.dart';
 
 /// The FARES menu.
-NestedMenuItem buildFaresMenu(MenuActions actions) {
-  return NestedMenuItem(title: "FARES", children: [
-    NestedMenuItem(
+AppMenuItem buildFaresMenu(MenuActions actions) {
+  return AppMenuItem(title: "FARES", children: [
+    AppMenuItem(
       title: "CREATE FARE SETTINGS",
       onTap: () => actions.openPage(
         title: "CREATE FARE SETTINGS",
         page: () => FareConfigurationDay(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "CREATE FIXED FARE SETTINGS",
       onTap: () => actions.openPage(
         title: "CREATE FIXED FARE SETTINGS",
         page: () => CreateFixedFareSetting(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "CREATE PLOT FARE",
       onTap: () => actions.openPage(
         title: "CREATE PLOT FARE",
         page: () => PlotFare(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "CREATE FARE BY VEHICLE SETTINGS",
       onTap: () => actions.openPage(
         title: "CREATE FARE BY VEHICLE SETTINGS",
         page: () => FareByVehicle(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "AIRPORT CHARGES",
       onTap: () => actions.openPage(
         title: "AIRPORT CHARGES",
         page: () => AirportCharges(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "FARE INCREMENT",
       onTap: () => actions.openPage(
         title: "FARE INCREMENT",
         page: () => FareIncrement(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "SUR CHARGES",
       onTap: () => actions.openPage(
         title: "SUR CHARGES",
         page: () => FareCharges(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "FARE METER",
       onTap: () => actions.openPage(
         title: "FARE METER",

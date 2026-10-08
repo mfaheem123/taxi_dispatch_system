@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:nested_menu_bar/nested_menu_bar.dart';
+import 'app_menu_item.dart';
 
 import '../../locations_view/controller/locations_controller.dart';
 import '../../locations_view/location/localization_screen.dart';
@@ -10,9 +10,9 @@ import '../../locations_view/location/zone_screen.dart';
 import 'menu_actions.dart';
 
 /// The LOCATIONS menu.
-NestedMenuItem buildLocationsMenu(MenuActions actions) {
-  return NestedMenuItem(title: "LOCATIONS", children: [
-    NestedMenuItem(
+AppMenuItem buildLocationsMenu(MenuActions actions) {
+  return AppMenuItem(title: "LOCATIONS", children: [
+    AppMenuItem(
       title: "CREATE LOCATIONS",
       onTap: () => actions.openPage(
         title: "CREATE LOCATIONS",
@@ -25,7 +25,7 @@ NestedMenuItem buildLocationsMenu(MenuActions actions) {
         },
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "LIST OF LOCATIONS",
       onTap: () => actions.openPage(
         title: "LIST OF LOCATIONS",
@@ -33,7 +33,7 @@ NestedMenuItem buildLocationsMenu(MenuActions actions) {
         permission: 'read_location',
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "CREATE ZONE",
       onTap: () => actions.openPage(
         title: "CREATE ZONE",
@@ -41,7 +41,7 @@ NestedMenuItem buildLocationsMenu(MenuActions actions) {
         permission: 'create_zone',
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "LIST OF ZONES",
       onTap: () => actions.openPage(
         title: "LIST OF ZONES",
@@ -49,7 +49,7 @@ NestedMenuItem buildLocationsMenu(MenuActions actions) {
         permission: 'read_zone',
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "LOCALIZATION",
       onTap: () => actions.openPage(
         title: "LOCALIZATION",

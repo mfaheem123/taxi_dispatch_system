@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:nested_menu_bar/nested_menu_bar.dart';
+import 'menu/app_menu_item.dart';
 
 import '../../component/color.dart';
 import '../auth/Controller/auth_controller.dart';
@@ -11,6 +11,7 @@ import '../dashboard_view/dashboard/defult_dashboard_view.dart';
 import '../setting/chat_with_driver_passenger.dart';
 import 'components/main_appbar_header.dart';
 import 'components/main_bottom_bar.dart';
+import 'components/mobile_shell.dart';
 import 'components/open_pages_tab_strip.dart';
 import 'keyboard/shell_keyboard_controller.dart';
 import 'menu/main_menu.dart';
@@ -42,7 +43,10 @@ class _MyHomePageState extends State<MyHomePage> {
   late final ShellKeyboardController _keyboard;
 
   /// The menu bar's items, built once — they only close over [_menuActions].
-  late final List<NestedMenuItem> hoverMenu;
+  late final List<AppMenuItem> hoverMenu;
+
+  /// Shared by the menu bar (web) and the drawer (phone).
+  late final MenuActions _menuActions;
 
   /// Redraws the clock in the status bar.
   Timer? _timer;
@@ -57,13 +61,11 @@ class _MyHomePageState extends State<MyHomePage> {
     )..attach();
 
     authController.checkUserStatus();
-    hoverMenu = buildMainMenu(
-      context,
-      MenuActions(
-        controller: controller,
-        refresh: (change) => setState(change),
-      ),
+    _menuActions = MenuActions(
+      controller: controller,
+      refresh: (change) => setState(change),
     );
+    hoverMenu = buildMainMenu(context, _menuActions);
     controller.inItStateOFController();
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -88,6 +90,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Phone: no hover menu bar — a slim app bar and a drawer instead.
+    final isMobile = isMobileShell(context);
     return PopScope(
       canPop: false,
       // Har tap yahan note hota hai, taake baad mein pata chale k focus user ne
@@ -97,7 +101,12 @@ class _MyHomePageState extends State<MyHomePage> {
         onPointerDown: _keyboard.handlePointerDown,
         child: Scaffold(
           backgroundColor: DynamicColors.whiteClr,
-          appBar: MainAppbarHeader(menus: hoverMenu, onLogout: _logout),
+          appBar: isMobile
+              ? const MobileAppbarHeader()
+              : MainAppbarHeader(menus: hoverMenu, onLogout: _logout),
+          drawer: isMobile
+              ? MainMobileDrawer(actions: _menuActions, onLogout: _logout)
+              : null,
           body: GetBuilder<DashboardController>(builder: (controller) {
             return Stack(
               alignment: Alignment.bottomCenter,
@@ -122,7 +131,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 // on. At least 680px wide: narrower than ~664px the chat
                 // widget switches to its stacked phone layout, which does not
                 // fit a side panel. Taller content scrolls inside the panel.
-                Obx(() => messagesShow.value
+                // Desktop only: on a phone MESSAGES opens full screen from
+                // MobileStatusScreen instead.
+                Obx(() => messagesShow.value && !isMobile
                     ? Positioned(
                   bottom: 0,
                   right: 0,
@@ -139,7 +150,9 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             );
           }),
-          bottomNavigationBar: MainBottomBar(),
+          // Phone: the status bar's contents live on MobileStatusScreen
+          // (drawer > MY STATUS) instead.
+          bottomNavigationBar: isMobile ? null : MainBottomBar(),
         ),
       ),
     );

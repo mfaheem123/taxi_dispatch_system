@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:nested_menu_bar/nested_menu_bar.dart';
+import 'app_menu_item.dart';
 
 import '../../customer/add_customerScreen.dart';
 import '../../customer/complaints.dart';
@@ -11,7 +11,7 @@ import '../../customer/lost_property.dart';
 import 'menu_actions.dart';
 
 /// The CUSTOMERS menu.
-NestedMenuItem buildCustomersMenu(MenuActions actions) {
+AppMenuItem buildCustomersMenu(MenuActions actions) {
   /// Wipes whatever the customer forms were left holding, so a fresh entry
   /// opens on an empty form.
   void resetCustomerForm(void Function(CustomerController) reset) {
@@ -20,8 +20,8 @@ NestedMenuItem buildCustomersMenu(MenuActions actions) {
     }
   }
 
-  return NestedMenuItem(title: "CUSTOMERS", children: [
-    NestedMenuItem(
+  return AppMenuItem(title: "CUSTOMERS", children: [
+    AppMenuItem(
       title: "ADD CUSTOMER",
       onTap: () => actions.openPage(
         title: "ADD CUSTOMER",
@@ -30,7 +30,7 @@ NestedMenuItem buildCustomersMenu(MenuActions actions) {
         beforeOpen: () => resetCustomerForm((c) => c.clearForm()),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "CUSTOMERS",
       onTap: () => actions.openPage(
         title: "CUSTOMERS",
@@ -38,7 +38,7 @@ NestedMenuItem buildCustomersMenu(MenuActions actions) {
         permission: 'read_customer',
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "CREATE LOST PROPERTY",
       onTap: () => actions.openPage(
         title: "CREATE LOST PROPERTY",
@@ -47,7 +47,7 @@ NestedMenuItem buildCustomersMenu(MenuActions actions) {
         beforeOpen: () => resetCustomerForm((c) => c.refreshFields()),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "LOST PROPERTY",
       onTap: () => actions.openPage(
         title: "LOST PROPERTY",
@@ -55,7 +55,7 @@ NestedMenuItem buildCustomersMenu(MenuActions actions) {
         permission: 'read_lost_property',
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "CREATE COMPLAINT",
       onTap: () => actions.openPage(
         title: "CREATE COMPLAINT",
@@ -64,7 +64,7 @@ NestedMenuItem buildCustomersMenu(MenuActions actions) {
         beforeOpen: () => resetCustomerForm((c) => c.clearComplaintForm()),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "COMPLAINTS",
       onTap: () => actions.openPage(
         title: "COMPLAINTS",

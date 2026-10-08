@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:nested_menu_bar/nested_menu_bar.dart';
+import 'app_menu_item.dart';
 
 import '../../booking_view/app_booking.dart';
 import '../../booking_view/complete_bookingview.dart';
@@ -12,9 +12,9 @@ import '../../booking_view/web_booking.dart';
 import 'menu_actions.dart';
 
 /// The BOOKINGS menu.
-NestedMenuItem buildBookingsMenu(MenuActions actions) {
-  return NestedMenuItem(title: "BOOKINGS", children: [
-    NestedMenuItem(
+AppMenuItem buildBookingsMenu(MenuActions actions) {
+  return AppMenuItem(title: "BOOKINGS", children: [
+    AppMenuItem(
       title: "CREATE BOOKINGS",
       // The booking form is pushed as a route of its own instead of becoming a
       // chip, so the open-page limit only warns here — the form opens either
@@ -26,49 +26,49 @@ NestedMenuItem buildBookingsMenu(MenuActions actions) {
         Get.to(CreateNewBookingForm());
       },
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "COMPLETE BOOKINGS",
       onTap: () => actions.openPage(
         title: "COMPLETE BOOKINGS",
         page: () => CompleteBookingsScreen(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "PENDING BOOKINGS",
       onTap: () => actions.openPage(
         title: "PENDING BOOKINGS",
         page: () => PendingBooking(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "PRE BOOKINGS",
       onTap: () => actions.openPage(
         title: "PRE BOOKINGS",
         page: () => PreBooking(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "WEB BOOKINGS",
       onTap: () => actions.openPage(
         title: "WEB BOOKINGS",
         page: () => WebBooking(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "APP BOOKINGS",
       onTap: () => actions.openPage(
         title: "APP BOOKINGS",
         page: () => AppBooking(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "MULTI BOOKINGS",
       onTap: () => actions.openPage(
         title: "MULTI BOOKINGS",
         page: () => MultiBooking(),
       ),
     ),
-    NestedMenuItem(
+    AppMenuItem(
       title: "TRASH BOOKINGS",
       onTap: () => actions.openPage(
         title: "TRASH BOOKINGS",
