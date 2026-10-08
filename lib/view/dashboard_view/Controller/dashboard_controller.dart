@@ -70,6 +70,22 @@ class DashboardController extends GetxController {
 
   DashboardController({this.formTag});
 
+  /// Puts the dashboard's own instance in, once a user is signed in — after a
+  /// login, or at start-up when a saved session is restored. Permanent, so no
+  /// route being popped can take it down; [unregister] on logout does.
+  static DashboardController register() => Get.isRegistered<DashboardController>()
+      ? Get.find<DashboardController>()
+      : Get.put(DashboardController(), permanent: true);
+
+  /// Deletes the dashboard's instance on logout. Its onClose closes the
+  /// sockets and pollers and disposes the form's controllers, so the next
+  /// login starts on a fresh one. Call it only once the signed-in screens are
+  /// gone — their fields are still using its TextEditingControllers until then.
+  static Future<void> unregister() async {
+    if (!Get.isRegistered<DashboardController>()) return;
+    await Get.delete<DashboardController>(force: true);
+  }
+
   /// True on the edit screen's private instance, false on the dashboard's.
   bool get isDetachedForm => formTag != null;
 

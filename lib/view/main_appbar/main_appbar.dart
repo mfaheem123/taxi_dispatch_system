@@ -30,9 +30,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final DashboardController controller = Get.isRegistered<DashboardController>()
-      ? Get.find<DashboardController>()
-      : Get.put(DashboardController());
+  // Normally already put by the login; register() covers anything else.
+  final DashboardController controller = DashboardController.register();
 
   // AuthController ko yahan register karein taake error na aaye
   final AuthController authController = Get.isRegistered<AuthController>()

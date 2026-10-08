@@ -78,7 +78,9 @@ void main() async {
   print("Initializing Controllers...");
   Get.put(ZoneController(), permanent: true);
   Get.put(AuthController(), permanent: true);
-  Get.put(DashboardController(), permanent: true);
+  // Only for a restored session — otherwise it is put after login
+  // (AuthController.postLoginDetails) and deleted again on logout.
+  if (GetStorage().read('token') != null) DashboardController.register();
 
   // TEMP (debug only): on web the widget inspector's structured error
   // reporter crashes with "LegacyJavaScriptObject is not a subtype of
@@ -195,10 +197,14 @@ Future<void> setupWebNotifications() async {
             bookingRef: bRef,
             onDecline: () {
               // Handle Decline logic here
+              // Signed out: there is no dashboard to act on.
+              if (!Get.isRegistered<DashboardController>()) return;
               DashboardController controler = Get.find();
               controler.recoverBooking(dID, paramUrl: "bookings/reject-recover-driver/$bookingId");
             },
             onApprove: () {
+              // Signed out: there is no dashboard to act on.
+              if (!Get.isRegistered<DashboardController>()) return;
               DashboardController controler = Get.find();
              controler.recoverBooking(bookingId);
               // Handle Approve logic here
@@ -225,11 +231,15 @@ Future<void> setupWebNotifications() async {
             bookingRef: bRef,
             onDecline: () {
               // Handle Decline logic here
+              // Signed out: there is no dashboard to act on.
+              if (!Get.isRegistered<DashboardController>()) return;
               DashboardController controler = Get.find();
               controler.bookingRequests(dID, paramUrl: "bookings/reject-no-pickup-driver/$bookingId");
             },
             onApprove: () {
               // Handle Decline logic here
+              // Signed out: there is no dashboard to act on.
+              if (!Get.isRegistered<DashboardController>()) return;
               DashboardController controler = Get.find();
               controler.bookingRequests(bookingId);
               // Handle Approve logic here

@@ -83,6 +83,9 @@ class AuthController extends GetxController {
         await getRole(id: employeeData['role_id']);
         Employee.selectedEmployee = Employee.fromJson(employeeData);
 
+        // The dashboard's controller lives only while someone is signed in.
+        DashboardController.register();
+
         List extensions = employeeData['employee_extensions'] ?? [];
 
         if (extensions.isEmpty) {
@@ -154,7 +157,8 @@ class AuthController extends GetxController {
 
       // The dashboard's own sockets and pollers. They live on the
       // DashboardController, which is put with Get.put(permanent: true) and
-      // therefore survives Get.offAllNamed below - without this its CLI /
+      // is only deleted once the login screen is up (see the finally) - without
+      // this its CLI /
       // driver-login / driver-busy sockets and its table pollers keep running
       // against a token that is about to be erased.
       //
@@ -209,6 +213,13 @@ class AuthController extends GetxController {
       _isLoggingOut = false;
       update();
       Get.offAllNamed(Routes.loginScreen);
+      // Delete the dashboard's controller once the login screen has replaced
+      // the signed-in screens — they keep using its text controllers until
+      // their route is actually gone (after the transition). Skipped if
+      // someone has already signed back in by then.
+      Future.delayed(const Duration(milliseconds: 800), () {
+        if (sp.read('token') == null) DashboardController.unregister();
+      });
     }
   }
 
