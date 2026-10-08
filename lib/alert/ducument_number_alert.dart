@@ -1,13 +1,12 @@
+import 'package:dashboard_new1/component/text_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:get/get.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
+import '../component/alert_close_button.dart';
+import '../component/customButton.dart';
 import '../component/dropdown_button.dart';
 import '../component/text_widget.dart';
-import '../view/administration/model/list_subsDiary.dart';
-import '../view/reports/controller/report_controller.dart';
-import '../view/setting/controller/extension_controller.dart';
 import '../view/setting/controller/setting_controller.dart';
 
 class AddDocumentDialog extends StatelessWidget {
@@ -25,14 +24,20 @@ class AddDocumentDialog extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       titlePadding: EdgeInsets.zero,
       title: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-        color: DynamicColors.gryClr,
-        child: Text(
-          "DOCUMENT NUMBER",
-          style: mozillaTextSemiBoldText(
-            fontSize: 18,
-            color: DynamicColors.black,
-          ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: DynamicColors.gryClr.withOpacity(0.5),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+        ),
+        child: Row(
+          children: [
+            Text("DOCUMENT NUMBER", style: titleDesign()),
+            const Spacer(),
+            FocusTraversalOrder(
+              order: const NumericFocusOrder(999),
+              child: const AlertCloseButton(),
+            ),
+          ],
         ),
       ),
       content: GetBuilder<SettingController>( initState: (state)  {
@@ -56,25 +61,44 @@ class AddDocumentDialog extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: CustomDropdownField<String>(
-                            width: maxWidth < 1400 ? fieldWidth / 1.7 : fieldWidth / 1.9,
-                            text: "DOCUMENT TABLE",
-                            label: "SELECT DOCUMENT TABLE",
-                            items: logic.tableColumnsMap.keys.toList(),
-                            value: logic.tableColumnsMap.containsKey(logic.selectedTable)
-                                ? logic.selectedTable
-                                : null,
-                            itemLabel: (val) => val.replaceAll("_", " ").toUpperCase(),
-                            onChanged: (val) {
-                              logic.onTableChanged(val);
-                            },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "DOCUMENT TABLE",
+                                style: outFitRegular(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87,
+                                ),
+                              ),
+                              CustomDropdownField<String>(
+                                width: maxWidth < 1400 ? fieldWidth / 1.7 : fieldWidth / 1.9,
+                                height: 35,
+                                text: "",
+                                label: "SELECT DOCUMENT TABLE",
+                                items: logic.tableColumnsMap.keys.toList(),
+                                value: logic.tableColumnsMap.containsKey(logic.selectedTable)
+                                    ? logic.selectedTable
+                                    : null,
+                                itemLabel: (val) => val.replaceAll("_", " ").toUpperCase(),
+                                onChanged: (val) {
+                                  logic.onTableChanged(val);
+                                },
+                              ),
+                            ],
                           ),
                         ),
                         const SizedBox(width: 15),
                         Expanded(
-                          child: CustomDropdownField<String>(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                            Text(
+                            "DOCUMENT TABLE",
+                            style: outFitRegular(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87),
+                          ),
+                          CustomDropdownField<String>(
                             width: maxWidth < 1400 ? fieldWidth / 1.7 : fieldWidth / 1.9,
-                            text: "DOCUMENT COLUMN",
+                            height: 35,
+                            text: "",
                             label: "SELECT DOCUMENT COLUMN",
                             items: availableColumns.isNotEmpty ? availableColumns : ["SELECT DOCUMENT COLUMN"],
                             value: availableColumns.contains(logic.selectedColumn)
@@ -86,12 +110,22 @@ class AddDocumentDialog extends StatelessWidget {
                               logic.update();
                             },
                           ),
+                          ]),
                         ),
                         const SizedBox(width: 15),
                         Expanded(
-                          child: CustomDropdownField<dynamic>(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                            Text(
+                            AppText.subsidiary,
+                            style: outFitRegular(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87,
+                            ),
+                          ),
+                          CustomDropdownField<dynamic>(
                             width: fieldWidth / 1.5,
-                            text: AppText.subsidiary,
+                            height: 35,
+                            text: "",
                             label: AppText.selectSubsidiary,
                             items: controller.subsDiaryModel?.subsidiaries ?? [],
                             value: controller.subsDiaryModel?.subsidiaries
@@ -103,6 +137,7 @@ class AddDocumentDialog extends StatelessWidget {
                               controller.update();
                             },
                           ),
+                          ]),
                         ),
                       ],
                     ),
@@ -112,14 +147,14 @@ class AddDocumentDialog extends StatelessWidget {
                       children: [
                         Expanded(
                           child: _buildInputField(
-                            label: "Prefix",
+                            label: "PREFIX",
                             controller: logic.prefixController,
                           ),
                         ),
                         const SizedBox(width: 15),
                         Expanded(
                           child: _buildCounterField(
-                            label: "Start #",
+                            label: "START #",
                             controller: logic.startNumberController,
                             onUp: () => logic.changeCounterValue(
                                 logic.startNumberController, true),
@@ -130,7 +165,7 @@ class AddDocumentDialog extends StatelessWidget {
                         const SizedBox(width: 15),
                         Expanded(
                           child: _buildCounterField(
-                            label: "Increment",
+                            label: "INCREMENT",
                             controller: logic.incrementController,
                             onUp: () => logic.changeCounterValue(
                                 logic.incrementController, true),
@@ -148,21 +183,23 @@ class AddDocumentDialog extends StatelessWidget {
           );
         },
       ),
-      actionsPadding: const EdgeInsets.only(right: 20, bottom: 20, top: 10),
+
+      actionsPadding: const EdgeInsets.only(right: 20, bottom: 20),
       actions: [
         // Close Button
-        OutlinedButton(
-          style: OutlinedButton.styleFrom(
-            foregroundColor: DynamicColors.primaryClr,
-            side: BorderSide(color: DynamicColors.primaryClr),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+        CustomButton(
+          width: 100,
+          height: 32,
+          verticalPadding: 0.0,
+          btnText: "CLOSE",
+          btnColor: Colors.red,
+          borderRadius: 4,
+          style: mozillaTextSemiBoldText(
+              fontSize: 13,
+              color: Colors.white,
+              fontWeight: FontWeight.bold
           ),
-          onPressed: () => Navigator.pop(context),
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            child: Text("Close"),
-          ),
+          onTap: () => Get.back(),
         ),
         const SizedBox(width: 10),
         // Save Button
@@ -170,8 +207,7 @@ class AddDocumentDialog extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: DynamicColors.primaryClr,
             foregroundColor: DynamicColors.whiteClr,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
           ),
           onPressed: controller.isAddNumber
               ? null
@@ -182,12 +218,12 @@ class AddDocumentDialog extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
             child: controller.isAddNumber
                 ? const SizedBox(
-              width: 20,
-              height: 20,
+              width: 15,
+              height: 16,
               child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
             )
                 : Obx(() => Text(
-              controller.updateDocumentNumber.value ? "Update" : "Save",
+              controller.updateDocumentNumber.value ? "UPDATE" : "SAVE",
             )),
           ),
         ),
@@ -201,22 +237,13 @@ class AddDocumentDialog extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87)),
+            style: outFitRegular(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87)),
         const SizedBox(height: 6),
-        TextField(
+        CustomTextField(
           controller: controller,
+          borderRadius: 4,
           inputFormatters: [UpperCaseTextFormatter()],
-          textCapitalization: TextCapitalization.characters,
-          style: const TextStyle(fontSize: 13),
-          decoration: const InputDecoration(
-            fillColor: Colors.white,
-            filled: true,
-            border: OutlineInputBorder(),
-            contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          ),
+          height: 35,
         ),
       ],
     );
@@ -232,37 +259,26 @@ class AddDocumentDialog extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label,
-            style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87)),
+            style: outFitRegular(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87)),
         const SizedBox(height: 6),
-        TextField(
+        CustomTextField(
           controller: controller,
           keyboardType: TextInputType.number,
-          style: const TextStyle(fontSize: 13),
-          decoration: InputDecoration(
-            fillColor: Colors.white,
-            filled: true,
-            border: const OutlineInputBorder(),
-            contentPadding:
-                const EdgeInsets.only(left: 10, right: 4, top: 8, bottom: 8),
+          borderRadius: 4,
+          height: 35,
             suffixIcon: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GestureDetector(
                   onTap: onUp,
-                  child: const Icon(Icons.arrow_drop_up,
-                      size: 20, color: Colors.grey),
+                  child: const Icon(Icons.arrow_drop_up, size: 16, color: Colors.grey),
                 ),
                 GestureDetector(
                   onTap: onDown,
-                  child: const Icon(Icons.arrow_drop_down,
-                      size: 20, color: Colors.grey),
+                  child: const Icon(Icons.arrow_drop_down, size: 16, color: Colors.grey),
                 ),
               ],
             ),
-          ),
         ),
       ],
     );

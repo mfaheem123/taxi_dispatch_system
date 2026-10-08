@@ -1,16 +1,16 @@
+import 'package:dashboard_new1/component/action_icon_button.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/datatable_widget.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
-import 'package:dashboard_new1/view/administration/controller/administration_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../alert/ducument_number_alert.dart';
 import '../../component/networks/api.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
-import 'controller/extension_controller.dart';
+import '../page_scroller.dart';
 import 'controller/setting_controller.dart';
 
 class DocumentNumberScreen extends StatefulWidget {
@@ -24,10 +24,9 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
   int selectedRowIndex = 0;
   final int totalRows = 5;
 
-  SettingController controller =
-      Get.isRegistered<SettingController>()
-          ? Get.find<SettingController>()
-          : Get.put(SettingController());
+  SettingController controller = Get.isRegistered<SettingController>()
+      ? Get.find<SettingController>()
+      : Get.put(SettingController());
 
   @override
   void initState() {
@@ -46,147 +45,130 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<SettingController>(initState: (v) {
-      controller.getDocumentNumber();
-      permissions = Api().sp.read('all_permissions') ?? [];
-    }, builder: (controller) {
-      final documentList = controller.getDocumentNumberModel?.documentNumbers ?? [];
+    return PageScrollWrapper(
+        child: GetBuilder<SettingController>(initState: (v) {
+        controller.getDocumentNumber();
+        permissions = Api().sp.read('all_permissions') ?? [];
+      },
+      builder: (controller) {
+        final documentList = controller.getDocumentNumberModel?.documentNumbers ?? [];
 
-      return LayoutBuilder(builder: (context, constraints) {
-        final double maxWidth = constraints.maxWidth;
-        final bool isMobile = maxWidth < 600;
-        final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+        return LayoutBuilder(builder: (context, constraints) {
+          final double maxWidth = constraints.maxWidth;
+          final bool isMobile = maxWidth < 600;
+          final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-        // Instead of fixed width, we calculate flexible field widths
-        final double fieldWidth = isMobile
-            ? maxWidth // full width
-            : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
+          final double fieldWidth = isMobile
+              ? maxWidth // full width
+              : isTablet
+                  ? maxWidth / 2
+                  : maxWidth / 4;
 
-        return Wrap(
-          runSpacing: 10,
-          spacing: 10,
-          children: [
-            Container(
-              width: Get.width,
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-              color: DynamicColors.gryClr.withOpacity(0.5),
-              child: Row(
-                children: [
-                  Text(
-                    AppText.documentsNumber,
-                    style: mozillaTextSemiBoldText(
-                        fontWeight: FontWeight.w800, fontSize: 23),
-                  ),
-                  Spacer(),
-                  CustomButton(
-                    height: 40,
-                    width: 80,
-                    verticalPadding: 0.0,
-                    borderRadius: 4,
-                    widget: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
-                      child: Icon(
-                        Icons.add,
-                        color: DynamicColors.whiteClr,
-                        size: 25,
-                      ),
-                    ),
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => const AddDocumentDialog(),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-            controller.isDocumentNumber
-            ? const Center(child: CircularProgressIndicator())
-            : documentList.isEmpty
-                ? const Center(child: Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Text("No Data Found"),
-            ))
-            : SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: SizedBox(
+          return Wrap(
+            runSpacing: 10,
+            spacing: 10,
+            children: [
+              Container(
                 width: Get.width,
-                child: DatatableWidget(
-                  columns: [
-                    buildHeaderWithSearch(title: "TABLE", removeSearching: true),
-                    buildHeaderWithSearch(title: "COLUMN", removeSearching: true),
-                    buildHeaderWithSearch(title: "SUBSIDIARY", removeSearching: true),
-                    buildHeaderWithSearch(title: "PREFIX", removeSearching: true),
-                    buildHeaderWithSearch(title: "START #", removeSearching: true),
-                    buildHeaderWithSearch(title: "END #", removeSearching: true),
-                    buildHeaderWithSearch(title: "INCREMENT", removeSearching: true),
-                    buildHeaderWithSearch(
-                        title: "ACTIONS", removeSearching: true),
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                color: DynamicColors.gryClr.withOpacity(0.5),
+                child: Row(
+                  children: [
+                    Text(AppText.documentsNumber,
+                      style: mozillaTextSemiBoldText(fontWeight: FontWeight.w800, fontSize: 20),
+                    ),
+                    Spacer(),
+                    CustomButton(
+                      height: 35,
+                      width: 40,
+                      verticalPadding: 0.0,
+                      borderRadius: 4,
+                      widget: Icon(
+                          Icons.add,
+                          color: DynamicColors.whiteClr),
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => const AddDocumentDialog(),
+                        );
+                      },
+                    ),
                   ],
-                  totalRow: documentList.length,
-                  rows: documentList.map((document) {
-                    return DataRow(cells: [
-                      DataCell(Center(child: Text((document.documentTable ?? "-").replaceAll("_", " ").toUpperCase()))),
-                      DataCell(Center(child: Text((document.documentColumn ?? "-").replaceAll("_", " ").toUpperCase()))),
-                      DataCell(Center(child: Text((document.subsidiary?.name ?? "-").toUpperCase()))),
-                      DataCell(Center(child: Text((document.prefix ?? "-").toUpperCase()))),
-                      DataCell(Center(child: Text((document.startNumber?.toString() ?? "-").toUpperCase()))),
-                      DataCell(Center(child: Text((document.endNumber?.toString() ?? "-").toUpperCase()))),
-                      DataCell(Center(child: Text((document.incrementValue?.toString() ?? "-").toUpperCase()))),
-                      DataCell(Center(child:
-                        Row(
-                          children: [
-                            if (permissions.contains('update_document_number'))
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(color: Colors.transparent),
-                                ),
-                                onPressed: () {
-                                  controller.bindDocumentNumber(document);
-                                  controller.update();
-
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => const AddDocumentDialog(),
-                                  );
-                                },
-                                child: Icon(
-                                  Icons.edit_calendar,
-                                  size: 28,
-                                  color: DynamicColors.primaryClr,
-                                ),
-                              ),
-                            if (permissions.contains('delete_document_number'))
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(color: Colors.transparent),
-                                ),
-                                onPressed: () {
-                                  controller.documentNumberDelete(document.id);
-                                },
-                                child:  Icon(
-                                  Icons.delete_forever,
-                                  size: 28,
-                                  color: DynamicColors.redClr,
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                      ),
-                    ]);
-                  }).toList(),
                 ),
               ),
-            ),
-          ],
-        );
-      });
-    },
-    );
+              Padding(
+                  padding: EdgeInsets.all(10),
+                  child: controller.isDocumentNumber
+                      ? const Center(child: CircularProgressIndicator())
+                      : documentList.isEmpty
+                          ? const Center(
+                              child: Padding(padding: EdgeInsets.all(20.0),
+                              child: Text("No Data Found"),
+                            ))
+                          : SingleChildScrollView(
+                              child: SizedBox(
+                                width: Get.width,
+                                child: DatatableWidget(
+                                  columns: [
+                                    buildHeaderWithSearch(title: "TABLE", removeSearching: true),
+                                    buildHeaderWithSearch(title: "COLUMN", removeSearching: true),
+                                    buildHeaderWithSearch(title: "SUBSIDIARY", removeSearching: true),
+                                    buildHeaderWithSearch(title: "PREFIX", removeSearching: true),
+                                    buildHeaderWithSearch(title: "START #", removeSearching: true),
+                                    buildHeaderWithSearch(title: "END #", removeSearching: true),
+                                    buildHeaderWithSearch(title: "INCREMENT", removeSearching: true),
+                                    buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
+                                  ],
+                                  totalRow: documentList.length,
+                                  rows: documentList.map((document) {
+                                    return DataRow(cells: [
+                                      DataCell(Center(child: Text((document.documentTable ?? "-").replaceAll("_", " ").toUpperCase()))),
+                                      DataCell(Center(child: Text((document.documentColumn ?? "-").replaceAll("_", " ").toUpperCase()))),
+                                      DataCell(Center(child: Text((document.subsidiary?.name ?? "-").toUpperCase()))),
+                                      DataCell(Center(child: Text((document.prefix ?? "-").toUpperCase()))),
+                                      DataCell(Center(child: Text((document.startNumber?.toString() ?? "-").toUpperCase()))),
+                                      DataCell(Center(child: Text((document.endNumber?.toString() ?? "-").toUpperCase()))),
+                                      DataCell(Center(child: Text((document.incrementValue?.toString() ?? "-").toUpperCase()))),
+                                      DataCell(Center(
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              if (permissions.contains('update_document_number'))
+                                                ActionIconButton(
+                                                  onPressed: () {
+                                                    controller.bindDocumentNumber(document);
+                                                    controller.update();
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (context) => const AddDocumentDialog(),
+                                                    );
+                                                  },
+                                                  icon: Icons.edit_calendar,
+                                                  color: DynamicColors.primaryClr,
+                                                  size: 22,
+                                                ),
+                                              if (permissions.contains('delete_document_number'))
+                                                ActionIconButton(
+                                                  onPressed: () {
+                                                    controller.documentNumberDelete(document.id);
+                                                  },
+                                                  icon: Icons.delete_forever,
+                                                  color: DynamicColors.redClr,
+                                                  size: 22,
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ]);
+                                  }).toList(),
+                                ),
+                              ),
+                            )),
+            ],
+          );
+        });
+      },
+    ));
   }
 }
