@@ -2,9 +2,7 @@ import 'package:dashboard_new1/component/color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
 import '../../component/textStyle.dart';
-import 'controller/extension_controller.dart';
 import 'controller/setting_controller.dart';
 
 class WallboardScreen extends StatefulWidget {
@@ -84,7 +82,7 @@ class _WallboardScreenState extends State<WallboardScreen> {
                                       Text(
                                         "WALLBOARD",
                                         style: mozillaTextSemiBoldText(
-                                            fontWeight: FontWeight.w600,
+                                            fontWeight: FontWeight.bold,
                                             fontSize: 10)
                                             .copyWith(color: Colors.purple),
                                       ),
@@ -100,7 +98,7 @@ class _WallboardScreenState extends State<WallboardScreen> {
                             child: Text(
                               "WALLBOARD",
                               style: mozillaTextSemiBoldText(
-                                  fontWeight: FontWeight.w800, fontSize: 20),
+                                  fontWeight: FontWeight.bold, fontSize: 28),
                             ),
                           ),
                         ),
