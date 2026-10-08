@@ -11,6 +11,7 @@ import '../../../alert/child_seats_alert.dart';
 import '../../../alert/send_email_alert.dart';
 import '../../../alert/sinbin_driver_alert.dart';
 import '../../../component/marker_class.dart';
+import '../../../component/networks/api.dart';
 import '../../../component/short_text.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/time_duration_method.dart';
@@ -845,6 +846,8 @@ class _DriversViewState extends State<DriversView> {
     double left = offset.dx;
     double top = offset.dy;
 
+    final bool isOnBreak = driver?.driverStatus == "On Break";
+
     await showMenu(
       context: context,
       position: RelativeRect.fromLTRB(left, top, left, top),
@@ -871,7 +874,8 @@ class _DriversViewState extends State<DriversView> {
         PopupMenuItem(
           value: 3,
           height: 30,
-          child: Text("FORCE BREAK",
+          child: Text(
+            isOnBreak ? "END BREAK" : "FORCE BREAK",
             style:
             mozillaTextRegularText(fontSize: 13),
           ),
@@ -894,7 +898,7 @@ class _DriversViewState extends State<DriversView> {
         ),
       ],
       elevation: 8.0,
-    ).then((value) {
+    ).then((value) async {
       // Handle the action based on the value selected
       if (value == 1) {
         DashboardController _controller = Get.find();
@@ -952,6 +956,13 @@ class _DriversViewState extends State<DriversView> {
           context: context,
           builder: (context) => SinbinDriverAlert(driver: driver),
         );
+      } else if (value == 3) {
+        if (driver?.id == null) return;
+        if (isOnBreak) {
+          await _driverController.endDriverBreak(driver!.id!);
+        } else {
+          await _driverController.breakACCEPT(driver!.id!, "Accepted");
+        }
       }
     });
   }

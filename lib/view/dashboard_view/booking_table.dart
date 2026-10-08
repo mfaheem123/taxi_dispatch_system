@@ -320,10 +320,18 @@ class _BookingTableState extends State<BookingTable> {
 
 
                   if(permissions.contains('read_booking'))
-                    controller.dashboardTableModelData == null?SizedBox():
-                    SizedBox(
-                      width: Get.width,
-                      child: DataTable(
+                    controller.isTableLoading
+                        ? Container(
+                            height: 150,
+                            alignment: Alignment.topCenter,
+                            padding: const EdgeInsets.only(top: 20),
+                            child: const CircularProgressIndicator(),
+                          )
+                        : controller.dashboardTableModelData == null
+                            ? SizedBox()
+                            : SizedBox(
+                                width: Get.width,
+                                child: DataTable(
                         headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
                         columnSpacing: widthss/80,
                         dataRowMinHeight: 40,

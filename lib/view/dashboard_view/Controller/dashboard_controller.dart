@@ -2377,6 +2377,7 @@ class DashboardController extends GetxController {
   }
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard table data
+  bool isTableLoading = false;
   DashboardTableModel? dashboardTableModelData;
   final referenceNumber = TextEditingController();
   final pickupDate = TextEditingController();
@@ -2423,6 +2424,8 @@ class DashboardController extends GetxController {
   String? jobDue;
 
   getDashboardTableData({tableId}) async {
+    isTableLoading = true;
+    update();
     String selectJobDue = "";
     if (jobDue != null) {
       if (jobDue == "15 MIN") {
@@ -2462,8 +2465,9 @@ class DashboardController extends GetxController {
       _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
         // getDashboardTableData(tableId: selectedTabId);
       });
-      update();
     }
+    isTableLoading = false;
+    update();
   }
 
   void dashboardTablePageChange(int page) {
@@ -4509,6 +4513,7 @@ class DashboardController extends GetxController {
 
     if (response.statusCode == 200) {
       Get.back();
+      BotToast.showText(text: response.data['message']);
     }
   }
 
@@ -4534,12 +4539,21 @@ class DashboardController extends GetxController {
       Get.back();
     }
   }
+
+
+  Future<bool> endDriverBreak(int driverId) async {
+    var formData = {
+      "driver_id": driverId,
+    };
+    var response = await Api().post(formData, "drivers/end-break");
+    if (response.statusCode == 200) {
+      dashboardData();
+      BotToast.showText(text: response.data['message']);
+      return true;
+    }
+    return false;
+  }
 }
-
-
-
-
-
 
 
 class DashBoardBindings implements Bindings {
