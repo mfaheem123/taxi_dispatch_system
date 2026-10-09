@@ -260,6 +260,7 @@ import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:html' as html;
 import '../../../component/marker_class.dart';
+import '../../../component/textStyle.dart';
 import '../../../routes/app_pages.dart';
 import '../booking_form_scope.dart';
 import '../Controller/dashboard_controller.dart';
@@ -495,6 +496,33 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                                     ? DynamicColors.primaryClr
                                     : DynamicColors.secondaryClr,
                                 text: "PLOT",
+                                widget: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    SizedBox.shrink(),
+                                    Center(
+                                      child: Text(
+                                        "MAPS",
+                                        style: headingText(
+                                            fontSize: 14,
+                                            color: controller.selectedTab.value != "MAPS"
+                                                ? DynamicColors.secondaryClr
+                                                : DynamicColors.primaryClr
+                                        ),
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: (){
+                                        print("object");
+                                      },
+                                      child: Icon(Icons.refresh,
+                                      color: controller.selectedTab.value != "MAPS"
+                                          ? DynamicColors.secondaryClr
+                                          : DynamicColors.primaryClr,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                                 textClr: controller.selectedTab.value != "MAPS"
                                     ? DynamicColors.secondaryClr
                                     : DynamicColors.primaryClr,
@@ -519,6 +547,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                                   Text(
                                       "${controller.totalDistance.value} miles"),
                                   Text(controller.totalTimeDuration.value),
+
                                 ],
                               ),
                             ),
@@ -528,6 +557,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                     ),
                   ),
                 ),
+
 
               // ── OPEN-IN-DIALOG BUTTON ──
               Positioned(

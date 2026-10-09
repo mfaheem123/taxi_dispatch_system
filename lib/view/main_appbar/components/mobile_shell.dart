@@ -95,8 +95,8 @@ class MainMobileDrawer extends StatelessWidget {
               }),
             ),
             // No action behind the bell on the web app bar either.
-            _item(Icons.notifications, 'NOTIFICATIONS',
-                () => Navigator.of(context).pop()),
+            // _item(Icons.notifications, 'NOTIFICATIONS',
+            //     () => Navigator.of(context).pop()),
             const Spacer(),
             const Divider(height: 1),
             _item(

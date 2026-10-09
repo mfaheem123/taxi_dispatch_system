@@ -43,6 +43,7 @@ import '../dashboard_view/models/dashboard_model.dart';
 import '../dashboard_view/widgets/via_location.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
 import '../locations_view/controller/locations_controller.dart';
+import '../main_appbar/components/mobile_shell.dart';
 import 'widgets/booking_form_layout.dart';
 import 'widgets/booking_form_parts.dart';
 import 'widgets/labeled_address_field.dart';
@@ -478,10 +479,11 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
     final drivers = data.drivers ?? const <DashboardDriverObject>[];
     String driverLabel(DashboardDriverObject d) => d.name ?? '';
     String vehicleLabel(DashboardVehicleTypeObject v) => v.name ?? '';
+    final isMobile = isMobileShell(context);
 
     return Column(
       children: [
-        TopTabs(tabs: [
+        isMobile ?SizedBox.shrink():TopTabs(tabs: [
           const TopTab('F2', 'BOOKING', active: true),
           TopTab('F8', '+ MULTI RESERVATION', onTap: () {
             if (controller.pickupController.text.isNotEmpty &&
@@ -508,7 +510,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
               SpanField(HeaderTitle('BOOKING'), span: 2),
               // No source field exists on the controller / booking payload
               // yet, so this one stays local.
-              SpanField(LabeledDropdown('SOURCE',
+               SpanField(isMobile ?SizedBox.shrink():LabeledDropdown('SOURCE',
                   items: ['OPT', 'WEB', 'APP', 'PHONE'])),
               SpanField(LabeledObjectDropdown<DashboardSubsidiaryObject>(
                 'SUB',
