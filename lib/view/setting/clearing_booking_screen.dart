@@ -72,14 +72,13 @@ class _BookingClearingUtilityScreenState
           children: [
             Container(
               width: Get.width,
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
               color: DynamicColors.gryClr.withOpacity(0.5),
               child: Row(
                 children: [
                   Text(
-                    "${AppText.clearBooking} (${controller?.clearBookingModel!.count.toString()})",
-                    style: mozillaTextSemiBoldText(
-                        fontWeight: FontWeight.w800, fontSize: 17),
+                    "${AppText.clearBooking} (${controller.clearBookingModel!.count.toString()})",
+                    style: titleDesign()
                   ),
                   Spacer(),
                   CustomButton(
@@ -88,8 +87,8 @@ class _BookingClearingUtilityScreenState
                     height: 40,
                     borderRadius: 4,
                     btnText: AppText.clearSelected,
-                    style: mozillaTextRegularText(
-                        fontSize: 10, color: DynamicColors.whiteClr),
+                    style: mozillaTextSemiBoldText(
+                        fontSize: 13, color: DynamicColors.whiteClr),
                     onTap: () {
                       controller.clearSelectedBookings();
                     },
@@ -101,8 +100,8 @@ class _BookingClearingUtilityScreenState
                     height: 40,
                     borderRadius: 4,
                     btnText: AppText.clearAll,
-                    style: mozillaTextRegularText(
-                        fontSize: 10, color: DynamicColors.whiteClr),
+                    style: mozillaTextSemiBoldText(
+                        fontSize: 13, color: DynamicColors.whiteClr),
                     onTap: () {
                       controller.clearAllBookings();
                     },
@@ -135,7 +134,7 @@ class _BookingClearingUtilityScreenState
                       controller.searchRefNo.value = v;
                       controller.onSearchBooking();
                     }),
-                    buildHeaderWithSearch(title: "DATEtIME",
+                    buildHeaderWithSearch(title: "DATETIME",
                         onChanged: (v) {
                       controller.searchDateTime.value = v;
                       controller.onSearchBooking();
