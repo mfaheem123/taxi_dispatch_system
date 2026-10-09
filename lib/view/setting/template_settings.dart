@@ -1,21 +1,14 @@
-import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/text_field.dart';
 import 'package:dashboard_new1/view/setting/controller/setting_controller.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
-
-import '../../alert/restrict_drivers_alert.dart';
 import '../../component/color.dart';
 import '../../component/dropdown_button.dart';
 import '../../component/networks/api.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_widget.dart';
-import '../accounts/controller/account_controller.dart';
-import '../administration/User/create_userScreen.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../page_scroller.dart';
 import 'model/select_templete_type.dart';
@@ -42,165 +35,6 @@ class _TemplateSettingsState extends State<TemplateSettings> {
     shortCutKeyValue.value = "templateSettings";
     controller.getTemplateTypes();
   }
-
-//
-//   /// Editable Invoice HTML Template
-//   final String invoiceHtml = """
-// <style>
-//   body {
-//     font-family: Arial, Helvetica, sans-serif;
-//     font-size: 12px;
-//   }
-//
-//   h2 {
-//     margin-bottom: 10px;
-//   }
-//
-//   table {
-//     width: 100%;
-//     border-collapse: collapse;
-//     margin-bottom: 12px;
-//   }
-//
-//   th, td {
-//     border: 2px solid  black;
-//     padding: 6px;
-//     vertical-align: top;
-//   }
-//
-//   th {
-//     font-weight: bold;
-//     text-align: left;
-//     background: #f5f5f5;
-//   }
-//
-//   .no-border td {
-//     border: none;
-//   }
-//
-//   .right {
-//     text-align: right;
-//   }
-//
-//   .center {
-//     text-align: center;
-//   }
-// </style>
-//
-// <h2>CUSTOMER INVOICE</h2>
-//
-// <!-- FROM / TO TABLE -->
-// <table>
-//   <tr>
-//     <th style="width:50%;">FROM {{DROPOFF}}</th>
-//     <th style="width:50%;">TO</th>
-//   </tr>
-//   <tr>
-//     <td>
-//       <%= COMPANY_INFORMATION.ADDRESS %>
-//     </td>
-//     <td>
-//       <b>CUSTOMER:</b> (<%= CUSTOMER_INVOICE?.CUSTOMER.ID || "" %>)<br/>
-//       <%= CUSTOMER_INVOICE?.CUSTOMER.NAME || "" %>
-//     </td>
-//   </tr>
-//   <tr>
-//     <td>
-//       <b>EMAIL:</b> <%= COMPANY_INFORMATION.EMAIL %>
-//     </td>
-//     <td>
-//       <b>DATE:</b> <%= CUSTOMER_INVOICE.INVOICE_DATE %>
-//     </td>
-//   </tr>
-//   <tr>
-//     <td>
-//       <b>MOBILE:</b> <%= COMPANY_INFORMATION.EMERGENCY_CONTACT_NUMBER %>
-//     </td>
-//     <td>
-//       <b>DUE DATE:</b> <%= CUSTOMER_INVOICE.INVOICE_DUE_DATE %>
-//     </td>
-//   </tr>
-//   <tr>
-//     <td>
-//       <b>TELEPHONE:</b> <%= COMPANY_INFORMATION.TELEPHONE_NUMBER %>
-//     </td>
-//     <td></td>
-//   </tr>
-// </table>
-//
-// <!-- PERIOD -->
-// <p>
-//   <b>PERIOD:</b>
-//   (<%= CUSTOMER_INVOICE.FROM_DATE %> - <%= CUSTOMER_INVOICE.TO_DATE %>)
-// </p>
-//
-// <!-- BOOKINGS LOOP -->
-// <% for (let i = 0; i < BOOKINGS.length; i++) { %>
-//
-// <table>
-//   <thead>
-//     <tr>
-//       <th>REF #</th>
-//       <th>DATETIME</th>
-//       <th>VEH</th>
-//       <th>PICKUP</th>
-//       <th>DROPOFF</th>
-//       <th>J/T</th>
-//       <th>P/T</th>
-//       <th>FARE</th>
-//       <th>PC</th>
-//       <th>WC</th>
-//       <th>CC</th>
-//       <th>TOTAL</th>
-//     </tr>
-//   </thead>
-//   <tbody>
-//     <tr>
-//       <td><%= BOOKINGS[i].REFERENCE_NUMBER %></td>
-//       <td>
-//         <%= BOOKINGS[i].PICKUP_DATE %><br/>
-//         <%= BOOKINGS[i].PICKUP_TIME %>
-//       </td>
-//       <td><%= BOOKINGS[i].VEHICLE_TYPE?.NAME || "" %></td>
-//       <td>
-//         <%= BOOKINGS[i].PICKUP %><br/>
-//         <%= BOOKINGS[i].VIAPOINTS || "" %>
-//       </td>
-//       <td><%= BOOKINGS[i].DROPOFF %></td>
-//       <td><%= BOOKINGS[i].JOURNEY_TYPE?.JOURNEY_TYPE || "" %></td>
-//       <td><%= BOOKINGS[i].PAYMENT_TYPE?.NAME || "" %></td>
-//       <td>£ <%= BOOKINGS[i].FARES %></td>
-//       <td>£ <%= BOOKINGS[i].PARKING_CHARGES %></td>
-//       <td>£ <%= BOOKINGS[i].WAITING_CHARGES %></td>
-//       <td>£ <%= BOOKINGS[i].CONGESTION_CHARGES %></td>
-//       <td>£ <%= BOOKINGS[i].TOTAL_CHARGES %></td>
-//     </tr>
-//   </tbody>
-// </table>
-//
-// <% } %>
-//
-// <!-- TOTALS / FOOTER -->
-// <table>
-//   <tr>
-//     <td class="right"><b>TOTAL</b></td>
-//     <td class="right">£ <%= CUSTOMER_INVOICE.GRAND_TOTAL %></td>
-//   </tr>
-// </table>
-//
-// <p style="font-size:11px;">
-//   <b>PC</b> = Parking Charges &nbsp;
-//   <b>WC</b> = Waiting Charges &nbsp;
-//   <b>CC</b> = Congestion Charges
-// </p>
-//
-// <hr/>
-//
-// <p class="center" style="font-size:11px;">
-//   MYCABIFY, ALL RIGHTS RESERVED © 2019 – 2025
-// </p>
-//
-// """;
 
   DropdownModel? selectedTag;
 
@@ -257,8 +91,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    double width = WidgetsBinding
-        .instance.platformDispatcher.views.first.physicalSize.width /
+    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
     return PageScrollWrapper(
       child: GetBuilder<SettingController>(
@@ -280,10 +113,8 @@ class _TemplateSettingsState extends State<TemplateSettings> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 50),
-              Align(
-                  alignment: Alignment.center,
-                  child: Text(AppText.templateSettings,
-                      style: titleDesign())),
+              Align(alignment: Alignment.center,
+                  child: Text(AppText.templateSettings, style: titleDesign())),
               SizedBox(height: 15),
               Padding(
                 padding: const EdgeInsets.all(6.0),
@@ -300,99 +131,83 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(4),
                                 border: Border.all(color: DynamicColors.textClr)),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric( horizontal: 10.0, vertical: 6.0),
-                              child: Wrap(
-                                spacing: 10,
-                                runSpacing: 10,
-                                crossAxisAlignment:
-                                WrapCrossAlignment.end,
-                                children: [
-                                  Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 12),
-                                    color: DynamicColors.gryClr
-                                        .withOpacity(0.5),
-                                    child: Text(AppText.templateSelection,
-                                        style: titleDesign()),
-                                  ),
-                                  // if (permissions
-                                  //     .contains('read_template_type'))
-                                    CustomDropdownField<TemplateType>(
-                                      label: "SELECT TEMPLATE TYPE",
-                                      items: controller.selectTempleteType!.templateTypes!,
-                                      value: controller.selectedTemplateType,
-                                      itemLabel: (val) => (val.name ?? "").toUpperCase(),
-                                      onChanged: (val) {
-                                        controller.selectedTemplateType = val;
-                                        controller.template = null;
-                                        controller.templeteByTypeMOdel = null;
-                                        controller.getTemplateByTypes(selectedTempId: val!.id);
-                                      },
-                                    ),
-                                  CustomDropdownField<Template>(
-                                    label: "SELECT USER",
-                                    items: controller.templeteByTypeMOdel?.templates ?? [],
-                                    // value: controller.templeteByTypeMOdel?.templates?.contains(controller.template) == true ? controller.template : null,
-                                    value: controller.template,
-                                    itemLabel: (val) => (val.name ?? "").toUpperCase(),
-                                    onChanged: (val) {
-                                      controller.template = val;
-                                      controller.getTemplateHtmlText(
-                                          selectedTempId: val!.id);
-                                    },
-                                  ),
-                                  if (controller.showSubjectField) ...[
-                                    Padding(padding: const EdgeInsets.only(top: 15),
-                                      child: CustomTextField(
-                                        borderRadius: 4,
-                                        controller: controller.subjectController,
-                                        width: fieldWidth / 1.5,
-                                        hintText: "SUBJECT",
-                                        height: 30,
-                                        columnText: true,
-                                        readOnly: controller.template == null,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                                  color: DynamicColors.gryClr.withOpacity(0.5),
+                                  child: Text(AppText.templateSelection, style: titleDesign()),
+                                ),
+                                  
+                                Padding(padding: EdgeInsets.all(10.0),
+                                  child: Wrap(
+                                    spacing: 10,
+                                    runSpacing: 10,
+                                    crossAxisAlignment: WrapCrossAlignment.end,
+                                    children: [
+                                      if (permissions.contains('read_template_type'))
+                                        CustomDropdownField<TemplateType>(
+                                          label: "SELECT TEMPLATE TYPE",
+                                          items: controller.selectTempleteType!.templateTypes!,
+                                          value: controller.selectedTemplateType,
+                                          itemLabel: (val) => (val.name ?? "").toUpperCase(),
+                                          onChanged: (val) {
+                                            controller.selectedTemplateType = val;
+                                            controller.template = null;
+                                            controller.templeteByTypeMOdel = null;
+                                            controller.getTemplateByTypes(selectedTempId: val!.id);
+                                            },
+                                        ),
+                                      CustomDropdownField<Template>(
+                                        label: "SELECT USER",
+                                        items: controller.templeteByTypeMOdel?.templates ?? [],
+                                        // value: controller.templeteByTypeMOdel?.templates?.contains(controller.template) == true ? controller.template : null,
+                                        value: controller.template,
+                                        itemLabel: (val) => (val.name ?? "").toUpperCase(),
+                                        onChanged: (val) {
+                                          controller.template = val;
+                                          controller.getTemplateHtmlText(
+                                              selectedTempId: val!.id);
+                                          },
                                       ),
-                                    ),
-                                  ],
-                                  // Padding(
-                                  //   padding:
-                                  //   const EdgeInsets.only(top: 20),
-                                  //   child: CustomTextField(
-                                  //     borderRadius: 4,
-                                  //     controller:
-                                  //     controller.emailController,
-                                  //     width: fieldWidth / 1.5,
-                                  //     hintText: AppText.email,
-                                  //     height: 30,
-                                  //   ),
-                                  // ),
-                                  if (permissions
-                                      .contains('update_template'))
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 20.0),
-                                      child: CustomButton(
-                                        onTap: () {
-                                          controller.updateTemplateHtml(
-                                              templateId: controller
-                                                  .templeteHtmlModel!
-                                                  .templates!
-                                                  .id!);
-                                        },
-                                        verticalPadding: 0.0,
-                                        width: controller.showSubjectField ? fieldWidth / 2.5 : fieldWidth / 1.5,
-                                        height: 30,
-                                        borderRadius: 4,
-                                        btnText: AppText.save,
-                                        style: mozillaTextRegularText(
-                                            fontSize: 10,
-                                            color:
-                                            DynamicColors.whiteClr),
-                                      ),
-                                    ),
-                                ],
-                              ),
+                                      if (controller.showSubjectField) ...[
+                                        Padding(padding: const EdgeInsets.only(top: 15),
+                                          child: CustomTextField(
+                                            borderRadius: 4,
+                                            controller: controller.subjectController,
+                                            width: fieldWidth / 1.5,
+                                            hintText: "SUBJECT",
+                                            height: 30,
+                                            columnText: true,
+                                            readOnly: controller.template == null,
+                                          ),
+                                        ),
+                                      ],
+                                      if (permissions.contains('update_template'))
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 20.0),
+                                          child: CustomButton(
+                                            onTap: () {
+                                              controller.updateTemplateHtml(
+                                                  templateId: controller.templeteHtmlModel!
+                                                      .templates!.id!);
+                                              },
+                                            verticalPadding: 0.0,
+                                            width: controller.showSubjectField ? fieldWidth / 2.5 : fieldWidth / 1.5,
+                                            height: 30,
+                                            borderRadius: 4,
+                                            btnText: AppText.save,
+                                            style: mozillaTextSemiBoldText(
+                                                fontSize: 10,
+                                                color: DynamicColors.whiteClr),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
 
@@ -403,14 +218,12 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                             width: double.infinity,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(4),
-                                border: Border.all(
-                                    color: DynamicColors.textClr)),
+                                border: Border.all(color: DynamicColors.textClr)),
                             height: 500,
                             child: IgnorePointer(
                                 ignoring: controller.isDropdownOpen,
                                 child: HtmlEditor(
-                              controller:
-                              controller.templateTitleController,
+                              controller: controller.templateTitleController,
                               htmlEditorOptions: const HtmlEditorOptions(
                                 hint: 'WRITE TEXT HERE...',
                                 shouldEnsureVisible: true,
@@ -451,41 +264,35 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                               ),
                               otherOptions:
                               const OtherOptions(height: 500),
-                            )),
+                            )
+                          ),
                           ),
                         ],
                       ),
                     ),
 
-                    const SizedBox(
-                        width:
-                        15),
+                    const SizedBox(width: 15),
 
                     // RIGHT SECTION
                     SizedBox(width: 280,
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(4),
-                          border:
-                          Border.all(color: DynamicColors.textClr),
+                          border: Border.all(color: DynamicColors.textClr),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
                               width: double.infinity,
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 12),
-                              color:
-                              DynamicColors.gryClr.withOpacity(0.5),
-                              child: Text(AppText.tags,
-                                  style: titleDesign()),
+                              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                              color: DynamicColors.gryClr.withOpacity(0.5),
+                              child: Text(AppText.tags, style: titleDesign()),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: SizedBox(
-                                height:
-                                580,
+                                height: 580,
                                 child: SingleChildScrollView(
                                   child: Wrap(
                                     spacing: 6,
@@ -497,21 +304,16 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                               value: tag.name);
                                         },
                                         child: Container(
-                                          padding:
-                                          const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 5),
+                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                                           decoration: BoxDecoration(
                                             color: Colors.grey.shade100,
-                                            borderRadius:
-                                            BorderRadius.circular(3),
+                                            borderRadius: BorderRadius.circular(3),
                                             border: Border.all(
-                                                color:
-                                                Colors.grey.shade300),
+                                                color: Colors.grey.shade300),
                                           ),
                                           child: Text(
                                             tag.name ?? '',
-                                            style: const TextStyle(
+                                            style: outFitRegular(
                                                 fontSize: 10,
                                                 fontWeight:
                                                 FontWeight.w600,
@@ -552,11 +354,3 @@ class _TemplateSettingsState extends State<TemplateSettings> {
 //   DropdownModel(id:6, name: "MULTIBOOKING CONFIRMATION MESSAGE", templateValue: "do not replyyour car has booked from {{pickup}} to {{dropoff}} for {{customer}} from {{from}} to {{to}}, you need to pay {{fares}} gbp each.thank you for booking with {{company_name}}. for query call us on {{company_telephone}}* reply to these messages are not monitored"),
 //   DropdownModel(id:6, name: "BOOKING QUOTATION SMS", templateValue: "DO NOT REPLYBOOKING QUOTATIONThank you for your inquiry about booking information with {{company_name}}Journey details; {{reference_number}}Pickup {{date}} {{time}}From: {{pickup}}To:{{dropoff}}fare: {{total_fares}}\"Please call us at {{company_telephone}} for confirmation or to make any amendments.\"* reply to these messages are not monitored"),
 // ];
-
-
-
-
-
-
-
-
