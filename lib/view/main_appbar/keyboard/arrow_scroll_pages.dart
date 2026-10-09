@@ -74,7 +74,7 @@ import 'package:dashboard_new1/view/administration/User/create_subsiDiary.dart';
 import 'package:dashboard_new1/view/administration/User/subsi_diaries_screen.dart';
 import 'package:dashboard_new1/view/authorization/authorization_Screen.dart';
 import 'package:dashboard_new1/view/booking_view/trash_booking.dart';
-import 'package:dashboard_new1/view/setting/booking_clearing_utility_screen.dart';
+import 'package:dashboard_new1/view/setting/clearing_booking_screen.dart';
 import 'package:dashboard_new1/view/setting/chat_with_driver_passenger.dart';
 import 'package:dashboard_new1/view/setting/company_information_screen.dart';
 import 'package:dashboard_new1/view/setting/document_number_screen.dart';

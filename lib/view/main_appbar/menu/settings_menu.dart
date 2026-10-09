@@ -5,7 +5,7 @@ import '../../../routes/app_pages.dart';
 import 'app_menu_item.dart';
 
 import '../../../alert/back_slash_alert.dart';
-import '../../setting/booking_clearing_utility_screen.dart';
+import '../../setting/clearing_booking_screen.dart';
 import '../../setting/call_recordings.dart';
 import '../../setting/chat_with_driver_passenger.dart';
 import '../../setting/company_configuration_view/company_configuration_view.dart';
