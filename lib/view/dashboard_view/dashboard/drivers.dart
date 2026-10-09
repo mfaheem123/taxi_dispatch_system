@@ -961,7 +961,7 @@ class _DriversViewState extends State<DriversView> {
         if (isOnBreak) {
           await _driverController.endDriverBreak(driver!.id!);
         } else {
-          await _driverController.breakACCEPT(driver!.id!, "Accepted");
+          await _driverController.breakACCEPT(driver!.id!, "Accepted", "enabled");
         }
       }
     });

@@ -4502,34 +4502,35 @@ class DashboardController extends GetxController {
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo break ACCEPT or REJECT
-  breakACCEPT(driveID, ONBreak) async {
+  breakACCEPT(driveID, ONBreak, forceBreak) async {
     var formData = {
       "driver_id": driveID,
       "on_break": ONBreak,
+      "force_break": forceBreak,
     };
 
     var response =
         await Api().post(formData, 'drivers/break-request', auth: false);
-
     if (response.statusCode == 200) {
       Get.back();
+      print(response.data);
       BotToast.showText(text: response.data['message']);
     }
   }
 
-  breakReject(driveID, ONBreak) async {
-    var formData = {
-      "driver_id": driveID,
-      "on_break": ONBreak,
-    };
-
-    var response =
-        await Api().post(formData, 'drivers/break-request', auth: false);
-
-    if (response.statusCode == 200) {
-      Get.back();
-    }
-  }
+  // breakReject(driveID, ONBreak) async {
+  //   var formData = {
+  //     "driver_id": driveID,
+  //     "on_break": ONBreak,
+  //   };
+  //
+  //   var response =
+  //       await Api().post(formData, 'drivers/break-request', auth: false);
+  //
+  //   if (response.statusCode == 200) {
+  //     Get.back();
+  //   }
+  // }
 
   DisablePanic(driveID) async {
     var response =
@@ -4544,10 +4545,12 @@ class DashboardController extends GetxController {
   Future<bool> endDriverBreak(int driverId) async {
     var formData = {
       "driver_id": driverId,
+      "force_end_break": "disabled"
     };
     var response = await Api().post(formData, "drivers/end-break");
     if (response.statusCode == 200) {
       dashboardData();
+      print(response.data);
       BotToast.showText(text: response.data['message']);
       return true;
     }
