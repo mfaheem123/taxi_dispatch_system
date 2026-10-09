@@ -211,7 +211,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                             ),
                           ),
 
-                          const SizedBox(height: 105),
+                          const SizedBox(height: 15),
 
                           // 2. HTML Editor Container
                           Container(
