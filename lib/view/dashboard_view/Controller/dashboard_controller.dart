@@ -4549,7 +4549,6 @@ class DashboardController extends GetxController {
     };
     var response = await Api().post(formData, "drivers/end-break");
     if (response.statusCode == 200) {
-      dashboardData();
       print(response.data);
       BotToast.showText(text: response.data['message']);
       return true;
