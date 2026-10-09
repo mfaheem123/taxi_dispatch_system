@@ -56,6 +56,9 @@ dependencies:
   nested_menu_bar: ^1.0.2
   flutter_colorpicker: ^1.1.0
   html_editor_enhanced: ^2.7.1
+  # Lets a Flutter overlay (e.g. our dropdown list) receive clicks when it sits
+  # over a web platform view such as the HTML editor's iframe.
+  pointer_interceptor: ^0.10.1+2
   syncfusion_flutter_charts: ^31.1.21
   connectivity_plus: ^7.0.0
   http: ^1.0.0

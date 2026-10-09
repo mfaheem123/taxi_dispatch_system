@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
+import '../page_scroller.dart';
 import 'controller/extension_controller.dart';
 import 'controller/setting_controller.dart';
 
@@ -43,7 +44,8 @@ class _BookingClearingUtilityScreenState
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<SettingController>(initState: (state) {
+    return PageScrollWrapper(
+      child: GetBuilder<SettingController>(initState: (state) {
       controller.getBookingsToClear();
     }, builder: (controller) {
       if (controller.isLoadingBooking || controller.clearBookingModel == null) {
@@ -70,14 +72,13 @@ class _BookingClearingUtilityScreenState
           children: [
             Container(
               width: Get.width,
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
               color: DynamicColors.gryClr.withOpacity(0.5),
               child: Row(
                 children: [
                   Text(
-                    "${AppText.clearBooking} (${controller?.clearBookingModel!.count.toString()})",
-                    style: mozillaTextSemiBoldText(
-                        fontWeight: FontWeight.w800, fontSize: 17),
+                    "${AppText.clearBooking} (${controller.clearBookingModel!.count.toString()})",
+                    style: titleDesign()
                   ),
                   Spacer(),
                   CustomButton(
@@ -86,8 +87,8 @@ class _BookingClearingUtilityScreenState
                     height: 40,
                     borderRadius: 4,
                     btnText: AppText.clearSelected,
-                    style: mozillaTextRegularText(
-                        fontSize: 10, color: DynamicColors.whiteClr),
+                    style: mozillaTextSemiBoldText(
+                        fontSize: 13, color: DynamicColors.whiteClr),
                     onTap: () {
                       controller.clearSelectedBookings();
                     },
@@ -99,8 +100,8 @@ class _BookingClearingUtilityScreenState
                     height: 40,
                     borderRadius: 4,
                     btnText: AppText.clearAll,
-                    style: mozillaTextRegularText(
-                        fontSize: 10, color: DynamicColors.whiteClr),
+                    style: mozillaTextSemiBoldText(
+                        fontSize: 13, color: DynamicColors.whiteClr),
                     onTap: () {
                       controller.clearAllBookings();
                     },
@@ -108,8 +109,9 @@ class _BookingClearingUtilityScreenState
                 ],
               ),
             ),
-            SingleChildScrollView(
-              // scrollDirection: Axis.horizontal,
+            Padding(padding: EdgeInsets.all(10.0),
+            child: SingleChildScrollView(
+             // scrollDirection: Axis.horizontal,
               child: SizedBox(
                 width: Get.width,
                 child: DatatableWidget(
@@ -127,13 +129,41 @@ class _BookingClearingUtilityScreenState
                         },
                       ),
                     ),
-                    buildHeaderWithSearch(title: "REF #"),
-                    buildHeaderWithSearch(title: "DATEtIME"),
-                    buildHeaderWithSearch(title: "CUSTOMER"),
-                    buildHeaderWithSearch(title: "PICKUP"),
-                    buildHeaderWithSearch(title: "DROPOFF"),
-                    buildHeaderWithSearch(title: "DRIVER"),
-                    buildHeaderWithSearch(title: "STATUS"),
+                    buildHeaderWithSearch(title: "REF #",
+                        onChanged: (v) {
+                      controller.searchRefNo.value = v;
+                      controller.onSearchBooking();
+                    }),
+                    buildHeaderWithSearch(title: "DATETIME",
+                        onChanged: (v) {
+                      controller.searchDateTime.value = v;
+                      controller.onSearchBooking();
+                    }),
+                    buildHeaderWithSearch(title: "CUSTOMER",
+                        onChanged: (v) {
+                      controller.searchCustomer.value = v;
+                      controller.onSearchBooking();
+                    }),
+                    buildHeaderWithSearch(title: "PICKUP",
+                        onChanged: (v) {
+                      controller.searchPickup.value = v;
+                      controller.onSearchBooking();
+                    }),
+                    buildHeaderWithSearch(title: "DROPOFF",
+                        onChanged: (v) {
+                      controller.searchDropOff.value = v;
+                      controller.onSearchBooking();
+                    }),
+                    buildHeaderWithSearch(title: "DRIVER",
+                        onChanged: (v) {
+                      controller.searchDriver.value = v;
+                      controller.onSearchBooking();
+                    }),
+                    buildHeaderWithSearch(title: "STATUS",
+                        onChanged: (v) {
+                      controller.searchStatus.value = v;
+                      controller.onSearchBooking();
+                    }),
                   ],
                   rows: bookings.map((booking) {
                     final bookingId = booking.id.toString();
@@ -142,13 +172,14 @@ class _BookingClearingUtilityScreenState
                     return DataRow(
                       cells: [
                         DataCell(
+                          Center(child:
                           Checkbox(
                             value: isSelected,
                             onChanged: (val) {
                               controller.toggleSelection(bookingId);
                             },
                           ),
-                        ),
+                        )),
                         DataCell(Center(child: Text((booking.referenceNumber ?? "").toUpperCase()))),
                         DataCell(Center(child: Text(
                             "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}"))),
@@ -162,10 +193,10 @@ class _BookingClearingUtilityScreenState
                   }).toList(),
                 ),
               ),
-            ),
+            )),
           ],
         );
       });
-    });
+    }));
   }
 }

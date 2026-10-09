@@ -625,7 +625,7 @@ class SettingController extends GetxController {
           formData,
           updateDocumentNumber.value == false
               ? "document/document_numbers/add"
-              : "document/document_numbers/update/${documentUpdateId.value},", sendCompanyId: true,
+              : "document/document_numbers/update/${documentUpdateId.value}", sendCompanyId: true,
       );
 
       print("SERVER RESPONSE: ${response.statusCode} -> ${response.data}");
@@ -658,7 +658,7 @@ class SettingController extends GetxController {
     selectedTable = document.documentTable.toString().toLowerCase();
     selectedColumn = document.documentColumn.toString().toLowerCase();
     selectedSubsidiaryId = document.subsidiaryId.toString() ?? "";
-    prefixController.text = document.prefix ?? "";
+    prefixController.text = (document.prefix ?? "").toUpperCase();
     startNumberController.text = document.startNumber.toString();
     incrementController.text = document.incrementValue.toString();
 
@@ -764,6 +764,18 @@ class SettingController extends GetxController {
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo payment type  functionality
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo clear booking  functionality
 
+
+  RxList<Booking> clearBookingAll = <Booking>[].obs;
+  RxList<Booking> clearBookingFiltered = <Booking>[].obs;
+
+  RxString searchRefNo = ''.obs;
+  RxString searchDateTime = ''.obs;
+  RxString searchCustomer = ''.obs;
+  RxString searchPickup = ''.obs;
+  RxString searchDropOff = ''.obs;
+  RxString searchDriver = ''.obs;
+  RxString searchStatus = ''.obs;
+
   ClearBookingModel? clearBookingModel;
   List<String> selectedBookingIds = [];
   bool isClearingSelected = false;
@@ -789,6 +801,11 @@ class SettingController extends GetxController {
     isLoadingBooking = false;
     update();
   }
+
+
+  void onSearchBooking() {
+    getBookingsToClear();
+}
 
   clearSelectedBookings() async {
     if (selectedBookingIds.isEmpty) return;
