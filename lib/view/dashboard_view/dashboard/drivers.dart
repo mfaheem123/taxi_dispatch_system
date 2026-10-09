@@ -963,6 +963,9 @@ class _DriversViewState extends State<DriversView> {
         } else {
           await _driverController.breakACCEPT(driver!.id!, "Accepted", "enabled");
         }
+      }else if (value == 4) {
+        if (driver?.id == null) return;
+        await _driverController.forceLogoutDriver(driver!.id!);
       }
     });
   }

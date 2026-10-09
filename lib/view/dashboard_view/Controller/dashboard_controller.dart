@@ -4501,14 +4501,13 @@ class DashboardController extends GetxController {
     }
   }
 
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo break ACCEPT or REJECT
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo driver right click break etc
   breakACCEPT(driveID, ONBreak, forceBreak) async {
     var formData = {
       "driver_id": driveID,
       "on_break": ONBreak,
       "force_break": forceBreak,
     };
-
     var response =
         await Api().post(formData, 'drivers/break-request', auth: false);
     if (response.statusCode == 200) {
@@ -4518,31 +4517,17 @@ class DashboardController extends GetxController {
     }
   }
 
-  // breakReject(driveID, ONBreak) async {
-  //   var formData = {
-  //     "driver_id": driveID,
-  //     "on_break": ONBreak,
-  //   };
-  //
-  //   var response =
-  //       await Api().post(formData, 'drivers/break-request', auth: false);
-  //
-  //   if (response.statusCode == 200) {
-  //     Get.back();
-  //   }
-  // }
 
   DisablePanic(driveID) async {
     var response =
         await Api().get('drivers/panic-disable/$driveID', auth: false);
-
     if (response.statusCode == 200) {
       Get.back();
     }
   }
 
 
-  Future<bool> endDriverBreak(int driverId) async {
+ endDriverBreak(int driverId) async {
     var formData = {
       "driver_id": driverId,
       "force_end_break": "disabled"
@@ -4555,6 +4540,22 @@ class DashboardController extends GetxController {
     }
     return false;
   }
+ forceLogoutDriver(int driverId) async {
+    var formData = {
+      "driverId": driverId,
+    };
+    var response = await Api().post(formData, "drivers/forced-logout");
+    if (response.statusCode == 200) {
+      if (response.data != null && response.data['message'] != null) {
+        BotToast.showText(text: response.data['message']);
+      }
+      return true;
+    }
+    return false;
+  }
+
+
+
 }
 
 
