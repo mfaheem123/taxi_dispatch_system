@@ -576,22 +576,19 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                                     columns: [
                                       buildHeaderWithSearch(
                                         widhtss: 30, // Header width set to 30px
-                                        widget: SizedBox(
-                                          width: 20,
-                                          child: Checkbox(
-                                            materialTapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
-                                            visualDensity: VisualDensity.compact,
-                                            value: false,
-                                            onChanged: (v) {},
-                                          ),
+                                        widget: Checkbox(
+                                          materialTapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                          visualDensity: VisualDensity.compact,
+                                          value: false,
+                                          onChanged: (v) {},
                                         ),
                                       ),
                                       buildHeaderWithSearch(
                                         title: "REF #",
                                         controller: _searchRefController,
                                         onChanged: (v) => onSearchBooking(),
-                                        widhtss: 65,
+                                        widhtss: 70,
                                       ),
                                       buildHeaderWithSearch(
                                         title: "DATE/TIME",
@@ -700,13 +697,15 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
         DataRow(
           cells: List.generate(
             13,
-                (index) => DataCell(
+            (index) => DataCell(
               index == 6
-                  ? const SizedBox(
-                height: 25,
-                width: 25,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
+                  ? const Center(
+                      child: SizedBox(
+                        height: 25,
+                        width: 25,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    )
                   : const SizedBox.shrink(),
             ),
           ),
@@ -754,71 +753,68 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
           return null;
         }),
         cells: [
-          // FIXED DATACELL: Wraps inside UnconstrainedBox & explicit SizedBox
           DataCell(
-            UnconstrainedBox(
+            Center(
               child: SizedBox(
                 width: 30,
-                child: Builder(
-                  builder: (context) {
-                    return Focus(
-                      focusNode: _rowFocusNodes.length > index
-                          ? _rowFocusNodes[index]
-                          : null,
-                      onKeyEvent: (node, event) {
-                        if (event is KeyDownEvent &&
-                            (event.logicalKey == LogicalKeyboardKey.enter ||
-                                event.logicalKey == LogicalKeyboardKey.space)) {
-                          final bool isCurrentlySelected =
+                child: Focus(
+                  focusNode: _rowFocusNodes.length > index
+                      ? _rowFocusNodes[index]
+                      : null,
+                  onKeyEvent: (node, event) {
+                    if (event is KeyDownEvent &&
+                        (event.logicalKey == LogicalKeyboardKey.enter ||
+                            event.logicalKey == LogicalKeyboardKey.space)) {
+                      final bool isCurrentlySelected =
                           selectedBookings.contains(booking);
-                          setState(() {
-                            if (isCurrentlySelected) {
-                              selectedBookings.remove(booking);
-                              selectedRowIndex = -1;
-                            } else {
-                              selectedBookings.add(booking);
-                              selectedRowIndex = index;
-                            }
-                          });
-                          return KeyEventResult.handled;
+                      setState(() {
+                        if (isCurrentlySelected) {
+                          selectedBookings.remove(booking);
+                          selectedRowIndex = -1;
+                        } else {
+                          selectedBookings.add(booking);
+                          selectedRowIndex = index;
                         }
-                        return KeyEventResult.ignored;
-                      },
-                      child: Builder(
-                        builder: (context) {
-                          final hasFocus = Focus.of(context).hasFocus;
-                          return Container(
-                            decoration: hasFocus
-                                ? BoxDecoration(
-                              border:
-                              Border.all(color: Colors.blue, width: 2),
-                              borderRadius: BorderRadius.circular(4),
-                            )
-                                : null,
-                            child: Checkbox(
-                              materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                              visualDensity: VisualDensity.compact,
-                              focusNode: FocusNode(skipTraversal: true),
-                              value: selectedBookings.contains(booking),
-                              onChanged: (bool? value) {
-                                if (value == null) return;
-                                setState(() {
-                                  if (value) {
-                                    selectedBookings.add(booking);
-                                    selectedRowIndex = index;
-                                  } else {
-                                    selectedBookings.remove(booking);
-                                    selectedRowIndex = -1;
-                                  }
-                                });
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                    );
+                      });
+                      return KeyEventResult.handled;
+                    }
+                    return KeyEventResult.ignored;
                   },
+                  child: Builder(
+                    builder: (context) {
+                      final hasFocus = Focus.of(context).hasFocus;
+                      return Center(
+                        child: Container(
+                          decoration: hasFocus
+                              ? BoxDecoration(
+                                  border: Border.all(
+                                      color: Colors.blue, width: 2),
+                                  borderRadius: BorderRadius.circular(4),
+                                )
+                              : null,
+                          child: Checkbox(
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            visualDensity: VisualDensity.compact,
+                            focusNode: FocusNode(skipTraversal: true),
+                            value: selectedBookings.contains(booking),
+                            onChanged: (bool? value) {
+                              if (value == null) return;
+                              setState(() {
+                                if (value) {
+                                  selectedBookings.add(booking);
+                                  selectedRowIndex = index;
+                                } else {
+                                  selectedBookings.remove(booking);
+                                  selectedRowIndex = -1;
+                                }
+                              });
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
@@ -826,7 +822,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
           DataCell(
             Center(
               child: _buildCellText(booking.referenceNumber ?? '',
-                  width: 60, isSmall: true),
+                  width: 70   , isSmall: true),
             ),
           ),
           // DATE/TIME in a single row
@@ -846,7 +842,20 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
             ),
           ),
           DataCell(
-            Center(child: _buildCellText(booking.pickup ?? '', width: 180)),
+            Center(
+              child: Tooltip(
+                message: (booking.pickup ?? '').toUpperCase(),
+                waitDuration: const Duration(milliseconds: 50),
+                showDuration: const Duration(seconds: 3),
+                preferBelow: true,
+                textStyle: _kOutfitStyle(fontSize: 12, color: Colors.white),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF757578),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: _buildCellText(booking.pickup ?? '', width: 180),
+              ),
+            ),
           ),
           // DROPOFF + small VIA box (only when via exists)
           DataCell(
@@ -855,16 +864,29 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                 width: 200,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      (booking.dropoff ?? '').toUpperCase(),
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      style: _kOutfitStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.normal,
-                        color: DynamicColors.textClr,
+                    Tooltip(
+                      message: (booking.dropoff ?? '').toUpperCase(),
+                      waitDuration: const Duration(milliseconds: 50),
+                      showDuration: const Duration(seconds: 3),
+                      preferBelow: true,
+                      textStyle: _kOutfitStyle(fontSize: 12, color: Colors.white),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF757578),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        (booking.dropoff ?? '').toUpperCase(),
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: _kOutfitStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.normal,
+                          color: DynamicColors.textClr,
+                        ),
                       ),
                     ),
                     if (viaList.isNotEmpty) ...[
@@ -900,7 +922,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
           DataCell(
             Center(
               child: _buildCellText(booking.bookingStatus?.bookingStatus ?? '',
-                  width: 70, isSmall: true),
+                  width: 85, isSmall: true),
             ),
           ),
           DataCell(
@@ -939,10 +961,10 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
           .join("\n"),
       waitDuration: const Duration(milliseconds: 100),
       showDuration: const Duration(seconds: 5),
-      preferBelow: false,
+      preferBelow: true,
       textStyle: _kOutfitStyle(fontSize: 12, color: Colors.white),
       decoration: BoxDecoration(
-        color: const Color(0xFF101B2E),
+        color: const Color(0xFF757578),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Container(
@@ -1164,50 +1186,66 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
   }
 }
 
-DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget? widget, textFieldHeight, double? fontSize, Widget? customWidget, Function(String)? onChanged,
+DataColumn buildHeaderWithSearch({
+  String? title,
+  bool removeSearching = false,
+  Widget? widget,
+  double? textFieldHeight,
+  double? fontSize,
+  Widget? customWidget,
+  Function(String)? onChanged,
   TextEditingController? controller,
   FocusNode? focusNode,
-  double? widhtss
+  double? widhtss,
 }) {
   return DataColumn(
     label: Expanded(
-      child: widget?? Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(title!.toUpperCase(), style: TextStyle(fontWeight: FontWeight.bold,
-              fontSize: fontSize ?? 13
-          )),
-          SizedBox(height: 4),
-          title == "CHECKBOX" || removeSearching == true
-              ? SizedBox.shrink()
-              : customWidget
-              ?? SizedBox(
-                width: widhtss??100,
-                height: textFieldHeight??28,
-                child: TextField(
-                  focusNode: focusNode,
-                  controller: controller,
-                  onChanged: onChanged,
-                  onTap: () {},
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w800, fontSize: 12),
-                  decoration: InputDecoration(
-                    hintText: "SEARCH",
-                    hintStyle: TextStyle(
-                        fontWeight: FontWeight.w800,
-                        color: DynamicColors.textClr.withOpacity(0.8),
-                        fontSize: 12),
-                    contentPadding:
-                    EdgeInsets.symmetric(horizontal: 6, vertical: 0),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(4),
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
+      child: widget != null
+          ? Center(child: widget)
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  title!.toUpperCase(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: fontSize ?? 13,
                   ),
                 ),
-              ),
-        ],
-      ),
+                const SizedBox(height: 4),
+                title == "CHECKBOX" || removeSearching == true
+                    ? const SizedBox.shrink()
+                    : customWidget ??
+                        SizedBox(
+                          width: widhtss ?? 100,
+                          height: textFieldHeight ?? 28,
+                          child: TextField(
+                            focusNode: focusNode,
+                            controller: controller,
+                            onChanged: onChanged,
+                            onTap: () {},
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w800, fontSize: 12),
+                            decoration: InputDecoration(
+                              hintText: "SEARCH",
+                              hintStyle: TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  color: DynamicColors.textClr.withOpacity(0.8),
+                                  fontSize: 12),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 0),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(4),
+                                borderSide: const BorderSide(color: Colors.grey),
+                              ),
+                            ),
+                          ),
+                        ),
+              ],
+            ),
     ),
   );
 }
