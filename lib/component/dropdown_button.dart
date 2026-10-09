@@ -2,6 +2,7 @@ import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 import 'color.dart';
 
@@ -16,6 +17,11 @@ class CustomDropdownField<T> extends StatefulWidget {
   final Function(T?) onChanged;
   final String? text;
 
+  /// Set on screens where the open list floats over a web platform view (such
+  /// as the HTML editor's iframe). It wraps the list in a [PointerInterceptor]
+  /// so taps on the list reach Flutter instead of being swallowed by the view.
+  final bool interceptPointer;
+
   const CustomDropdownField({
     super.key,
     this.label,
@@ -26,6 +32,7 @@ class CustomDropdownField<T> extends StatefulWidget {
     this.value,
     required this.itemLabel,
     required this.onChanged,
+    this.interceptPointer = false,
   });
 
   @override
@@ -87,6 +94,12 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
     return Get.width / 4;
   }
 
+  /// Wraps the open list in a [PointerInterceptor] when [interceptPointer] is
+  /// set, so clicks on it are not swallowed by a web platform view (the HTML
+  /// editor iframe) sitting underneath. A no-op otherwise.
+  Widget _maybeIntercept(Widget child) =>
+      widget.interceptPointer ? PointerInterceptor(child: child) : child;
+
   void _scrollToIndex(int index) {
     if (!_scrollController.hasClients || widget.items.isEmpty) return;
 
@@ -138,7 +151,7 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
           link: _layerLink,
           showWhenUnlinked: false,
           offset: Offset(0, (widget.height ?? 30) + 5),
-          child: Material(
+          child: _maybeIntercept(Material(
             elevation: 4,
             borderRadius: BorderRadius.circular(4),
             child: Container(
@@ -178,7 +191,7 @@ class _CustomDropdownFieldState<T> extends State<CustomDropdownField<T>> {
                 },
               ),
             ),
-          ),
+          )),
         ),
       ),
     );

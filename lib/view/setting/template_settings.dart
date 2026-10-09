@@ -153,6 +153,9 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                           items: controller.selectTempleteType!.templateTypes!,
                                           value: controller.selectedTemplateType,
                                           itemLabel: (val) => (val.name ?? "").toUpperCase(),
+                                          // The overlay drops over the HTML editor's iframe; let its
+                                          // taps reach Flutter instead of the iframe.
+                                          interceptPointer: true,
                                           onChanged: (val) {
                                             controller.selectedTemplateType = val;
                                             controller.template = null;
@@ -166,6 +169,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                         // value: controller.templeteByTypeMOdel?.templates?.contains(controller.template) == true ? controller.template : null,
                                         value: controller.template,
                                         itemLabel: (val) => (val.name ?? "").toUpperCase(),
+                                        interceptPointer: true,
                                         onChanged: (val) {
                                           controller.template = val;
                                           controller.getTemplateHtmlText(
