@@ -18,6 +18,7 @@ class LocationTypeShortcuts extends StatefulWidget {
   State<LocationTypeShortcuts> createState() => _LocationTypeShortcutsState();
 }
 
+
 class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
   SettingController controller = Get.isRegistered<SettingController>()
       ? Get.find<SettingController>()
@@ -88,7 +89,7 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
                             DataCell(
                               Center(
                                 child: TextField(
-                                  controller: item.controller,
+                                  controller: item.controller = TextEditingController(text: (item.shortcut ?? '').toUpperCase()),
                                   decoration: const InputDecoration(
                                     border: OutlineInputBorder(),
                                     isDense: true,
