@@ -25,7 +25,7 @@ void showContextMenu(BuildContext context, Offset offset) {
 
 // Helper Widget Item
 PopupMenuItem _buildMenuItem(int value, IconData icon, String title) {
-  return PopupMenuItem<int>(
+  return PopupMenuItem(
     value: value,
     height: 38,
     child: Row(
