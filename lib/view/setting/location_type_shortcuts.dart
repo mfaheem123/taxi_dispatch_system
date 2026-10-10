@@ -54,6 +54,13 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
                         Text(AppText.locationTypeShortcuts, style: titleDesign()),
                         SizedBox(width: 50),
                         CustomButton(
+                          onTap: () {
+                            if (controller.locationShortCut?.locationTypes != null) {
+                              for (var item in controller.locationShortCut!.locationTypes!) {
+                                controller.postShortCut(item.id!);
+                              }
+                            }
+                          },
                           height: 30,
                           btnText: AppText.save,
                           verticalPadding: 0.0,

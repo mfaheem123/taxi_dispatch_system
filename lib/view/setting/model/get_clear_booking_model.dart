@@ -9,29 +9,41 @@ ClearBookingModel clearBookingModelFromJson(String str) => ClearBookingModel.fro
 String clearBookingModelToJson(ClearBookingModel data) => json.encode(data.toJson());
 
 class ClearBookingModel {
-  bool? status;
-  int? count;
+  bool? success;
+  int? page;
+  int? limit;
   int? total;
+  int? totalPages;
+  int? count;
   List<Booking>? bookings;
 
   ClearBookingModel({
-    this.status,
-    this.count,
+    this.success,
+    this.page,
+    this.limit,
     this.total,
+    this.totalPages,
+    this.count,
     this.bookings,
   });
 
   factory ClearBookingModel.fromJson(Map<String, dynamic> json) => ClearBookingModel(
-    status: json["status"],
-    count: json["count"],
+    success: json["success"],
+    page: json["page"],
+    limit: json["limit"],
     total: json["total"],
+    totalPages: json["total_pages"],
+    count: json["count"],
     bookings: json["bookings"] == null ? [] : List<Booking>.from(json["bookings"]!.map((x) => Booking.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
-    "status": status,
-    "count": count,
+    "success": success,
+    "page": page,
+    "limit": limit,
     "total": total,
+    "total_pages": totalPages,
+    "count": count,
     "bookings": bookings == null ? [] : List<dynamic>.from(bookings!.map((x) => x.toJson())),
   };
 }
@@ -39,7 +51,7 @@ class ClearBookingModel {
 class Booking {
   String? id;
   String? referenceNumber;
-  dynamic subsidiaryId;
+  int? subsidiaryId;
   int? bookingTypeId;
   int? bookingStatusId;
   int? journeyTypeId;
@@ -52,8 +64,8 @@ class Booking {
   String? pickupTime;
   dynamic dropoffDate;
   dynamic dropoffTime;
-  dynamic pickupDoorNumber;
-  dynamic dropoffDoorNumber;
+  String? pickupDoorNumber;
+  String? dropoffDoorNumber;
   dynamic pickupPlot;
   dynamic dropoffPlot;
   dynamic pickupLocationTypeId;
@@ -69,9 +81,9 @@ class Booking {
   int? vehicleTypeId;
   dynamic vehicleId;
   int? driverId;
-  dynamic passengers;
-  dynamic luggages;
-  dynamic handLuggages;
+  int? passengers;
+  int? luggages;
+  int? handLuggages;
   List<dynamic>? childSeat;
   String? name;
   String? email;
@@ -123,7 +135,7 @@ class Booking {
   bool? completed;
   bool? controllerCompleted;
   dynamic driverWaitingTime;
-  dynamic dispatchedAt;
+  String? dispatchedAt;
   String? bookedAt;
   dynamic stripeCustomerId;
   dynamic stripePaymentId;
@@ -133,6 +145,7 @@ class Booking {
   String? updatedAt;
   String? eta;
   bool? fob;
+  bool? future;
   BookingStatus? bookingStatus;
   BookingType? bookingType;
   JourneyType? journeyType;
@@ -242,6 +255,7 @@ class Booking {
     this.updatedAt,
     this.eta,
     this.fob,
+    this.future,
     this.bookingStatus,
     this.bookingType,
     this.journeyType,
@@ -352,6 +366,7 @@ class Booking {
     updatedAt: json["updated_at"],
     eta: json["eta"],
     fob: json["fob"],
+    future: json["future"],
     bookingStatus: json["booking_status"] == null ? null : BookingStatus.fromJson(json["booking_status"]),
     bookingType: json["booking_type"] == null ? null : BookingType.fromJson(json["booking_type"]),
     journeyType: json["journey_type"] == null ? null : JourneyType.fromJson(json["journey_type"]),
@@ -462,6 +477,7 @@ class Booking {
     "updated_at": updatedAt,
     "eta": eta,
     "fob": fob,
+    "future": future,
     "booking_status": bookingStatus?.toJson(),
     "booking_type": bookingType?.toJson(),
     "journey_type": journeyType?.toJson(),
@@ -634,8 +650,8 @@ class BookingType {
 
 class Customer {
   dynamic doorNumber;
-  String? address1;
-  String? address2;
+  dynamic address1;
+  dynamic address2;
   bool? blacklist;
 
   Customer({
@@ -741,8 +757,8 @@ class Vehicle {
 }
 
 class Employee {
-  dynamic username;
-  dynamic roleId;
+  String? username;
+  int? roleId;
 
   Employee({
     this.username,
@@ -805,9 +821,9 @@ class PaymentType {
 }
 
 class Subsidiary {
-  dynamic id;
-  dynamic name;
-  dynamic telephoneNumber;
+  int? id;
+  String? name;
+  String? telephoneNumber;
 
   Subsidiary({
     this.id,

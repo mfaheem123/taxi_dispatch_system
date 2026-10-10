@@ -6,6 +6,7 @@ import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/administration/controller/administration_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../component/pagination.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
 import '../page_scroller.dart';
@@ -48,6 +49,11 @@ class _BookingClearingUtilityScreenState
       child: GetBuilder<SettingController>(initState: (state) {
       controller.getBookingsToClear();
     }, builder: (controller) {
+
+        final listToShow = controller.clearBookingFiltered.isNotEmpty
+            ? controller.clearBookingFiltered
+            : controller.clearBookingAll;
+
       if (controller.isLoadingBooking || controller.clearBookingModel == null) {
         return const Center(child: CircularProgressIndicator());
       }
@@ -83,7 +89,7 @@ class _BookingClearingUtilityScreenState
                   Spacer(),
                   CustomButton(
                     verticalPadding: 0.0,
-                    width: screenWidth / 15,
+                    width: screenWidth / 13,
                     height: 40,
                     borderRadius: 4,
                     btnText: AppText.clearSelected,
@@ -96,7 +102,7 @@ class _BookingClearingUtilityScreenState
                   SizedBox(width: 12),
                   CustomButton(
                     verticalPadding: 0.0,
-                    width: screenWidth / 15,
+                    width: screenWidth / 13,
                     height: 40,
                     borderRadius: 4,
                     btnText: AppText.clearAll,
@@ -165,28 +171,27 @@ class _BookingClearingUtilityScreenState
                       controller.onSearchBooking();
                     }),
                   ],
-                  rows: bookings.map((booking) {
+                  totalRow: listToShow.length,
+                  rows: listToShow.map((booking) {
                     final bookingId = booking.id.toString();
                     final isSelected = controller.selectedBookingIds.contains(bookingId);
 
                     return DataRow(
                       cells: [
                         DataCell(
-                          Center(child:
                           Checkbox(
                             value: isSelected,
                             onChanged: (val) {
                               controller.toggleSelection(bookingId);
                             },
                           ),
-                        )),
+                        ),
                         DataCell(Center(child: Text((booking.referenceNumber ?? "").toUpperCase()))),
-                        DataCell(Center(child: Text(
-                            "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}"))),
+                        DataCell(Center(child: Text("${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}"))),
                         DataCell(Center(child: Text((booking.name ?? "").toUpperCase()))),
                         DataCell(Center(child: Text((booking.pickup ?? "").toUpperCase()))),
                         DataCell(Center(child: Text((booking.dropoff ?? "").toUpperCase()))),
-                        DataCell(Center(child: Text((booking.driver?.name ?? "N/A").toUpperCase()))),
+                        DataCell(Center(child: Text((booking.driver?.name ?? "").toUpperCase()))),
                         DataCell(Center(child: Text((booking.bookingStatus?.bookingStatus ?? "").toUpperCase()))),
                         ],
                     );
@@ -194,6 +199,11 @@ class _BookingClearingUtilityScreenState
                 ),
               ),
             )),
+            PaginationWidget(
+              currentPage: controller.currentBookingPage.value,
+              totalPages: controller.totalBookingPages.value,
+              onPageChange: controller.onPage,
+            ),
           ],
         );
       });

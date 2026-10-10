@@ -1,16 +1,12 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/Model/image_model.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
-import 'package:dashboard_new1/alert/payment_types_color_alt.dart';
 import 'package:dashboard_new1/view/setting/shortcut_model.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
-import 'package:pdf/pdf.dart';
-import 'dart:convert';
 import 'package:dio/dio.dart' as dio;
 import '../../administration/controller/administration_controller.dart';
 import '../../administration/model/list_subsDiary.dart';
@@ -23,12 +19,7 @@ import '../model/select_templete_type.dart';
 import '../model/templete_HTML_model.dart' hide TemplateType;
 import '../model/templete_by_type_model.dart';
 
-import 'dart:typed_data';
-import 'dart:html' as html;
-import 'package:pdf/widgets.dart' as pw;
-
 class SettingController extends GetxController {
-  // Add your methods and properties here
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Template Settings functionality
 
@@ -37,29 +28,11 @@ class SettingController extends GetxController {
   String? selectedTemplate;
   String? tagAssigned;
 
-  // RxBool showDownloadButtons = false.obs;
-
   /// text field controllers
   final templateTitleController = HtmlEditorController();
   final subjectController = TextEditingController();
   final emailController = TextEditingController();
 
-  // void insertTagValue({value, bool temFormate = false}) async {
-  //   String currentText = await templateTitleController.getText();
-  //   String valueAdding = value.toString().replaceAll(" ", "_");
-  //   if (currentText.trim().isEmpty || currentText.trim() == "<p></p>") {
-  //     // 👇 Agar text empty hai
-  //     if (temFormate == false) {
-  //       templateTitleController.setText("<p>{{$valueAdding}}</p>");
-  //     } else {
-  //       templateTitleController.setText("<p>$value</p>");
-  //     }
-  //   } else {
-  //     // 👇 Agar text already hai
-  //     templateTitleController.insertHtml("{{$valueAdding}}");
-  //   }
-  //   update();
-  // }
   void insertTagValue({value, bool temFormate = false}) async {
     String valueAdding = value.toString().replaceAll(" ", "_");
     String tagText = temFormate == false ? "{{$valueAdding}}" : "$value";
@@ -84,12 +57,6 @@ class SettingController extends GetxController {
     var response = await Api().get("templates/template_types", sendCompanyId: true,);
     if (response.statusCode == 200) {
       selectTempleteType = TempTypeModel.fromJson(response.data);
-      // selectedTemplateType = selectTempleteType!.templateTypes![1];
-      // final types = selectTempleteType?.templateTypes;
-      // if (types != null && types.isNotEmpty) {
-      //   selectedTemplateType = types.length > 1 ? types[1] : types[0];
-      //   getTemplateByTypes(selectedTempId: selectedTemplateType!.id);
-      // }
       selectedTemplateType = null;
       template = null;
       templeteByTypeMOdel = null;
@@ -172,55 +139,6 @@ class SettingController extends GetxController {
     loadingtemp = false;
     update();
   }
-
-
-//// Template setting download function
-  //
-  // Future<void> downloadPdfWebDynamic() async {
-  //   try {
-  //     final list = await getTemplateHtmlText(selectedTempId: templeteHtmlModel!.templates!.id!);
-  //     if (list.isEmpty) return;
-  //
-  //     final pdf = pw.Document();
-  //
-  //     // headers = API keys
-  //     final headers = list.first.keys.toList();
-  //     // rows = API values
-  //     final data = list.map((row) {
-  //       return headers.map((key) {
-  //         final value = row[key];
-  //         return value == null ? '' : value.toString();
-  //       }).toList();
-  //     }).toList();
-  //
-  //     pdf.addPage(
-  //       pw.Page(
-  //         build: (context) {
-  //           return pw.Table.fromTextArray(
-  //             headers: headers,
-  //             data: data,
-  //             border: pw.TableBorder.all(),
-  //             headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-  //           );
-  //         },
-  //       ),
-  //     );
-  //
-  //     final pdfData = await pdf.save();
-  //     final bytes = Uint8List.fromList(pdfData);
-  //
-  //     final blob = html.Blob([bytes], 'application/pdf');
-  //     final url = html.Url.createObjectUrlFromBlob(blob);
-  //
-  //     html.AnchorElement(href: url)
-  //       ..setAttribute("download", "invoice.pdf")
-  //       ..click();
-  //
-  //     html.Url.revokeObjectUrl(url);
-  //   } catch (e) {
-  //     print("PDF Error: $e");
-  //   }
-  // }
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Template Settings functionality
 
@@ -338,10 +256,8 @@ class SettingController extends GetxController {
       "toggle_decline_email": toggleDeclineEmailValue.value,
       "map_service": mapServiceValue,
       "map_api_key": mapApiKeyController.text,
-      // "map_distance_factor": distanceFactorController.text,
-      // "map_time_factor": timeFactorController.text,
-      "map_distance_factor": distanceFactorController.text.isEmpty ? "0" : distanceFactorController.text,
-      "map_time_factor": timeFactorController.text.isEmpty ? "0" : timeFactorController.text,
+      "map_distance_factor": distanceFactorController.text,
+      "map_time_factor": timeFactorController.text,
       "toggle_map_controls": toggleMapControlsValue.value,
       "company_date_format": dateFormate,
       "company_time_format": timeFormate,
@@ -776,6 +692,11 @@ class SettingController extends GetxController {
   RxString searchDriver = ''.obs;
   RxString searchStatus = ''.obs;
 
+  /// >>>>>>>>>>>>>>>>>>>>> Pagination Work
+  var currentBookingPage = 1.obs;
+  var totalBookingPages = 1.obs;
+  final int bookingLimit = 20;
+
   ClearBookingModel? clearBookingModel;
   List<String> selectedBookingIds = [];
   bool isClearingSelected = false;
@@ -792,20 +713,42 @@ class SettingController extends GetxController {
 
   getBookingsToClear() async {
     isLoadingBooking = true;
-    update();
+    // update();
 
-    var response = await Api().get("bookings/clear");
+    var response = await Api().get("bookings/clear",
+        queryParameters: {
+          "page": currentBookingPage.value,
+          "limit": bookingLimit,
+          "reference_number": searchRefNo.value.toLowerCase(),
+          "pickup_date": searchDateTime.value.toLowerCase(),
+          "pickup_time": searchDateTime.value.toLowerCase(),
+          "customer": searchCustomer.value.toLowerCase(),
+          "pickup": searchPickup.value.toLowerCase(),
+          "dropoff": searchDropOff.value.toLowerCase(),
+          "driver": searchDriver.value.toLowerCase(),
+          "booking_status": searchStatus.value.toLowerCase(),
+        }
+    );
     if (response.statusCode == 200) {
       clearBookingModel = ClearBookingModel.fromJson(response.data);
+      totalPages.value = clearBookingModel?.totalPages ?? 1;
+      clearBookingAll.value = clearBookingModel?.bookings ?? [];
+      clearBookingFiltered.value = clearBookingAll;
     }
     isLoadingBooking = false;
     update();
   }
 
-
   void onSearchBooking() {
+    currentBookingPage.value = 1;
     getBookingsToClear();
-}
+  }
+
+  // -----------Pagination function
+  void onPage(int page) {
+    currentBookingPage.value = page;
+    getBookingsToClear();
+  }
 
   clearSelectedBookings() async {
     if (selectedBookingIds.isEmpty) return;
@@ -968,6 +911,32 @@ class SettingController extends GetxController {
       update();
     }
   }
+
+  RxBool updateShortCutLoader = false.obs;
+  postShortCut(int updateId) async {
+    updateShortCutLoader(true);
+
+    var formData = {
+      "background_color": pickerColor.value.toRadixString(16) ?? "",
+      "foreground_color": foregroundColor.value.toRadixString(16) ?? "",
+    };
+
+    var response = await Api().post(
+      formData,
+        "location-types/$updateId",
+        auth: true);
+
+    if(response.statusCode == 200) {
+      BotToast.showText(text: "COLORS UPDATED SUCCESSFULLY!");
+      getShortCut();
+    } else {
+     BotToast.showText(text: "FAILED TO UPDATE COLORS");
+    }
+
+    updateShortCutLoader(false);
+    update();
+  }
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo LocationShortcuts Work
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo sms tracking Work
