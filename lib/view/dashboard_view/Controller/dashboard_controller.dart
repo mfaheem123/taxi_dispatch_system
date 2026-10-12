@@ -615,11 +615,116 @@ class DashboardController extends GetxController {
               ));
         });
       }
+      // Show every logged-in / busy driver on the map by default — not just
+      // the one picked with right-click > TRACK — and frame them all.
+      plotAllDriverMarkers(fitCamera: true);
       timer = Timer.periodic(Duration(seconds: 5), (_) {
         timerTick.value++; // trigger UI update
-        update();
+        // Re-plot so pins follow drivers as their positions update; keeps
+        // retrying the one-time camera fit until the map is ready.
+        plotAllDriverMarkers(fitCamera: true);
       });
       update();
+    }
+  }
+
+  /// Image shown for a driver pin, by booking status (mirrors the driver
+  /// panel's own mapping).
+  String _driverStatusCarImage(String status) {
+    switch (status) {
+      case "Accepted":
+        return "assets/c.png"; // Orange
+      case "Arrived":
+        return "assets/d.png"; // Yellow
+      case "On Route":
+        return "assets/tracking_car.png"; // Black
+      case "STC":
+        return "assets/a.png"; // Blue
+      default:
+        return "assets/green.jpeg";
+    }
+  }
+
+  /// Set once the camera has framed all drivers, so the 5s re-plot doesn't keep
+  /// snapping the map back and fighting the user's own pan / zoom.
+  bool _driverCameraFitted = false;
+
+  /// Plots a marker for EVERY online and busy driver that has a location, so
+  /// the map shows all of them at once (1, 2, 10 … — however many there are).
+  /// Replaces the previous driver markers, so repeated calls just refresh the
+  /// pins without touching the booking route's pickup/drop markers.
+  ///
+  /// With [fitCamera] set, the first call that has drivers also frames the
+  /// camera so every logged-in driver is visible without panning — but only
+  /// when no booking route is being framed, and only once.
+  void plotAllDriverMarkers({bool fitCamera = false}) {
+    markers.removeWhere((m) => m.type == "driverMarker");
+
+    final List<LatLng> driverPoints = [];
+    for (final driver in [...onlineDriversList, ...busyDriversList]) {
+      final lat = double.tryParse(driver.latitude?.toString() ?? "");
+      final lng = double.tryParse(driver.longitude?.toString() ?? "");
+      if (lat == null || lng == null) continue;
+
+      final point = LatLng(lat, lng);
+      driverPoints.add(point);
+      markers.add(
+        CustomMarker(
+          withReturnType: "driverMarker",
+          type: "driverMarker",
+          point: point,
+          width: 70,
+          height: 70,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Image.asset(
+                _driverStatusCarImage(driver.bookingStatus ?? ""),
+                width: 70,
+                height: 70,
+                fit: BoxFit.contain,
+              ),
+              Text(
+                driver.username ?? "",
+                style: const TextStyle(fontSize: 12, color: Colors.white),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    update();
+
+    // Frame all logged-in drivers once. Skipped while a booking journey is
+    // framed (so it doesn't pull the camera off the route). Retries on later
+    // calls until it succeeds, because the map may not be ready on first load.
+    if (fitCamera &&
+        !_driverCameraFitted &&
+        driverPoints.isNotEmpty &&
+        mapFocusPoints.isEmpty &&
+        polylinePoints.isEmpty) {
+      _driverCameraFitted = _fitCameraToDrivers(driverPoints);
+    }
+  }
+
+  /// Moves/zooms the map so all of [points] are on screen. Returns whether it
+  /// succeeded — the MapController throws until a FlutterMap is attached.
+  bool _fitCameraToDrivers(List<LatLng> points) {
+    try {
+      if (points.length == 1) {
+        mapController.move(points.first, 14 + mapZoomBoost);
+      } else {
+        mapController.fitCamera(
+          CameraFit.coordinates(
+            coordinates: points,
+            padding: EdgeInsets.all(mapFitPadding),
+            maxZoom: 15 + mapZoomBoost,
+          ),
+        );
+      }
+      return true;
+    } catch (_) {
+      return false;
     }
   }
 

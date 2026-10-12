@@ -488,71 +488,80 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                             ),
                             Expanded(
                               child: RowButtonWidgetMap(
-                                onTap: () {
-                                  controller.selectedTab.value = "PLOT";
-                                  controller.update();
-                                },
-                                color: controller.selectedTab.value != "MAPS"
-                                    ? DynamicColors.primaryClr
-                                    : DynamicColors.secondaryClr,
-                                text: "PLOT",
-                                widget: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  onTap: () {
+                                    controller.selectedTab.value = "PLOT";
+                                    controller.update();
+                                  },
+                                  color: controller.selectedTab.value != "MAPS"
+                                      ? DynamicColors.primaryClr
+                                      : DynamicColors.secondaryClr,
+                                  text: "PLOT",
+                                  textClr: controller.selectedTab.value != "MAPS"
+                                      ? DynamicColors.secondaryClr
+                                      : DynamicColors.primaryClr,
+                                ),
+                            ),
+
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                color: DynamicColors.whiteClr,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 10.0,
+                                  horizontal: 10,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    SizedBox.shrink(),
-                                    Center(
-                                      child: Text(
-                                        "MAPS",
-                                        style: headingText(
-                                            fontSize: 14,
-                                            color: controller.selectedTab.value != "MAPS"
-                                                ? DynamicColors.secondaryClr
-                                                : DynamicColors.primaryClr
-                                        ),
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: (){
-                                        print("object");
-                                      },
-                                      child: Icon(Icons.refresh,
-                                      color: controller.selectedTab.value != "MAPS"
-                                          ? DynamicColors.secondaryClr
-                                          : DynamicColors.primaryClr,
-                                      ),
-                                    ),
+                                    Text(
+                                        "${controller.totalDistance.value} miles"),
+                                    Text(controller.totalTimeDuration.value),
+
                                   ],
                                 ),
-                                textClr: controller.selectedTab.value != "MAPS"
-                                    ? DynamicColors.secondaryClr
-                                    : DynamicColors.primaryClr,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                // Reset the map to its first-load framing: fit
+                                // the journey if there is one, otherwise return
+                                // to the default centre and zoom (same logic as
+                                // onMapReady above).
+                                final journey =
+                                    controller.polylinePoints.isNotEmpty
+                                        ? controller.polylinePointsCoordinate
+                                        : const <LatLng>[];
+                                if (controller.mapFocusPoints.isNotEmpty) {
+                                  controller.focusMapOnJourney();
+                                } else if (journey.length >= 2) {
+                                  controller.focusMapOnJourney(points: journey);
+                                } else {
+                                  _ownMap.move(
+                                    LatLng(51.2709722, 0.1893883),
+                                    13.0 + controller.mapZoomBoost,
+                                  );
+                                }
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: DynamicColors.whiteClr,
+                                    borderRadius: BorderRadius.circular(15)
+                                ),
+                                padding: const EdgeInsets.all(6),
+                                child: Icon(Icons.refresh,
+                                  color: DynamicColors.primaryClr,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              color: DynamicColors.whiteClr,
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 18.0,
-                                horizontal: 10,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                      "${controller.totalDistance.value} miles"),
-                                  Text(controller.totalTimeDuration.value),
 
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),
