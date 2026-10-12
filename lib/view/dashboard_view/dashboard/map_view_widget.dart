@@ -708,3 +708,133 @@ class _MapViewWidgetState extends State<MapViewWidget> {
 }
 
 
+class MapWidget extends StatelessWidget {
+  const MapWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+
+
+        // ── OPEN-IN-DIALOG BUTTON ──
+        Positioned(
+          bottom: 7,
+          left: 7,
+          child: Container(
+            height: 20,
+            width: 30,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(6),
+              color: DynamicColors.secondaryClr,
+              // Keyboard-Tab highlight ring (driven from the driver panel).
+              // Always a 2px border so toggling doesn't shift the child.
+              border: Border.all(
+                color: Colors.transparent,
+                width: 2,
+              ),
+            ),
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              icon: const Icon(Icons.crop_square_outlined),
+              onPressed: () {
+                // Get.to(ViewDriversMap());
+                final newTabUrl = Uri.base.origin + '/#' + Routes.viewDriversMap;
+                html.window.open(newTabUrl, '_blank');
+              },
+            ),
+          ),
+        ),
+
+        ///  ZOOM BUTTONS ON map
+        Positioned(
+          right: 15,
+          bottom: 10,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+
+              // Zoom (+) Button
+              Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.transparent,
+                    width: 2,
+                  ),
+                ),
+                child: SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: FloatingActionButton.small(
+                    heroTag: "zoom_in_btn",
+                    backgroundColor: Colors.white,
+
+                    onPressed: () {
+                      // controller.updateZoom(true);
+                    },
+                    child: const Icon(Icons.add, color: Colors.black87,  size: 20,),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              // Zoom (-) Button
+              Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.transparent,
+                    width: 2,
+                  ),
+                ),
+                child: SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: FloatingActionButton.small(
+                    heroTag: "zoom_out_btn",
+                    backgroundColor: Colors.white,
+                    onPressed: () {
+                      // controller.updateZoom(false);
+                    },
+                    child: const Icon(Icons.remove, color: Colors.black87, size: 20,),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              // Camera fouces
+              Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color:  Colors.transparent,
+                    width: 2,
+                  ),
+                ),
+                child: SizedBox(
+                  height: 30,
+                  width: 30,
+                  child: FloatingActionButton.small(
+                    backgroundColor: Colors.black26,
+                    onPressed: () {
+                      // Re-frame the whole journey. This used to move to
+                      // polylinePoints.first — the first point ever
+                      // tapped, which is not the current pickup once the
+                      // address is changed.
+                    },
+                    child: const Icon(Icons.center_focus_strong, color: Colors.black87, size: 20,),
+                  ),
+                ),
+              ),
+
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+
