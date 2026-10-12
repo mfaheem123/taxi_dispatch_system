@@ -977,6 +977,7 @@ class _DriversViewState extends State<DriversView> {
     });
   }
 
+
   void _showBusyContextMenu(
       BuildContext context, Offset offset, DashboardDriverObject? driver,
       {index}) async {
@@ -996,7 +997,7 @@ class _DriversViewState extends State<DriversView> {
           value: 1,
           height: 30,
           child: Text(
-            "TRACK",
+            "busy",
             style: mozillaTextRegularText(fontSize: 13),
           ),
         ),
@@ -1004,7 +1005,7 @@ class _DriversViewState extends State<DriversView> {
           value: 2,
           height: 30,
           child: Text(
-            "SINBIN",
+            "busy",
             style: mozillaTextRegularText(fontSize: 13),
           ),
         ),
@@ -1012,7 +1013,7 @@ class _DriversViewState extends State<DriversView> {
           value: 3,
           height: 30,
           child: Text(
-            isOnBreak ? "END BREAK" : "FORCE BREAK",
+            isOnBreak ? "END busy" : "FORCE BREAK",
             style: mozillaTextRegularText(fontSize: 13),
           ),
         ),
@@ -1020,7 +1021,7 @@ class _DriversViewState extends State<DriversView> {
           value: 4,
           height: 30,
           child: Text(
-            "LOGOUT",
+            "busy",
             style: mozillaTextRegularText(fontSize: 13),
           ),
         ),
@@ -1028,7 +1029,7 @@ class _DriversViewState extends State<DriversView> {
           value: 5,
           height: 30,
           child: Text(
-            "CALL DRIVER",
+            "busy",
             style: mozillaTextRegularText(fontSize: 13),
           ),
         ),
