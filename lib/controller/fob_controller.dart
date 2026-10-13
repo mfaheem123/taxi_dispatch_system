@@ -77,13 +77,13 @@ class FobController extends GetxController {
   }
 
   bool isCompleteStatus = false;
-  postCompleteBooking(dynamic bookingId) async {
+  postCompleteBooking(dynamic bookingId, {dynamic driverId}) async {
     isCompleteStatus = true;
     update();
 
     try {
       var formData = {
-        "driver_id": selectDriverObject?.id,
+        "driver_id": driverId ?? selectDriverObject?.id,
       };
       var response =
           await Api().post(formData, "bookings/completed-booking/$bookingId", auth: true);

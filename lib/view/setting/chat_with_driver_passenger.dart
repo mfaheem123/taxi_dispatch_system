@@ -83,35 +83,35 @@ class ChatWithDriverAndPassengerState
           ),
           child: Column(
             children: [
-              CustomDropdownField<String>(
-                text: AppText.selectMessage,
-                width: double.infinity,
-                label: AppText.selectMessage,
-                items: ["Driver", "Passenger"],
-                value: controller.selectMessageRole,
-                itemLabel: (val) => val,
-                onChanged: (val) {
-                  controller.selectMessageRole = val!;
-                  controller.update();
-                },
-              ),
+              // CustomDropdownField<String>(
+              //   text: AppText.selectMessage,
+              //   width: double.infinity,
+              //   label: AppText.selectMessage,
+              //   items: ["Driver", "Passenger"],
+              //   value: controller.selectMessageRole,
+              //   itemLabel: (val) => val,
+              //   onChanged: (val) {
+              //     controller.selectMessageRole = val!;
+              //     controller.update();
+              //   },
+              // ),
               const SizedBox(height: 15),
 
               // Checkbox (Send to all)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: KeyboardCheckbox(
-                  onChanged: (v) {
-                    controller.sendToAllValue.value = v;
-                    controller.update();
-                  },
-                  label: AppText.sendAll,
-                  value: controller.sendToAllValue.value,
-                  focusNode: controller.sendToAllNode,
-                  width: double.infinity,
-                ),
-              ),
-              const SizedBox(height: 16),
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(horizontal: 4),
+              //   child: KeyboardCheckbox(
+              //     onChanged: (v) {
+              //       controller.sendToAllValue.value = v;
+              //       controller.update();
+              //     },
+              //     label: AppText.sendAll,
+              //     value: controller.sendToAllValue.value,
+              //     focusNode: controller.sendToAllNode,
+              //     width: double.infinity,
+              //   ),
+              // ),
+              // const SizedBox(height: 16),
 
               // ===== Dynamic Message List =====
               Expanded(

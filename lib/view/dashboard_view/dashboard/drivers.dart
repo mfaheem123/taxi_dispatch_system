@@ -23,6 +23,7 @@ import 'package:flutter_map/flutter_map.dart';
 import '../models/account_darshboard_model.dart';
 import '../models/dashboard_model.dart';
 import '../models/tracking_drivers_model.dart';
+import 'busy_driver_right_click_menu.dart';
 import 'defult_dashboard_view.dart';
 
 class DriversView extends StatefulWidget {
@@ -625,9 +626,9 @@ class _DriversViewState extends State<DriversView> {
                                     context, details.globalPosition, driver,
                                     index: index);
                               } else {
-                                _showBusyContextMenu(
-                                    context, details.globalPosition, driver,
-                                    index: index);
+                                showContextMenuOnBusyDriver(
+                                    context, details.globalPosition,
+                                    driver: driver, index: index);
                               }
                             },
                             child: Card(
@@ -978,119 +979,5 @@ class _DriversViewState extends State<DriversView> {
   }
 
 
-  void _showBusyContextMenu(
-      BuildContext context, Offset offset, DashboardDriverObject? driver,
-      {index}) async {
-    double left = offset.dx;
-    double top = offset.dy;
 
-    final bool isOnBreak = driver?.driverStatus == "On Break";
-
-    await showMenu(
-      context: context,
-      position: RelativeRect.fromLTRB(left, top, left, top),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      items: [
-        PopupMenuItem(
-          value: 1,
-          height: 30,
-          child: Text(
-            "busy",
-            style: mozillaTextRegularText(fontSize: 13),
-          ),
-        ),
-        PopupMenuItem(
-          value: 2,
-          height: 30,
-          child: Text(
-            "busy",
-            style: mozillaTextRegularText(fontSize: 13),
-          ),
-        ),
-        PopupMenuItem(
-          value: 3,
-          height: 30,
-          child: Text(
-            isOnBreak ? "END busy" : "FORCE BREAK",
-            style: mozillaTextRegularText(fontSize: 13),
-          ),
-        ),
-        PopupMenuItem(
-          value: 4,
-          height: 30,
-          child: Text(
-            "busy",
-            style: mozillaTextRegularText(fontSize: 13),
-          ),
-        ),
-        PopupMenuItem(
-          value: 5,
-          height: 30,
-          child: Text(
-            "busy",
-            style: mozillaTextRegularText(fontSize: 13),
-          ),
-        ),
-      ],
-      elevation: 8.0,
-    ).then((value) async {
-      // Handle the action based on the value selected for busy driver
-      if (value == 1) {
-        DashboardController controller = Get.find();
-
-        controller.markers.removeWhere((m) => m.type == "driverMarker");
-        controller.markers.add(
-          CustomMarker(
-            withReturnType: "driverMarker",
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Image.asset(
-                  statusCarImage(driver?.bookingStatus ?? ""),
-                  width: 70,
-                  height: 70,
-                  fit: BoxFit.contain,
-                ),
-                Text(
-                  "${driver!.username}",
-                  style: const TextStyle(fontSize: 12, color: Colors.white),
-                )
-              ],
-            ),
-            type: "driverMarker",
-            point: LatLng(double.parse(driver.latitude!),
-                double.parse(driver.longitude!)),
-            width: 70,
-            height: 70,
-          ),
-        );
-
-        final target = LatLng(
-            double.parse(driver.latitude!), double.parse(driver.longitude!));
-
-        controller.mapController.move(target, 16);
-
-        debugPrint("Tapped on marker ${driver.latitude}");
-        debugPrint("Tapped on marker ${driver.longitude}");
-        setState(() {});
-      } else if (value == 2) {
-        showDialog(
-          context: context,
-          builder: (context) => SinbinDriverAlert(driver: driver),
-        );
-      } else if (value == 3) {
-        if (driver?.id == null) return;
-        if (isOnBreak) {
-          await _driverController.endDriverBreak(driver!.id!);
-        } else {
-          await _driverController.breakACCEPT(driver!.id!, "Accepted", "enabled");
-        }
-      } else if (value == 4) {
-        if (driver?.id == null) return;
-        await _driverController.forceLogoutDriver(driver!.id!);
-      }
-    });
-  }
 }
