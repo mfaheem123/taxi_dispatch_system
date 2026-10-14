@@ -115,7 +115,7 @@ void showContextMenuOnBusyDriver(
     } else if (value == 6) {
 
       if (driver?.id != null) {
-        controller.bookingRequests(controller.getActiveBookingId(driver!.id));
+        controller.checkNoPickupActiveBooking(driver!.id);
       }
       debugPrint("NO PICKUP tapped for busy driver: ${driver?.username}");
     } else if (value == 7) {
