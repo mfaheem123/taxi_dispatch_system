@@ -3,7 +3,7 @@ import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import '../../alert/multi_reservation_alert.dart';
+import '../../alert/multi_booking_alert.dart';
 import '../../component/responsive_datatable_widget.dart';
 
 class MultiReservationScreen extends StatefulWidget {
