@@ -27,6 +27,7 @@ class ResponsiveDataTableWidget extends StatefulWidget {
   final List<TableColumnConfig> columnConfigs;
   final List<dynamic> items;
   final List<dynamic> Function(dynamic item, Map<String, double> widths) rowBuilder;
+  final Color? headerBackgroundColor;
 
   const ResponsiveDataTableWidget({
     super.key,
@@ -34,6 +35,7 @@ class ResponsiveDataTableWidget extends StatefulWidget {
     required this.columnConfigs,
     required this.items,
     required this.rowBuilder,
+    this.headerBackgroundColor,
   });
 
   @override
@@ -82,7 +84,8 @@ class _ResponsiveDataTableWidgetState extends State<ResponsiveDataTableWidget> {
           DataTable(
             columnSpacing: 1.0,
             horizontalMargin: 2.0,
-            headingRowColor: MaterialStateProperty.all(DynamicColors.secondaryClr),
+            headingRowColor: MaterialStateProperty.all(widget.headerBackgroundColor ?? DynamicColors.secondaryClr,
+            ),
             dataRowMinHeight: 40,
             dataRowMaxHeight: 52,
             headingTextStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
