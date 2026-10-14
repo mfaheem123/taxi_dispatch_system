@@ -4559,7 +4559,7 @@ class DashboardController extends GetxController {
   }
 
   /// Fetches active booking ID for a given driver from backend
-  Future<dynamic> getActiveBookingId(dynamic driverId) async {
+ getActiveBookingId(dynamic driverId) async {
     if (driverId == null) return null;
     try {
       final response = await Api().get(
@@ -4578,7 +4578,7 @@ class DashboardController extends GetxController {
     return null;
   }
 
-  Future<void> checkAndRecoverActiveBooking(dynamic driverId) async {
+    checkAndRecoverActiveBooking(dynamic driverId) async {
     if (driverId == null) return;
     isRecoverLoading = true;
     update();
@@ -4626,7 +4626,7 @@ class DashboardController extends GetxController {
 
   bool isCheckActiveBookingLoading = false;
 
-  Future<void> checkAndCompleteActiveBooking(dynamic driverId) async {
+checkCompleteActiveBooking(dynamic driverId) async {
     if (driverId == null) return;
     isCheckActiveBookingLoading = true;
     update();
@@ -4635,7 +4635,7 @@ class DashboardController extends GetxController {
         final fobController = Get.isRegistered<FobController>()
             ? Get.find<FobController>()
             : Get.put(FobController());
-        await fobController.postCompleteBooking(bookingId, driverId: driverId);
+        await fobController.postCancelBooking(bookingId, bookingStatus:  11);
       isCheckActiveBookingLoading = false;
       update();
       } else {
@@ -4643,6 +4643,31 @@ class DashboardController extends GetxController {
       }
 
   }
+
+
+  bool isCheckNoShowBookingLoading = false;
+
+
+  checkNoShowActiveBooking(dynamic driverId) async {
+    if (driverId == null) return;
+    isCheckNoShowBookingLoading = true;
+    update();
+    final bookingId = await getActiveBookingId(driverId);
+    if (bookingId != null) {
+      final fobController = Get.isRegistered<FobController>()
+          ? Get.find<FobController>()
+          : Get.put(FobController());
+      await fobController.postCancelBooking(bookingId, bookingStatus:  7);
+      isCheckNoShowBookingLoading = false;
+      update();
+    } else {
+      BotToast.showText(text: "No active booking found for this driver");
+    }
+
+  }
+
+
+
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo booking recover
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo delete booking

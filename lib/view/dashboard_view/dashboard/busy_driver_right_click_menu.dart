@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../../component/marker_class.dart';
+import '../../../controller/fob_controller.dart';
 import '../Controller/dashboard_controller.dart';
 import '../models/dashboard_model.dart';
 
@@ -29,7 +30,9 @@ void showContextMenuOnBusyDriver(
   int? index,
 }) {
   final DashboardController controller = Get.find<DashboardController>();
-
+  final fobController = Get.isRegistered<FobController>()
+      ? Get.find<FobController>()
+      : Get.put(FobController());
   showMenu(
     context: context,
     position: RelativeRect.fromLTRB(offset.dx, offset.dy, offset.dx, offset.dy),
@@ -100,12 +103,20 @@ void showContextMenuOnBusyDriver(
       debugPrint("RECOVER tapped for busy driver: ${driver?.username}");
     } else if (value == 4) {
       if (driver?.id != null) {
-        controller.checkAndCompleteActiveBooking(driver!.id);
+        controller.checkCompleteActiveBooking(driver!.id);
       }
       debugPrint("COMPLETE tapped for busy driver: ${driver?.username}");
     } else if (value == 5) {
+
+      if (driver?.id != null) {
+        controller.checkNoShowActiveBooking(driver!.id);
+      }
       debugPrint("NO SHOW tapped for busy driver: ${driver?.username}");
     } else if (value == 6) {
+
+      if (driver?.id != null) {
+        controller.bookingRequests(controller.getActiveBookingId(driver!.id));
+      }
       debugPrint("NO PICKUP tapped for busy driver: ${driver?.username}");
     } else if (value == 7) {
       debugPrint("VIEW JOB tapped for busy driver: ${driver?.username}");
