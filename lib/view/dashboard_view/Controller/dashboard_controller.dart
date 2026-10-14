@@ -32,6 +32,7 @@ import '../dashboard/defult_dashboard_view.dart';
 import '../models/account_darshboard_model.dart';
 import '../models/all_addresses_model.dart';
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
+import '../../../controller/fob_controller.dart';
 import '../models/checkDriverSinBinModel.dart';
 import '../models/dashboard_table_model.dart' hide Employee;
 import '../models/jobs_details_model.dart';
@@ -4539,7 +4540,7 @@ class DashboardController extends GetxController {
   recoverBooking(dynamic bookingId, {paramUrl}) async {
     isRecoverLoading = true;
     update();
-    try {
+
       var formData = {};
 
       var response = await Api().post(
@@ -4549,18 +4550,46 @@ class DashboardController extends GetxController {
       );
       if (response.statusCode == 200) {
         BotToast.showText(text: "BOOKING RECOVERED SUCCESSFULLY");
-      } else if (response.statusCode == 404) {
-        BotToast.showText(text: "BOOKING NOT FOUND");
-      } else {
+        isRecoverLoading = false;
+        update();
+      }  else {
         BotToast.showText(text: "FAILED TO RECOVER BOOKING");
+        print("Error recovering booking: ${response.data['message']}");
+      }
+  }
+
+  /// Fetches active booking ID for a given driver from backend
+  Future<dynamic> getActiveBookingId(dynamic driverId) async {
+    if (driverId == null) return null;
+    try {
+      final response = await Api().get(
+        "bookings/check-active-booking?driver_id=$driverId",
+        auth: true,
+      );
+      if (response != null && response.statusCode == 200) {
+        var data = response.data;
+        if (data != null && data["booking_id"] != null) {
+          return data["booking_id"];
+        }
       }
     } catch (e) {
-      print("Error recovering booking: $e");
-      BotToast.showText(text: "SOMETHING WENT WRONG");
-    } finally {
+      debugPrint("Error fetching active booking ID for driver $driverId: $e");
+    }
+    return null;
+  }
+
+  Future<void> checkAndRecoverActiveBooking(dynamic driverId) async {
+    if (driverId == null) return;
+    isRecoverLoading = true;
+    update();
+      final bookingId = await getActiveBookingId(driverId);
+      if (bookingId != null) {
+        await recoverBooking(bookingId);
       isRecoverLoading = false;
       update();
-    }
+      } else {
+        BotToast.showText(text: "No active booking found for this driver");
+      }
   }
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo booking recover
@@ -4593,6 +4622,26 @@ class DashboardController extends GetxController {
       bookingRequest = false;
       update();
     }
+  }
+
+  bool isCheckActiveBookingLoading = false;
+
+  Future<void> checkAndCompleteActiveBooking(dynamic driverId) async {
+    if (driverId == null) return;
+    isCheckActiveBookingLoading = true;
+    update();
+      final bookingId = await getActiveBookingId(driverId);
+      if (bookingId != null) {
+        final fobController = Get.isRegistered<FobController>()
+            ? Get.find<FobController>()
+            : Get.put(FobController());
+        await fobController.postCompleteBooking(bookingId, driverId: driverId);
+      isCheckActiveBookingLoading = false;
+      update();
+      } else {
+        BotToast.showText(text: "No active booking found for this driver");
+      }
+
   }
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo booking recover
