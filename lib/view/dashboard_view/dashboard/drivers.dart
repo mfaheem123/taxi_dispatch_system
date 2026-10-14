@@ -55,14 +55,6 @@ class _DriversViewState extends State<DriversView> {
 
   RxBool showSubsidairy = false.obs;
 
-  @override
-  void initState() {
-    super.initState();
-    // Do NOT auto-grab focus here — otherwise the driver panel would steal
-    // focus from the booking form on load. Focus arrives only when the user
-    // Tabs off the Home/SAVE button (see driverPanelFocusNode handoff).
-  }
-
   // driverPanelFocusNode is owned/disposed by DashboardController, so it is
   // deliberately not disposed here.
 
@@ -72,16 +64,13 @@ class _DriversViewState extends State<DriversView> {
   /// "group number wise").
   void _activateHeaderIcon(BuildContext context, int index) {
     switch (index) {
-      case 0: // reset_tv_outlined
-        debugPrint("Header action: RESET");
+      case 0:
         _driverController.dashboardData();
         break;
-      case 1: // refresh
-        debugPrint("Header action: REFRESH");
+      case 1:
         _driverController.dashboardData();
         break;
-      case 2: // visibility_off_sharp
-        debugPrint("Header action: HIDE/SHOW");
+      case 2:
         break;
       case 3: // mail
         showDialog(
@@ -97,10 +86,8 @@ class _DriversViewState extends State<DriversView> {
         break;
       case 5: // share
         showSubsidairy.value = !showSubsidairy.value;
-        debugPrint("Header action: SHARE");
         break;
       default:
-        debugPrint("Header action: no handler for index $index");
     }
   }
 
@@ -131,7 +118,6 @@ class _DriversViewState extends State<DriversView> {
         _driverController.mapController.move(pts.first, 13.0);
         break;
       default:
-        debugPrint("Map button action: no handler for index $index");
     }
   }
 
@@ -157,7 +143,6 @@ class _DriversViewState extends State<DriversView> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
 
     return GetBuilder<DashboardController>(
       builder: (controller) {
@@ -289,8 +274,6 @@ class _DriversViewState extends State<DriversView> {
                 // Fire the selected header icon's onTap action by its index.
                 _activateHeaderIcon(context, selectedHeaderIndex);
               } else {
-                debugPrint(
-                    "Enter pressed on Driver ${controller.selectedDriverIndex}");
                 // driver list action
               }
               return KeyEventResult.handled;
@@ -300,12 +283,8 @@ class _DriversViewState extends State<DriversView> {
           child: SizedBox(
             width: screenWidth >= 1270 ? screenWidth / 5 : screenWidth / 4.8,
             height: containerFormHeight,
-            // height: screenHeight >=940? screenHeight * 0.51: screenHeight * 0.80,
             child: Card(
               elevation: 4,
-              // shape: RoundedRectangleBorder(
-              //   borderRadius: BorderRadius.circular(16),
-              // ),
               child: Column(
                 children: [
                   // ----- Header -----
@@ -345,7 +324,6 @@ class _DriversViewState extends State<DriversView> {
                                 selectedHeaderIndex = index;
                               });
                               _activateHeaderIcon(context, index);
-                              debugPrint("Clicked on header icon index $index");
                             },
                             child: Container(
                               decoration: BoxDecoration(
@@ -518,62 +496,6 @@ class _DriversViewState extends State<DriversView> {
                             ),
                           ),
                         ),
-                        // Expanded(
-                        //   child: InkWell(
-                        //     onTap: () {
-                        //     print("AVAILABLE (5)");
-                        //
-                        //     },
-                        //     child: Container(
-                        //       padding: const EdgeInsets.symmetric(vertical: 8),
-                        //       color:  DynamicColors.secondaryClr,
-                        //       child: Row(
-                        //         mainAxisAlignment: MainAxisAlignment.center,
-                        //         children: [
-                        //           CircleAvatar(
-                        //               radius: 6,
-                        //               backgroundColor: DynamicColors.redClr),
-                        //           const SizedBox(width: 6),
-                        //           Text(
-                        //             "AVAILABLE (5)",
-                        //             style: mozillaTextRegularText(
-                        //               fontSize: 10,
-                        //               color:
-                        //                   DynamicColors.black,
-                        //             ),
-                        //           ),
-                        //         ],
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-                        // Expanded(
-                        //   child: InkWell(
-                        //     onTap: () {
-                        //       print("BUSY (0)");
-                        //     },
-                        //     child: Container(
-                        //       padding: const EdgeInsets.symmetric(vertical: 8),
-                        //       color:   DynamicColors.secondaryClr,
-                        //       child: Row(
-                        //         mainAxisAlignment: MainAxisAlignment.center,
-                        //         children: [
-                        //           CircleAvatar(
-                        //               radius: 6,
-                        //               backgroundColor: DynamicColors.redClr),
-                        //           const SizedBox(width: 6),
-                        //           Text(
-                        //             "BUSY (0)",
-                        //             style: mozillaTextRegularText(
-                        //               fontSize: 10,
-                        //               color:  DynamicColors.black,
-                        //             ),
-                        //           ),
-                        //         ],
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
                       ],
                     ),
                   ),
@@ -909,8 +831,6 @@ class _DriversViewState extends State<DriversView> {
       // Handle the action based on the value selected
       if (value == 1) {
         DashboardController _controller = Get.find();
-
-        print(index);
         // Remove the previous driver tracking marker before assigning a new one
         _controller.markers.removeWhere((m) => m.type == "driverMarker");
         _controller.markers.add(
@@ -925,12 +845,6 @@ class _DriversViewState extends State<DriversView> {
                   height: 70,
                   fit: BoxFit.contain,
                 ),
-                // Image(
-                //   image: AssetImage("assets/tracking_car.png"),
-                //   width: 70,
-                //   height: 70,
-                // ),
-
                 Text(
                   "${driver!.username}",
                   style: TextStyle(fontSize: 12, color: Colors.white),
@@ -951,14 +865,8 @@ class _DriversViewState extends State<DriversView> {
         _controller.mapController
             .move(target, 16); // 16 = zoom level (you can adjust)
 
-        debugPrint("Tapped on marker ${driver.latitude}");
-        debugPrint("Tapped on marker ${driver.longitude}");
         setState(() {});
-
-        print("Viewing profile of ${driver.username}");
       } else if (value == 2) {
-        // print("Assigning task...");
-        print("Sinbin selected for ${driver?.username}");
         showDialog(
           context: context,
           builder: (context) => SinbinDriverAlert(driver: driver),
@@ -1071,9 +979,6 @@ class _DriversViewState extends State<DriversView> {
             double.parse(driver.latitude!), double.parse(driver.longitude!));
 
         controller.mapController.move(target, 16);
-
-        debugPrint("Tapped on marker ${driver.latitude}");
-        debugPrint("Tapped on marker ${driver.longitude}");
         setState(() {});
       } else if (value == 2) {
         showDialog(
