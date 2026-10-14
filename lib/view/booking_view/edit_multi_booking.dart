@@ -33,19 +33,19 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
   final TextEditingController fareController = TextEditingController();
 
   final List<Map<String, String>> reservations = [
-    {'datetime': 'MON 05-10-26 09:00', 'ref': 'DCB75891', 'jt': 'R/N'},
-    {'datetime': 'WED 07-10-26 09:00', 'ref': 'DCB75892', 'jt': 'R/N'},
-    {'datetime': 'FRI 09-10-26 09:00', 'ref': 'DCB75881', 'jt': 'R/N'},
-    {'datetime': 'MON 12-10-26 09:00', 'ref': 'DCB75893', 'jt': 'R/N'},
-    {'datetime': 'WED 14-10-26 09:00', 'ref': 'DCB75894', 'jt': 'R/N'},
-    {'datetime': 'FRI 16-10-26 09:00', 'ref': 'DCB75895', 'jt': 'R/N'},
-    {'datetime': 'MON 19-10-26 09:00', 'ref': 'DCB75896', 'jt': 'R/N'},
-    {'datetime': 'WED 21-10-26 09:00', 'ref': 'DCB75897', 'jt': 'R/N'},
-    {'datetime': 'FRI 23-10-26 09:00', 'ref': 'DCB75898', 'jt': 'R/N'},
-    {'datetime': 'MON 26-10-26 09:00', 'ref': 'DCB75899', 'jt': 'R/N'},
-    {'datetime': 'WED 28-10-26 09:00', 'ref': 'DCB75900', 'jt': 'R/N'},
-    {'datetime': 'FRI 30-10-26 09:00', 'ref': 'DCB75901', 'jt': 'R/N'},
-    {'datetime': 'MON 05-10-26 18:10', 'ref': 'DCB75891', 'jt': 'R/N'},
+    {'datetime': 'MON 05-10-26 09:00', 'ref': 'NTG75891', 'jt': 'R/N'},
+    {'datetime': 'WED 07-10-26 09:00', 'ref': 'NTG75892', 'jt': 'R/N'},
+    {'datetime': 'FRI 09-10-26 09:00', 'ref': 'NTG75881', 'jt': 'R/N'},
+    {'datetime': 'MON 12-10-26 09:00', 'ref': 'NTG75893', 'jt': 'R/N'},
+    {'datetime': 'WED 14-10-26 09:00', 'ref': 'NTG75894', 'jt': 'R/N'},
+    {'datetime': 'FRI 16-10-26 09:00', 'ref': 'NTG75895', 'jt': 'R/N'},
+    {'datetime': 'MON 19-10-26 09:00', 'ref': 'NTG75896', 'jt': 'R/N'},
+    {'datetime': 'WED 21-10-26 09:00', 'ref': 'NTG75897', 'jt': 'R/N'},
+    {'datetime': 'FRI 23-10-26 09:00', 'ref': 'NTG75898', 'jt': 'R/N'},
+    {'datetime': 'MON 26-10-26 09:00', 'ref': 'NTG75899', 'jt': 'R/N'},
+    {'datetime': 'WED 28-10-26 09:00', 'ref': 'NTG75900', 'jt': 'R/N'},
+    {'datetime': 'FRI 30-10-26 09:00', 'ref': 'NTG75901', 'jt': 'R/N'},
+    {'datetime': 'MON 05-10-26 18:10', 'ref': 'NTG75891', 'jt': 'R/N'},
   ];
 
   @override
@@ -228,16 +228,16 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                     isFormMobile
                         ? Column(
                       children: [
-                        _labelledField('DATE', _timeBox('10/30/2026', Icons.calendar_today)),
+                        _labelledField('DATE', _timeBox('10/30/2026')),
                         const SizedBox(height: 8),
-                        _labelledField('TIME', _timeBox('--:-- --', Icons.access_time)),
+                        _labelledField('TIME', _timeBox('--:-- --', icon: Icons.access_time)),
                       ],
                     )
                         : Row(
                       children: [
-                        Expanded(flex: 3, child: _labelledField('DATE', _timeBox('10/30/2026', Icons.calendar_today))),
+                        Expanded(flex: 3, child: _labelledField('DATE', _timeBox('10/30/2026'))),
                         const SizedBox(width: 8),
-                        Expanded(flex: 3, child: _labelledField('TIME', _timeBox('--:-- --', Icons.access_time))),
+                        Expanded(flex: 3, child: _labelledField('TIME', _timeBox('--:-- --', icon: Icons.access_time))),
                         const Spacer(flex: 6),
                       ],
                     ),
@@ -247,7 +247,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                     isFormMobile
                         ? Column(
                       children: [
-                        _labelledField('LEAD', _timeBox('--:-- --', Icons.access_time)),
+                        _labelledField('LEAD', _timeBox('--:-- --', icon: Icons.access_time)),
                         const SizedBox(height: 8),
                         _labelledField('JOUR', _dropdownBox('R/N')),
                         const SizedBox(height: 8),
@@ -256,7 +256,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                     )
                         : Row(
                       children: [
-                        Expanded(flex: 3, child: _labelledField('LEAD', _timeBox('--:-- --', Icons.access_time))),
+                        Expanded(flex: 3, child: _labelledField('LEAD', _timeBox('--:-- --', icon: Icons.access_time))),
                         const SizedBox(width: 8),
                         Expanded(flex: 3, child: _labelledField('JOUR', _dropdownBox('R/N'))),
                         const SizedBox(width: 8),
@@ -714,7 +714,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
     );
   }
 
-  Widget _timeBox(String text, IconData icon) {
+  Widget _timeBox(String text, {IconData? icon}) {
     return Container(
       height: 32,
       padding: const EdgeInsets.symmetric(horizontal: 8),

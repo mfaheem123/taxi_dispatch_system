@@ -21,12 +21,25 @@ class MultiReservationAlert extends StatefulWidget {
 class _MultiReservationAlertState extends State<MultiReservationAlert> {
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+
+    final double dialogWidth =
+    screenWidth < 1080 ? screenWidth - 40 : 1040;
+
+    const double hPad = 16;
+    const double spacing = 12;
+    // 4 columns like the image on desktop, dropping to 2 / 1 when narrow.
+    final int columns = dialogWidth > 820 ? 4 : (dialogWidth > 520 ? 2 : 1);
+    final double contentWidth = dialogWidth - hPad * 2;
+    final double fieldWidth =
+        (contentWidth - spacing * (columns - 1)) / columns;
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       backgroundColor: Colors.white,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       child: Container(
-        width: 760,
+        width: dialogWidth,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -54,7 +67,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                       style: outFitRegular(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: Colors.green,
+                        color: DynamicColors.primaryClr,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -63,7 +76,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                       style: outFitRegular(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: Colors.green,
+                        color: DynamicColors.primaryClr,
                       ),
                     ),
                     const Spacer(),
@@ -78,31 +91,31 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
 
               // ────────── Form Fields Grid (Using TextField for native Web resize handle) ──────────
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(hPad),
                 child: Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
+                  spacing: spacing,
+                  runSpacing: spacing,
                   children: [
-                    _buildPopupField('PICKUP', 'PITTENWEEM ROAD ST. MONANS ANSTRUTHER KY10 2AJ', maxLines: 3),
-                    _buildPopupField('PICKUP NOTES', ''),
-                    _buildPopupField('DROPOFF', 'CANMORE ROAD GLENROTHES KY7 4BD', maxLines: 3),
-                    _buildPopupField('DROPOFF NOTES', '', maxLines: 3),
-                    _buildPopupField('NAME', 'ROWDEN'),
-                    _buildPopupField('EMAIL', ''),
-                    _buildPopupField('MOBILE', '07485464242'),
-                    _buildPopupField('TELEPHONE', ''),
-                    _buildPopupField('DATE', '2026-10-12'),
-                    _buildPopupField('TIME', '09:00:00'),
-                    _buildPopupField('LEAD', ''),
-                    _buildPopupField('JOURNEY TYPE', widget.item['jt'] ?? 'R/N'),
-                    _buildPopupField('PAYMENT TYPE', 'ACCOUNT'),
-                    _buildPopupField('FARES', '45'),
-                    _buildPopupField('VEHICLE', 'SALOON'),
-                    _buildPopupField('DRIVER', '()'),
-                    _buildPopupField('PASSENGERS', ''),
-                    _buildPopupField('LUGGAGES', ''),
-                    _buildPopupField('HAND LUGGAGES', ''),
-                    _buildPopupField('ACCOUNT', 'CAPITA BUSINESS PLS'),
+                    _buildPopupField('PICKUP', 'PITTENWEEM ROAD ST. MONANS ANSTRUTHER KY10 2AJ', fieldWidth),
+                    _buildPopupField('PICKUP NOTES', '', fieldWidth),
+                    _buildPopupField('DROPOFF', 'CANMORE ROAD GLENROTHES KY7 4BD', fieldWidth),
+                    _buildPopupField('DROPOFF NOTES', '', fieldWidth),
+                    _buildPopupField('NAME', 'ROWDEN', fieldWidth),
+                    _buildPopupField('EMAIL', '', fieldWidth),
+                    _buildPopupField('MOBILE', '07485464242', fieldWidth),
+                    _buildPopupField('TELEPHONE', '', fieldWidth),
+                    _buildPopupField('DATE', '2026-10-12', fieldWidth),
+                    _buildPopupField('TIME', '09:00:00', fieldWidth),
+                    _buildPopupField('LEAD', '', fieldWidth),
+                    _buildPopupField('JOURNEY TYPE', widget.item['jt'] ?? 'R/N', fieldWidth),
+                    _buildPopupField('PAYMENT TYPE', 'ACCOUNT', fieldWidth),
+                    _buildPopupField('FARES', '45', fieldWidth),
+                    _buildPopupField('VEHICLE', 'SALOON', fieldWidth),
+                    _buildPopupField('DRIVER', '()', fieldWidth),
+                    _buildPopupField('PASSENGERS', '', fieldWidth),
+                    _buildPopupField('LUGGAGES', '', fieldWidth),
+                    _buildPopupField('HAND LUGGAGES', '', fieldWidth),
+                    _buildPopupField('ACCOUNT', 'CAPITA BUSINESS PLS', fieldWidth),
                   ],
                 ),
               ),
@@ -122,9 +135,9 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                       btnColor: Colors.red,
                       borderRadius: 4,
                       style: mozillaTextSemiBoldText(
-                        fontSize: 13,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold
                       ),
                       onTap: () => Get.back(),
                     ),
@@ -138,9 +151,9 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
     );
   }
 
-  Widget _buildPopupField(String label, String value, {int maxLines = 1}) {
+  Widget _buildPopupField(String label, String value, double width) {
     return SizedBox(
-      width: 170,
+      width: width,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -155,7 +168,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
           const SizedBox(height: 4),
           TextField(
             controller: TextEditingController(text: value),
-            maxLines: maxLines,
+            minLines: 2,
+            maxLines: null,
             readOnly: true,
             style: outFitRegular(
               fontSize: 11,
