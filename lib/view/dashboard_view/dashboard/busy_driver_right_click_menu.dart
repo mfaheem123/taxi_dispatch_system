@@ -109,13 +109,13 @@ void showContextMenuOnBusyDriver(
     } else if (value == 5) {
 
       if (driver?.id != null) {
-        controller.checkNoShowActiveBooking(driver!.id);
+        // controller.checkNoShowActiveBooking(driver!.id);
       }
       debugPrint("NO SHOW tapped for busy driver: ${driver?.username}");
     } else if (value == 6) {
 
       if (driver?.id != null) {
-        controller.checkNoPickupActiveBooking(driver!.id);
+        // controller.checkNoPickupActiveBooking(driver!.id);
       }
       debugPrint("NO PICKUP tapped for busy driver: ${driver?.username}");
     } else if (value == 7) {
