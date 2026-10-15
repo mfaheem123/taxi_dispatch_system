@@ -78,6 +78,10 @@ class DashboardController extends GetxController {
       ? Get.find<DashboardController>()
       : Get.put(DashboardController(), permanent: true);
 
+
+  final fobController = Get.isRegistered<FobController>()
+      ? Get.find<FobController>()
+      : Get.put(FobController());
   /// Deletes the dashboard's instance on logout. Its onClose closes the
   /// sockets and pollers and disposes the form's controllers, so the next
   /// login starts on a fresh one. Call it only once the signed-in screens are
@@ -4534,32 +4538,11 @@ class DashboardController extends GetxController {
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo booking recover
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo driver right click option
 
-  bool isRecoverLoading = false;
-
-  recoverBooking(dynamic bookingId, {paramUrl}) async {
-    isRecoverLoading = true;
-    update();
-
-      var formData = {};
-
-      var response = await Api().post(
-        formData,
-        paramUrl??"bookings/recover-booking/$bookingId",
-        auth: true,
-      );
-      if (response.statusCode == 200) {
-        BotToast.showText(text: "BOOKING RECOVERED SUCCESSFULLY");
-        isRecoverLoading = false;
-        update();
-      }  else {
-        BotToast.showText(text: "FAILED TO RECOVER BOOKING");
-        print("Error recovering booking: ${response.data['message']}");
-      }
-  }
 
   /// Fetches active booking ID for a given driver from backend
-  Future<dynamic> getActiveBookingId(dynamic driverId) async {
+  getActiveBookingId(dynamic driverId) async {
     if (driverId == null) return null;
     try {
       final response = await Api().get(
@@ -4577,8 +4560,30 @@ class DashboardController extends GetxController {
     }
     return null;
   }
+  bool isRecoverLoading = false;
 
-  Future<void> checkAndRecoverActiveBooking(dynamic driverId) async {
+  recoverBooking(dynamic bookingId, {paramUrl}) async {
+    isRecoverLoading = true;
+    update();
+      var formData = {};
+      var response = await Api().post(
+        formData,
+        paramUrl??"bookings/recover-booking/$bookingId",
+        auth: true,
+      );
+      if (response.statusCode == 200) {
+        BotToast.showText(text: "BOOKING RECOVERED SUCCESSFULLY");
+        isRecoverLoading = false;
+        update();
+      }  else {
+        BotToast.showText(text: "FAILED TO RECOVER BOOKING");
+        print("Error recovering booking: ${response.data['message']}");
+      }
+  }
+
+
+
+    checkAndRecoverActiveBooking(dynamic driverId) async {
     if (driverId == null) return;
     isRecoverLoading = true;
     update();
@@ -4592,57 +4597,89 @@ class DashboardController extends GetxController {
       }
   }
 
-  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo booking recover
-  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo booking recover
 
   bool bookingRequest = false;
-
   bookingRequests(dynamic bookingId, {paramUrl}) async {
     bookingRequest = true;
     update();
     try {
       var formData = {};
-
       var response = await Api().post(
         formData,
-        paramUrl??"bookings/no-pickup-booking/$bookingId",
+        paramUrl ?? "bookings/no-pickup-booking/$bookingId",
         auth: true,
       );
       if (response.statusCode == 200) {
-        BotToast.showText(text: "BOOKING RECOVERED SUCCESSFULLY");
-      } else if (response.statusCode == 404) {
-        BotToast.showText(text: "BOOKING NOT FOUND");
+        String msg = (response.data != null && response.data['message'] != null)
+            ? response.data['message']
+            : "NO PICKUP SUBMITTED SUCCESSFULLY";
+        BotToast.showText(text: msg.toUpperCase());
       } else {
-        BotToast.showText(text: "FAILED TO RECOVER BOOKING");
+        String errMsg = (response?.data != null && response?.data['message'] != null)
+            ? response.data['message']
+            : "FAILED TO PROCESS NO PICKUP";
+        BotToast.showText(text: errMsg.toUpperCase());
+        print("Error processing no pickup: ${response?.data?['message']}");
       }
     } catch (e) {
-      print("Error recovering booking: $e");
-      BotToast.showText(text: "SOMETHING WENT WRONG");
+      BotToast.showText(text: "FAILED TO PROCESS NO PICKUP");
+      print("Error in bookingRequests: $e");
     } finally {
       bookingRequest = false;
       update();
     }
   }
 
+  bool isCheckNoPickupBookingLoading = false;
+  checkNoPickupActiveBooking(dynamic driverId) async {
+    if (driverId == null) return;
+    isCheckNoPickupBookingLoading = true;
+    update();
+    final bookingId = await getActiveBookingId(driverId);
+    if (bookingId != null) {
+      await bookingRequests(bookingId);
+      isCheckNoPickupBookingLoading = false;
+      update();
+    } else {
+      BotToast.showText(text: "No active booking found for this driver");
+    }
+  }
+
   bool isCheckActiveBookingLoading = false;
 
-  Future<void> checkAndCompleteActiveBooking(dynamic driverId) async {
+checkCompleteActiveBooking(dynamic driverId) async {
     if (driverId == null) return;
     isCheckActiveBookingLoading = true;
     update();
       final bookingId = await getActiveBookingId(driverId);
       if (bookingId != null) {
-        final fobController = Get.isRegistered<FobController>()
-            ? Get.find<FobController>()
-            : Get.put(FobController());
-        await fobController.postCompleteBooking(bookingId, driverId: driverId);
+        await fobController.postCancelBooking(bookingId, bookingStatus:  11);
       isCheckActiveBookingLoading = false;
       update();
       } else {
         BotToast.showText(text: "No active booking found for this driver");
       }
+  }
+
+
+  bool isCheckNoShowBookingLoading = false;
+  checkNoShowActiveBooking(dynamic driverId) async {
+    if (driverId == null) return;
+    isCheckNoShowBookingLoading = true;
+    update();
+    final bookingId = await getActiveBookingId(driverId);
+    if (bookingId != null) {
+      await fobController.postCancelBooking(bookingId, bookingStatus:  7);
+      isCheckNoShowBookingLoading = false;
+      update();
+    } else {
+      BotToast.showText(text: "No active booking found for this driver");
+    }
 
   }
+
+
+
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo booking recover
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo delete booking

@@ -3,6 +3,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import '../component/alert_close_button.dart';
 import '../component/color.dart';
+import '../component/customButton.dart';
 import '../component/textStyle.dart';
 
 class MultiReservationAlert extends StatefulWidget {
@@ -21,10 +22,9 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    // Match the image: a wide dialog on desktop, shrinking to fit smaller
-    // screens instead of overflowing.
+
     final double dialogWidth =
-        screenWidth < 1080 ? screenWidth - 40 : 1040;
+    screenWidth < 1080 ? screenWidth - 40 : 1040;
 
     const double hPad = 16;
     const double spacing = 12;
@@ -67,7 +67,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                       style: outFitRegular(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: Colors.green,
+                        color: DynamicColors.primaryClr,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -76,7 +76,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                       style: outFitRegular(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: Colors.green,
+                        color: DynamicColors.primaryClr,
                       ),
                     ),
                     const Spacer(),
@@ -96,10 +96,10 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                   spacing: spacing,
                   runSpacing: spacing,
                   children: [
-                    _buildPopupField('PICKUP', 'PITTENWEEM ROAD ST. MONANS ANSTRUTHER KY10 2AJ', fieldWidth, maxLines: 3),
+                    _buildPopupField('PICKUP', 'PITTENWEEM ROAD ST. MONANS ANSTRUTHER KY10 2AJ', fieldWidth),
                     _buildPopupField('PICKUP NOTES', '', fieldWidth),
-                    _buildPopupField('DROPOFF', 'CANMORE ROAD GLENROTHES KY7 4BD', fieldWidth, maxLines: 3),
-                    _buildPopupField('DROPOFF NOTES', '', fieldWidth, maxLines: 3),
+                    _buildPopupField('DROPOFF', 'CANMORE ROAD GLENROTHES KY7 4BD', fieldWidth),
+                    _buildPopupField('DROPOFF NOTES', '', fieldWidth),
                     _buildPopupField('NAME', 'ROWDEN', fieldWidth),
                     _buildPopupField('EMAIL', '', fieldWidth),
                     _buildPopupField('MOBILE', '07485464242', fieldWidth),
@@ -127,27 +127,19 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    // Light, outlined button like the image (not the red one).
-                    InkWell(
-                      onTap: () => Get.back(),
-                      borderRadius: BorderRadius.circular(4),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF1F5F9),
-                          borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: const Color(0xFFCBD5E1)),
-                        ),
-                        child: Text(
-                          "CLOSE",
-                          style: mozillaTextSemiBoldText(
-                            fontSize: 13,
-                            color: const Color(0xFF334155),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                    CustomButton(
+                      width: 80,
+                      height: 28,
+                      verticalPadding: 0.0,
+                      btnText: "CLOSE",
+                      btnColor: Colors.red,
+                      borderRadius: 4,
+                      style: mozillaTextSemiBoldText(
+                          fontSize: 13,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold
                       ),
+                      onTap: () => Get.back(),
                     ),
                   ],
                 ),
@@ -159,8 +151,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
     );
   }
 
-  Widget _buildPopupField(String label, String value, double width,
-      {int maxLines = 1}) {
+  Widget _buildPopupField(String label, String value, double width) {
     return SizedBox(
       width: width,
       child: Column(
@@ -177,7 +168,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
           const SizedBox(height: 4),
           TextField(
             controller: TextEditingController(text: value),
-            maxLines: maxLines,
+            minLines: 2,
+            maxLines: null,
             readOnly: true,
             style: outFitRegular(
               fontSize: 11,
