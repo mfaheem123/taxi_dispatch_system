@@ -5,6 +5,7 @@ import '../../drivers_view/driver/bulk_driver_commission/bulk_driver_commission.
 import '../../drivers_view/driver/bulk_driver_commission/bulk_driver_rent.dart';
 import '../../drivers_view/driver/create_driver_form/driver_form.dart';
 import '../../drivers_view/driver/driver_app_features/driver_app_feature_screen.dart';
+import '../../drivers_view/driver/driver_Attribites/driver_attributes_list.dart';
 import '../../drivers_view/driver/driver_commission/create_driver_commission.dart';
 import '../../drivers_view/driver/driver_commission/create_driver_rent.dart';
 import '../../drivers_view/driver/driver_commission/list_driver_commission.dart';
@@ -43,6 +44,13 @@ AppMenuItem buildDriversMenu(MenuActions actions) {
           onTap: () => actions.openPage(
             title: "LIST OF LOGGED IN/OUT DRIVERS",
             page: () => LoginDriversScreen(),
+          ),
+        ),
+        AppMenuItem(
+          title: "DRIVER ATTRIBUTES",
+          onTap: () => actions.openPage(
+            title: "DRIVER ATTRIBUTES",
+            page: () => const DriverAttributesList(),
           ),
         ),
       ],

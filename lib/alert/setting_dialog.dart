@@ -73,6 +73,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                             ],
                           ),
                         ),
+
                         const SizedBox(width: 16),
 
                         // Right Side Dynamic Screen Call
@@ -82,7 +83,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                             children: [
                               const ExtraFaresAlert(),
                               RestrictDriversAlert(),
-                              const DriverAttributesAlert(),
+                              const  DriverAttributesAlert(),
                             ],
                           ),
                         ),
