@@ -3,6 +3,7 @@ import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:timepickerfield/timepickerfield.dart';
 import '../../alert/multi_booking_alert.dart';
 import '../../component/responsive_datatable_widget.dart';
 
@@ -14,12 +15,14 @@ class MultiReservationScreen extends StatefulWidget {
 }
 
 class _MultiReservationScreenState extends State<MultiReservationScreen> {
+  TimeOfDay? selectedTime;
 
   static const Color _border = Color(0xFFE1E7F0);
   static const Color _fieldFill = Color(0xFFF2F5F9);
   static const Color _subtleText = Color(0xFF475569);
 
   static const double _fsLabel = 11.0;
+  static const double _fieldHeight = 34.0;
 
   int selectedRowIndex = 0;
 
@@ -31,6 +34,8 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
   final TextEditingController mobController = TextEditingController();
   final TextEditingController telController = TextEditingController();
   final TextEditingController fareController = TextEditingController();
+  final TextEditingController timeController = TextEditingController();
+  final TextEditingController leadController = TextEditingController();
 
   final List<Map<String, String>> reservations = [
     {'datetime': 'MON 05-10-26 09:00', 'ref': 'NTG75891', 'jt': 'R/N'},
@@ -228,17 +233,20 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                     isFormMobile
                         ? Column(
                       children: [
-                        _labelledField('DATE', _timeBox('10/30/2026')),
+                        _labelledField('DATE', _dateBox()),
                         const SizedBox(height: 8),
-                        _labelledField('TIME', _timeBox('--:-- --', icon: Icons.access_time)),
+                        _labelledField('TIME', _timePickerBox()),
                       ],
                     )
                         : Row(
                       children: [
-                        Expanded(flex: 3, child: _labelledField('DATE', _timeBox('10/30/2026'))),
+                        Expanded(child: _labelledField('DATE', SizedBox(height: _fieldHeight, child: _dateBox()))),
                         const SizedBox(width: 8),
-                        Expanded(flex: 3, child: _labelledField('TIME', _timeBox('--:-- --', icon: Icons.access_time))),
-                        const Spacer(flex: 6),
+                        Expanded(child: _labelledField('TIME', SizedBox(height: _fieldHeight, child: _timePickerBox()))),
+                        const SizedBox(width: 8),
+                        const Expanded(child: SizedBox()),
+                        const SizedBox(width: 8),
+                        const Expanded(child: SizedBox()),
                       ],
                     ),
                     const SizedBox(height: 10),
@@ -247,7 +255,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                     isFormMobile
                         ? Column(
                       children: [
-                        _labelledField('LEAD', _timeBox('--:-- --', icon: Icons.access_time)),
+                        _labelledField('LEAD', _timePickerBox()),
                         const SizedBox(height: 8),
                         _labelledField('JOUR', _dropdownBox('R/N')),
                         const SizedBox(height: 8),
@@ -256,12 +264,13 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                     )
                         : Row(
                       children: [
-                        Expanded(flex: 3, child: _labelledField('LEAD', _timeBox('--:-- --', icon: Icons.access_time))),
+                        Expanded(child: _labelledField('LEAD', SizedBox(height: _fieldHeight, child: _timePickerBox()))),
                         const SizedBox(width: 8),
-                        Expanded(flex: 3, child: _labelledField('JOUR', _dropdownBox('R/N'))),
+                        Expanded(child: _labelledField('JOUR', SizedBox(height: _fieldHeight, child: _dropdownBox('R/N')))),
                         const SizedBox(width: 8),
-                        Expanded(flex: 3, child: _labelledField('VEH', _dropdownBox('SELECT VEHICLE'))),
-                        const Spacer(flex: 3),
+                        Expanded(child: _labelledField('VEH', SizedBox(height: _fieldHeight, child: _dropdownBox('SELECT VEHICLE')))),
+                        const SizedBox(width: 8),
+                        const Expanded(child: SizedBox()),
                       ],
                     ),
                     const SizedBox(height: 10),
@@ -352,12 +361,10 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                         : Row(
                       children: [
                         Expanded(
-                          flex: 3,
-                          child: _labelledField('PAY', _dropdownBox('ACCOUNT')),
+                          child: _labelledField('PAY', SizedBox(height: _fieldHeight, child: _dropdownBox('ACCOUNT'))),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          flex: 3,
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -376,11 +383,12 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                             ],
                           ),
                         ),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: 8),
+                        const Expanded(child: SizedBox()),
+                        const SizedBox(width: 8),
                         Expanded(
-                          flex: 3,
                           child: Container(
-                            height: 32,
+                            height: _fieldHeight,
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             decoration: BoxDecoration(
                               border: Border.all(color: _border),
@@ -412,7 +420,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                           ),
                         ),
                       ],
-                    ),
+                    )
                   ],
                 ),
               ),
@@ -581,8 +589,15 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
 
   Widget _labelledField(String label, Widget child) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(width: 40, child: Text(label, style: outFitRegular(fontSize: _fsLabel, fontWeight: FontWeight.bold, color: _subtleText))),
+        SizedBox(
+          width: 38, // Fixed width label ke liye
+          child: Text(
+              label,
+              style: outFitRegular(fontSize: _fsLabel, fontWeight: FontWeight.bold, color: _subtleText)
+          ),
+        ),
         const SizedBox(width: 4),
         Expanded(child: child),
       ],
@@ -714,14 +729,49 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
     );
   }
 
-  Widget _timeBox(String text, {IconData? icon}) {
+  Widget _dateBox() {
+    final now = DateTime.now();
+    final currentDate =
+        '${now.day.toString().padLeft(2, '0')}/'
+        '${now.month.toString().padLeft(2, '0')}/'
+        '${now.year}';
+
     return Container(
       height: 32,
+      alignment: Alignment.centerLeft,
       padding: const EdgeInsets.symmetric(horizontal: 8),
-      decoration: BoxDecoration(color: _fieldFill, border: Border.all(color: _border), borderRadius: BorderRadius.circular(5)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [Text(text, style: _valStyle), Icon(icon, size: 14, color: _subtleText)],
+      decoration: BoxDecoration(
+        color: _fieldFill,
+        border: Border.all(color: _border),
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: Text(
+        currentDate,
+        style: _valStyle,
+      ),
+    );
+  }
+
+  Widget _timePickerBox() {
+    return SizedBox(
+      height: 32,
+      child: TimePickerField(
+        controller: TextEditingController(),
+        showPrefixIcon: false,
+        textStyle: _valStyle,
+        accent: DynamicColors.primaryClr,
+        borderColor: _border,
+        decoration: _fieldDec().copyWith(
+          suffixIcon: const Icon(
+            Icons.access_time,
+            size: 14,
+            color: _subtleText,
+          ),
+          suffixIconConstraints: const BoxConstraints(
+            minWidth: 28,
+            minHeight: 0,
+          ),
+        ),
       ),
     );
   }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:html' as html;
+import 'dart:ui_web' as ui;
 import '../component/alert_close_button.dart';
 import '../component/color.dart';
 import '../component/customButton.dart';
@@ -19,6 +22,134 @@ class MultiReservationAlert extends StatefulWidget {
 }
 
 class _MultiReservationAlertState extends State<MultiReservationAlert> {
+  late final Map<String, TextEditingController> _controllers;
+  final Map<String, html.TextAreaElement> _textAreas = {};
+  final Map<String, double> _fieldHeights = {};
+  final Map<String, double> _fieldWidths = {};
+  final Map<String, html.ResizeObserver> _resizeObservers = {};
+  static const double _initialFieldHeight = 48;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeControllers();
+
+    if (kIsWeb) {
+      _registerHtmlTextAreas();
+    }
+  }
+
+  void _initializeControllers() {
+    _controllers = {
+      'PICKUP': TextEditingController(text: 'PITTENWEEM ROAD ST. MONANS ANSTRUTHER KY10 2AJ'),
+      'PICKUP NOTES': TextEditingController(text: widget.item['pickup_notes'] ?? ''),
+      'DROPOFF': TextEditingController(text: 'CANMORE ROAD GLENROTHES KY7 4BD'),
+      'DROPOFF NOTES': TextEditingController(text: widget.item['dropoff_notes'] ?? ''),
+      'NAME': TextEditingController(text: 'ROWDEN'),
+      'EMAIL': TextEditingController(text: widget.item['email'] ?? ''),
+      'MOBILE': TextEditingController(text: '07485464242'),
+      'TELEPHONE': TextEditingController(text: widget.item['telephone'] ?? ''),
+      'DATE': TextEditingController(text: '2026-10-12'),
+      'TIME': TextEditingController(text: '09:00'),
+      'LEAD': TextEditingController(text: widget.item['lead'] ?? ''),
+      'JOURNEY TYPE': TextEditingController(text: widget.item['jt'] ?? 'R/N'),
+      'PAYMENT TYPE': TextEditingController(text: 'ACCOUNT'),
+      'FARES': TextEditingController(text: '45'),
+      'VEHICLE': TextEditingController(text: 'SALOON'),
+      'DRIVER': TextEditingController(text: '()'),
+      'PASSENGERS': TextEditingController(text: widget.item['passengers'] ?? ''),
+      'LUGGAGES': TextEditingController(text: widget.item['luggages'] ?? ''),
+      'HAND LUGGAGES': TextEditingController(text: widget.item['hand_luggages'] ?? ''),
+      'ACCOUNT': TextEditingController(text: 'CAPITA BUSINESS PLS'),
+    };
+  }
+
+  void _registerHtmlTextAreas() {
+    // bottom-right resize grip.
+    final style = html.StyleElement()
+      ..innerText = '''
+        textarea {
+          resize: vertical !important;
+          overflow: hidden !important;
+          overflow-y: hidden !important;
+          overflow-x: hidden !important;
+          scrollbar-width: none !important;
+          -ms-overflow-style: none !important;
+        }
+        textarea::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+      ''';
+    html.document.head?.append(style);
+
+    for (final entry in _controllers.entries) {
+      final label = entry.key;
+      final viewType = 'reservation-textarea-${identityHashCode(this)}-${label.hashCode}';
+      _fieldHeights[label] = _initialFieldHeight;
+      _fieldWidths[label] = 0;
+
+      ui.platformViewRegistry.registerViewFactory(viewType, (int viewId) {
+        final area = html.TextAreaElement()
+          ..value = entry.value.text
+          ..readOnly = true
+          ..spellcheck = false
+          ..style.width = '100%'
+          ..style.height = '${_fieldHeights[label]}px'
+          ..style.minHeight = '${_initialFieldHeight}px'
+          ..style.boxSizing = 'border-box'
+          ..style.resize = 'vertical'
+          ..style.overflow = 'hidden'
+          ..style.overflowY = 'hidden'
+          ..style.overflowX = 'hidden'
+          ..style.maxWidth = '100%'
+          ..style.minWidth = '100%'
+          ..style.setProperty('scrollbar-width', 'none')
+          ..style.setProperty('-ms-overflow-style', 'none')
+          ..style.padding = '8px'
+          ..style.border = '1px solid #E1E7F0'
+          ..style.borderRadius = '5px'
+          ..style.backgroundColor = '#F8FAFC'
+          ..style.color = '#475569'
+          ..style.fontFamily = 'Outfit, sans-serif'
+          ..style.fontSize = '11px'
+          ..style.fontWeight = '600'
+          ..style.lineHeight = '15px'
+          ..style.outline = 'none';
+
+        _textAreas[label] = area;
+
+        final observer = html.ResizeObserver((entries, observer) {
+          final newHeight = area.clientHeight.toDouble();
+          if (mounted && newHeight >= _initialFieldHeight &&
+              (_fieldHeights[label] ?? _initialFieldHeight) != newHeight) {
+            setState(() {
+              _fieldHeights[label] = newHeight;
+            });
+            // Keep the HTML textarea width locked to its grid column.
+            area.style.width = '100%';
+            area.style.maxWidth = '100%';
+            area.style.minWidth = '100%';
+          }
+        });
+        observer.observe(area);
+        _resizeObservers[label] = observer;
+        return area;
+      });
+      _viewTypes[label] = viewType;
+    }
+  }
+
+  final Map<String, String> _viewTypes = {};
+
+  @override
+  void dispose() {
+    for (final observer in _resizeObservers.values) {
+      observer.disconnect();
+    }
+    for (var controller in _controllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -28,7 +159,6 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
 
     const double hPad = 16;
     const double spacing = 12;
-    // 4 columns like the image on desktop, dropping to 2 / 1 when narrow.
     final int columns = dialogWidth > 820 ? 4 : (dialogWidth > 520 ? 2 : 1);
     final double contentWidth = dialogWidth - hPad * 2;
     final double fieldWidth =
@@ -89,33 +219,33 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
               ),
               const SizedBox(height: 12),
 
-              // ────────── Form Fields Grid (Using TextField for native Web resize handle) ──────────
+              // ────────── Form Fields Grid ──────────
               Padding(
                 padding: const EdgeInsets.all(hPad),
                 child: Wrap(
                   spacing: spacing,
                   runSpacing: spacing,
                   children: [
-                    _buildPopupField('PICKUP', 'PITTENWEEM ROAD ST. MONANS ANSTRUTHER KY10 2AJ', fieldWidth),
-                    _buildPopupField('PICKUP NOTES', '', fieldWidth),
-                    _buildPopupField('DROPOFF', 'CANMORE ROAD GLENROTHES KY7 4BD', fieldWidth),
-                    _buildPopupField('DROPOFF NOTES', '', fieldWidth),
-                    _buildPopupField('NAME', 'ROWDEN', fieldWidth),
-                    _buildPopupField('EMAIL', '', fieldWidth),
-                    _buildPopupField('MOBILE', '07485464242', fieldWidth),
-                    _buildPopupField('TELEPHONE', '', fieldWidth),
-                    _buildPopupField('DATE', '2026-10-12', fieldWidth),
-                    _buildPopupField('TIME', '09:00:00', fieldWidth),
-                    _buildPopupField('LEAD', '', fieldWidth),
-                    _buildPopupField('JOURNEY TYPE', widget.item['jt'] ?? 'R/N', fieldWidth),
-                    _buildPopupField('PAYMENT TYPE', 'ACCOUNT', fieldWidth),
-                    _buildPopupField('FARES', '45', fieldWidth),
-                    _buildPopupField('VEHICLE', 'SALOON', fieldWidth),
-                    _buildPopupField('DRIVER', '()', fieldWidth),
-                    _buildPopupField('PASSENGERS', '', fieldWidth),
-                    _buildPopupField('LUGGAGES', '', fieldWidth),
-                    _buildPopupField('HAND LUGGAGES', '', fieldWidth),
-                    _buildPopupField('ACCOUNT', 'CAPITA BUSINESS PLS', fieldWidth),
+                    _buildPopupField('PICKUP', fieldWidth),
+                    _buildPopupField('PICKUP NOTES', fieldWidth),
+                    _buildPopupField('DROPOFF', fieldWidth),
+                    _buildPopupField('DROPOFF NOTES', fieldWidth),
+                    _buildPopupField('NAME', fieldWidth),
+                    _buildPopupField('EMAIL', fieldWidth),
+                    _buildPopupField('MOBILE', fieldWidth),
+                    _buildPopupField('TELEPHONE', fieldWidth),
+                    _buildPopupField('DATE', fieldWidth),
+                    _buildPopupField('TIME', fieldWidth),
+                    _buildPopupField('LEAD', fieldWidth),
+                    _buildPopupField('JOURNEY TYPE', fieldWidth),
+                    _buildPopupField('PAYMENT TYPE', fieldWidth),
+                    _buildPopupField('FARES', fieldWidth),
+                    _buildPopupField('VEHICLE', fieldWidth),
+                    _buildPopupField('DRIVER', fieldWidth),
+                    _buildPopupField('PASSENGERS', fieldWidth),
+                    _buildPopupField('LUGGAGES', fieldWidth),
+                    _buildPopupField('HAND LUGGAGES', fieldWidth),
+                    _buildPopupField('ACCOUNT', fieldWidth),
                   ],
                 ),
               ),
@@ -151,7 +281,9 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
     );
   }
 
-  Widget _buildPopupField(String label, String value, double width) {
+  Widget _buildPopupField(String label, double width) {
+    final height = _fieldHeights[label] ?? _initialFieldHeight;
+
     return SizedBox(
       width: width,
       child: Column(
@@ -160,40 +292,15 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
           Text(
             label,
             style: outFitRegular(
-              fontSize: 10,
+              fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: const Color(0xFF475569),
+              color: Colors.black,
             ),
           ),
           const SizedBox(height: 4),
-          TextField(
-            controller: TextEditingController(text: value),
-            minLines: 2,
-            maxLines: null,
-            readOnly: true,
-            style: outFitRegular(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
-            ),
-            decoration: InputDecoration(
-              isDense: true,
-              filled: true,
-              fillColor: const Color(0xFFF8FAFC),
-              contentPadding: const EdgeInsets.all(8),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5),
-                borderSide: const BorderSide(color: Color(0xFFE1E7F0)),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5),
-                borderSide: const BorderSide(color: Color(0xFFE1E7F0)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5),
-                borderSide: const BorderSide(color: Color(0xFFE1E7F0)),
-              ),
-            ),
+          SizedBox(
+            height: height,
+            child: HtmlElementView(viewType: _viewTypes[label]!),
           ),
         ],
       ),
