@@ -344,7 +344,8 @@ class DashboardController extends GetxController {
             );
             dashboardAllData!.drivers!.add(driver);
             onlineDriversList.add(driver);
-            update();
+            // Show the new driver's pin on the map right away.
+            _scheduleDriverMarkerRefresh();
           } else if (data['event'] == "DRIVER_BREAK_STATUS_UPDATE" ||
               data['event'] == "DRIVER_SIN_BIN_STATUS_UPDATE") {
             final driverData = data['data'];
@@ -381,7 +382,8 @@ class DashboardController extends GetxController {
           //     onlineDriversList[index].bookingStatus =
           //     driverData['booking_status'];
 
-              update();
+              // Status changed → refresh the pin (its car image depends on it).
+              _scheduleDriverMarkerRefresh();
             }
           } else if (data['event'] != "DRIVER_LIST") {
             int index = onlineDriversList.indexWhere(
@@ -403,7 +405,8 @@ class DashboardController extends GetxController {
               onlineDriversList.removeAt(index);
               selectDriverValue = null;
             }
-            update();
+            // Driver logged out → drop its pin from the map too.
+            _scheduleDriverMarkerRefresh();
           }
         },
         onError: (error) => print("Connection Error: $error"),
@@ -511,7 +514,8 @@ class DashboardController extends GetxController {
                   "BOOKING_STATUS_UPDATE: no driver matched id=$driverId (status=$newBookingStatus)");
             }
 
-            update();
+            // Booking status changed → refresh pins (car image depends on it).
+            _scheduleDriverMarkerRefresh();
           } else if (data['event'] == "BUSY_DRIVER_UPDATE") {
             if (onlineDriversList.any(
                   (e) => e.id.toString() == data['data']['id'].toString(),
@@ -536,13 +540,14 @@ class DashboardController extends GetxController {
             );
 
             busyDriversList.add(driver);
-            update();
+            _scheduleDriverMarkerRefresh();
           } else {
             busyDriversList.removeWhere(
                   (e) => e.id.toString() == data['data']['id'].toString(),
             );
 
-            update();
+            // Busy driver logged out → remove its pin from the map.
+            _scheduleDriverMarkerRefresh();
           }
         },
         onError: (error) => print("Connection Error: $error"),
@@ -653,6 +658,23 @@ class DashboardController extends GetxController {
   /// Set once the camera has framed all drivers, so the 5s re-plot doesn't keep
   /// snapping the map back and fighting the user's own pan / zoom.
   bool _driverCameraFitted = false;
+
+  bool _driverMarkerRefreshScheduled = false;
+
+  /// Re-plots the driver pins once on the NEXT frame, coalescing a burst of
+  /// socket events (several logins / logouts arriving together) into a single
+  /// rebuild. Re-plotting inline from a socket callback can rebuild the map
+  /// while a view is being torn down, which throws "Trying to render a disposed
+  /// EngineFlutterView" on web; deferring to a post-frame callback avoids that
+  /// and also collapses the redundant frames.
+  void _scheduleDriverMarkerRefresh() {
+    if (_driverMarkerRefreshScheduled) return;
+    _driverMarkerRefreshScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _driverMarkerRefreshScheduled = false;
+      plotAllDriverMarkers();
+    });
+  }
 
   /// Plots a marker for EVERY online and busy driver that has a location, so
   /// the map shows all of them at once (1, 2, 10 … — however many there are).
