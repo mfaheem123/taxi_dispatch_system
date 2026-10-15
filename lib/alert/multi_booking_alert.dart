@@ -4,6 +4,7 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:html' as html;
 import 'dart:ui_web' as ui;
+
 import '../component/alert_close_button.dart';
 import '../component/color.dart';
 import '../component/customButton.dart';
@@ -50,7 +51,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
       'MOBILE': TextEditingController(text: '07485464242'),
       'TELEPHONE': TextEditingController(text: widget.item['telephone'] ?? ''),
       'DATE': TextEditingController(text: '2026-10-12'),
-      'TIME': TextEditingController(text: '09:00'),
+      'TIME': TextEditingController(text: '09:00:00'),
       'LEAD': TextEditingController(text: widget.item['lead'] ?? ''),
       'JOURNEY TYPE': TextEditingController(text: widget.item['jt'] ?? 'R/N'),
       'PAYMENT TYPE': TextEditingController(text: 'ACCOUNT'),
@@ -204,7 +205,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                     Text(
                       '(THIS INFORMATION IS FOR VIEW ONLY)',
                       style: outFitRegular(
-                        fontSize: 11,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: DynamicColors.primaryClr,
                       ),
@@ -267,8 +268,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                       style: mozillaTextSemiBoldText(
                           fontSize: 13,
                           color: Colors.white,
-                          fontWeight: FontWeight.bold
-                      ),
+                          fontWeight: FontWeight.bold),
                       onTap: () => Get.back(),
                     ),
                   ],
@@ -292,7 +292,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
           Text(
             label,
             style: outFitRegular(
-              fontSize: 12,
+              fontSize: 13,
               fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
