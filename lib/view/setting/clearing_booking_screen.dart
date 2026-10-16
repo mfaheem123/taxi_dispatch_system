@@ -5,6 +5,7 @@ import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/administration/controller/administration_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../component/pagination.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
@@ -123,7 +124,25 @@ class _BookingClearingUtilityScreenState
                 child: DatatableWidget(
                   columns: [
                     DataColumn(
-                      label: Checkbox(
+                      label: Focus(
+                        onKeyEvent: (node, event) {
+                          if (event is KeyDownEvent &&
+                              (event.logicalKey == LogicalKeyboardKey.enter ||
+                                  event.logicalKey == LogicalKeyboardKey.space)) {
+                            bool currentAll = bookings.isNotEmpty &&
+                                controller.selectedBookingIds.length == bookings.length;
+                            if (!currentAll) {
+                              controller.selectedBookingIds =
+                                  bookings.map((b) => b.id.toString()).toList();
+                            } else {
+                              controller.selectedBookingIds.clear();
+                            }
+                            controller.update();
+                            return KeyEventResult.handled;
+                          }
+                          return KeyEventResult.ignored;
+                        },
+                        child: Checkbox(
                         value: bookings.isNotEmpty && controller.selectedBookingIds.length == bookings.length,
                         onChanged: (val) {
                           if (val == true) {
@@ -134,7 +153,7 @@ class _BookingClearingUtilityScreenState
                           controller.update();
                         },
                       ),
-                    ),
+                    )),
                     buildHeaderWithSearch(title: "REF #",
                         onChanged: (v) {
                       controller.searchRefNo.value = v;
@@ -179,13 +198,23 @@ class _BookingClearingUtilityScreenState
                     return DataRow(
                       cells: [
                         DataCell(
-                          Checkbox(
+                            Focus(
+                              onKeyEvent: (node, event) {
+                                if (event is KeyDownEvent &&
+                                    (event.logicalKey == LogicalKeyboardKey.enter ||
+                                        event.logicalKey == LogicalKeyboardKey.space)) {
+                                  controller.toggleSelection(bookingId);
+                                  return KeyEventResult.handled;
+                                }
+                                return KeyEventResult.ignored;
+                              },
+                              child: Checkbox(
                             value: isSelected,
                             onChanged: (val) {
                               controller.toggleSelection(bookingId);
                             },
                           ),
-                        ),
+                        )),
                         DataCell(Center(child: Text((booking.referenceNumber ?? "").toUpperCase()))),
                         DataCell(Center(child: Text("${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}"))),
                         DataCell(Center(child: Text((booking.name ?? "").toUpperCase()))),

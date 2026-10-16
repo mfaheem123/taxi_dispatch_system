@@ -1,7 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/Model/image_model.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
-import 'package:dashboard_new1/view/setting/shortcut_model.dart';
+import 'package:dashboard_new1/view/setting/model/shortcut_model.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -508,9 +508,11 @@ class SettingController extends GetxController {
   GetDocumentNumberModel? getDocumentNumberModel;
   bool isDocumentNumber = false;
 
-  getDocumentNumber() async {
-    isDocumentNumber = true;
-    update();
+  getDocumentNumber({bool showLoading = true}) async {
+    if (showLoading) {
+      isDocumentNumber = true;
+      update();
+    }
 
     var response = await Api().get("document/document_numbers/get", sendCompanyId: true);
     if (response.statusCode == 200) {
@@ -600,7 +602,7 @@ class SettingController extends GetxController {
     var response = await Api().delete("document/document_numbers/delete/$id");
     if (response.statusCode == 200) {
       BotToast.showText(text:"DOCUMENT NUMBER DELETED SUCCESSFULLY!");
-      getDocumentNumber();
+      getDocumentNumber(showLoading: false);
     }
   }
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo document number functionality
@@ -720,8 +722,7 @@ class SettingController extends GetxController {
           "page": currentBookingPage.value,
           "limit": bookingLimit,
           "reference_number": searchRefNo.value.toLowerCase(),
-          "pickup_date": searchDateTime.value.toLowerCase(),
-          "pickup_time": searchDateTime.value.toLowerCase(),
+          "datetime": searchDateTime.value.toLowerCase(),
           "customer": searchCustomer.value.toLowerCase(),
           "pickup": searchPickup.value.toLowerCase(),
           "dropoff": searchDropOff.value.toLowerCase(),

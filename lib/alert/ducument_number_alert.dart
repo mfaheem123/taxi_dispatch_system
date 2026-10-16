@@ -1,5 +1,6 @@
 import 'package:dashboard_new1/component/text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
@@ -18,7 +19,13 @@ class AddDocumentDialog extends StatelessWidget {
         ? Get.find<SettingController>()
         : Get.put(SettingController());
 
-    return AlertDialog(
+    return PopScope(
+        onPopInvokedWithResult: (didPop, result) {
+      if (didPop) {
+        controller.clearFields();
+      }
+    },
+    child: AlertDialog(
       backgroundColor: Colors.white,
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -35,7 +42,11 @@ class AddDocumentDialog extends StatelessWidget {
             const Spacer(),
             FocusTraversalOrder(
               order: const NumericFocusOrder(999),
-              child: const AlertCloseButton(),
+              child: AlertCloseButton(
+                onTap: () {
+                controller.clearFields();
+                Get.back();
+              }),
             ),
           ],
         ),
@@ -199,7 +210,10 @@ class AddDocumentDialog extends StatelessWidget {
               color: Colors.white,
               fontWeight: FontWeight.bold
           ),
-          onTap: () => Get.back(),
+          onTap: () {
+            controller.clearFields();
+            Get.back();
+          },
         ),
         const SizedBox(width: 10),
         // Save Button
@@ -228,7 +242,7 @@ class AddDocumentDialog extends StatelessWidget {
           ),
         ),
       ],
-    );
+    ));
   }
 
   Widget _buildInputField(
@@ -261,7 +275,20 @@ class AddDocumentDialog extends StatelessWidget {
         Text(label,
             style: outFitRegular(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87)),
         const SizedBox(height: 6),
-        CustomTextField(
+        Focus(
+            onKeyEvent: (node, event) {
+              if (event is KeyDownEvent) {
+                if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                  onUp();
+                  return KeyEventResult.handled;
+                } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                  onDown();
+                  return KeyEventResult.handled;
+                }
+              }
+              return KeyEventResult.ignored;
+            },
+            child: CustomTextField(
           controller: controller,
           keyboardType: TextInputType.number,
           borderRadius: 4,
@@ -279,7 +306,7 @@ class AddDocumentDialog extends StatelessWidget {
                 ),
               ],
             ),
-        ),
+        )),
       ],
     );
   }
