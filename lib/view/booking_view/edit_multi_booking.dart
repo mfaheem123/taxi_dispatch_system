@@ -4,6 +4,7 @@ import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:timepickerfield/timepickerfield.dart';
+import '../../alert/account_details_alert.dart';
 import '../../alert/multi_booking_alert.dart';
 import '../../component/responsive_datatable_widget.dart';
 
@@ -300,6 +301,26 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                       ],
                     ),
                     const SizedBox(height: 10),
+                    isFormMobile
+                        ? Column(
+                      children: [
+                        _labelledField('DEPT', _dropdownBox('')),
+                        const SizedBox(height: 8),
+                        _labelledField('ESC', _dropdownBox('')),
+                      ],
+                    )
+                        : Row(
+                      children: [
+                        Expanded(child: _labelledField('DEPT', _dropdownBox(''))),
+                        const SizedBox(width: 8),
+                        Expanded(child: _labelledField('ESC', _dropdownBox(''))),
+                        const SizedBox(width: 8),
+                        const Expanded(child: SizedBox()),
+                        const SizedBox(width: 8),
+                        const Expanded(child: SizedBox()),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
 
                     // Pay, Quotation, Icons (Responsive)
                     isFormMobile
@@ -563,7 +584,12 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                       child: SizedBox(
                         height: 38,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => const AccountDetailsAlert(),
+                            );
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: DynamicColors.primaryClr,
                             foregroundColor: Colors.white,

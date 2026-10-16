@@ -15,7 +15,6 @@ import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
 import 'complete_bookingview.dart';
 import 'controller.dart';
-import 'edit_multi_booking.dart';
 
 class MultiBooking extends StatefulWidget {
   const MultiBooking({super.key});
@@ -98,24 +97,6 @@ class _MultiBookingState extends State<MultiBooking> {
                           ),
                         ),
                       ),
-
-                    const Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                          child: CustomButton(
-                            width: 80,
-                            height: 40,
-                            verticalPadding: 0.0,
-                            btnText: "EDIT",
-                            btnColor: DynamicColors.primaryClr,
-                            borderRadius: 4,
-                            style: mozillaTextSemiBoldText(
-                                fontSize: 13,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                            onTap: () => Get.to(() => const MultiReservationScreen()),
-                          ),
-                    ),
                   ],
                 ),
                 SizedBox(
