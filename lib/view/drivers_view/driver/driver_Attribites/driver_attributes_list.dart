@@ -459,11 +459,11 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                                 rows: controller.filteredAttributes.asMap().entries.map((entry) {
                                   final index = entry.key;
                                   final item = entry.value;
-                                  final rowNumber = index + 1;
+                                  // final rowNumber = index + 1;
 
                                   return DataRow(
                                     cells: [
-                                      DataCell(Center(child: Text("$rowNumber"))),
+                                      // DataCell(Center(child: Text("$rowNumber"))),
                                       DataCell(Center(
                                         child: Text((item.attributeName ?? '').toUpperCase()),
                                       )),
@@ -476,9 +476,10 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
                                             _FocusableButton(
-                                              onTap: () => _showAddEditDialog(
-                                                itemToEdit: item,
-                                              ),
+                                              onTap: () =>
+                                                  print("Edit button pressed"),
+                                                //   _showAddEditDialog(
+                                                // itemToEdit: item),
                                               tooltip: "Edit",
                                               child: OutlinedButton(
                                                 style: OutlinedButton.styleFrom(
@@ -486,9 +487,10 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                                                   padding: EdgeInsets.zero,
                                                   minimumSize: const Size(32, 32),
                                                 ),
-                                                onPressed: () => _showAddEditDialog(
-                                                  itemToEdit: item,
-                                                ),
+                                                onPressed: () =>
+                                                    print("Edit button pressed"),
+                                                //   _showAddEditDialog(
+                                                  // itemToEdit: item),
                                                 child: Icon(
                                                   Icons.edit_calendar,
                                                   size: 28,
@@ -499,8 +501,8 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                                             const SizedBox(width: 8),
                                             _FocusableButton(
                                               onTap: () async {
-                                                await controller.deleteDriverAttribute(item.id);
-                                                Get.back();
+                                                // await controller.deleteDriverAttribute(item.id);
+                                                // Get.back();
                                               },
                                               tooltip: "Delete",
                                               child: OutlinedButton(
@@ -510,10 +512,10 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                                                   minimumSize: const Size(32, 32),
                                                 ),
                                                 onPressed: () async {
-                                  await controller.deleteDriverAttribute(item.id);
-                                  Get.back();
-                                  } ,
-                                  // _showDeleteDialog(item),
+                                                   // await controller.deleteDriverAttribute(item.id);
+                                                   // Get.back();
+                                                              } ,
+                                                  // _showDeleteDialog(item),
                                                 child: Icon(
                                                   Icons.delete_forever,
                                                   size: 28,

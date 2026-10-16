@@ -28,7 +28,7 @@ class DriverAttributeController extends GetxController {
   }
 
   /// GET Driver Attributes API Call
-  Future<void> getDriverAttributes() async {
+   getDriverAttributes() async {
     try {
       isLoading.value = true;
       update();
@@ -83,7 +83,7 @@ class DriverAttributeController extends GetxController {
   }
 
   /// ADD or UPDATE Driver Attribute API Call (POST)
-  Future<bool> saveDriverAttribute() async {
+   saveDriverAttribute() async {
     final name = attributeNameController.text.trim().toUpperCase();
     final shortName = shortNameController.text.trim().toUpperCase();
 
