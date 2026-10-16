@@ -338,7 +338,7 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                       Container(
                         width: Get.width,
                         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                        color: DynamicColors.gryClr,
+                        // color: DynamicColors.gryClr,
                         child: Row(
                           children: [
                             RichText(
@@ -382,7 +382,8 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                             const Spacer(),
                             _FocusableButton(
                               focusNode: _addButtonFocusNode,
-                              onTap: () => _showAddEditDialog(),
+                              onTap: () {},
+                              // => _showAddEditDialog(),
                               tooltip: "Add New Attribute",
                               child: CustomButton(
                                 height: 38,
@@ -432,10 +433,10 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                               width: isMobile || isTablet ? Get.width + 600 : Get.width,
                               child: DatatableWidget(
                                 columns: [
-                                  buildHeaderWithSearch(
-                                    title: "S.NO",
-                                    removeSearching: true,
-                                  ),
+                                  // buildHeaderWithSearch(
+                                  //   title: "S.NO",
+                                  //   removeSearching: true,
+                                  // ),
                                   buildHeaderWithSearch(
                                     title: "NAME",
                                     onChanged: (v) {

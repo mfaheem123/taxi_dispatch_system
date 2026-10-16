@@ -62,6 +62,7 @@ class DriverAttributeController extends GetxController {
       final shortNameMatches = queryShortName.isEmpty ||
           (item.shortName ?? '').toLowerCase().contains(queryShortName);
       return nameMatches && shortNameMatches;
+
     }).toList();
     update();
   }
