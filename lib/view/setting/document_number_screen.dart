@@ -24,6 +24,8 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
   int selectedRowIndex = 0;
   final int totalRows = 5;
 
+  final List<FocusNode> _deleteFocusNodes = [];
+
   SettingController controller = Get.isRegistered<SettingController>()
       ? Get.find<SettingController>()
       : Get.put(SettingController());
@@ -33,6 +35,14 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "DocumentNumberScreen";
+  }
+
+  @override
+  void dispose() {
+    for (var node in _deleteFocusNodes) {
+      node.dispose();
+    }
+    super.dispose();
   }
 
   List permissions = [];
@@ -52,6 +62,10 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
       },
       builder: (controller) {
         final documentList = controller.getDocumentNumberModel?.documentNumbers ?? [];
+
+        while (_deleteFocusNodes.length < documentList.length) {
+          _deleteFocusNodes.add(FocusNode());
+        }
 
         return LayoutBuilder(builder: (context, constraints) {
           final double maxWidth = constraints.maxWidth;
@@ -120,7 +134,10 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
                                     buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
                                   ],
                                   totalRow: documentList.length,
-                                  rows: documentList.map((document) {
+                                  rows: documentList.asMap().entries.map((entry) {
+                                    int index = entry.key;
+                                    var document = entry.value;
+
                                     return DataRow(cells: [
                                       DataCell(Center(child: Text((document.documentTable ?? "-").replaceAll("_", " ").toUpperCase()))),
                                       DataCell(Center(child: Text((document.documentColumn ?? "-").replaceAll("_", " ").toUpperCase()))),
@@ -148,14 +165,22 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
                                                   size: 22,
                                                 ),
                                               if (permissions.contains('delete_document_number'))
-                                                ActionIconButton(
-                                                  onPressed: () {
-                                                    controller.documentNumberDelete(document.id);
+                                                Focus(
+                                                    focusNode: _deleteFocusNodes[index],
+                                                    child: ActionIconButton(
+                                                  onPressed: () async{
+                                                    final targetIndex = index > 0 ? index - 1 : 0;
+                                                    await controller.documentNumberDelete(document.id);
+                                                    if (mounted && _deleteFocusNodes.isNotEmpty) {
+                                                      if (targetIndex < _deleteFocusNodes.length) {
+                                                        _deleteFocusNodes[targetIndex].requestFocus();
+                                                      }
+                                                    }
                                                   },
                                                   icon: Icons.delete_forever,
                                                   color: DynamicColors.redClr,
                                                   size: 22,
-                                                ),
+                                                )),
                                             ],
                                           ),
                                         ),

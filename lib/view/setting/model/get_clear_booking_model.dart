@@ -567,7 +567,7 @@ class Airport {
 class Dropoff {
   dynamic id;
   dynamic name;
-  LocationType? locationType;
+  BookingLocationType? locationType;
 
   Dropoff({
     this.id,
@@ -578,7 +578,7 @@ class Dropoff {
   factory Dropoff.fromJson(Map<String, dynamic> json) => Dropoff(
     id: json["id"],
     name: json["name"],
-    locationType: json["location_type"] == null ? null : LocationType.fromJson(json["location_type"]),
+    locationType: json["location_type"] == null ? null : BookingLocationType.fromJson(json["location_type"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -588,20 +588,20 @@ class Dropoff {
   };
 }
 
-class LocationType {
+class BookingLocationType {
   dynamic id;
   dynamic name;
   dynamic backgroundColor;
   dynamic foregroundColor;
 
-  LocationType({
+  BookingLocationType({
     this.id,
     this.name,
     this.backgroundColor,
     this.foregroundColor,
   });
 
-  factory LocationType.fromJson(Map<String, dynamic> json) => LocationType(
+  factory BookingLocationType.fromJson(Map<String, dynamic> json) => BookingLocationType(
     id: json["id"],
     name: json["name"],
     backgroundColor: json["background_color"],
