@@ -1,4 +1,5 @@
 import 'package:dashboard_new1/component/color.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -23,7 +24,8 @@ class _WallboardScreenState extends State<WallboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<SettingController>(
+    return PageScrollWrapper(
+        child: GetBuilder<SettingController>(
         initState: (v) {},
         builder: (controller) {
           return LayoutBuilder(builder: (context, constraints) {
@@ -605,7 +607,7 @@ class _WallboardScreenState extends State<WallboardScreen> {
               ),
             );
           });
-        });
+        }));
   }
 
   Widget _buildStatusRoundButton(Color colorTheme, String label, String count) {

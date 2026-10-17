@@ -1,4 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:dashboard_new1/component/action_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
@@ -20,6 +21,8 @@ class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
   double currentSpeed = 1.0;
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
+
+  final FocusNode _dropdownFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -46,6 +49,7 @@ class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
 
   @override
   void dispose() {
+    _dropdownFocusNode.dispose();
     _audioPlayer.dispose();
     super.dispose();
   }
@@ -79,14 +83,12 @@ class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
 
             Row(
               children: [
-                IconButton(
-                  visualDensity: VisualDensity.compact,
-                  splashRadius: 15,
-                  icon: Icon(
-                    isPlaying ? Icons.pause : Icons.play_arrow,
+                ActionIconButton(
+                  // visualDensity: VisualDensity.compact,
+                  // splashRadius: 15,
+                  icon: isPlaying ? Icons.pause : Icons.play_arrow,
                     size: 28,
                     color: Colors.green,
-                  ),
                   onPressed: () async {
                     // if (isPlaying) {
                     //   await _audioPlayer.pause();
@@ -119,32 +121,33 @@ class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
                 const Icon(Icons.volume_up, color: Colors.grey),
 
                 // Dots Vertical Playback Speed Option
-                SizedBox(
-                  width: 30,
-                  height: 30,
-                  child: PopupMenuButton<double>(
-                    constraints: const BoxConstraints(
-                      maxHeight: 180,
-                      maxWidth: 100,
+                Focus(
+                  focusNode: _dropdownFocusNode,
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<double>(
+                      value: currentSpeed,
+                      icon: const Icon(Icons.more_vert, color: Colors.grey, size: 20),
+                      dropdownColor: Colors.white,
+                      focusColor: Colors.green.withOpacity(0.1),
+                      elevation: 8,
+                      onChanged: (double? speed) async {
+                        if (speed != null) {
+                          setState(() {
+                            currentSpeed = speed;
+                          });
+                          await _audioPlayer.setPlaybackRate(speed);
+                        }
+                      },
+                      items: const [
+                        DropdownMenuItem<double>(value: 0.5, child: Text('0.5x', style: TextStyle(fontSize: 13, color: Colors.black))),
+                        DropdownMenuItem<double>(value: 0.75, child: Text('0.75x', style: TextStyle(fontSize: 13, color: Colors.black))),
+                        DropdownMenuItem<double>(value: 1.0, child: Text('NORMAL', style: TextStyle(fontSize: 13, color: Colors.black))),
+                        DropdownMenuItem<double>(value: 1.25, child: Text('1.25x', style: TextStyle(fontSize: 13, color: Colors.black))),
+                        DropdownMenuItem<double>(value: 1.5, child: Text('1.5x', style: TextStyle(fontSize: 13, color: Colors.black))),
+                        DropdownMenuItem<double>(value: 1.75, child: Text('1.75x', style: TextStyle(fontSize: 13, color: Colors.black))),
+                        DropdownMenuItem<double>(value: 2.0, child: Text('2.0x', style: TextStyle(fontSize: 13, color: Colors.black))),
+                      ],
                     ),
-                    padding: EdgeInsets.zero,
-                    splashRadius: 15,
-                    icon: const Icon(Icons.more_vert, color: Colors.grey, size: 20),
-                    onSelected: (double speed) async {
-                      setState(() {
-                        currentSpeed = speed;
-                      });
-                      await _audioPlayer.setPlaybackRate(speed);
-                    },
-                    itemBuilder: (BuildContext context) => <PopupMenuEntry<double>>[
-                      const PopupMenuItem<double>(height: 32, value: 0.5, child: Text('0.5x', style: TextStyle(fontSize: 13))),
-                      const PopupMenuItem<double>(height: 32, value: 0.75, child: Text('0.75x', style: TextStyle(fontSize: 13))),
-                      const PopupMenuItem<double>(height: 32, value: 1.0, child: Text('NORMAL', style: TextStyle(fontSize: 13))),
-                      const PopupMenuItem<double>(height: 32, value: 1.25, child: Text('1.25x', style: TextStyle(fontSize: 13))),
-                      const PopupMenuItem<double>(height: 32, value: 1.5, child: Text('1.5x', style: TextStyle(fontSize: 13))),
-                      const PopupMenuItem<double>(height: 32, value: 1.75, child: Text('1.75x', style: TextStyle(fontSize: 13))),
-                      const PopupMenuItem<double>(height: 32, value: 2.0, child: Text('2.0x', style: TextStyle(fontSize: 13))),
-                    ],
                   ),
                 ),
               ],

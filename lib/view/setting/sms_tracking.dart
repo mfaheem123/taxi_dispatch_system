@@ -1,3 +1,4 @@
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../component/color.dart';
@@ -22,7 +23,8 @@ class _SmsSettingsScreenState extends State<SmsSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<SettingController>(
+    return PageScrollWrapper(
+        child: GetBuilder<SettingController>(
         initState: (v) {},
         builder: (controller) {
           return LayoutBuilder(
@@ -130,6 +132,6 @@ class _SmsSettingsScreenState extends State<SmsSettingsScreen> {
             },
           );
         },
-    );
+    ));
   }
 }

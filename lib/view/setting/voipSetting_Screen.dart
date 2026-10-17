@@ -1,8 +1,12 @@
+import 'dart:math';
+
+import 'package:dashboard_new1/component/action_icon_button.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/datatable_widget.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
+import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/services.dart';
 import 'package:dashboard_new1/view/dashboard_view/booking_table.dart';
 import 'package:dashboard_new1/view/setting/controller/extension_controller.dart';
@@ -50,8 +54,8 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
     final w = MediaQuery.of(context).size.width;
     final h = MediaQuery.of(context).size.height;
 
-    return GetBuilder<ExtensionController>(
-      initState: (v) {
+    return PageScrollWrapper(
+        child: GetBuilder<ExtensionController>(initState: (v) {
         controller.getManageExtention();
       },
       builder: (controller) {
@@ -127,16 +131,15 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Expanded(
-                                      child: Row(
+                                     Row(
                                         children: [
                                           Text("SERVICE",
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 14)),
                                           SizedBox(width: 15),
-                                          Expanded(
-                                            child: CustomDropdownField<String>(
+                                          CustomDropdownField<String>(
+                                            width: w * 0.18,
                                               label: "VOIP STATUS",
                                               items: const ["YESTECH", "V4VOIP"],
                                               value: ["YESTECH", "V4VOIP"].contains(settingController.voipServiceValue)
@@ -148,24 +151,21 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                                                 settingController.update();
                                               },
                                             ),
-                                          ),
                                         ],
                                       ),
-                                    ),
 
                                     const SizedBox(width: 25),
 
                                     // Status
-                                    Expanded(
-                                      child: Row(
+                                     Row(
                                         children: [
                                           Text("STATUS",
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 14)),
                                           SizedBox(width: 15),
-                                          Expanded(
-                                            child: CustomDropdownField<String>(
+                                           CustomDropdownField<String>(
+                                             width: w * 0.18,
                                               label: "VOIP STATUS",
                                               items: const ["IDLE", "RINGING", "IN USE"],
                                               value: ["IDLE", "RINGING", "IN USE"].contains(settingController.voipStatusValue)
@@ -177,9 +177,37 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                                                 settingController.update();
                                               },
                                             ),
-                                          ),
+
                                         ],
                                       ),
+                                    const SizedBox(width: 25),
+                                    CustomButton(
+                                      height: 30,
+                                      width: w * 0.15,
+                                      verticalPadding: 0.0,
+                                      borderRadius: 4,
+                                      widget: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 15, vertical: 0.0),
+                                        child: settingController.isSavingConfig
+                                            ? const SizedBox(
+                                          height: 16,
+                                          width: 16,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                            : Text(
+                                          AppText.save,
+                                          style: mozillaTextRegularText(
+                                              fontSize: 12,
+                                              color: DynamicColors.whiteClr),
+                                        ),
+                                      ),
+                                      onTap: () async {
+                                        await settingController.saveCompanyConfiguration();
+                                      },
                                     ),
                                   ],
                                 ),
@@ -187,36 +215,9 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                                 const SizedBox(height: 16),
 
                                 // Save Button
-                                Center(
-                                  child: CustomButton(
-                                    height: 35,
-                                    width: 250,
-                                    verticalPadding: 0.0,
-                                    borderRadius: 4,
-                                    widget: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 0.0),
-                                      child: settingController.isSavingConfig
-                                          ? const SizedBox(
-                                        height: 16,
-                                        width: 16,
-                                        child: CircularProgressIndicator(
-                                          color: Colors.white,
-                                          strokeWidth: 2,
-                                        ),
-                                      )
-                                          : Text(
-                                        AppText.save,
-                                        style: mozillaTextRegularText(
-                                            fontSize: 12,
-                                            color: DynamicColors.whiteClr),
-                                      ),
-                                    ),
-                                    onTap: () async {
-                                      await settingController.saveCompanyConfiguration();
-                                    },
-                                  ),
-                                ),
+                                // Center(
+                                //   child:
+                                // ),
                               ],
                             ),
                           ),
@@ -317,7 +318,7 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       // Edit/Save Toggle Icon
-                                      IconButton(
+                                      ActionIconButton(
                                         onPressed: () async {
                                           if (isEditing) {
                                             // Update API Call
@@ -339,15 +340,13 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                                             });
                                           }
                                         },
-                                        icon: Icon(
-                                          isEditing ? Icons.check : Icons.edit,
+                                        icon: isEditing ? Icons.check : Icons.edit,
                                           color: isEditing ? Colors.green : DynamicColors.primaryClr,
                                           size: 20,
-                                        ),
                                       ),
 
                                       // Delete or Cancel Editing Icon
-                                      IconButton(
+                                      ActionIconButton(
                                         onPressed: () async {
                                           if (isEditing) {
                                             setState(() {
@@ -357,12 +356,10 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                                             await controller.deleteExtension(ext.id!);
                                           }
                                         },
-                                        icon: Icon(
-                                          isEditing ? Icons.close : Icons.delete,
+                                        icon: isEditing ? Icons.close : Icons.delete,
                                           color: Colors.red,
                                           size: 20,
                                         ),
-                                      ),
                                     ],
                                   ),
                                 ),
@@ -379,16 +376,15 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                               DataCell(
                                 Container(
                                   alignment: Alignment.center,
-                                  child: DropdownButton<dynamic>(
+                                  margin: const EdgeInsets.only(top: 12),
+                                  child: CustomDropdownField<dynamic>(
+                                    width: w * 0.12,
                                     value: row["employeeObj"],
-                                    hint: const Text("SELECT EMPLOYEE"),
-                                    alignment: Alignment.center,
-                                    items: controller.getManageExtentionModel!.employeeExtensions!.map((e) {
-                                      return DropdownMenuItem(
-                                        value: e.employee,
-                                        child: Text((e.employee?.username ?? "-").toUpperCase()),
-                                      );
-                                    }).toList(),
+                                    label: "SELECT EMPLOYEE",
+                                    items: controller.getManageExtentionModel!.employeeExtensions!
+                                        .map((e) => e.employee)
+                                        .toList(),
+                                    itemLabel: (item) => ((item?.username ?? "-").toUpperCase()),
                                     onChanged: (val) {
                                       setState(() {
                                         newExtensions[index]["employeeObj"] = val;
@@ -425,7 +421,7 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      IconButton(
+                                      ActionIconButton(
                                         onPressed: () async {
                                           controller.selectedEmployee = row["employeeObj"];
                                           controller.extensionNumberController.text = row["extension"] ?? "";
@@ -436,15 +432,15 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
                                             newExtensions.removeAt(index);
                                           });
                                         },
-                                        icon: const Icon(Icons.check, color: Colors.green),
+                                        icon: Icons.check, color: Colors.green,
                                       ),
-                                      IconButton(
+                                      ActionIconButton(
                                         onPressed: () {
                                           setState(() {
                                             newExtensions.removeAt(index);
                                           });
                                         },
-                                        icon: const Icon(Icons.close, color: Colors.red),
+                                        icon: Icons.close, color: Colors.red,
                                       ),
                                     ],
                                   ),
@@ -463,6 +459,6 @@ class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
           },
         );
       },
-    );
+    ));
   }
 }
