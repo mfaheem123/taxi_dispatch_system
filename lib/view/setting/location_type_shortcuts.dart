@@ -45,19 +45,20 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
             ? SizedBox.shrink()
             : Column(
                 children: [
-                  SizedBox(height: 8),
-                  Scrollbar(
-                    thickness: 10,
-                    child: Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.center,
+                  SizedBox(height: 12),
+
+                  SizedBox(
+                    width: Get.width / 1.1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(AppText.locationTypeShortcuts, style: titleDesign()),
-                        SizedBox(width: 50),
+
                         CustomButton(
                           onTap: () {
                             if (controller.locationShortCut?.locationTypes != null) {
                               for (var item in controller.locationShortCut!.locationTypes!) {
-                                controller.postShortCut(item.id!);
+                                controller.postShortCut(item);
                               }
                             }
                           },
@@ -90,13 +91,15 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
                         // 🔹 Create a list of DataRow, each having 4 DataCell
                         rows: controller.locationShortCut!.locationTypes!
                             .map((item) {
-                          return DataRow(cells: [
+                          return DataRow(
+                              key: ValueKey(item.id),
+                              cells: [
                             DataCell(Center(
                                 child: Text((item.name!).toUpperCase()))),
                             DataCell(
                               Center(
                                 child: TextField(
-                                  controller: item.controller = TextEditingController(text: (item.shortcut ?? '').toUpperCase()),
+                                  controller: item.controller ??= TextEditingController(text: (item.shortcut ?? '').toUpperCase()),
                                   decoration: const InputDecoration(
                                     border: OutlineInputBorder(),
                                     isDense: true,
@@ -107,7 +110,7 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
                             ),
                             DataCell(Center(
                               child: ColorPickerWidget(
-                                pickerColor: item.backgroundColor!,
+                                pickerColor: item.backgroundColor ?? Colors.blue,
                                 // pickerColor: (0xff item.backgroundColor),
                                 onColorChanged: (color) {
                                   setState(() {
@@ -127,7 +130,7 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
                             )),
                             DataCell(Center(
                               child: ColorPickerWidget(
-                                pickerColor: item.foregroundColor!,
+                                pickerColor: item.foregroundColor ?? Colors.white,
                                 onColorChanged: (color) {
                                   setState(() {
                                     item.foregroundColor = color; // live preview
