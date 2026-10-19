@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -5,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 
 import '../../../component/marker_class.dart';
 import '../../../controller/fob_controller.dart';
+import '../../../utils/open_edit_booking_tab.dart';
 import '../Controller/dashboard_controller.dart';
 import '../models/dashboard_model.dart';
 
@@ -109,16 +111,24 @@ void showContextMenuOnBusyDriver(
     } else if (value == 5) {
 
       if (driver?.id != null) {
-        // controller.checkNoShowActiveBooking(driver!.id);
+        controller.checkNoShowActiveBooking(driver!.id);
       }
       debugPrint("NO SHOW tapped for busy driver: ${driver?.username}");
     } else if (value == 6) {
 
       if (driver?.id != null) {
-        // controller.checkNoPickupActiveBooking(driver!.id);
+        controller.checkNoPickupActiveBooking(driver!.id);
       }
       debugPrint("NO PICKUP tapped for busy driver: ${driver?.username}");
     } else if (value == 7) {
+      if (driver?.id != null) {
+        final bookingId = await controller.getActiveBookingId(driver!.id);
+        if (bookingId != null) {
+          openEditBookingTab(bookingId.toString());
+        } else {
+          BotToast.showText(text: "No active booking found for this driver");
+        }
+      }
       debugPrint("VIEW JOB tapped for busy driver: ${driver?.username}");
     }
     // else if (value == 8) {
@@ -127,6 +137,7 @@ void showContextMenuOnBusyDriver(
     //   }
     // }
     else if (value == 9) {
+
       debugPrint("CALL DRIVER tapped for busy driver: ${driver?.username}");
     }
   });

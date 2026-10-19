@@ -104,13 +104,14 @@ class FobController extends GetxController {
   /// CANCEL ALERT
   bool isCancelLoading = false;
 
-  Future<void> postCancelBooking(dynamic bookingId ,{ bookingStatus }) async {
+  Future<void> postCancelBooking(dynamic bookingId ,{ bookingStatus, driverCompleteStatus }) async {
     isCancelLoading = true;
     update();
 
     try{
       var formData = {
         "booking_status_id": bookingStatus ?? 12 ,
+        "driver_web_complete" : driverCompleteStatus,
       };
 
       var response = await Api().post(formData,

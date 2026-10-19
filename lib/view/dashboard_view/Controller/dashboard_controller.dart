@@ -4675,7 +4675,7 @@ checkCompleteActiveBooking(dynamic driverId) async {
     update();
       final bookingId = await getActiveBookingId(driverId);
       if (bookingId != null) {
-        await fobController.postCancelBooking(bookingId, bookingStatus:  11);
+        await fobController.postCancelBooking(bookingId, bookingStatus:  11, driverCompleteStatus: true);
       isCheckActiveBookingLoading = false;
       update();
       } else {
