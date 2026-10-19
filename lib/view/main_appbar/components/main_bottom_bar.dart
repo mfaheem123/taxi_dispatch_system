@@ -7,6 +7,7 @@ import '../../../component/color.dart';
 import '../../../component/textStyle.dart';
 import '../../administration/model/user_model.dart';
 import '../../auth/Controller/auth_controller.dart';
+import '../../setting/controller/driver_chat_controller.dart';
 
 /// Whether the driver / passenger chat panel is open. Toggled by the MESSAGES
 /// button below and watched by the shell (main_appbar.dart), which shows the
@@ -150,6 +151,29 @@ class _ClockAndExtension extends StatelessWidget {
                         fontSize: 14,
                         fontWeight: FontWeight.bold),
                   ),
+                  Builder(builder: (context) {
+                    if (!Get.isRegistered<DriverChatController>()) {
+                      return const SizedBox.shrink();
+                    }
+                    final count = Get.find<DriverChatController>().totalUnreadCount.value;
+                    if (count <= 0) return const SizedBox.shrink();
+                    return Container(
+                      margin: const EdgeInsets.only(left: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: open ? Colors.white : const Color(0xff424899),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        "$count",
+                        style: TextStyle(
+                          color: open ? const Color(0xff424899) : Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    );
+                  }),
                 ],
               ),
             );

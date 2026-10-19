@@ -144,13 +144,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 // MobileStatusScreen instead.
                 Obx(() => messagesShow.value && !isMobile
                     ? Positioned(
-                  bottom: 0,
-                  right: 0,
-                  height: MediaQuery.sizeOf(context).height * 0.6,
-                  width: (MediaQuery.sizeOf(context).width * 0.4)
-                      .clamp(680.0, MediaQuery.sizeOf(context).width),
+                  bottom: 6,
+                  right: 12,
+                  height: (MediaQuery.sizeOf(context).height * 0.46)
+                      .clamp(380.0, 480.0),
+                  width: (MediaQuery.sizeOf(context).width * 0.32)
+                      .clamp(420.0, 520.0),
                   child: const Material(
                     elevation: 12,
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    clipBehavior: Clip.antiAlias,
                     color: Colors.white,
                     child: ChatWithDriverAndPassenger(),
                   ),

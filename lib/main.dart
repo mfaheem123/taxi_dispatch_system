@@ -325,6 +325,7 @@ Future<void> setupWebNotifications() async {
           );
         }
       }
+
       else if (type == 'PERMISSION_UPDATE'){
 
         Get.dialog(
@@ -526,7 +527,6 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
     String pickupTime = booking?['pickup_time'] ?? "N/A";
     String fares = booking?['fares']?.toString() ?? "0.00";
     String vehicleType = booking?['vehicle_type']?['name'] ?? "N/A";
-
     bool isAsapMode = widget.bookingMode.toUpperCase() == 'ASAP';
 
     // Title ko dynamic karne ke liye string check lagayi hai
@@ -596,6 +596,7 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
                       ),
                     ),
                   ),
+
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
@@ -609,6 +610,7 @@ class _NewBookingAlertState extends State<NewBookingAlert> {
                   ),
                 ],
               ),
+
               const SizedBox(height: 15),
 
               // Date & Time
