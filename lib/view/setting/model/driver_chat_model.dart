@@ -131,6 +131,7 @@ class ChatMessage {
 class ChatDriver {
   final int id;
   final String name;
+  final String username;
   final String vehicleNumber;
   final String? mobile;
   final String? callsign;
@@ -140,6 +141,7 @@ class ChatDriver {
   ChatDriver({
     required this.id,
     required this.name,
+    required this.username,
     required this.vehicleNumber,
     this.mobile,
     this.callsign,
@@ -163,6 +165,7 @@ class ChatDriver {
     return ChatDriver(
       id: parsedId,
       name: json['name']?.toString() ?? 'Driver #$parsedId',
+      username: json['username']?.toString() ?? 'Driver #$parsedId',
       vehicleNumber: veh,
       mobile: json['mobile']?.toString(),
       callsign: json['callsign']?.toString() ?? json['username']?.toString(),

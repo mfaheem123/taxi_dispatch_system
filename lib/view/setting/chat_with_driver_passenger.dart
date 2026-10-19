@@ -1,3 +1,4 @@
+import 'package:dashboard_new1/component/color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../main_appbar/components/main_bottom_bar.dart';
@@ -96,7 +97,7 @@ class ChatWithDriverAndPassenger extends StatelessWidget {
           const Icon(Icons.chat_bubble_rounded, color: Colors.white, size: 18),
           const SizedBox(width: 8),
           const Text(
-            "Driver Chat",
+            "CHAT",
             style: TextStyle(
               color: Colors.white,
               fontSize: 13.5,
@@ -125,13 +126,13 @@ class ChatWithDriverAndPassenger extends StatelessWidget {
                     fontSize: 10.5,
                   ),
                 ),
-                Text(
-                  " #${controller.currentUserId}",
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.9),
-                    fontSize: 10.5,
-                  ),
-                ),
+                // Text(
+                //   " #${controller.currentUserId}",
+                //   style: TextStyle(
+                //     color: Colors.white.withValues(alpha: 0.9),
+                //     fontSize: 10.5,
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -388,26 +389,26 @@ class ChatWithDriverAndPassenger extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Text(
-                          "#${driver.id}",
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.grey.shade500,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        // Text(
+                        //   "#${driver.id}",
+                        //   style: TextStyle(
+                        //     fontSize: 10,
+                        //     color: Colors.grey.shade500,
+                        //     fontWeight: FontWeight.w500,
+                        //   ),
+                        // ),
                       ],
                     ),
                     const SizedBox(height: 2),
-                    Text(
-                      driver.vehicleNumber,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
+                    // Text(
+                    //   driver.vehicleNumber,
+                    //   maxLines: 1,
+                    //   overflow: TextOverflow.ellipsis,
+                    //   style: TextStyle(
+                    //     fontSize: 11,
+                    //     color: Colors.grey.shade600,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -418,7 +419,7 @@ class ChatWithDriverAndPassenger extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                   decoration: BoxDecoration(
-                    color: primaryColor,
+                    color: DynamicColors.redClr,
                     borderRadius: BorderRadius.circular(9),
                   ),
                   child: Text(
@@ -555,7 +556,8 @@ class ChatWithDriverAndPassenger extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "${driver.name} (#${driver.id})",
+                  "${driver.name} (${driver.username})",
+
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -705,7 +707,8 @@ class ChatWithDriverAndPassenger extends StatelessWidget {
     );
   }
 
-  // --- Chat Input Box ---
+
+// --- Chat Input Box ---
   Widget _buildChatInputBox(DriverChatController controller) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
@@ -728,18 +731,22 @@ class ChatWithDriverAndPassenger extends StatelessWidget {
                 onChanged: controller.onTypingChanged,
                 onSubmitted: (_) => controller.sendMessage(),
                 style: const TextStyle(fontSize: 12.5),
+                // Centering the cursor and text vertically
+                textAlignVertical: TextAlignVertical.center,
                 decoration: const InputDecoration(
                   hintText: "Type a message...",
                   hintStyle: TextStyle(color: Color(0xFF94A3B8), fontSize: 12),
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  // Adjust vertical padding to 0 and horizontal for left spacing
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                  isDense: true, // Reduces the height of the internal input field
                 ),
               ),
             ),
           ),
           const SizedBox(width: 6),
           Material(
-            color: primaryColor, // Color(0xff424899)
+            color: primaryColor,
             borderRadius: BorderRadius.circular(18),
             child: InkWell(
               onTap: controller.sendMessage,
@@ -755,7 +762,6 @@ class ChatWithDriverAndPassenger extends StatelessWidget {
       ),
     );
   }
-
   // --- Empty State ---
   Widget _buildEmptyState(DriverChatController controller) {
     return Container(

@@ -1,6 +1,7 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../component/textStyle.dart';
@@ -14,17 +15,68 @@ class WallboardScreen extends StatefulWidget {
 }
 
 class _WallboardScreenState extends State<WallboardScreen> {
-  final SettingController controller = Get.isRegistered<SettingController>()
+  final ScrollController _scrollController = ScrollController();
+  final FocusNode _focusNode = FocusNode();
+
+   SettingController controller = Get.isRegistered<SettingController>()
       ? Get.find<SettingController>()
       : Get.put(SettingController());
 
   Stream<DateTime> _timeStream() {
     return Stream.periodic(const Duration(seconds: 1), (_) => DateTime.now());
   }
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      if (!_focusNode.hasFocus) {
+        _focusNode.requestFocus();
+      }
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return PageScrollWrapper(
+    return KeyboardListener(
+        focusNode: _focusNode,
+        autofocus: true,
+        onKeyEvent: (KeyEvent event) {
+          if (event is KeyDownEvent || event is KeyRepeatEvent) {
+            // Arrow Down Key
+            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+              _scrollController.animateTo(
+                (_scrollController.offset + 120).clamp(
+                  0.0,
+                  _scrollController.position.maxScrollExtent,
+                ),
+                duration: const Duration(milliseconds: 80),
+                curve: Curves.easeOut,
+              );
+            }
+            // Arrow Up Key
+            else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+              _scrollController.animateTo(
+                (_scrollController.offset - 120).clamp(
+                  0.0,
+                  _scrollController.position.maxScrollExtent,
+                ),
+                duration: const Duration(milliseconds: 80),
+                curve: Curves.easeOut,
+              );
+            }
+          }
+        },
         child: GetBuilder<SettingController>(
         initState: (v) {},
         builder: (controller) {
@@ -35,6 +87,7 @@ class _WallboardScreenState extends State<WallboardScreen> {
             const double totalBodyHeight = 720;
 
             return SingleChildScrollView(
+            controller: _scrollController,
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

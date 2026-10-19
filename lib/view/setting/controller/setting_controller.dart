@@ -908,23 +908,38 @@ class SettingController extends GetxController {
     var response = await Api().get("location-types");
     if (response.statusCode == 200) {
       locationShortCut = LocationShortCutModel.fromJson(response.data);
+
+      if (locationShortCut?.locationTypes != null) {
+        locationShortCut!.locationTypes!.sort((a, b) =>
+            (a.name ?? "").toLowerCase().compareTo((b.name ?? "").toLowerCase())
+        );
+      }
+
       getShortCutLoader(false);
       update();
     }
   }
 
   RxBool updateShortCutLoader = false.obs;
-  postShortCut(int updateId) async {
+  postShortCut(item) async {
     updateShortCutLoader(true);
 
+    String bgHex = item.backgroundColor != null
+        ? item.backgroundColor!.value.toRadixString(16).padLeft(8, '0').substring(2)
+        : "2196f3";
+
+    String fgHex = item.foregroundColor != null
+        ? item.foregroundColor!.value.toRadixString(16).padLeft(8, '0').substring(2)
+        : "ffffff";
+
     var formData = {
-      "background_color": pickerColor.value.toRadixString(16) ?? "",
-      "foreground_color": foregroundColor.value.toRadixString(16) ?? "",
+      "background_color": bgHex,
+      "foreground_color": fgHex,
     };
 
     var response = await Api().post(
       formData,
-        "location-types/$updateId",
+        "location-types/${item.id}",
         auth: true);
 
     if(response.statusCode == 200) {
