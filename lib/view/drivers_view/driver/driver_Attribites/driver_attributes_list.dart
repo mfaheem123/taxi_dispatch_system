@@ -382,8 +382,8 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                             const Spacer(),
                             _FocusableButton(
                               focusNode: _addButtonFocusNode,
-                              onTap: () {},
-                              // => _showAddEditDialog(),
+                              onTap: ()
+                              => _showAddEditDialog(),
                               tooltip: "Add New Attribute",
                               child: CustomButton(
                                 height: 38,
@@ -478,9 +478,9 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                                           children: [
                                             _FocusableButton(
                                               onTap: () =>
-                                                  print("Edit button pressed"),
-                                                //   _showAddEditDialog(
-                                                // itemToEdit: item),
+                                                  // print("Edit button pressed"),
+                                                  _showAddEditDialog(
+                                                itemToEdit: item),
                                               tooltip: "Edit",
                                               child: OutlinedButton(
                                                 style: OutlinedButton.styleFrom(
@@ -489,9 +489,9 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                                                   minimumSize: const Size(32, 32),
                                                 ),
                                                 onPressed: () =>
-                                                    print("Edit button pressed"),
-                                                //   _showAddEditDialog(
-                                                  // itemToEdit: item),
+                                                    // print("Edit button pressed"),
+                                                  _showAddEditDialog(
+                                                  itemToEdit: item),
                                                 child: Icon(
                                                   Icons.edit_calendar,
                                                   size: 28,
@@ -502,8 +502,8 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                                             const SizedBox(width: 8),
                                             _FocusableButton(
                                               onTap: () async {
-                                                // await controller.deleteDriverAttribute(item.id);
-                                                // Get.back();
+                                                await controller.deleteDriverAttribute(item.id);
+                                                Get.back();
                                               },
                                               tooltip: "Delete",
                                               child: OutlinedButton(
@@ -513,8 +513,8 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                                                   minimumSize: const Size(32, 32),
                                                 ),
                                                 onPressed: () async {
-                                                   // await controller.deleteDriverAttribute(item.id);
-                                                   // Get.back();
+                                                   await controller.deleteDriverAttribute(item.id);
+                                                   Get.back();
                                                               } ,
                                                   // _showDeleteDialog(item),
                                                 child: Icon(
