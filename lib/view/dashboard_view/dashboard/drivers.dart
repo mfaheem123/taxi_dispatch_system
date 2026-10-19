@@ -75,11 +75,11 @@ class _DriversViewState extends State<DriversView> {
     switch (index) {
       case 0: // reset_tv_outlined
         debugPrint("Header action: RESET");
-        _driverController.dashboardData();
+        _driverController.getAllOnlineDrivers();
         break;
       case 1: // refresh
         debugPrint("Header action: REFRESH");
-        _driverController.dashboardData();
+        _driverController.getAllOnlineDrivers();
         break;
       case 2: // visibility_off_sharp
         debugPrint("Header action: HIDE/SHOW");
