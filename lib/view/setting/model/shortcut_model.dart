@@ -60,9 +60,11 @@ class LocationType {
     name: json["name"],
     shortcut: json ["shortcut"],
     // backgroundColor: Color(0xff0537ff),
-    backgroundColor: parseColorStatic(json["background_color"]),
+    backgroundColor: Color(
+      int.parse("0xff${json["background_color"].toString()}"),),
 
-    foregroundColor: parseColorStatic(json["foreground_color"]),
+    foregroundColor: Color(
+      int.parse("0xff${json["foreground_color"].toString().replaceAll('#',"")}"),),
     controller: TextEditingController(text: json["shortcut"]),
   );
 
@@ -74,18 +76,4 @@ class LocationType {
     "foreground_color": foregroundColor,
     "controller": controller,
   };
-
-
-  static Color parseColorStatic(String? colorHex) {
-    if (colorHex == null || colorHex.isEmpty) return Colors.blue;
-    try {
-      String hex = colorHex.replaceAll('#', '');
-      if (hex.length == 6) {
-        hex = 'FF$hex';
-      }
-      return Color(int.parse('0x$hex'));
-    } catch (e) {
-      return Colors.blue;
-    }
-  }
 }
