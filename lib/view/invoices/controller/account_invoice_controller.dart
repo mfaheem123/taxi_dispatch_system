@@ -9,7 +9,7 @@ import '../../../component/networks/api.dart';
 import '../../administration/model/list_subsDiary.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
 import '../model/account_invoice_booking_model.dart';
-import '../model/invoice_number_model.dart' hide Subsidiary;
+import '../model/account_invoice_number_model.dart' hide Subsidiary;
 import '../model/list_of_account_invoice_model.dart';
 import '../model/update_account_invoice_model.dart'
     hide Account, Subsidiary, Booking;
