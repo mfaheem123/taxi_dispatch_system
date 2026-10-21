@@ -4743,7 +4743,7 @@ checkCompleteActiveBooking(dynamic driverId) async {
  endDriverBreak(int driverId) async {
     var formData = {
       "driver_id": driverId,
-      "force_end_break": "disabled"
+      "force_end_break": "enabled"
     };
     var response = await Api().post(formData, "drivers/end-break");
     if (response.statusCode == 200) {

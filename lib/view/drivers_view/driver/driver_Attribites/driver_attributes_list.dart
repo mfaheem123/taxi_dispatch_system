@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+
 import '../../../../component/color.dart';
 import '../../../../component/customButton.dart';
 import '../../../../component/datatable_widget.dart';
@@ -228,94 +229,94 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
   }
 
   // Delete Confirmation Dialog
-  // void _showDeleteDialog(DriverAttribute item) {
-  //   final deleteFocusNode = FocusNode();
-  //   final cancelFocusNode = FocusNode();
-  //
-  //   Get.dialog(
-  //     KeyboardListener(
-  //       focusNode: FocusNode(),
-  //       onKeyEvent: (event) {
-  //         if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
-  //           Get.back();
-  //         }
-  //       },
-  //       child: Dialog(
-  //         backgroundColor: Colors.white,
-  //         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-  //         child: Container(
-  //           width: 380,
-  //           padding: const EdgeInsets.all(20),
-  //           child: Column(
-  //             mainAxisSize: MainAxisSize.min,
-  //             children: [
-  //               Icon(Icons.warning_amber_rounded, size: 48, color: DynamicColors.redClr),
-  //               const SizedBox(height: 12),
-  //               Text(
-  //                 "DELETE ATTRIBUTE",
-  //                 style: mozillaTextSemiBoldText(
-  //                   fontSize: 16,
-  //                   fontWeight: FontWeight.bold,
-  //                   color: const Color(0xFF1E293B),
-  //                 ),
-  //               ),
-  //               const SizedBox(height: 8),
-  //               Text(
-  //                 "Are you sure you want to delete '${item.attributeName ?? ''}'?",
-  //                 textAlign: TextAlign.center,
-  //                 style: outFitRegular(
-  //                   fontSize: 13,
-  //                   color: const Color(0xFF64748B),
-  //                   fontWeight: FontWeight.w600,
-  //                 ),
-  //               ),
-  //               const SizedBox(height: 24),
-  //               Row(
-  //                 mainAxisAlignment: MainAxisAlignment.center,
-  //                 children: [
-  //                   CustomButton(
-  //                     focusNode: cancelFocusNode,
-  //                     onTap: () => Get.back(),
-  //                     width: 90,
-  //                     height: 34,
-  //                     verticalPadding: 0.0,
-  //                     borderRadius: 6,
-  //                     btnText: "CANCEL",
-  //                     btnColor: const Color(0xFF94A3B8),
-  //                     style: mozillaTextSemiBoldText(
-  //                       fontSize: 12,
-  //                       color: Colors.white,
-  //                       fontWeight: FontWeight.bold,
-  //                     ),
-  //                   ),
-  //                   const SizedBox(width: 16),
-  //                   CustomButton(
-  //                     focusNode: deleteFocusNode,
-  //                     onTap: () async {
-  //                       await controller.deleteDriverAttribute(item.id);
-  //                       Get.back();
-  //                     },
-  //                     width: 90,
-  //                     height: 34,
-  //                     verticalPadding: 0.0,
-  //                     borderRadius: 6,
-  //                     btnText: "DELETE",
-  //                     btnColor: DynamicColors.redClr,
-  //                     style: mozillaTextSemiBoldText(
-  //                       fontSize: 12,
-  //                       color: Colors.white,
-  //                       fontWeight: FontWeight.bold,
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
+  void _showDeleteDialog(DriverAttribute item) {
+    final deleteFocusNode = FocusNode();
+    final cancelFocusNode = FocusNode();
+
+    Get.dialog(
+      KeyboardListener(
+        focusNode: FocusNode(),
+        onKeyEvent: (event) {
+          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
+            Get.back();
+          }
+        },
+        child: Dialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          child: Container(
+            width: 380,
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.warning_amber_rounded, size: 48, color: DynamicColors.redClr),
+                const SizedBox(height: 12),
+                Text(
+                  "DELETE ATTRIBUTE",
+                  style: mozillaTextSemiBoldText(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF1E293B),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Are you sure you want to delete '${item.attributeName ?? ''}'?",
+                  textAlign: TextAlign.center,
+                  style: outFitRegular(
+                    fontSize: 13,
+                    color: const Color(0xFF64748B),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CustomButton(
+                      focusNode: cancelFocusNode,
+                      onTap: () => Get.back(),
+                      width: 90,
+                      height: 34,
+                      verticalPadding: 0.0,
+                      borderRadius: 6,
+                      btnText: "CANCEL",
+                      btnColor: const Color(0xFF94A3B8),
+                      style: mozillaTextSemiBoldText(
+                        fontSize: 12,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    CustomButton(
+                      focusNode: deleteFocusNode,
+                      onTap: () async {
+                        await controller.deleteDriverAttribute(item.id);
+                        Get.back();
+                      },
+                      width: 90,
+                      height: 34,
+                      verticalPadding: 0.0,
+                      borderRadius: 6,
+                      btnText: "DELETE",
+                      btnColor: DynamicColors.redClr,
+                      style: mozillaTextSemiBoldText(
+                        fontSize: 12,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -338,7 +339,7 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                       Container(
                         width: Get.width,
                         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                        // color: DynamicColors.gryClr,
+                        color: DynamicColors.gryClr,
                         child: Row(
                           children: [
                             RichText(
@@ -382,8 +383,7 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                             const Spacer(),
                             _FocusableButton(
                               focusNode: _addButtonFocusNode,
-                              onTap: ()
-                              => _showAddEditDialog(),
+                              onTap: () => _showAddEditDialog(),
                               tooltip: "Add New Attribute",
                               child: CustomButton(
                                 height: 38,
@@ -433,10 +433,10 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                               width: isMobile || isTablet ? Get.width + 600 : Get.width,
                               child: DatatableWidget(
                                 columns: [
-                                  // buildHeaderWithSearch(
-                                  //   title: "S.NO",
-                                  //   removeSearching: true,
-                                  // ),
+                                  buildHeaderWithSearch(
+                                    title: "S.NO",
+                                    removeSearching: true,
+                                  ),
                                   buildHeaderWithSearch(
                                     title: "NAME",
                                     onChanged: (v) {
@@ -458,13 +458,12 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                                 ],
                                 totalRow: controller.filteredAttributes.length,
                                 rows: controller.filteredAttributes.asMap().entries.map((entry) {
-                                  final index = entry.key;
                                   final item = entry.value;
-                                  // final rowNumber = index + 1;
+                                  final rowNumber = entry.key + 1;
 
                                   return DataRow(
                                     cells: [
-                                      // DataCell(Center(child: Text("$rowNumber"))),
+                                      DataCell(Center(child: Text("$rowNumber"))),
                                       DataCell(Center(
                                         child: Text((item.attributeName ?? '').toUpperCase()),
                                       )),
@@ -477,10 +476,9 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
                                             _FocusableButton(
-                                              onTap: () =>
-                                                  // print("Edit button pressed"),
-                                                  _showAddEditDialog(
-                                                itemToEdit: item),
+                                              onTap: () => _showAddEditDialog(
+                                                itemToEdit: item,
+                                              ),
                                               tooltip: "Edit",
                                               child: OutlinedButton(
                                                 style: OutlinedButton.styleFrom(
@@ -488,10 +486,9 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                                                   padding: EdgeInsets.zero,
                                                   minimumSize: const Size(32, 32),
                                                 ),
-                                                onPressed: () =>
-                                                    // print("Edit button pressed"),
-                                                  _showAddEditDialog(
-                                                  itemToEdit: item),
+                                                onPressed: () => _showAddEditDialog(
+                                                  itemToEdit: item,
+                                                ),
                                                 child: Icon(
                                                   Icons.edit_calendar,
                                                   size: 28,
@@ -501,10 +498,7 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                                             ),
                                             const SizedBox(width: 8),
                                             _FocusableButton(
-                                              onTap: () async {
-                                                await controller.deleteDriverAttribute(item.id);
-                                                Get.back();
-                                              },
+                                              onTap: () => _showDeleteDialog(item),
                                               tooltip: "Delete",
                                               child: OutlinedButton(
                                                 style: OutlinedButton.styleFrom(
@@ -512,11 +506,7 @@ class _DriverAttributesListState extends State<DriverAttributesList> {
                                                   padding: EdgeInsets.zero,
                                                   minimumSize: const Size(32, 32),
                                                 ),
-                                                onPressed: () async {
-                                                   await controller.deleteDriverAttribute(item.id);
-                                                   Get.back();
-                                                              } ,
-                                                  // _showDeleteDialog(item),
+                                                onPressed: () => _showDeleteDialog(item),
                                                 child: Icon(
                                                   Icons.delete_forever,
                                                   size: 28,

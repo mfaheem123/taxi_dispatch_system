@@ -974,6 +974,11 @@ class _DriversViewState extends State<DriversView> {
       } else if (value == 4) {
         if (driver?.id == null) return;
         await _driverController.forceLogoutDriver(driver!.id!);
+      }  else if (value == 5) {
+        if (context.mounted) {
+          showDriverCallExtensionDialog(context, driver: driver);
+        }
+        debugPrint("CALL DRIVER tapped for busy driver: ${driver?.username}");
       }
     });
   }
