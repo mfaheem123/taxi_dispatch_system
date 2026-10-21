@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'app_menu_item.dart';
-
-import '../../accounts/Invoice/create_account_invoice_screen.dart';
-import '../../accounts/Invoice/create_customer_invoice.dart';
-import '../../accounts/Invoice/list_of_customer_invoice.dart';
-import '../../accounts/Invoice/list_of_account_invoice_screen.dart';
 import '../../accounts/account/account_view.dart';
 import '../../accounts/controller/account_controller.dart';
 import '../../accounts/create_escort_screen.dart';
@@ -58,37 +53,6 @@ AppMenuItem buildAccountsMenu(MenuActions actions) {
         title: "ESCORT LIST",
         page: () => ESCORTScreen(),
         permission: 'read_escort',
-      ),
-    ),
-    AppMenuItem(
-      title: "CREATE CUSTOMER INVOICE",
-      onTap: () => actions.openPage(
-        title: "CREATE CUSTOMER INVOICE",
-        page: () => CreateCustomerInvoice(),
-        permission: 'read_customer_invoice',
-      ),
-    ),
-    AppMenuItem(
-      title: "LIST OF CUSTOMER INVOICES",
-      onTap: () => actions.openPage(
-        title: "LIST OF CUSTOMER INVOICES",
-        page: () => InvoiceList(),
-      ),
-    ),
-    AppMenuItem(
-      title: "CREATE ACCOUNT INVOICE",
-      onTap: () => actions.openPage(
-        title: "CREATE ACCOUNT INVOICE",
-        page: () => CreateAccountInvoiceScreen(),
-        permission: 'create_account_invoice',
-      ),
-    ),
-    AppMenuItem(
-      title: "LIST OF ACCOUNT INVOICES",
-      onTap: () => actions.openPage(
-        title: "LIST OF ACCOUNT INVOICES",
-        page: () => ListOfAccountInvoiceScreen(),
-        permission: 'read_account_invoice',
       ),
     ),
   ]);

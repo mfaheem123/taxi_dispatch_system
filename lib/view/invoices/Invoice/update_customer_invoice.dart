@@ -22,14 +22,14 @@ import '../controller/customer_invoice_controller.dart';
 import 'account_invoice_preview_screen.dart';
 import 'customer_invoice_view_screen.dart';
 
-class UpdateCustomerInvoice extends StatefulWidget {
-  const UpdateCustomerInvoice({super.key});
+class UpdateCustomerInvoiceScreen extends StatefulWidget {
+  const UpdateCustomerInvoiceScreen({super.key});
 
   @override
-  State<UpdateCustomerInvoice> createState() => _UpdateCustomerInvoiceState();
+  State<UpdateCustomerInvoiceScreen> createState() => _UpdateCustomerInvoiceState();
 }
 
-class _UpdateCustomerInvoiceState extends State<UpdateCustomerInvoice> {
+class _UpdateCustomerInvoiceState extends State<UpdateCustomerInvoiceScreen> {
   CustomerInvoiceController controller =
   Get.isRegistered<CustomerInvoiceController>()
       ? Get.find<CustomerInvoiceController>()

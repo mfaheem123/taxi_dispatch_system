@@ -1,20 +1,10 @@
-import 'dart:convert';
-import 'dart:typed_data';
-import 'dart:html' as html;
 import 'package:dashboard_new1/component/responsive_datatable_widget.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
-import 'package:excel/excel.dart' show Excel, Sheet, CellValue, TextCellValue;
 import 'package:flutter/services.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:pdf/widgets.dart' as pw;
-
 import 'package:dashboard_new1/component/customButton.dart';
-import 'package:dashboard_new1/view/booking_view/reusable_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../../component/color.dart';
-import '../../../component/datatable_widget.dart';
 import '../../../component/editable_cell_widget.dart';
 import '../../../component/networks/api.dart';
 import '../../../component/textStyle.dart';
@@ -22,10 +12,8 @@ import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
 import '../../customer/model/search_customer_by_mobile.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
-import '../../dashboard_view/booking_table.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../dashboard_view/widgets/user_info_widget.dart';
-import '../controller/account_controller.dart';
 import '../controller/customer_invoice_controller.dart';
 
 class CreateCustomerInvoice extends StatefulWidget {

@@ -14,7 +14,7 @@ import '../../../../component/datatable_widget.dart';
 import '../../../../component/textStyle.dart';
 import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
-import 'package:dashboard_new1/view/accounts/model/account_invoice_model.dart';
+import 'package:dashboard_new1/view/invoices/model/account_invoice_model.dart';
 
 import '../../../component/editable_cell_widget.dart';
 import '../../../component/networks/api.dart';

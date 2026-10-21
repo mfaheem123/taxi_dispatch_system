@@ -7,6 +7,7 @@ import 'bookings_menu.dart';
 import 'customers_menu.dart';
 import 'drivers_menu.dart';
 import 'fares_menu.dart';
+import 'invoices_menu.dart';
 import 'locations_menu.dart';
 import 'menu_actions.dart';
 import 'reports_menu.dart';
@@ -25,6 +26,7 @@ List<AppMenuItem> buildMainMenu(BuildContext context, MenuActions actions) {
     buildLocationsMenu(actions),
     buildDriversMenu(actions),
     buildAccountsMenu(actions),
+    buildInvoicesMenu(actions),
     buildVehiclesMenu(actions),
     buildAdministrationMenu(actions),
     buildReportsMenu(actions),

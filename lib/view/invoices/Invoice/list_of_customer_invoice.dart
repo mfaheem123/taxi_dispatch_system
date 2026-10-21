@@ -1,14 +1,12 @@
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/keyboard_checkBox_widget.dart';
-import 'package:dashboard_new1/view/accounts/Invoice/update_customer_invoice.dart';
+import 'package:dashboard_new1/view/invoices/Invoice/update_customer_invoice.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../../component/color.dart';
 import '../../../component/datatable_widget.dart';
 import '../../../component/textStyle.dart';
-import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
@@ -125,7 +123,6 @@ class _InvoiceListState extends State<InvoiceList> {
                   // )
                   //     :
                   SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
                     child: SizedBox(
                       width: constraints.maxWidth,
                       child: DatatableWidget(
@@ -198,16 +195,16 @@ class _InvoiceListState extends State<InvoiceList> {
                                                 .selectedItem = true;
                                             _controller.currentPage
                                                 .value =
-                                                UpdateCustomerInvoice();
+                                                UpdateCustomerInvoiceScreen();
                                           } else {
                                             _controller.currentPage
                                                 .value =
-                                                UpdateCustomerInvoice();
+                                                UpdateCustomerInvoiceScreen();
                                             _controller.menuBarRefresh(
                                                 title:
                                                 "UPDATE CUSTOMER INVOICE",
                                                 pageName:
-                                                UpdateCustomerInvoice());
+                                                UpdateCustomerInvoiceScreen());
                                           }
                                           controller.update();
                                         },
