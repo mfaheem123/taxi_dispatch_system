@@ -15,7 +15,7 @@ import '../../../component/networks/api.dart';
 import '../../../component/pagination.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
-import '../controller/invoice_controller.dart';
+import '../controller/account_invoice_controller.dart';
 import 'create_account_invoice_screen.dart';
 
 class ListOfAccountInvoiceScreen extends StatefulWidget {

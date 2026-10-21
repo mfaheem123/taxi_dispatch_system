@@ -20,7 +20,7 @@ import '../../../component/editable_cell_widget.dart';
 import '../../../component/networks/api.dart';
 import '../../../component/responsive_datatable_widget.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
-import '../controller/invoice_controller.dart';
+import '../controller/account_invoice_controller.dart';
 
 class CreateAccountInvoiceScreen extends StatefulWidget {
   const CreateAccountInvoiceScreen({super.key});

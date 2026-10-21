@@ -15,7 +15,7 @@ import '../../../alert/stripe_payment.dart';
 import '../../../alert/update_invoice_email_alt.dart';
 import '../../../component/editable_cell_widget.dart';
 import '../../../component/responsive_datatable_widget.dart';
-import '../controller/invoice_controller.dart';
+import '../controller/account_invoice_controller.dart';
 import 'account_invoice_preview_screen.dart';
 
 class UpdateAccountInvoiceScreen extends StatefulWidget {

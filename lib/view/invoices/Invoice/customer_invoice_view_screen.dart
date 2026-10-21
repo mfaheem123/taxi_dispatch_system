@@ -5,7 +5,7 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 
 import '../../../component/color.dart';
 import '../controller/customer_invoice_controller.dart';
-import '../controller/invoice_controller.dart';
+import '../controller/account_invoice_controller.dart';
 
 class InvoiceViewWindowWrapper extends StatefulWidget {
   @override
