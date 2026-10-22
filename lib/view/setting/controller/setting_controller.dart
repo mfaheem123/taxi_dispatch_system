@@ -16,6 +16,7 @@ import '../model/company_configuration_model.dart';
 import '../model/get_clear_booking_model.dart';
 import '../model/get_document_number_model.dart';
 import '../model/select_templete_type.dart';
+import '../model/sms_tracking_model.dart';
 import '../model/templete_HTML_model.dart' hide TemplateType;
 import '../model/templete_by_type_model.dart';
 
@@ -956,8 +957,65 @@ class SettingController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo LocationShortcuts Work
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo sms tracking Work
+  RxList<Message> messageAll = <Message>[].obs;
+  RxList<Message> messageFiltered = <Message>[].obs;
+  RxString searchNumber = ''.obs;
+  RxString searchSms = ''.obs;
+  RxString searchDate = ''.obs;
+  RxString searchTime = ''.obs;
+
+  /// >>>>>>>>>>>>>>>>>>>>> Pagination Work
+  var currentSmsPage = 1.obs;
+  var totalSmsPages = 1.obs;
+  final int smsLimit = 20;
+
+  RxBool isLoadingSms = false.obs;
+  SmsTrackingModel? smsTrackingModel;
+  
+  getSmsTracking() async {
+    isLoadingSms(true);
+    
+    var response = await Api().get("sms/messages", sendCompanyId: true, queryParameters: {
+      'page': currentSmsPage.value,
+      'limit': smsLimit,
+      'number': searchNumber.value.toLowerCase(),
+      'sms': searchSms.value.toLowerCase(),
+      'date': searchDate.value.toLowerCase(),
+      'time': searchTime.value.toLowerCase(),
+    });
+    if (response.statusCode == 200) {
+      smsTrackingModel = SmsTrackingModel.fromJson(response.data);
+      totalSmsPages.value = smsTrackingModel?.totalPages ?? 1;
+      messageAll.value = smsTrackingModel?.messages ?? [];
+      messageFiltered.value = messageAll;
+      print("TOTAL MESSAGES FETCHED: ${smsTrackingModel?.messages?.length}");
+
+      isLoadingSms(false);
+      update();
+    }
+  }
+
+  // -----------Search function
+  void onSearchSms() {
+    currentSmsPage.value = 1;
+    getSmsTracking();
+  }
+
+  // -----------Pagination function
+  void onPageSms(int page) {
+    currentSmsPage.value = page;
+    getSmsTracking();
+  }
 
 
+  void refreshAndClearSearch() {
+    searchNumber.value = '';
+    searchSms.value = '';
+    searchDate.value = '';
+    searchTime.value = '';
+    currentSmsPage.value = 1;
+    getSmsTracking();
+  }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo sms tracking Work
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo call recordings Work
   Rx<DateTime> callFromDate = DateTime.now().obs;
