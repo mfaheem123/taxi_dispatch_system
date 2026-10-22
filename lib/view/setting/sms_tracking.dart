@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -5,7 +7,6 @@ import '../../component/color.dart';
 import '../../component/customButton.dart';
 import '../../component/datatable_widget.dart';
 import '../../component/textStyle.dart';
-import '../../view/setting/controller/extension_controller.dart';
 import '../dashboard_view/booking_table.dart';
 import 'controller/setting_controller.dart';
 
@@ -17,7 +18,7 @@ class SmsSettingsScreen extends StatefulWidget {
 }
 
 class _SmsSettingsScreenState extends State<SmsSettingsScreen> {
-  final SettingController controller = Get.isRegistered<SettingController>()
+   SettingController controller = Get.isRegistered<SettingController>()
       ? Get.find<SettingController>()
       : Get.put(SettingController());
 
@@ -25,8 +26,12 @@ class _SmsSettingsScreenState extends State<SmsSettingsScreen> {
   Widget build(BuildContext context) {
     return PageScrollWrapper(
         child: GetBuilder<SettingController>(
-        initState: (v) {},
+        initState: (v) {
+          controller.getSmsTracking();
+        },
         builder: (controller) {
+          final messagesList = controller.smsTrackingModel?.messages ?? [];
+
           return LayoutBuilder(
             builder: (context, constraints) {
               final double maxWidth = constraints.maxWidth;
@@ -61,7 +66,7 @@ class _SmsSettingsScreenState extends State<SmsSettingsScreen> {
                           width: 160,
                           verticalPadding: 0.0,
                           borderRadius: 4,
-                          btnText: "ONGOING MESSAGE",
+                          btnText: "OUTGOING MESSAGE",
                           fontSize: 14,
                           onTap: () {
                           },
@@ -73,20 +78,46 @@ class _SmsSettingsScreenState extends State<SmsSettingsScreen> {
                           width: 50,
                           verticalPadding: 0.0,
                           borderRadius: 4,
-                          widget: Icon(
+                          widget: controller.isLoadingSms
+                              ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                              : Icon(
                             Icons.refresh,
                             color: DynamicColors.whiteClr,
                             size: 25,
                           ),
                           onTap: () {
+                            if (!controller.isLoadingSms) {
+                              controller.getSmsTracking();
+                            }
                           },
                         ),
                       ],
                     ),
                   ),
 
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
+                  controller.isLoadingSms
+                      ? const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 40),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                      : messagesList.isEmpty
+                      ? const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 40),
+                    child: Center(
+                      child: Text(
+                        "No SMS Data Found",
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    ),
+                  )
+                  : SingleChildScrollView(
                     child: SizedBox(
                       width: Get.width,
                       child: DatatableWidget(
@@ -97,17 +128,23 @@ class _SmsSettingsScreenState extends State<SmsSettingsScreen> {
                           buildHeaderWithSearch(title: "TIME"),
                           buildHeaderWithSearch(title: "STATUS"),
                         ],
-                        totalRow: 1,
-                        rows: [
-                          DataRow(cells: [
-                            const DataCell(Center(child: Text('+1234567890'))),
-                            const DataCell(Center(child: Text('HELLO, THIS IS A TEST MESSAGE.'))),
-                            const DataCell(Center(child: Text('2026-07-11'))),
-                            const DataCell(Center(child: Text('14:30'))),
+                        totalRow: messagesList.length,
+                        rows: messagesList.map((msg) {
+                          // Date Formatting
+                          String formattedDate = msg.date != null
+                              ? "${msg.date!.year}-${msg.date!.month.toString().padLeft(2, '0')}-${msg.date!.day.toString().padLeft(2, '0')}"
+                              : '';
+
+                          return DataRow(cells: [
+                            DataCell(Center(child: Text((msg.number ?? '').toUpperCase()))),
+                            DataCell(Center(child: Text((msg.sms ?? '').toUpperCase()))),
+                            DataCell(Center(child: Text(formattedDate))),
+                            DataCell(Center(child: Text(msg.time ?? ''))),
                             DataCell(
                               Center(
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(
                                     color: Colors.green,
                                     borderRadius: BorderRadius.circular(4),
@@ -122,8 +159,8 @@ class _SmsSettingsScreenState extends State<SmsSettingsScreen> {
                                 ),
                               ),
                             ),
-                          ]),
-                        ],
+                          ]);
+                        }).toList(),
                       ),
                     ),
                   ),

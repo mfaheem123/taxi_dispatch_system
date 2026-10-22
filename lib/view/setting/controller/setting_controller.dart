@@ -16,6 +16,7 @@ import '../model/company_configuration_model.dart';
 import '../model/get_clear_booking_model.dart';
 import '../model/get_document_number_model.dart';
 import '../model/select_templete_type.dart';
+import '../model/sms_tracking_model.dart';
 import '../model/templete_HTML_model.dart' hide TemplateType;
 import '../model/templete_by_type_model.dart';
 
@@ -957,6 +958,22 @@ class SettingController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo LocationShortcuts Work
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo sms tracking Work
 
+  bool isLoadingSms = false;
+  SmsTrackingModel? smsTrackingModel;
+  
+  getSmsTracking() async {
+    isLoadingSms = true;
+    update();
+    
+    var response = await Api().get("sms/messages", sendCompanyId: true);
+    if (response.statusCode == 200) {
+      smsTrackingModel = SmsTrackingModel.fromJson(response.data);
+      print("TOTAL MESSAGES FETCHED: ${smsTrackingModel?.messages?.length}");
+
+      isLoadingSms = false;
+      update();
+    }
+  }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo sms tracking Work
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo call recordings Work
