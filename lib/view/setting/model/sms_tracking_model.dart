@@ -11,23 +11,35 @@ String smsTrackingModelToJson(SmsTrackingModel data) => json.encode(data.toJson(
 class SmsTrackingModel {
   bool? status;
   int? count;
+  int? totalPages;
+  int? currentPage;
+  int? limit;
   List<Message>? messages;
 
   SmsTrackingModel({
     this.status,
     this.count,
+    this.totalPages,
+    this.currentPage,
+    this.limit,
     this.messages,
   });
 
   factory SmsTrackingModel.fromJson(Map<String, dynamic> json) => SmsTrackingModel(
     status: json["status"],
     count: json["count"],
+    totalPages: json["totalPages"],
+    currentPage: json["currentPage"],
+    limit: json["limit"],
     messages: json["messages"] == null ? [] : List<Message>.from(json["messages"]!.map((x) => Message.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
     "status": status,
     "count": count,
+    "totalPages": totalPages,
+    "currentPage": currentPage,
+    "limit": limit,
     "messages": messages == null ? [] : List<dynamic>.from(messages!.map((x) => x.toJson())),
   };
 }
