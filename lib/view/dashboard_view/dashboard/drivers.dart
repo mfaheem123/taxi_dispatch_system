@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/view/dashboard_view/dashboard/row_button_widget_map.dart';
@@ -80,6 +81,7 @@ class _DriversViewState extends State<DriversView> {
       case 1: // refresh
         debugPrint("Header action: REFRESH");
         _driverController.getAllOnlineDrivers();
+        BotToast.showText(text: "Driver Refreshed");
         break;
       case 2: // visibility_off_sharp
         debugPrint("Header action: HIDE/SHOW");
@@ -88,7 +90,9 @@ class _DriversViewState extends State<DriversView> {
         showDialog(
           context: context,
           builder: (_) => SendEmailAlert(),
+
         );
+
         break;
       case 4: // send
         showDialog(
@@ -346,6 +350,8 @@ class _DriversViewState extends State<DriversView> {
                                 selectedHeaderIndex = index;
                               });
                               _activateHeaderIcon(context, index);
+
+
                               debugPrint("Clicked on header icon index $index");
                             },
                             child: Container(
@@ -976,7 +982,7 @@ class _DriversViewState extends State<DriversView> {
         await _driverController.forceLogoutDriver(driver!.id!);
       }  else if (value == 5) {
         if (context.mounted) {
-          // showDriverCallExtensionDialog(context, driver: driver);
+          showDriverCallExtensionDialog(context, driver: driver);
         }
         debugPrint("CALL DRIVER tapped for busy driver: ${driver?.username}");
       }
