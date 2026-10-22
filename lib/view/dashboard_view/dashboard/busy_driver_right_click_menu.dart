@@ -150,7 +150,7 @@ void showContextMenuOnBusyDriver(
     /// CALL DRIVER
     else if (value == 9) {
       if (context.mounted) {
-        showDriverCallExtensionDialog(context, driver: driver);
+        // showDriverCallExtensionDialog(context, driver: driver);
       }
       debugPrint("CALL DRIVER tapped for busy driver: ${driver?.username}");
     }
