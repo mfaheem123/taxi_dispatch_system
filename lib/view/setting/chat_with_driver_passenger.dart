@@ -323,7 +323,6 @@ class ChatWithDriverAndPassenger extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final driver = drivers[index];
                   final isSelected = controller.selectedDriver.value?.id == driver.id;
-
                   return _buildDriverTile(controller, driver, isSelected);
                 },
               );
@@ -336,6 +335,8 @@ class ChatWithDriverAndPassenger extends StatelessWidget {
 
   // --- Driver List Item ---
   Widget _buildDriverTile(DriverChatController controller, ChatDriver driver, bool isSelected) {
+    final bool isOnline = controller.isDriverOnline(driver.id) || driver.isOnline;
+
     return Material(
       color: isSelected ? const Color(0xFFEEF0FA) : Colors.white,
       child: InkWell(
@@ -353,20 +354,39 @@ class ChatWithDriverAndPassenger extends StatelessWidget {
           ),
           child: Row(
             children: [
-              // Avatar
-              CircleAvatar(
-                radius: 16,
-                backgroundColor: isSelected ? primaryColor : const Color(0xFFE2E8F0),
-                child: Text(
-                  driver.name.isNotEmpty
-                      ? driver.name.substring(0, 1).toUpperCase()
-                      : "D",
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : const Color(0xFF334155),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12.5,
+              // Avatar with Online Dot
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  CircleAvatar(
+                    radius: 16,
+                    backgroundColor: isSelected ? primaryColor : const Color(0xFFE2E8F0),
+                    child: Text(
+                      driver.name.isNotEmpty
+                          ? driver.name.substring(0, 1).toUpperCase()
+                          : "D",
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : const Color(0xFF334155),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12.5,
+                      ),
+                    ),
                   ),
-                ),
+                  if (isOnline)
+                    Positioned(
+                      right: -1,
+                      bottom: -1,
+                      child: Container(
+                        width: 9,
+                        height: 9,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF25D366),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 1.5),
+                        ),
+                      ),
+                    ),
+                ],
               ),
               const SizedBox(width: 8),
 
@@ -377,7 +397,7 @@ class ChatWithDriverAndPassenger extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Expanded(
+                        Flexible(
                           child: Text(
                             driver.name,
                             maxLines: 1,
@@ -389,26 +409,30 @@ class ChatWithDriverAndPassenger extends StatelessWidget {
                             ),
                           ),
                         ),
-                        // Text(
-                        //   "#${driver.id}",
-                        //   style: TextStyle(
-                        //     fontSize: 10,
-                        //     color: Colors.grey.shade500,
-                        //     fontWeight: FontWeight.w500,
-                        //   ),
-                        // ),
+                        if (isOnline) ...[
+                          const SizedBox(width: 5),
+                          Container(
+                            width: 7.5,
+                            height: 7.5,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF25D366),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                     const SizedBox(height: 2),
-                    // Text(
-                    //   driver.vehicleNumber,
-                    //   maxLines: 1,
-                    //   overflow: TextOverflow.ellipsis,
-                    //   style: TextStyle(
-                    //     fontSize: 11,
-                    //     color: Colors.grey.shade600,
-                    //   ),
-                    // ),
+                    Text(
+                      isOnline ? "Online" : "Offline",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 10.5,
+                        color: isOnline ? const Color(0xFF25D366) : Colors.grey.shade600,
+                        fontWeight: isOnline ? FontWeight.w600 : FontWeight.normal,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -524,6 +548,8 @@ class ChatWithDriverAndPassenger extends StatelessWidget {
     ChatDriver driver,
     bool isNarrow,
   ) {
+    final bool isOnline = controller.isDriverOnline(driver.id) || driver.isOnline;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: const BoxDecoration(
@@ -542,29 +568,64 @@ class ChatWithDriverAndPassenger extends StatelessWidget {
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
             ),
-          CircleAvatar(
-            radius: 14,
-            backgroundColor: primaryColor,
-            child: Text(
-              driver.name.isNotEmpty ? driver.name.substring(0, 1).toUpperCase() : "D",
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11),
-            ),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              CircleAvatar(
+                radius: 14,
+                backgroundColor: primaryColor,
+                child: Text(
+                  driver.name.isNotEmpty ? driver.name.substring(0, 1).toUpperCase() : "D",
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11),
+                ),
+              ),
+              if (isOnline)
+                Positioned(
+                  right: -1,
+                  bottom: -1,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF25D366),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 1.5),
+                    ),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "${driver.name} (${driver.username})",
-
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF0F172A),
-                  ),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        "${driver.name} (${driver.username})",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF0F172A),
+                        ),
+                      ),
+                    ),
+                    if (isOnline) ...[
+                      const SizedBox(width: 5),
+                      Container(
+                        width: 7.5,
+                        height: 7.5,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF25D366),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
                 controller.isDriverTyping.value
                     ? const Text(
@@ -576,14 +637,28 @@ class ChatWithDriverAndPassenger extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       )
-                    : Text(
-                        driver.vehicleNumber,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 10.5,
-                          color: Colors.grey.shade600,
-                        ),
+                    : Row(
+                        children: [
+                          Text(
+                            isOnline ? "Online" : "Offline",
+                            style: TextStyle(
+                              fontSize: 10.5,
+                              color: isOnline ? const Color(0xFF25D366) : Colors.grey.shade600,
+                              fontWeight: isOnline ? FontWeight.w600 : FontWeight.normal,
+                            ),
+                          ),
+                          // if (driver.vehicleNumber.isNotEmpty && driver.vehicleNumber != 'No Vehicle') ...[
+                          //   Text(
+                          //     " • ${driver.vehicleNumber}",
+                          //     maxLines: 1,
+                          //     overflow: TextOverflow.ellipsis,
+                          //     style: TextStyle(
+                          //       fontSize: 10.5,
+                          //       color: Colors.grey.shade600,
+                          //     ),
+                          //   ),
+                          // ],
+                        ],
                       ),
               ],
             ),

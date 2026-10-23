@@ -137,6 +137,9 @@ class ChatDriver {
   final String? callsign;
   final bool isActive;
   int unreadCount;
+  bool isOnline;
+  String? driverStatus;
+  String? sessionStatus;
 
   ChatDriver({
     required this.id,
@@ -147,6 +150,9 @@ class ChatDriver {
     this.callsign,
     this.isActive = true,
     this.unreadCount = 0,
+    this.isOnline = false,
+    this.driverStatus,
+    this.sessionStatus,
   });
 
   factory ChatDriver.fromJson(Map<String, dynamic> json) {
@@ -162,6 +168,12 @@ class ChatDriver {
       veh = json['vehicle']['vehicle_number']?.toString() ?? 'No Vehicle';
     }
 
+    final String? dStatus = json['driver_status']?.toString();
+    final String? sStatus = json['session_status']?.toString();
+    final bool isSessionOnline = (sStatus ?? '').toLowerCase().trim() == 'logged_in' ||
+        (dStatus ?? '').toLowerCase().trim() == 'available' ||
+        (dStatus ?? '').toLowerCase().trim() == 'busy';
+
     return ChatDriver(
       id: parsedId,
       name: json['name']?.toString() ?? 'Driver #$parsedId',
@@ -171,6 +183,9 @@ class ChatDriver {
       callsign: json['callsign']?.toString() ?? json['username']?.toString(),
       isActive: json['active'] == true || json['active'] == 1,
       unreadCount: 0,
+      isOnline: isSessionOnline,
+      driverStatus: dStatus,
+      sessionStatus: sStatus,
     );
   }
 }

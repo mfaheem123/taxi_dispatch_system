@@ -8,6 +8,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../../component/networks/Url.dart';
 import '../../../component/networks/api.dart';
 import '../../administration/model/user_model.dart';
+import '../../dashboard_view/Controller/dashboard_controller.dart' show DashboardController;
 import '../model/driver_chat_model.dart';
 
 class DriverChatController extends GetxController {
@@ -34,6 +35,35 @@ class DriverChatController extends GetxController {
   final RxList<ChatMessage> messages = <ChatMessage>[].obs;
   final RxBool isDriverTyping = false.obs;
   final RxInt totalUnreadCount = 0.obs;
+  final RxSet<int> onlineDriverIds = <int>{}.obs;
+  final RxSet<int> liveOnlineDriverIds = <int>{}.obs;
+
+  bool isDriverOnline(int driverId) {
+    final strId = driverId.toString();
+
+    // 1. Live online drivers directly from backend login-busy API
+    if (liveOnlineDriverIds.contains(driverId)) {
+      return true;
+    }
+
+    // 2. Real-time online or busy drivers from DashboardController socket
+    if (Get.isRegistered<DashboardController>()) {
+      try {
+        final dash = Get.find<DashboardController>();
+        final bool isOnlineOnDash = dash.onlineDriversList.any(
+              (d) => d.id != null && d.id.toString() == strId,
+            ) ||
+            dash.busyDriversList.any(
+              (d) => d.id != null && d.id.toString() == strId,
+            );
+        if (isOnlineOnDash) return true;
+      } catch (e) {
+        debugPrint("Error checking dash drivers: $e");
+      }
+    }
+
+    return false;
+  }
 
   // Input & search controllers
   final TextEditingController messageInputController = TextEditingController();
@@ -45,6 +75,7 @@ class DriverChatController extends GetxController {
   StreamSubscription? _subscription;
   Timer? _reconnectTimer;
   Timer? _typingTimer;
+  Timer? _dashboardSyncTimer;
 
   // User details retrieved from session/storage
   String get currentUserId {
@@ -104,10 +135,53 @@ class DriverChatController extends GetxController {
     super.onInit();
     fetchDrivers();
     connectWs();
+    syncOnlineDriversFromApi();
+    _dashboardSyncTimer?.cancel();
+    _dashboardSyncTimer = Timer.periodic(
+      const Duration(seconds: 2),
+      (_) {
+        syncOnlineDriversFromApi();
+        _syncDriversOnlineStatus();
+      },
+    );
+  }
+
+  Future<void> syncOnlineDriversFromApi() async {
+    try {
+      final res = await Api().get(
+        "drivers/login-busy",
+        sendCompanyId: true,
+      );
+      if (res != null && res.statusCode == 200 && res.data != null) {
+        final Set<int> activeIds = <int>{};
+        final loginList = res.data['login_drivers'];
+        if (loginList is List) {
+          for (var item in loginList) {
+            final id = item['id'];
+            final parsed = id is int ? id : int.tryParse(id.toString());
+            if (parsed != null) activeIds.add(parsed);
+          }
+        }
+        final busyList = res.data['busy_drivers'];
+        if (busyList is List) {
+          for (var item in busyList) {
+            final id = item['id'];
+            final parsed = id is int ? id : int.tryParse(id.toString());
+            if (parsed != null) activeIds.add(parsed);
+          }
+        }
+        liveOnlineDriverIds.assignAll(activeIds);
+        _syncDriversOnlineStatus();
+      }
+    } catch (e) {
+      debugPrint("Error syncing online drivers from API: $e");
+    }
   }
 
   @override
   void onClose() {
+    _dashboardSyncTimer?.cancel();
+    _dashboardSyncTimer = null;
     disconnectWs();
     _typingTimer?.cancel();
     _reconnectTimer?.cancel();
@@ -168,6 +242,8 @@ class DriverChatController extends GetxController {
     isConnected.value = false;
     isConnecting.value = false;
     connectionStatus.value = "Offline";
+    onlineDriverIds.clear();
+    _syncDriversOnlineStatus();
     update();
     _subscription?.cancel();
     _subscription = null;
@@ -191,6 +267,8 @@ class DriverChatController extends GetxController {
     isConnected.value = false;
     isConnecting.value = false;
     connectionStatus.value = "Offline";
+    onlineDriverIds.clear();
+    _syncDriversOnlineStatus();
     update();
   }
 
@@ -281,10 +359,74 @@ class DriverChatController extends GetxController {
           isDriverTyping.value = data['is_typing'] == true;
           update();
         }
+      } else if (eventType == 'presence_change') {
+        if (data != null && data is Map) {
+          final String role = (data['role'] ?? data['user_role'] ?? '').toString().toUpperCase().trim();
+          final String status = (data['status'] ?? '').toString().toUpperCase().trim();
+          final dynamic uid = data['user_id'] ?? data['userId'] ?? data['id'];
+          final int? userId = uid is int ? uid : int.tryParse(uid.toString());
+
+          if (role == 'DRIVER' && userId != null) {
+            final bool isOnline = status == 'ONLINE';
+            if (isOnline) {
+              onlineDriverIds.add(userId);
+            } else {
+              onlineDriverIds.remove(userId);
+            }
+            _syncDriverOnlineStatus(userId, isOnline);
+            update();
+          }
+        }
+      } else if (eventType == 'active_presence_list') {
+        if (data != null && data is List) {
+          onlineDriverIds.clear();
+          for (var item in data) {
+            if (item is Map) {
+              final String role = (item['role'] ?? item['user_role'] ?? '').toString().toUpperCase().trim();
+              if (role == 'DRIVER') {
+                final dynamic uid = item['user_id'] ?? item['userId'] ?? item['id'];
+                final int? userId = uid is int ? uid : int.tryParse(uid.toString());
+                if (userId != null) {
+                  onlineDriverIds.add(userId);
+                }
+              }
+            }
+          }
+          _syncDriversOnlineStatus();
+          update();
+        }
       }
     } catch (e) {
       debugPrint("❌ Error parsing WS message: $e");
     }
+  }
+
+  void _syncDriversOnlineStatus() {
+    bool hasChanged = false;
+    for (var driver in driversList) {
+      final bool newStatus = isDriverOnline(driver.id);
+      if (driver.isOnline != newStatus) {
+        driver.isOnline = newStatus;
+        hasChanged = true;
+      }
+    }
+
+    if (selectedDriver.value != null) {
+      final bool newStatus = isDriverOnline(selectedDriver.value!.id);
+      if (selectedDriver.value!.isOnline != newStatus) {
+        selectedDriver.value!.isOnline = newStatus;
+        hasChanged = true;
+      }
+    }
+    if (hasChanged) {
+      driversList.refresh();
+      filteredDriversList.refresh();
+      update();
+    }
+  }
+
+  void _syncDriverOnlineStatus(int driverId, bool isOnline) {
+    _syncDriversOnlineStatus();
   }
 
   void _addOrUpdateMessage(ChatMessage msg) {
@@ -316,6 +458,14 @@ class DriverChatController extends GetxController {
     isLoadingDrivers.value = true;
     update();
     try {
+      if (Get.isRegistered<DashboardController>()) {
+        try {
+          Get.find<DashboardController>().getAllOnlineDrivers();
+        } catch (_) {}
+      }
+
+      await syncOnlineDriversFromApi();
+
       final res = await Api().get(
         "drivers/get?active=true",
         sendCompanyId: true,
@@ -329,6 +479,7 @@ class DriverChatController extends GetxController {
           }).toList();
 
           driversList.assignAll(parsed);
+          _syncDriversOnlineStatus();
           filterDrivers(searchDriverController.text);
         }
       }
@@ -360,6 +511,7 @@ class DriverChatController extends GetxController {
 
   // --- Driver Selection ---
   void selectDriver(ChatDriver driver) {
+    driver.isOnline = isDriverOnline(driver.id);
     selectedDriver.value = driver;
     // Clear unread count for this driver
     driver.unreadCount = 0;
