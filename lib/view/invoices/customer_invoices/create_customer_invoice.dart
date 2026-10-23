@@ -30,8 +30,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
   final int totalRows = 5;
   final ScrollController _autocompleteScrollController = ScrollController();
 
-  CustomerInvoiceController controller =
-  Get.isRegistered<CustomerInvoiceController>()
+  CustomerInvoiceController controller = Get.isRegistered<CustomerInvoiceController>()
       ? Get.find<CustomerInvoiceController>()
       : Get.put(CustomerInvoiceController());
 
@@ -173,6 +172,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Expanded(
                           child: CustomTextField(
@@ -182,6 +182,8 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                             hintText: AppText.name,
                             columnText: true,
                             height: 30,
+                            inputFormatters: [UpperCaseTextFormatter(),
+                            ],
                           ),
                         ),
                         SizedBox(width: 10),
@@ -193,20 +195,23 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                             hintText: AppText.email,
                             columnText: true,
                             height: 30,
+                            inputFormatters: [
+                              UpperCaseTextFormatter(),
+                            ],
                           ),
                         ),
                         SizedBox(width: 10),
                         Expanded(
                           child: LayoutBuilder(builder: (context, constraints) {
-                            return SizedBox(
-                              height: 52,
-                              child: Column(
+                            return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(AppText.mobile,
-                                      style: TextStyle(
-                                          fontSize: 12, fontWeight: FontWeight.bold)),
+                                      style: mozillaTextSemiBoldText(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w800,
+                                          color: Colors.black)),
                                   const SizedBox(height: 4),
                                   SizedBox(
                                     height: 30,
@@ -245,13 +250,18 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                                           controller: textEditingController,
                                           focusNode: focusNode,
                                           onSubmitted: (value) => onFieldSubmitted(),
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter.digitsOnly,
+                                          ],
                                           decoration: InputDecoration(
+                                            // isDense: true,
                                             contentPadding:
                                             const EdgeInsets.symmetric(
-                                                horizontal: 8, vertical: 0),
+                                                horizontal: 8, vertical: 8),
                                             hintText: AppText.mobile,
-                                            hintStyle: const TextStyle(
-                                                fontSize: 12,
+                                            hintStyle: mozillaTextSemiBoldText(
+                                                fontSize: 10,
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.black),
                                             border: OutlineInputBorder(
@@ -279,9 +289,9 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                                             )
                                                 : null,
                                           ),
-                                          style: const TextStyle(
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.bold),
+                                          style: mozillaTextSemiBoldText(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w800),
                                           onChanged: (val) {
                                             controller.customerMobileController.text =
                                                 val;
@@ -349,7 +359,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                                                             mainAxisSize: MainAxisSize.min,
                                                             children: [
                                                               Text(
-                                                                option.name ?? '',
+                                                                (option.name ?? '').toUpperCase(),
                                                                 style: const TextStyle(
                                                                     fontWeight: FontWeight.bold,
                                                                     fontSize: 13,
@@ -451,9 +461,9 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                                         controller.customerMobileController.text =
                                             selection.mobile ?? '';
                                         controller.customerNameController.text =
-                                            selection.name ?? '';
+                                        (selection.name ?? '').toUpperCase();
                                         controller.customerEmailController.text =
-                                            selection.email ?? '';
+                                        (selection.email ?? '').toUpperCase();
                                         controller.customerTelephoneController.text =
                                             selection.telephone ?? '';
                                         controller.update();
@@ -461,7 +471,6 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                                     ),
                                   ),
                                 ],
-                              ),
                             );
                           }),
                         ),
@@ -474,6 +483,10 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                             hintText: AppText.tel,
                             columnText: true,
                             height: 30,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
                           ),
                         ),
                       ],

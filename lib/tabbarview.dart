@@ -58,7 +58,7 @@ class _TopNavBarState extends State<TopNavBar> {
                       fontSize: 30,
                     ),
                   ),
-                  SizedBox(width: 20),
+                  // SizedBox(width: 20),
                   buildMenuTab(Icons.book_online, "BOOKINGS", "BOOKINGS",
                       ["CREATE BOOKINGS", "LIST OF BOOKINGS", "LIST OF WEB BOOKINGS", "LIST OF APP BOOKINGS", "LIST OF MULTI BOOKINGS", "LIST OF TRASH BOOKINGS"], bookingKey),
                   buildMenuTab(Icons.headset_mic_rounded, "CUSTOMERS", "CUSTOMERS",

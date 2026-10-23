@@ -2598,6 +2598,7 @@ class DashboardController extends GetxController {
         getDashboardTableData(tableId: selectedTabId);
       });
     }
+
     isTableLoading = false;
     update();
   }

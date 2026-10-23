@@ -320,14 +320,15 @@ class _BookingTableState extends State<BookingTable> {
 
 
                   if(permissions.contains('read_booking'))
-                    controller.isTableLoading
-                        ? Container(
-                            height: 150,
-                            alignment: Alignment.topCenter,
-                            padding: const EdgeInsets.only(top: 20),
-                            child: const CircularProgressIndicator(),
-                          )
-                        : controller.dashboardTableModelData == null
+                    // controller.isTableLoading
+                    //     ? Container(
+                    //         height: 150,
+                    //         alignment: Alignment.topCenter,
+                    //         padding: const EdgeInsets.only(top: 20),
+                    //         child: const CircularProgressIndicator(),
+                    //       )
+                    //     :
+                    controller.dashboardTableModelData == null
                             ? SizedBox()
                             : SizedBox(
                                 width: Get.width,

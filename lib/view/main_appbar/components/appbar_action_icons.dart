@@ -47,21 +47,21 @@ class AppbarActionIcons extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _ActionIcon(
-            icon: Icons.dark_mode_outlined,
-            tooltip: 'Theme',
-            onTap: () {}, // no theme toggle yet
-          ),
+        //   _ActionIcon(
+        //     icon: Icons.dark_mode_outlined,
+        //     tooltip: 'Theme',
+        //     onTap: () {}, // no theme toggle yet
+        //   ),
           _ActionIcon(
             icon: Icons.headset_mic_outlined,
             tooltip: 'Extension',
             onTap: ExtensionAlert.show,
           ),
-          _ActionIcon(
-            icon: Icons.call_outlined,
-            tooltip: 'Phone',
-            onTap: () {},
-          ),
+          // _ActionIcon(
+          //   icon: Icons.call_outlined,
+          //   tooltip: 'Phone',
+          //   onTap: () {},
+          // ),
           _ActionIcon(
             icon: Icons.notifications_outlined,
             tooltip: 'Notifications',

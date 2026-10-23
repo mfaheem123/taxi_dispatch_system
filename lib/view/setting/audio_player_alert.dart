@@ -1,13 +1,17 @@
+import 'dart:async';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:dashboard_new1/component/action_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
+import '../../component/alert_close_button.dart';
+import '../../component/color.dart';
 import '../../component/customButton.dart';
 import '../../component/textStyle.dart';
 
 class AudioPlayerDialog extends StatefulWidget {
-final String audioUrl;
+  final String audioUrl;
 
   const AudioPlayerDialog({super.key, required this.audioUrl});
 
@@ -17,6 +21,10 @@ final String audioUrl;
 
 class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
   late AudioPlayer _audioPlayer;
+  late StreamSubscription _durationSub;
+  late StreamSubscription _positionSub;
+  late StreamSubscription _playerStateSub;
+
   bool isPlaying = false;
   double currentSpeed = 1.0;
   Duration duration = Duration.zero;
@@ -29,26 +37,24 @@ class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
     super.initState();
     _audioPlayer = AudioPlayer();
 
-    // Listen to duration changes
-    _audioPlayer.onDurationChanged.listen((newDuration) {
-      setState(() => duration = newDuration);
+    _durationSub = _audioPlayer.onDurationChanged.listen((newDuration) {
+      if (mounted) setState(() => duration = newDuration);
     });
 
-    // Listen to position changes (slider movement)
-    _audioPlayer.onPositionChanged.listen((newPosition) {
-      setState(() => position = newPosition);
+    _positionSub = _audioPlayer.onPositionChanged.listen((newPosition) {
+      if (mounted) setState(() => position = newPosition);
     });
 
-    // Listen when audio completes
-    _audioPlayer.onPlayerStateChanged.listen((state) {
-      setState(() {
-        isPlaying = state == PlayerState.playing;
-      });
+    _playerStateSub = _audioPlayer.onPlayerStateChanged.listen((state) {
+      if (mounted) setState(() => isPlaying = state == PlayerState.playing);
     });
   }
 
   @override
   void dispose() {
+    _durationSub.cancel();
+    _positionSub.cancel();
+    _playerStateSub.cancel();
     _dropdownFocusNode.dispose();
     _audioPlayer.dispose();
     super.dispose();
@@ -65,130 +71,171 @@ class _AudioPlayerDialogState extends State<AudioPlayerDialog> {
   Widget build(BuildContext context) {
     return FocusScope(
         autofocus: true,
-      child: AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      titlePadding: const EdgeInsets.all(16),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-      actionsPadding: const EdgeInsets.all(12),
-      title: Text(
-        "RECORDING",
-        style: mozillaTextSemiBoldText(fontWeight: FontWeight.w800, fontSize: 18),
-      ),
-      content: SizedBox(
-        width: 400,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 10),
-
-            Row(
-              children: [
-                ActionIconButton(
-                  // visualDensity: VisualDensity.compact,
-                  // splashRadius: 15,
-                  icon: isPlaying ? Icons.pause : Icons.play_arrow,
-                    size: 28,
-                    color: Colors.green,
-                  onPressed: () async {
-                    // if (isPlaying) {
-                    //   await _audioPlayer.pause();
-                    // } else {
-                    //   await _audioPlayer.play(UrlSource(widget.audioUrl));
-                    // }
-                  },
+        child: Dialog(
+            backgroundColor: Colors.transparent,
+            child: Container(
+                width: 420,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                // Timeline Slider
-                Expanded(
-                  child: SliderTheme(
-                    data: SliderTheme.of(context).copyWith(
-                      trackHeight: 3.0,
-                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6.0),
-                      overlayShape: const RoundSliderOverlayShape(overlayRadius: 12.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: DynamicColors.gryClr.withOpacity(0.5),
+                        borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(10)),
+                      ),
+                      child: Row(
+                        children: [
+                          Text("RECORDING", style: titleDesign()),
+                          const Spacer(),
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(999),
+                            child: const AlertCloseButton(),
+                          ),
+                        ],
+                      ),
                     ),
-                  child: Slider(
-                    min: 0,
-                    max: duration.inSeconds.toDouble(),
-                    value: position.inSeconds.toDouble().clamp(0.0, duration.inSeconds.toDouble()),
-                    onChanged: (val) async {
-                      // final position = Duration(seconds: val.toInt());
-                      // await _audioPlayer.seek(position);
-                    },
-                    activeColor: Colors.green,
-                    inactiveColor: Colors.grey.shade300,
-                  )),
-                ),
+                    Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: SizedBox(
+                          width: 400,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox(height: 10),
 
-                const Icon(Icons.volume_up, color: Colors.grey),
+                              Row(
+                                children: [
+                                  ActionIconButton(
+                                    // visualDensity: VisualDensity.compact,
+                                    // splashRadius: 15,
+                                    icon: isPlaying
+                                        ? Icons.pause
+                                        : Icons.play_arrow,
+                                    size: 28,
+                                    color: Colors.green,
+                                    onPressed: () async {
+                                      // if (isPlaying) {
+                                      //   await _audioPlayer.pause();
+                                      // } else {
+                                      //   await _audioPlayer.play(UrlSource(widget.audioUrl));
+                                      // }
+                                    },
+                                  ),
+                                  // Timeline Slider
+                                  Expanded(
+                                    child: SliderTheme(
+                                        data: SliderTheme.of(context).copyWith(
+                                          trackHeight: 3.0,
+                                          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6.0),
+                                          overlayShape: const RoundSliderOverlayShape(overlayRadius: 12.0),
+                                        ),
+                                        child: Slider(
+                                          min: 0,
+                                          max: duration.inSeconds.toDouble(),
+                                          value: position.inSeconds
+                                              .toDouble()
+                                              .clamp(
+                                                  0.0,
+                                                  duration.inSeconds.toDouble()),
+                                          onChanged: (val) async {
+                                            // final position = Duration(seconds: val.toInt());
+                                            // await _audioPlayer.seek(position);
+                                          },
+                                          activeColor: Colors.green,
+                                          inactiveColor: Colors.grey.shade300,
+                                        )),
+                                  ),
 
-                // Dots Vertical Playback Speed Option
-                Focus(
-                  focusNode: _dropdownFocusNode,
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<double>(
-                      value: currentSpeed,
-                      icon: const Icon(Icons.more_vert, color: Colors.grey, size: 20),
-                      dropdownColor: Colors.white,
-                      focusColor: Colors.green.withOpacity(0.1),
-                      elevation: 8,
-                      onChanged: (double? speed) async {
-                        if (speed != null) {
-                          setState(() {
-                            currentSpeed = speed;
-                          });
-                          await _audioPlayer.setPlaybackRate(speed);
-                        }
-                      },
-                      items: const [
-                        DropdownMenuItem<double>(value: 0.5, child: Text('0.5x', style: TextStyle(fontSize: 13, color: Colors.black))),
-                        DropdownMenuItem<double>(value: 0.75, child: Text('0.75x', style: TextStyle(fontSize: 13, color: Colors.black))),
-                        DropdownMenuItem<double>(value: 1.0, child: Text('NORMAL', style: TextStyle(fontSize: 13, color: Colors.black))),
-                        DropdownMenuItem<double>(value: 1.25, child: Text('1.25x', style: TextStyle(fontSize: 13, color: Colors.black))),
-                        DropdownMenuItem<double>(value: 1.5, child: Text('1.5x', style: TextStyle(fontSize: 13, color: Colors.black))),
-                        DropdownMenuItem<double>(value: 1.75, child: Text('1.75x', style: TextStyle(fontSize: 13, color: Colors.black))),
-                        DropdownMenuItem<double>(value: 2.0, child: Text('2.0x', style: TextStyle(fontSize: 13, color: Colors.black))),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            // Duration details and Speed tag
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("${formatTime(position)} / ${formatTime(duration)}", style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                  // Container(
-                  //   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  //   decoration: BoxDecoration(
-                  //     color: Colors.grey.shade200,
-                  //     borderRadius: BorderRadius.circular(4),
-                  //   ),
-                  //   // child: Text("${currentSpeed}x", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                  // )
-                ],
-              ),
-            ),
-            const SizedBox(height: 15),
-          ],
-        ),
-      ),
-      actions: [
-        CustomButton(
-          height: 35,
-          width: 80,
-          verticalPadding: 0.0,
-          borderRadius: 4,
-          btnText: "CLOSE",
-          btnColor: Colors.red,
-          style: mozillaTextSemiBoldText(color: Colors.white, fontSize: 14),
-          onTap: () {
-            _audioPlayer.stop();
-            Get.back();
-          },
-        ),
-      ],
-    ));
+                                  const Icon(Icons.volume_up,
+                                      color: Colors.grey),
+
+                                  // Dots Vertical Playback Speed Option
+                                  Focus(
+                                    focusNode: _dropdownFocusNode,
+                                  child:
+                                  DropdownButtonHideUnderline(
+                                      child: DropdownButton<double>(
+
+                                        value: currentSpeed,
+                                        icon: const Icon(Icons.more_vert,
+                                            color: Colors.grey, size: 20),
+                                        dropdownColor: Colors.white,
+                                        focusColor: Colors.green.withOpacity(0.2),
+                                        elevation: 8,
+                                        onChanged: (double? speed) async {
+                                          if (speed != null) {
+                                            setState(() {
+                                              currentSpeed = speed;
+                                            });
+                                            await _audioPlayer.setPlaybackRate(speed);
+                                          }
+                                        },
+                                        items: const [
+                                          DropdownMenuItem<double>(value: 0.5, child: Text('0.5x', style: TextStyle(fontSize: 13, color: Colors.black))),
+                                          DropdownMenuItem<double>(value: 0.75, child: Text('0.75x', style: TextStyle(fontSize: 13, color: Colors.black))),
+                                          DropdownMenuItem<double>(value: 1.0, child: Text('NORMAL', style: TextStyle(fontSize: 13, color: Colors.black))),
+                                          DropdownMenuItem<double>(value: 1.25, child: Text('1.25x', style: TextStyle(fontSize: 13, color: Colors.black))),
+                                          DropdownMenuItem<double>(value: 1.5, child: Text('1.5x', style: TextStyle(fontSize: 13, color: Colors.black))),
+                                          DropdownMenuItem<double>(value: 1.75, child: Text('1.75x', style: TextStyle(fontSize: 13, color: Colors.black))),
+                                          DropdownMenuItem<double>(value: 2.0, child: Text('2.0x', style: TextStyle(fontSize: 13, color: Colors.black))),
+                                        ],
+                                      ),
+                                    )),
+                                ],
+                              ),
+                              // Duration details and Speed tag
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 12),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                        "${formatTime(position)} / ${formatTime(duration)}",
+                                        style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                                    // Container(
+                                    //   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    //   decoration: BoxDecoration(
+                                    //     color: Colors.grey.shade200,
+                                    //     borderRadius: BorderRadius.circular(4),
+                                    //   ),
+                                    //   // child: Text("${currentSpeed}x", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                    // )
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 15),
+                            ],
+                          ),
+                        )),
+                    Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              CustomButton(
+                                height: 35,
+                                width: 80,
+                                verticalPadding: 0.0,
+                                borderRadius: 4,
+                                btnText: "CLOSE",
+                                btnColor: Colors.red,
+                                style: mozillaTextSemiBoldText(
+                                    color: Colors.white, fontSize: 14),
+                                onTap: () {
+                                  _audioPlayer.stop();
+                                  Get.back();
+                                },
+                              ),
+                            ]))
+                  ],
+                ))));
   }
 }
