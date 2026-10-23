@@ -420,8 +420,9 @@ class AppText {
   static get createreservation => "CRATE RESEVERVATION";
   static get saveAndClose => "SAVE & CLOSE";
   static get departmentType => "DEPARTMENT TYPE";
-  static get customerInvoices => "CUSTOMER INVOICE";
-  static get customerPreInvoices => "CUSTOMER PRE INVOICE";
+  static get customerInvoices => "CUSTOMER INVOICES";
+  static get customerPreInvoice => "CUSTOMER PRE INVOICE";
+  static get customerPreInvoices => "CUSTOMER PRE INVOICES";
   static get paid => "PAID";
   static get accountInvoice => "ACCOUNT INVOICE";
   static get create => "CREATE";

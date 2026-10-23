@@ -19,7 +19,7 @@ import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../dashboard_view/widgets/user_info_widget.dart';
 import '../controller/customer_invoice_controller.dart';
-import 'account_invoice_preview_screen.dart';
+import '../account_invoices/account_invoice_preview_screen.dart';
 import 'customer_invoice_view_screen.dart';
 
 class UpdateCustomerInvoiceScreen extends StatefulWidget {

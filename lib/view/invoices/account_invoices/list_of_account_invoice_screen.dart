@@ -6,7 +6,7 @@ import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/time_picker_widget.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/user_info_widget.dart';
-import 'package:dashboard_new1/view/invoices/Invoice/update_list_of_account_invoice.dart';
+import 'package:dashboard_new1/view/invoices/account_invoices/update_account_invoice.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

@@ -1,6 +1,6 @@
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/keyboard_checkBox_widget.dart';
-import 'package:dashboard_new1/view/invoices/Invoice/update_customer_invoice.dart';
+import 'package:dashboard_new1/view/invoices/customer_invoices/update_customer_invoice.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

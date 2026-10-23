@@ -79,7 +79,7 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
                       padding:
                       const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                       color: DynamicColors.gryClr.withOpacity(0.5),
-                      child: Text(AppText.customerPreInvoices, style: titleDesign()),
+                      child: Text(AppText.customerPreInvoice, style: titleDesign()),
                     ),
                   SizedBox(
                     height: 8,
