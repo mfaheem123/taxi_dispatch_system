@@ -28,6 +28,7 @@ import '../../customer/model/restricDriver.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../driver/create_driver_form/driver_form.dart';
 import '../driver/driver_app_features/driver_app_future_model.dart';
+import '../model/driver_attribute_model.dart';
 import '../model/create_driver_rent_model.dart';
 import '../model/driver_commission_alert_model.dart';
 import '../model/driver_commission_payment_model.dart';
@@ -174,6 +175,7 @@ class DriverController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>shift alert controllers
   List shiftList = <ShiftAlertClass>[].obs;
   List noteList = <NoteAlertClass>[].obs;
+  RxList<DriverAttribute> selectedAttributeList = <DriverAttribute>[].obs;
   final notesCtrl = TextEditingController();
 
   /// Rx String variable
@@ -382,6 +384,22 @@ class DriverController extends GetxController {
         baseData["notes"] = jsonEncode(allNotes);
       }
 
+      if (selectedAttributeList.isNotEmpty) {
+        List<Map<String, dynamic>> allAttributes = [];
+
+        for (final item in selectedAttributeList) {
+          final Map<String, dynamic> rowJson = {
+            "id": item.id,
+            "attribute_name": item.attributeName,
+            "short_name": item.shortName,
+          };
+
+          allAttributes.add(rowJson);
+        }
+
+        baseData["attributes"] = jsonEncode(allAttributes);
+      }
+
       // 📦 Step 5: Create FormData
       final formData = dio.FormData.fromMap(baseData);
 
@@ -439,6 +457,7 @@ class DriverController extends GetxController {
     vehicleInformation.value = false;
     shiftList.clear();
     noteList.clear();
+    selectedAttributeList.clear();
     companyType = null;
     singleDriverData = null;
     driverType = null;
@@ -1197,6 +1216,14 @@ class DriverController extends GetxController {
             createdItTime: action.createdBy,
           ));
         }
+      }
+
+      if (singleDriverData!.driver!.attributes != null &&
+          singleDriverData!.driver!.attributes!.isNotEmpty) {
+        selectedAttributeList.value = List<DriverAttribute>.from(
+            singleDriverData!.driver!.attributes!);
+      } else {
+        selectedAttributeList.clear();
       }
 
       final DashboardController _controller = Get.find();

@@ -5,22 +5,34 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../component/alert_close_button.dart';
+import '../component/datatable_widget.dart';
+import '../view/dashboard_view/booking_table.dart';
+import '../view/drivers_view/controller/driver_attribute_controller.dart';
+import '../view/drivers_view/controller/driver_controller.dart';
 
 class AttributeAlert {
-  static void show() {
-    final List<Map<String, dynamic>> attributes = [
-      {"id": 1, "name": "PET FRIENDLY", "code": "PF", "isSelected": false},
-      {"id": 2, "name": "WHEEL CHAIR", "code": "WC", "isSelected": false},
-    ];
+  static void show({Set<int>? initialSelectedIds, Function(Set<int>)? onSave}) {
+    final DriverAttributeController controller =
+        Get.isRegistered<DriverAttributeController>()
+            ? Get.find<DriverAttributeController>()
+            : Get.put(DriverAttributeController());
+
+    final DriverController driverController =
+        Get.isRegistered<DriverController>()
+            ? Get.find<DriverController>()
+            : Get.put(DriverController());
+
+    // Fetch driver attributes from API
+    controller.getDriverAttributes();
 
     Get.dialog(
       Dialog(
         insetPadding: const EdgeInsets.only(top: 40, left: 60, right: 60),
         backgroundColor: Colors.transparent,
         child: Align(
-          alignment: Alignment.topCenter,
+          alignment: Alignment.center,
           child: Container(
-            width: 450,
+            width: 500,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
@@ -35,7 +47,7 @@ class AttributeAlert {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 12),
                       decoration: BoxDecoration(
-                        color: DynamicColors.gryClr.withOpacity(0.5),
+                        color: DynamicColors.gryClr.withValues(alpha: 0.5),
                         borderRadius: const BorderRadius.vertical(
                             top: Radius.circular(10)),
                       ),
@@ -61,98 +73,135 @@ class AttributeAlert {
                     const Divider(height: 1, thickness: 1),
                     const SizedBox(height: 15),
 
-                    // Table Header & Rows
-                    Padding(padding: EdgeInsets.symmetric(horizontal: 20.0),
-                        child:  Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: const Color(0xFFE2E8F0)),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(6),
-                        child: Column(
-                          children: [
-                            // Header Row
-                            Container(
-                              height: 38,
-                              color: const Color(0xFFF8FAFC),
-                              child: Row(
-                                children: [
-                                  _buildCell("#", width: 45, isHeader: true),
-                                  _buildCell("ATTRIBUTE NAME", flex: 3, isHeader: true),
-                                  _buildCell("SHORT CODE", flex: 3, isHeader: true),
-                                  _buildCell("ACTION", width: 70, isHeader: true, showRightBorder: false, centerAlign: true),
-                                ],
+                    // Table Section using DatatableWidget
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Obx(() {
+                        if (controller.isLoading.value &&
+                            controller.allAttributes.isEmpty) {
+                          return const Padding(
+                            padding: EdgeInsets.all(30.0),
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        }
+
+                        if (controller.allAttributes.isEmpty) {
+                          return Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Center(
+                              child: Text(
+                                "NO ATTRIBUTES FOUND",
+                                style: mozillaTextRegularText(
+                                    fontSize: 13, color: Colors.grey),
                               ),
                             ),
-                            const Divider(height: 1, color: Color(0xFFE2E8F0)),
+                          );
+                        }
 
-                            // Table Rows
-                            ListView.separated(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: attributes.length,
-                              separatorBuilder: (context, index) => const Divider(height: 1, color: Color(0xFFE2E8F0)),
-                              itemBuilder: (context, index) {
-                                final item = attributes[index];
-                                return SizedBox(
-                                  height: 40,
-                                  child: Row(
-                                    children: [
-                                      _buildCell("${item['id']}", width: 45),
-                                      _buildCell(item['name'], flex: 3),
-                                      _buildCell(item['code'], flex: 3),
-                                      // Action Checkbox Cell
-                                      SizedBox(
-                                        width: 70,
-                                        child: Center(
-                                          child: Transform.scale(
-                                            scale: 0.8,
-                                            child: Checkbox(
-                                              value: item['isSelected'],
-                                              shape: const CircleBorder(),
-                                              activeColor: DynamicColors.primaryClr,
-                                              side: const BorderSide(color: Color(0xFFCBD5E1), width: 1.5),
-                                              onChanged: (val) {
-                                                setState(() {
-                                                  item['isSelected'] = val ?? false;
-                                                });
-                                              },
-                                            ),
-                                          ),
+                        return SizedBox(
+                          width: double.infinity,
+                          child: DatatableWidget(
+                            headingRowHeight: 38,
+                            dataRowMinHeight: 40,
+                            dataRowMaxHeight: 40,
+                            columns: [
+                              buildHeaderWithSearch(
+                                title: "ATTRIBUTE NAME",
+                                removeSearching: true,
+                              ),
+                              buildHeaderWithSearch(
+                                title: "SHORT CODE",
+                                removeSearching: true,
+                              ),
+                              buildHeaderWithSearch(
+                                title: "ACTION",
+                                removeSearching: true,
+                              ),
+                            ],
+                            totalRow: controller.allAttributes.length,
+                            rows: controller.allAttributes.asMap().entries.map((entry) {
+                              final item = entry.value;
+                              final itemId = item.id;
+                              final isSelected = driverController.selectedAttributeList
+                                  .any((a) => a.id == itemId);
+
+                              return DataRow(
+                                cells: [
+                                  DataCell(Center(
+                                      child: Text(
+                                          (item.attributeName ?? '').toUpperCase()))),
+                                  DataCell(Center(
+                                      child:
+                                          Text((item.shortName ?? '').toUpperCase()))),
+                                  DataCell(
+                                    Center(
+                                      child: Transform.scale(
+                                        scale: 0.8,
+                                        child: Checkbox(
+                                          value: isSelected,
+                                          shape: const CircleBorder(),
+                                          activeColor: DynamicColors.primaryClr,
+                                          side: const BorderSide(
+                                              color: Color(0xFFCBD5E1), width: 1.5),
+                                          onChanged: (val) {
+                                            setState(() {
+                                              if (val == true) {
+                                                if (!driverController.selectedAttributeList
+                                                    .any((a) => a.id == itemId)) {
+                                                  driverController.selectedAttributeList
+                                                      .add(item);
+                                                }
+                                              } else {
+                                                driverController.selectedAttributeList
+                                                    .removeWhere((a) => a.id == itemId);
+                                              }
+                                            });
+                                          },
                                         ),
                                       ),
-                                    ],
+                                    ),
                                   ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    )),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                        );
+                      }),
+                    ),
                     const SizedBox(height: 20),
 
                     // Footer
                     Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              CustomButton(
-                                width: 80,
-                                height: 28,
-                                verticalPadding: 0.0,
-                                btnText: "CLOSE",
-                                btnColor: Colors.red,
-                                borderRadius: 4,
-                                style: mozillaTextSemiBoldText(
-                                    fontSize: 13,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                                onTap: () => Get.back(),
-                              )])),
-
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          CustomButton(
+                            width: 80,
+                            height: 28,
+                            verticalPadding: 0.0,
+                            btnText: "CLOSE",
+                            btnColor: Colors.red,
+                            borderRadius: 4,
+                            style: mozillaTextSemiBoldText(
+                                fontSize: 13,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                            onTap: () {
+                              if (onSave != null) {
+                                onSave(driverController.selectedAttributeList
+                                    .where((e) => e.id != null)
+                                    .map((e) => e.id!)
+                                    .toSet());
+                              }
+                              Get.back();
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 );
               },
@@ -161,37 +210,5 @@ class AttributeAlert {
         ),
       ),
     );
-  }
-
-  static Widget _buildCell(
-      String text, {
-        double? width,
-        int flex = 1,
-        bool isHeader = false,
-        bool showRightBorder = true,
-        bool centerAlign = false,
-      }) {
-    final cellChild = Container(
-      decoration: BoxDecoration(
-        border: showRightBorder
-            ? const Border(right: BorderSide(color: Color(0xFFE2E8F0), width: 1))
-            : null,
-      ),
-      alignment: centerAlign ? Alignment.center : Alignment.centerLeft,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Text(
-        text,
-        style: outFitRegular(
-          fontSize: 12,
-          fontWeight: isHeader ? FontWeight.bold : FontWeight.w600,
-          color: const Color(0xFF1E293B),
-        ),
-      ),
-    );
-
-    if (width != null) {
-      return SizedBox(width: width, child: cellChild);
-    }
-    return Expanded(flex: flex, child: cellChild);
   }
 }

@@ -8,6 +8,8 @@ import 'dart:convert';
 
 import 'package:intl/intl.dart';
 
+import '../../view/drivers_view/model/driver_attribute_model.dart';
+
 SingleDriverModel singleDriverModelFromJson(String str) => SingleDriverModel.fromJson(json.decode(str));
 
 String singleDriverModelToJson(SingleDriverModel data) => json.encode(data.toJson());
@@ -85,6 +87,7 @@ class Driver {
   dynamic lastBooking;
   dynamic lastVehicle;
   List<Note>? notes;
+  List<DriverAttribute>? attributes;
   dynamic zone;
   dynamic rank;
   dynamic waitingTime;
@@ -161,6 +164,7 @@ class Driver {
     this.lastBooking,
     this.lastVehicle,
     this.notes,
+    this.attributes,
     this.zone,
     this.rank,
     this.waitingTime,
@@ -237,7 +241,12 @@ class Driver {
     mobileDeviceId: json["mobile_device_id"],
     lastBooking: json["last_booking"],
     lastVehicle: json["last_vehicle"],
-    notes: List<Note>.from(json["notes"].map((x) => Note.fromJson(x))),
+    notes: json["notes"] == null
+        ? []
+        : List<Note>.from(json["notes"].map((x) => Note.fromJson(x))),
+    attributes: (json["attributes"] == null || json["attributes"].isEmpty)
+        ? []
+        : List<DriverAttribute>.from(json["attributes"].map((x) => DriverAttribute.fromJson(x))),
     zone: json["zone"],
     rank: json["rank"],
     waitingTime: json["waiting_time"],
@@ -316,7 +325,8 @@ class Driver {
     "mobile_device_id": mobileDeviceId,
     "last_booking": lastBooking,
     "last_vehicle": lastVehicle,
-    "notes": List<dynamic>.from(notes!.map((x) => x.toJson())),
+    "notes": notes == null ? [] : List<dynamic>.from(notes!.map((x) => x.toJson())),
+    "attributes": attributes == null ? [] : List<dynamic>.from(attributes!.map((x) => x.toJson())),
     "zone": zone,
     "rank": rank,
     "waiting_time": waitingTime,
