@@ -144,13 +144,29 @@ class _SmsSettingsScreenState extends State<SmsSettingsScreen> {
                                     ? "${msg.date!.year}-${msg.date!.month.toString().padLeft(2, '0')}-${msg.date!.day.toString().padLeft(2, '0')}"
                                     : '';
 
+                                String cleanSms = (msg.sms ?? '').replaceAll(r'\n', ' ').replaceAll('\n', ' ');
                                 String statusText = (msg.status?.toLowerCase() == 'sent')
                                         ? 'DELIVERED'
                                         : (msg.status?.toUpperCase() ?? 'DELIVERED');
 
                                 return DataRow(cells: [
                                   DataCell(Center(child: Text((msg.number ?? '').toUpperCase()))),
-                                  DataCell(Center(child: Text((msg.sms ?? '').toUpperCase()))),
+                                  DataCell(
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+                                      child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          cleanSms.toUpperCase(),
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.black87,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                   DataCell(Center(child: Text(formattedDate))),
                                   DataCell(Center(child: Text(msg.time ?? ''))),
                                   DataCell(
