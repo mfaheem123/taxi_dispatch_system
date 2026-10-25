@@ -13,6 +13,7 @@ import '../../administration/model/list_subsDiary.dart';
 import '../../drivers_view/model/driver_commission_payment_model.dart';
 import '../model/call_recording_model.dart';
 import '../model/company_configuration_model.dart';
+import '../model/email_tracking_model.dart';
 import '../model/get_clear_booking_model.dart';
 import '../model/get_document_number_model.dart';
 import '../model/select_templete_type.dart';
@@ -1017,6 +1018,53 @@ class SettingController extends GetxController {
     getSmsTracking();
   }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo sms tracking Work
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo email tracking Work
+
+  RxString searchEmail = ''.obs;
+  RxString searchSubject = ''.obs;
+  RxString searchEmailDate = ''.obs;
+  RxString searchEmailTime = ''.obs;
+
+  EmailTrackingModel? emailTrackingModel;
+  bool isLoadingEmail = false;
+  /// >>>>>>>>>>>>>>>>>>>>> Pagination Work
+  var currentEmailPage = 1.obs;
+  var totalEmailPages = 1.obs;
+  final int emailLimit = 20;
+
+  getEmailTracking() async {
+    isLoadingEmail = true;
+    update();
+
+    var response = await Api().get("emails/tracking", sendCompanyId: true,
+        queryParameters: {
+      'page': currentEmailPage.value,
+      'limit': emailLimit,
+          'email': searchEmail.value.toLowerCase(),
+          'subject': searchSubject.value.toLowerCase(),
+          'date': searchEmailDate.value.toLowerCase(),
+          'time': searchEmailTime.value.toLowerCase(),
+    }
+    );
+
+    print("API Response Code: ${response.statusCode}");
+    print("API Raw Data: ${response.data}");
+    if (response.statusCode == 200) {
+      emailTrackingModel = EmailTrackingModel.fromJson(response.data);
+      totalEmailPages.value = emailTrackingModel?.totalPages?? 1;
+
+      isLoadingEmail = false;
+      update();
+    }
+  }
+
+  // -----------Pagination function
+  void onPageEmail(int page) {
+    currentEmailPage.value = page;
+    getEmailTracking();
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo email tracking Work
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo call recordings Work
   Rx<DateTime> callFromDate = DateTime.now().obs;
   Rx<DateTime> callToDate = DateTime.now().obs;
