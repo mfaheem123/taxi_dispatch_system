@@ -137,10 +137,15 @@ class LabeledZoneDropdown extends StatelessWidget implements LabelledField {
 /// Dropdown bound to a list of model objects (vehicle types, accounts,
 /// drivers, ...) and to whichever controller field holds the selection.
 ///
-/// Stateless for the same reason as [LabeledZoneDropdown]: it must always show
-/// what the bound field currently holds, since that field is also changed from
-/// outside (CLEAR, a booking being loaded, a journey-type reset).
-class LabeledObjectDropdown<T> extends StatelessWidget implements LabelledField {
+/// Always shows what the bound field currently holds, since that field is also
+/// changed from outside (CLEAR, a booking being loaded, a journey-type reset).
+///
+/// That includes a pick the parent REFUSES — JOUR before PICK and DROP are
+/// filled. DropdownButtonFormField stores the picked item in its own state and
+/// only re-seeds when `initialValue` changes, which a refusal never does, so
+/// the rejected item stayed on screen. After each pick this checks whether the
+/// parent took it and, if not, rebuilds the field from the bound value.
+class LabeledObjectDropdown<T> extends StatefulWidget implements LabelledField {
   @override
   final String label;
   final List<T> items;
@@ -160,19 +165,61 @@ class LabeledObjectDropdown<T> extends StatelessWidget implements LabelledField 
       this.hint});
 
   @override
+  State<LabeledObjectDropdown<T>> createState() =>
+      _LabeledObjectDropdownState<T>();
+}
+
+class _LabeledObjectDropdownState<T> extends State<LabeledObjectDropdown<T>> {
+  /// Bumped to throw away the field's internal state after a refused pick.
+  int _generation = 0;
+
+  /// Kept across those rebuilds so a keyboard user stays on the field.
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  // A value missing from `items` (list reloading, nothing loaded yet) would
+  // make DropdownButtonFormField assert — show no selection instead.
+  T? get _selected =>
+      widget.value != null && widget.items.contains(widget.value)
+          ? widget.value
+          : null;
+
+  void _onChanged(T? picked) {
+    widget.onChanged?.call(picked);
+    // The parent applies the pick with setState, so its answer is only
+    // visible in the next build.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _selected == picked) return;
+      final hadFocus = _focusNode.hasFocus;
+      setState(() => _generation++);
+      if (hadFocus) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _focusNode.requestFocus();
+        });
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // A value missing from `items` (list reloading, nothing loaded yet) would
-    // make DropdownButtonFormField assert — show no selection instead.
-    final selected = value != null && items.contains(value) ? value : null;
+    final items = widget.items;
+    final itemLabel = widget.itemLabel;
     return FieldShell(
-      label: label,
+      label: widget.label,
       child: DropdownButtonFormField<T>(
-        initialValue: selected,
+        key: ValueKey(_generation),
+        focusNode: _focusNode,
+        initialValue: _selected,
         isExpanded: true,
         isDense: true,
         itemHeight: null,
         iconSize: 16,
-        hint: Text(hint ?? 'SELECT', style: kFormDropdownHintStyle),
+        hint: Text(widget.hint ?? 'SELECT', style: kFormDropdownHintStyle),
         decoration: const InputDecoration(
           contentPadding:
               EdgeInsets.symmetric(horizontal: 8, vertical: Density.dropPadY),
@@ -185,7 +232,7 @@ class LabeledObjectDropdown<T> extends StatelessWidget implements LabelledField 
               child: Text(itemLabel(i), overflow: TextOverflow.ellipsis),
             ),
         ],
-        onChanged: onChanged,
+        onChanged: widget.onChanged == null ? null : _onChanged,
       ),
     );
   }

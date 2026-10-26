@@ -328,11 +328,12 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
   }
 
   void _onJourneyChanged(JourneyTypeObject? v) {
-    if (controller.pickupController.text.isEmpty ||
-        controller.dropOffController.text.isEmpty) {
+    // trim(): a field holding only spaces is still empty.
+    if (controller.pickupController.text.trim().isEmpty ||
+        controller.dropOffController.text.trim().isEmpty) {
       BotToast.showText(text: "Please select pickup and drop location first");
-      // Rebuild so the dropdown snaps back to the controller's value.
-      setState(() {});
+      // selectJourneyTypeValue is left untouched, so LabeledObjectDropdown
+      // sees the pick was refused and puts the old journey type back.
       return;
     }
     setState(() {
