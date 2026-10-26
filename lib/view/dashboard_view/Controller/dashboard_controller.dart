@@ -34,6 +34,7 @@ import '../models/all_addresses_model.dart';
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
 import '../../../controller/fob_controller.dart';
 import '../models/checkDriverSinBinModel.dart';
+import '../../drivers_view/model/driver_attribute_model.dart';
 import '../models/dashboard_table_model.dart' hide Employee;
 import '../models/jobs_details_model.dart';
 import '../models/tracking_drivers_model.dart';
@@ -2423,7 +2424,7 @@ class DashboardController extends GetxController {
   void startBookingCountTimer() {
     _bookingCountTimer?.cancel();
     _bookingCountTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
-      await getBookingCounts();
+      // await getBookingCounts();
     });
   }
 
@@ -2595,7 +2596,7 @@ class DashboardController extends GetxController {
       _checkBookingsTimeAndPlaySound(dashboardTableModelData?.data ?? []);
       _timer?.cancel();
       _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-        getDashboardTableData(tableId: selectedTabId);
+        // getDashboardTableData(tableId: selectedTabId);
       });
     }
 
@@ -3200,6 +3201,8 @@ class DashboardController extends GetxController {
   List childSeatList = [];
   List extraFaresList = [];
   List extraFaresReturnList = [];
+  RxList<DriverAttribute> selectedBookingAttributes = <DriverAttribute>[].obs;
+  List bookingAttributesList = [];
   List viaPostList = [];
   List viaReturnPostList = [];
   List multiReservationTemp = [];
@@ -3386,6 +3389,8 @@ class DashboardController extends GetxController {
       if (restrictedDrivers.isNotEmpty)
         'restricted_drivers': jsonEncode(restrictedDrivers),
       if (childSeatList.isNotEmpty) 'child_seat': jsonEncode(childSeatList),
+      if (bookingAttributesList.isNotEmpty)
+        'attributes': jsonEncode(bookingAttributesList),
       if (parkingChargesController.text.isNotEmpty)
         'parking_charges': parkingChargesController.text,
       if (congestionChargesController.text.isNotEmpty)
@@ -3549,6 +3554,19 @@ class DashboardController extends GetxController {
       }
     }
 
+    if (selectedBookingAttributes.isNotEmpty) {
+      bookingAttributesList.clear();
+      for (var ele in selectedBookingAttributes) {
+        bookingAttributesList.add({
+          "id": ele.id,
+          "attribute_name": ele.attributeName,
+          "short_name": ele.shortName,
+        });
+      }
+    } else {
+      bookingAttributesList.clear();
+    }
+
     if (multiReservationList.isNotEmpty) {
       for (var element in multiReservationList) {
         DateTime parsedDate = DateFormat('yyyy-M-d').parse(element.startDate!);
@@ -3678,6 +3696,8 @@ class DashboardController extends GetxController {
     childSeatList.clear();
     extraFaresList.clear();
     extraFaresReturnList.clear();
+    selectedBookingAttributes.clear();
+    bookingAttributesList.clear();
     driversList.clear();
     childSeatAlert.clear();
     controllerAlert.clear();

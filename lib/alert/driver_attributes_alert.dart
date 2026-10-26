@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../component/color.dart';
 import '../component/datatable_widget.dart';
 import '../component/textStyle.dart';
+import '../view/dashboard_view/Controller/dashboard_controller.dart';
 import '../view/dashboard_view/booking_table.dart';
 import '../view/drivers_view/controller/driver_attribute_controller.dart';
 
@@ -20,7 +21,10 @@ class _DriverAttributesAlertState extends State<DriverAttributesAlert> {
           ? Get.find<DriverAttributeController>()
           : Get.put(DriverAttributeController());
 
-  final Set<int> selectedIds = {};
+  final DashboardController dashController =
+      Get.isRegistered<DashboardController>()
+          ? Get.find<DashboardController>()
+          : Get.put(DashboardController());
 
   @override
   void initState() {
@@ -73,14 +77,8 @@ class _DriverAttributesAlertState extends State<DriverAttributesAlert> {
             return SizedBox(
               width: double.infinity,
               child: DatatableWidget(
-                headingRowHeight: 38,
-                dataRowMinHeight: 40,
-                dataRowMaxHeight: 40,
                 columns: [
-                  buildHeaderWithSearch(
-                    title: "#",
-                    removeSearching: true,
-                  ),
+
                   buildHeaderWithSearch(
                     title: "ATTRIBUTE NAME",
                     removeSearching: true,
@@ -96,17 +94,18 @@ class _DriverAttributesAlertState extends State<DriverAttributesAlert> {
                 ],
                 totalRow: controller.allAttributes.length,
                 rows: controller.allAttributes.asMap().entries.map((entry) {
-                  final index = entry.key;
+
                   final item = entry.value;
                   final itemId = item.id;
-                  final isSelected =
-                      itemId != null && selectedIds.contains(itemId);
+                  final isSelected = itemId != null &&
+                      dashController.selectedBookingAttributes
+                          .any((a) => a.id == itemId);
 
                   return DataRow(
                     cells: [
-                      DataCell(Center(child: Text("${itemId ?? (index + 1)}"))),
-                      DataCell(Text((item.attributeName ?? '').toUpperCase())),
-                      DataCell(Text((item.shortName ?? '').toUpperCase())),
+
+                      DataCell(Center(child: Text((item.attributeName ?? '').toUpperCase()))),
+                      DataCell(Center(child: Text((item.shortName ?? '').toUpperCase()))),
                       DataCell(
                         Center(
                           child: Transform.scale(
@@ -131,9 +130,15 @@ class _DriverAttributesAlertState extends State<DriverAttributesAlert> {
                                 setState(() {
                                   if (itemId != null) {
                                     if (val == true) {
-                                      selectedIds.add(itemId);
+                                      if (!dashController
+                                          .selectedBookingAttributes
+                                          .any((a) => a.id == itemId)) {
+                                        dashController.selectedBookingAttributes
+                                            .add(item);
+                                      }
                                     } else {
-                                      selectedIds.remove(itemId);
+                                      dashController.selectedBookingAttributes
+                                          .removeWhere((a) => a.id == itemId);
                                     }
                                   }
                                 });
