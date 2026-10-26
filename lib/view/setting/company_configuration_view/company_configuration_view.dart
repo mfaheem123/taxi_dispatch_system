@@ -2,6 +2,7 @@ import 'package:dashboard_new1/view/setting/company_configuration_view/general_c
 import 'package:dashboard_new1/view/setting/company_configuration_view/payment_getways_view.dart';
 import 'package:dashboard_new1/view/setting/company_configuration_view/sms_configuration_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../component/color.dart';
@@ -171,8 +172,16 @@ class _CompanyConfigurationViewState extends State<CompanyConfigurationView> {
     final bool isSmallScreen = Get.width < 1024;
 
     return Focus(
-    onKeyEvent: (node, event) {
-      return KeyEventResult.ignored;
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent &&
+            (event.logicalKey == LogicalKeyboardKey.enter ||
+                event.logicalKey == LogicalKeyboardKey.space)) {
+          setState(() {
+            selectedTabIndex = index;
+          });
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
       },
        child: Builder(builder: (context) {
      final bool isFocused = Focus.of(context).hasFocus;
@@ -183,6 +192,8 @@ class _CompanyConfigurationViewState extends State<CompanyConfigurationView> {
           selectedTabIndex = index;
         });
       },
+      borderRadius: BorderRadius.circular(4),
+      canRequestFocus: false,
       child: Container(
         padding: EdgeInsets.symmetric(
           horizontal: isSmallScreen ? 16.0 : 24.0,
