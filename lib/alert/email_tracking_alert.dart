@@ -42,10 +42,8 @@ class EmailContentAlert extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.email_outlined, color: DynamicColors.primaryClr),
-                  const SizedBox(width: 10),
                   Text(
-                    "EMAIL CONTENT",
+                    "CONTENT",
                     style: mozillaTextSemiBoldText(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -72,7 +70,7 @@ class EmailContentAlert extends StatelessWidget {
                   child: blocks.isEmpty
                       ? Text(
                     "No content available",
-                    style: mozillaTextRegularText(
+                    style: outFitRegular(
                       fontSize: 14,
                       color: Colors.black87,
                     ),

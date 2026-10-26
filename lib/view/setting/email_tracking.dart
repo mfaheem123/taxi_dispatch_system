@@ -127,7 +127,7 @@ class _EmailTrackingScreenState extends State<EmailTrackingScreen> {
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                                       decoration: BoxDecoration(
-                                        color: Colors.green,
+                                        color: DynamicColors.primaryClr,
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                       child: Text(

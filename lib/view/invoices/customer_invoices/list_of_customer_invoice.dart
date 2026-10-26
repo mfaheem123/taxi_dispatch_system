@@ -4,6 +4,8 @@ import 'package:dashboard_new1/view/invoices/customer_invoices/update_customer_i
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../alert/update_customer_invoice_email.dart';
+import '../../../component/action_icon_button.dart';
 import '../../../component/color.dart';
 import '../../../component/datatable_widget.dart';
 import '../../../component/textStyle.dart';
@@ -174,11 +176,7 @@ class _InvoiceListState extends State<InvoiceList> {
                                   Center(child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          side: const BorderSide(color: Colors.transparent),
-                                          padding: EdgeInsets.zero,
-                                        ),
+                                      ActionIconButton(
                                         onPressed: () {
                                           Get.back();
                                           controller
@@ -208,18 +206,29 @@ class _InvoiceListState extends State<InvoiceList> {
                                           }
                                           controller.update();
                                         },
-                                        child: Icon(Icons.edit_calendar, size: 28, color: DynamicColors.primaryClr),
+                                       icon: Icons.edit_calendar, color: DynamicColors.primaryClr,
                                       ),
-                                      OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          side: const BorderSide(color: Colors.transparent),
-                                          padding: EdgeInsets.zero,
-                                        ),
-                                        onPressed: () {
-                                          controller.customerInvoiceDelete(invoice.id);
-                                        },
-                                        child: Icon(Icons.delete_forever, size: 28, color: DynamicColors.redClr),
-                                      ),
+                                      Text("|"),
+                                        ActionIconButton(
+                                            icon: Icons.delete,
+                                            color: Colors.red,
+                                          onPressed: () {
+                                            controller.customerInvoiceDelete(invoice.id);
+                                          }),
+                                      Text("|"),
+                                      ActionIconButton(
+                                          icon: Icons.picture_as_pdf,
+                                          color: Colors.black,
+                                          onPressed: () {
+                                            controller.downloadPdfFile();
+                                          }),
+                                      Text("|"),
+                                      ActionIconButton(
+                                          icon: Icons.mail,
+                                          color: Colors.black,
+                                          onPressed: () {
+                                            EmailCustomerInvoiceAlert.show();
+                                          }),
                                     ],
                                   ),
                                   )),

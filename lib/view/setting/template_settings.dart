@@ -112,7 +112,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
               : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 50),
+              SizedBox(height: 20),
               Align(alignment: Alignment.center,
                   child: Text(AppText.templateSettings, style: titleDesign())),
               SizedBox(height: 15),
@@ -164,7 +164,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                             },
                                         ),
                                       CustomDropdownField<Template>(
-                                        label: "SELECT USER",
+                                        label: "SELECT TEMPLATE",
                                         items: controller.templeteByTypeMOdel?.templates ?? [],
                                         // value: controller.templeteByTypeMOdel?.templates?.contains(controller.template) == true ? controller.template : null,
                                         value: controller.template,
