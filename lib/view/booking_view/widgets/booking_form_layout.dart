@@ -503,7 +503,8 @@ class SectionCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: Density.cardGap),
       padding: const EdgeInsets.all(Density.cardPad),
       decoration: BoxDecoration(
-        color: const Color(0xFFF7F7F7),
+        color: Colors.white,
+        // color: const Color(0xFFF7F7F7),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: const Color(0xFFE0E0E0)),
       ),

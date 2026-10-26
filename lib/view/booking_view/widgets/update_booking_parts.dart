@@ -501,7 +501,7 @@ class _LabeledActionButtonState extends State<LabeledActionButton> {
           onFocusChange: (has) {
             if (has != _focused) setState(() => _focused = has);
           },
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(6),
           focusColor: Colors.transparent,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 140),
@@ -510,7 +510,7 @@ class _LabeledActionButtonState extends State<LabeledActionButton> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: widget.background,
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(6),
               border: Border.all(
                 color: _focused ? ring : UpdateFormPalette.border,
                 width: _focused ? fieldFocusWidth : fieldBorderWidth,

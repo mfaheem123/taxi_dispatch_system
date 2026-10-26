@@ -55,7 +55,7 @@ import 'widgets/labeled_icon_actions.dart';
 import 'widgets/labeled_input.dart';
 import 'widgets/labeled_mobile_field.dart';
 import 'widgets/labeled_time_picker.dart';
-import 'widgets/update_booking_parts.dart' show LabeledActionButton;
+import 'widgets/update_booking_parts.dart' show LabeledActionButton, UpdateFormPalette;
 
 // ---------------------------------------------------------------------------
 // The screen itself.
@@ -632,10 +632,13 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                       keyboardType: TextInputType.phone),
                   desktopPerRow: 5),
               SpanField(
+                  widths: 150,
                   LabeledActionButton(
                     text: 'PICK BOOKING',
                     icon: Icons.search,
                     onPressed: _showPickBooking,
+                    background: UpdateFormPalette.green,
+                    foreground: UpdateFormPalette.chip,
                   ),
                   id: 'PICK BOOKING',
                   desktopPerRow: 5),
