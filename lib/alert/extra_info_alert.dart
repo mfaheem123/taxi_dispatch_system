@@ -69,7 +69,7 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
           // Follows whichever form opened the dialog.
           tag: dashBoardCntrl.formTag,
           builder: (controller) {
-            final bool isReturnTrip = controller.jourValue == 'W/R';
+            final bool isReturnTrip = controller.jourValue == 'R/N';
             final double dialogWidth = isReturnTrip ? 950.0 : 500.0;
 
             return SizedBox(
