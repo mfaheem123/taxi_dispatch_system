@@ -16,6 +16,10 @@ abstract class Routes {
   static const lostProperty = _Paths.lostProperty;
   static const receiptDetails = _Paths.receiptDetails;
   static const wallboardScreen = _Paths.wallboardScreen;
+  static const customerInvoiceView = _Paths.customerInvoiceView;
+  static const accountInvoiceView = _Paths.accountInvoiceView;
+  static const driverCommissionView = _Paths.driverCommissionView;
+  static const driverRentView = _Paths.driverRentView;
 }
 
 abstract class _Paths {
@@ -33,4 +37,8 @@ abstract class _Paths {
   static const lostProperty = '/LostProperty';
   static const receiptDetails = '/view/receipt';
   static const wallboardScreen = '/Wallboard';
+  static const customerInvoiceView = '/view/customerInvoice';
+  static const accountInvoiceView = '/view/accountInvoice';
+  static const driverCommissionView = '/view/driverCommission';
+  static const driverRentView = '/view/driverRent';
 }

@@ -145,6 +145,11 @@ class CustomerInvoiceViewScreen extends StatelessWidget {
                     {"EMAIL": (accountData?.email ?? "").toUpperCase()},
                     {"MOBILE": accountData?.mobile ?? ""},
                     {"TELEPHONE": accountData?.telephone ?? ""},
+                    {
+                      "PERIOD":
+                          "(${mainData.fromDate.toString().split(' ').first} TO ${mainData.toDate.toString().split(' ').first})"
+
+                    },
                   ]),
                   _infoColumn([
                     {"CUSTOMER": "(${mainData.customer?.name?.toString() ?? ""})"},
@@ -155,25 +160,6 @@ class CustomerInvoiceViewScreen extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 15),
-            Text.rich(
-              TextSpan(
-                children: [
-                  const TextSpan(
-                      text: "PERIOD: (",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)
-                  ),
-                  TextSpan(
-                      text: "${mainData.fromDate.toString().split(' ').first} TO ${mainData.toDate.toString().split(' ').first}",
-                      style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 16)
-                  ),
-                  const TextSpan(
-                      text: ")",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)
-                  ),
-                ],
-              ),
-            ),
             const SizedBox(height: 15),
 
             // Main Table
