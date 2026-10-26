@@ -7,6 +7,7 @@ class ActionIconButton extends StatelessWidget {
   final VoidCallback onPressed;
   final double size;
   final double? order;
+  final FocusNode? focusNode;
 
   const ActionIconButton({
     super.key,
@@ -15,15 +16,19 @@ class ActionIconButton extends StatelessWidget {
     required this.onPressed,
     this.size = 18,
     this.order,
+    this.focusNode,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Single tab stop: this Focus handles keyboard + highlight, the InkWell is
+    // mouse-only so Tab doesn't stop on the same icon twice.
     Widget btn = Focus(
+      focusNode: focusNode,
       onKeyEvent: (node, event) {
         if (event is KeyDownEvent &&
             (event.logicalKey == LogicalKeyboardKey.enter ||
-             event.logicalKey == LogicalKeyboardKey.space)) {
+                event.logicalKey == LogicalKeyboardKey.space)) {
           onPressed();
           return KeyEventResult.handled;
         }
@@ -34,6 +39,7 @@ class ActionIconButton extends StatelessWidget {
           final isFocused = Focus.of(context).hasFocus;
           return InkWell(
             onTap: onPressed,
+            canRequestFocus: false,
             borderRadius: BorderRadius.circular(4),
             child: Container(
               padding: const EdgeInsets.all(5),
