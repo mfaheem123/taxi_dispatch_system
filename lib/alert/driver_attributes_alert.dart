@@ -115,8 +115,18 @@ class _DriverAttributesAlertState extends State<DriverAttributesAlert> {
                               value: isSelected,
                               shape: const CircleBorder(),
                               activeColor: DynamicColors.primaryClr,
-                              side: const BorderSide(
-                                  color: Color(0xFFCBD5E1), width: 1.5),
+                              // Tab focus: thick primary outline plus a tinted
+                              // halo, instead of the faint default overlay.
+                              focusColor:
+                                  DynamicColors.primaryClr.withValues(alpha: 0.25),
+                              side: WidgetStateBorderSide.resolveWith(
+                                (states) => states.contains(WidgetState.focused)
+                                    ? BorderSide(
+                                        color: DynamicColors.primaryClr,
+                                        width: 2.5)
+                                    : const BorderSide(
+                                        color: Color(0xFFCBD5E1), width: 1.5),
+                              ),
                               onChanged: (val) {
                                 setState(() {
                                   if (itemId != null) {

@@ -3182,7 +3182,10 @@ class DashboardController extends GetxController {
     final now = DateTime.now();
     final nowTime = DateFormat('HH:mm').format(now);
     if (!pickUpDatePicked) pickUpDate = now;
-    if (!pickUpTimePicked) pickUpTimeController.text = nowTime;
+    // An airport pickup's time is left blank on purpose; don't refill it.
+    if (!pickUpTimePicked && !isAirportResponse.value) {
+      pickUpTimeController.text = nowTime;
+    }
     if (!pickUpDateReturnPicked) pickUpDateReturn = now;
     if (!pickUpTimeReturnPicked) pickUpTimeControllerReturn.text = nowTime;
     if (!arrivalTimePicked) arrivalTimeController.text = nowTime;

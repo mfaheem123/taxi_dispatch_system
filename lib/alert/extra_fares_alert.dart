@@ -205,6 +205,10 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
               LengthLimitingTextInputFormatter(2),
             ],
             borderRadius: 4,
+            width: double.infinity,
+            // Grey at rest, thick primary when Tab lands on it.
+            idleBorderColor: Colors.grey.shade400,
+            borderWidth: 2.5,
             prefixIcon: Container(
               width: 22,
               margin: const EdgeInsets.only(right: 8),
@@ -214,11 +218,10 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                   topLeft: Radius.circular(4),
                   bottomLeft: Radius.circular(4),
                 ),
+                // Divider only: the field's own outline (grey at rest,
+                // primary when focused) already frames the £ box.
                 border: Border(
-                  left: BorderSide(color: DynamicColors.primaryClr),
-                  right: BorderSide(color: DynamicColors.primaryClr),
-                  top: BorderSide(color: DynamicColors.primaryClr),
-                  bottom: BorderSide(color: DynamicColors.primaryClr),
+                  right: BorderSide(color: Colors.grey.shade400),
                 ),
               ),
               child: Center(

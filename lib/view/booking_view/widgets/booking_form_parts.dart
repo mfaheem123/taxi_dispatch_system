@@ -44,26 +44,39 @@ class TopTabs extends StatelessWidget {
   const TopTabs({super.key, this.tabs = _defaults});
   @override
   Widget build(BuildContext context) {
-    Widget tab(TopTab t) => Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: t.onTap,
-        borderRadius: BorderRadius.circular(6),
-        child: tabBody(t.keyLabel, t.label, active: t.active),
-      ),
-    );
+    // 0.1, 0.2, … — ahead of every field, so Tab starts on the tab strip, as
+    // on the dashboard form. Unordered, OrderedTraversalPolicy put them after
+    // SAVE.
+    Widget tab(int i, TopTab t) => FocusTraversalOrder(
+          order: NumericFocusOrder((i + 1) / 10),
+          child: _TopTabButton(t, this),
+        );
     return Align(
       alignment: Alignment.centerLeft,
-      child: Wrap(children: [for (final t in tabs) tab(t)]),
+      child: Wrap(children: [for (final (i, t) in tabs.indexed) tab(i, t)]),
     );
   }
 
-  Widget tabBody(String key, String label, {bool active = false}) => Container(
+  Widget tabBody(String key, String label,
+          {bool active = false, bool focused = false}) =>
+      Container(
           margin: const EdgeInsets.only(right: 6, bottom: 6),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          // 10 / 5 less the border, which is always drawn (transparent at
+          // rest) so focusing a tab doesn't resize it.
+          padding: const EdgeInsets.symmetric(
+              horizontal: 10 - fieldFocusWidth, vertical: 5 - fieldFocusWidth),
           decoration: BoxDecoration(
             color: active ? const Color(0xFF312E81) : const Color(0xFFEDEDED),
             borderRadius: BorderRadius.circular(6),
+            // Focus shows as a border, like every field on the form.
+            border: Border.all(
+              color: focused
+                  ? focusRingOn(active
+                      ? const Color(0xFF312E81)
+                      : const Color(0xFFEDEDED))
+                  : Colors.transparent,
+              width: fieldFocusWidth,
+            ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -88,6 +101,39 @@ class TopTabs extends StatelessWidget {
             ],
           ),
         );
+}
+
+/// One [TopTabs] entry as a Tab stop: Enter / Space fire its onTap.
+class _TopTabButton extends StatefulWidget {
+  final TopTab tab;
+  final TopTabs strip;
+  const _TopTabButton(this.tab, this.strip);
+
+  @override
+  State<_TopTabButton> createState() => _TopTabButtonState();
+}
+
+class _TopTabButtonState extends State<_TopTabButton> {
+  bool _focused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = widget.tab;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: t.onTap,
+        onFocusChange: (has) {
+          if (has != _focused) setState(() => _focused = has);
+        },
+        borderRadius: BorderRadius.circular(6),
+        // The border is the focus cue; the default focus fill would muddy it.
+        focusColor: Colors.transparent,
+        child: widget.strip.tabBody(t.keyLabel, t.label,
+            active: t.active, focused: _focused),
+      ),
+    );
+  }
 }
 
 /// One read-only figure in a [StatStrip] — ETA, distance, total fares.

@@ -36,7 +36,18 @@ class CustomTextField extends StatelessWidget {
     this.readOnly = false,
     this.borderWidth = 2,
     this.obscureText = false, // Optional, default is false
+    this.uppercase = false,
+    this.idleBorderColor,
   });
+
+  /// Border colour while NOT focused. Null keeps [borderColor] for both
+  /// states (the old look); set it so the focused border stands out.
+  final Color? idleBorderColor;
+
+  /// Forces typed text to capitals. textCapitalization only affects soft
+  /// keyboards, so a PC keyboard still typed lowercase. Off by default:
+  /// login email / password fields share this widget.
+  final bool uppercase;
 
   String? labelText;
   String? hintText;
@@ -138,7 +149,9 @@ class CustomTextField extends StatelessWidget {
                   fontSize: 10,
                   fontWeight: FontWeight.w800,
                 ),
-            inputFormatters: inputFormatters,
+            inputFormatters: uppercase
+                ? [...?inputFormatters, UpperCaseTextFormatter()]
+                : inputFormatters,
             maxLines: obscureText ? 1 : maxLines, // Obscure text requires maxLines to be 1
             minLines: obscureText ? 1 : maxLines,
             readOnly: readOnly,
@@ -160,7 +173,10 @@ class CustomTextField extends StatelessWidget {
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(borderRadius ?? 20),
-                borderSide: BorderSide(color: borderColor ?? DynamicColors.primaryClr),
+                borderSide: BorderSide(
+                    color: idleBorderColor ??
+                        borderColor ??
+                        DynamicColors.primaryClr),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(borderRadius ?? 20),

@@ -29,6 +29,14 @@ class ChildSeatsAlert extends StatefulWidget {
 }
 
 class _ChildSeatsAlertState extends State<ChildSeatsAlert> {
+  /// Shared by SEATS COUNT, AGE GROUP and the ADD button so the row lines up.
+  static const double _rowHeight = 36;
+
+  /// Centres the text vertically in [_rowHeight] instead of the field's
+  /// default zero vertical padding.
+  static const EdgeInsets _fieldPadding =
+      EdgeInsets.symmetric(horizontal: 12, vertical: 10);
+
   int? editingIndex;
 
   /// The form that opened this dialog — the edit screen's private instance
@@ -104,6 +112,9 @@ class _ChildSeatsAlertState extends State<ChildSeatsAlert> {
                                       hintText: "E.G. 1",
                                       controller: controller.noOfChildren,
                                       borderRadius: 6,
+                                      height: _rowHeight,
+                                      width: double.infinity,
+                                      contentPadding: _fieldPadding,
                                       keyboardType: TextInputType.number,
                                       inputFormatters: [
                                         FilteringTextInputFormatter.digitsOnly,
@@ -123,6 +134,10 @@ class _ChildSeatsAlertState extends State<ChildSeatsAlert> {
                                       hintText: "E.G. 2-3",
                                       controller: controller.childAge,
                                       borderRadius: 6,
+                                      uppercase: true,
+                                      height: _rowHeight,
+                                      width: double.infinity,
+                                      contentPadding: _fieldPadding,
                                     ),
                                   ],
                                 ),
@@ -130,7 +145,7 @@ class _ChildSeatsAlertState extends State<ChildSeatsAlert> {
                               const SizedBox(width: 10),
                               CustomButton(
                                 width: editingIndex != null ? 90 : 80,
-                                height: 30,
+                                height: _rowHeight,
                                 onTap: () {
                                   // onTap: (){
                                   //   controller.childSeatAlert.add(ChildSeatClass(

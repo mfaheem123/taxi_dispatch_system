@@ -15,6 +15,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+// GlowFocus: the focus ring the dashboard form puts on these same buttons.
+import 'package:flutter_web_date_picker/flutter_web_date_picker.dart'
+    show GlowFocus;
 
 import 'booking_form_layout.dart';
 import 'labeled_icon_actions.dart' show IconAction;
@@ -94,8 +97,13 @@ class LabeledAddressField extends StatefulWidget implements LabelledField {
 }
 
 class _LabeledAddressFieldState extends State<LabeledAddressField> {
-  static const double _itemHeight = 44;
   static const double _panelHeight = 260;
+
+  /// One key per panel row, so arrow-key navigation can scroll the highlighted
+  /// row into view — rows size to their text, so there's no fixed row height
+  /// to compute offsets from.
+  List<GlobalKey> _rowKeys = const [];
+  int _lastMoveDelta = 1;
 
   final _layerLink = LayerLink();
 
@@ -260,6 +268,7 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
     if (_filtered.isEmpty) return;
     final next = (_highlighted + delta).clamp(0, _filtered.length - 1);
     if (next == _highlighted) return;
+    _lastMoveDelta = delta;
     _highlighted = next;
     _entry?.markNeedsBuild();
     _scrollHighlightedIntoView();
@@ -268,18 +277,19 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
   void _scrollHighlightedIntoView() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final c = _scrollController;
-      if (!c.hasClients || _highlighted < 0) return;
-      final itemTop = _highlighted * _itemHeight;
-      final itemBottom = itemTop + _itemHeight;
-      final viewTop = c.offset;
-      final viewBottom = viewTop + _panelHeight;
-      final maxScroll = c.position.maxScrollExtent;
-      if (itemTop < viewTop) {
-        c.jumpTo(itemTop.clamp(0.0, maxScroll));
-      } else if (itemBottom > viewBottom) {
-        c.jumpTo((itemBottom - _panelHeight).clamp(0.0, maxScroll));
-      }
+      if (_highlighted < 0 || _highlighted >= _rowKeys.length) return;
+      final rowContext = _rowKeys[_highlighted].currentContext;
+      if (rowContext == null) return;
+      // Same as the dashboard's panel: scroll only as far as needed to show
+      // the row at the edge it is moving towards.
+      Scrollable.ensureVisible(
+        rowContext,
+        duration: const Duration(milliseconds: 90),
+        curve: Curves.easeOut,
+        alignmentPolicy: _lastMoveDelta > 0
+            ? ScrollPositionAlignmentPolicy.keepVisibleAtEnd
+            : ScrollPositionAlignmentPolicy.keepVisibleAtStart,
+      );
     });
   }
 
@@ -319,6 +329,9 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
     // The same accent the focused field border uses, so the highlighted row in
     // this panel matches the ring around the field it hangs off.
     const accent = fieldFocusColor;
+    if (_rowKeys.length != _filtered.length) {
+      _rowKeys = List.generate(_filtered.length, (_) => GlobalKey());
+    }
     final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     final width = box?.size.width ?? 280.0;
     final height = box?.size.height ?? 40.0;
@@ -349,15 +362,21 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
                               color: Colors.black,
                               fontSize: Density.fieldFont)),
                     )
-                  : ListView.builder(
+                  : Scrollbar(
                       controller: _scrollController,
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      itemCount: _filtered.length,
-                      itemBuilder: (_, i) {
+                      thumbVisibility: true,
+                      // A Column rather than ListView.builder, as on the
+                      // dashboard: rows size to their own text, and every row
+                      // must be built so its key can be scrolled to.
+                      child: SingleChildScrollView(
+                      controller: _scrollController,
+                      child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: List.generate(_filtered.length, (i) {
                         final a = _filtered[i];
                         final active = _highlighted == i;
                         return MouseRegion(
+                          key: _rowKeys[i],
                           cursor: SystemMouseCursors.click,
                           onEnter: (_) {
                             if (_highlighted == i) return;
@@ -373,9 +392,11 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
                             onTap: () => _pick(a),
                             child: Container(
                               width: double.infinity,
-                              height: _itemHeight,
+                              // No fixed height, same as the dashboard's panel:
+                              // a short address takes one line, a long one
+                              // wraps to a second.
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 12),
+                                  horizontal: 10, vertical: 5),
                               color: active
                                   ? accent.withValues(alpha: 0.10)
                                   : Colors.white,
@@ -388,7 +409,7 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
                                 Expanded(
                                   child: Text(
                                     a.display,
-                                    maxLines: 1,
+                                    maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontSize: Density.fieldFont,
@@ -403,7 +424,9 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
                             ),
                           ),
                         );
-                      },
+                      }),
+                      ),
+                      ),
                     ),
             ),
           ),
@@ -415,41 +438,56 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
   /// The × / swap pair. Rebuilt on its own so showing and hiding × costs no
   /// more than a repaint of the two icons.
   ///
-  /// Wrapped in [ExcludeFocus] because these buttons live *inside* a field:
-  /// left focusable they would cost one or two extra Tab presses per location
-  /// field, which is exactly what this form's ordered traversal avoids.
+  /// Tab stops, exactly as on the dashboard form: address → × → swap / via →
+  /// zone. Each gets an explicit fractional order between the field's own
+  /// grid order and the next cell's (dashboard: tabBase + 1.3 / + 1.6), so
+  /// the sequence never depends on a geometry tie-break, and the same
+  /// [GlowFocus] ring marks the focused icon.
   Widget _suffixIcons() {
+    // The grid cell's order; the icons slot in just after it.
+    final cellOrder = FocusTraversalOrder.maybeOf(context);
+    final base =
+        cellOrder is NumericFocusOrder ? cellOrder.order : null;
+
     Widget iconBtn(IconData icon, String tooltip, VoidCallback onTap,
-            {Color color = Colors.grey}) =>
-        IconButton(
+        double step,
+        {Color color = Colors.grey}) {
+      final Widget button = GlowFocus(
+        radius: 14,
+        child: IconButton(
           tooltip: tooltip,
           onPressed: onTap,
           icon: Icon(icon, size: 14, color: color),
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
           splashRadius: 14,
-        );
-
-    return ExcludeFocus(
-      child: ValueListenableBuilder<TextEditingValue>(
-        valueListenable: widget.controller,
-        builder: (_, value, __) => Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            // Red because it throws the address away — the one destructive
-            // button in the row.
-            if (value.text.isNotEmpty)
-              iconBtn(Icons.cancel, 'Clear', _clear,
-                  color: const Color(0xFFD9412B)),
-            if (widget.onSwap != null)
-              iconBtn(Icons.swap_vert, 'Swap pickup and drop', widget.onSwap!),
-            if (widget.extraAction != null)
-              iconBtn(widget.extraAction!.icon, widget.extraAction!.tooltip,
-                  widget.extraAction!.onTap),
-            const SizedBox(width: 2),
-          ],
         ),
+      );
+      return base == null
+          ? button
+          : FocusTraversalOrder(
+              order: NumericFocusOrder(base + step), child: button);
+    }
+
+    return ValueListenableBuilder<TextEditingValue>(
+      valueListenable: widget.controller,
+      builder: (_, value, __) => Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          // Red because it throws the address away — the one destructive
+          // button in the row.
+          if (value.text.isNotEmpty)
+            iconBtn(Icons.cancel, 'Clear', _clear, 0.3,
+                color: const Color(0xFFD9412B)),
+          if (widget.onSwap != null)
+            iconBtn(Icons.swap_vert, 'Swap pickup and drop', widget.onSwap!,
+                0.6),
+          if (widget.extraAction != null)
+            iconBtn(widget.extraAction!.icon, widget.extraAction!.tooltip,
+                widget.extraAction!.onTap, 0.8),
+          const SizedBox(width: 2),
+        ],
       ),
     );
   }

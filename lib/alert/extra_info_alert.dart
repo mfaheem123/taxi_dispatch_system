@@ -28,6 +28,19 @@ class ExtraInfoAlert extends StatefulWidget {
 }
 
 class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
+  /// Note inputs and their + buttons share this height so each row lines up.
+  static const double _noteHeight = 36;
+
+  /// Three readable lines of special requirements plus padding.
+  static const int _requirementsLines = 3;
+  static const double _requirementsHeight = 84;
+
+  static const EdgeInsets _fieldPadding =
+      EdgeInsets.symmetric(horizontal: 12, vertical: 10);
+
+  /// Typed text and hint; 10px was too small to read comfortably.
+  TextStyle get _fieldTextStyle => outFitRegular(fontSize: 12);
+
   int? editingIndex;
   String? editingType;
 
@@ -104,16 +117,16 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                                       _buildFieldLabel(
                                           "SPECIAL REQUIREMENTS (PASSENGER VISIBLE)"),
                                       CustomTextField(
-                                        maxLines: 3,
-                                        height: 70,
+                                        maxLines: _requirementsLines,
+                                        height: _requirementsHeight,
+                                        width: double.infinity,
                                         hintText: AppText.specialRequirements,
                                         controller: dashBoardCntrl
                                             .specialRequirementsController,
-                                        hintStyle: outFitRegular(
-                                            fontSize: 10),
-                                        contentPadding:
-                                            const EdgeInsets.all(10),
+                                        hintStyle: _fieldTextStyle,
+                                        contentPadding: _fieldPadding,
                                         borderRadius: 6,
+                                        uppercase: true,
                                       ),
                                     ],
                                   ),
@@ -128,16 +141,17 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                                         _buildFieldLabel(
                                             "RETURN SPECIAL REQUIREMENTS"),
                                         CustomTextField(
-                                          maxLines: 3,
-                                          height: 70,
+                                          maxLines: _requirementsLines,
+                                          height: _requirementsHeight,
+                                          width: double.infinity,
                                           hintText:
                                               'RETURN SPECIAL REQUIREMENTS',
                                           controller: dashBoardCntrl
                                               .specialRequirementsReturnController,
-                                          hintStyle: outFitRegular(
-                                              fontSize: 10),
-                                          contentPadding: EdgeInsets.all(10),
+                                          hintStyle: _fieldTextStyle,
+                                          contentPadding: _fieldPadding,
                                           borderRadius: 6,
+                                          uppercase: true,
                                         ),
                                       ],
                                     ),
@@ -167,15 +181,18 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                                               hintText: "ENTER NEW NOTE...",
                                               controller: controller
                                                   .controllerNoteController,
-                                              hintStyle: outFitRegular(
-                                                  fontSize: 10),
-                                              borderRadius: 4,
+                                              hintStyle: _fieldTextStyle,
+                                              height: _noteHeight,
+                                              width: double.infinity,
+                                              contentPadding: _fieldPadding,
+                                              borderRadius: 6,
+                                              uppercase: true,
                                             ),
                                           ),
                                           const SizedBox(width: 6),
                                           CustomButton(
-                                            width: 35,
-                                            height: 35,
+                                            width: _noteHeight,
+                                            height: _noteHeight,
                                             // onTap: (){
                                             //   if(controller.controllerNoteController.text.isNotEmpty){
                                             //     controller.controllerAlert.add(
@@ -250,22 +267,22 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                                             children: [
                                               Expanded(
                                                 child: CustomTextField(
-                                                  contentPadding:
-                                                      EdgeInsets.only(left: 12),
+                                                  contentPadding: _fieldPadding,
                                                   hintText:
                                                       "ENTER NEW RETURN NOTES...",
                                                   controller: controller
                                                       .controllerNoteReturnController,
-                                                  hintStyle:
-                                                      outFitRegular(
-                                                          fontSize: 10),
+                                                  hintStyle: _fieldTextStyle,
+                                                  height: _noteHeight,
+                                                  width: double.infinity,
                                                   borderRadius: 6,
+                                                  uppercase: true,
                                                 ),
                                               ),
                                               const SizedBox(width: 6),
                                               CustomButton(
-                                                width: 35,
-                                                height: 35,
+                                                width: _noteHeight,
+                                                height: _noteHeight,
                                                 btnColor:
                                                     DynamicColors.primaryClr,
                                                 onTap: () {

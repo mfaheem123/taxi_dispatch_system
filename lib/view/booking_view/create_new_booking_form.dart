@@ -28,6 +28,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_date_picker/flutter_web_date_picker.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../alert/child_seats_alert.dart';
 import '../../alert/extra_info_alert.dart';
@@ -77,6 +78,9 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
   /// dispose, so every visit starts empty and leaving clears it.
   late final DashboardController controller;
 
+  /// Clears the pickup time when the pickup resolves to an airport.
+  late final Worker _airportTimeWorker;
+
   // Same zone/location-type controller the dashboard form reads
   // locationtypezoneModel.zonesList from for its zone dropdowns.
   final LocationController _locationController =
@@ -95,6 +99,18 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
     if (_locationController.locationtypezoneModel == null) {
       _locationController.getLocationTypeZone();
     }
+    // An airport pickup starts with no time — the operator sets it from the
+    // flight — unless one was already picked. Leaving the airport puts the
+    // "now" default back on an untouched field.
+    _airportTimeWorker = ever<bool>(controller.isAirportResponse, (airport) {
+      if (controller.pickUpTimePicked) return;
+      if (airport) {
+        controller.pickUpTimeController.clear();
+      } else if (controller.pickUpTimeController.text.isEmpty) {
+        controller.pickUpTimeController.text =
+            DateFormat('HH:mm').format(DateTime.now());
+      }
+    });
     // After the first frame: seeding ends in update(), which cannot run while
     // the route that pushed this screen is still building.
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -127,6 +143,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
   void dispose() {
     // Runs the instance's onClose, which disposes its text controllers — so
     // whatever was typed here is gone, and the dashboard form is untouched.
+    _airportTimeWorker.dispose();
     Get.delete<DashboardController>(tag: _formTag);
     super.dispose();
   }

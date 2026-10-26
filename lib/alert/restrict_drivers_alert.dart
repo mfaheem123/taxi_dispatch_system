@@ -215,7 +215,16 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                                                         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
                                                         decoration: BoxDecoration(
                                                           color: DynamicColors.primaryClr,
-                                                          borderRadius: BorderRadius.circular(4)
+                                                          borderRadius: BorderRadius.circular(4),
+                                                          // Focus cue: a white inner ring with a
+                                                          // primary halo, readable on the solid fill.
+                                                          border: Border.all(
+                                                            color: isFocused ? Colors.white : DynamicColors.primaryClr,
+                                                            width: 2,
+                                                          ),
+                                                          boxShadow: isFocused
+                                                              ? [BoxShadow(color: DynamicColors.primaryClr, spreadRadius: 2)]
+                                                              : null,
                                                         ),
                                                         child: Row(
                                                           children: [
@@ -386,7 +395,12 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                                                                     child: Container(
                                                                       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
                                                                       decoration: BoxDecoration(
-                                                                        color: isFocused ? DynamicColors.primaryClr.withOpacity(0.15) : Colors.transparent,
+                                                                        color: isFocused ? DynamicColors.redClr.withOpacity(0.10) : Colors.transparent,
+                                                                        borderRadius: BorderRadius.circular(4),
+                                                                        border: Border.all(
+                                                                          color: isFocused ? DynamicColors.redClr : Colors.transparent,
+                                                                          width: 2,
+                                                                        ),
                                                                       ),
                                                                       child: Center(
                                                                         child: Icon(Icons.delete_forever, color: DynamicColors.redClr,

@@ -18,6 +18,9 @@ class SettingsDialog extends StatefulWidget {
 class _SettingsDialogState extends State<SettingsDialog> {
   int selectedIndex = 0;
 
+  /// Which left-panel item keyboard focus is on, for its focus border.
+  int? _focusedNav;
+
   @override
   Widget build(BuildContext context) {
     return EscapeDismissible(
@@ -29,7 +32,12 @@ class _SettingsDialogState extends State<SettingsDialog> {
           width: 850,
           height: 500,
           // padding: const EdgeInsets.all(16),
-          child: Column(
+          // Tab order: left menu (1–3) → the open panel's fields (10) → close
+          // (999). Without OrderedTraversalPolicy the close button's 999 was
+          // ignored and reading order put it first.
+          child: FocusTraversalGroup(
+            policy: OrderedTraversalPolicy(),
+            child: Column(
             children: [
               // 1. Header
               Container(
@@ -78,19 +86,30 @@ class _SettingsDialogState extends State<SettingsDialog> {
 
                         // Right Side Dynamic Screen Call
                         Expanded(
-                          child: IndexedStack(
-                            index: selectedIndex,
-                            children: [
-                              const ExtraFaresAlert(),
-                              RestrictDriversAlert(),
-                              const  DriverAttributesAlert(),
-                            ],
+                          // One stop in the outer order; inside it, the
+                          // panel's own fields go in reading order (left to
+                          // right, top to bottom). IndexedStack keeps the
+                          // hidden panels out of traversal.
+                          child: FocusTraversalOrder(
+                            order: const NumericFocusOrder(10),
+                            child: FocusTraversalGroup(
+                              policy: ReadingOrderTraversalPolicy(),
+                              child: IndexedStack(
+                                index: selectedIndex,
+                                children: [
+                                  const ExtraFaresAlert(),
+                                  RestrictDriversAlert(),
+                                  const  DriverAttributesAlert(),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ],
                     ),
                   )),
             ],
+          ),
           ),
         ),
       ),
@@ -100,15 +119,34 @@ class _SettingsDialogState extends State<SettingsDialog> {
   // Left Panel Navigation Item
   Widget _navBtn(int index, IconData icon, String title) {
     final isSelected = selectedIndex == index;
-    return InkWell(
+    final isFocused = _focusedNav == index;
+    return FocusTraversalOrder(
+      order: NumericFocusOrder(index + 1.0),
+      child: InkWell(
       onTap: () => setState(() => selectedIndex = index),
+      onFocusChange: (has) => setState(() {
+        if (has) {
+          _focusedNav = index;
+        } else if (_focusedNav == index) {
+          _focusedNav = null;
+        }
+      }),
+      // The border below is the focus cue.
+      focusColor: Colors.transparent,
       borderRadius: BorderRadius.circular(6),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        // 10 less the 2px border that is always drawn, so focus can't
+        // resize the item.
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
         decoration: BoxDecoration(
           color: isSelected ? Colors.white : Colors.transparent,
           borderRadius: BorderRadius.circular(6),
-          border: isSelected ? Border.all(color: Colors.grey.shade300) : null,
+          border: Border.all(
+            width: 2,
+            color: isFocused
+                ? DynamicColors.primaryClr
+                : (isSelected ? Colors.grey.shade300 : Colors.transparent),
+          ),
           boxShadow: isSelected
               ? [ BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -125,6 +163,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
             Text(title, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: isSelected ? Colors.black : Colors.black87,)),
           ],
         ),
+      ),
       ),
     );
   }
