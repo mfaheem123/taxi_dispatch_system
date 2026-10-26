@@ -19,6 +19,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_web_date_picker/flutter_web_date_picker.dart'
     show GlowFocus;
 
+import '../../dashboard_view/utils/address_query_match.dart';
 import 'booking_form_layout.dart';
 import 'labeled_icon_actions.dart' show IconAction;
 import 'labeled_input.dart' show UpperCaseTextFormatter;
@@ -205,10 +206,13 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
     if (query.isEmpty) {
       _filtered = const [];
     } else {
-      _filtered = widget.addresses.where((a) {
-        return a.name.toLowerCase().contains(query) ||
-            a.postcode.toLowerCase().contains(query);
-      }).toList();
+      // Token-wise, same matcher as the dashboard form: the backend answers
+      // "A H" with rows like "ASDA, HIGH STREET", which a single substring
+      // check would drop, leaving 'No data' over a good response.
+      _filtered = widget.addresses
+          .where((a) => addressMatchesQuery(
+              name: a.name, postcode: a.postcode, query: query))
+          .toList();
     }
 
     if (_filtered.isEmpty) {
