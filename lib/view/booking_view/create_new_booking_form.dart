@@ -519,6 +519,13 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
     String driverLabel(DashboardDriverObject d) => d.name ?? '';
     String vehicleLabel(DashboardVehicleTypeObject v) => v.name ?? '';
     final isMobile = isMobileShell(context);
+    final pickBookingButton = LabeledActionButton(
+      text: 'PICK BOOKING',
+      icon: Icons.search,
+      onPressed: _showPickBooking,
+      background: UpdateFormPalette.green,
+      foreground: UpdateFormPalette.chip,
+    );
 
     return Column(
       children: [
@@ -547,10 +554,6 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
             orderBase: 100,
             children: [
               SpanField(HeaderTitle('BOOKING'), span: 2),
-              // No source field exists on the controller / booking payload
-              // yet, so this one stays local.
-               SpanField(isMobile ?SizedBox.shrink():LabeledDropdown('SOURCE',
-                  items: ['OPT', 'WEB', 'APP', 'PHONE'])),
               SpanField(LabeledObjectDropdown<DashboardSubsidiaryObject>(
                 'SUB',
                 items: data.subsidiaries ?? const [],
@@ -653,15 +656,19 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                       controller: controller.telController,
                       keyboardType: TextInputType.phone),
                   desktopPerRow: 5),
+              // Mobile: a 150px button at the start of its line, as before.
+              // Web: the cell takes the row's last fifth like the four fields
+              // beside it, and the same 150px button sits at its right edge —
+              // the end of the row — instead of leaving a gap after it.
               SpanField(
-                  widths: 150,
-                  LabeledActionButton(
-                    text: 'PICK BOOKING',
-                    icon: Icons.search,
-                    onPressed: _showPickBooking,
-                    background: UpdateFormPalette.green,
-                    foreground: UpdateFormPalette.chip,
-                  ),
+                  widths: isMobile ? 150 : null,
+                  isMobile
+                      ? pickBookingButton
+                      : Align(
+                          alignment: Alignment.centerRight,
+                          child:
+                              SizedBox(width: 150, child: pickBookingButton),
+                        ),
                   id: 'PICK BOOKING',
                   desktopPerRow: 5),
             ],
@@ -1000,7 +1007,8 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
         // ---- Map (same widget as the dashboard) ----
         // Fixed height because the form scrolls, same as craate_booking.dart.
         SizedBox(
-          height: Get.height / 2.1,
+          // Three quarters of the screen (was ~48%, Get.height / 2.1).
+          height: Get.height * 0.75,
           child: MapViewWidget(createBooking: true),
         ),
       ],

@@ -23,6 +23,68 @@ class _SettingsDialogState extends State<SettingsDialog> {
 
   @override
   Widget build(BuildContext context) {
+    // EXTRA FARES is a few short rows of fields, so on that tab the dialog
+    // hugs its content instead of sitting at the fixed 500px the RESTRICTIONS
+    // and ATTRIBUTES lists need — which left a large empty band under it.
+    // It is shown on its own there: an IndexedStack is always as tall as its
+    // tallest child, hidden ones included. The other panels keep their data in
+    // GetX controllers, so rebuilding them on the way back loses nothing.
+    final compact = selectedIndex == 0;
+
+    final panel = FocusTraversalOrder(
+      order: const NumericFocusOrder(10),
+      // One stop in the outer order; inside it, the panel's own fields go in
+      // reading order (left to right, top to bottom). IndexedStack keeps the
+      // hidden panels out of traversal.
+      child: FocusTraversalGroup(
+        policy: ReadingOrderTraversalPolicy(),
+        child: compact
+            ? const ExtraFaresAlert()
+            : IndexedStack(
+                index: selectedIndex,
+                children: [
+                  const ExtraFaresAlert(),
+                  RestrictDriversAlert(),
+                  const DriverAttributesAlert(),
+                ],
+              ),
+      ),
+    );
+
+    final body = Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        // Compact: the left menu's grey panel is stretched to the fields'
+        // height (IntrinsicHeight below) rather than to a fixed one.
+        crossAxisAlignment:
+            compact ? CrossAxisAlignment.stretch : CrossAxisAlignment.center,
+        children: [
+          // Left Panel
+          Container(
+            width: 170,
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+            decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(8)),
+            child: Column(
+              children: [
+                _navBtn(0, Icons.attach_money, "EXTRA FARES"),
+                const SizedBox(height: 6),
+                _navBtn(1, Icons.person_off_sharp, "RESTRICTIONS"),
+                const SizedBox(height: 6),
+                _navBtn(2, Icons.manage_accounts, "ATTRIBUTES"),
+              ],
+            ),
+          ),
+
+          const SizedBox(width: 16),
+
+          // Right Side Dynamic Screen Call
+          Expanded(child: panel),
+        ],
+      ),
+    );
+
     return EscapeDismissible(
       child: Dialog(
         insetPadding: const EdgeInsets.all(20),
@@ -30,7 +92,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Container(
           width: 850,
-          height: 500,
+          height: compact ? null : 500,
           // padding: const EdgeInsets.all(16),
           // Tab order: left menu (1–3) → the open panel's fields (10) → close
           // (999). Without OrderedTraversalPolicy the close button's 999 was
@@ -38,6 +100,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
           child: FocusTraversalGroup(
             policy: OrderedTraversalPolicy(),
             child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               // 1. Header
               Container(
@@ -61,53 +124,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
               const Divider(height: 1, thickness: 1),
               // SizedBox(height: 30),
 
-              Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      children: [
-                        // Left Panel
-                        Container(
-                          width: 170,
-                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
-                          decoration: BoxDecoration(color: const Color(0xFFF8FAFC), borderRadius: BorderRadius.circular(8)),
-                          child: Column(
-                            children: [
-                              _navBtn(0, Icons.attach_money, "EXTRA FARES"),
-                              const SizedBox(height: 6),
-                              _navBtn(1, Icons.person_off_sharp, "RESTRICTIONS"),
-                              const SizedBox(height: 6),
-                              _navBtn(2, Icons.manage_accounts, "ATTRIBUTES"),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(width: 16),
-
-                        // Right Side Dynamic Screen Call
-                        Expanded(
-                          // One stop in the outer order; inside it, the
-                          // panel's own fields go in reading order (left to
-                          // right, top to bottom). IndexedStack keeps the
-                          // hidden panels out of traversal.
-                          child: FocusTraversalOrder(
-                            order: const NumericFocusOrder(10),
-                            child: FocusTraversalGroup(
-                              policy: ReadingOrderTraversalPolicy(),
-                              child: IndexedStack(
-                                index: selectedIndex,
-                                children: [
-                                  const ExtraFaresAlert(),
-                                  RestrictDriversAlert(),
-                                  const  DriverAttributesAlert(),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )),
+              compact ? IntrinsicHeight(child: body) : Expanded(child: body),
             ],
           ),
           ),

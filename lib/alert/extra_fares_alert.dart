@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/escape_dismissible.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +42,64 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
     shortCutKeyValue.value = "alert";
   }
 
+  /// Every field on this alert, in display order.
+  List<TextEditingController> get _fields => [
+        dashBoardCntrl.parkingChargesController,
+        dashBoardCntrl.congestionChargesController,
+        dashBoardCntrl.waitingChargesController,
+        dashBoardCntrl.extraDropChargesController,
+        dashBoardCntrl.creditCardChargesController,
+        dashBoardCntrl.meetGreetController,
+        dashBoardCntrl.companyPriceController,
+        dashBoardCntrl.returnCompanyPriceController,
+      ];
+
+  /// True while CLEAR / SAVE is waiting on the fares call, so a second tap
+  /// cannot fire it again.
+  bool _busy = false;
+
+  /// getFaresCalculation force-unwraps both of these.
+  bool get _canCalculate =>
+      dashBoardCntrl.selectJourneyTypeValue != null &&
+      dashBoardCntrl.pickUpDate != null;
+
+  /// Recalculates the fares, then closes the alert. Fares used to be
+  /// recalculated on every keystroke in every field; now only CLEAR and SAVE
+  /// do it, once.
+  ///
+  /// Closing pops the route this widget sits on: its own dialog when the edit
+  /// screen opened it, the whole SettingsDialog when it is that dialog's tab.
+  Future<void> _calculateAndClose() async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      if (_canCalculate) await dashBoardCntrl.getFaresCalculation();
+    } finally {
+      if (mounted) {
+        setState(() => _busy = false);
+        Navigator.of(context).pop();
+      }
+    }
+  }
+
+  /// Empties every field, recalculates without the charges, and closes.
+  void _onClear() {
+    for (final c in _fields) {
+      c.clear();
+    }
+    _calculateAndClose();
+  }
+
+  /// Recalculates with the charges entered here, and closes. Stays open with a
+  /// message when the fare cannot be calculated yet.
+  void _onSave() {
+    if (!_canCalculate) {
+      BotToast.showText(text: "Please select journey type and pickup date first");
+      return;
+    }
+    _calculateAndClose();
+  }
+
   @override
   Widget build(BuildContext context) {
     // Escape closes the alert. This one is opened with
@@ -58,8 +117,13 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
           return Container(
             // height: 350,
             // width: 650,
-            padding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
+            // The dialog around it already pads by 16 — vertical padding here
+            // only added empty space above the fields and under the buttons.
+            padding: EdgeInsets.symmetric(horizontal: 20),
             child: Column(
+              // Hug the fields: the default (max) stretched this to whatever
+              // height the dialog had, leaving the space below empty.
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Row(
@@ -85,39 +149,59 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
 
                 Row(
                   children: [
-                    _buildFareField(label: "PARKING", controller: dashBoardCntrl.parkingChargesController,
-                      onChanged: (val) => controller.getFaresCalculation()),
+                    _buildFareField(label: "PARKING", controller: dashBoardCntrl.parkingChargesController),
                     const SizedBox(width: 8),
-                    _buildFareField(label: "CONGESTION", controller: dashBoardCntrl.congestionChargesController,
-                      onChanged: (val) => controller.getFaresCalculation()),
+                    _buildFareField(label: "CONGESTION", controller: dashBoardCntrl.congestionChargesController),
                     const SizedBox(width: 8),
-                    _buildFareField(label: "WAITING", controller: dashBoardCntrl.waitingChargesController,
-                      onChanged: (val) => controller.getFaresCalculation()),
+                    _buildFareField(label: "WAITING", controller: dashBoardCntrl.waitingChargesController),
                   ],
                 ),
 
-                SizedBox(height: 15),
+                SizedBox(height: 10),
 
                 Row(
                   children: [
-                    _buildFareField(label: "EXTRA DROP", controller: dashBoardCntrl.extraDropChargesController,
-                      onChanged: (val) => controller.getFaresCalculation()),
+                    _buildFareField(label: "EXTRA DROP", controller: dashBoardCntrl.extraDropChargesController),
                     const SizedBox(width: 8),
-                    _buildFareField(label: "CREDIT CARD", controller: dashBoardCntrl.creditCardChargesController,
-                      onChanged: (val) => controller.getFaresCalculation()),
+                    _buildFareField(label: "CREDIT CARD", controller: dashBoardCntrl.creditCardChargesController),
                     const SizedBox(width: 8),
-                    _buildFareField(label: "MEET & GREET ", controller: dashBoardCntrl.meetGreetController,
-                      onChanged: (val) => controller.getFaresCalculation()),
+                    _buildFareField(label: "MEET & GREET ", controller: dashBoardCntrl.meetGreetController),
                   ],
                 ),
-                SizedBox(height: 15,),
+                SizedBox(height: 10),
                 Row(
                   children: [
-                    _buildFareField(label: "COMPANY PRICE", controller: dashBoardCntrl.companyPriceController,
-                      onChanged: (val) => controller.getFaresCalculation()),
+                    _buildFareField(label: "COMPANY PRICE", controller: dashBoardCntrl.companyPriceController),
                     const SizedBox(width: 8),
-                    _buildFareField(label: "RETURN COMPANY PRICE", controller: dashBoardCntrl.returnCompanyPriceController,
-                      onChanged: (val) => controller.getFaresCalculation()),
+                    _buildFareField(label: "RETURN COMPANY PRICE", controller: dashBoardCntrl.returnCompanyPriceController),
+                  ],
+                ),
+                SizedBox(height: 14),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    CustomButton(
+                      verticalPadding: 0.0,
+                      width: 90,
+                      height: 32,
+                      borderRadius: 4,
+                      btnText: "CLEAR",
+                      btnColor: Colors.red,
+                      style: mozillaTextRegularText(
+                          fontSize: 11, color: DynamicColors.whiteClr),
+                      onTap: _onClear,
+                    ),
+                    const SizedBox(width: 10),
+                    CustomButton(
+                      verticalPadding: 0.0,
+                      width: 90,
+                      height: 32,
+                      borderRadius: 4,
+                      btnText: "SAVE",
+                      style: mozillaTextRegularText(
+                          fontSize: 11, color: DynamicColors.whiteClr),
+                      onTap: _onSave,
+                    ),
                   ],
                 ),
                 // Spacer(),
@@ -184,7 +268,6 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
   Widget _buildFareField({
     required String label,
     required TextEditingController controller,
-    required ValueChanged<String> onChanged,
   }) {
     return Expanded(
       child: Column(
@@ -198,7 +281,6 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
           CustomTextField(
             hintText: "0.00",
             controller: controller,
-            onChanged: onChanged,
             keyboardType: TextInputType.number,
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,
