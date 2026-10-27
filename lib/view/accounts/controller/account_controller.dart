@@ -146,7 +146,7 @@ class AccountController extends GetxController {
     var formData = {
       "subsidiary_id": subsidiaryStoreValue!.id,
       "account_type": accountType,
-      "closed": false,
+      // "closed": false,
       "name": accountNameController.text,
       "code": accountCodeController.text,
       "email": accountEmailController.text,

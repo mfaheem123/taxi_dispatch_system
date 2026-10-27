@@ -374,42 +374,26 @@ class _UpdateCustomerInvoiceState extends State<UpdateCustomerInvoiceScreen> {
                                 ),
                               ])),
 
-                      ResponsiveDataTableWidget(
+                      controller.isLoadingUpdate
+                          ? const Center(child: CircularProgressIndicator())
+                          : ResponsiveDataTableWidget(
                           totalWidth: totalAvailableWidth,
                           columnConfigs: [
-                            TableColumnConfig(
-                                title: "REF#", sizeType: ColumnSizeType.medium),
-                            TableColumnConfig(
-                                title: "DATETIME", sizeType: ColumnSizeType.medium),
-                            TableColumnConfig(
-                                title: "PICKUP", sizeType: ColumnSizeType.large),
-                            TableColumnConfig(
-                                title: "DROPOFF", sizeType: ColumnSizeType.large),
-                            TableColumnConfig(
-                                title: "VEH", sizeType: ColumnSizeType.small),
-                            TableColumnConfig(
-                                title: "J/T", sizeType: ColumnSizeType.small),
-                            TableColumnConfig(
-                                title: "P/T", sizeType: ColumnSizeType.small),
-                            TableColumnConfig(
-                                title: "FARE", sizeType: ColumnSizeType.small),
-                            TableColumnConfig(
-                                title: "PC", sizeType: ColumnSizeType.small),
-                            TableColumnConfig(
-                                title: "WC", sizeType: ColumnSizeType.small),
-                            TableColumnConfig(
-                                title: "EDC", sizeType: ColumnSizeType.small),
-                            TableColumnConfig(
-                                title: "M&G", sizeType: ColumnSizeType.small),
-                            TableColumnConfig(
-                                title: "CC", sizeType: ColumnSizeType.small),
-                            TableColumnConfig(
-                                title: "TOTAL", sizeType: ColumnSizeType.medium),
-                            TableColumnConfig(
-                                title: "ACTIONS",
-                                sizeType: ColumnSizeType.fixed,
-                                fixedWidth: 65,
-                                removeSearching: true),
+                            TableColumnConfig(title: "REF#", sizeType: ColumnSizeType.medium),
+                            TableColumnConfig(title: "DATETIME", sizeType: ColumnSizeType.medium),
+                            TableColumnConfig(title: "PICKUP", sizeType: ColumnSizeType.large),
+                            TableColumnConfig(title: "DROPOFF", sizeType: ColumnSizeType.large),
+                            TableColumnConfig(title: "VEH", sizeType: ColumnSizeType.small),
+                            TableColumnConfig(title: "J/T", sizeType: ColumnSizeType.small),
+                            TableColumnConfig(title: "P/T", sizeType: ColumnSizeType.small),
+                            TableColumnConfig(title: "FARE", sizeType: ColumnSizeType.small),
+                            TableColumnConfig(title: "PC", sizeType: ColumnSizeType.small),
+                            TableColumnConfig(title: "WC", sizeType: ColumnSizeType.small),
+                            TableColumnConfig(title: "EDC", sizeType: ColumnSizeType.small),
+                            TableColumnConfig(title: "M&G", sizeType: ColumnSizeType.small),
+                            TableColumnConfig(title: "CC", sizeType: ColumnSizeType.small),
+                            TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium),
+                            TableColumnConfig(title: "ACTIONS", sizeType: ColumnSizeType.fixed, fixedWidth: 65, removeSearching: true),
                           ],
                           items: [
                             ...(controller.customerInvoiceByIdModel?.customerInvoice?.customerInvoiceLineitems ?? []),
@@ -425,75 +409,31 @@ class _UpdateCustomerInvoiceState extends State<UpdateCustomerInvoiceScreen> {
                                 "",
                                 "",
                                 "",
-                                const Center(
+                                Center(
                                   child: Text("TOTAL",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold, fontSize: 11)),
+                                      style: mozillaTextSemiBoldText(
+                                          fontWeight: FontWeight.w900, fontSize: 14)),
                                 ),
-                                Center(
-                                    child: Text(
-                                        "£ ${controller.getUpdateColumnTotal('fare').toStringAsFixed(2)}",
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold, fontSize: 11))),
-                                Center(
-                                    child: Text(
-                                        "£ ${controller.getUpdateColumnTotal('pc').toStringAsFixed(2)}",
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold, fontSize: 11))),
-                                Center(
-                                    child: Text(
-                                        "£ ${controller.getUpdateColumnTotal('wc').toStringAsFixed(2)}",
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold, fontSize: 11))),
-                                Center(
-                                    child: Text(
-                                        "£ ${controller.getUpdateColumnTotal('edc').toStringAsFixed(2)}",
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold, fontSize: 11))),
-                                Center(
-                                    child: Text(
-                                        "£ ${controller.getUpdateColumnTotal('mg').toStringAsFixed(2)}",
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold, fontSize: 11))),
-                                Center(
-                                    child: Text(
-                                        "£ ${controller.getUpdateColumnTotal('cc').toStringAsFixed(2)}",
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold, fontSize: 11))),
-                                Center(
-                                    child: Text(
-                                        "£ ${controller.getUpdateColumnTotal('total').toStringAsFixed(2)}",
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold, fontSize: 11))),
+                                Center(child: Text("£ ${controller.getUpdateColumnTotal('fare').toStringAsFixed(2)}",
+                                        style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
+                                Center(child: Text("£ ${controller.getUpdateColumnTotal('pc').toStringAsFixed(2)}",
+                                        style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
+                                Center(child: Text("£ ${controller.getUpdateColumnTotal('wc').toStringAsFixed(2)}",
+                                        style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
+                                Center(child: Text("£ ${controller.getUpdateColumnTotal('edc').toStringAsFixed(2)}",
+                                        style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
+                                Center(child: Text("£ ${controller.getUpdateColumnTotal('mg').toStringAsFixed(2)}",
+                                        style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
+                                Center(child: Text("£ ${controller.getUpdateColumnTotal('cc').toStringAsFixed(2)}",
+                                        style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
+                                Center(child: Text("£ ${controller.getUpdateColumnTotal('total').toStringAsFixed(2)}",
+                                        style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
                                 "",
                               ];
                             }
 
                             final lineItem = item;
                             final booking = lineItem.booking;
-
-                            // Widget editableCell(
-                            //     dynamic initialValue, Function(String) onChanged) {
-                            //   return Center(
-                            //     child: SizedBox(
-                            //       width: 50,
-                            //       child: TextFormField(
-                            //         initialValue: initialValue?.toString() ?? "0",
-                            //         keyboardType: TextInputType.number,
-                            //         textAlign: TextAlign.center,
-                            //         style: const TextStyle(fontSize: 11),
-                            //         decoration: const InputDecoration(
-                            //           isDense: true,
-                            //           contentPadding: EdgeInsets.symmetric(
-                            //               vertical: 6, horizontal: 4),
-                            //           border: OutlineInputBorder(),
-                            //         ),
-                            //         onChanged: onChanged,
-                            //       ),
-                            //     ),
-                            //   );
-                            // }
-
                             return [
                               booking.referenceNumber ?? "",
                               "${booking.pickupDate != null ? DateFormat("yyyy-MM-dd").format(DateFormat("yyyy-M-d").parse(booking.pickupDate.toString())) : "-"} ${booking.pickupTime != null ? booking.pickupTime.toString().split('.')[0].substring(0, 5) : ""}",

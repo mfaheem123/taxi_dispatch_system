@@ -212,7 +212,6 @@ class _UpdateAccountInvoiceScreenState
                       onTap: () {
                         final invoice = controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice;
                         if (invoice != null) {
-                          // Maine pichle jawab mein jo function bataya tha wahi call hoga
                           controller.updateBookingAmount(invoice);
                         } else {
                           BotToast.showText(text: "No invoice data found to save");
@@ -382,9 +381,9 @@ class _UpdateAccountInvoiceScreenState
                 height: 8,
               ),
 
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: ResponsiveDataTableWidget(
+              controller.isLoadingUpdate
+                  ? const Center(child: CircularProgressIndicator())
+                  : ResponsiveDataTableWidget(
                   totalWidth: Get.width,
                   columnConfigs: [
                     TableColumnConfig(title: "REF #", sizeType: ColumnSizeType.medium),
@@ -533,7 +532,6 @@ class _UpdateAccountInvoiceScreenState
                     ];
                   },
                 ),
-              ),
               SizedBox(height: 25,)
             ],
           );
