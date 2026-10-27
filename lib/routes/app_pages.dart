@@ -12,6 +12,8 @@ import '../view/customer/create_complaint.dart';
 import '../view/customer/create_lost_propertyScreen.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
 import '../view/dashboard_view/widgets/view_drivers_map.dart';
+import '../view/drivers_view/driver/driver_commission/driver_commission_preview_screen.dart';
+import '../view/drivers_view/model/update_driver_commission_model.dart' show UpdateDriverCommissionByIdModel;
 import '../view/invoices/account_invoices/account_invoice_preview_screen.dart';
 import '../view/invoices/customer_invoices/customer_invoice_view_screen.dart';
 import '../view/invoices/model/update_account_invoice_model.dart'
@@ -110,6 +112,14 @@ class AppPages {
         fromJson: UpdateInvoiceByIdModel.fromJson,
         builder: (context, data) => AccountInvoiceViewScreen(
             invoice: data.accountInvoice?.accountInvoice),
+      ),
+    ),
+    GetPage(
+      name: _Paths.driverCommissionView,
+      page: () => NewWindowScreen<UpdateDriverCommissionByIdModel>(
+        fromJson: UpdateDriverCommissionByIdModel.fromJson,
+        builder: (context, data) =>
+            DriverCommissionViewScreen(commission: data.driverCommission),
       ),
     ),
   ];

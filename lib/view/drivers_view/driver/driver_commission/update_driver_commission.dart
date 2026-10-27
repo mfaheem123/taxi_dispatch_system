@@ -17,6 +17,8 @@ import '../../../../component/datatable_widget.dart';
 import '../../../../component/editable_cell_widget.dart';
 import '../../../../component/responsive_datatable_widget.dart';
 import '../../../../component/text_field.dart';
+import '../../../../routes/app_pages.dart';
+import '../../../../utils/new_window.dart';
 import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../../dashboard_view/booking_table.dart';
 import '../../../dashboard_view/widgets/time_picker_widget.dart';
@@ -133,18 +135,10 @@ class _UpdateDriverCommissionScreenState
                                         ),
                                         alignment: Alignment.centerLeft,
                                         child: Text(
-                                          controller
-                                                  .updateDriverSelectionController
-                                                  .text
-                                                  .isEmpty
+                                          controller.updateDriverSelectionController.text.isEmpty
                                               ? "NO DRIVER"
-                                              : controller
-                                                  .updateDriverSelectionController
-                                                  .text
-                                                  .toUpperCase(),
-                                          style: TextStyle(
-                                              fontSize: 13,
-                                              color: Colors.black),
+                                              : controller.updateDriverSelectionController.text.toUpperCase(),
+                                          style: TextStyle(fontSize: 13, color: Colors.black),
                                         ),
                                       ),
                                     ],
@@ -380,17 +374,28 @@ class _UpdateDriverCommissionScreenState
                                           style: mozillaTextSemiBoldText(
                                               fontSize: 13,
                                               color: DynamicColors.whiteClr),
-                                          onTap: () async {
-                                            if (controller.listDriverCommission ==
-                                                null) {
-                                              await controller
-                                                  .getCreateDriverCommission();
+                                          onTap: () {
+                                            final commission = controller.updateDriverCommissionByIdModel;
+                                            if(commission?.driverCommission == null) {
+                                              BotToast.showText(text: "NO COMMISSION DATA FOUND");
+                                              return;
                                             }
-                                            Get.dialog(
-                                              DriverComissionWindowWrapper(),
-                                              barrierDismissible: true,
+                                            openScreenInNewWindow(
+                                              Routes.driverCommissionView,
+                                              data: commission,
                                             );
                                           },
+                                          // onTap: () async {
+                                          //   if (controller.listDriverCommission ==
+                                          //       null) {
+                                          //     await controller
+                                          //         .getCreateDriverCommission();
+                                          //   }
+                                          //   Get.dialog(
+                                          //     DriverComissionWindowWrapper(),
+                                          //     barrierDismissible: true,
+                                          //   );
+                                          // },
                                         ),
                                         SizedBox(width: 5),
                                         CustomButton(

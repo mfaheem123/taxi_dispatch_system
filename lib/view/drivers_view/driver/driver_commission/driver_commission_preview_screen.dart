@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../../../../component/color.dart';
 import '../../../../component/textStyle.dart';
 import '../../model/list_driver_commission_model.dart';
+import '../../model/update_driver_commission_model.dart' show UpdateDriverCommission;
 
 class DriverComissionWindowWrapper extends StatefulWidget {
   @override
@@ -72,7 +73,7 @@ class _DriverComissionWindowWrapper
                   ],
                 ),
               ),
-              Expanded(child: DriverCommissionViewScreen(isPopup: true)),
+              Expanded(child: DriverCommissionViewScreen()),
             ],
           ),
         ),
@@ -82,21 +83,27 @@ class _DriverComissionWindowWrapper
 }
 
 class DriverCommissionViewScreen extends StatelessWidget {
-  final bool isPopup;
-  DriverCommissionViewScreen({this.isPopup = false});
+  final UpdateDriverCommission? commission;
+  const DriverCommissionViewScreen({super.key, this.commission});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<DriverController>();
-    final data = controller.updateDriverCommissionByIdModel?.driverCommission;
+    final controller = Get.isRegistered<DriverController>()
+        ? Get.find<DriverController>()
+        : null;
+    final data = commission ??
+        controller?.updateDriverCommissionByIdModel?.driverCommission;
     final items = data?.driverCommissionLineitems ?? [];
 
     final currentDriverId = data?.driver?.id;
-    final selectedDriverData =
-        controller.listDriverCommission?.drivers?.firstWhere(
-      (d) => d.id == currentDriverId,
+    final selectedDriverData = controller?.listDriverCommission?.drivers?.firstWhere(
+          (d) => d.id == currentDriverId,
       orElse: () => CreateDriverCommission(),
     );
+
+    final fromDate = data?.fromDate != null ? data!.fromDate.toString().split(' ').first : (controller?.updateFilterFromDate ?? '');
+    final toDate = data?.toDate != null ? data!.toDate.toString().split(' ').first : (controller?.updateFilterToDate ?? '');
+    final transactionDate = data?.transactionDate != null ? data!.transactionDate.toString().split(' ').first : (controller?.updateTransactionDateController ?? '');
 
     const tableBorder = TableBorder(
       verticalInside: BorderSide(color: Colors.black, width: 0.5),
@@ -109,15 +116,6 @@ class DriverCommissionViewScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: isPopup
-          ? null
-          : AppBar(
-              title: Text("",
-                  style: mozillaTextSemiBoldText(
-                      color: Colors.white, fontSize: 20)),
-              backgroundColor: DynamicColors.primaryClr,
-              iconTheme: const IconThemeData(color: Colors.white),
-            ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
         child: Column(
@@ -132,7 +130,7 @@ class DriverCommissionViewScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 _buildUIInfoColumn("", [
-                  "PERIOD: (${controller.updateFilterFromDate} - ${controller.updateFilterToDate})",
+                  "PERIOD: ($fromDate - $toDate)",
                 ]),
                 const Spacer(flex: 1),
                 Expanded(
@@ -151,7 +149,7 @@ class DriverCommissionViewScreen extends StatelessWidget {
                       "DRIVER: (${data?.driver?.username ?? ""})",
                       "${(data?.driver?.name ?? "").toUpperCase()}",
                       "COMMISSION: ${data?.driver?.driverCommission ?? ""}%",
-                      "DATE: ${controller.updateTransactionDateController}",
+                      "DATE: $transactionDate",
                     ],
                   ),
                 ),
@@ -227,9 +225,18 @@ class DriverCommissionViewScreen extends StatelessWidget {
                       _buildTableCell("£${b?.extraDropCharges ?? '0'}"),
                       _buildTableCell("£${b?.congestionCharges ?? '0'}"),
                       _buildTableCell(
-                          "£${controller.calculateWithoutCommission(b)}"),
+                          controller != null
+                              ? "£${controller.calculateWithoutCommission(b)}"
+                              : "£${(double.tryParse(b?.fares ?? '0') ?? 0) + (double.tryParse(b?.waitingCharges ?? '0') ?? 0) + (double.tryParse(b?.extraDropCharges ?? '0') ?? 0)}"
+                      ),
                       _buildTableCell(
-                          "£${controller.calculateFinalDriverComm(b)}"),
+                          controller != null
+                              ? "£${controller.calculateFinalDriverComm(b)}"
+                              : "£${(
+                              (controller != null ? (double.tryParse(controller.calculateWithoutCommission(b).toString()) ?? 0.0) : ((double.tryParse(b?.fares ?? '0') ?? 0) + (double.tryParse(b?.waitingCharges ?? '0') ?? 0) + (double.tryParse(b?.extraDropCharges ?? '0') ?? 0)))
+                                  * ((double.tryParse(data?.driver?.driverCommission?.toString() ?? '0') ?? 0) / 100)
+                          ).toStringAsFixed(2)}"
+                      ),
                       _buildTableCell("£${b?.totalCharges ?? '0'}",
                           isBold: true),
                     ],
@@ -246,14 +253,10 @@ class DriverCommissionViewScreen extends StatelessWidget {
                   flex: 2,
                   child: Column(
                     children: [
-                      _buildFooterRowPlain(
-                          "CASH TOTAL", controller.updateCashTotalValue),
-                      _buildFooterRowPlain("COMMISSION TOTAL",
-                          controller.updateTotalCommissionVar),
-                      _buildFooterRowPlain("OWED", controller.updateOwedVar),
-                      _buildFooterRowPlain(
-                          "TOTAL", controller.updateGrandTotalVar,
-                          isBold: true),
+                      _buildFooterRowPlain("CASH TOTAL", double.tryParse(data?.cashJobsTotal ?? '0') ?? controller?.updateCashTotalValue ?? 0.0),
+                      _buildFooterRowPlain("COMMISSION TOTAL", double.tryParse(data?.commissionTotal ?? '0') ?? controller?.updateTotalCommissionVar ?? 0.0),
+                      _buildFooterRowPlain("OWED", double.tryParse(data?.owed ?? '0') ?? controller?.updateOwedVar ?? 0.0),
+                      _buildFooterRowPlain("TOTAL", double.tryParse(data?.jobsTotal ?? '0') ?? controller?.updateGrandTotalVar ?? 0.0, isBold: true),
                     ],
                   ),
                 ),
@@ -263,11 +266,11 @@ class DriverCommissionViewScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       _buildFooterRowPlain("ACCOUNT W/COMM TOTAL",
-                          controller.updateAccountFareTotalVar),
+                          double.tryParse(data?.accountJobsTotal ?? '0') ?? controller?.updateAccountFareTotalVar ?? 0.0),
                       _buildFooterRowPlain("ACCOUNT WO/COMM TOTAL",
-                          controller.updateAccountWOCmmVar),
+                          controller?.updateAccountWOCmmVar ?? 0.0),
                       _buildFooterRowPlain("PARKING & CONGESTION CHARGES",
-                          controller.updateParkingCongestionVar),
+                          controller?.updateParkingCongestionVar ?? 0.0),
                     ],
                   ),
                 ),
@@ -379,9 +382,7 @@ class DriverCommissionViewScreen extends StatelessWidget {
                   textAlign: alignEnd ? TextAlign.right : TextAlign.left),
             );
           }
-          return Text(line,
-              style:
-                  const TextStyle(fontSize: 18, fontWeight: FontWeight.w500));
+          return Text(line, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500));
         }),
       ],
     );

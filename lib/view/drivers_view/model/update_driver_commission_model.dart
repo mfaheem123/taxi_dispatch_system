@@ -4,9 +4,13 @@
 
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
+
 UpdateDriverCommissionByIdModel updateDriverCommissionByIdModelFromJson(String str) => UpdateDriverCommissionByIdModel.fromJson(json.decode(str));
 
 String updateDriverCommissionByIdModelToJson(UpdateDriverCommissionByIdModel data) => json.encode(data.toJson());
+
+String? _ymd(DateTime? d) => d == null ? null : DateFormat('yyyy-MM-dd').format(d);
 
 class UpdateDriverCommissionByIdModel {
   bool? status;
@@ -90,7 +94,7 @@ class UpdateDriverCommission {
   Map<String, dynamic> toJson() => {
     "id": id,
     "transaction_number": transactionNumber,
-    "transaction_date": "${transactionDate!.year.toString().padLeft(4, '0')}-${transactionDate!.month.toString().padLeft(2, '0')}-${transactionDate!.day.toString().padLeft(2, '0')}",
+    "transaction_date":  _ymd(transactionDate),
     "driver_id": driverId,
     "jobs_total": jobsTotal,
     "commission_total": commissionTotal,
@@ -99,8 +103,8 @@ class UpdateDriverCommission {
     "owed": owed,
     "old_balance": oldBalance,
     "current_balance": currentBalance,
-    "from_date": "${fromDate!.year.toString().padLeft(4, '0')}-${fromDate!.month.toString().padLeft(2, '0')}-${fromDate!.day.toString().padLeft(2, '0')}",
-    "to_date": "${toDate!.year.toString().padLeft(4, '0')}-${toDate!.month.toString().padLeft(2, '0')}-${toDate!.day.toString().padLeft(2, '0')}",
+    "from_date": _ymd(fromDate),
+    "to_date": _ymd(toDate),
     "payment_type": paymentType,
     "last_modified": "${lastModified!.year.toString().padLeft(4, '0')}-${lastModified!.month.toString().padLeft(2, '0')}-${lastModified!.day.toString().padLeft(2, '0')}",
     "driver": driver?.toJson(),
