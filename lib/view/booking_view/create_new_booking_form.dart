@@ -58,6 +58,27 @@ import 'widgets/labeled_time_picker.dart';
 import 'widgets/update_booking_parts.dart' show LabeledActionButton, UpdateFormPalette;
 
 // ---------------------------------------------------------------------------
+// Field borders — the same width and colour as the dashboard booking form
+// (auth/dashboard_form_widget.dart `_kFieldDecoration`): a 1.0 grey outline at
+// rest and a 2.0 indigo one on focus, 6px corners. Kept local to this screen
+// so the update / edit forms that share [denseInputTheme] are unaffected.
+// ---------------------------------------------------------------------------
+final OutlineInputBorder _createFormIdleBorder = OutlineInputBorder(
+  borderRadius: BorderRadius.circular(6),
+  borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.7)),
+);
+
+final InputDecorationTheme _createFormInputTheme = denseInputTheme.copyWith(
+  border: _createFormIdleBorder,
+  enabledBorder: _createFormIdleBorder,
+  disabledBorder: _createFormIdleBorder,
+  focusedBorder: OutlineInputBorder(
+    borderRadius: BorderRadius.circular(6),
+    borderSide: const BorderSide(color: fieldFocusColor, width: 2),
+  ),
+);
+
+// ---------------------------------------------------------------------------
 // The screen itself.
 // ---------------------------------------------------------------------------
 class CreateNewBookingForm extends StatefulWidget {
@@ -439,8 +460,8 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
         child: Theme(
           // Applied here so the compact field heights survive even if this
           // screen is embedded under someone else's MaterialApp.
-          data:
-              Theme.of(context).copyWith(inputDecorationTheme: denseInputTheme),
+          data: Theme.of(context)
+              .copyWith(inputDecorationTheme: _createFormInputTheme),
           child: LayoutBuilder(
             builder: (context, constraints) => FormLayout(
               // Decided once, from the real screen width, for the whole form.
@@ -535,6 +556,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                 items: data.subsidiaries ?? const [],
                 value: controller.selectSubsidiariesValue,
                 itemLabel: (s) => s.name ?? '',
+                allowUnselect: false,
                 onChanged: (v) {
                   if (v == null) return;
                   setState(() {
@@ -756,6 +778,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                 value: controller.selectJourneyTypeValue,
                 itemLabel: (j) => j.journeyType ?? '',
                 onChanged: _onJourneyChanged,
+                allowUnselect: false,
               )),
               SpanField(LabeledObjectDropdown<DashboardVehicleTypeObject>(
                 'VEH',
@@ -763,6 +786,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                 value: controller.selectVehicleValue,
                 itemLabel: vehicleLabel,
                 onChanged: _onVehicleChanged,
+                allowUnselect: false,
               )),
               ..._ifReturn(
                   SpanField(LabeledObjectDropdown<DashboardVehicleTypeObject>(
@@ -771,6 +795,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                 value: controller.selectVehicleValueReturn,
                 itemLabel: vehicleLabel,
                 onChanged: _onReturnVehicleChanged,
+                allowUnselect: false,
               ))),
               SpanField(LabeledObjectDropdown<DashboardAccountObject>(
                 'ACC',
@@ -863,6 +888,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                 itemLabel: (p) => p.name ?? '',
                 onChanged: (v) =>
                     setState(() => controller.selectPaymentTypeValue = v),
+                allowUnselect: false,
               )),
               ..._ifReturn(SpanField(LabeledInput('R/LEAD (MINS)',
                   controller: controller.minControllerReturn,

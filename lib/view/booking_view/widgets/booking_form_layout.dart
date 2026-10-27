@@ -72,8 +72,12 @@ Color focusRingOn(Color background) =>
 /// pick all of it up without being told about it.
 const InputDecorationTheme denseInputTheme = InputDecorationTheme(
   isDense: true,
-  contentPadding:
-      EdgeInsets.symmetric(horizontal: 8, vertical: Density.fieldPadY),
+  // The app leaves visualDensity adaptive, which is compact on desktop / web
+  // and takes another 8px off every field. Pinned so [Density] heights are
+  // the heights actually drawn, the same as on the dashboard form.
+  visualDensity: VisualDensity.standard,
+  contentPadding: EdgeInsets.symmetric(
+      horizontal: Density.fieldPadX, vertical: Density.fieldPadY),
   border: _idleBorder,
   enabledBorder: _idleBorder,
   disabledBorder: _idleBorder,
@@ -190,19 +194,21 @@ class Density {
   // which is where the two drifted apart: at fieldFont a line is ~15.2, so
   // the text fields came out ~5px shorter than the dropdowns beside them.
   //
-  // 34 is the floor a dropdown can reach: Material's dense DropdownButton has
-  // a hard 24px inner height, so [dropPadY] below is down to 5 a side. Going
-  // lower would push that padding negative and the dropdowns would stop
-  // matching the text fields beside them.
-  static const double fieldHeight = 34;
+  // One height for every input — text fields and dropdowns alike — so a row
+  // of mixed controls lines up. Tighter than the dashboard booking form's
+  // 35 / 38px. A dense DropdownButton has a hard 24px inner height, so 24 is
+  // the absolute floor; at 30 it keeps 3px of padding a side.
+  static const double fieldHeight = 30;
+  static const double dropdownHeight = fieldHeight;
 
-  // A 13px line of text measures ~15.2 logical pixels, so this is the padding
-  // that gets a text field to [fieldHeight].
-  // A line of text measures ~1.17x its font size.
+  // A line of text measures ~1.17x its font size, so this is the padding that
+  // gets a text field to [fieldHeight].
   static const double fieldPadY = (fieldHeight - fieldFont * 1.17) / 2;
-  // A dense DropdownButton has a hard-coded 24px inner height, so it needs
-  // correspondingly less padding to land on that same [fieldHeight].
-  static const double dropPadY = (fieldHeight - 24) / 2;
+  // A dense DropdownButton has a hard-coded 24px inner height, so this is the
+  // padding that gets it to [dropdownHeight].
+  static const double dropPadY = (dropdownHeight - 24) / 2;
+  // Horizontal padding inside every field — the dashboard form's 10.
+  static const double fieldPadX = 10;
   // Sizes match the dashboard form (auth/dashboard_form_widget.dart).
   static const double fieldFont = 11; // text inside inputs
   static const double hintFont = 12; // placeholder text

@@ -59,8 +59,8 @@ class _LabeledDropdownState extends State<LabeledDropdown> {
         // 16 keeps the icon from becoming the tallest thing in the row.
         iconSize: 16,
         decoration: const InputDecoration(
-          contentPadding:
-              EdgeInsets.symmetric(horizontal: 8, vertical: Density.dropPadY),
+          contentPadding: EdgeInsets.symmetric(
+              horizontal: Density.fieldPadX, vertical: Density.dropPadY),
         ),
         style: kFormValueStyle,
         items: [
@@ -109,7 +109,7 @@ class LabeledZoneDropdown extends StatelessWidget implements LabelledField {
     final selected = value != null && items.contains(value) ? value : null;
     return FieldShell(
       label: label,
-      child: DropdownButtonFormField<ZoneObject>(
+      child: DropdownButtonFormField<ZoneObject?>(
         initialValue: selected,
         isExpanded: true,
         isDense: true,
@@ -117,11 +117,15 @@ class LabeledZoneDropdown extends StatelessWidget implements LabelledField {
         iconSize: 16,
         hint: const Text('SELECT ZONE', style: kFormDropdownHintStyle),
         decoration: const InputDecoration(
-          contentPadding:
-              EdgeInsets.symmetric(horizontal: 8, vertical: Density.dropPadY),
+          contentPadding: EdgeInsets.symmetric(
+              horizontal: Density.fieldPadX, vertical: Density.dropPadY),
         ),
         style: kFormValueStyle,
         items: [
+          const DropdownMenuItem<ZoneObject?>(
+            value: null,
+            child: _UnselectEntry('SELECT ZONE'),
+          ),
           for (final z in items)
             DropdownMenuItem(
               value: z,
@@ -156,13 +160,20 @@ class LabeledObjectDropdown<T> extends StatefulWidget implements LabelledField {
   /// Shown while nothing is selected.
   final String? hint;
 
+  /// Puts the [hint] at the top of the open menu as an entry of its own, so
+  /// the user can clear the selection — the dashboard form's `allowUnselect`.
+  /// Off for the fields a booking can't be without (journey type, vehicle,
+  /// payment).
+  final bool allowUnselect;
+
   const LabeledObjectDropdown(this.label,
       {super.key,
       required this.items,
       required this.itemLabel,
       this.value,
       this.onChanged,
-      this.hint});
+      this.hint,
+      this.allowUnselect = true});
 
   @override
   State<LabeledObjectDropdown<T>> createState() =>
@@ -209,9 +220,10 @@ class _LabeledObjectDropdownState<T> extends State<LabeledObjectDropdown<T>> {
   Widget build(BuildContext context) {
     final items = widget.items;
     final itemLabel = widget.itemLabel;
+    final hint = widget.hint ?? 'SELECT';
     return FieldShell(
       label: widget.label,
-      child: DropdownButtonFormField<T>(
+      child: DropdownButtonFormField<T?>(
         key: ValueKey(_generation),
         focusNode: _focusNode,
         initialValue: _selected,
@@ -219,15 +231,17 @@ class _LabeledObjectDropdownState<T> extends State<LabeledObjectDropdown<T>> {
         isDense: true,
         itemHeight: null,
         iconSize: 16,
-        hint: Text(widget.hint ?? 'SELECT', style: kFormDropdownHintStyle),
+        hint: Text(hint, style: kFormDropdownHintStyle),
         decoration: const InputDecoration(
-          contentPadding:
-              EdgeInsets.symmetric(horizontal: 8, vertical: Density.dropPadY),
+          contentPadding: EdgeInsets.symmetric(
+              horizontal: Density.fieldPadX, vertical: Density.dropPadY),
         ),
         style: kFormValueStyle,
         items: [
+          if (widget.allowUnselect)
+            DropdownMenuItem<T?>(value: null, child: _UnselectEntry(hint)),
           for (final i in items)
-            DropdownMenuItem<T>(
+            DropdownMenuItem<T?>(
               value: i,
               child: Text(itemLabel(i), overflow: TextOverflow.ellipsis),
             ),
@@ -236,4 +250,16 @@ class _LabeledObjectDropdownState<T> extends State<LabeledObjectDropdown<T>> {
       ),
     );
   }
+}
+
+/// The "SELECT …" entry at the top of an open menu, as on the dashboard form.
+/// Styled as the placeholder, so the closed field still reads as empty once
+/// it is picked.
+class _UnselectEntry extends StatelessWidget {
+  final String text;
+  const _UnselectEntry(this.text);
+
+  @override
+  Widget build(BuildContext context) =>
+      Text(text, overflow: TextOverflow.ellipsis, style: kFormDropdownHintStyle);
 }
