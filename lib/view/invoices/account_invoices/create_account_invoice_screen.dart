@@ -359,7 +359,7 @@ class _CreateAccountInvoiceScreenState
                         height: 30,
                         borderRadius: 4,
                         btnText: AppText.filter,
-                        style: mozillaTextRegularText(
+                        style: mozillaTextSemiBoldText(
                             fontSize: 10, color: DynamicColors.whiteClr),
                         onTap: () {
                           controller.getInvoiceNumber();
@@ -378,14 +378,17 @@ class _CreateAccountInvoiceScreenState
                         height: 30,
                         borderRadius: 4,
                         btnText: AppText.save,
-                        style: mozillaTextRegularText(
+                        style: mozillaTextSemiBoldText(
                             fontSize: 10, color: DynamicColors.whiteClr),
                         onTap: () {
                           Controller.addAccountInvoice();
                           },
                       ),
                     ),
-                     ResponsiveDataTableWidget(
+
+                     controller.isLoadingInvoice
+                         ? const Center(child: CircularProgressIndicator())
+                         : ResponsiveDataTableWidget(
                         totalWidth: totalAvailableWidth,
                         columnConfigs: [
                           TableColumnConfig(
@@ -437,14 +440,14 @@ class _CreateAccountInvoiceScreenState
                             final totalData = item['data'];
                             return [
                               "", "", "", "", "", "", "", "",
-                              Center(child: Text("TOTAL", style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12))),
+                              Center(child: Text("TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900, fontSize: 12))),
                               Center(child: Text("£${totalData.fareTotal ?? "0.00"}")),
                               Center(child: Text("£${totalData.parkingChargesTotal ?? "0.00"}")),
                               Center(child: Text("£${totalData.waitingChargesTotal ?? "0.00"}")),
                               Center(child: Text("£${totalData.extraDropChargesTotal ?? "0.00"}")),
                               Center(child: Text("£${totalData.meetAndGreetTotal ?? "0.00"}")),
                               Center(child:Text("£${totalData.congestionChargesTotal ?? "0.00"}")),
-                              Center(child: Text("£${totalData.total ?? "0.00"}", style: mozillaTextRegularText(color: Colors.blue, fontSize: 12))),
+                              Center(child: Text("£${totalData.total ?? "0.00"}", style: mozillaTextSemiBoldText(color: Colors.blue, fontSize: 12))),
                               "",
                             ];
                           }
@@ -453,9 +456,9 @@ class _CreateAccountInvoiceScreenState
                             final totalData = item['data'];
                             return [
                               "", "", "", "", "", "", "", "",
-                              Center(child: Text("GRAND\nTOTAL", style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12))),
+                              Center(child: Text("GRAND\nTOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900, fontSize: 12))),
                               "", "", "", "", "", "",
-                              Center(child: Text("£${totalData.grandTotal ?? "0.00"}", style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12))),
+                              Center(child: Text("£${totalData.grandTotal ?? "0.00"}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
                               "",
                             ];
                           }
@@ -534,7 +537,7 @@ class _CreateAccountInvoiceScreenState
                             Center(
                               child: Text(
                                 "£${booking.totalCharges ?? '0.0'}",
-                                style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12),
+                                style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12),
                               ),
                             ),
 
@@ -545,7 +548,7 @@ class _CreateAccountInvoiceScreenState
                                 height: 26,
                                 borderRadius: 4,
                                 btnText: "SAVE",
-                                style: mozillaTextRegularText(fontSize: 9, color: DynamicColors.whiteClr),
+                                style: mozillaTextSemiBoldText(fontSize: 9, color: DynamicColors.whiteClr),
                                 onTap: () {
                                   if (booking != null) {
                                     controller.updateBookingCharges(booking);

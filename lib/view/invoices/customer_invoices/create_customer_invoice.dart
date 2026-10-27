@@ -54,6 +54,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
 
     return PageScrollWrapper(
       child: GetBuilder<CustomerInvoiceController>(initState: (v) {
+        controller.clearCustomerInvoice();
         controller.getPaymentTypes();
         controller.getCustomerInvoiceNumber();
         permissions = Api().sp.read('all_permissions') ?? [];
@@ -383,78 +384,6 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                                         );
                                       },
 
-                                      // optionsViewBuilder:
-                                      //     (context, onSelected, options) {
-                                      //   return Align(
-                                      //     alignment: Alignment.topLeft,
-                                      //     child: Material(
-                                      //       elevation: 4.0,
-                                      //       borderRadius: BorderRadius.circular(8),
-                                      //       color: Colors.white,
-                                      //       child: Container(
-                                      //         width: constraints.maxWidth,
-                                      //         height: 250,
-                                      //         decoration: BoxDecoration(
-                                      //           color: Colors.white,
-                                      //           borderRadius:
-                                      //               BorderRadius.circular(8),
-                                      //           border: Border.all(
-                                      //               color: Colors.grey.shade200),
-                                      //         ),
-                                      //         child: ListView.builder(
-                                      //           padding: EdgeInsets.zero,
-                                      //           shrinkWrap: true,
-                                      //           itemCount: options.length,
-                                      //           itemBuilder: (BuildContext context,
-                                      //               int index) {
-                                      //             final SearchCustomer option =
-                                      //                 options.elementAt(index);
-                                      //
-                                      //             final bool highlight =
-                                      //                 AutocompleteHighlightedOption
-                                      //                         .of(context) ==
-                                      //                     index;
-                                      //
-                                      //             return InkWell(
-                                      //               onTap: () => onSelected(option),
-                                      //               child: Container(
-                                      //                 color: highlight
-                                      //                     ? const Color(0xFFE1F2FE)
-                                      //                     : null,
-                                      //                 padding:
-                                      //                     const EdgeInsets.symmetric(
-                                      //                         vertical: 8.0,
-                                      //                         horizontal: 12.0),
-                                      //                 child: Row(
-                                      //                   mainAxisSize:
-                                      //                       MainAxisSize.min,
-                                      //                   children: [
-                                      //                     Text(
-                                      //                       option.name ?? '',
-                                      //                       style: const TextStyle(
-                                      //                           fontWeight:
-                                      //                               FontWeight.bold,
-                                      //                           fontSize: 13,
-                                      //                           color: Colors.black),
-                                      //                     ),
-                                      //                     const SizedBox(width: 10),
-                                      //                     Text(
-                                      //                       "${option.mobile ?? ''}",
-                                      //                       style: const TextStyle(
-                                      //                           color: Colors.black,
-                                      //                           fontSize: 13),
-                                      //                     ),
-                                      //                   ],
-                                      //                 ),
-                                      //               ),
-                                      //             );
-                                      //           },
-                                      //         ),
-                                      //       ),
-                                      //     ),
-                                      //   );
-                                      // },
-
                                       // ACTION ON SELECTION
                                       onSelected: (SearchCustomer selection) {
                                         controller.selectedCustomerId = selection.id;
@@ -647,10 +576,11 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  ResponsiveDataTableWidget(
+                  SizedBox(height: 8),
+
+                  controller.isFilteredLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : ResponsiveDataTableWidget(
                       totalWidth: totalAvailableWidth,
                       columnConfigs: [
                         TableColumnConfig(
@@ -770,29 +700,6 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                         final isRowSelected =
                         controller.selectedIds.contains(booking.id.toString());
 
-                        // Widget editableCell(
-                        //     dynamic initialValue, Function(String) onChanged) {
-                        //   return Center(
-                        //     child: SizedBox(
-                        //       width: 50,
-                        //       child: TextFormField(
-                        //         initialValue: initialValue?.toString() ?? "0",
-                        //         keyboardType: TextInputType.numberWithOptions(decimal: true),
-                        //         textAlign: TextAlign.center,
-                        //         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))],
-                        //         style: const TextStyle(fontSize: 11),
-                        //         decoration: const InputDecoration(
-                        //           isDense: true,
-                        //           contentPadding: EdgeInsets.symmetric(
-                        //               vertical: 6, horizontal: 4),
-                        //           border: OutlineInputBorder(),
-                        //         ),
-                        //         onChanged: onChanged,
-                        //       ),
-                        //     ),
-                        //   );
-                        // }
-
                         return [
                           Center(
                             child: Checkbox(
@@ -857,30 +764,6 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                               controller.recalculateTotalRow(booking);
                             },
                           ),
-                          // editableCell(booking.fares, (val) {
-                          //   booking.fares = val;
-                          //   controller.recalculateTotalRow(booking);
-                          // }),
-                          // editableCell(booking.parkingCharges, (val) {
-                          //   booking.parkingCharges = val;
-                          //   controller.recalculateTotalRow(booking);
-                          // }),
-                          // editableCell(booking.waitingCharges, (val) {
-                          //   booking.waitingCharges = val;
-                          //   controller.recalculateTotalRow(booking);
-                          // }),
-                          // editableCell(booking.extraDropCharges, (val) {
-                          //   booking.extraDropCharges = val;
-                          //   controller.recalculateTotalRow(booking);
-                          // }),
-                          // editableCell(booking.meetAndGreet, (val) {
-                          //   booking.meetAndGreet = val;
-                          //   controller.recalculateTotalRow(booking);
-                          // }),
-                          // editableCell(booking.congestionCharges, (val) {
-                          //   booking.congestionCharges = val;
-                          //   controller.recalculateTotalRow(booking);
-                          // }),
                           Center(child: Text("£ ${booking.totalCharges ?? "0"}")),
                           Center(
                             child: CustomButton(
