@@ -2,6 +2,7 @@ import 'package:dashboard_new1/view/vehicles_view/create_vehicle_types.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import '../utils/new_window.dart';
 import '../view/auth/edit_jobs.dart';
 import '../view/auth/new_login_screen.dart';
 import '../view/auth/receipt_details.dart';
@@ -11,6 +12,12 @@ import '../view/customer/create_complaint.dart';
 import '../view/customer/create_lost_propertyScreen.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
 import '../view/dashboard_view/widgets/view_drivers_map.dart';
+import '../view/invoices/account_invoices/account_invoice_preview_screen.dart';
+import '../view/invoices/customer_invoices/customer_invoice_view_screen.dart';
+import '../view/invoices/model/update_account_invoice_model.dart'
+    show UpdateInvoiceByIdModel;
+import '../view/invoices/model/update_customer_invoice_model.dart'
+    show CustomerInvoiceByIdModel;
 import '../view/main_appbar/main_appbar.dart';
 import '../view/setting/wallboard_screen.dart';
 part 'app_routes.dart';
@@ -87,6 +94,24 @@ class AppPages {
     GetPage(
         name: _Paths.wallboardScreen,
         page: () => WallboardScreen()),
+    // Opened in its own window with openScreenInNewWindow(), which hands the
+    // invoice over through storage — the new window has no controller.
+    GetPage(
+      name: _Paths.customerInvoiceView,
+      page: () => NewWindowScreen<CustomerInvoiceByIdModel>(
+        fromJson: CustomerInvoiceByIdModel.fromJson,
+        builder: (context, data) =>
+            CustomerInvoiceViewScreen(invoice: data.customerInvoice),
+      ),
+    ),
+    GetPage(
+      name: _Paths.accountInvoiceView,
+      page: () => NewWindowScreen<UpdateInvoiceByIdModel>(
+        fromJson: UpdateInvoiceByIdModel.fromJson,
+        builder: (context, data) => AccountInvoiceViewScreen(
+            invoice: data.accountInvoice?.accountInvoice),
+      ),
+    ),
   ];
 }
 

@@ -15,6 +15,8 @@ import '../../../alert/update_invoice_email_alt.dart';
 import '../../../component/editable_cell_widget.dart';
 import '../../../component/responsive_datatable_widget.dart';
 import '../../../component/text_widget.dart';
+import '../../../routes/app_pages.dart';
+import '../../../utils/new_window.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../dashboard_view/widgets/user_info_widget.dart';
@@ -170,9 +172,14 @@ class _UpdateCustomerInvoiceState extends State<UpdateCustomerInvoiceScreen> {
                                 style: mozillaTextRegularText(
                                     fontSize: 10, color: DynamicColors.whiteClr),
                                 onTap: () {
-                                  Get.dialog(
-                                    InvoiceViewWindowWrapper(),
-                                    barrierDismissible: true,
+                                  final invoice = controller.customerInvoiceByIdModel;
+                                  if (invoice?.customerInvoice == null) {
+                                    BotToast.showText(text: "NO INVOICE DATA FOUND");
+                                    return;
+                                  }
+                                  openScreenInNewWindow(
+                                    Routes.customerInvoiceView,
+                                    data: invoice,
                                   );
                                 }
                             ),

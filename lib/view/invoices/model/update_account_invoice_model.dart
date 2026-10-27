@@ -10,6 +10,8 @@ UpdateInvoiceByIdModel updateInvoiceByIdModelFromJson(String str) => UpdateInvoi
 
 String updateInvoiceByIdModelToJson(UpdateInvoiceByIdModel data) => json.encode(data.toJson());
 
+String? _ymd(DateTime? d) => d == null ? null : DateFormat('yyyy-MM-dd').format(d);
+
 class UpdateInvoiceByIdModel {
   UpdateInvoiceByIdModelAccountInvoice? accountInvoice;
 
@@ -127,10 +129,13 @@ class AccountInvoiceAccountInvoice {
     "subsidiary_id": subsidiaryId,
     "account_id": accountId,
     "invoice_number": invoiceNumber,
-    "invoice_date": "${invoiceDate!.year.toString().padLeft(4, '0')}-${invoiceDate!.month.toString().padLeft(2, '0')}-${invoiceDate!.day.toString().padLeft(2, '0')}",
-    "invoice_due_date": "${invoiceDueDate!.year.toString().padLeft(4, '0')}-${invoiceDueDate!.month.toString().padLeft(2, '0')}-${invoiceDueDate!.day.toString().padLeft(2, '0')}",
-    "from_date": "${fromDate!.year.toString().padLeft(4, '0')}-${fromDate!.month.toString().padLeft(2, '0')}-${fromDate!.day.toString().padLeft(2, '0')}",
-    "to_date": "${toDate!.year.toString().padLeft(4, '0')}-${toDate!.month.toString().padLeft(2, '0')}-${toDate!.day.toString().padLeft(2, '0')}",
+    // "yyyy-MM-dd", the format fromJson reads back — and null-safe, since a
+    // missing date made toJson throw and left the invoice window
+    // (utils/new_window.dart) empty.
+    "invoice_date": _ymd(invoiceDate),
+    "invoice_due_date": _ymd(invoiceDueDate),
+    "from_date": _ymd(fromDate),
+    "to_date": _ymd(toDate),
     "invoice_type": invoiceType,
     "department_id": departmentId,
     "order_number": orderNumber,

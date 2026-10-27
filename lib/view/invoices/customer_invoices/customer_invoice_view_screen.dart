@@ -6,6 +6,7 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import '../../../component/color.dart';
 import '../controller/customer_invoice_controller.dart';
 import '../controller/account_invoice_controller.dart';
+import '../model/update_customer_invoice_model.dart' show UpdateCustomerInvoice;
 
 class InvoiceViewWindowWrapper extends StatefulWidget {
   @override
@@ -83,11 +84,21 @@ class _InvoiceViewWindowWrapperState
 }
 
 class CustomerInvoiceViewScreen extends StatelessWidget {
+  /// The invoice to show. Passed in when the screen is opened in its own
+  /// window (see utils/new_window.dart), where no CustomerInvoiceController
+  /// exists; otherwise read from the controller as before.
+  final UpdateCustomerInvoice? invoice;
+
+  const CustomerInvoiceViewScreen({super.key, this.invoice});
+
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<CustomerInvoiceController>();
-    final mainData =
-        controller.customerInvoiceByIdModel?.customerInvoice;
+    final mainData = invoice ??
+        (Get.isRegistered<CustomerInvoiceController>()
+            ? Get.find<CustomerInvoiceController>()
+                .customerInvoiceByIdModel
+                ?.customerInvoice
+            : null);
 
     if (mainData == null) {
       return const Center(child: Text("NO INVOICE DATA FOUND"));

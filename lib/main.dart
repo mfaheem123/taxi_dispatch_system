@@ -792,7 +792,13 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    if(sp.read('token') !=null){
+    // A window popped by the app itself (utils/new_window.dart,
+    // new_window_booking.dart) boots a second app instance. The window that
+    // opened it has already registered this browser's device token, and
+    // re-posting it from the popup only gets an "employee id not found" error
+    // back — so only the main window does it.
+    final isPoppedWindow = html.window.opener != null;
+    if (sp.read('token') != null && !isPoppedWindow) {
       refreshDeviceToken();
     }
   }
@@ -803,6 +809,7 @@ class _MyAppState extends State<MyApp> {
     String? fcmToken = await FirebaseMessaging.instance.getToken();
     print("FCM Token: $fcmToken");
     var userInfo = await sp.read('userData');
+    if (userInfo == null || userInfo['id'] == null) return;
     var formData = {
       "web_device_id": fcmToken ?? "",
     };

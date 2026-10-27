@@ -15,8 +15,9 @@ import '../../../alert/stripe_payment.dart';
 import '../../../alert/update_invoice_email_alt.dart';
 import '../../../component/editable_cell_widget.dart';
 import '../../../component/responsive_datatable_widget.dart';
+import '../../../routes/app_pages.dart';
+import '../../../utils/new_window.dart';
 import '../controller/account_invoice_controller.dart';
-import 'account_invoice_preview_screen.dart';
 
 class UpdateAccountInvoiceScreen extends StatefulWidget {
   const UpdateAccountInvoiceScreen({super.key});
@@ -186,10 +187,15 @@ class _UpdateAccountInvoiceScreenState
                       btnText: "VIEW",
                       style: mozillaTextRegularText(
                           fontSize: 10, color: DynamicColors.whiteClr),
-                      onTap: ()  {
-                        Get.dialog(
-                          InvoicePreviewWindowWrapper(),
-                          barrierDismissible: true,
+                      onTap: () {
+                        final invoice = controller.updateInvoiceByIdModel;
+                        if (invoice?.accountInvoice?.accountInvoice == null) {
+                          BotToast.showText(text: "NO INVOICE DATA FOUND");
+                          return;
+                        }
+                        openScreenInNewWindow(
+                          Routes.accountInvoiceView,
+                          data: invoice,
                         );
                       },
                     ),

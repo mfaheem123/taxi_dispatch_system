@@ -10,6 +10,8 @@ CustomerInvoiceByIdModel customerInvoiceByIdModelFromJson(String str) => Custome
 
 String customerInvoiceByIdModelToJson(CustomerInvoiceByIdModel data) => json.encode(data.toJson());
 
+String? _ymd(DateTime? d) => d == null ? null : DateFormat('yyyy-MM-dd').format(d);
+
 class CustomerInvoiceByIdModel {
   bool? status;
   UpdateCustomerInvoice? customerInvoice;
@@ -92,10 +94,13 @@ class UpdateCustomerInvoice {
     "id": id,
     "invoice_number": invoiceNumber,
     "customer_id": customerId,
-    "invoice_date": invoiceDate,
-    "invoice_due_date": invoiceDueDate,
-    "from_date": "${fromDate!.year.toString().padLeft(4, '0')}-${fromDate!.month.toString().padLeft(2, '0')}-${fromDate!.day.toString().padLeft(2, '0')}",
-    "to_date": "${toDate!.year.toString().padLeft(4, '0')}-${toDate!.month.toString().padLeft(2, '0')}-${toDate!.day.toString().padLeft(2, '0')}",
+    // Dates go out as "yyyy-MM-dd" strings — the format fromJson reads back.
+    // A raw DateTime here made jsonEncode throw, which is what left the invoice
+    // window (utils/new_window.dart) empty.
+    "invoice_date": _ymd(invoiceDate),
+    "invoice_due_date": _ymd(invoiceDueDate),
+    "from_date": _ymd(fromDate),
+    "to_date": _ymd(toDate),
     "invoice_type": invoiceType,
     "amount": amount,
     "status": status,
