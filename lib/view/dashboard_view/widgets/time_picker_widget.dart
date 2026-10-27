@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../component/color.dart';
+import '../Controller/dashboard_controller.dart';
 
 class CustomTimePicker extends StatefulWidget {
   final TextEditingController? controller;
@@ -1451,21 +1452,28 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
     DateTime initial = DateTime(year, month, day);
     DateTime now = DateTime.now();
 
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: initial,
-      firstDate: widget.allowPastDates ? DateTime(1900) : DateTime(now.year, now.month, now.day),
-      lastDate: widget.allowFutureDates ? DateTime(2100) : DateTime(now.year, now.month, now.day),
-    );
+    final String previousShortcutKey = shortCutKeyValue.value;
+    shortCutKeyValue.value = "alert";
 
-    if (picked != null) {
-      setState(() {
-        day = picked.day;
-        month = picked.month;
-        year = picked.year;
-      });
-      widget.onChanged?.call(picked);
-      widget.onSubmitted?.call(picked);
+    try {
+      final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: initial,
+        firstDate: widget.allowPastDates ? DateTime(1900) : DateTime(now.year, now.month, now.day),
+        lastDate: widget.allowFutureDates ? DateTime(2100) : DateTime(now.year, now.month, now.day),
+      );
+
+      if (picked != null) {
+        setState(() {
+          day = picked.day;
+          month = picked.month;
+          year = picked.year;
+        });
+        widget.onChanged?.call(picked);
+        widget.onSubmitted?.call(picked);
+      }
+    } finally {
+      shortCutKeyValue.value = previousShortcutKey;
     }
   }
 
