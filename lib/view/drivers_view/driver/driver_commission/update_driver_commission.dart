@@ -10,6 +10,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../../../../alert/pay_driver_commission.dart';
 import '../../../../alert/update_driver_commission_email.dart';
@@ -23,6 +24,7 @@ import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../../dashboard_view/booking_table.dart';
 import '../../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../controller/driver_controller.dart';
+import '../../model/list_driver_commission_model.dart';
 import 'driver_commission_preview_screen.dart';
 
 class UpdateDriverCommissionScreen extends StatefulWidget {
@@ -374,28 +376,42 @@ class _UpdateDriverCommissionScreenState
                                           style: mozillaTextSemiBoldText(
                                               fontSize: 13,
                                               color: DynamicColors.whiteClr),
-                                          onTap: () {
+                                          onTap: () async {
                                             final commission = controller.updateDriverCommissionByIdModel;
-                                            if(commission?.driverCommission == null) {
+                                            if (commission?.driverCommission == null) {
                                               BotToast.showText(text: "NO COMMISSION DATA FOUND");
                                               return;
                                             }
+
+                                            if (controller.listDriverCommission == null) {
+                                              await controller.getCreateDriverCommission();
+                                            }
+
+                                            final currentDriverId = commission?.driverCommission?.driver?.id;
+                                            final driverList = controller.listDriverCommission?.drivers ?? [];
+
+                                            CreateDriverCommission? matchedDriver;
+                                            if (driverList.isNotEmpty) {
+                                              try {
+                                                matchedDriver = driverList.firstWhere((d) => d.id == currentDriverId);
+                                              } catch (_) {
+                                                matchedDriver = null;
+                                              }
+                                            }
+
+                                            final box = GetStorage();
+                                            if (matchedDriver != null) {
+                                              box.write('temp_driver_commission_mobile', matchedDriver.mobile ?? '');
+                                              box.write('temp_driver_commission_telephone', matchedDriver.telephone ?? '');
+                                              box.write('temp_driver_mobile', matchedDriver.mobile ?? '');
+                                              box.write('temp_driver_telephone', matchedDriver.telephone ?? '');
+                                            }
+
                                             openScreenInNewWindow(
                                               Routes.driverCommissionView,
                                               data: commission,
                                             );
                                           },
-                                          // onTap: () async {
-                                          //   if (controller.listDriverCommission ==
-                                          //       null) {
-                                          //     await controller
-                                          //         .getCreateDriverCommission();
-                                          //   }
-                                          //   Get.dialog(
-                                          //     DriverComissionWindowWrapper(),
-                                          //     barrierDismissible: true,
-                                          //   );
-                                          // },
                                         ),
                                         SizedBox(width: 5),
                                         CustomButton(

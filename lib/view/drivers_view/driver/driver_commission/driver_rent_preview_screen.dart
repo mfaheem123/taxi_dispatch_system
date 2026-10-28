@@ -1,10 +1,12 @@
 import 'package:dashboard_new1/view/drivers_view/controller/driver_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:get_storage/get_storage.dart';
 import '../../../../component/color.dart';
 import '../../../../component/textStyle.dart';
+import '../../model/update_driver_rent_model.dart' show DriverRent;
 import '../../model/create_driver_rent_model.dart';
+
 
 class DriverRentWindowWrapper extends StatefulWidget {
   @override
@@ -71,7 +73,7 @@ class _DriverRentWindowWrapperState extends State<DriverRentWindowWrapper> {
                   ],
                 ),
               ),
-              Expanded(child: DriverRentViewScreen(isPopup: true)),
+              Expanded(child: DriverRentViewScreen()),
             ],
           ),
         ),
@@ -81,20 +83,64 @@ class _DriverRentWindowWrapperState extends State<DriverRentWindowWrapper> {
 }
 
 class DriverRentViewScreen extends StatelessWidget {
-  final bool isPopup;
-  DriverRentViewScreen({this.isPopup = false});
+  final DriverRent? rent;
+  const DriverRentViewScreen({super.key, this.rent});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<DriverController>();
-    final data = controller.updateDriverRentByIdModel?.driverRent;
+    final controller =  Get.isRegistered<DriverController>()
+        ? Get.find<DriverController>()
+        : null;
+
+    final data = rent ?? controller?.updateDriverRentByIdModel?.driverRent;
     final items = data?.driverRentLineitems ?? [];
 
     final currentDriverId = data?.driver?.id;
-    final selectedDriverData = controller.driverRentModel?.drivers?.firstWhere(
-      (d) => d.id == currentDriverId,
-      orElse: () => CreateDriverRent(),
-    );
+
+    final storage = GetStorage();
+
+    String mobileNumber = storage.read<String>('temp_driver_rent_mobile') ??
+        storage.read<String>('temp_driver_mobile') ??
+        "";
+    String telephoneNumber = storage.read<String>('temp_driver_rent_telephone') ??
+        storage.read<String>('temp_driver_telephone') ??
+        "";
+
+    if (controller != null && controller.driverRentModel?.drivers != null) {
+      try {
+        final selectedDriverData = controller.driverRentModel!.drivers!.firstWhere(
+              (d) => d.id == currentDriverId,
+        );
+        if (mobileNumber.isEmpty && (selectedDriverData.mobile ?? "").isNotEmpty) {
+          mobileNumber = selectedDriverData.mobile!;
+        }
+        if (telephoneNumber.isEmpty && (selectedDriverData.telephone ?? "").isNotEmpty) {
+          telephoneNumber = selectedDriverData.telephone!;
+        }
+      } catch (_) {}
+    }
+
+    final fromDate = data?.fromDate != null
+        ? data!.fromDate.toString().split(' ').first
+        : (controller?.updateRentFilterFromDate ?? '');
+
+    final toDate = data?.toDate != null
+        ? data!.toDate.toString().split(' ').first
+        : (controller?.updateRentFilterToDate ?? '');
+
+    final transactionDate = data?.transactionDate != null
+        ? data!.transactionDate.toString().split('T').first.split(' ').first
+        : (controller?.rentTransactionDateController.toString().split("T").first.split(" ").first ?? '');
+
+    double calculatedParkingCongestion = 0.0;
+    for (var item in items) {
+      final b = item.booking;
+      if (b != null) {
+        final pc = double.tryParse(b.parkingCharges ?? '0') ?? 0.0;
+        final cc = double.tryParse(b.congestionCharges ?? '0') ?? 0.0;
+        calculatedParkingCongestion += (pc + cc);
+      }
+    }
 
     const tableBorder = TableBorder(
       verticalInside: BorderSide(color: Colors.black, width: 0.5),
@@ -107,15 +153,6 @@ class DriverRentViewScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: isPopup
-          ? null
-          : AppBar(
-              title: Text("",
-                  style: mozillaTextSemiBoldText(
-                      color: Colors.white, fontSize: 20)),
-              backgroundColor: DynamicColors.primaryClr,
-              iconTheme: const IconThemeData(color: Colors.white),
-            ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
         child: Column(
@@ -131,15 +168,15 @@ class DriverRentViewScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 _buildUIInfoColumn("", [
-                  "PERIOD: (${controller.updateRentFilterFromDate} - ${controller.updateRentFilterToDate})",
+                  "PERIOD: ($fromDate - $toDate)",
                 ]),
                 const Spacer(flex: 1),
                 Expanded(
                   flex: 5,
                   child: _buildUIInfoColumn("", [
                     "EMAIL: ${(data?.driver?.email ?? "").toUpperCase()}",
-                    "MOBILE: ${selectedDriverData?.mobile ?? ""}",
-                    "TELEPHONE: ${selectedDriverData?.telephone ?? ""}",
+                    "MOBILE: $mobileNumber",
+                    "TELEPHONE: $telephoneNumber",
                   ]),
                 ),
                 Expanded(
@@ -150,7 +187,7 @@ class DriverRentViewScreen extends StatelessWidget {
                       "DRIVER: (${data?.driver?.username ?? ""})",
                       "${(data?.driver?.name ?? "").toUpperCase()}",
                       "RENT: ${data?.driver?.driverCommission ?? ""}",
-                      "DATE: ${controller.rentTransactionDateController.toString().split("T").first.split(" ").first}",
+                      "DATE: $transactionDate",
                     ],
                   ),
                 ),
@@ -216,8 +253,7 @@ class DriverRentViewScreen extends StatelessWidget {
                       _buildTableCell("£${b?.waitingCharges ?? '0'}"),
                       _buildTableCell("£${b?.extraDropCharges ?? '0'}"),
                       _buildTableCell("£${b?.congestionCharges ?? '0'}"),
-                      _buildTableCell("£${b?.totalCharges ?? '0'}",
-                          isBold: true),
+                      _buildTableCell("£${b?.totalCharges ?? '0'}", isBold: true),
                     ],
                   );
                 }).toList(),
@@ -232,15 +268,12 @@ class DriverRentViewScreen extends StatelessWidget {
                 1: FixedColumnWidth(98), // Matching TOTAL column
               },
               children: [
-                _buildFooterRow(
-                    context, "CASH TOTAL:", controller.updateCashTotal),
-                _buildFooterRow(context, "TOTAL:", controller.updateGrandTotal),
-                _buildFooterRow(
-                    context, "ACCOUNT TOTAL:", controller.updateAccountTotal),
-                _buildFooterRow(context, "PARKING/CONGESTION TOTAL:",
-                    controller.updateParkingCongestion),
-                _buildFooterRow(context, "RENT TOTAL:", controller.rTotal),
-                _buildFooterRow(context, "OWED:", controller.updateOwed),
+                _buildFooterRow(context, "CASH TOTAL:", double.tryParse(data?.cashJobsTotal ?? '0') ?? controller?.updateCashTotal ?? 0.0),
+                _buildFooterRow(context, "TOTAL:", double.tryParse(data?.jobsTotal ?? '0') ?? controller?.updateGrandTotal ?? 0.0),
+                _buildFooterRow(context, "ACCOUNT TOTAL:", double.tryParse(data?.accountJobsTotal ?? '0') ?? controller?.updateAccountTotal ?? 0.0),
+                _buildFooterRow(context, "PARKING/CONGESTION TOTAL:", controller?.updateParkingCongestion ?? calculatedParkingCongestion),
+                _buildFooterRow(context, "RENT TOTAL:", double.tryParse(data?.rentTotal ?? '0') ?? controller?.rTotal ?? 0.0),
+                _buildFooterRow(context, "OWED:", double.tryParse(data?.owed ?? '0') ?? controller?.updateOwed ?? 0.0),
               ],
             ),
             const SizedBox(height: 50),

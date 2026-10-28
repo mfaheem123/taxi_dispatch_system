@@ -13,7 +13,9 @@ import '../view/customer/create_lost_propertyScreen.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
 import '../view/dashboard_view/widgets/view_drivers_map.dart';
 import '../view/drivers_view/driver/driver_commission/driver_commission_preview_screen.dart';
+import '../view/drivers_view/driver/driver_commission/driver_rent_preview_screen.dart';
 import '../view/drivers_view/model/update_driver_commission_model.dart' show UpdateDriverCommissionByIdModel;
+import '../view/drivers_view/model/update_driver_rent_model.dart' show DriverRentByIdModel;
 import '../view/invoices/account_invoices/account_invoice_preview_screen.dart';
 import '../view/invoices/customer_invoices/customer_invoice_view_screen.dart';
 import '../view/invoices/model/update_account_invoice_model.dart'
@@ -120,6 +122,14 @@ class AppPages {
         fromJson: UpdateDriverCommissionByIdModel.fromJson,
         builder: (context, data) =>
             DriverCommissionViewScreen(commission: data.driverCommission),
+      ),
+    ),
+    GetPage(
+      name: _Paths.driverRentView,
+      page: () => NewWindowScreen<DriverRentByIdModel>(
+        fromJson: DriverRentByIdModel.fromJson,
+        builder: (context, data) =>
+            DriverRentViewScreen(rent: data.driverRent),
       ),
     ),
   ];
