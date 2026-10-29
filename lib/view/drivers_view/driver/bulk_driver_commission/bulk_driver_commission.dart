@@ -46,7 +46,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
             final bool isMobile = maxWidth < 600;
             final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-            final bool isCompact = maxWidth < 1500;
+            final bool isCompact = maxWidth < 1550;
 
             // Instead of fixed width, we calculate flexible field widths
             final double fieldWidth = isMobile
@@ -99,7 +99,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                       crossAxisAlignment: WrapCrossAlignment.center,
                                       children: [
                                          CustomDropdownField(
-                                           width: isCompact ? fieldWidth / 2.3 : fieldWidth / 2,
+                                           width: isCompact ? fieldWidth / 2.5 : fieldWidth / 2,
                                             text: "SUBS",
                                             label: AppText.selectSubsidiary,
                                             items: [
@@ -121,7 +121,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                               context: context,
                                               isMobile: isMobile,
                                               label: AppText.from,
-                                              width: isCompact ? fieldWidth / 2.3 : fieldWidth / 2,
+                                              width: isCompact ? fieldWidth / 2.6 : fieldWidth / 2,
                                               column: true,
                                               child: SizedBox(
                                                 height: isCompact ? 28 : 30,
@@ -133,7 +133,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                               context: context,
                                               isMobile: isMobile,
                                            label: AppText.to,
-                                           width: isCompact ? fieldWidth / 2.3 : fieldWidth / 2,
+                                           width: isCompact ? fieldWidth / 2.6 : fieldWidth / 2,
                                               column: true,
                                               child: SizedBox(
                                                 height: isCompact ? 28 : 30,
@@ -158,7 +158,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                                 btnText: AppText.getBooking,
                                               ),
                                               CustomButton(
-                                                width: isCompact ? 70 : 80,
+                                                width: isCompact ? 60 : 80,
                                                 height: isCompact ? 30 : 33,
                                                 borderRadius: 4,
                                                 btnColor: DynamicColors.redClr,
@@ -167,7 +167,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                                 btnText: AppText.clear,
                                               ),
                                               CustomButton(
-                                                width: isCompact ? 75 : 90,
+                                                width: isCompact ? 70 : 90,
                                                 height: isCompact ? 30 : 33,
                                                 borderRadius: 4,
                                                 btnColor: DynamicColors.greenClr,
@@ -454,9 +454,10 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                           buildHeaderWithSearch(title: "BOOKINGS"),
                           buildHeaderWithSearch(title: "CASH TOTAL"),
                           buildHeaderWithSearch(
-                              title: maxWidth > 1669
-                                  ? "ACCOUNT TOTALS"
-                                  : "ACCOUNT\nTOTALS"),
+                              title: "ACCOUNT TOTALS"),
+                              // maxWidth > 1669
+                              //     ? "ACCOUNT TOTALS"
+                              //     : "ACCOUNT\nTOTALS"),
                           buildHeaderWithSearch(title: "TOTALS"),
                           buildHeaderWithSearch(title: "COMM"),
                           buildHeaderWithSearch(title: "OLD BALANCE"),
