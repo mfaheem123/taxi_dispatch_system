@@ -228,13 +228,14 @@ class _ViaLocationState extends State<ViaLocation> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                SizedBox(
+                                _FocusZoom(
+                                  builder: (focused) => SizedBox(
                                   height: 30,
                                   child: TextButton(
                                     style: TextButton.styleFrom(
                                       backgroundColor: Colors.red,
                                       padding: const EdgeInsets.symmetric(horizontal: 24),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                                      shape: _focusShape(focused),
                                     ),
                                     onPressed: () {
                                       controller.viaMilsCondition = false;
@@ -242,15 +243,17 @@ class _ViaLocationState extends State<ViaLocation> {
                                     },
                                     child: Text("CANCEL", style: mozillaTextSemiBoldText(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
                                   ),
+                                  ),
                                 ),
                                 const SizedBox(width: 10),
-                                SizedBox(
+                                _FocusZoom(
+                                  builder: (focused) => SizedBox(
                                   height: 30,
                                   child: TextButton.icon(
                                     style: TextButton.styleFrom(
                                       backgroundColor: DynamicColors.primaryClr,
                                       padding: const EdgeInsets.symmetric(horizontal: 24),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                                      shape: _focusShape(focused),
                                     ),
                                     onPressed: () {
                                       controller.viaMilsCondition = true;
@@ -264,6 +267,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                     },
                                     icon: const Icon(Icons.check, color: Colors.white, size: 18),
                                     label: Text("APPLY CHANGES", style: mozillaTextSemiBoldText(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                                  ),
                                   ),
                                 )
                               ],
@@ -700,5 +704,45 @@ class _ViaLocationState extends State<ViaLocation> {
         ),
       ],
     ));
+  }
+}
+/// Rounded button shape that gains a white border while keyboard focus is on
+/// it — the red / primary fills would swallow any coloured ring.
+OutlinedBorder _focusShape(bool focused) => RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(6),
+      side: focused
+          ? const BorderSide(color: Colors.white, width: 2)
+          : BorderSide.none,
+    );
+
+/// Zooms its button in slightly while it holds keyboard focus, so Tab shows
+/// clearly which one Enter will press. The [Focus] here is not a tab stop of
+/// its own; it only listens for focus landing on the button inside it.
+class _FocusZoom extends StatefulWidget {
+  final Widget Function(bool focused) builder;
+  const _FocusZoom({required this.builder});
+
+  @override
+  State<_FocusZoom> createState() => _FocusZoomState();
+}
+
+class _FocusZoomState extends State<_FocusZoom> {
+  bool _focused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Focus(
+      canRequestFocus: false,
+      skipTraversal: true,
+      onFocusChange: (has) {
+        if (has != _focused) setState(() => _focused = has);
+      },
+      child: AnimatedScale(
+        scale: _focused ? 1.08 : 1.0,
+        duration: const Duration(milliseconds: 140),
+        curve: Curves.easeOut,
+        child: widget.builder(_focused),
+      ),
+    );
   }
 }
