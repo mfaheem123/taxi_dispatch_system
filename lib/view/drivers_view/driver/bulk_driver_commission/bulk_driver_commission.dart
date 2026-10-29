@@ -30,7 +30,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
   @override
   void initState() {
     super.initState();
-    shortCutKeyValue.value = "driversBulkCommission";
+    shortCutKeyValue.value = "bulkDriverCommission";
   }
 
   int selectedRowIndex = 0;
@@ -64,376 +64,190 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                   Text(AppText.bulkDriverCommission, style: titleDesign()),
                   const SizedBox(height: 15),
 
-                  /// Responsive Box
-                  // maxWidth > 1034
-                      // ?
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              flex: 3,
-                              child: Container(
-                              // width: fieldWidth * 2.8,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: DynamicColors.gryClr),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  /// Header
-                                  Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                                    color: DynamicColors.gryClr.withOpacity(0.5),
-                                    child: Text(AppText.duration,
-                                      style: mozillaTextSemiBoldText(fontSize: 16),
-                                    ),
+                    children: [
+                      Expanded(
+                          flex: 3,
+                          child: Container(
+                            // width: fieldWidth * 2.8,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: DynamicColors.gryClr),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                /// Header
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                                  color: DynamicColors.gryClr.withOpacity(0.5),
+                                  child: Text(AppText.duration,
+                                    style: mozillaTextSemiBoldText(fontSize: 16),
                                   ),
+                                ),
 
-                                  /// Fields Section
-                                  Padding(
-                                    padding: const EdgeInsets.all(12.0),
-                                    child: Wrap(
-                                      runSpacing: 8,
-                                      spacing: isCompact ? 6 : 8,
-                                      crossAxisAlignment: WrapCrossAlignment.center,
-                                      children: [
-                                         CustomDropdownField(
-                                           width: isCompact ? fieldWidth / 2.5 : fieldWidth / 2,
-                                            text: "SUBS",
-                                            label: AppText.selectSubsidiary,
-                                            items: [
-                                              "25 GEORGE HAMPTON",
-                                              "26 PAUL DOUBLEDAY",
-                                              "27 RICHARD HARDWICK",
-                                              "28 LANRE OKERJO",
-                                            ],
-                                            value: selectSub,
-                                            itemLabel: (val) => val,
-                                            onChanged: (val) {
-                                              selectSub = val;
-                                              controller.update();
-                                            },
-                                          ),
+                                /// Fields Section
+                                Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Wrap(
+                                    runSpacing: 8,
+                                    spacing: isCompact ? 6 : 8,
+                                    crossAxisAlignment: WrapCrossAlignment.center,
+                                    children: [
+                                      CustomDropdownField(
+                                        width: isCompact ? fieldWidth / 2.4 : fieldWidth / 2,
+                                        text: "SUBS",
+                                        label: AppText.selectSubsidiary,
+                                        items: [
+                                          "25 GEORGE HAMPTON",
+                                          "26 PAUL DOUBLEDAY",
+                                          "27 RICHARD HARDWICK",
+                                          "28 LANRE OKERJO",
+                                        ],
+                                        value: selectSub,
+                                        itemLabel: (val) => val,
+                                        onChanged: (val) {
+                                          selectSub = val;
+                                          controller.update();
+                                        },
+                                      ),
 
+                                      labeledField(
+                                          context: context,
+                                          isMobile: isMobile,
+                                          label: AppText.from,
+                                          width: isCompact ? fieldWidth / 2.4 : fieldWidth / 2,
+                                          column: true,
+                                          child: SizedBox(
+                                            height: isCompact ? 28 : 30,
+                                            child: KeyboardDatePicker(),
+                                          )),
 
-                                          labeledField(
-                                              context: context,
-                                              isMobile: isMobile,
-                                              label: AppText.from,
-                                              width: isCompact ? fieldWidth / 2.6 : fieldWidth / 2,
-                                              column: true,
-                                              child: SizedBox(
-                                                height: isCompact ? 28 : 30,
-                                                child: KeyboardDatePicker(),
-                                              )),
+                                      labeledField(
+                                          context: context,
+                                          isMobile: isMobile,
+                                          label: AppText.to,
+                                          width: isCompact ? fieldWidth / 2.4 : fieldWidth / 2,
+                                          column: true,
+                                          child: SizedBox(
+                                            height: isCompact ? 28 : 30,
+                                            child: KeyboardDatePicker(),
+                                          )),
 
+                                      SizedBox(width: isCompact ? 20 : 50),
 
-                                       labeledField(
-                                              context: context,
-                                              isMobile: isMobile,
-                                           label: AppText.to,
-                                           width: isCompact ? fieldWidth / 2.6 : fieldWidth / 2,
-                                              column: true,
-                                              child: SizedBox(
-                                                height: isCompact ? 28 : 30,
-                                                child: KeyboardDatePicker(),
-                                              )),
-
-                                        SizedBox(width: isCompact ? 20 : 50),
-                                        /// Action Buttons
-                                        Padding(
-                                          padding: const EdgeInsets.only(top: 18.0),
-                                          child: Wrap(
-                                            spacing: isCompact ? 6 : 8,
-                                            runSpacing: 8,
-                                            children: [
-                                              CustomButton(
-                                                width: isCompact ? 85 : 100,
-                                                height: isCompact ? 30 : 33,
-                                                borderRadius: 4,
-                                                btnColor: DynamicColors.primaryClr,
-                                                style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
-                                                verticalPadding: 0.0,
-                                                btnText: AppText.getBooking,
-                                              ),
-                                              CustomButton(
-                                                width: isCompact ? 60 : 80,
-                                                height: isCompact ? 30 : 33,
-                                                borderRadius: 4,
-                                                btnColor: DynamicColors.redClr,
-                                                style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
-                                                verticalPadding: 0.0,
-                                                btnText: AppText.clear,
-                                              ),
-                                              CustomButton(
-                                                width: isCompact ? 70 : 90,
-                                                height: isCompact ? 30 : 33,
-                                                borderRadius: 4,
-                                                btnColor: DynamicColors.greenClr,
-                                                style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
-                                                verticalPadding: 0.0,
-                                                btnText: AppText.generate,
-                                              ),
-                                            ],
-                                          ),
+                                      /// Action Buttons
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 18.0),
+                                        child: Wrap(
+                                          spacing: isCompact ? 6 : 8,
+                                          runSpacing: 8,
+                                          children: [
+                                            CustomButton(
+                                              width: isCompact ? 90 : 100,
+                                              height: isCompact ? 30 : 33,
+                                              borderRadius: 4,
+                                              btnColor: DynamicColors.primaryClr,
+                                              style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
+                                              verticalPadding: 0.0,
+                                              btnText: AppText.getBooking,
+                                            ),
+                                            CustomButton(
+                                              width: isCompact ? 60 : 80,
+                                              height: isCompact ? 30 : 33,
+                                              borderRadius: 4,
+                                              btnColor: DynamicColors.redClr,
+                                              style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
+                                              verticalPadding: 0.0,
+                                              btnText: AppText.clear,
+                                            ),
+                                            CustomButton(
+                                              width: isCompact ? 70 : 90,
+                                              height: isCompact ? 30 : 33,
+                                              borderRadius: 4,
+                                              btnColor: DynamicColors.greenClr,
+                                              style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
+                                              verticalPadding: 0.0,
+                                              btnText: AppText.generate,
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            )),
+                                ),
+                              ],
+                            ),
+                          )),
 
-                            SizedBox(width: 10),
-                            /// Responsive Box
-                            Expanded(
-                              flex: 2,
-                              child: Container(
-                              // width: fieldWidth,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: DynamicColors.gryClr),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  /// Header
-                                  Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                                    color: DynamicColors.gryClr.withOpacity(0.5),
-                                    child: Text(AppText.info,
-                                      style: mozillaTextSemiBoldText(fontSize: 16),
-                                    ),
+                      SizedBox(width: 10),
+
+                      Expanded(
+                          flex: 2,
+                          child: Container(
+                            // width: fieldWidth,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: DynamicColors.gryClr),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                /// Header
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 12),
+                                  color: DynamicColors.gryClr.withOpacity(0.5),
+                                  child: Text(AppText.info,
+                                    style: mozillaTextSemiBoldText(fontSize: 16),
                                   ),
+                                ),
 
-                                  /// Fields Section
-                                  Padding(
-                                    padding: EdgeInsets.all(isCompact ? 10.5 : 12.0),
-                                    child: Wrap(
-                                      runSpacing: 6,
-                                      spacing: isCompact ? 20 : 30,
-                                      crossAxisAlignment: WrapCrossAlignment.center,
-                                      children: [
-                                        SizedBox(
-                                          width: isCompact ? fieldWidth / 1.3 : fieldWidth,
-                                          child: labeledTextField(
-                                                  context,
-                                                  isMobile,
-                                                  AppText.emailSubject,
-                                                  controller.emailSubjectController,
-                                                  width: fieldWidth,
-                                                  column: true,
-                                                  textInputAction: TextInputAction.next),
+                                /// Fields Section
+                                Padding(
+                                  padding: EdgeInsets.all(isCompact ? 10.5 : 12.0),
+                                  child: Wrap(
+                                    runSpacing: 6,
+                                    spacing: isCompact ? 20 : 30,
+                                    crossAxisAlignment: WrapCrossAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        width: isCompact ? fieldWidth / 1.3 : fieldWidth,
+                                        child: labeledTextField(
+                                            context,
+                                            isMobile,
+                                            AppText.emailSubject,
+                                            controller.emailSubjectController,
+                                            width: fieldWidth,
+                                            column: true,
+                                            textInputAction: TextInputAction.next),
+                                      ),
+
+                                      /// Action Buttons
+                                      Padding(
+                                        padding: const EdgeInsetsGeometry.only(top: 18.0),
+                                        child: CustomButton(
+                                          width: 140,
+                                          height: isCompact ? 30 : 33,
+                                          borderRadius: 4,
+                                          btnColor: DynamicColors.greenClr,
+                                          style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
+                                          verticalPadding: 0.0,
+                                          btnText: AppText.generateSendPdf,
                                         ),
-
-                                        /// Action Buttons
-                                        Padding(
-                                          padding: const EdgeInsetsGeometry.only(top: 18.0),
-                                          child: CustomButton(
-                                            width: 140,
-                                            height: isCompact ? 30 : 33,
-                                            borderRadius: 4,
-                                            btnColor: DynamicColors.greenClr,
-                                            style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
-                                            verticalPadding: 0.0,
-                                            btnText: AppText.generateSendPdf,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            )),
-                          ],
-                        ),
-                      // : Column(
-                      //     crossAxisAlignment: CrossAxisAlignment.start,
-                      //     children: [
-                      //       Container(
-                      //         width: fieldWidth * 2.8,
-                      //         decoration: BoxDecoration(
-                      //           border: Border.all(color: DynamicColors.gryClr),
-                      //         ),
-                      //         child: Column(
-                      //           crossAxisAlignment: CrossAxisAlignment.start,
-                      //           children: [
-                      //             /// Header
-                      //             Container(
-                      //               width: double.infinity,
-                      //               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                      //               color: DynamicColors.gryClr.withOpacity(0.5),
-                      //               child: Text(AppText.duration,
-                      //                 style: mozillaTextSemiBoldText(fontSize: 16),
-                      //               ),
-                      //             ),
-                      //
-                      //             /// Fields Section
-                      //             Padding(
-                      //               padding: const EdgeInsets.all(12.0),
-                      //               child: Wrap(
-                      //                 runSpacing: 12,
-                      //                 spacing: 20,
-                      //                 crossAxisAlignment: WrapCrossAlignment.center,
-                      //                 children: [
-                      //                   SizedBox(
-                      //                     width: fieldWidth / 1.5,
-                      //                     child: CustomDropdownField(
-                      //                       width: fieldWidth,
-                      //                       label: AppText.selectSubsidiary,
-                      //                       items: [
-                      //                         "25 GEORGE HAMPTON",
-                      //                         "26 PAUL DOUBLEDAY",
-                      //                         "27 RICHARD HARDWICK",
-                      //                         "28 LANRE OKERJO",
-                      //                       ],
-                      //                       value: selectSub,
-                      //                       itemLabel: (val) => val,
-                      //                       onChanged: (val) {
-                      //                         selectSub = val;
-                      //                         controller.update();
-                      //                       },
-                      //                     ),
-                      //                   ),
-                      //                   SizedBox(
-                      //                     width: fieldWidth / 1.5,
-                      //                     child: labeledField(
-                      //                         context: context,
-                      //                         isMobile: isMobile,
-                      //                         label: AppText.from,
-                      //                         width: fieldWidth,
-                      //                         child: SizedBox(
-                      //                             height: 30,
-                      //                             child: KeyboardDatePicker())),
-                      //                   ),
-                      //
-                      //                   SizedBox(
-                      //                     width: fieldWidth / 1.5,
-                      //                     child: labeledField(
-                      //                         context: context,
-                      //                         isMobile: isMobile,
-                      //                         label: AppText.to,
-                      //                         width: fieldWidth,
-                      //                         child: SizedBox(
-                      //                             height: 30,
-                      //                             child: KeyboardDatePicker())),
-                      //                   ),
-                      //
-                      //                   /// Action Buttons
-                      //                   Padding(
-                      //                     padding: const EdgeInsets.only(top: 18.0),
-                      //                     child: Wrap(
-                      //                       spacing: 8,
-                      //                       runSpacing: 8,
-                      //                       children: [
-                      //                         CustomButton(
-                      //                           width: 100,
-                      //                           height: 33,
-                      //                           borderRadius: 4,
-                      //                           btnColor: DynamicColors.primaryClr,
-                      //                           style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
-                      //                           verticalPadding: 0.0,
-                      //                           btnText: AppText.getBooking,
-                      //                         ),
-                      //                         CustomButton(
-                      //                           width: 80,
-                      //                           height: 33,
-                      //                           borderRadius: 4,
-                      //                           btnColor: DynamicColors.redClr,
-                      //                           style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
-                      //                           verticalPadding: 0.0,
-                      //                           btnText: AppText.clear,
-                      //                         ),
-                      //                         CustomButton(
-                      //                           width: 90,
-                      //                           height: 33,
-                      //                           borderRadius: 4,
-                      //                           btnColor: DynamicColors.greenClr,
-                      //                           style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
-                      //                           verticalPadding: 0.0,
-                      //                           btnText: AppText.generate,
-                      //                         ),
-                      //                       ],
-                      //                     ),
-                      //                   ),
-                      //                 ],
-                      //               ),
-                      //             ),
-                      //           ],
-                      //         ),
-                      //       ),
-                      //       SizedBox(width: 15),
-                      //
-                      //       /// Responsive Box
-                      //       Container(
-                      //         width: fieldWidth,
-                      //         decoration: BoxDecoration(
-                      //           border: Border.all(color: DynamicColors.gryClr),
-                      //         ),
-                      //         child: Column(
-                      //           crossAxisAlignment: CrossAxisAlignment.start,
-                      //           children: [
-                      //             /// Header
-                      //             Container(
-                      //               width: double.infinity,
-                      //               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                      //               color: DynamicColors.gryClr.withOpacity(0.5),
-                      //               child: Text(AppText.info,
-                      //                 style: mozillaTextSemiBoldText(fontSize: 16),
-                      //               ),
-                      //             ),
-                      //
-                      //             /// Fields Section
-                      //             Padding(
-                      //               padding: const EdgeInsets.all(12.0),
-                      //               child: Wrap(
-                      //                 runSpacing: 12,
-                      //                 spacing: 20,
-                      //                 crossAxisAlignment: WrapCrossAlignment.center,
-                      //                 children: [
-                      //                   SizedBox(
-                      //                     width: fieldWidth / 1.7,
-                      //                     child: Column(
-                      //                       crossAxisAlignment: CrossAxisAlignment.start,
-                      //                       children: [
-                      //                         labeledTextField(
-                      //                             context,
-                      //                             isMobile,
-                      //                             AppText.emailSubject,
-                      //                             controller.emailSubjectController,
-                      //                             width: fieldWidth,
-                      //                             column: true,
-                      //                             textInputAction: TextInputAction.next),
-                      //                       ],
-                      //                     ),
-                      //                   ),
-                      //
-                      //                   /// Action Buttons
-                      //                   Padding(
-                      //                     padding: const EdgeInsets.only(top: 18.0),
-                      //                     child: CustomButton(
-                      //                       width: 140,
-                      //                       height: 33,
-                      //                       borderRadius: 4,
-                      //                       btnColor: DynamicColors.greenClr,
-                      //                       style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
-                      //                       verticalPadding: 0.0,
-                      //                       btnText: AppText.generateSendPdf,
-                      //                     ),
-                      //                   ),
-                      //                 ],
-                      //               ),
-                      //             ),
-                      //           ],
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
+                                ),
+                              ],
+                            ),
+                          )),
+                    ],
+                  ),
 
                   const SizedBox(height: 15),
                   SingleChildScrollView(
-                    // scrollDirection: Axis.horizontal,
                     child: SizedBox(
                       width: Get.width,
                       child: DatatableWidget(
@@ -448,11 +262,10 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                           buildHeaderWithSearch(title: "DRIVER"),
                           buildHeaderWithSearch(title: "BOOKINGS"),
                           buildHeaderWithSearch(title: "CASH TOTAL"),
-                          buildHeaderWithSearch(
-                              title: "ACCOUNT TOTALS"),
-                              // maxWidth > 1669
-                              //     ? "ACCOUNT TOTALS"
-                              //     : "ACCOUNT\nTOTALS"),
+                          buildHeaderWithSearch(title: "ACCOUNT TOTALS"),
+                          // maxWidth > 1669
+                          //     ? "ACCOUNT TOTALS"
+                          //     : "ACCOUNT\nTOTALS"),
                           buildHeaderWithSearch(title: "TOTALS"),
                           buildHeaderWithSearch(title: "COMM"),
                           buildHeaderWithSearch(title: "OLD BALANCE"),
@@ -462,12 +275,12 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                         ],
                         totalRow: totalRows,
                         cells: [
-                          DataCell(Checkbox(
+                          DataCell(Center(child: Checkbox(
                               value: controller.selectAllDrivers.value,
                               onChanged: (v) {
                                 controller.selectAllDrivers.value = v!;
                                 controller.update();
-                              })),
+                              }))),
                           const DataCell(Center(child: Text("#PHC VEHICLE"))),
                           const DataCell(Center(child: Text("PHC VEHICLE"))),
                           const DataCell(Center(child: Text("20/10/2025"))),

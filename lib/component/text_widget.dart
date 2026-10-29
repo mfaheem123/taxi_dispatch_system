@@ -155,6 +155,7 @@ class AppText {
   static get driverCommissionPay => "DRIVER COMMISSION PAY";
   static get driver => "DRIVER";
   static get commissionDue => "COMMISSION DUE";
+  static get rentDue => "RENT DUE";
   static get amount => "AMOUNT";
   static get description => "DESCRIPTION";
   static get credit => "CREDIT";
