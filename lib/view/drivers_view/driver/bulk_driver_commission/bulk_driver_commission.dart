@@ -3,6 +3,7 @@ import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../alert/account_details_alert.dart';
 import '../../../../component/color.dart';
 import '../../../../component/datatable_widget.dart';
 import '../../../../component/textStyle.dart';
@@ -155,6 +156,13 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                                 style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
                                                 verticalPadding: 0.0,
                                                 btnText: AppText.getBooking,
+                                                onTap: () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) =>  AccountDetailsAlert(),
+                                                  );
+
+                                                },
                                               ),
                                               CustomButton(
                                                 width: 80,
