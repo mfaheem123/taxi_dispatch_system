@@ -1,6 +1,7 @@
 import 'package:dashboard_new1/view/drivers_view/controller/driver_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../../../../component/color.dart';
 import '../../../../component/textStyle.dart';
@@ -96,10 +97,31 @@ class DriverCommissionViewScreen extends StatelessWidget {
     final items = data?.driverCommissionLineitems ?? [];
 
     final currentDriverId = data?.driver?.id;
-    final selectedDriverData = controller?.listDriverCommission?.drivers?.firstWhere(
-          (d) => d.id == currentDriverId,
-      orElse: () => CreateDriverCommission(),
-    );
+    final storage = GetStorage();
+
+    String mobileNumber = storage.read<String>('temp_driver_commission_mobile') ??
+        storage.read<String>('temp_driver_mobile') ??
+        "";
+    String telephoneNumber = storage.read<String>('temp_driver_commission_telephone') ??
+        storage.read<String>('temp_driver_telephone') ??
+        "";
+
+    if (controller != null && controller.listDriverCommission?.drivers != null) {
+      try {
+        final selectedDriverData = controller.listDriverCommission!.drivers!.firstWhere(
+              (d) => d.id == currentDriverId,
+        );
+        if (mobileNumber.isEmpty && (selectedDriverData.mobile ?? "").isNotEmpty) {
+          mobileNumber = selectedDriverData.mobile!;
+        }
+        if (telephoneNumber.isEmpty && (selectedDriverData.telephone ?? "").isNotEmpty) {
+          telephoneNumber = selectedDriverData.telephone!;
+        }
+      } catch (_) {}
+    }
+
+
+
 
     final fromDate = data?.fromDate != null ? data!.fromDate.toString().split(' ').first : (controller?.updateFilterFromDate ?? '');
     final toDate = data?.toDate != null ? data!.toDate.toString().split(' ').first : (controller?.updateFilterToDate ?? '');
@@ -137,8 +159,8 @@ class DriverCommissionViewScreen extends StatelessWidget {
                   flex: 5,
                   child: _buildUIInfoColumn("", [
                     "EMAIL: ${(data?.driver?.email ?? "").toUpperCase()}",
-                    "MOBILE: ${selectedDriverData?.mobile ?? ""}",
-                    "TELEPHONE: ${selectedDriverData?.telephone ?? ""}",
+                    "MOBILE: $mobileNumber",
+                    "TELEPHONE: $telephoneNumber",
                   ]),
                 ),
                 Expanded(

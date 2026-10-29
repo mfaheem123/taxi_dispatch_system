@@ -19,8 +19,9 @@ class LabeledInput extends StatelessWidget implements LabelledField {
   /// from outside. Fields nobody else touches can keep leaving it null.
   final TextEditingController? controller;
 
-  /// Upper-cases as you type, the way the dashboard form treats its address
-  /// and notes fields.
+  /// Upper-cases as you type, the way the dashboard form treats its fields.
+  /// On by default — everything on the booking form is written in capitals —
+  /// and applied on top of [inputFormatters], not instead of them.
   final bool uppercase;
 
   /// Small glyph inside the field, ahead of the text — the car on the notes
@@ -41,7 +42,7 @@ class LabeledInput extends StatelessWidget implements LabelledField {
       this.hint,
       this.keyboardType,
       this.controller,
-      this.uppercase = false,
+      this.uppercase = true,
       this.prefixIcon,
       this.prefixText,
       this.readOnly = false,
@@ -52,7 +53,8 @@ class LabeledInput extends StatelessWidget implements LabelledField {
   /// Fired on every edit (e.g. the passenger-limit check on PASS).
   final ValueChanged<String>? onChanged;
 
-  /// Replaces the default formatting (upper-casing when [uppercase]).
+  /// Extra input rules (digits only, a length cap, ...). Upper-casing, when
+  /// [uppercase], is added after these rather than replaced by them.
   final List<TextInputFormatter>? inputFormatters;
 
   /// Draws the field's border red — e.g. too many passengers for the vehicle.
@@ -93,8 +95,10 @@ class LabeledInput extends StatelessWidget implements LabelledField {
         readOnly: readOnly,
         textCapitalization:
             uppercase ? TextCapitalization.characters : TextCapitalization.none,
-        inputFormatters: inputFormatters ??
-            (uppercase ? const [UpperCaseTextFormatter()] : null),
+        inputFormatters: [
+          ...?inputFormatters,
+          if (uppercase) const UpperCaseTextFormatter(),
+        ],
         onChanged: onChanged,
         style: kFormValueStyle,
         // So the on-screen keyboard's "next" key walks the form too, not

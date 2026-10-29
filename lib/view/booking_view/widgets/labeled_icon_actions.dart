@@ -10,6 +10,8 @@
 //
 // See create_new_booking_form.dart for how this fits into the wider form.
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'booking_form_layout.dart';
@@ -21,7 +23,12 @@ class IconAction {
   /// Shown on hover / long-press and read out by screen readers, so the icon
   /// never has to carry its meaning alone.
   final String tooltip;
-  final VoidCallback onTap;
+
+  /// Fired on click / Enter / Space. May return a Future — `() =>
+  /// showDialog(...)` does — and the button then takes keyboard focus back
+  /// once it completes, so Tab after closing the dialog carries on from this
+  /// icon rather than from the top of the form.
+  final FutureOr<void> Function() onTap;
 
   /// Filled variant. Null leaves the default outlined button — white with a
   /// grey border — which is what the create form uses throughout. Set it for
@@ -93,6 +100,31 @@ class _IconActionButton extends StatefulWidget {
 
 class _IconActionButtonState extends State<_IconActionButton> {
   bool _focused = false;
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  /// Runs the action, then puts focus back on this button when it is done.
+  ///
+  /// A mouse click never focuses an InkWell, and closing a dialog only gives
+  /// focus back to whatever had it before it opened — often nothing — so Tab
+  /// started again at the top of the form. Focusing first and re-focusing once
+  /// the dialog's Future completes makes Tab continue to the next field.
+  Future<void> _activate() async {
+    _focusNode.requestFocus();
+    final result = widget.action.onTap();
+    if (result is Future) {
+      try {
+        await result;
+      } finally {
+        if (mounted) _focusNode.requestFocus();
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +153,8 @@ class _IconActionButtonState extends State<_IconActionButton> {
         child: InkWell(
           // Enter / Space reach a focused InkWell as an ActivateIntent, which
           // it already turns into a tap — no extra Shortcuts wiring needed.
-          onTap: widget.action.onTap,
+          focusNode: _focusNode,
+          onTap: _activate,
           onFocusChange: (has) {
             if (has != _focused) setState(() => _focused = has);
           },

@@ -1,9 +1,8 @@
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../../../../alert/restrict_drivers_alert.dart';
 import '../../../../component/color.dart';
 import '../../../../component/datatable_widget.dart';
 import '../../../../component/textStyle.dart';
@@ -26,14 +25,16 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
       ? Get.find<DriverController>()
       : Get.put(DriverController());
 
+  String? selectSub = "SELECT SUBSIDIARY";
+
   @override
   void initState() {
     super.initState();
     shortCutKeyValue.value = "driversBulkCommission";
   }
 
-  int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
+  int selectedRowIndex = 0;
+  final int totalRows = 5;
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +52,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                 : isTablet
                     ? maxWidth / 2
                     : maxWidth / 4;
+
             return SingleChildScrollView(
               padding: const EdgeInsets.all(12),
               child: Column(
@@ -61,11 +63,14 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                   const SizedBox(height: 15),
 
                   /// Responsive Box
-                  maxWidth > 1034
-                      ? Row(
+                  // maxWidth > 1034
+                      // ?
+                  Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
+                            Expanded(
+                              flex: 3,
+                              child: Container(
                               width: fieldWidth * 2.8,
                               decoration: BoxDecoration(
                                 border: Border.all(color: DynamicColors.gryClr),
@@ -76,13 +81,10 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                   /// Header
                                   Container(
                                     width: double.infinity,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 12),
+                                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                                     color: DynamicColors.gryClr.withOpacity(0.5),
-                                    child: Text(
-                                      AppText.duration,
-                                      style:
-                                          mozillaTextSemiBoldText(fontSize: 16),
+                                    child: Text(AppText.duration,
+                                      style: mozillaTextSemiBoldText(fontSize: 16),
                                     ),
                                   ),
 
@@ -90,95 +92,57 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                   Padding(
                                     padding: const EdgeInsets.all(12.0),
                                     child: Wrap(
-                                      runSpacing: 12,
-                                      spacing: 20,
-                                      crossAxisAlignment:
-                                          WrapCrossAlignment.center,
+                                      // runSpacing: 10,
+                                      spacing: 8,
+                                      crossAxisAlignment: WrapCrossAlignment.center,
                                       children: [
-                                        SizedBox(
-                                          width: fieldWidth / 1.5,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(AppText.sub,
-                                                  style: mozillaTextSemiBoldText(
-                                                      context: context,
-                                                      fontSize: 13)),
-                                              const SizedBox(height: 6),
-                                              Container(
-                                                width: fieldWidth,
-                                                height: 35,
-                                                decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                      color: Colors.grey),
-                                                  borderRadius:
-                                                      BorderRadius.circular(4),
-                                                ),
-                                                child: RestrictedDrivers(
-                                                  width: fieldWidth,
-                                                  border: Border.all(
-                                                      color: Colors.transparent),
-                                                  // border: Border(
-                                                  //   bottom: BorderSide(
-                                                  //     color: DynamicColors.gryClr, // border color
-                                                  //     width: 2.0,        // border thickness
-                                                  //   ),
-                                                  // ),
-                                                  titleText: "SELECT SUBSIDIARY",
-                                                  driversList: [
-                                                    "25 GEORGE HAMPTON",
-                                                    "26 PAUL DOUBLEDAY",
-                                                    "27 RICHARD HARDWICK",
-                                                    "28 LANRE OKERJO",
-                                                  ],
-                                                ),
-                                              ),
+                                         CustomDropdownField(
+                                            width: fieldWidth / 2,
+                                            text: "SUBS",
+                                            label: AppText.selectSubsidiary,
+                                            items: [
+                                              "25 GEORGE HAMPTON",
+                                              "26 PAUL DOUBLEDAY",
+                                              "27 RICHARD HARDWICK",
+                                              "28 LANRE OKERJO",
                                             ],
+                                            value: selectSub,
+                                            itemLabel: (val) => val,
+                                            onChanged: (val) {
+                                              selectSub = val;
+                                              controller.update();
+                                            },
                                           ),
-                                        ),
-                                        SizedBox(
-                                          width: fieldWidth / 1.5,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(AppText.from,
-                                                  style: mozillaTextSemiBoldText(
-                                                      context: context,
-                                                      fontSize: 13)),
-                                              const SizedBox(height: 6),
-                                              SizedBox(
-                                                height: 35,
-                                                child: KeyboardDatePicker(),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
 
-                                        SizedBox(
-                                          width: fieldWidth / 1.5,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(AppText.to,
-                                                  style: mozillaTextSemiBoldText(
-                                                      context: context,
-                                                      fontSize: 13)),
-                                              const SizedBox(height: 6),
-                                              SizedBox(
-                                                height: 35,
+
+                                          labeledField(
+                                              context: context,
+                                              isMobile: isMobile,
+                                              label: AppText.from,
+                                              width: fieldWidth / 2,
+                                              column: true,
+                                              child: SizedBox(
+                                                height: 30,
                                                 child: KeyboardDatePicker(),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                                              )),
+
+
+                                       labeledField(
+                                              context: context,
+                                              isMobile: isMobile,
+                                              label: AppText.to,
+                                              width: fieldWidth / 2,
+                                              column: true,
+                                              child: SizedBox(
+                                                height: 30,
+                                                child: KeyboardDatePicker(),
+                                              )),
+
+                                        SizedBox(width: 50),
 
                                         /// Action Buttons
                                         Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 18.0),
+                                          padding: const EdgeInsets.only(top: 18.0),
                                           child: Wrap(
                                             spacing: 8,
                                             runSpacing: 8,
@@ -187,11 +151,8 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                                 width: 100,
                                                 height: 33,
                                                 borderRadius: 4,
-                                                btnColor: DynamicColors.pink,
-                                                style: mozillaTextRegularText(
-                                                    fontSize: 11,
-                                                    color:
-                                                        DynamicColors.whiteClr),
+                                                btnColor: DynamicColors.primaryClr,
+                                                style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
                                                 verticalPadding: 0.0,
                                                 btnText: AppText.getBooking,
                                               ),
@@ -200,10 +161,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                                 height: 33,
                                                 borderRadius: 4,
                                                 btnColor: DynamicColors.redClr,
-                                                style: mozillaTextRegularText(
-                                                    fontSize: 11,
-                                                    color:
-                                                        DynamicColors.whiteClr),
+                                                style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
                                                 verticalPadding: 0.0,
                                                 btnText: AppText.clear,
                                               ),
@@ -211,10 +169,8 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                                 width: 90,
                                                 height: 33,
                                                 borderRadius: 4,
-                                                style: mozillaTextRegularText(
-                                                    fontSize: 10,
-                                                    color:
-                                                        DynamicColors.whiteClr),
+                                                btnColor: DynamicColors.greenClr,
+                                                style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
                                                 verticalPadding: 0.0,
                                                 btnText: AppText.generate,
                                               ),
@@ -226,10 +182,13 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                   ),
                                 ],
                               ),
-                            ),
+                            )),
 
+                            SizedBox(width: 10),
                             /// Responsive Box
-                            Container(
+                            Expanded(
+                              flex: 2,
+                              child: Container(
                               width: fieldWidth,
                               decoration: BoxDecoration(
                                 border: Border.all(color: DynamicColors.gryClr),
@@ -240,13 +199,10 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                   /// Header
                                   Container(
                                     width: double.infinity,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 12),
+                                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                                     color: DynamicColors.gryClr.withOpacity(0.5),
-                                    child: Text(
-                                      AppText.info,
-                                      style:
-                                          mozillaTextSemiBoldText(fontSize: 16),
+                                    child: Text(AppText.info,
+                                      style: mozillaTextSemiBoldText(fontSize: 16),
                                     ),
                                   ),
 
@@ -255,41 +211,35 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                     padding: const EdgeInsets.all(12.0),
                                     child: Wrap(
                                       runSpacing: 12,
-                                      spacing: 20,
-                                      crossAxisAlignment:
-                                          WrapCrossAlignment.center,
+                                      spacing: 30,
+                                      crossAxisAlignment: WrapCrossAlignment.center,
                                       children: [
                                         SizedBox(
-                                          width: fieldWidth / 1.7,
+                                          width: fieldWidth,
                                           child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               labeledTextField(
                                                   context,
                                                   isMobile,
                                                   AppText.emailSubject,
-                                                  controller
-                                                      .emailSubjectController,
+                                                  controller.emailSubjectController,
                                                   width: fieldWidth,
                                                   column: true,
-                                                  textInputAction:
-                                                      TextInputAction.next),
+                                                  textInputAction: TextInputAction.next),
                                             ],
                                           ),
                                         ),
 
                                         /// Action Buttons
                                         Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 18.0),
+                                          padding: const EdgeInsetsGeometry.only(top: 18.0),
                                           child: CustomButton(
                                             width: 140,
                                             height: 33,
                                             borderRadius: 4,
-                                            style: mozillaTextRegularText(
-                                                fontSize: 11,
-                                                color: DynamicColors.whiteClr),
+                                            btnColor: DynamicColors.greenClr,
+                                            style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
                                             verticalPadding: 0.0,
                                             btnText: AppText.generateSendPdf,
                                           ),
@@ -299,252 +249,195 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
-                        )
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: fieldWidth * 2.8,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: DynamicColors.gryClr),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  /// Header
-                                  Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 12),
-                                    color: DynamicColors.gryClr.withOpacity(0.5),
-                                    child: Text(
-                                      AppText.duration,
-                                      style:
-                                          mozillaTextSemiBoldText(fontSize: 16),
-                                    ),
-                                  ),
-
-                                  /// Fields Section
-                                  Padding(
-                                    padding: const EdgeInsets.all(12.0),
-                                    child: Wrap(
-                                      runSpacing: 12,
-                                      spacing: 20,
-                                      crossAxisAlignment:
-                                          WrapCrossAlignment.center,
-                                      children: [
-                                        SizedBox(
-                                          width: fieldWidth / 1.5,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(AppText.sub,
-                                                  style: mozillaTextSemiBoldText(
-                                                      context: context,
-                                                      fontSize: 13)),
-                                              const SizedBox(height: 6),
-                                              Container(
-                                                width: fieldWidth,
-                                                height: 35,
-                                                decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                      color: Colors.grey),
-                                                  borderRadius:
-                                                      BorderRadius.circular(4),
-                                                ),
-                                                child: RestrictedDrivers(
-                                                  width: fieldWidth,
-                                                  border: Border.all(
-                                                      color: Colors.transparent),
-                                                  // border: Border(
-                                                  //   bottom: BorderSide(
-                                                  //     color: DynamicColors.gryClr, // border color
-                                                  //     width: 2.0,        // border thickness
-                                                  //   ),
-                                                  // ),
-                                                  titleText: "SELECT SUBSIDIARY",
-                                                  driversList: [
-                                                    "25 GEORGE HAMPTON",
-                                                    "26 PAUL DOUBLEDAY",
-                                                    "27 RICHARD HARDWICK",
-                                                    "28 LANRE OKERJO",
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: fieldWidth / 1.5,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(AppText.from,
-                                                  style: mozillaTextSemiBoldText(
-                                                      context: context,
-                                                      fontSize: 13)),
-                                              const SizedBox(height: 6),
-                                              SizedBox(
-                                                height: 35,
-                                                child: KeyboardDatePicker(),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
-                                        SizedBox(
-                                          width: fieldWidth / 1.5,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(AppText.to,
-                                                  style: mozillaTextSemiBoldText(
-                                                      context: context,
-                                                      fontSize: 13)),
-                                              const SizedBox(height: 6),
-                                              SizedBox(
-                                                height: 35,
-                                                child: KeyboardDatePicker(),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
-                                        /// Action Buttons
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 18.0),
-                                          child: Wrap(
-                                            spacing: 8,
-                                            runSpacing: 8,
-                                            children: [
-                                              CustomButton(
-                                                width: 100,
-                                                height: 33,
-                                                borderRadius: 4,
-                                                btnColor: DynamicColors.pink,
-                                                style: mozillaTextRegularText(
-                                                    fontSize: 11,
-                                                    color:
-                                                        DynamicColors.whiteClr),
-                                                verticalPadding: 0.0,
-                                                btnText: AppText.getBooking,
-                                              ),
-                                              CustomButton(
-                                                width: 80,
-                                                height: 33,
-                                                borderRadius: 4,
-                                                btnColor: DynamicColors.redClr,
-                                                style: mozillaTextRegularText(
-                                                    fontSize: 11,
-                                                    color:
-                                                        DynamicColors.whiteClr),
-                                                verticalPadding: 0.0,
-                                                btnText: AppText.clear,
-                                              ),
-                                              CustomButton(
-                                                width: 90,
-                                                height: 33,
-                                                borderRadius: 4,
-                                                style: mozillaTextRegularText(
-                                                    fontSize: 10,
-                                                    color:
-                                                        DynamicColors.whiteClr),
-                                                verticalPadding: 0.0,
-                                                btnText: AppText.generate,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(width: 15),
-
-                            /// Responsive Box
-                            Container(
-                              width: fieldWidth,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: DynamicColors.gryClr),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  /// Header
-                                  Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 12),
-                                    color: DynamicColors.gryClr.withOpacity(0.5),
-                                    child: Text(
-                                      AppText.info,
-                                      style:
-                                          mozillaTextSemiBoldText(fontSize: 16),
-                                    ),
-                                  ),
-
-                                  /// Fields Section
-                                  Padding(
-                                    padding: const EdgeInsets.all(12.0),
-                                    child: Wrap(
-                                      runSpacing: 12,
-                                      spacing: 20,
-                                      crossAxisAlignment:
-                                          WrapCrossAlignment.center,
-                                      children: [
-                                        SizedBox(
-                                          width: fieldWidth / 1.7,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              labeledTextField(
-                                                  context,
-                                                  isMobile,
-                                                  AppText.emailSubject,
-                                                  controller
-                                                      .emailSubjectController,
-                                                  width: fieldWidth,
-                                                  column: true,
-                                                  textInputAction:
-                                                      TextInputAction.next),
-                                            ],
-                                          ),
-                                        ),
-
-                                        /// Action Buttons
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 18.0),
-                                          child: CustomButton(
-                                            width: 140,
-                                            height: 33,
-                                            borderRadius: 4,
-                                            style: mozillaTextRegularText(
-                                                fontSize: 11,
-                                                color: DynamicColors.whiteClr),
-                                            verticalPadding: 0.0,
-                                            btnText: AppText.generateSendPdf,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            )),
                           ],
                         ),
+                      // : Column(
+                      //     crossAxisAlignment: CrossAxisAlignment.start,
+                      //     children: [
+                      //       Container(
+                      //         width: fieldWidth * 2.8,
+                      //         decoration: BoxDecoration(
+                      //           border: Border.all(color: DynamicColors.gryClr),
+                      //         ),
+                      //         child: Column(
+                      //           crossAxisAlignment: CrossAxisAlignment.start,
+                      //           children: [
+                      //             /// Header
+                      //             Container(
+                      //               width: double.infinity,
+                      //               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                      //               color: DynamicColors.gryClr.withOpacity(0.5),
+                      //               child: Text(AppText.duration,
+                      //                 style: mozillaTextSemiBoldText(fontSize: 16),
+                      //               ),
+                      //             ),
+                      //
+                      //             /// Fields Section
+                      //             Padding(
+                      //               padding: const EdgeInsets.all(12.0),
+                      //               child: Wrap(
+                      //                 runSpacing: 12,
+                      //                 spacing: 20,
+                      //                 crossAxisAlignment: WrapCrossAlignment.center,
+                      //                 children: [
+                      //                   SizedBox(
+                      //                     width: fieldWidth / 1.5,
+                      //                     child: CustomDropdownField(
+                      //                       width: fieldWidth,
+                      //                       label: AppText.selectSubsidiary,
+                      //                       items: [
+                      //                         "25 GEORGE HAMPTON",
+                      //                         "26 PAUL DOUBLEDAY",
+                      //                         "27 RICHARD HARDWICK",
+                      //                         "28 LANRE OKERJO",
+                      //                       ],
+                      //                       value: selectSub,
+                      //                       itemLabel: (val) => val,
+                      //                       onChanged: (val) {
+                      //                         selectSub = val;
+                      //                         controller.update();
+                      //                       },
+                      //                     ),
+                      //                   ),
+                      //                   SizedBox(
+                      //                     width: fieldWidth / 1.5,
+                      //                     child: labeledField(
+                      //                         context: context,
+                      //                         isMobile: isMobile,
+                      //                         label: AppText.from,
+                      //                         width: fieldWidth,
+                      //                         child: SizedBox(
+                      //                             height: 30,
+                      //                             child: KeyboardDatePicker())),
+                      //                   ),
+                      //
+                      //                   SizedBox(
+                      //                     width: fieldWidth / 1.5,
+                      //                     child: labeledField(
+                      //                         context: context,
+                      //                         isMobile: isMobile,
+                      //                         label: AppText.to,
+                      //                         width: fieldWidth,
+                      //                         child: SizedBox(
+                      //                             height: 30,
+                      //                             child: KeyboardDatePicker())),
+                      //                   ),
+                      //
+                      //                   /// Action Buttons
+                      //                   Padding(
+                      //                     padding: const EdgeInsets.only(top: 18.0),
+                      //                     child: Wrap(
+                      //                       spacing: 8,
+                      //                       runSpacing: 8,
+                      //                       children: [
+                      //                         CustomButton(
+                      //                           width: 100,
+                      //                           height: 33,
+                      //                           borderRadius: 4,
+                      //                           btnColor: DynamicColors.primaryClr,
+                      //                           style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
+                      //                           verticalPadding: 0.0,
+                      //                           btnText: AppText.getBooking,
+                      //                         ),
+                      //                         CustomButton(
+                      //                           width: 80,
+                      //                           height: 33,
+                      //                           borderRadius: 4,
+                      //                           btnColor: DynamicColors.redClr,
+                      //                           style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
+                      //                           verticalPadding: 0.0,
+                      //                           btnText: AppText.clear,
+                      //                         ),
+                      //                         CustomButton(
+                      //                           width: 90,
+                      //                           height: 33,
+                      //                           borderRadius: 4,
+                      //                           btnColor: DynamicColors.greenClr,
+                      //                           style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
+                      //                           verticalPadding: 0.0,
+                      //                           btnText: AppText.generate,
+                      //                         ),
+                      //                       ],
+                      //                     ),
+                      //                   ),
+                      //                 ],
+                      //               ),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //       ),
+                      //       SizedBox(width: 15),
+                      //
+                      //       /// Responsive Box
+                      //       Container(
+                      //         width: fieldWidth,
+                      //         decoration: BoxDecoration(
+                      //           border: Border.all(color: DynamicColors.gryClr),
+                      //         ),
+                      //         child: Column(
+                      //           crossAxisAlignment: CrossAxisAlignment.start,
+                      //           children: [
+                      //             /// Header
+                      //             Container(
+                      //               width: double.infinity,
+                      //               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                      //               color: DynamicColors.gryClr.withOpacity(0.5),
+                      //               child: Text(AppText.info,
+                      //                 style: mozillaTextSemiBoldText(fontSize: 16),
+                      //               ),
+                      //             ),
+                      //
+                      //             /// Fields Section
+                      //             Padding(
+                      //               padding: const EdgeInsets.all(12.0),
+                      //               child: Wrap(
+                      //                 runSpacing: 12,
+                      //                 spacing: 20,
+                      //                 crossAxisAlignment: WrapCrossAlignment.center,
+                      //                 children: [
+                      //                   SizedBox(
+                      //                     width: fieldWidth / 1.7,
+                      //                     child: Column(
+                      //                       crossAxisAlignment: CrossAxisAlignment.start,
+                      //                       children: [
+                      //                         labeledTextField(
+                      //                             context,
+                      //                             isMobile,
+                      //                             AppText.emailSubject,
+                      //                             controller.emailSubjectController,
+                      //                             width: fieldWidth,
+                      //                             column: true,
+                      //                             textInputAction: TextInputAction.next),
+                      //                       ],
+                      //                     ),
+                      //                   ),
+                      //
+                      //                   /// Action Buttons
+                      //                   Padding(
+                      //                     padding: const EdgeInsets.only(top: 18.0),
+                      //                     child: CustomButton(
+                      //                       width: 140,
+                      //                       height: 33,
+                      //                       borderRadius: 4,
+                      //                       btnColor: DynamicColors.greenClr,
+                      //                       style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
+                      //                       verticalPadding: 0.0,
+                      //                       btnText: AppText.generateSendPdf,
+                      //                     ),
+                      //                   ),
+                      //                 ],
+                      //               ),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+
+                  const SizedBox(height: 15),
                   SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
+                    // scrollDirection: Axis.horizontal,
                     child: SizedBox(
                       width: Get.width,
                       child: DatatableWidget(

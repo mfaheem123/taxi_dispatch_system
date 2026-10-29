@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'booking_form_layout.dart';
+import 'labeled_input.dart' show UpperCaseTextFormatter;
 
 /// One customer the MOBILE field can suggest.
 class CustomerSuggestion {
@@ -77,6 +78,11 @@ class _LabeledMobileFieldState extends State<LabeledMobileField> {
   // does not immediately re-open the panel it just closed.
   bool _suppressPanel = false;
 
+  /// The text [_onText] last reacted to. A controller notifies on every value
+  /// change, including a bare cursor move or `.text` being set to what it
+  /// already holds — none of which is the user typing.
+  late String _lastText = widget.controller.text;
+
   @override
   void initState() {
     super.initState();
@@ -112,7 +118,9 @@ class _LabeledMobileFieldState extends State<LabeledMobileField> {
   }
 
   void _onText() {
-    if (_suppressPanel || !_focusNode.hasFocus) return;
+    final changed = widget.controller.text != _lastText;
+    _lastText = widget.controller.text;
+    if (!changed || _suppressPanel || !_focusNode.hasFocus) return;
     final text = widget.controller.text.trim();
     if (text.isEmpty) {
       _userTyped = false;
@@ -173,10 +181,16 @@ class _LabeledMobileFieldState extends State<LabeledMobileField> {
     widget.controller.text = c.mobile;
     widget.controller.selection =
         TextSelection.collapsed(offset: c.mobile.length);
-    _suppressPanel = false;
     _userTyped = false;
     _hide();
-    widget.onPicked?.call(c);
+    // Still suppressed while the form fills the customer in: it writes this
+    // field's controller again (with NAME / EMAIL / TEL), and that write used
+    // to land after the flag was cleared and re-open the panel just closed.
+    try {
+      widget.onPicked?.call(c);
+    } finally {
+      _suppressPanel = false;
+    }
     // Focus is deliberately kept: Tab then carries straight on to TEL instead
     // of restarting traversal at the top of the form.
     setState(() {});
@@ -370,6 +384,10 @@ class _LabeledMobileFieldState extends State<LabeledMobileField> {
             focusNode: _focusNode,
             onChanged: widget.onSearch,
             keyboardType: TextInputType.phone,
+            // Capitals like every other field on the form, should anything
+            // but digits be typed here (the lookup also matches name / email).
+            textCapitalization: TextCapitalization.characters,
+            inputFormatters: const [UpperCaseTextFormatter()],
             textInputAction: TextInputAction.next,
             style: kFormValueStyle,
             decoration: const InputDecoration(

@@ -272,12 +272,21 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
     controller.update();
   }
 
-  /// DROP's route button: the via-points dialog, outbound side.
-  void _openVia() {
-    if (controller.pickupController.text.isEmpty) {
-      BotToast.showText(text: "Please write pickup and dropoff location");
-      return;
+  /// True when both PICK and DROP are filled in. Otherwise says so and returns
+  /// false — the gate in front of MULTI RESERVATION, VEHICLES and VIA.
+  /// trim(): a field holding only spaces is still empty.
+  bool _requirePickupAndDrop() {
+    if (controller.pickupController.text.trim().isEmpty ||
+        controller.dropOffController.text.trim().isEmpty) {
+      BotToast.showText(text: "Please enter the pickup and drop off location.");
+      return false;
     }
+    return true;
+  }
+
+  /// The VIA tab and DROP's route button: the via-points dialog, outbound side.
+  void _openVia() {
+    if (!_requirePickupAndDrop()) return;
     showDialog(
         context: context,
         builder: (_) => ViaLocation(formController: controller));
@@ -532,16 +541,10 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
         isMobile ?SizedBox.shrink():TopTabs(tabs: [
           const TopTab('F2', 'BOOKING', active: true),
           TopTab('F8', '+ MULTI RESERVATION', onTap: () {
-            if (controller.pickupController.text.isNotEmpty &&
-                controller.dropOffController.text.isNotEmpty) {
-              DashboardF8Alert.show();
-            }
+            if (_requirePickupAndDrop()) DashboardF8Alert.show();
           }),
           TopTab('F9', '+ VEHICLES', onTap: () {
-            if (controller.pickupController.text.isNotEmpty &&
-                controller.dropOffController.text.isNotEmpty) {
-              DashboardF9Alert.show();
-            }
+            if (_requirePickupAndDrop()) DashboardF9Alert.show();
           }),
           TopTab('VIA', 'VIA (${controller.viaPoints.length})',
               onTap: _openVia),
@@ -585,6 +588,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                     dotColor: Colors.green,
                     onSwap: controller.swapeToChangeLocation,
                     onSearch: _search('PICKUP LOCATION', _clearPickup),
+                    isSearching: () => controller.addressSearchField.value == 'PICKUP LOCATION',
                     onPicked: _onAddressPicked,
                     onCleared: _clearPickup,
                   ),
@@ -613,6 +617,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                     dotColor: Colors.red,
                     onSwap: controller.swapeToChangeLocation,
                     onSearch: _search('DROP LOCATION', _clearDrop),
+                    isSearching: () => controller.addressSearchField.value == 'DROP LOCATION',
                     onPicked: _onAddressPicked,
                     onCleared: _clearDrop,
                     extraAction: IconAction(
@@ -717,6 +722,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                     onSwap: controller.swapeToChangeReturnLocation,
                     onSearch:
                         _search('PICKUP TWO WAY LOCATION', _clearReturnPickup),
+                    isSearching: () => controller.addressSearchField.value == 'PICKUP TWO WAY LOCATION',
                     onPicked: _onAddressPicked,
                     onCleared: _clearReturnPickup,
                   ),
@@ -747,6 +753,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                     onSwap: controller.swapeToChangeReturnLocation,
                     onSearch:
                         _search('DROP TWO WAY LOCATION', _clearReturnDrop),
+                    isSearching: () => controller.addressSearchField.value == 'DROP TWO WAY LOCATION',
                     onPicked: _onAddressPicked,
                     onCleared: _clearReturnDrop,
                     extraAction: IconAction(
@@ -783,7 +790,9 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                 'JOUR',
                 items: data.journeyTypes ?? const [],
                 value: controller.selectJourneyTypeValue,
-                itemLabel: (j) => j.journeyType ?? '',
+                // Shown in capitals (the API sends e.g. 'o/w'); display only —
+                // the selected JourneyTypeObject itself is unchanged.
+                itemLabel: (j) => (j.journeyType ?? '').toUpperCase(),
                 onChanged: _onJourneyChanged,
                 allowUnselect: false,
               )),

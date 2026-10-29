@@ -15,6 +15,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get_state_manager/get_state_manager.dart' show Obx;
 // GlowFocus: the focus ring the dashboard form puts on these same buttons.
 import 'package:flutter_web_date_picker/flutter_web_date_picker.dart'
     show GlowFocus;
@@ -79,6 +80,14 @@ class LabeledAddressField extends StatefulWidget implements LabelledField {
   /// owns it.
   final FocusNode? focusNode;
 
+  /// True while this field's address search is waiting on results — read
+  /// inside an Obx, so it should read an Rx (DashboardController's
+  /// `addressSearchField`). Shows the same small loader the dashboard form
+  /// does: in a slot between the label and the field that opens while the
+  /// search runs, or beside the label when labels sit above their fields.
+  /// Null: no loader.
+  final bool Function()? isSearching;
+
   const LabeledAddressField(
     this.label, {
     super.key,
@@ -91,6 +100,7 @@ class LabeledAddressField extends StatefulWidget implements LabelledField {
     this.onSwap,
     this.extraAction,
     this.focusNode,
+    this.isSearching,
   });
 
   @override
@@ -415,11 +425,14 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
                                     a.display,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
+                                    // Rows at rest are bold; the one under
+                                    // the mouse or the arrow keys drops to
+                                    // regular weight, on top of its tint.
                                     style: TextStyle(
                                       fontSize: Density.fieldFont,
                                       fontWeight: active
-                                          ? FontWeight.w600
-                                          : FontWeight.w500,
+                                          ? FontWeight.w400
+                                          : FontWeight.w700,
                                       color: Colors.black87,
                                     ),
                                   ),
@@ -496,11 +509,82 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
     );
   }
 
+  /// Width the slot in front of the field opens to while the loader shows —
+  /// the dashboard form's `_kLoaderSlotWidth`.
+  static const double _loaderSlotWidth = 22;
+
+  /// The dashboard form's search loader: 16px, stroke drawn INSIDE the box (a
+  /// centred stroke spills over the edge and the slot's ClipRect cuts it).
+  Widget _spinner(TextScaler scaler) => SizedBox(
+        width: scaler.scale(16),
+        height: scaler.scale(16),
+        child: const CircularProgressIndicator(
+          strokeWidth: 2.6,
+          strokeAlign: CircularProgressIndicator.strokeAlignInside,
+          color: fieldFocusColor,
+        ),
+      );
+
   @override
   Widget build(BuildContext context) {
+    final field = _buildField();
+    final isSearching = widget.isSearching;
+    if (isSearching == null) {
+      return FieldShell(label: widget.label, child: field);
+    }
+    final scaler = MediaQuery.textScalerOf(context);
+
+    // Labels above the field (phone / tablet): the loader sits beside the
+    // label, as on the dashboard's mobile layout, so the field keeps its full
+    // width.
+    if (!FormLayout.inlineOf(context)) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            FieldLabel(widget.label),
+            const SizedBox(width: 6),
+            Obx(() =>
+                isSearching() ? _spinner(scaler) : const SizedBox.shrink()),
+          ]),
+          const SizedBox(height: Density.labelGap),
+          field,
+        ],
+      );
+    }
+
+    // Label beside the field (laptop / PC): a slot between the two animates
+    // open while searching and back to 0 after, so the field only gives up
+    // that width during a search. OverflowBox keeps the spinner full size
+    // while the slot animates; ClipRect hides what is outside the slot. The
+    // fixed height matters: the grid gives unbounded height, and an unbounded
+    // OverflowBox would size itself infinitely tall.
+    final slot = Obx(() {
+      final on = isSearching();
+      return ClipRect(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          curve: Curves.easeOut,
+          width: on ? scaler.scale(_loaderSlotWidth) : 0,
+          height: scaler.scale(16),
+          child: OverflowBox(
+            alignment: Alignment.centerLeft,
+            minWidth: 0,
+            minHeight: 0,
+            maxWidth: scaler.scale(_loaderSlotWidth),
+            child: on ? _spinner(scaler) : const SizedBox.shrink(),
+          ),
+        ),
+      );
+    });
     return FieldShell(
       label: widget.label,
-      child: CompositedTransformTarget(
+      child: Row(children: [slot, Expanded(child: field)]),
+    );
+  }
+
+  Widget _buildField() {
+    return CompositedTransformTarget(
         link: _layerLink,
         child: Focus(
           onKeyEvent: _handleKey,
@@ -526,7 +610,6 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
             ),
           ),
         ),
-      ),
     );
   }
 }

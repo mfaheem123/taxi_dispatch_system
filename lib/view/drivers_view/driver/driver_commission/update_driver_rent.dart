@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,6 +6,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../../../../alert/update_driver_rent_email.dart';
 import '../../../../component/color.dart';
@@ -15,11 +17,14 @@ import '../../../../component/responsive_datatable_widget.dart';
 import '../../../../component/textStyle.dart';
 import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
+import '../../../../routes/app_pages.dart';
+import '../../../../utils/new_window.dart';
 import '../../../booking_view/reusable_widget.dart';
 import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../../dashboard_view/booking_table.dart';
 import '../../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../controller/driver_controller.dart';
+import '../../model/create_driver_rent_model.dart';
 import 'driver_rent_preview_screen.dart';
 
 class UpdateDriverRentScreen extends StatefulWidget {
@@ -342,16 +347,40 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                                   fontSize: 13,
                                                   color: DynamicColors.whiteClr),
                                               onTap: () async {
-                                                if (controller.driverRentModel ==
-                                                    null) {
-                                                  await controller
-                                                      .getDriver();
+                                                final rent = controller.updateDriverRentByIdModel;
+                                                if(rent?.driverRent == null) {
+                                                  BotToast.showText(text: "NO DATA FOUND");
+                                                  return;
                                                 }
-                                                Get.dialog(
-                                                  DriverRentWindowWrapper(),
-                                                  barrierDismissible: true,
+
+                                                if (controller.driverRentModel == null) {
+                                                  await controller.getDriver();
+                                                }
+
+                                                final currentDriverId = rent?.driverRent?.driver?.id;
+                                                final driverList = controller.driverRentModel?.drivers ?? [];
+
+                                                CreateDriverRent? matchedDriver;
+                                                if (driverList.isNotEmpty) {
+                                                  try {
+                                                    matchedDriver = driverList.firstWhere((d) => d.id == currentDriverId);
+                                                  } catch (_) {
+                                                    matchedDriver = null;
+                                                  }
+                                                }
+
+                                                final box = GetStorage();
+                                                if (matchedDriver != null) {
+                                                  box.write('temp_driver_rent_mobile', matchedDriver.mobile ?? '');
+                                                  box.write('temp_driver_rent_telephone', matchedDriver.telephone ?? '');
+                                                  box.write('temp_driver_mobile', matchedDriver.mobile ?? '');
+                                                  box.write('temp_driver_telephone', matchedDriver.telephone ?? '');
+                                                }
+
+                                                openScreenInNewWindow(
+                                                  Routes.driverRentView,
+                                                  data: rent,
                                                 );
-                                                // Get.to(() => DriverRentViewScreen());
                                               },
                                             ),
                                             SizedBox(width: 5),
