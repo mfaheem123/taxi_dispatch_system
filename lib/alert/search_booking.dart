@@ -697,15 +697,15 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
         DataRow(
           cells: List.generate(
             13,
-            (index) => DataCell(
+                (index) => DataCell(
               index == 6
                   ? const Center(
-                      child: SizedBox(
-                        height: 25,
-                        width: 25,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    )
+                child: SizedBox(
+                  height: 25,
+                  width: 25,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              )
                   : const SizedBox.shrink(),
             ),
           ),
@@ -766,7 +766,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                         (event.logicalKey == LogicalKeyboardKey.enter ||
                             event.logicalKey == LogicalKeyboardKey.space)) {
                       final bool isCurrentlySelected =
-                          selectedBookings.contains(booking);
+                      selectedBookings.contains(booking);
                       setState(() {
                         if (isCurrentlySelected) {
                           selectedBookings.remove(booking);
@@ -787,14 +787,14 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                         child: Container(
                           decoration: hasFocus
                               ? BoxDecoration(
-                                  border: Border.all(
-                                      color: Colors.blue, width: 2),
-                                  borderRadius: BorderRadius.circular(4),
-                                )
+                            border: Border.all(
+                                color: Colors.blue, width: 2),
+                            borderRadius: BorderRadius.circular(4),
+                          )
                               : null,
                           child: Checkbox(
                             materialTapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
+                            MaterialTapTargetSize.shrinkWrap,
                             visualDensity: VisualDensity.compact,
                             focusNode: FocusNode(skipTraversal: true),
                             value: selectedBookings.contains(booking),
@@ -842,19 +842,50 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
             ),
           ),
           DataCell(
-            Center(
-              child: Tooltip(
-                message: (booking.pickup ?? '').toUpperCase(),
-                waitDuration: const Duration(milliseconds: 50),
-                showDuration: const Duration(seconds: 3),
-                preferBelow: true,
-                textStyle: _kOutfitStyle(fontSize: 12, color: Colors.white),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF757578),
-                  borderRadius: BorderRadius.circular(4),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Tooltip(
+                  message: (booking.pickup ?? '').toUpperCase(),
+                  waitDuration: const Duration(milliseconds: 50),
+                  showDuration: const Duration(seconds: 3),
+                  preferBelow: true,
+                  textStyle: _kOutfitStyle(fontSize: 12, color: Colors.white),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF757578),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: _buildCellText(booking.pickup ?? '', width: 180),
                 ),
-                child: _buildCellText(booking.pickup ?? '', width: 180),
-              ),
+                if (booking.flightNumber != null && booking.flightNumber!.isNotEmpty) ...[
+                  const SizedBox(width: 4),
+                  Tooltip(
+                    message: "FLIGHT: ${booking.flightNumber}\nARRIVAL: ${booking.arrivingFrom ?? ""}".toUpperCase(),
+                    decoration: BoxDecoration(
+                      color: Colors.black87,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    waitDuration: const Duration(milliseconds: 200),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade100,
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: Colors.blue.shade300, width: 0.8),
+                      ),
+                      child: Text(
+                        booking.arrivingFrom ?? "AIR",maxLines: 1,overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue.shade900,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
           // DROPOFF + small VIA box (only when via exists)

@@ -650,10 +650,21 @@ class _BookingTableState extends State<BookingTable> {
                                               ? Colors.transparent
                                               : Color(int.parse("0xFF${item.airport!.pickup!.locationType!.backgroundColor}")),
                                         ),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-
+                                            SizedBox.shrink(),
+                                            Text(
+                                              item.pickup?.toUpperCase() ?? "-".toUpperCase(),
+                                              maxLines: 1,overflow: TextOverflow.ellipsis,
+                                              style: mozillaTextRegularText(
+                                                fontSize: widthss / 140,
+                                                color: item.airport?.pickup?.locationType?.foregroundColor == null
+                                                    ? DynamicColors.black
+                                                    : Color(int.parse("0xFF${item.airport!.pickup!.locationType!.foregroundColor}")),
+                                              ),
+                                            ),
                                             if (item.flightNumber != null && item.flightNumber!.isNotEmpty) ...[
                                               const SizedBox(width: 4),
                                               Tooltip(
@@ -671,7 +682,7 @@ class _BookingTableState extends State<BookingTable> {
                                                     border: Border.all(color: Colors.blue.shade300, width: 0.8),
                                                   ),
                                                   child: Text(
-                                                    item.arrivingFrom ?? "AIR",
+                                                    item.arrivingFrom ?? "AIR",maxLines: 1,overflow: TextOverflow.ellipsis,
                                                     style: TextStyle(
                                                       fontSize: widthss / 160,
                                                       fontWeight: FontWeight.bold,
@@ -681,20 +692,6 @@ class _BookingTableState extends State<BookingTable> {
                                                 ),
                                               ),
                                             ],
-
-                                            Expanded(
-                                              child: Text(
-                                                item.pickup?.toUpperCase() ?? "-".toUpperCase(),
-                                                style: mozillaTextRegularText(
-                                                  fontSize: widthss / 140,
-                                                  color: item.airport?.pickup?.locationType?.foregroundColor == null
-                                                      ? DynamicColors.black
-                                                      : Color(int.parse("0xFF${item.airport!.pickup!.locationType!.foregroundColor}")),
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-
                                           ],
                                         ),
                                       ),

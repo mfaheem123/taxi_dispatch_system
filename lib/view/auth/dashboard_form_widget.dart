@@ -2923,7 +2923,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
                         // of being scaled down.
                         // The highlighted row is normal weight, the rest bold.
                         child: Text(
-                          "${a.name} ${a.postcode}",
+                          "${a.name} ${a.postcode}".toUpperCase(),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(

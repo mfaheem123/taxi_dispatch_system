@@ -3189,8 +3189,8 @@ class DashboardController extends GetxController {
     }
     if (!pickUpDateReturnPicked) pickUpDateReturn = now;
     if (!pickUpTimeReturnPicked) pickUpTimeControllerReturn.text = nowTime;
-    if (!arrivalTimePicked) arrivalTimeController.text = nowTime;
-    if (!arrivalReturnTimePicked) arrivalReturnTimeController.text = nowTime;
+    // if (!arrivalTimePicked) arrivalTimeController.text = nowTime;
+    // if (!arrivalReturnTimePicked) arrivalReturnTimeController.text = nowTime;
     update();
   }
 
@@ -3651,8 +3651,8 @@ class DashboardController extends GetxController {
     emailController.clear();
     mobileController.clear();
     selectAirportController.clear();
-    arrivalTimeController.text = nowHHmm;
-    arrivalReturnTimeController.text = nowHHmm;
+    arrivalTimeController.clear();
+    arrivalReturnTimeController.clear();
     pickupTwoWayController.clear();
     dropOffTwoWayController.clear();
     telController.clear();
