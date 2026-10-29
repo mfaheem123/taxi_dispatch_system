@@ -209,18 +209,15 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
 
                                   /// Fields Section
                                   Padding(
-                                    padding: const EdgeInsets.all(12.0),
+                                    padding: EdgeInsets.all(isCompact ? 10.5 : 12.0),
                                     child: Wrap(
-                                      runSpacing: 12,
+                                      runSpacing: 6,
                                       spacing: isCompact ? 20 : 30,
                                       crossAxisAlignment: WrapCrossAlignment.center,
                                       children: [
                                         SizedBox(
                                           width: isCompact ? fieldWidth / 1.3 : fieldWidth,
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              labeledTextField(
+                                          child: labeledTextField(
                                                   context,
                                                   isMobile,
                                                   AppText.emailSubject,
@@ -228,8 +225,6 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                                   width: fieldWidth,
                                                   column: true,
                                                   textInputAction: TextInputAction.next),
-                                            ],
-                                          ),
                                         ),
 
                                         /// Action Buttons
