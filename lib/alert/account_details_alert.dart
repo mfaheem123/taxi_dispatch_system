@@ -54,11 +54,12 @@ class _AccountDetailsAlertState extends State<AccountDetailsAlert> {
               ),
             ),
             const Divider(height: 1, thickness: 1),
-            SizedBox(height: 15),
+            SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 26.0),
               child: TextField(
                 maxLines: null,
+                readOnly: true,
                 keyboardType: TextInputType.multiline,
                 decoration: InputDecoration(
                   hintText: "API data will appear here...",
@@ -70,7 +71,7 @@ class _AccountDetailsAlertState extends State<AccountDetailsAlert> {
                 ),
               ),
             ),
-            SizedBox(height: 15),
+            SizedBox(height: 20),
             const Divider(height: 1),
 
             Padding(
