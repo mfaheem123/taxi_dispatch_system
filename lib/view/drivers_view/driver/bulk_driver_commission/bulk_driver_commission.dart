@@ -3,7 +3,6 @@ import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../alert/account_details_alert.dart';
 import '../../../../component/color.dart';
 import '../../../../component/datatable_widget.dart';
 import '../../../../component/textStyle.dart';
@@ -47,6 +46,8 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
             final bool isMobile = maxWidth < 600;
             final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
+            final bool isCompact = maxWidth < 1500;
+
             // Instead of fixed width, we calculate flexible field widths
             final double fieldWidth = isMobile
                 ? maxWidth // full width
@@ -67,12 +68,12 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                   // maxWidth > 1034
                       // ?
                   Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
                               flex: 3,
                               child: Container(
-                              width: fieldWidth * 2.8,
+                              // width: fieldWidth * 2.8,
                               decoration: BoxDecoration(
                                 border: Border.all(color: DynamicColors.gryClr),
                               ),
@@ -93,12 +94,12 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                   Padding(
                                     padding: const EdgeInsets.all(12.0),
                                     child: Wrap(
-                                      // runSpacing: 10,
-                                      spacing: 8,
+                                      runSpacing: 8,
+                                      spacing: isCompact ? 6 : 8,
                                       crossAxisAlignment: WrapCrossAlignment.center,
                                       children: [
                                          CustomDropdownField(
-                                            width: fieldWidth / 2,
+                                           width: isCompact ? fieldWidth / 2.3 : fieldWidth / 2,
                                             text: "SUBS",
                                             label: AppText.selectSubsidiary,
                                             items: [
@@ -120,10 +121,10 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                               context: context,
                                               isMobile: isMobile,
                                               label: AppText.from,
-                                              width: fieldWidth / 2,
+                                              width: isCompact ? fieldWidth / 2.3 : fieldWidth / 2,
                                               column: true,
                                               child: SizedBox(
-                                                height: 30,
+                                                height: isCompact ? 28 : 30,
                                                 child: KeyboardDatePicker(),
                                               )),
 
@@ -131,42 +132,34 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                        labeledField(
                                               context: context,
                                               isMobile: isMobile,
-                                              label: AppText.to,
-                                              width: fieldWidth / 2,
+                                           label: AppText.to,
+                                           width: isCompact ? fieldWidth / 2.3 : fieldWidth / 2,
                                               column: true,
                                               child: SizedBox(
-                                                height: 30,
+                                                height: isCompact ? 28 : 30,
                                                 child: KeyboardDatePicker(),
                                               )),
 
-                                        SizedBox(width: 50),
-
+                                        SizedBox(width: isCompact ? 20 : 50),
                                         /// Action Buttons
                                         Padding(
                                           padding: const EdgeInsets.only(top: 18.0),
                                           child: Wrap(
-                                            spacing: 8,
+                                            spacing: isCompact ? 6 : 8,
                                             runSpacing: 8,
                                             children: [
                                               CustomButton(
-                                                width: 100,
-                                                height: 33,
+                                                width: isCompact ? 85 : 100,
+                                                height: isCompact ? 30 : 33,
                                                 borderRadius: 4,
                                                 btnColor: DynamicColors.primaryClr,
                                                 style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
                                                 verticalPadding: 0.0,
                                                 btnText: AppText.getBooking,
-                                                onTap: () {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (context) =>  AccountDetailsAlert(),
-                                                  );
-
-                                                },
                                               ),
                                               CustomButton(
-                                                width: 80,
-                                                height: 33,
+                                                width: isCompact ? 70 : 80,
+                                                height: isCompact ? 30 : 33,
                                                 borderRadius: 4,
                                                 btnColor: DynamicColors.redClr,
                                                 style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
@@ -174,8 +167,8 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                                 btnText: AppText.clear,
                                               ),
                                               CustomButton(
-                                                width: 90,
-                                                height: 33,
+                                                width: isCompact ? 75 : 90,
+                                                height: isCompact ? 30 : 33,
                                                 borderRadius: 4,
                                                 btnColor: DynamicColors.greenClr,
                                                 style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
@@ -197,7 +190,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                             Expanded(
                               flex: 2,
                               child: Container(
-                              width: fieldWidth,
+                              // width: fieldWidth,
                               decoration: BoxDecoration(
                                 border: Border.all(color: DynamicColors.gryClr),
                               ),
@@ -219,11 +212,11 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                     padding: const EdgeInsets.all(12.0),
                                     child: Wrap(
                                       runSpacing: 12,
-                                      spacing: 30,
+                                      spacing: isCompact ? 20 : 30,
                                       crossAxisAlignment: WrapCrossAlignment.center,
                                       children: [
                                         SizedBox(
-                                          width: fieldWidth,
+                                          width: isCompact ? fieldWidth / 1.3 : fieldWidth,
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
@@ -244,7 +237,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                           padding: const EdgeInsetsGeometry.only(top: 18.0),
                                           child: CustomButton(
                                             width: 140,
-                                            height: 33,
+                                            height: isCompact ? 30 : 33,
                                             borderRadius: 4,
                                             btnColor: DynamicColors.greenClr,
                                             style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
