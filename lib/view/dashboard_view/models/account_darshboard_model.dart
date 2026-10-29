@@ -43,6 +43,7 @@ class DashboardAccountObject {
   String? mobile;
   String? paymentTypes;
   String? information;
+  bool? hasEscort;
   String? backgroundColor;
   String? foregroundColor;
   List<DepartmentObject>? departments;
@@ -57,6 +58,7 @@ class DashboardAccountObject {
     this.mobile,
     this.paymentTypes,
     this.information,
+    this.hasEscort,
     this.backgroundColor,
     this.foregroundColor,
     this.departments,
@@ -72,6 +74,7 @@ class DashboardAccountObject {
     mobile: json["mobile"],
     paymentTypes: json["payment_types"],
     information: json["information"],
+    hasEscort: json["has_escort"],
     backgroundColor: json["background_color"],
     foregroundColor: json["foreground_color"],
     departments: List<DepartmentObject>.from(json["departments"].map((x) => DepartmentObject.fromJson(x))),
@@ -87,6 +90,7 @@ class DashboardAccountObject {
     "mobile": mobile,
     "payment_types": paymentTypes,
     "information": information,
+    "has_escort": hasEscort,
     "background_color": backgroundColor,
     "foreground_color": foregroundColor,
     "departments": List<dynamic>.from(departments!.map((x) => x.toJson())),

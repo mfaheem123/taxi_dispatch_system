@@ -352,7 +352,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 child: SingleChildScrollView(
                   padding: EdgeInsets.symmetric(
                     horizontal: isMobile ? 0 : 4,
-                    vertical: isMobile ? 0 : 12,
+                    vertical: isMobile ? 0 : 6,
                   ),
                   child: Container(
                     decoration: BoxDecoration(
@@ -368,7 +368,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                           _topTabs(isMobile),
                           Padding(
                             padding: EdgeInsets.symmetric(
-                                horizontal: isMobile ? 12 : 4, vertical: 6),
+                                horizontal: isMobile ? 12 : 4, vertical: 2),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
@@ -1896,79 +1896,70 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             ),
           ),
         );
-    final left = Wrap(
-      spacing: 6,
-      runSpacing: 4,
-      crossAxisAlignment: WrapCrossAlignment.center,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // 21.2 / 21.4 (36.2 / 36.4 in return mode): these previously reused 20
-        // and 21, which are the Vehicle Type and Department dropdowns in the
-        // row above — a duplicate order leaves the relative position of the
-        // colliding pair up to a geometry tie-break instead of to us.
-        checkbox('SMS', controller.smsCheckbox.value,
-                (v) => setState(() => controller.smsCheckbox.value = v ?? false),
-            tab: _isReturnJourney ? 34.2 : 23.2),
-        checkbox('EMAIL', controller.emailCheckbox.value,
-                (v) => setState(() => controller.emailCheckbox.value = v ?? false),
-            tab: _isReturnJourney ? 34.4 : 23.4),
-        // luggageField('Passenger'.toUpperCase(), Icons.work, controller.passController, _isReturnJourney?37:22,),
-        luggageField(
-          'luggage'.toUpperCase(),
-          Icons.luggage,
-          controller.luggController,
-          _isReturnJourney ? 35 : 24,
+        Expanded(
+          child: Wrap(
+            spacing: 4,
+            runSpacing: 2,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              // 21.2 / 21.4 (36.2 / 36.4 in return mode): these previously reused 20
+              // and 21, which are the Vehicle Type and Department dropdowns in the
+              // row above — a duplicate order leaves the relative position of the
+              // colliding pair up to a geometry tie-break instead of to us.
+              checkbox('SMS', controller.smsCheckbox.value,
+                      (v) => setState(() => controller.smsCheckbox.value = v ?? false),
+                  tab: _isReturnJourney ? 34.2 : 23.2),
+              checkbox('EMAIL', controller.emailCheckbox.value,
+                      (v) => setState(() => controller.emailCheckbox.value = v ?? false),
+                  tab: _isReturnJourney ? 34.4 : 23.4),
+              luggageField(
+                'luggage'.toUpperCase(),
+                Icons.luggage,
+                controller.luggController,
+                _isReturnJourney ? 35 : 24,
+              ),
+              luggageField(
+                'small luggage'.toUpperCase(),
+                Icons.luggage,
+                controller.sluggController,
+                _isReturnJourney ? 36 : 25,
+              ),
+              _quotationToggle(),
+            ],
+          ),
         ),
-        luggageField(
-          'small luggage'.toUpperCase(),
-          Icons.luggage,
-          controller.sluggController,
-          _isReturnJourney ? 36 : 25,
+        const SizedBox(width: 8),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            iconBtn(Icons.settings_suggest, tab: _isReturnJourney ? 37 : 26,
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) => SettingsDialog(),
+                  );
+                }),
+            iconBtn(Icons.attach_money, tab: _isReturnJourney ? 38 : 27,
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) => ChildSeatsAlert(),
+                  );
+                }),
+            iconBtn(Icons.sticky_note_2, tab: _isReturnJourney ? 39 : 28,
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) => ExtraInfoAlert(),
+                  );
+                }),
+          ],
         ),
-
       ],
     );
-    final right = Row(mainAxisSize: MainAxisSize.min, children: [
-      _quotationToggle(),
-      // iconBtn(Icons.person, tab: _isReturnJourney ? 39 : 24, onPressed: () {
-      //   showDialog(context: context, builder: (_) => RestrictDriversAlert());
-      // }),
-      iconBtn(Icons.settings_suggest, tab: _isReturnJourney ? 37 : 26,
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (_) => SettingsDialog(),
-            );
-          }),
-      iconBtn(Icons.attach_money, tab: _isReturnJourney ? 38 : 27,
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (_) => ChildSeatsAlert(),
-            );
-          }),
-      // iconBtn(Icons.note_add, tab: _isReturnJourney ? 41 : 26, onPressed: () {
-      //   showDialog(
-      //     context: context,
-      //     barrierDismissible: false,
-      //     builder: (_) => ExtraFaresAlert(),
-      //   );
-      // }),
-      iconBtn(Icons.sticky_note_2, tab: _isReturnJourney ? 39 : 28,
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (_) => ExtraInfoAlert(),
-            );
-          }),
-    ]);
-    if (isMobile) {
-      return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        left,
-        const SizedBox(height: 10),
-        right,
-      ]);
-    }
-    return Row(children: [Expanded(child: left), right]);
   }
 
   // ────────── status cards
@@ -2017,11 +2008,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           icon: Icons.schedule,
           label: 'ETA',
           value: '${controller.totalTimeDuration}'),
-      card(icon: Icons.timer_outlined, label: 'JOURNEY', value: '0.0 mins'),
+      // card(icon: Icons.timer_outlined, label: 'JOURNEY', value: '0.0 mins'),
       card(
           icon: Icons.place_outlined,
           label: 'DISTANCE',
           value: '${controller.totalDistance}'),
+      card(icon: Icons.timer_outlined, label: 'MILEAGE FARE', value: '0.0'),
       card(
           icon: Icons.payments_outlined,
           label: 'FARE',
@@ -2374,38 +2366,35 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   }
 
   Widget _quotationToggle() {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      // const SizedBox(height: 16),
-      Row(children: [
-        // Last cell of the PAY BY / VEHICLE / DEPARTMENT row, so it sits just
-        // after Department (21, or 36 in return mode). Previously orderless,
-        // which parked it behind every numbered field.
-        FocusTraversalOrder(
-          order: NumericFocusOrder(_isReturnJourney ? 36.5 : 25.5),
-          child: CallbackShortcuts(
-            bindings: {
-              const SingleActivator(LogicalKeyboardKey.enter): () {
-                controller.dropDownShow.value = !controller.dropDownShow.value;
-              },
+    return Row(mainAxisSize: MainAxisSize.min, children: [
+      // Last cell of the PAY BY / VEHICLE / DEPARTMENT row, so it sits just
+      // after Department (21, or 36 in return mode). Previously orderless,
+      // which parked it behind every numbered field.
+      FocusTraversalOrder(
+        order: NumericFocusOrder(_isReturnJourney ? 36.5 : 25.5),
+        child: CallbackShortcuts(
+          bindings: {
+            const SingleActivator(LogicalKeyboardKey.enter): () {
+              controller.dropDownShow.value = !controller.dropDownShow.value;
             },
-            child: Focus(
-              // The Switch itself is the Tab stop and handles Enter/Space.
-              canRequestFocus: false,
-              child: GlowFocus(
-                radius: 20,
-                child: Obx(() => Switch(
-                  value: controller.dropDownShow.value,
-                  onChanged: (v) => controller.dropDownShow.value = v,
-                  activeColor: _purple,
-                )),
-              ),
+          },
+          child: Focus(
+            // The Switch itself is the Tab stop and handles Enter/Space.
+            canRequestFocus: false,
+            child: GlowFocus(
+              radius: 20,
+              child: Obx(() => Switch(
+                value: controller.dropDownShow.value,
+                onChanged: (v) => controller.dropDownShow.value = v,
+                activeColor: _purple,
+              )),
             ),
           ),
         ),
-        const SizedBox(width: 4),
-        Text('Quotation'.toUpperCase(),
-            style: TextStyle(fontWeight: FontWeight.w500, fontSize: _fsField)),
-      ]),
+      ),
+      const SizedBox(width: 4),
+      Text('Quotation'.toUpperCase(),
+          style: TextStyle(fontWeight: FontWeight.w500, fontSize: _fsField)),
     ]);
   }
 
