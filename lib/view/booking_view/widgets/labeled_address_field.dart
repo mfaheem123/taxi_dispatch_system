@@ -418,11 +418,11 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
                               child: Row(children: [
                                 Icon(Icons.place_outlined,
                                     size: 14,
-                                    color: active ? accent : Colors.grey),
+                                    color: active ? accent : Colors.green),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    a.display,
+                                    a.display.toUpperCase(),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     // Rows at rest are bold; the one under
