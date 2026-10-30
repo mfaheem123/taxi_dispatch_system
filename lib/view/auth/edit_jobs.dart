@@ -3055,6 +3055,23 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
   String _labelOf(T item) =>
       widget.itemLabel?.call(item) ?? item.toString();
 
+  List<T> get _uniqueItems {
+    final list = <T>[];
+    for (final item in widget.items) {
+      if (!list.contains(item)) {
+        list.add(item);
+      }
+    }
+    return list;
+  }
+
+  T? get _effectiveValue {
+    if (widget.value == null) return null;
+    final items = _uniqueItems;
+    final matches = items.where((e) => e == widget.value).toList();
+    return matches.length == 1 ? matches.first : null;
+  }
+
   /// Placeholder drawn in the closed box while nothing is picked. Same
   /// centreStart Align the value entries use, so it sits on the field's
   /// middle line rather than on its baseline. Fields that carry their caption
@@ -3073,6 +3090,9 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
 
   @override
   Widget build(BuildContext context) {
+    final uniqueItems = _uniqueItems;
+    final effectiveVal = _effectiveValue;
+
     return AnimatedBuilder(
       animation: _dropdownFocusNode,
       builder: (context, child) {
@@ -3082,7 +3102,7 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
         // from the field beside it until it is opened.
         return InputDecorator(
           isFocused: isFocused,
-          isEmpty: widget.value == null,
+          isEmpty: effectiveVal == null,
           decoration: _kFieldDecoration().copyWith(
             // No hintText here: InputDecorator baseline-aligns its hint to the
             // input's baseline, and the closed dropdown's empty slot is a
@@ -3101,7 +3121,7 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
               focusNode: _dropdownFocusNode,
               focusColor: Colors.transparent,
               isDense: true,
-              value: widget.value,
+              value: effectiveVal,
               // Only reached when nothing in `items` matches the value —
               // i.e. the allowUnselect: false fields with no selection.
               hint: _hintChild,
@@ -3134,7 +3154,7 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
                 // slot — not DropdownButton.hint — is the empty state whenever
                 // allowUnselect is on.
                 if (widget.allowUnselect) _hintChild,
-                ...widget.items.map((e) => Align(
+                ...uniqueItems.map((e) => Align(
                   alignment: AlignmentDirectional.centerStart,
                   child: Text(
                     _labelOf(e).toUpperCase(),
@@ -3165,7 +3185,7 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
                     ),
                   ),
                 // Actual items
-                ...widget.items.map((e) => DropdownMenuItem<T?>(
+                ...uniqueItems.map((e) => DropdownMenuItem<T?>(
                   value: e,
                   child: Text(
                     _labelOf(e).toUpperCase(),

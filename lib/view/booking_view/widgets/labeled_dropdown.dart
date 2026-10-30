@@ -225,12 +225,24 @@ class _LabeledObjectDropdownState<T> extends State<LabeledObjectDropdown<T>> {
     super.dispose();
   }
 
-  // A value missing from `items` (list reloading, nothing loaded yet) would
-  // make DropdownButtonFormField assert — show no selection instead.
-  T? get _selected =>
-      widget.value != null && widget.items.contains(widget.value)
-          ? widget.value
-          : null;
+  List<T> get _uniqueItems {
+    final list = <T>[];
+    for (final item in widget.items) {
+      if (!list.contains(item)) {
+        list.add(item);
+      }
+    }
+    return list;
+  }
+
+  // A value missing from `items` (list reloading, nothing loaded yet) or having
+  // duplicate instances would make DropdownButtonFormField assert — show no
+  // selection instead.
+  T? get _selected {
+    if (widget.value == null) return null;
+    final matches = _uniqueItems.where((i) => i == widget.value).toList();
+    return matches.length == 1 ? matches.first : null;
+  }
 
   void _onChanged(T? picked) {
     widget.onChanged?.call(picked);
@@ -257,7 +269,7 @@ class _LabeledObjectDropdownState<T> extends State<LabeledObjectDropdown<T>> {
 
   @override
   Widget build(BuildContext context) {
-    final items = widget.items;
+    final items = _uniqueItems;
     final itemLabel = widget.itemLabel;
     final hint = widget.hint ?? 'SELECT';
     return FieldShell(

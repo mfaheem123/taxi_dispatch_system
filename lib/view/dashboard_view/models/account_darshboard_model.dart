@@ -96,6 +96,17 @@ class DashboardAccountObject {
     "departments": List<dynamic>.from(departments!.map((x) => x.toJson())),
     "subsidiary": subsidiary!.toJson(),
   };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DashboardAccountObject &&
+          runtimeType == other.runtimeType &&
+          ((id != null && id == other.id) ||
+              (id == null && other.id == null && name == other.name));
+
+  @override
+  int get hashCode => id?.hashCode ?? name.hashCode;
 }
 
 class DepartmentObject {
@@ -116,6 +127,17 @@ class DepartmentObject {
     "id": id,
     "name": name,
   };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DepartmentObject &&
+          runtimeType == other.runtimeType &&
+          ((id != null && id == other.id) ||
+              (id == null && other.id == null && name == other.name));
+
+  @override
+  int get hashCode => id?.hashCode ?? name.hashCode;
 }
 
 class Subsidiary {
@@ -144,4 +166,15 @@ class Subsidiary {
     "email": email,
     "telephone_number": telephoneNumber,
   };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Subsidiary &&
+          runtimeType == other.runtimeType &&
+          ((id != null && id == other.id) ||
+              (id == null && other.id == null && name == other.name));
+
+  @override
+  int get hashCode => id?.hashCode ?? name.hashCode;
 }

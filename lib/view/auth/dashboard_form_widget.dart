@@ -2440,8 +2440,28 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
 
   String _labelOf(T item) => widget.itemLabel?.call(item) ?? item.toString();
 
+  List<T> get _uniqueItems {
+    final list = <T>[];
+    for (final item in widget.items) {
+      if (!list.contains(item)) {
+        list.add(item);
+      }
+    }
+    return list;
+  }
+
+  T? get _effectiveValue {
+    if (widget.value == null) return null;
+    final items = _uniqueItems;
+    final matches = items.where((e) => e == widget.value).toList();
+    return matches.length == 1 ? matches.first : null;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final uniqueItems = _uniqueItems;
+    final effectiveVal = _effectiveValue;
+
     return AnimatedBuilder(
       animation: _dropdownFocusNode,
       builder: (context, child) {
@@ -2454,7 +2474,7 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
           // Drives the label: parked inside the box while nothing is picked,
           // floated up onto the top edge once there is a value — exactly the
           // two states a TextField label has.
-          isEmpty: widget.value == null,
+          isEmpty: effectiveVal == null,
           decoration: _kFieldDecoration().copyWith(
             label: Text(widget.labelText),
             labelStyle: _kLabelTextStyle,
@@ -2469,7 +2489,7 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
               focusNode: _dropdownFocusNode,
               focusColor: Colors.transparent,
               isDense: true,
-              value: widget.value,
+              value: effectiveVal,
               // No hint: the label already owns the empty state, and a hint
               // would print the same words on top of it.
               hint: const SizedBox.shrink(),
@@ -2495,7 +2515,7 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
               // closed value rides the top of the row instead of its middle.
               selectedItemBuilder: (context) => [
                 if (widget.allowUnselect) const SizedBox.shrink(),
-                ...widget.items.map((e) => Align(
+                ...uniqueItems.map((e) => Align(
                   alignment: AlignmentDirectional.centerStart,
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
@@ -2531,7 +2551,7 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
                     ),
                   ),
                 // Actual items
-                ...widget.items.map((e) => DropdownMenuItem<T?>(
+                ...uniqueItems.map((e) => DropdownMenuItem<T?>(
                   value: e,
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
