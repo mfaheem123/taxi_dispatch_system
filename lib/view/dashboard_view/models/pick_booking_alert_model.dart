@@ -1,3 +1,37 @@
+String? _parseString(dynamic value) {
+  if (value == null) return null;
+  if (value is String) return value;
+  if (value is List) {
+    if (value.isEmpty) return null;
+    return value.map((e) {
+      if (e is Map) {
+        return e['address'] ?? e['via'] ?? e['name'] ?? e['value'] ?? e['viapoint'] ?? e.toString();
+      }
+      return e.toString();
+    }).join(', ');
+  }
+  return value.toString();
+}
+
+int? _parseInt(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is num) return value.toInt();
+  if (value is String) return int.tryParse(value);
+  return null;
+}
+
+bool? _parseBool(dynamic value) {
+  if (value == null) return null;
+  if (value is bool) return value;
+  if (value is num) return value != 0;
+  if (value is String) {
+    final lower = value.toLowerCase().trim();
+    return lower == 'true' || lower == '1' || lower == 'yes';
+  }
+  return null;
+}
+
 class PickBookingModel {
   bool? status;
   int? count;
@@ -6,13 +40,19 @@ class PickBookingModel {
   PickBookingModel({this.status, this.count, this.bookings});
 
   PickBookingModel.fromJson(Map<String, dynamic> json) {
-    status = json['status'];
-    count = json['count'];
+    status = _parseBool(json['status']);
+    count = _parseInt(json['count']);
     if (json['bookings'] != null) {
       bookings = <Bookings>[];
-      json['bookings'].forEach((v) {
-        bookings!.add(Bookings.fromJson(v));
-      });
+      if (json['bookings'] is List) {
+        for (var v in (json['bookings'] as List)) {
+          if (v is Map<String, dynamic>) {
+            bookings!.add(Bookings.fromJson(v));
+          } else if (v is Map) {
+            bookings!.add(Bookings.fromJson(Map<String, dynamic>.from(v)));
+          }
+        }
+      }
     }
   }
 
@@ -54,6 +94,7 @@ class Bookings {
   String? dropoffLatitude;
   String? dropoffLongitude;
   String? viapoints;
+  dynamic via;
   String? restrictedDrivers;
   String? flightNumber;
   String? arrivingFrom;
@@ -164,6 +205,7 @@ class Bookings {
     this.dropoffLatitude,
     this.dropoffLongitude,
     this.viapoints,
+    this.via,
     this.restrictedDrivers,
     this.flightNumber,
     this.arrivingFrom,
@@ -249,132 +291,137 @@ class Bookings {
   });
 
   Bookings.fromJson(Map<String, dynamic> json) {
-    id = json['id']?.toString();
-    referenceNumber = json['reference_number'];
-    subsidiaryId = json['subsidiary_id'];
-    bookingTypeId = json['booking_type_id'];
-    bookingStatusId = json['booking_status_id'];
-    journeyTypeId = json['journey_type_id'];
-    accountId = json['account_id'];
-    customerId = json['customer_id'];
-    employeeId = json['employee_id'];
-    pickup = json['pickup'];
-    dropoff = json['dropoff'];
-    pickupDate = json['pickup_date'];
-    pickupTime = json['pickup_time'];
-    dropoffDate = json['dropoff_date'];
-    dropoffTime = json['dropoff_time'];
-    pickupDoorNumber = json['pickup_door_number']?.toString();
-    dropoffDoorNumber = json['dropoff_door_number']?.toString();
-    pickupPlot = json['pickup_plot']?.toString();
-    dropoffPlot = json['dropoff_plot']?.toString();
-    pickupLocationTypeId = json['pickup_location_type_id'];
-    dropoffLocationTypeId = json['dropoff_location_type_id'];
-    pickupLatitude = json['pickup_latitude']?.toString();
-    pickupLongitude = json['pickup_longitude']?.toString();
-    dropoffLatitude = json['dropoff_latitude']?.toString();
-    dropoffLongitude = json['dropoff_longitude']?.toString();
-    viapoints = json['viapoints']?.toString();
-    restrictedDrivers = json['restricted_drivers']?.toString();
-    flightNumber = json['flight_number']?.toString();
-    arrivingFrom = json['arriving_from']?.toString();
-    vehicleTypeId = json['vehicle_type_id'];
-    vehicleId = json['vehicle_id'];
-    driverId = json['driver_id'];
-    passengers = json['passengers'];
-    luggages = json['luggages'];
-    handLuggages = json['hand_luggages'];
-    childSeat = json['child_seat']?.toString();
-    name = json['name'];
-    email = json['email'];
-    mobile = json['mobile'];
-    telephone = json['telephone'];
-    leadTime = json['lead_time']?.toString();
-    notes = json['notes'];
-    specialInstructions = json['special_instructions']?.toString();
-    paymentTypeId = json['payment_type_id'];
-    companyPrice = json['company_price']?.toString();
-    fares = json['fares']?.toString();
-    totalCharges = json['total_charges']?.toString();
-    parkingCharges = json['parking_charges']?.toString();
-    waitingCharges = json['waiting_charges']?.toString();
-    extraDropCharges = json['extra_drop_charges']?.toString();
-    creditCardCharges = json['credit_card_charges']?.toString();
-    congestionCharges = json['congestion_charges']?.toString();
-    miles = json['miles']?.toString();
-    meetAndGreet = json['meet_and_greet']?.toString();
-    department = json['department']?.toString();
-    escortId = json['escort_id'];
-    orderNumber = json['order_number']?.toString();
-    bookedBy = json['booked_by']?.toString();
-    addReturnFare = json['add_return_fare'];
-    fareMeterStatus = json['fare_meter_status'];
-    fareMeter = json['fare_meter'];
-    quotation = json['quotation'];
-    quoted = json['quoted'];
-    dispatch = json['dispatch'];
-    dispatchAs = json['dispatch_as']?.toString();
-    sms = json['sms'];
-    emailflag = json['emailflag'];
-    trash = json['trash'];
-    hidden = json['hidden'];
-    multiBookingId = json['multi_booking_id'];
+    id = _parseString(json['id']);
+    referenceNumber = _parseString(json['reference_number']);
+    subsidiaryId = _parseInt(json['subsidiary_id']);
+    bookingTypeId = _parseInt(json['booking_type_id']);
+    bookingStatusId = _parseInt(json['booking_status_id']);
+    journeyTypeId = _parseInt(json['journey_type_id']);
+    accountId = _parseInt(json['account_id']);
+    customerId = _parseInt(json['customer_id']);
+    employeeId = _parseInt(json['employee_id']);
+    pickup = _parseString(json['pickup']);
+    dropoff = _parseString(json['dropoff']);
+    pickupDate = _parseString(json['pickup_date']);
+    pickupTime = _parseString(json['pickup_time']);
+    dropoffDate = _parseString(json['dropoff_date']);
+    dropoffTime = _parseString(json['dropoff_time']);
+    pickupDoorNumber = _parseString(json['pickup_door_number']);
+    dropoffDoorNumber = _parseString(json['dropoff_door_number']);
+    pickupPlot = _parseString(json['pickup_plot']);
+    dropoffPlot = _parseString(json['dropoff_plot']);
+    pickupLocationTypeId = _parseInt(json['pickup_location_type_id']);
+    dropoffLocationTypeId = _parseInt(json['dropoff_location_type_id']);
+    pickupLatitude = _parseString(json['pickup_latitude']);
+    pickupLongitude = _parseString(json['pickup_longitude']);
+    dropoffLatitude = _parseString(json['dropoff_latitude']);
+    dropoffLongitude = _parseString(json['dropoff_longitude']);
+    viapoints = _parseString(json['viapoints']);
+    via = json['via'] ?? json['viapoints'];
+    restrictedDrivers = _parseString(json['restricted_drivers']);
+    flightNumber = _parseString(json['flight_number']);
+    arrivingFrom = _parseString(json['arriving_from']);
+    vehicleTypeId = _parseInt(json['vehicle_type_id']);
+    vehicleId = _parseInt(json['vehicle_id']);
+    driverId = _parseInt(json['driver_id']);
+    passengers = _parseInt(json['passengers']);
+    luggages = _parseInt(json['luggages']);
+    handLuggages = _parseInt(json['hand_luggages']);
+    childSeat = _parseString(json['child_seat']);
+    name = _parseString(json['name']);
+    email = _parseString(json['email']);
+    mobile = _parseString(json['mobile']);
+    telephone = _parseString(json['telephone']);
+    leadTime = _parseString(json['lead_time']);
+    notes = _parseString(json['notes']);
+    specialInstructions = _parseString(json['special_instructions']);
+    paymentTypeId = _parseInt(json['payment_type_id']);
+    companyPrice = _parseString(json['company_price']);
+    fares = _parseString(json['fares']);
+    totalCharges = _parseString(json['total_charges']);
+    parkingCharges = _parseString(json['parking_charges']);
+    waitingCharges = _parseString(json['waiting_charges']);
+    extraDropCharges = _parseString(json['extra_drop_charges']);
+    creditCardCharges = _parseString(json['credit_card_charges']);
+    congestionCharges = _parseString(json['congestion_charges']);
+    miles = _parseString(json['miles']);
+    meetAndGreet = _parseString(json['meet_and_greet']);
+    department = _parseString(json['department']);
+    escortId = _parseInt(json['escort_id']);
+    orderNumber = _parseString(json['order_number']);
+    bookedBy = _parseString(json['booked_by']);
+    addReturnFare = _parseBool(json['add_return_fare']);
+    fareMeterStatus = _parseBool(json['fare_meter_status']);
+    fareMeter = _parseBool(json['fare_meter']);
+    quotation = _parseBool(json['quotation']);
+    quoted = _parseBool(json['quoted']);
+    dispatch = _parseBool(json['dispatch']);
+    dispatchAs = _parseString(json['dispatch_as']);
+    sms = _parseBool(json['sms']);
+    emailflag = _parseBool(json['emailflag']);
+    trash = _parseBool(json['trash']);
+    hidden = _parseBool(json['hidden']);
+    multiBookingId = _parseInt(json['multi_booking_id']);
     associatedBooking = json['associated_booking'];
-    invoiceStatus = json['invoice_status']?.toString();
-    commissionStatus = json['commission_status']?.toString();
-    commission = json['commission'];
-    skippedBookings = json['skipped_bookings']?.toString();
-    permanent = json['permanent'];
-    toggleDriverText = json['toggle_driver_text']?.toString();
-    togglePassengerText = json['toggle_passenger_text']?.toString();
-    cancelledReason = json['cancelled_reason']?.toString();
-    bookingSource = json['booking_source'];
-    onRoute = json['on_route'];
-    arrived = json['arrived'];
-    passengerOnBoard = json['passenger_on_board'];
-    completed = json['completed'];
-    controllerCompleted = json['controller_completed'];
-    driverWaitingTime = json['driver_waiting_time']?.toString();
-    dispatchedAt = json['dispatched_at']?.toString();
-    bookedAt = json['booked_at'];
-    stripeCustomerId = json['stripe_customer_id']?.toString();
-    stripePaymentId = json['stripe_payment_id']?.toString();
-    invoiceNumber = json['invoice_number']?.toString();
-    initialSubsidiaryId = json['initial_subsidiary_id'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-    eta = json['eta'];
-    fob = json['fob'];
-    future = json['future'];
-    bookingStatus = json['booking_status'] != null
-        ? BookingStatus.fromJson(json['booking_status'])
+    invoiceStatus = _parseString(json['invoice_status']);
+    commissionStatus = _parseString(json['commission_status']);
+    commission = _parseBool(json['commission']);
+    skippedBookings = _parseString(json['skipped_bookings']);
+    permanent = _parseBool(json['permanent']);
+    toggleDriverText = _parseString(json['toggle_driver_text']);
+    togglePassengerText = _parseString(json['toggle_passenger_text']);
+    cancelledReason = _parseString(json['cancelled_reason']);
+    bookingSource = _parseString(json['booking_source']);
+    onRoute = _parseBool(json['on_route']);
+    arrived = _parseBool(json['arrived']);
+    passengerOnBoard = _parseBool(json['passenger_on_board']);
+    completed = _parseBool(json['completed']);
+    controllerCompleted = _parseBool(json['controller_completed']);
+    driverWaitingTime = _parseString(json['driver_waiting_time']);
+    dispatchedAt = _parseString(json['dispatched_at']);
+    bookedAt = _parseString(json['booked_at']);
+    stripeCustomerId = _parseString(json['stripe_customer_id']);
+    stripePaymentId = _parseString(json['stripe_payment_id']);
+    invoiceNumber = _parseString(json['invoice_number']);
+    initialSubsidiaryId = _parseInt(json['initial_subsidiary_id']);
+    createdAt = _parseString(json['created_at']);
+    updatedAt = _parseString(json['updated_at']);
+    eta = _parseString(json['eta']);
+    fob = _parseBool(json['fob']);
+    future = _parseBool(json['future']);
+    bookingStatus = json['booking_status'] is Map
+        ? BookingStatus.fromJson(Map<String, dynamic>.from(json['booking_status']))
         : null;
-    bookingType = json['booking_type'] != null
-        ? BookingType.fromJson(json['booking_type'])
+    bookingType = json['booking_type'] is Map
+        ? BookingType.fromJson(Map<String, dynamic>.from(json['booking_type']))
         : null;
-    journeyType = json['journey_type'] != null
-        ? JourneyType.fromJson(json['journey_type'])
+    journeyType = json['journey_type'] is Map
+        ? JourneyType.fromJson(Map<String, dynamic>.from(json['journey_type']))
         : null;
-    subsidiary = json['subsidiary'] != null
-        ? Subsidiary.fromJson(json['subsidiary'])
+    subsidiary = json['subsidiary'] is Map
+        ? Subsidiary.fromJson(Map<String, dynamic>.from(json['subsidiary']))
         : null;
-    vehicleType = json['vehicle_type'] != null
-        ? VehicleType.fromJson(json['vehicle_type'])
+    vehicleType = json['vehicle_type'] is Map
+        ? VehicleType.fromJson(Map<String, dynamic>.from(json['vehicle_type']))
         : null;
-    paymentType = json['payment_type'] != null
-        ? PaymentType.fromJson(json['payment_type'])
+    paymentType = json['payment_type'] is Map
+        ? PaymentType.fromJson(Map<String, dynamic>.from(json['payment_type']))
         : null;
-    account =
-    json['account'] != null ? Account.fromJson(json['account']) : null;
-    driver = json['driver'] != null ? Driver.fromJson(json['driver']) : null;
-    customer = json['customer'] != null
-        ? Customer.fromJson(json['customer'])
+    account = json['account'] is Map
+        ? Account.fromJson(Map<String, dynamic>.from(json['account']))
         : null;
-    employee = json['employee'] != null
-        ? Employee.fromJson(json['employee'])
+    driver = json['driver'] is Map
+        ? Driver.fromJson(Map<String, dynamic>.from(json['driver']))
         : null;
-    airport =
-    json['airport'] != null ? Airport.fromJson(json['airport']) : null;
+    customer = json['customer'] is Map
+        ? Customer.fromJson(Map<String, dynamic>.from(json['customer']))
+        : null;
+    employee = json['employee'] is Map
+        ? Employee.fromJson(Map<String, dynamic>.from(json['employee']))
+        : null;
+    airport = json['airport'] is Map
+        ? Airport.fromJson(Map<String, dynamic>.from(json['airport']))
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -405,6 +452,7 @@ class Bookings {
     data['dropoff_latitude'] = dropoffLatitude;
     data['dropoff_longitude'] = dropoffLongitude;
     data['viapoints'] = viapoints;
+    data['via'] = via;
     data['restricted_drivers'] = restrictedDrivers;
     data['flight_number'] = flightNumber;
     data['arriving_from'] = arrivingFrom;
@@ -519,7 +567,7 @@ class BookingStatus {
   BookingStatus({this.bookingStatus});
 
   BookingStatus.fromJson(Map<String, dynamic> json) {
-    bookingStatus = json['booking_status'];
+    bookingStatus = _parseString(json['booking_status']);
   }
 
   Map<String, dynamic> toJson() {
@@ -535,7 +583,7 @@ class BookingType {
   BookingType({this.bookingType});
 
   BookingType.fromJson(Map<String, dynamic> json) {
-    bookingType = json['booking_type'];
+    bookingType = _parseString(json['booking_type']);
   }
 
   Map<String, dynamic> toJson() {
@@ -551,7 +599,7 @@ class JourneyType {
   JourneyType({this.journeyType});
 
   JourneyType.fromJson(Map<String, dynamic> json) {
-    journeyType = json['journey_type'];
+    journeyType = _parseString(json['journey_type']);
   }
 
   Map<String, dynamic> toJson() {
@@ -569,9 +617,9 @@ class Subsidiary {
   Subsidiary({this.id, this.name, this.telephoneNumber});
 
   Subsidiary.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    telephoneNumber = json['telephone_number'];
+    id = _parseInt(json['id']);
+    name = _parseString(json['name']);
+    telephoneNumber = _parseString(json['telephone_number']);
   }
 
   Map<String, dynamic> toJson() {
@@ -591,9 +639,9 @@ class VehicleType {
   VehicleType({this.name, this.backgroundColor, this.foregroundColor});
 
   VehicleType.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
-    backgroundColor = json['background_color'];
-    foregroundColor = json['foreground_color'];
+    name = _parseString(json['name']);
+    backgroundColor = _parseString(json['background_color']);
+    foregroundColor = _parseString(json['foreground_color']);
   }
 
   Map<String, dynamic> toJson() {
@@ -614,10 +662,10 @@ class PaymentType {
   PaymentType({this.id, this.name, this.backgroundColor, this.foregroundColor});
 
   PaymentType.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    backgroundColor = json['background_color'];
-    foregroundColor = json['foreground_color'];
+    id = _parseInt(json['id']);
+    name = _parseString(json['name']);
+    backgroundColor = _parseString(json['background_color']);
+    foregroundColor = _parseString(json['foreground_color']);
   }
 
   Map<String, dynamic> toJson() {
@@ -656,16 +704,16 @@ class Account {
   });
 
   Account.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    backgroundColor = json['background_color'];
-    foregroundColor = json['foreground_color'];
-    hasVat = json['has_vat'];
-    bankInformation = json['bank_information']?.toString();
-    fareController = json['fare_controller']?.toString();
-    accountFeesType = json['account_fees_type']?.toString();
-    accountFees = json['account_fees']?.toString();
-    accountFeesVat = json['account_fees_vat']?.toString();
+    id = _parseInt(json['id']);
+    name = _parseString(json['name']);
+    backgroundColor = _parseString(json['background_color']);
+    foregroundColor = _parseString(json['foreground_color']);
+    hasVat = _parseBool(json['has_vat']);
+    bankInformation = _parseString(json['bank_information']);
+    fareController = _parseString(json['fare_controller']);
+    accountFeesType = _parseString(json['account_fees_type']);
+    accountFees = _parseString(json['account_fees']);
+    accountFeesVat = _parseString(json['account_fees_vat']);
   }
 
   Map<String, dynamic> toJson() {
@@ -710,17 +758,18 @@ class Driver {
   });
 
   Driver.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    username = json['username'];
-    name = json['name'];
-    mobileDeviceId = json['mobile_device_id']?.toString();
-    phcVehicleNumber = json['phc_vehicle_number']?.toString();
-    phcDriverNumber = json['phc_driver_number']?.toString();
-    vehicleId = json['vehicle_id'];
-    driverCommission = json['driver_commission']?.toString();
-    sessionStatus = json['session_status']?.toString();
-    vehicle =
-    json['vehicle'] != null ? Vehicle.fromJson(json['vehicle']) : null;
+    id = _parseInt(json['id']);
+    username = _parseString(json['username']);
+    name = _parseString(json['name']);
+    mobileDeviceId = _parseString(json['mobile_device_id']);
+    phcVehicleNumber = _parseString(json['phc_vehicle_number']);
+    phcDriverNumber = _parseString(json['phc_driver_number']);
+    vehicleId = _parseInt(json['vehicle_id']);
+    driverCommission = _parseString(json['driver_commission']);
+    sessionStatus = _parseString(json['session_status']);
+    vehicle = json['vehicle'] is Map
+        ? Vehicle.fromJson(Map<String, dynamic>.from(json['vehicle']))
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -750,10 +799,10 @@ class Vehicle {
   Vehicle({this.make, this.model, this.color, this.vehicleNumber});
 
   Vehicle.fromJson(Map<String, dynamic> json) {
-    make = json['make']?.toString();
-    model = json['model']?.toString();
-    color = json['color']?.toString();
-    vehicleNumber = json['vehicle_number']?.toString();
+    make = _parseString(json['make']);
+    model = _parseString(json['model']);
+    color = _parseString(json['color']);
+    vehicleNumber = _parseString(json['vehicle_number']);
   }
 
   Map<String, dynamic> toJson() {
@@ -775,10 +824,10 @@ class Customer {
   Customer({this.doorNumber, this.address1, this.address2, this.blacklist});
 
   Customer.fromJson(Map<String, dynamic> json) {
-    doorNumber = json['door_number']?.toString();
-    address1 = json['address1']?.toString();
-    address2 = json['address2']?.toString();
-    blacklist = json['blacklist'];
+    doorNumber = _parseString(json['door_number']);
+    address1 = _parseString(json['address1']);
+    address2 = _parseString(json['address2']);
+    blacklist = _parseBool(json['blacklist']);
   }
 
   Map<String, dynamic> toJson() {
@@ -798,8 +847,8 @@ class Employee {
   Employee({this.username, this.roleId});
 
   Employee.fromJson(Map<String, dynamic> json) {
-    username = json['username']?.toString();
-    roleId = json['role_id'];
+    username = _parseString(json['username']);
+    roleId = _parseInt(json['role_id']);
   }
 
   Map<String, dynamic> toJson() {
@@ -817,8 +866,12 @@ class Airport {
   Airport({this.pickup, this.dropoff});
 
   Airport.fromJson(Map<String, dynamic> json) {
-    pickup = json['pickup'] != null ? Pickup.fromJson(json['pickup']) : null;
-    dropoff = json['dropoff'] != null ? Pickup.fromJson(json['dropoff']) : null;
+    pickup = json['pickup'] is Map
+        ? Pickup.fromJson(Map<String, dynamic>.from(json['pickup']))
+        : null;
+    dropoff = json['dropoff'] is Map
+        ? Pickup.fromJson(Map<String, dynamic>.from(json['dropoff']))
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -841,10 +894,10 @@ class Pickup {
   Pickup({this.id, this.name, this.locationType});
 
   Pickup.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name']?.toString();
-    locationType = json['location_type'] != null
-        ? LocationType.fromJson(json['location_type'])
+    id = _parseInt(json['id']);
+    name = _parseString(json['name']);
+    locationType = json['location_type'] is Map
+        ? LocationType.fromJson(Map<String, dynamic>.from(json['location_type']))
         : null;
   }
 
@@ -873,10 +926,10 @@ class LocationType {
   });
 
   LocationType.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name']?.toString();
-    backgroundColor = json['background_color']?.toString();
-    foregroundColor = json['foreground_color']?.toString();
+    id = _parseInt(json['id']);
+    name = _parseString(json['name']);
+    backgroundColor = _parseString(json['background_color']);
+    foregroundColor = _parseString(json['foreground_color']);
   }
 
   Map<String, dynamic> toJson() {

@@ -295,6 +295,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
 
       queryParams
           .removeWhere((key, value) => value == '' || value == "MM/DD/YYYY");
+      print(queryParams);
 
       dynamic response = await Api().get(
         "bookings/pick-bookings",
@@ -371,7 +372,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
   /// Works whether `via` is a List of objects/strings or a plain string.
   List<String> _viaAddresses(Bookings booking) {
     try {
-      final dynamic via = booking.toJson()['via'];
+      final dynamic via = booking.via ?? booking.toJson()['via'] ?? booking.toJson()['viapoints'];
       if (via == null) return const [];
       if (via is String) {
         return via.trim().isEmpty ? const [] : [via.trim()];
@@ -381,7 +382,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
             .map((e) {
           if (e is String) return e.trim();
           if (e is Map) {
-            final addr = e['address'] ?? e['via'] ?? e['name'] ?? e['value'];
+            final addr = e['address'] ?? e['via'] ?? e['name'] ?? e['value'] ?? e['viapoint'];
             return addr == null ? '' : addr.toString().trim();
           }
           return e.toString().trim();
@@ -551,114 +552,132 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                             Border.all(color: Colors.transparent, width: 1.5),
                           ),
                           child: RawScrollbar(
-                            controller: _scrollController,
+                            controller: _horizontalScrollController,
                             thumbVisibility: true,
                             trackVisibility: true,
-                            thumbColor: Colors.grey.shade800,
-                            trackColor: Colors.grey.shade300,
+                            thumbColor: Colors.grey.shade600,
+                            trackColor: Colors.grey.shade200,
                             thickness: 8,
                             radius: const Radius.circular(8),
+                            notificationPredicate: (notif) => notif.depth == 0,
                             child: SingleChildScrollView(
-                              controller: _scrollController,
-                              scrollDirection: Axis.vertical,
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              child: SizedBox(
-                                width: screenWidth * 0.96 - 20,
-                                child: Obx(() {
-                                  _syncRowFocusNodes(
-                                      PickBookingfiltered.length);
-                                  return DatatableWidget(
-                                    columnSpacing: 10,
-                                    horizontalMargin: 8,
-                                    headingRowHeight: 60,
-                                    dataRowMinHeight: 50,
-                                    dataRowMaxHeight: 65,
-                                    columns: [
-                                      buildHeaderWithSearch(
-                                        widhtss: 30, // Header width set to 30px
-                                        widget: Checkbox(
-                                          materialTapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
-                                          visualDensity: VisualDensity.compact,
-                                          value: false,
-                                          onChanged: (v) {},
-                                        ),
-                                      ),
-                                      buildHeaderWithSearch(
-                                        title: "REF #",
-                                        controller: _searchRefController,
-                                        onChanged: (v) => onSearchBooking(),
-                                        widhtss: 70,
-                                      ),
-                                      buildHeaderWithSearch(
-                                        title: "DATE/TIME",
-                                        controller: _searchDateTimeController,
-                                        onChanged: (v) => onSearchBooking(),
-                                        widhtss: 95,
-                                      ),
-                                      buildHeaderWithSearch(
-                                        title: "VEHICLE",
-                                        controller: _searchVehicleController,
-                                        onChanged: (v) => onSearchBooking(),
-                                        widhtss: 55,
-                                      ),
-                                      buildHeaderWithSearch(
-                                        title: "PICKUP",
-                                        controller: _searchPickupController,
-                                        onChanged: (v) => onSearchBooking(),
-                                        widhtss: 180,
-                                      ),
-                                      buildHeaderWithSearch(
-                                        title: "DROPOFF",
-                                        controller: _searchDropoffController,
-                                        onChanged: (v) => onSearchBooking(),
-                                        widhtss: 200,
-                                      ),
-                                      buildHeaderWithSearch(
-                                        title: "FARES",
-                                        controller: _searchFareController,
-                                        onChanged: (v) => onSearchBooking(),
-                                        widhtss: 50,
-                                      ),
-                                      buildHeaderWithSearch(
-                                        title: "CUST",
-                                        controller: _searchCustomerController,
-                                        onChanged: (v) => onSearchBooking(),
-                                        widhtss: 80,
-                                      ),
-                                      buildHeaderWithSearch(
-                                        title: "ACC",
-                                        controller: _searchAccountController,
-                                        onChanged: (v) => onSearchBooking(),
-                                        widhtss: 65,
-                                      ),
-                                      buildHeaderWithSearch(
-                                        title: "DRIVER",
-                                        controller: _searchDriverController,
-                                        onChanged: (v) => onSearchBooking(),
-                                        widhtss: 65,
-                                      ),
-                                      buildHeaderWithSearch(
-                                        title: "P/T",
-                                        controller:
-                                        _searchPaymentTypeController,
-                                        onChanged: (v) => onSearchBooking(),
-                                        widhtss: 55,
-                                      ),
-                                      buildHeaderWithSearch(
-                                        title: "STATUS",
-                                        controller: _searchStatusController,
-                                        onChanged: (v) => onSearchBooking(),
-                                        widhtss: 70,
-                                      ),
-                                      buildHeaderWithSearch(
-                                        title: "ACTION",
-                                        removeSearching: true,
-                                      ),
-                                    ],
-                                    rows: _buildTableRows(),
-                                  );
-                                }),
+                              controller: _horizontalScrollController,
+                              scrollDirection: Axis.horizontal,
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minWidth: (screenWidth * 0.96 - 20)
+                                      .clamp(1100.0, double.infinity),
+                                ),
+                                child: RawScrollbar(
+                                  controller: _scrollController,
+                                  thumbVisibility: true,
+                                  trackVisibility: true,
+                                  thumbColor: Colors.grey.shade800,
+                                  trackColor: Colors.grey.shade300,
+                                  thickness: 8,
+                                  radius: const Radius.circular(8),
+                                  notificationPredicate: (notif) => notif.depth == 0,
+                                  child: SingleChildScrollView(
+                                    controller: _scrollController,
+                                    scrollDirection: Axis.vertical,
+                                    physics: const AlwaysScrollableScrollPhysics(),
+                                    child: Obx(() {
+                                      _syncRowFocusNodes(
+                                          PickBookingfiltered.length);
+                                      return DatatableWidget(
+                                        columnSpacing: 10,
+                                        horizontalMargin: 8,
+                                        headingRowHeight: 60,
+                                        dataRowMinHeight: 50,
+                                        dataRowMaxHeight: 65,
+                                        columns: [
+                                          buildHeaderWithSearch(
+                                            widhtss: 30, // Header width set to 30px
+                                            widget: Checkbox(
+                                              materialTapTargetSize:
+                                              MaterialTapTargetSize.shrinkWrap,
+                                              visualDensity: VisualDensity.compact,
+                                              value: false,
+                                              onChanged: (v) {},
+                                            ),
+                                          ),
+                                          buildHeaderWithSearch(
+                                            title: "REF #",
+                                            controller: _searchRefController,
+                                            onChanged: (v) => onSearchBooking(),
+                                            widhtss: 70,
+                                          ),
+                                          buildHeaderWithSearch(
+                                            title: "DATE/TIME",
+                                            controller: _searchDateTimeController,
+                                            onChanged: (v) => onSearchBooking(),
+                                            widhtss: 95,
+                                          ),
+                                          buildHeaderWithSearch(
+                                            title: "VEHICLE",
+                                            controller: _searchVehicleController,
+                                            onChanged: (v) => onSearchBooking(),
+                                            widhtss: 55,
+                                          ),
+                                          buildHeaderWithSearch(
+                                            title: "PICKUP",
+                                            controller: _searchPickupController,
+                                            onChanged: (v) => onSearchBooking(),
+                                            widhtss: 180,
+                                          ),
+                                          buildHeaderWithSearch(
+                                            title: "DROPOFF",
+                                            controller: _searchDropoffController,
+                                            onChanged: (v) => onSearchBooking(),
+                                            widhtss: 200,
+                                          ),
+                                          buildHeaderWithSearch(
+                                            title: "FARES",
+                                            controller: _searchFareController,
+                                            onChanged: (v) => onSearchBooking(),
+                                            widhtss: 50,
+                                          ),
+                                          buildHeaderWithSearch(
+                                            title: "CUST",
+                                            controller: _searchCustomerController,
+                                            onChanged: (v) => onSearchBooking(),
+                                            widhtss: 80,
+                                          ),
+                                          buildHeaderWithSearch(
+                                            title: "ACC",
+                                            controller: _searchAccountController,
+                                            onChanged: (v) => onSearchBooking(),
+                                            widhtss: 65,
+                                          ),
+                                          buildHeaderWithSearch(
+                                            title: "DRIVER",
+                                            controller: _searchDriverController,
+                                            onChanged: (v) => onSearchBooking(),
+                                            widhtss: 65,
+                                          ),
+                                          buildHeaderWithSearch(
+                                            title: "P/T",
+                                            controller:
+                                            _searchPaymentTypeController,
+                                            onChanged: (v) => onSearchBooking(),
+                                            widhtss: 55,
+                                          ),
+                                          buildHeaderWithSearch(
+                                            title: "STATUS",
+                                            controller: _searchStatusController,
+                                            onChanged: (v) => onSearchBooking(),
+                                            widhtss: 70,
+                                          ),
+                                          buildHeaderWithSearch(
+                                            title: "ACTION",
+                                            removeSearching: true,
+                                          ),
+                                        ],
+                                        rows: _buildTableRows(),
+                                      );
+                                    }),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -844,7 +863,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
           DataCell(
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Tooltip(
                   message: (booking.pickup ?? '').toUpperCase(),
@@ -866,7 +885,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                       color: Colors.black87,
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    waitDuration: const Duration(milliseconds: 200),
+                    waitDuration: const Duration(milliseconds: 100),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
                       decoration: BoxDecoration(
@@ -875,7 +894,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                         border: Border.all(color: Colors.blue.shade300, width: 0.8),
                       ),
                       child: Text(
-                        booking.arrivingFrom ?? "AIR",maxLines: 1,overflow: TextOverflow.ellipsis,
+                        booking.flightNumber ?? "AIR",maxLines: 1,overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
@@ -990,8 +1009,8 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
           .entries
           .map((e) => "VIA ${e.key + 1}: ${e.value.toUpperCase()}")
           .join("\n"),
-      waitDuration: const Duration(milliseconds: 100),
-      showDuration: const Duration(seconds: 5),
+      waitDuration: const Duration(milliseconds: 20),
+      showDuration: const Duration(seconds: 3),
       preferBelow: true,
       textStyle: _kOutfitStyle(fontSize: 12, color: Colors.white),
       decoration: BoxDecoration(
@@ -1234,49 +1253,49 @@ DataColumn buildHeaderWithSearch({
       child: widget != null
           ? Center(child: widget)
           : Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  title!.toUpperCase(),
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            title!.toUpperCase(),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: fontSize ?? 13,
+            ),
+          ),
+          const SizedBox(height: 4),
+          title == "CHECKBOX" || removeSearching == true
+              ? const SizedBox.shrink()
+              : customWidget ??
+              SizedBox(
+                width: widhtss ?? 100,
+                height: textFieldHeight ?? 28,
+                child: TextField(
+                  focusNode: focusNode,
+                  controller: controller,
+                  onChanged: onChanged,
+                  onTap: () {},
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: fontSize ?? 13,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w800, fontSize: 12),
+                  decoration: InputDecoration(
+                    hintText: "SEARCH",
+                    hintStyle: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        color: DynamicColors.textClr.withOpacity(0.8),
+                        fontSize: 12),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 6, vertical: 0),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: const BorderSide(color: Colors.grey),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 4),
-                title == "CHECKBOX" || removeSearching == true
-                    ? const SizedBox.shrink()
-                    : customWidget ??
-                        SizedBox(
-                          width: widhtss ?? 100,
-                          height: textFieldHeight ?? 28,
-                          child: TextField(
-                            focusNode: focusNode,
-                            controller: controller,
-                            onChanged: onChanged,
-                            onTap: () {},
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.w800, fontSize: 12),
-                            decoration: InputDecoration(
-                              hintText: "SEARCH",
-                              hintStyle: TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                  color: DynamicColors.textClr.withOpacity(0.8),
-                                  fontSize: 12),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 6, vertical: 0),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(4),
-                                borderSide: const BorderSide(color: Colors.grey),
-                              ),
-                            ),
-                          ),
-                        ),
-              ],
-            ),
+              ),
+        ],
+      ),
     ),
   );
 }
