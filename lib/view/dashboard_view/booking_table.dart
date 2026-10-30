@@ -651,7 +651,7 @@ class _BookingTableState extends State<BookingTable> {
                                               : Color(int.parse("0xFF${item.airport!.pickup!.locationType!.backgroundColor}")),
                                         ),
                                         child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             SizedBox.shrink(),
@@ -717,9 +717,21 @@ class _BookingTableState extends State<BookingTable> {
                                               ? Colors.transparent
                                               : Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.backgroundColor}"))),
                                         ),
-                                        child: Row(
+                                        child: Column(
                                           mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
                                           children: [
+                                            // 1. Dropoff Text
+                                            Text(
+                                              (item.dropoff ?? "-").toUpperCase(),
+                                              style: mozillaTextRegularText(
+                                                fontSize: widthss / 140,
+                                                color: item.airport?.dropoff?.locationType?.foregroundColor == null
+                                                    ? DynamicColors.black
+                                                    : Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.foregroundColor}")),
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                             // 2. VIA Tag with Multi-Address Hover Tooltip
                                             if (item.viapoints != null && item.viapoints!.isNotEmpty) ...[
                                               const SizedBox(width: 4),
@@ -771,19 +783,7 @@ class _BookingTableState extends State<BookingTable> {
                                                 ),
                                               ),
                                             ],
-                                            // 1. Dropoff Text
-                                            Expanded(
-                                              child: Text(
-                                                (item.dropoff ?? "-").toUpperCase(),
-                                                style: mozillaTextRegularText(
-                                                  fontSize: widthss / 140,
-                                                  color: item.airport?.dropoff?.locationType?.foregroundColor == null
-                                                      ? DynamicColors.black
-                                                      : Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.foregroundColor}")),
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
+
 
                                           ],
                                         ),
