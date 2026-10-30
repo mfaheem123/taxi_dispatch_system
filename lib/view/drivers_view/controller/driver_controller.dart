@@ -24,6 +24,7 @@ import 'package:file_picker/file_picker.dart';
 import '../../../Model/driver_models/single_driver_model.dart' as singleDriver;
 import '../../../Model/image_model.dart';
 import '../../../component/color.dart';
+import '../../administration/model/list_subsDiary.dart';
 import '../../customer/model/restricDriver.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../driver/create_driver_form/driver_form.dart';
@@ -55,12 +56,43 @@ class DriverController extends GetxController {
   RxBool vehicleInformation = false.obs;
 
   String? driverType;
+
   // String driverType = 'COMMISSION';
-  String? dobDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
-  String? vehicleStartDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
-  String? vehicleEndeDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
-  String? startDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
-  String? endDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? dobDate = "${DateTime
+      .now()
+      .year}-${DateTime
+      .now()
+      .month}-${DateTime
+      .now()
+      .day}";
+  String? vehicleStartDate = "${DateTime
+      .now()
+      .year}-${DateTime
+      .now()
+      .month}-${DateTime
+      .now()
+      .day}";
+  String? vehicleEndeDate = "${DateTime
+      .now()
+      .year}-${DateTime
+      .now()
+      .month}-${DateTime
+      .now()
+      .day}";
+  String? startDate = "${DateTime
+      .now()
+      .year}-${DateTime
+      .now()
+      .month}-${DateTime
+      .now()
+      .day}";
+  String? endDate = "${DateTime
+      .now()
+      .year}-${DateTime
+      .now()
+      .month}-${DateTime
+      .now()
+      .day}";
 
   /// text editing controller
   final driverUserNameController = TextEditingController();
@@ -318,7 +350,9 @@ class DriverController extends GetxController {
       };
 
       // ✅ PASSWORD SAFE FIX
-      if (driverPasswordController.text.trim().isNotEmpty) {
+      if (driverPasswordController.text
+          .trim()
+          .isNotEmpty) {
         baseData["password"] = driverPasswordController.text.trim();
       }
 
@@ -427,7 +461,6 @@ class DriverController extends GetxController {
   }
 
 
-
   clearAddDriverData() async {
     driverRendLimitController.clear();
     driverBalanceController.clear();
@@ -491,7 +524,8 @@ class DriverController extends GetxController {
     String licenceExpiryFormatted = '-';
     if (driver.licenceExpiry != null) {
       licenceExpiryFormatted = driver.licenceExpiry!;
-      if (driver.licenceExpiryTime != null && driver.licenceExpiryTime!.isNotEmpty) {
+      if (driver.licenceExpiryTime != null &&
+          driver.licenceExpiryTime!.isNotEmpty) {
         licenceExpiryFormatted += ' ${driver.licenceExpiryTime}';
       }
     }
@@ -504,6 +538,7 @@ class DriverController extends GetxController {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
+
               /// Company Name & Title
               pw.Center(
                 child: pw.Column(
@@ -522,14 +557,15 @@ class DriverController extends GetxController {
               ),
 
 
-
               /// Main table with driver info
               pw.Table(
                 border: pw.TableBorder(
                   top: const pw.BorderSide(color: PdfColors.black, width: 0.5),
-                  bottom: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                  bottom: const pw.BorderSide(
+                      color: PdfColors.black, width: 0.5),
                   left: const pw.BorderSide(color: PdfColors.black, width: 0.5),
-                  right: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                  right: const pw.BorderSide(
+                      color: PdfColors.black, width: 0.5),
                 ),
                 columnWidths: {
                   0: const pw.FlexColumnWidth(2),
@@ -538,6 +574,7 @@ class DriverController extends GetxController {
                   3: const pw.FlexColumnWidth(2.5),
                 },
                 children: [
+
                   /// Driver ID row
                   // pw.TableRow(
                   //   children: [
@@ -546,7 +583,6 @@ class DriverController extends GetxController {
                   //     _buildPdfCell(''),
                   //     _buildPdfCell(''),
                   //   ],                  ),
-
 
 
                   /// Name + NI row
@@ -558,6 +594,7 @@ class DriverController extends GetxController {
                       _buildPdfValueCell(driver.ni ?? '-'),
                     ],
                   ),
+
                   /// Address row
                   pw.TableRow(
                     children: [
@@ -567,6 +604,7 @@ class DriverController extends GetxController {
                       _buildPdfValueCell(''),
                     ],
                   ),
+
                   /// DOB + PHC License row
                   pw.TableRow(
                     children: [
@@ -576,6 +614,7 @@ class DriverController extends GetxController {
                       _buildPdfValueCell(driver.phcDriverNumber ?? '-'),
                     ],
                   ),
+
                   /// License # + License Expiry row
                   pw.TableRow(
                     children: [
@@ -585,6 +624,7 @@ class DriverController extends GetxController {
                       _buildPdfValueCell(licenceExpiryFormatted),
                     ],
                   ),
+
                   /// Start Date + End Date row
                   pw.TableRow(
                     children: [
@@ -657,6 +697,7 @@ class DriverController extends GetxController {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
+
               /// Company Name & Title
               pw.Center(
                 child: pw.Column(
@@ -678,9 +719,11 @@ class DriverController extends GetxController {
               pw.Table(
                 border: pw.TableBorder(
                   top: const pw.BorderSide(color: PdfColors.black, width: 0.5),
-                  bottom: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                  bottom: const pw.BorderSide(
+                      color: PdfColors.black, width: 0.5),
                   left: const pw.BorderSide(color: PdfColors.black, width: 0.5),
-                  right: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                  right: const pw.BorderSide(
+                      color: PdfColors.black, width: 0.5),
                 ),
                 columnWidths: {
                   0: const pw.FlexColumnWidth(2.5),
@@ -689,6 +732,7 @@ class DriverController extends GetxController {
                   3: const pw.FlexColumnWidth(3),
                 },
                 children: [
+
                   /// Driver ID row
                   // pw.TableRow(
                   //   children: [
@@ -703,11 +747,14 @@ class DriverController extends GetxController {
                   pw.TableRow(
                     children: [
                       _buildPdfLabelCell('VEHICLE NUMBER'),
-                      _buildPdfValueCell(vehicle?.vehicleNumber?.toUpperCase() ?? '-'),
+                      _buildPdfValueCell(
+                          vehicle?.vehicleNumber?.toUpperCase() ?? '-'),
                       _buildPdfLabelCell('VEHICLE TYPE'),
-                      _buildPdfValueCell(vehicle?.vehicleType?.name?.toUpperCase() ?? '-'),
+                      _buildPdfValueCell(
+                          vehicle?.vehicleType?.name?.toUpperCase() ?? '-'),
                     ],
                   ),
+
                   /// Make + Model
                   pw.TableRow(
                     children: [
@@ -717,6 +764,7 @@ class DriverController extends GetxController {
                       _buildPdfValueCell(vehicle?.model?.toUpperCase() ?? '-'),
                     ],
                   ),
+
                   /// Color + Owner
                   pw.TableRow(
                     children: [
@@ -731,24 +779,28 @@ class DriverController extends GetxController {
                   pw.TableRow(
                     children: [
                       _buildPdfLabelCell('PHC VEHICLE #'),
-                      _buildPdfValueCell(vehicle?.phcVehicle?.phcVehicleNumber ?? '-'),
+                      _buildPdfValueCell(
+                          vehicle?.phcVehicle?.phcVehicleNumber ?? '-'),
                       _buildPdfLabelCell('PHC VEHICLE EXPIRY'),
                       _buildPdfValueCell(formatExpiry(
                           vehicle?.phcVehicle?.phcVehicleExpiry,
                           vehicle?.phcVehicle?.phcVehicleExpiryTime)),
                     ],
                   ),
+
                   /// PHC Driver
                   pw.TableRow(
                     children: [
                       _buildPdfLabelCell('PHC DRIVER #'),
-                      _buildPdfValueCell(vehicle?.phcDriver?.phcDriverNumber ?? '-'),
+                      _buildPdfValueCell(
+                          vehicle?.phcDriver?.phcDriverNumber ?? '-'),
                       _buildPdfLabelCell('PHC DRIVER EXPIRY'),
                       _buildPdfValueCell(formatExpiry(
                           vehicle?.phcDriver?.phcDriverExpiry,
                           vehicle?.phcDriver?.phcDriverExpiryTime)),
                     ],
                   ),
+
                   /// MOT
                   pw.TableRow(
                     children: [
@@ -760,6 +812,7 @@ class DriverController extends GetxController {
                           vehicle?.mot?.motExpiryTime)),
                     ],
                   ),
+
                   /// MOT 2
                   pw.TableRow(
                     children: [
@@ -771,66 +824,79 @@ class DriverController extends GetxController {
                           vehicle?.mot2?.mot2ExpiryTime)),
                     ],
                   ),
+
                   /// Insurance
                   pw.TableRow(
                     children: [
                       _buildPdfLabelCell('INSURANCE #'),
-                      _buildPdfValueCell(vehicle?.insurance?.insuranceNumber ?? '-'),
+                      _buildPdfValueCell(
+                          vehicle?.insurance?.insuranceNumber ?? '-'),
                       _buildPdfLabelCell('INSURANCE EXPIRY'),
                       _buildPdfValueCell(formatExpiry(
                           vehicle?.insurance?.insuranceExpiry,
                           vehicle?.insurance?.insuranceExpiryTime)),
                     ],
                   ),
+
                   /// License
                   pw.TableRow(
                     children: [
                       _buildPdfLabelCell('LICENSE #'),
-                      _buildPdfValueCell(vehicle?.licence?.licenceNumber ?? '-'),
+                      _buildPdfValueCell(
+                          vehicle?.licence?.licenceNumber ?? '-'),
                       _buildPdfLabelCell('LICENSE EXPIRY'),
                       _buildPdfValueCell(formatExpiry(
                           vehicle?.licence?.licenceExpiry,
                           vehicle?.licence?.licenceExpiryTime)),
                     ],
                   ),
+
                   /// Road Tax
                   pw.TableRow(
                     children: [
                       _buildPdfLabelCell('ROAD TAX #'),
-                      _buildPdfValueCell(vehicle?.roadTax?.roadTaxNumber ?? '-'),
+                      _buildPdfValueCell(
+                          vehicle?.roadTax?.roadTaxNumber ?? '-'),
                       _buildPdfLabelCell('ROAD TAX EXPIRY'),
                       _buildPdfValueCell(formatExpiry(
                           vehicle?.roadTax?.roadTaxExpiry,
                           vehicle?.roadTax?.roadTaxExpiryTime)),
                     ],
                   ),
+
                   /// V5 Registration
                   pw.TableRow(
                     children: [
                       _buildPdfLabelCell('V5 REGISTRATION #'),
-                      _buildPdfValueCell(vehicle?.v5Registration?.v5RegistrationNumber ?? '-'),
+                      _buildPdfValueCell(
+                          vehicle?.v5Registration?.v5RegistrationNumber ?? '-'),
                       _buildPdfLabelCell('V5 REGISTRATION EXPIRY'),
                       _buildPdfValueCell(formatExpiry(
                           vehicle?.v5Registration?.v5RegistrationExpiry,
                           vehicle?.v5Registration?.v5RegistrationExpiryTime)),
                     ],
                   ),
+
                   /// Rental Agreement
                   pw.TableRow(
                     children: [
                       _buildPdfLabelCell('RENTAL AGREEMENT #'),
-                      _buildPdfValueCell(vehicle?.rentalAgreement?.rentalAgreementNumber ?? '-'),
+                      _buildPdfValueCell(
+                          vehicle?.rentalAgreement?.rentalAgreementNumber ??
+                              '-'),
                       _buildPdfLabelCell('RENTAL AGREEMENT EXPIRY'),
                       _buildPdfValueCell(formatExpiry(
                           vehicle?.rentalAgreement?.rentalAgreementExpiry,
                           vehicle?.rentalAgreement?.rentalAgreementExpiryTime)),
                     ],
                   ),
+
                   /// Log Book
                   pw.TableRow(
                     children: [
                       _buildPdfLabelCell('LOG BOOK #'),
-                      _buildPdfValueCell(vehicle?.logBook?.logBookNumber ?? '-'),
+                      _buildPdfValueCell(
+                          vehicle?.logBook?.logBookNumber ?? '-'),
                       _buildPdfLabelCell(''),
                       _buildPdfValueCell(''),
                     ],
@@ -870,12 +936,12 @@ class DriverController extends GetxController {
   }
 
 
-
   singleDriver.SingleDriverModel? singleDriverData;
   RxBool driverDataBindingLoading = false.obs;
 
   RxBool isAuditDriverLoading = false.obs;
   Map<String, dynamic>? auditDriverData;
+
   Future<void> fetchAuditDriverData(String driverId) async {
     isAuditDriverLoading.value = true;
     try {
@@ -930,10 +996,16 @@ class DriverController extends GetxController {
             singleDriverData!.driver!.address.toString().toUpperCase();
       }
 
-      if (singleDriverData!.driver!.useCompanyVehicle == false && singleDriverData!.driver!.vehicle != null) {
+      if (singleDriverData!.driver!.useCompanyVehicle == false &&
+          singleDriverData!.driver!.vehicle != null) {
         if (singleDriverData!.driver!.vehicle!.vehicleNumber != null) {
           vehicleNameController.text =
-              singleDriverData!.driver!.vehicle!.vehicleNumber.toString().toUpperCase();
+              singleDriverData!
+                  .driver!
+                  .vehicle!
+                  .vehicleNumber
+                  .toString()
+                  .toUpperCase();
         }
 
         if (singleDriverData!.driver!.vehicle!.make != null) {
@@ -963,21 +1035,23 @@ class DriverController extends GetxController {
         }
 
         int index = getCombineVehicleData!.vehicleTypes!.indexWhere((test) =>
-            test.id == singleDriverData!.driver!.vehicle!.vehicleTypeId!);
+        test.id == singleDriverData!.driver!.vehicle!.vehicleTypeId!);
         selectCompanyVehicle = getCombineVehicleData!.vehicleTypes![index];
         for (var action in rows) {
           if (action.documentTitle == "PHC VEHICLE") {
             action.expiryDate = DateTime.parse(singleDriverData!
                 .driver!.vehicle!.phcVehicle!.phcVehicleExpiry!);
             action.expiryTime.text = singleDriverData!
-                    .driver!.vehicle!.phcVehicle!.phcVehicleExpiryTime ??
+                .driver!.vehicle!.phcVehicle!.phcVehicleExpiryTime ??
                 "";
             action.batchNo.text = singleDriverData!
-                    .driver!.vehicle!.phcVehicle!.phcVehicleNumber ??
+                .driver!.vehicle!.phcVehicle!.phcVehicleNumber ??
                 "";
-            if (singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleDocument != null) {
+            if (singleDriverData!.driver!.vehicle!.phcVehicle!
+                .phcVehicleDocument != null) {
               action.fileName = ImageModel(
-                name: singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleDocument!,
+                name: singleDriverData!.driver!.vehicle!.phcVehicle!
+                    .phcVehicleDocument!,
                 bytes: Uint8List(0),
                 path: null,
               );
@@ -987,14 +1061,16 @@ class DriverController extends GetxController {
             action.expiryDate = DateTime.parse(
                 singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverExpiry!);
             action.expiryTime.text = singleDriverData!
-                    .driver!.vehicle!.phcDriver!.phcDriverExpiryTime ??
+                .driver!.vehicle!.phcDriver!.phcDriverExpiryTime ??
                 "";
             action.batchNo.text =
                 singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverNumber ??
                     "";
-            if (singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverDocument != null) {
+            if (singleDriverData!.driver!.vehicle!.phcDriver!
+                .phcDriverDocument != null) {
               action.fileName = ImageModel(
-                name: singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverDocument!,
+                name: singleDriverData!.driver!.vehicle!.phcDriver!
+                    .phcDriverDocument!,
                 bytes: Uint8List(0),
                 path: null,
               );
@@ -1034,14 +1110,16 @@ class DriverController extends GetxController {
             action.expiryDate = DateTime.parse(
                 singleDriverData!.driver!.vehicle!.insurance!.insuranceExpiry!);
             action.expiryTime.text = singleDriverData!
-                    .driver!.vehicle!.insurance!.insuranceExpiryTime ??
+                .driver!.vehicle!.insurance!.insuranceExpiryTime ??
                 "";
             action.batchNo.text =
                 singleDriverData!.driver!.vehicle!.insurance!.insuranceNumber ??
                     "";
-            if (singleDriverData!.driver!.vehicle!.insurance!.insuranceDocument != null) {
+            if (singleDriverData!.driver!.vehicle!.insurance!
+                .insuranceDocument != null) {
               action.fileName = ImageModel(
-                name: singleDriverData!.driver!.vehicle!.insurance!.insuranceDocument!,
+                name: singleDriverData!.driver!.vehicle!.insurance!
+                    .insuranceDocument!,
                 bytes: Uint8List(0),
                 path: null,
               );
@@ -1055,9 +1133,11 @@ class DriverController extends GetxController {
                     "";
             action.batchNo.text =
                 singleDriverData!.driver!.vehicle!.licence!.licenceNumber ?? "";
-            if (singleDriverData!.driver!.vehicle!.licence!.licenceDocument != null) {
+            if (singleDriverData!.driver!.vehicle!.licence!.licenceDocument !=
+                null) {
               action.fileName = ImageModel(
-                name: singleDriverData!.driver!.vehicle!.licence!.licenceDocument!,
+                name: singleDriverData!.driver!.vehicle!.licence!
+                    .licenceDocument!,
                 bytes: Uint8List(0),
                 path: null,
               );
@@ -1071,17 +1151,22 @@ class DriverController extends GetxController {
                     "";
             action.batchNo.text =
                 singleDriverData!.driver!.vehicle!.roadTax!.roadTaxNumber ?? "";
-            if (singleDriverData!.driver!.vehicle!.roadTax!.roadTaxDocument != null) {
+            if (singleDriverData!.driver!.vehicle!.roadTax!.roadTaxDocument !=
+                null) {
               action.fileName = ImageModel(
-                name: singleDriverData!.driver!.vehicle!.roadTax!.roadTaxDocument!,
+                name: singleDriverData!.driver!.vehicle!.roadTax!
+                    .roadTaxDocument!,
                 bytes: Uint8List(0),
                 path: null,
               );
             }
             // action.fileName!.name = singleDriverData!.driver!.vehicle!.roadTax!.roadTaxDocument!;
           } else if (action.documentTitle == "V5 REGISTRATION") {
-            if (singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationExpiry != null) {
-              action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationExpiry!);
+            if (singleDriverData!.driver!.vehicle!.v5Registration!
+                .v5RegistrationExpiry != null) {
+              action.expiryDate = DateTime.parse(
+                  singleDriverData!.driver!.vehicle!.v5Registration!
+                      .v5RegistrationExpiry!);
             }
             else if (singleDriverData!.driver!.createdAt != null) {
               action.expiryDate = singleDriverData!.driver!.createdAt;
@@ -1089,37 +1174,45 @@ class DriverController extends GetxController {
             else {
               action.expiryDate = DateTime.now();
             }
-            action.expiryTime.text = singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationExpiryTime ?? "";
-            action.batchNo.text = singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationNumber ?? "";
-            if (singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationDocument != null) {
+            action.expiryTime.text =
+                singleDriverData!.driver!.vehicle!.v5Registration!
+                    .v5RegistrationExpiryTime ?? "";
+            action.batchNo.text =
+                singleDriverData!.driver!.vehicle!.v5Registration!
+                    .v5RegistrationNumber ?? "";
+            if (singleDriverData!.driver!.vehicle!.v5Registration!
+                .v5RegistrationDocument != null) {
               action.fileName = ImageModel(
-                name: singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationDocument!,
+                name: singleDriverData!.driver!.vehicle!.v5Registration!
+                    .v5RegistrationDocument!,
                 bytes: Uint8List(0),
                 path: null,
               );
             }
-          // } else if (action.documentTitle == "V5 REGISTRATION") {
-          //   action.expiryDate = DateTime.parse(singleDriverData!
-          //       .driver!.vehicle!.v5Registration!.v5RegistrationExpiry!);
-          //   action.expiryTime.text = singleDriverData!.driver!.vehicle!
-          //           .v5Registration!.v5RegistrationExpiryTime ??
-          //       "";
-          //   action.batchNo.text = singleDriverData!
-          //           .driver!.vehicle!.v5Registration!.v5RegistrationNumber ??
-          //       "";
+            // } else if (action.documentTitle == "V5 REGISTRATION") {
+            //   action.expiryDate = DateTime.parse(singleDriverData!
+            //       .driver!.vehicle!.v5Registration!.v5RegistrationExpiry!);
+            //   action.expiryTime.text = singleDriverData!.driver!.vehicle!
+            //           .v5Registration!.v5RegistrationExpiryTime ??
+            //       "";
+            //   action.batchNo.text = singleDriverData!
+            //           .driver!.vehicle!.v5Registration!.v5RegistrationNumber ??
+            //       "";
             // action.fileName!.name = singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationDocument!;
           } else {
             action.expiryDate = DateTime.parse(singleDriverData!
                 .driver!.vehicle!.rentalAgreement!.rentalAgreementExpiry!);
             action.expiryTime.text = singleDriverData!.driver!.vehicle!
-                    .rentalAgreement!.rentalAgreementExpiryTime ??
+                .rentalAgreement!.rentalAgreementExpiryTime ??
                 "";
             action.batchNo.text = singleDriverData!
-                    .driver!.vehicle!.rentalAgreement!.rentalAgreementNumber ??
+                .driver!.vehicle!.rentalAgreement!.rentalAgreementNumber ??
                 "";
-            if (singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementDocument != null) {
+            if (singleDriverData!.driver!.vehicle!.rentalAgreement!
+                .rentalAgreementDocument != null) {
               action.fileName = ImageModel(
-                name: singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementDocument!,
+                name: singleDriverData!.driver!.vehicle!.rentalAgreement!
+                    .rentalAgreementDocument!,
                 bytes: Uint8List(0),
                 path: null,
               );
@@ -1130,7 +1223,8 @@ class DriverController extends GetxController {
       } else {
         // selectCompanyVehicle = null;
         int indexx = getCombineVehicleData!.companyVehicles!.indexWhere(
-            (test) => test.id == singleDriverData!.driver!.companyVehicleId);
+                (test) =>
+            test.id == singleDriverData!.driver!.companyVehicleId);
         // vehicleType = getCombineVehicleData!.companyVehicles![indexx];
         if (indexx != -1) {
           vehicleType = getCombineVehicleData!.companyVehicles![indexx];
@@ -1141,7 +1235,6 @@ class DriverController extends GetxController {
             singleDriverData!.driver!.username.toString().toUpperCase();
       }
       if (singleDriverData!.driver!.password != null) {
-
         driverPasswordController.clear();
       }
       if (singleDriverData!.driver!.name != null) {
@@ -1159,13 +1252,16 @@ class DriverController extends GetxController {
       }
 
       if (singleDriverData!.driver!.vehicle?.startDate != null) {
-        vehicleStartDate = formatDateForUi(singleDriverData!.driver!.vehicle!.startDate);
+        vehicleStartDate =
+            formatDateForUi(singleDriverData!.driver!.vehicle!.startDate);
       }
       if (singleDriverData!.driver!.vehicle?.endDate != null) {
-        vehicleEndeDate = formatDateForUi(singleDriverData!.driver!.vehicle!.endDate);
+        vehicleEndeDate =
+            formatDateForUi(singleDriverData!.driver!.vehicle!.endDate);
       }
       if (singleDriverData!.driver!.email != null) {
-        driverEmailController.text = singleDriverData!.driver!.email.toString().toUpperCase();
+        driverEmailController.text =
+            singleDriverData!.driver!.email.toString().toUpperCase();
       }
       if (singleDriverData!.driver!.mobile != null) {
         driverMobileController.text =
@@ -1188,7 +1284,7 @@ class DriverController extends GetxController {
       isActive.value = singleDriverData!.driver!.active!;
       vehicleInformation.value = singleDriverData!.driver!.useCompanyVehicle!;
       int companyTypeIndex = getCombineVehicleData!.subsidiaries!.indexWhere(
-          (test) => test.id == singleDriverData!.driver!.subsidiaryId);
+              (test) => test.id == singleDriverData!.driver!.subsidiaryId);
       // companyType = getCombineVehicleData!.subsidiaries![companyTypeIndex];
       if (companyTypeIndex != -1) {
         companyType = getCombineVehicleData!.subsidiaries![companyTypeIndex];
@@ -1212,7 +1308,8 @@ class DriverController extends GetxController {
           noteList.add(NoteAlertClass(
             notesTitle: action.note,
             createdByTime:
-                "${action.createdAt!.day}-${action.createdAt!.month}-${action.createdAt!.year}",
+            "${action.createdAt!.day}-${action.createdAt!.month}-${action
+                .createdAt!.year}",
             createdItTime: action.createdBy,
           ));
         }
@@ -1245,9 +1342,22 @@ class DriverController extends GetxController {
       update();
     }
   }
+
   String formatDateForUi(dynamic dateInput) {
-    if (dateInput == null || dateInput.toString().isEmpty) {
-      return "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}";
+    if (dateInput == null || dateInput
+        .toString()
+        .isEmpty) {
+      return "${DateTime
+          .now()
+          .year}-${DateTime
+          .now()
+          .month
+          .toString()
+          .padLeft(2, '0')}-${DateTime
+          .now()
+          .day
+          .toString()
+          .padLeft(2, '0')}";
     }
 
     String apiDate = dateInput.toString();
@@ -1258,6 +1368,7 @@ class DriverController extends GetxController {
 
     return apiDate;
   }
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create driver form functionality
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver list screen
@@ -1292,7 +1403,8 @@ class DriverController extends GetxController {
     try {
       driverLoading.value = true;
       final response =
-          await Api().get( 'drivers/get?', auth: true ,sendCompanyId: true, queryParameters: {
+      await Api().get(
+          'drivers/get?', auth: true, sendCompanyId: true, queryParameters: {
         'active': activeDrivers.value == true ? false : true,
         'page': driverCurrentPage.value,
         'limit': driverLimit,
@@ -1340,7 +1452,7 @@ class DriverController extends GetxController {
     var response = await Api().delete("drivers/delete/$id");
     if (response.statusCode == 200) {
       getDriverList();
-      BotToast.showText(text:"DRIVER DELETED SUCCESSFULLY!");
+      BotToast.showText(text: "DRIVER DELETED SUCCESSFULLY!");
       print(json.encode(response.data));
     }
   }
@@ -1396,6 +1508,7 @@ class DriverController extends GetxController {
   RestricDriverModel? allDriverData;
   DriverObject? selectDriverObject;
   bool isDriversLoading = false;
+
   getAllDrivers() async {
     isDriversLoading = true;
     update();
@@ -1408,10 +1521,11 @@ class DriverController extends GetxController {
   }
 
   DriverAppFutureModel? driverAppFutureModel;
-  getDriversAppFuture(int driverId) async {
-    var response = await Api().get("drivers-app/app_features?driver_id=$driverId", sendCompanyId: true);
-    if (response.statusCode == 200) {
 
+  getDriversAppFuture(int driverId) async {
+    var response = await Api().get(
+        "drivers-app/app_features?driver_id=$driverId", sendCompanyId: true);
+    if (response.statusCode == 200) {
       driverAppFutureModel = DriverAppFutureModel.fromJson(response.data);
       if (driverAppFutureModel?.appFeatures?.isNotEmpty ?? false) {
         var feat = driverAppFutureModel!.appFeatures!.first.features;
@@ -1446,8 +1560,10 @@ class DriverController extends GetxController {
           modelController.text = feat.mobileModel?.toString() ?? "";
           simNetworkController.text = feat.mobileSimNetwork?.toString() ?? "";
           simNumberController.text = feat.mobileSimNumber?.toString() ?? "";
-          networkProviderController.text = feat.mobileNetworkProvider?.toString() ?? "";
-          dataAllowanceController.text = feat.mobileDataAllowance?.toString() ?? "";
+          networkProviderController.text =
+              feat.mobileNetworkProvider?.toString() ?? "";
+          dataAllowanceController.text =
+              feat.mobileDataAllowance?.toString() ?? "";
           pdaDepositController.text = feat.pdaDeposit?.toString() ?? "";
           commentsController.text = feat.pdaComments?.toString() ?? "";
         }
@@ -1460,7 +1576,9 @@ class DriverController extends GetxController {
     feature.value = !feature.value;
     update(); // Taake GetBuilder refresh ho jaye
   }
+
   RxBool saveFeaturesLoad = false.obs;
+
   saveDriverFeatures() async {
     if (selectDriverObject == null) {
       BotToast.showText(text: 'PLEASE SELECT A DRIVER FIRST');
@@ -1487,7 +1605,7 @@ class DriverController extends GetxController {
       "waiting_after_arrival": waitingAfterArrivalValue.value,
       "disable_panic_buton": disablePanicButtonValue.value,
       "show_navigation": showNavigationValue.value,
-      "show_sta_near_500_yards" :showSwipeArriveValue.value,
+      "show_sta_near_500_yards": showSwipeArriveValue.value,
       "show_fare": shawFareValue.value,
       "has_company_car": hasCompanyCarValue.value,
       "hide_payment_type": hidePaymentTypeValue.value,
@@ -1576,7 +1694,7 @@ class DriverController extends GetxController {
   final TextEditingController toDateController = TextEditingController();
   TextEditingController driverSelectionController = TextEditingController();
   TextEditingController updateDriverSelectionController =
-      TextEditingController();
+  TextEditingController();
   String transactionDate = "";
 
   Set<String> selectedIds = {};
@@ -1637,7 +1755,8 @@ class DriverController extends GetxController {
     isCreateDriverCommission = true;
     update();
     var response = await Api()
-        .get("drivers/commission?active=true&driver_type=COMMISSION", sendCompanyId: true);
+        .get("drivers/commission?active=true&driver_type=COMMISSION",
+        sendCompanyId: true);
     if (response.statusCode == 200) {
       // print("API Response: ${response.data}");
       listDriverCommission = ListDriverCommissionModel.fromJson(response.data);
@@ -1653,7 +1772,8 @@ class DriverController extends GetxController {
   void autoFillDriverDetails(String selectedText) {
     if (selectedText.isEmpty) return;
     final driver = listDriverCommission?.drivers?.firstWhere(
-      (d) => "${d.username} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
+          (d) =>
+      "${d.username} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
       // orElse: () => null,
     );
 
@@ -1696,7 +1816,8 @@ class DriverController extends GetxController {
 
     final selectedText = driverSelectionController.text;
     final driver = listDriverCommission?.drivers?.firstWhere(
-          (d) => "${d.username} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
+          (d) =>
+      "${d.username} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
       orElse: () => null as dynamic,
     );
 
@@ -1736,8 +1857,8 @@ class DriverController extends GetxController {
     double wComm = double.tryParse(calculateWithoutCommission(booking)) ?? 0.0;
     var drPct = booking is CommissionBooking
         ? (updateDriverCommissionByIdModel
-                ?.driverCommission?.driver?.driverCommission ??
-            0)
+        ?.driverCommission?.driver?.driverCommission ??
+        0)
         : (booking.driver?.driverCommission ?? 0);
 
     double drValue = double.tryParse(drPct.toString()) ?? 0.0;
@@ -1800,8 +1921,8 @@ class DriverController extends GetxController {
     if (selectedIds.isEmpty) return 0.0;
 
     final list = filterData?.bookings
-            ?.where((b) => selectedIds.contains(b.id.toString()))
-            .toList() ??
+        ?.where((b) => selectedIds.contains(b.id.toString()))
+        .toList() ??
         [];
 
     return _calculateListTotal(list, field);
@@ -1813,7 +1934,7 @@ class DriverController extends GetxController {
 
     if (updateItems == null || updateItems.isEmpty) return 0.0;
     final list =
-        updateItems.map((e) => e.booking).where((b) => b != null).toList();
+    updateItems.map((e) => e.booking).where((b) => b != null).toList();
 
     return _calculateListTotal(list, field);
   }
@@ -1923,7 +2044,7 @@ class DriverController extends GetxController {
     }
 
     final List<dynamic> activeBookings =
-        updateItems.map((e) => e.booking).where((b) => b != null).toList();
+    updateItems.map((e) => e.booking).where((b) => b != null).toList();
 
     // 1. Cash Total
     updateCashTotalValue = activeBookings.fold(0.0, (sum, b) {
@@ -1998,7 +2119,7 @@ class DriverController extends GetxController {
     if (updateItems == null) return;
 
     final List<dynamic> activeBookings =
-        updateItems.map((e) => e.booking).where((b) => b != null).toList();
+    updateItems.map((e) => e.booking).where((b) => b != null).toList();
 
     updateTotalCommissionVar = activeBookings.fold(0.0, (sum, b) {
       return sum + double.parse(calculateFinalDriverComm(b));
@@ -2020,12 +2141,17 @@ class DriverController extends GetxController {
     update();
 
     String finalDate = transactionDate.isEmpty
-        ? DateTime.now().toIso8601String().split("T").first
+        ? DateTime
+        .now()
+        .toIso8601String()
+        .split("T")
+        .first
         : transactionDate;
 
     final selectedText = driverSelectionController.text;
     final driver = listDriverCommission?.drivers?.firstWhere(
-          (d) => "${d.username} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
+          (d) =>
+      "${d.username} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
       orElse: () => null as dynamic,
     );
 
@@ -2050,7 +2176,8 @@ class DriverController extends GetxController {
     };
     print("Submitting Payload: $formData");
     var response =
-        await Api().post(formData, "driver_commission/add", sendCompanyId: true, auth: true);
+    await Api().post(
+        formData, "driver_commission/add", sendCompanyId: true, auth: true);
     if (response.statusCode == 200) {
       BotToast.showText(text: "DRIVER COMMISSION ADDED SUCCESSFULLY!");
       clearDriverCommission();
@@ -2092,7 +2219,8 @@ class DriverController extends GetxController {
 
   getDriverCommission() async {
     isLoading(true);
-    var response = await Api().get("driver_commission/distinct", sendCompanyId: true);
+    var response = await Api().get(
+        "driver_commission/distinct", sendCompanyId: true);
 
     if (response.statusCode == 200) {
       driverCommission = DriverCommissionModel.fromJson(response.data);
@@ -2129,7 +2257,7 @@ class DriverController extends GetxController {
     var response = await Api().delete("driver_commission/delete/$id");
     if (response.statusCode == 200) {
       getDriverCommission();
-      BotToast.showText(text:"DRIVER COMMISSION DELETED SUCCESSFULLY!");
+      BotToast.showText(text: "DRIVER COMMISSION DELETED SUCCESSFULLY!");
       print("DriverCommission deleted successfully!");
     }
   }
@@ -2179,7 +2307,7 @@ class DriverController extends GetxController {
     updateAccountFareTotalVar = parse(data.accountJobsTotal);
     updateTotalCommissionVar = parse(data.commissionTotal);
     updateDriverSelectionController.text =
-        "${data.driver?.username ?? ''} ${data.driver?.name ?? ''}";
+    "${data.driver?.username ?? ''} ${data.driver?.name ?? ''}";
     UpdateCommissionController.text =
         (data.driver?.driverCommission ?? "0").toString();
     UpdatePdaRentController.text = (data.driver?.pdaRent ?? "0").toString();
@@ -2199,10 +2327,15 @@ class DriverController extends GetxController {
       saveUpdatedCommissionLoad = true;
       update();
 
-      String dId = updateDriverCommissionByIdModel?.driverCommission?.driverId?.toString() ?? "";
+      String dId = updateDriverCommissionByIdModel?.driverCommission?.driverId
+          ?.toString() ?? "";
 
       // String dId = driverSelectionController.text.split(" ").first;
-      String todayDate = DateTime.now().toIso8601String().split("T").first;
+      String todayDate = DateTime
+          .now()
+          .toIso8601String()
+          .split("T")
+          .first;
 
       final updateItems = updateDriverCommissionByIdModel
           ?.driverCommission?.driverCommissionLineitems
@@ -2223,7 +2356,7 @@ class DriverController extends GetxController {
         "to_date": updateFilterToDate,
         "last_modified": todayDate,
         "driver_commission_lineitems":
-            updateItems?.map((e) => {"booking_id": e.bookingId}).toList() ?? [],
+        updateItems?.map((e) => {"booking_id": e.bookingId}).toList() ?? [],
       };
       print(formData);
 
@@ -2246,7 +2379,11 @@ class DriverController extends GetxController {
     updateDriverSelectionController.clear();
     UpdateCommissionController.clear();
     UpdatePdaRentController.clear();
-    updateTransactionDateController = DateTime.now().toIso8601String().split("T").first;
+    updateTransactionDateController = DateTime
+        .now()
+        .toIso8601String()
+        .split("T")
+        .first;
     updateFilterFromDate = "";
     updateFilterToDate = "";
     updateCashTotalValue = 0.0;
@@ -2275,13 +2412,13 @@ class DriverController extends GetxController {
     }
     final pdf = pw.Document();
     final items = updateDriverCommissionByIdModel
-            ?.driverCommission?.driverCommissionLineitems ??
+        ?.driverCommission?.driverCommissionLineitems ??
         [];
 
     final currentDriverId =
         updateDriverCommissionByIdModel?.driverCommission?.driver?.id;
     final selectedDriverData = listDriverCommission?.drivers?.firstWhere(
-      (d) => d.id == currentDriverId,
+          (d) => d.id == currentDriverId,
       orElse: () {
         return CreateDriverCommission();
       },
@@ -2313,7 +2450,9 @@ class DriverController extends GetxController {
                 _buildInfoColumn(
                     "FROM",
                     [
-                      "EMAIL: ${(updateDriverCommissionByIdModel?.driverCommission?.driver?.email ?? "").toUpperCase()}",
+                      "EMAIL: ${(updateDriverCommissionByIdModel
+                          ?.driverCommission?.driver?.email ?? "")
+                          .toUpperCase()}",
                       "MOBILE: ${selectedDriverData?.mobile ?? ""}",
                       "TELEPHONE: ${selectedDriverData?.telephone ?? ""}",
                       "",
@@ -2323,10 +2462,13 @@ class DriverController extends GetxController {
                 _buildInfoColumn(
                     "TO",
                     [
-                      "DRIVER: (${updateDriverCommissionByIdModel?.driverCommission?.driver?.username ?? ""})",
-                      "${(updateDriverCommissionByIdModel?.driverCommission?.driver?.name ?? "").toUpperCase()}",
+                      "DRIVER: (${updateDriverCommissionByIdModel
+                          ?.driverCommission?.driver?.username ?? ""})",
+                      "${(updateDriverCommissionByIdModel?.driverCommission
+                          ?.driver?.name ?? "").toUpperCase()}",
                       "DATE: $updateTransactionDateController",
-                      "COMMISSION: ${updateDriverCommissionByIdModel?.driverCommission?.driver?.driverCommission ?? ""}%",
+                      "COMMISSION: ${updateDriverCommissionByIdModel
+                          ?.driverCommission?.driver?.driverCommission ?? ""}%",
                     ],
                     primaryColor,
                     alignEnd: true),
@@ -2344,7 +2486,7 @@ class DriverController extends GetxController {
                   color: PdfColor.fromInt(DynamicColors.primaryClr.value)),
               cellStyle: const pw.TextStyle(fontSize: 7),
               cellPadding:
-                  const pw.EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+              const pw.EdgeInsets.symmetric(vertical: 4, horizontal: 2),
               cellAlignment: pw.Alignment.center,
               headerAlignment: pw.Alignment.center,
               columnWidths: {
@@ -2402,9 +2544,9 @@ class DriverController extends GetxController {
                 right: const pw.BorderSide(color: PdfColors.black, width: 0.5),
                 bottom: const pw.BorderSide(color: PdfColors.black, width: 0.5),
                 verticalInside:
-                    const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                const pw.BorderSide(color: PdfColors.black, width: 0.5),
                 horizontalInside:
-                    const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                const pw.BorderSide(color: PdfColors.black, width: 0.5),
               ),
               columnWidths: {
                 0: const pw.FlexColumnWidth(1),
@@ -2435,7 +2577,7 @@ class DriverController extends GetxController {
       {bool alignEnd = false}) {
     return pw.Column(
       crossAxisAlignment:
-          alignEnd ? pw.CrossAxisAlignment.end : pw.CrossAxisAlignment.start,
+      alignEnd ? pw.CrossAxisAlignment.end : pw.CrossAxisAlignment.start,
       children: [
         pw.Text(label,
             style: pw.TextStyle(
@@ -2501,7 +2643,7 @@ class DriverController extends GetxController {
 
     // 3. Data Rows
     final items = updateDriverCommissionByIdModel
-            ?.driverCommission?.driverCommissionLineitems ??
+        ?.driverCommission?.driverCommissionLineitems ??
         [];
     for (var item in items) {
       final b = item.booking;
@@ -2540,7 +2682,7 @@ class DriverController extends GetxController {
         final content = base64Encode(fileBytes);
         final anchor = html.AnchorElement(
             href:
-                "data:application/octet-stream;charset=utf-16le;base64,$content")
+            "data:application/octet-stream;charset=utf-16le;base64,$content")
           ..setAttribute("download", "Driver_Commission_Report.xlsx")
           ..click();
       }
@@ -2551,7 +2693,7 @@ class DriverController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Update Driver Commission Screen functionality
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Driver Login/Logout
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Driver Login/Logout
 
   DriverLoginLogoutModel? driverLoginLogoutModel;
   var driverLoginCurrentPage = 1.obs;
@@ -2577,35 +2719,34 @@ class DriverController extends GetxController {
   getDriverLoginLogout() async {
     isLoadingDriverlogin = true;
     update();
-      String status = activeLogout.value ? "logged_out" : "logged_in";
-      var response = await Api().get("drivers/session", queryParameters: {
-        'session_status': status,
-        'page': driverLoginCurrentPage.value, // Pagination fix
-        'limit': driverLoginLimit,
-        "name": searchName.value.toLowerCase(),
-        "username": searchUsername.value.toLowerCase(),
-        "vehicle_type": searchLoginVehicleName.value.toLowerCase(),
-        "end_date": searchDriverloginExpiry.value.toLowerCase(),
-        "vehicle_end_date": searchVehicleloginExpiry.value.toLowerCase(),
-        "mot_expiry": searchMOTLoginExpiry.value.toLowerCase(),
-        "mot2_expiry": searchMOT2LoginExpiry.value.toLowerCase(),
-        "insurance_expiry": searchInsuranceLoginExpiry.value.toLowerCase(),
-        "licence_expiry": searchLicenseLoginExpiry.value.toLowerCase(),
-        "mobile": searchMobileLogin.value.toLowerCase(),
-        "subsidiary": searchSubsiDiaryLogin.value.toLowerCase(),
-      }, sendCompanyId: true,);
+    String status = activeLogout.value ? "logged_out" : "logged_in";
+    var response = await Api().get("drivers/session", queryParameters: {
+      'session_status': status,
+      'page': driverLoginCurrentPage.value, // Pagination fix
+      'limit': driverLoginLimit,
+      "name": searchName.value.toLowerCase(),
+      "username": searchUsername.value.toLowerCase(),
+      "vehicle_type": searchLoginVehicleName.value.toLowerCase(),
+      "end_date": searchDriverloginExpiry.value.toLowerCase(),
+      "vehicle_end_date": searchVehicleloginExpiry.value.toLowerCase(),
+      "mot_expiry": searchMOTLoginExpiry.value.toLowerCase(),
+      "mot2_expiry": searchMOT2LoginExpiry.value.toLowerCase(),
+      "insurance_expiry": searchInsuranceLoginExpiry.value.toLowerCase(),
+      "licence_expiry": searchLicenseLoginExpiry.value.toLowerCase(),
+      "mobile": searchMobileLogin.value.toLowerCase(),
+      "subsidiary": searchSubsiDiaryLogin.value.toLowerCase(),
+    }, sendCompanyId: true,);
 
-      if (response.statusCode == 200) {
-        driverLoginLogoutModel = DriverLoginLogoutModel.fromJson(response.data);
-        driverLoginTotalPage.value = driverLoginLogoutModel?.totalPages ?? 1;
-        driverLoginAll.value = driverLoginLogoutModel?.drivers ?? [];
-        driverLoginFilter.value = driverLoginAll;
-        print('Drivers Loaded: ${driverLoginAll.length}');
+    if (response.statusCode == 200) {
+      driverLoginLogoutModel = DriverLoginLogoutModel.fromJson(response.data);
+      driverLoginTotalPage.value = driverLoginLogoutModel?.totalPages ?? 1;
+      driverLoginAll.value = driverLoginLogoutModel?.drivers ?? [];
+      driverLoginFilter.value = driverLoginAll;
+      print('Drivers Loaded: ${driverLoginAll.length}');
       isLoadingDriverlogin = false;
       update();
       print("Error fetching drivers: $e");
-      }
-
+    }
   }
 
   void driverloginSearch() {
@@ -2619,13 +2760,12 @@ class DriverController extends GetxController {
   }
 
 
-
   // // Delete
   driverLoginLogoutDelete(int? id) async {
     var response = await Api().delete("drivers/delete/$id");
     if (response.statusCode == 200) {
       getDriverLoginLogout();
-      BotToast.showText(text:"DRIVER LOGIN LOGOUT DELETED SUCCESSFULLY!");
+      BotToast.showText(text: "DRIVER LOGIN LOGOUT DELETED SUCCESSFULLY!");
       print("Driver Login logout deleted successfully!");
     }
   }
@@ -2642,6 +2782,7 @@ class DriverController extends GetxController {
   TextEditingController rentDriverSelectionController = TextEditingController();
   TextEditingController updateRentDriverSelectionController = TextEditingController();
   String rentTransactionDate = "";
+
   // Set<String> selectedBookings = {};
 
   ///drop down API
@@ -2680,7 +2821,8 @@ class DriverController extends GetxController {
     isCreateDriverRent = true;
     update();
     var response =
-    await Api().get("drivers/commission?active=true&driver_type=RENT/WEEK", sendCompanyId: true,);
+    await Api().get("drivers/commission?active=true&driver_type=RENT/WEEK",
+      sendCompanyId: true,);
     if (response.statusCode == 200) {
       print("API Response: ${response.data}");
       driverRentModel = DriverRentModel.fromJson(response.data);
@@ -2698,7 +2840,8 @@ class DriverController extends GetxController {
   void fillDriverDetails(String selectedText) {
     if (selectedText.isEmpty) return;
     final driver = driverRentModel?.drivers?.firstWhere(
-      (d) => "${d.username} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
+          (d) =>
+      "${d.username} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
       // orElse: () => null,
     );
 
@@ -2725,7 +2868,8 @@ class DriverController extends GetxController {
 
     final selectedText = rentDriverSelectionController.text;
     final driver = driverRentModel?.drivers?.firstWhere(
-          (d) => "${d.username} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
+          (d) =>
+      "${d.username} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
       orElse: () => null as dynamic,
     );
 
@@ -2763,14 +2907,16 @@ class DriverController extends GetxController {
     if (selectedIds.isEmpty) return 0.0;
 
     final list = driverRentFilterModel?.bookings
-            ?.where((b) => selectedIds.contains(b.id.toString()))
-            .toList() ??
+        ?.where((b) => selectedIds.contains(b.id.toString()))
+        .toList() ??
         [];
 
     return _calculateRentListTotal(list, field);
   }
+
   double getUpdateRentColumnTotal(String field) {
-    final list = updateDriverRentByIdModel?.driverRent?.driverRentLineitems ?? [];
+    final list = updateDriverRentByIdModel?.driverRent?.driverRentLineitems ??
+        [];
 
     if (list.isEmpty) return 0.0;
 
@@ -2827,21 +2973,22 @@ class DriverController extends GetxController {
 
     // Cash Total
     cashTotal =
-        selectedBookings!.where((b) => b.paymentTypeId == 1).fold(0.0, (sum, b) {
-      return sum +
-          parseD(b.fares) +
-          parseD(b.waitingCharges) +
-          parseD(b.extraDropCharges);
-    });
+        selectedBookings!.where((b) => b.paymentTypeId == 1).fold(
+            0.0, (sum, b) {
+          return sum +
+              parseD(b.fares) +
+              parseD(b.waitingCharges) +
+              parseD(b.extraDropCharges);
+        });
 
     // 2. ACCOUNT TOTAL
     accountTotal =
         selectedBookings.where((b) => b.paymentTypeId == 3).fold(0.0, (sum, b) {
-      return sum +
-          parseD(b.fares) +
-          parseD(b.waitingCharges) +
-          parseD(b.extraDropCharges);
-    });
+          return sum +
+              parseD(b.fares) +
+              parseD(b.waitingCharges) +
+              parseD(b.extraDropCharges);
+        });
 
     // 3. PARKING/CONGESTION TOTAL (All Selected Bookings)
     parkingCongestion = selectedBookings.fold(0.0, (sum, b) {
@@ -2878,7 +3025,8 @@ class DriverController extends GetxController {
       return;
     }
 
-    double parseD(dynamic val) => double.tryParse(val?.toString() ?? "0") ?? 0.0;
+    double parseD(dynamic val) =>
+        double.tryParse(val?.toString() ?? "0") ?? 0.0;
 
     // 1. Reset values
     updateCashTotal = 0.0;
@@ -2917,6 +3065,7 @@ class DriverController extends GetxController {
 
     update();
   }
+
   void _resetTotal() {
     updateCashTotal = 0.0;
     updateAccountTotal = 0.0;
@@ -2937,12 +3086,17 @@ class DriverController extends GetxController {
     update();
 
     String finalTDate = rentTransactionDate.isEmpty
-        ? DateTime.now().toIso8601String().split("T").first
+        ? DateTime
+        .now()
+        .toIso8601String()
+        .split("T")
+        .first
         : rentTransactionDate;
 
     final selectedText = rentDriverSelectionController.text;
     final driver = driverRentModel?.drivers?.firstWhere(
-          (d) => "${d.username} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
+          (d) =>
+      "${d.username} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
       orElse: () => null as dynamic,
     );
 
@@ -2968,7 +3122,8 @@ class DriverController extends GetxController {
     };
     print("Submitting Payload: $formData");
     var response =
-    await Api().post(formData, "driver_rent/add",sendCompanyId: true, auth: true);
+    await Api().post(
+        formData, "driver_rent/add", sendCompanyId: true, auth: true);
     if (response.statusCode == 200) {
       BotToast.showText(text: "DRIVER RENT ADDED SUCCESSFULLY!");
       clearDriverRent();
@@ -3000,7 +3155,6 @@ class DriverController extends GetxController {
   }
 
 
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Driver Rent Screen functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Driver Rent List functionality
 
@@ -3011,7 +3165,8 @@ class DriverController extends GetxController {
     isListLoading = true;
     update();
 
-    var response = await Api().get("driver_rent/distinct", sendCompanyId: true,);
+    var response = await Api().get(
+      "driver_rent/distinct", sendCompanyId: true,);
 
     if (response.statusCode == 200) {
       listDriverRentModel = ListDriverRentModel.fromJson(response.data);
@@ -3029,7 +3184,7 @@ class DriverController extends GetxController {
     isLoadingDriverRent = true;
     update();
     var response = await Api().get(
-      "driver_rent/driverid?driver_id=$id",sendCompanyId: true,
+      "driver_rent/driverid?driver_id=$id", sendCompanyId: true,
     );
 
     if (response.statusCode == 200) {
@@ -3044,10 +3199,11 @@ class DriverController extends GetxController {
   driverRentDelete(int? id) async {
     var response = await Api().delete("driver_rent/delete/$id");
     if (response.statusCode == 200) {
-      BotToast.showText(text:"DRIVER RENT DELETED SUCCESSFULLY!");
+      BotToast.showText(text: "DRIVER RENT DELETED SUCCESSFULLY!");
       print("DriverRent deleted successfully!");
     }
   }
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Driver Rent List functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Update Driver Rent List functionality
 
@@ -3080,12 +3236,12 @@ class DriverController extends GetxController {
 
     double parse(String? val) => double.tryParse(val ?? "0") ?? 0.0;
 
-    updateCashTotal  = parse(data.cashJobsTotal);
-    updateGrandTotal  = parse(data.jobsTotal);
-    updateOwed  = parse(data.owed);
+    updateCashTotal = parse(data.cashJobsTotal);
+    updateGrandTotal = parse(data.jobsTotal);
+    updateOwed = parse(data.owed);
     oBalance = parse(data.oldBalance);
-    updateNewBalance  = parse(data.currentBalance);
-    updateAccountTotal  = parse(data.accountJobsTotal);
+    updateNewBalance = parse(data.currentBalance);
+    updateAccountTotal = parse(data.accountJobsTotal);
     // rTotal = parse(data.driver?.driverCommission);
     updateRentDriverSelectionController.text =
     "${data.driver?.username ?? ''} ${data.driver?.name ?? ''}";
@@ -3104,15 +3260,23 @@ class DriverController extends GetxController {
   bool saveUpdatedRentLoad = false;
 
   saveUpdatedRent(int selectedId) async {
-    print("DEBUG: Driver Controller Text: '${rentDriverSelectionController.text}'");
-    print("DEBUG: Model Status: ${updateDriverRentByIdModel == null ? 'NULL' : 'Data Present'}");
+    print("DEBUG: Driver Controller Text: '${rentDriverSelectionController
+        .text}'");
+    print("DEBUG: Model Status: ${updateDriverRentByIdModel == null
+        ? 'NULL'
+        : 'Data Present'}");
     print("DEBUG: Selected ID: $selectedId");
     try {
       saveUpdatedRentLoad = true;
       update();
 
-      String drId = updateDriverRentByIdModel?.driverRent?.driverId?.toString() ?? "";
-      String todayDate = DateTime.now().toIso8601String().split("T").first;
+      String drId = updateDriverRentByIdModel?.driverRent?.driverId
+          ?.toString() ?? "";
+      String todayDate = DateTime
+          .now()
+          .toIso8601String()
+          .split("T")
+          .first;
 
       final updateItems = updateDriverRentByIdModel
           ?.driverRent?.driverRentLineitems
@@ -3156,7 +3320,11 @@ class DriverController extends GetxController {
     updateRentDriverSelectionController.clear();
     updateRentWeekController.clear();
     updatePdaRentWeekController.clear();
-    rentTransactionDateController = DateTime.now().toIso8601String().split("T").first;
+    rentTransactionDateController = DateTime
+        .now()
+        .toIso8601String()
+        .split("T")
+        .first;
     updateRentFilterFromDate = "";
     updateRentFilterToDate = "";
     updateDriverRentByIdModel = null;
@@ -3221,7 +3389,8 @@ class DriverController extends GetxController {
                 _buildInfoRentColumn(
                     "FROM",
                     [
-                      "EMAIL: ${(updateDriverRentByIdModel?.driverRent?.driver?.email ?? "").toUpperCase()}",
+                      "EMAIL: ${(updateDriverRentByIdModel?.driverRent?.driver
+                          ?.email ?? "").toUpperCase()}",
                       "MOBILE: ${selectedDriverData?.mobile ?? ""}",
                       "TELEPHONE: ${selectedDriverData?.telephone ?? ""}",
                       "",
@@ -3231,10 +3400,18 @@ class DriverController extends GetxController {
                 _buildInfoRentColumn(
                     "TO",
                     [
-                      "DRIVER: (${updateDriverRentByIdModel?.driverRent?.driver?.username ?? ""})",
-                      "${(updateDriverRentByIdModel?.driverRent?.driver?.name ?? "").toUpperCase()}",
-                      "DATE: ${rentTransactionDateController.toString().split("T").first.split(" ").first}",
-                      "COMMISSION: ${updateDriverRentByIdModel?.driverRent?.driver?.driverCommission ?? ""}%",
+                      "DRIVER: (${updateDriverRentByIdModel?.driverRent?.driver
+                          ?.username ?? ""})",
+                      "${(updateDriverRentByIdModel?.driverRent?.driver?.name ??
+                          "").toUpperCase()}",
+                      "DATE: ${rentTransactionDateController
+                          .toString()
+                          .split("T")
+                          .first
+                          .split(" ")
+                          .first}",
+                      "COMMISSION: ${updateDriverRentByIdModel?.driverRent
+                          ?.driver?.driverCommission ?? ""}%",
                     ],
                     primaryColor,
                     alignEnd: true),
@@ -3334,7 +3511,8 @@ class DriverController extends GetxController {
     await Printing.sharePdf(bytes: bytes, filename: 'Driver_Rent.pdf');
   }
 
-  pw.Widget _buildInfoRentColumn(String label, List<String> lines, PdfColor accent,
+  pw.Widget _buildInfoRentColumn(String label, List<String> lines,
+      PdfColor accent,
       {bool alignEnd = false}) {
     return pw.Column(
       crossAxisAlignment:
@@ -3449,6 +3627,22 @@ class DriverController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo BULK DRIVER COMMISSION functionality
   /// TextEditingControllers
   final emailSubjectController = TextEditingController();
+
+  SubsDiaryModel? subsDiaryModel;
+  Subsidiaries? selectedSubsidiary;
+  bool isSubsidiary = false;
+
+  getSubsidiary() async {
+    isSubsidiary = true;
+    update();
+
+    var response = await Api().get('subsidiaries/get', sendCompanyId: true);
+    if (response.statusCode == 200) {
+      subsDiaryModel = SubsDiaryModel.fromJson(response.data);
+      isSubsidiary = false;
+      update();
+    }
+  }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo BULK DRIVER COMMISSION functionality
 

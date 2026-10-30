@@ -426,6 +426,7 @@ class AppText {
   static get customerPreInvoices => "CUSTOMER PRE INVOICES";
   static get paid => "PAID";
   static get accountInvoice => "ACCOUNT INVOICE";
+  static get accountPreInvoice => "ACCOUNT PRE INVOICE";
   static get create => "CREATE";
   static get bankDetails => "BANK DETAILS";
   static get emergencyContactHash => "EMERGENCY CONTACT #";

@@ -1,5 +1,6 @@
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/dropdown_button.dart';
+import 'package:dashboard_new1/view/administration/model/list_subsDiary.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -25,12 +26,11 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
       ? Get.find<DriverController>()
       : Get.put(DriverController());
 
-  String? selectSub = "SELECT SUBSIDIARY";
-
   @override
   void initState() {
     super.initState();
     shortCutKeyValue.value = "bulkDriverCommission";
+    controller.getSubsidiary();
   }
 
   int selectedRowIndex = 0;
@@ -95,20 +95,15 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                     spacing: isCompact ? 6 : 8,
                                     crossAxisAlignment: WrapCrossAlignment.center,
                                     children: [
-                                      CustomDropdownField(
+                                      CustomDropdownField<Subsidiaries>(
                                         width: isCompact ? fieldWidth / 2.4 : fieldWidth / 2,
                                         text: "SUBS",
                                         label: AppText.selectSubsidiary,
-                                        items: [
-                                          "25 GEORGE HAMPTON",
-                                          "26 PAUL DOUBLEDAY",
-                                          "27 RICHARD HARDWICK",
-                                          "28 LANRE OKERJO",
-                                        ],
-                                        value: selectSub,
-                                        itemLabel: (val) => val,
+                                        items: controller.subsDiaryModel?.subsidiaries ?? [],
+                                        value: controller.selectedSubsidiary,
+                                        itemLabel: (item) => item.name ?? "",
                                         onChanged: (val) {
-                                          selectSub = val;
+                                          controller.selectedSubsidiary = val;
                                           controller.update();
                                         },
                                       ),
