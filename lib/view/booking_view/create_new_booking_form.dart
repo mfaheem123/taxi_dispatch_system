@@ -278,7 +278,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
   bool _requirePickupAndDrop() {
     if (controller.pickupController.text.trim().isEmpty ||
         controller.dropOffController.text.trim().isEmpty) {
-      BotToast.showText(text: "Please enter the pickup and drop off location.");
+      BotToast.showText(text: "Please Enter The Pickup And Drop Off Location.");
       return false;
     }
     return true;
@@ -296,7 +296,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
   void _openReturnVia() {
     if (controller.pickupTwoWayController.text.isEmpty) {
       BotToast.showText(
-          text: "Please write return pickup and dropoff location");
+          text: "Please Enter The Pickup And Drop Off Location.");
       return;
     }
     controller.viaSelectionOneWay.value = false;
@@ -541,7 +541,7 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
         isMobile ?SizedBox.shrink():TopTabs(tabs: [
           const TopTab('F2', 'BOOKING', active: true),
           TopTab('F8', '+ MULTI RESERVATION', onTap: () {
-            if (_requirePickupAndDrop()) DashboardF8Alert.show();
+            if (_requirePickupAndDrop()) DashboardF8Alert.show(tag: _formTag);
           }),
           TopTab('F9', '+ VEHICLES', onTap: () {
             if (_requirePickupAndDrop()) DashboardF9Alert.show();
@@ -835,6 +835,9 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                   controller.update();
                 }),
               )),
+              SpanField(LabeledInput('ESCORT',
+                  controller: controller.escortController,
+                  uppercase: true)),
               SpanField(Obx(() => LabeledInput(
                     'PASS',
                     controller: controller.passController,

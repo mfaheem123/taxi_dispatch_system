@@ -3197,6 +3197,10 @@ class DashboardController extends GetxController {
   TextEditingController passController = TextEditingController(text: '1');
   final luggController = TextEditingController();
   final sluggController = TextEditingController();
+
+  /// ESCORT on the create-booking form (create_new_booking_form.dart). Typed
+  /// by hand for now — not yet sent with the booking.
+  final escortController = TextEditingController();
   List restrictedDrivers = [];
   List childSeatList = [];
   List extraFaresList = [];
@@ -3661,6 +3665,7 @@ class DashboardController extends GetxController {
     passController.text = "1";
     luggController.clear();
     sluggController.clear();
+    escortController.clear();
     parkingChargesController.clear();
     congestionChargesController.clear();
     meetGreetController.clear();
@@ -4476,6 +4481,7 @@ class DashboardController extends GetxController {
       dropOffTwoWayController,
       dropUpNoteController,
       emailController,
+      escortController,
       extraDropChargesController,
       luggController,
       meetGreetController,

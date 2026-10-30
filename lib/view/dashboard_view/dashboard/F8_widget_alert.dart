@@ -8,7 +8,11 @@ import '../../../component/color.dart';
 import '../../../component/textStyle.dart';
 
 class DashboardF8Alert {
-  static void show() {
+  /// [tag] picks which DashboardController the alert works on. Null is the
+  /// dashboard's own; a screen with a form of its own (create_new_booking_form)
+  /// passes its tag, since a dialog route sits outside that screen's tree and
+  /// would otherwise read the dashboard's journey type, times and fields.
+  static void show({String? tag}) {
     Get.dialog(
       // Esc closes this alert. The barrier stays non-dismissible below, and
       // Flutter's built-in Esc handling is tied to barrierDismissible, so the
@@ -37,7 +41,7 @@ class DashboardF8Alert {
                     ),
                   ],
                 ),
-                child: MultiReservationAlert(),
+                child: MultiReservationAlert(tag: tag),
 
               );
             },
