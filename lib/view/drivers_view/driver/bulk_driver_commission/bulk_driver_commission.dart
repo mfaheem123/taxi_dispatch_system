@@ -116,7 +116,9 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                           column: true,
                                           child: SizedBox(
                                             height: isCompact ? 28 : 30,
-                                            child: KeyboardDatePicker(),
+                                            child: KeyboardDatePicker(
+                                              initialDate: DateTime.now().subtract(Duration(days: 7)),
+                                            ),
                                           )),
 
                                       labeledField(
@@ -127,7 +129,9 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                           column: true,
                                           child: SizedBox(
                                             height: isCompact ? 28 : 30,
-                                            child: KeyboardDatePicker(),
+                                            child: KeyboardDatePicker(
+                                              initialDate: DateTime.now(),
+                                            ),
                                           )),
 
                                       SizedBox(width: isCompact ? 20 : 50),
