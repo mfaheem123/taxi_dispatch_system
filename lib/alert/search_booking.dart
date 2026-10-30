@@ -382,7 +382,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
             .map((e) {
           if (e is String) return e.trim();
           if (e is Map) {
-            final addr = e['address'] ?? e['via'] ?? e['name'] ?? e['value'] ?? e['viapoint'];
+            final addr = e['viapoint'];
             return addr == null ? '' : addr.toString().trim();
           }
           return e.toString().trim();

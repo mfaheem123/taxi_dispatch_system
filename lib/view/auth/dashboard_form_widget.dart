@@ -2105,20 +2105,24 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             return KeyEventResult.ignored;
           },
           child: ElevatedButton.icon(
-            onPressed: () {
+
+            onPressed: () async {
               if (controller.jourValue == 'R/N' &&
                   controller.pickupTwoWayController.text.isEmpty &&
                   controller.dropOffTwoWayController.text.isEmpty) {
                 BotToast.showText(text: "Please chose waiting return");
                 return;
               }
-              controller.dashBoardApiValidation(
+              bool success = await controller.dashBoardApiValidation(
                 id: (controller.jobDetails == null ||
                     controller.cliJobHit == true ||
                     controller.isPickBooking == true) // <-- Yahan check add karein
                     ? null
                     : int.parse(controller.jobDetails!.id!),
               );
+              if (success) {
+                controller.refreshPostAllFields();
+              }
             },
             icon: const Icon(Icons.home_outlined, size: 16),
             label: const Text('SAVE [HOME]'),

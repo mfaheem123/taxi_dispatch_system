@@ -3696,8 +3696,6 @@ class DashboardController extends GetxController {
     childSeatList.clear();
     extraFaresList.clear();
     extraFaresReturnList.clear();
-    selectedBookingAttributes.clear();
-    bookingAttributesList.clear();
     driversList.clear();
     childSeatAlert.clear();
     controllerAlert.clear();
@@ -3752,6 +3750,8 @@ class DashboardController extends GetxController {
     selectVehicleValueReturn = dashboardAllData!.vehicleTypes![0];
     selectDriverValue = null;
     jobDetails = null;
+    isPickBooking = false;
+    cliJobHit = false;
     dashboardDataLoader(false);
     update();
   }

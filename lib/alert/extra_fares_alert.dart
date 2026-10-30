@@ -283,8 +283,8 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
             controller: controller,
             keyboardType: TextInputType.number,
             inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(2),
+              FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$')),
+              LengthLimitingTextInputFormatter(20),
             ],
             borderRadius: 4,
             width: double.infinity,
