@@ -42,6 +42,7 @@ import '../model/driver_rent_alt_model.dart';
 
 import '../model/driver_rent_filter_model.dart';
 import '../model/driver_rent_model.dart';
+import '../model/get_bulk_commission_model.dart';
 import '../model/list_driver_commission_model.dart';
 import '../model/update_driver_commission_model.dart';
 import '../model/update_driver_rent_model.dart';
@@ -3467,6 +3468,68 @@ class DriverController extends GetxController {
     }
   }
 
+  ///Get Bulk Commission
+
+  String bulkFromDate = "";
+  String bulkToDate = "";
+
+  RxBool selectBulkDrivers = false.obs;
+
+  final fromBulkCommissionController = TextEditingController();
+  bool isBulkCommission = false;
+  GetBulkCommissionModel? getBulkCommissionModel;
+
+  getBulkCommission() async {
+    isBulkCommission = true;
+    update();
+
+    var response = await Api().get("driver_commission/bulk-preview", sendCompanyId: true,
+      queryParameters: {
+        "subsidiary_id": selectedSubsidiary?.id,
+        "from_date": bulkFromDate,
+        "to_date": bulkToDate
+      }
+    );
+
+    if (response.statusCode == 200) {
+      getBulkCommissionModel = GetBulkCommissionModel.fromJson(response.data);
+      isBulkCommission = false;
+      update();
+    }
+  }
+
+  void clearBulkCommission() {
+    bulkFromDate = "";
+    bulkToDate = "";
+    selectedSubsidiary = null;
+    getBulkCommissionModel = null;
+    selectBulkDrivers = false.obs;
+    emailSubjectController.clear();
+    update();
+  }
+
+  ///POST Bulk Commission
+
+  bool isLoadBulkCommission = false;
+  generateBulkCommission() async {
+    isLoadBulkCommission = true;
+    update();
+
+    var formData = {
+      "from_date": bulkFromDate,
+      "to_date": bulkToDate,
+      "transaction_date": DateTime.now(),
+    };
+
+    var response = await Api().post(
+        formData,
+        "driver_commission/bulk-create", sendCompanyId: true, auth: true);
+
+    if (response.statusCode == 200) {
+      isLoadBulkCommission = false;
+      update();
+    }
+  }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo BULK DRIVER COMMISSION functionality
 

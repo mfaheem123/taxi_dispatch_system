@@ -21,7 +21,10 @@ import '../../dashboard_view/widgets/user_info_widget.dart';
 import '../controller/setting_controller.dart';
 
 class MultiReservationAlert extends StatefulWidget {
-  const MultiReservationAlert({super.key});
+  /// Tag of the DashboardController to work on — see DashboardF8Alert.show.
+  final String? tag;
+
+  const MultiReservationAlert({super.key, this.tag});
 
   @override
   State<MultiReservationAlert> createState() => _MultiReservationAlertState();
@@ -69,7 +72,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
       );
 
   Widget build(BuildContext context) {
-    return GetBuilder<DashboardController>(builder: (controller) {
+    return GetBuilder<DashboardController>(
+        tag: widget.tag, builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;

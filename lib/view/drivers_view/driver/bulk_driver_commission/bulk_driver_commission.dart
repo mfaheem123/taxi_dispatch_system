@@ -31,6 +31,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
     super.initState();
     shortCutKeyValue.value = "bulkDriverCommission";
     controller.getSubsidiary();
+    controller.clearBulkCommission();
   }
 
   int selectedRowIndex = 0;
@@ -63,7 +64,6 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                   const SizedBox(height: 15),
                   Text(AppText.bulkDriverCommission, style: titleDesign()),
                   const SizedBox(height: 15),
-
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -96,7 +96,9 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                     crossAxisAlignment: WrapCrossAlignment.center,
                                     children: [
                                       CustomDropdownField<Subsidiaries>(
-                                        width: isCompact ? fieldWidth / 2.4 : fieldWidth / 2,
+                                        width: isCompact
+                                            ? fieldWidth / 2.4
+                                            : fieldWidth / 2,
                                         text: "SUBS",
                                         label: AppText.selectSubsidiary,
                                         items: controller.subsDiaryModel?.subsidiaries ?? [],
@@ -112,12 +114,24 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                           context: context,
                                           isMobile: isMobile,
                                           label: AppText.from,
-                                          width: isCompact ? fieldWidth / 2.4 : fieldWidth / 2,
+                                          width: isCompact
+                                              ? fieldWidth / 2.4
+                                              : fieldWidth / 2,
                                           column: true,
                                           child: SizedBox(
                                             height: isCompact ? 28 : 30,
                                             child: KeyboardDatePicker(
-                                              initialDate: DateTime.now().subtract(Duration(days: 7)),
+                                              initialDate: controller.bulkFromDate.isNotEmpty
+                                                  ? DateTime.parse(controller.bulkFromDate)
+                                                  : DateTime.now().subtract(Duration(days: 7)),
+                                              onChanged: (date) {
+                                                controller.bulkFromDate = date.toIso8601String().split("T").first;
+                                                controller.update();
+                                              },
+                                              onSubmitted: (date) {
+                                                controller.bulkFromDate = date.toIso8601String().split("T").first;
+                                                controller.update();
+                                              },
                                             ),
                                           )),
 
@@ -125,12 +139,24 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                           context: context,
                                           isMobile: isMobile,
                                           label: AppText.to,
-                                          width: isCompact ? fieldWidth / 2.4 : fieldWidth / 2,
+                                          width: isCompact
+                                              ? fieldWidth / 2.4
+                                              : fieldWidth / 2,
                                           column: true,
                                           child: SizedBox(
                                             height: isCompact ? 28 : 30,
                                             child: KeyboardDatePicker(
-                                              initialDate: DateTime.now(),
+                                              initialDate: controller.bulkToDate.isNotEmpty
+                                                  ? DateTime.parse(controller.bulkToDate)
+                                                  : DateTime.now(),
+                                              onChanged: (date) {
+                                                controller.bulkToDate = date.toIso8601String().split("T").first;
+                                                controller.update();
+                                              },
+                                              onSubmitted: (date) {
+                                                controller.bulkToDate = date.toIso8601String().split("T").first;
+                                                controller.update();
+                                              },
                                             ),
                                           )),
 
@@ -138,7 +164,8 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
 
                                       /// Action Buttons
                                       Padding(
-                                        padding: const EdgeInsets.only(top: 18.0),
+                                        padding:
+                                            const EdgeInsets.only(top: 18.0),
                                         child: Wrap(
                                           spacing: isCompact ? 6 : 8,
                                           runSpacing: 8,
@@ -148,27 +175,39 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                               height: isCompact ? 30 : 33,
                                               borderRadius: 4,
                                               btnColor: DynamicColors.primaryClr,
-                                              style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
+                                              style: mozillaTextSemiBoldText(
+                                                  fontSize: 11, color: DynamicColors.whiteClr),
                                               verticalPadding: 0.0,
                                               btnText: AppText.getBooking,
+                                              onTap: () {
+                                                controller.getBulkCommission();
+                                              },
                                             ),
                                             CustomButton(
                                               width: isCompact ? 60 : 80,
                                               height: isCompact ? 30 : 33,
                                               borderRadius: 4,
                                               btnColor: DynamicColors.redClr,
-                                              style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
+                                              style: mozillaTextSemiBoldText(
+                                                  fontSize: 11, color: DynamicColors.whiteClr),
                                               verticalPadding: 0.0,
                                               btnText: AppText.clear,
+                                              onTap: () {
+                                                controller.clearBulkCommission();
+                                              },
                                             ),
                                             CustomButton(
                                               width: isCompact ? 70 : 90,
                                               height: isCompact ? 30 : 33,
                                               borderRadius: 4,
                                               btnColor: DynamicColors.greenClr,
-                                              style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
+                                              style: mozillaTextSemiBoldText(
+                                                  fontSize: 11, color: DynamicColors.whiteClr),
                                               verticalPadding: 0.0,
                                               btnText: AppText.generate,
+                                              onTap: () {
+
+                                              },
                                             ),
                                           ],
                                         ),
@@ -179,9 +218,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                               ],
                             ),
                           )),
-
                       SizedBox(width: 10),
-
                       Expanded(
                           flex: 2,
                           child: Container(
@@ -195,8 +232,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                 /// Header
                                 Container(
                                   width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 12),
+                                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                                   color: DynamicColors.gryClr.withOpacity(0.5),
                                   child: Text(AppText.info,
                                     style: mozillaTextSemiBoldText(fontSize: 16),
@@ -231,7 +267,8 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                           height: isCompact ? 30 : 33,
                                           borderRadius: 4,
                                           btnColor: DynamicColors.greenClr,
-                                          style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
+                                          style: mozillaTextSemiBoldText(
+                                              fontSize: 11, color: DynamicColors.whiteClr),
                                           verticalPadding: 0.0,
                                           btnText: AppText.generateSendPdf,
                                         ),
@@ -244,7 +281,6 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                           )),
                     ],
                   ),
-
                   const SizedBox(height: 15),
                   SingleChildScrollView(
                     child: SizedBox(
@@ -253,47 +289,57 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                         columns: [
                           buildHeaderWithSearch(
                               widget: Checkbox(
-                                  value: controller.selectAllDrivers.value,
+                                  value: controller.selectBulkDrivers.value,
                                   onChanged: (v) {
-                                    controller.selectAllDrivers.value = v!;
+                                    controller.selectBulkDrivers.value = v!;
                                     controller.update();
                                   })),
-                          buildHeaderWithSearch(title: "DRIVER"),
-                          buildHeaderWithSearch(title: "BOOKINGS"),
-                          buildHeaderWithSearch(title: "CASH TOTAL"),
-                          buildHeaderWithSearch(title: "ACCOUNT TOTALS"),
-                          // maxWidth > 1669
-                          //     ? "ACCOUNT TOTALS"
-                          //     : "ACCOUNT\nTOTALS"),
-                          buildHeaderWithSearch(title: "TOTALS"),
-                          buildHeaderWithSearch(title: "COMM"),
-                          buildHeaderWithSearch(title: "OLD BALANCE"),
-                          buildHeaderWithSearch(title: "BALANCE"),
-                          buildHeaderWithSearch(title: "OWED"),
-                          buildHeaderWithSearch(title: "ACTION"),
+                          buildHeaderWithSearch(title: "DRIVER", removeSearching: true),
+                          buildHeaderWithSearch(title: "BOOKINGS", removeSearching: true),
+                          buildHeaderWithSearch(title: "CASH TOTAL", removeSearching: true),
+                          buildHeaderWithSearch(title: "ACCOUNT TOTALS", removeSearching: true),
+                          buildHeaderWithSearch(title: "TOTALS", removeSearching: true),
+                          buildHeaderWithSearch(title: "COMM", removeSearching: true),
+                          buildHeaderWithSearch(title: "OLD BALANCE", removeSearching: true),
+                          buildHeaderWithSearch(title: "BALANCE", removeSearching: true),
+                          buildHeaderWithSearch(title: "OWED", removeSearching: true),
+                          buildHeaderWithSearch(title: "ACTION", removeSearching: true),
                         ],
-                        totalRow: totalRows,
-                        cells: [
-                          DataCell(Center(child: Checkbox(
-                              value: controller.selectAllDrivers.value,
-                              onChanged: (v) {
-                                controller.selectAllDrivers.value = v!;
-                                controller.update();
-                              }))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                        ],
+                        totalRow: controller.getBulkCommissionModel?.data?.length ?? 0,
+                        rows: controller.getBulkCommissionModel?.data?.map((item) {
+                          return DataRow(cells: [
+                            DataCell(Center(
+                                child: Checkbox(
+                                    value: controller.selectBulkDrivers.value,
+                                    onChanged: (v) {
+                                      controller.selectBulkDrivers.value = v!;
+                                      controller.update();
+                                    }))),
+                            DataCell(Center(child: Text(item.driver?.name ?? ""))),
+                            DataCell(Center(child: Text(item.bookingsCount ?? ""))),
+                            DataCell(Center(child: Text("£ ${item.cashJobsTotal ?? ""}"))),
+                            DataCell(Center(child: Text("£ ${item.accountJobsTotal ?? ""}"))),
+                            DataCell(Center(child: Text("£ ${item.jobsTotal ?? ""}"))),
+                            DataCell(Center(child: Text("£ ${item.commissionTotal ?? ""}"))),
+                            DataCell(Center(child: Text("£ ${item.oldBalance ?? ""}"))),
+                            DataCell(Center(child: Text("£ ${item.currentBalance ?? ""}"))),
+                            DataCell(Center(child: Text("£ ${item.owed ?? ""}"))),
+                            DataCell(Center(child:
+                            CustomButton(
+                              width: 55,
+                              height: 26,
+                              btnText: AppText.view,
+                              btnColor: DynamicColors.primaryClr,
+                              borderRadius: 6,
+                              verticalPadding: 0.0,
+                              style: mozillaTextSemiBoldText(
+                                  fontSize: 11, color: DynamicColors.whiteClr),
+                            ))),
+                          ]);
+                        }).toList(),
                       ),
                     ),
-                  ),
+                  )
                 ],
               ),
             );

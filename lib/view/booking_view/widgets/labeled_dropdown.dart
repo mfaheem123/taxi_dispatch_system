@@ -30,6 +30,13 @@ class LabeledDropdown extends StatefulWidget implements LabelledField {
 
 class _LabeledDropdownState extends State<LabeledDropdown> {
   late String? _value = widget.value ?? widget.items.first;
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   void didUpdateWidget(LabeledDropdown oldWidget) {
@@ -49,31 +56,35 @@ class _LabeledDropdownState extends State<LabeledDropdown> {
   Widget build(BuildContext context) {
     return FieldShell(
       label: widget.label,
-      child: DropdownButtonFormField<String>(
-        initialValue: _value,
-        isExpanded: true,
-        isDense: true,
-        // null -> the button hugs the text instead of the 48px tap target,
-        // which is what makes the dropdowns line up with the text fields.
-        itemHeight: null,
-        // 16 keeps the icon from becoming the tallest thing in the row.
-        iconSize: 16,
-        decoration: const InputDecoration(
-          contentPadding: EdgeInsets.symmetric(
-              horizontal: Density.fieldPadX, vertical: Density.dropPadY),
+      child: _FocusOnPress(
+        node: _focusNode,
+        child: DropdownButtonFormField<String>(
+          focusNode: _focusNode,
+          initialValue: _value,
+          isExpanded: true,
+          isDense: true,
+          // null -> the button hugs the text instead of the 48px tap target,
+          // which is what makes the dropdowns line up with the text fields.
+          itemHeight: null,
+          // 16 keeps the icon from becoming the tallest thing in the row.
+          iconSize: 16,
+          decoration: const InputDecoration(
+            contentPadding: EdgeInsets.symmetric(
+                horizontal: Density.fieldPadX, vertical: Density.dropPadY),
+          ),
+          style: kFormValueStyle,
+          items: [
+            for (final i in widget.items)
+              DropdownMenuItem(
+                value: i,
+                child: Text(i, overflow: TextOverflow.ellipsis),
+              ),
+          ],
+          onChanged: (v) {
+            setState(() => _value = v);
+            widget.onChanged?.call(v);
+          },
         ),
-        style: kFormValueStyle,
-        items: [
-          for (final i in widget.items)
-            DropdownMenuItem(
-              value: i,
-              child: Text(i, overflow: TextOverflow.ellipsis),
-            ),
-        ],
-        onChanged: (v) {
-          setState(() => _value = v);
-          widget.onChanged?.call(v);
-        },
       ),
     );
   }
@@ -91,7 +102,7 @@ class _LabeledDropdownState extends State<LabeledDropdown> {
 /// `_value` to fall out of sync. `initialValue` still reacts to changes
 /// because DropdownButtonFormField re-seeds itself whenever `initialValue`
 /// differs from the previous build (see Flutter's dropdown.dart).
-class LabeledZoneDropdown extends StatelessWidget implements LabelledField {
+class LabeledZoneDropdown extends StatefulWidget implements LabelledField {
   @override
   final String label;
   final List<ZoneObject> items;
@@ -102,37 +113,58 @@ class LabeledZoneDropdown extends StatelessWidget implements LabelledField {
       {super.key, required this.items, this.value, this.onChanged});
 
   @override
+  State<LabeledZoneDropdown> createState() => _LabeledZoneDropdownState();
+}
+
+/// Holds nothing but the focus node — the selection still comes straight
+/// from [LabeledZoneDropdown.value] on every build.
+class _LabeledZoneDropdownState extends State<LabeledZoneDropdown> {
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final items = widget.items;
+    final value = widget.value;
     // A value that no longer appears in `items` (list just reloaded, or
     // nothing loaded yet) would make DropdownButtonFormField assert — show no
     // selection instead of crashing, exactly like LabeledDropdown does.
     final selected = value != null && items.contains(value) ? value : null;
     return FieldShell(
-      label: label,
-      child: DropdownButtonFormField<ZoneObject?>(
-        initialValue: selected,
-        isExpanded: true,
-        isDense: true,
-        itemHeight: null,
-        iconSize: 16,
-        hint: const Text('SELECT ZONE', style: kFormDropdownHintStyle),
-        decoration: const InputDecoration(
-          contentPadding: EdgeInsets.symmetric(
-              horizontal: Density.fieldPadX, vertical: Density.dropPadY),
-        ),
-        style: kFormValueStyle,
-        items: [
-          const DropdownMenuItem<ZoneObject?>(
-            value: null,
-            child: _UnselectEntry('SELECT ZONE'),
+      label: widget.label,
+      child: _FocusOnPress(
+        node: _focusNode,
+        child: DropdownButtonFormField<ZoneObject?>(
+          focusNode: _focusNode,
+          initialValue: selected,
+          isExpanded: true,
+          isDense: true,
+          itemHeight: null,
+          iconSize: 16,
+          hint: const Text('SELECT ZONE', style: kFormDropdownHintStyle),
+          decoration: const InputDecoration(
+            contentPadding: EdgeInsets.symmetric(
+                horizontal: Density.fieldPadX, vertical: Density.dropPadY),
           ),
-          for (final z in items)
-            DropdownMenuItem(
-              value: z,
-              child: Text(z.name ?? '', overflow: TextOverflow.ellipsis),
+          style: kFormValueStyle,
+          items: [
+            const DropdownMenuItem<ZoneObject?>(
+              value: null,
+              child: _UnselectEntry('SELECT ZONE'),
             ),
-        ],
-        onChanged: onChanged,
+            for (final z in items)
+              DropdownMenuItem(
+                value: z,
+                child: Text(z.name ?? '', overflow: TextOverflow.ellipsis),
+              ),
+          ],
+          onChanged: widget.onChanged,
+        ),
       ),
     );
   }
@@ -205,14 +237,21 @@ class _LabeledObjectDropdownState<T> extends State<LabeledObjectDropdown<T>> {
     // The parent applies the pick with setState, so its answer is only
     // visible in the next build.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || _selected == picked) return;
-      final hadFocus = _focusNode.hasFocus;
-      setState(() => _generation++);
-      if (hadFocus) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) _focusNode.requestFocus();
-        });
+      if (!mounted) return;
+      if (_selected == picked) {
+        // A pick leaves the keyboard user on this field, so Tab carries on to
+        // the next one. The parent's handler can pull focus elsewhere first —
+        // JOUR's DashboardController.changeJourneyFtn() requests focus on the
+        // dashboard's return-address nodes — so take it back.
+        if (!_focusNode.hasFocus) _focusNode.requestFocus();
+        return;
       }
+      setState(() => _generation++);
+      // Refused pick: the field is rebuilt, so focus goes back to it on the
+      // frame after.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _focusNode.requestFocus();
+      });
     });
   }
 
@@ -223,30 +262,33 @@ class _LabeledObjectDropdownState<T> extends State<LabeledObjectDropdown<T>> {
     final hint = widget.hint ?? 'SELECT';
     return FieldShell(
       label: widget.label,
-      child: DropdownButtonFormField<T?>(
-        key: ValueKey(_generation),
-        focusNode: _focusNode,
-        initialValue: _selected,
-        isExpanded: true,
-        isDense: true,
-        itemHeight: null,
-        iconSize: 16,
-        hint: Text(hint, style: kFormDropdownHintStyle),
-        decoration: const InputDecoration(
-          contentPadding: EdgeInsets.symmetric(
-              horizontal: Density.fieldPadX, vertical: Density.dropPadY),
+      child: _FocusOnPress(
+        node: _focusNode,
+        child: DropdownButtonFormField<T?>(
+          key: ValueKey(_generation),
+          focusNode: _focusNode,
+          initialValue: _selected,
+          isExpanded: true,
+          isDense: true,
+          itemHeight: null,
+          iconSize: 16,
+          hint: Text(hint, style: kFormDropdownHintStyle),
+          decoration: const InputDecoration(
+            contentPadding: EdgeInsets.symmetric(
+                horizontal: Density.fieldPadX, vertical: Density.dropPadY),
+          ),
+          style: kFormValueStyle,
+          items: [
+            if (widget.allowUnselect)
+              DropdownMenuItem<T?>(value: null, child: _UnselectEntry(hint)),
+            for (final i in items)
+              DropdownMenuItem<T?>(
+                value: i,
+                child: Text(itemLabel(i), overflow: TextOverflow.ellipsis),
+              ),
+          ],
+          onChanged: widget.onChanged == null ? null : _onChanged,
         ),
-        style: kFormValueStyle,
-        items: [
-          if (widget.allowUnselect)
-            DropdownMenuItem<T?>(value: null, child: _UnselectEntry(hint)),
-          for (final i in items)
-            DropdownMenuItem<T?>(
-              value: i,
-              child: Text(itemLabel(i), overflow: TextOverflow.ellipsis),
-            ),
-        ],
-        onChanged: widget.onChanged == null ? null : _onChanged,
       ),
     );
   }
@@ -260,6 +302,25 @@ class _UnselectEntry extends StatelessWidget {
   const _UnselectEntry(this.text);
 
   @override
-  Widget build(BuildContext context) =>
-      Text(text, overflow: TextOverflow.ellipsis, style: kFormDropdownHintStyle);
+  Widget build(BuildContext context) => Text(text,
+      overflow: TextOverflow.ellipsis, style: kFormDropdownHintStyle);
+}
+
+/// Focuses the dropdown as soon as the pointer goes down on it — before the
+/// tap opens its menu. A mouse click doesn't focus a DropdownButton by itself,
+/// so the menu would close back onto whichever field had focus before; with
+/// the dropdown focused first, closing the menu (pick, Esc or click outside)
+/// leaves focus on it and Tab carries on from here.
+class _FocusOnPress extends StatelessWidget {
+  final FocusNode node;
+  final Widget child;
+  const _FocusOnPress({required this.node, required this.child});
+
+  @override
+  Widget build(BuildContext context) => Listener(
+        onPointerDown: (_) {
+          if (!node.hasFocus) node.requestFocus();
+        },
+        child: child,
+      );
 }

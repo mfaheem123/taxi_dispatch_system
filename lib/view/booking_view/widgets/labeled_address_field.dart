@@ -312,12 +312,17 @@ class _LabeledAddressFieldState extends State<LabeledAddressField> {
       return KeyEventResult.ignored;
     }
     final key = event.logicalKey;
+    // ↑ / ↓ belong to the panel only while it is open. With it closed they
+    // are left to bubble up to the screen's PageScrollWrapper, which scrolls
+    // the page instead.
     if (key == LogicalKeyboardKey.arrowDown) {
-      if (_entry != null) _moveHighlight(1);
+      if (_entry == null) return KeyEventResult.ignored;
+      _moveHighlight(1);
       return KeyEventResult.handled;
     }
     if (key == LogicalKeyboardKey.arrowUp) {
-      if (_entry != null) _moveHighlight(-1);
+      if (_entry == null) return KeyEventResult.ignored;
+      _moveHighlight(-1);
       return KeyEventResult.handled;
     }
     if (key == LogicalKeyboardKey.enter ||

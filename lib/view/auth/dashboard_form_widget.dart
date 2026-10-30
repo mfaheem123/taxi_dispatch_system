@@ -880,19 +880,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   ),
 
 
-                                  _dropdown<DepartmentObject>(
-                                    'Select Escort',
-                                    controller.selectDepartmentData,
-                                    controller.selectAccountValue == null
-                                        ? []
-                                        : controller
-                                        .selectAccountValue!.departments!,
-                                        (v) => setState(() {
-                                      controller.selectDepartmentData = v;
-                                      controller.update();
-                                    }),
-                                    _isReturnJourney ? 32 : 20,
-                                    itemLabel: (p) => p.name ?? "",
+                                  // Same ESCORT text field as the create-booking
+                                  // form (create_new_booking_form.dart).
+                                  _field(
+                                    'Escort',
+                                    tab: _isReturnJourney ? 32 : 20,
+                                    controller: controller.escortController,
                                   ),
 
                                   _dropdown<DashboardVehicleTypeObject>(
