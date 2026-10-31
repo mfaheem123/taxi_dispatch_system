@@ -3515,10 +3515,31 @@ class DriverController extends GetxController {
     isLoadBulkCommission = true;
     update();
 
+    List itemsList = [];
+
+    if (getBulkCommissionModel?.data != null) {
+      for (var item in getBulkCommissionModel!.data!) {
+        itemsList.add({
+          "driver_id": item.driverId,
+          "jobs_total": item.jobsTotal,
+          "commission_total": item.commissionTotal,
+          "cash_jobs_total": item.cashJobsTotal,
+          "account_jobs_total": item.accountJobsTotal,
+          "owed": item.owed,
+          "old_balance": item.oldBalance,
+          "current_balance": item.currentBalance,
+          "driver_commission_lineitems": item.driverCommissionLineitems?.map((line) => {
+            "booking_id": line.bookingId,
+          }).toList() ?? [],
+        });
+      }
+    }
+
     var formData = {
       "from_date": bulkFromDate,
       "to_date": bulkToDate,
-      "transaction_date": DateTime.now(),
+      "transaction_date": DateTime.now().toIso8601String().split("T").first,
+      "items": jsonEncode(itemsList),
     };
 
     var response = await Api().post(
@@ -3526,6 +3547,7 @@ class DriverController extends GetxController {
         "driver_commission/bulk-create", sendCompanyId: true, auth: true);
 
     if (response.statusCode == 200) {
+      BotToast.showText(text: "COMMISSION GENERATED SUCCESSFULLY");
       isLoadBulkCommission = false;
       update();
     }
@@ -3545,27 +3567,6 @@ class DriverController extends GetxController {
   final descriptionController = TextEditingController();
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER COMMISSION PAY functionality
-
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER SIN BIN SETTINGS functionality
-
-  /// TextEditingControllers
-  final recoverJobController = TextEditingController();
-  final rejectJobController = TextEditingController();
-  final ignoreJobController = TextEditingController();
-
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER SIN BIN SETTINGS functionality
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
 

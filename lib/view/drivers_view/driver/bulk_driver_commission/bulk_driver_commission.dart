@@ -206,7 +206,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                               verticalPadding: 0.0,
                                               btnText: AppText.generate,
                                               onTap: () {
-
+                                                controller.generateBulkCommission();
                                               },
                                             ),
                                           ],
