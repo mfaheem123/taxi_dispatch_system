@@ -282,7 +282,9 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                     ],
                   ),
                   const SizedBox(height: 15),
-                  SingleChildScrollView(
+                  controller.isBulkCommission
+                      ? const Center(child: CircularProgressIndicator())
+                      : SingleChildScrollView(
                     child: SizedBox(
                       width: Get.width,
                       child: DatatableWidget(
