@@ -144,7 +144,6 @@ class _LabeledZoneDropdownState extends State<LabeledZoneDropdown> {
           initialValue: selected,
           isExpanded: true,
           isDense: true,
-
           itemHeight: null,
           iconSize: 16,
           hint: const Text('SELECT ZONE', style: kFormDropdownHintStyle),
