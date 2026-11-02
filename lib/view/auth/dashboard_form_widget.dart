@@ -345,6 +345,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             if (_controller.locationtypezoneModel == null) {
               _controller.getLocationTypeZone();
             }
+            if (controller.escortList.isEmpty) {
+              controller.fetchEscortList();
+            }
           },
           builder: (controller) {
             return SafeArea(
@@ -850,6 +853,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       setState(() {
                                         controller.selectAccountValue = v;
                                         controller.selectDepartmentData = null;
+                                        if (controller.escortList.isEmpty) {
+                                          controller.fetchEscortList();
+                                        }
                                       });
                                     },
                                     18,

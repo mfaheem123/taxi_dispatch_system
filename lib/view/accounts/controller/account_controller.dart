@@ -647,6 +647,8 @@ class AccountController extends GetxController {
   final PATBatch = TextEditingController();
   final firstAidBatch = TextEditingController();
   final DBSBatch = TextEditingController();
+  RxBool escortActive = false.obs;
+  final FocusNode escortActiveNode = FocusNode();
 
   Uint8List? safeguardingDocPic;
   Uint8List? patDocPic;
@@ -728,7 +730,7 @@ class AccountController extends GetxController {
       "pat_expiry": patExpiryDate,
       "firstaid_expiry": firstAidDate,
       "dbs_expiry": dbsExpireTime.text,
-      "active": "false",
+      "active": escortActive.value,
     };
     var formData = dio.FormData.fromMap(baseData);
     var response =
@@ -789,6 +791,7 @@ void clearEscortFields() {
   patDocPic = null;
   firstAidDocPic = null;
   dbsDocPic = null;
+  escortActive.value = false;
   selectedEscort = null;
   listEscort();
   isEscortUpdating.value = false;
@@ -890,6 +893,7 @@ void clearEscortFields() {
     PATBatch.text = escort.patNumber ?? '';
     firstAidBatch.text = escort.firstaidNumber ?? '';
     DBSBatch.text = escort.dbsNumber ?? '';
+    escortActive.value = escort.active ?? false;
 
     profileImg = null;
     safeguardingDocPic = null;

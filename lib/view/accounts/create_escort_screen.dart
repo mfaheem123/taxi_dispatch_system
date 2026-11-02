@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../component/image_pick_widget.dart';
+import '../../component/keyboard_checkBox_widget.dart';
 import '../../component/networks/api.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
@@ -210,10 +211,33 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                             SizedBox(
                               height: 10,
                             ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(left: fieldWidth / 11),
+                                  child: Obx(() => KeyboardCheckbox(
+                                    onChanged: (v) {
+                                      controller.escortActive.value = v;
+                                      controller.update();
+                                    },
+                                    value: controller.escortActive.value,
+                                    focusNode: controller.escortActiveNode,
+                                    width: fieldWidth / 1.5,
+                                    label: "ACTIVE",
+                                  )),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+
                             Wrap(
                               runSpacing: 10,
                               spacing: 10,
                               children: [
+
                                 CustomTextField(
                                   borderRadius: 4,
                                   controller: controller.escortName,
@@ -387,6 +411,9 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                     UpperCaseTextFormatter(),
                                   ],
                                 ),
+
+
+
                               ],
                             ),
                           ],

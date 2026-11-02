@@ -3212,8 +3212,8 @@ class DashboardController extends GetxController {
   Future<void> fetchEscortList() async {
     try {
       // One big page: this feeds a dropdown, not a paginated table.
-      final response = await Api().get('escorts/get?',
-          queryParameters: {"page": 1, "limit": 1000},
+      final response = await Api().get('escorts/get',
+          // queryParameters: {"page": 1, "limit": 1000},
           sendCompanyId: true,
           auth: true);
       if (response.statusCode == 200) {
@@ -3224,7 +3224,9 @@ class DashboardController extends GetxController {
             !escortList.contains(selectEscortValue)) {
           selectEscortValue = escortList.firstWhereOrNull(
               (e) => e.id == selectEscortValue!.id);
+
         }
+        print(response.data);
         update();
       }
     } catch (e) {
