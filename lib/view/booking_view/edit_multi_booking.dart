@@ -86,43 +86,41 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.white,
-        body: FocusTraversalGroup(
-          policy: WidgetOrderTraversalPolicy(),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                bool isScreenMobile = constraints.maxWidth < 850;
+    return FocusTraversalGroup(
+      policy: WidgetOrderTraversalPolicy(),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            bool isScreenMobile = constraints.maxWidth < 850;
 
-                return isScreenMobile
-                    ? Column(
-                        children: [
-                          SizedBox(
-                            width: double.infinity,
-                            child: _buildLeftTableSection(),
-                          ),
-                          const SizedBox(height: 16),
-                          _buildRightFormSection(),
-                        ],
-                      )
-                    : Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            width: 390,
-                            child: _buildLeftTableSection(),
-                          ),
-                          Expanded(
-                            child: _buildRightFormSection(),
-                          ),
-                        ],
-                      );
-              },
-            ),
-          ),
-        ));
+            return isScreenMobile
+                ? Column(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: _buildLeftTableSection(),
+                ),
+                const SizedBox(height: 16),
+                _buildRightFormSection(),
+              ],
+            )
+                : Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 390,
+                  child: _buildLeftTableSection(),
+                ),
+                Expanded(
+                  child: _buildRightFormSection(),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
   }
 
   // ────────── Left Table Section Widget ──────────
