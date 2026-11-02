@@ -55,6 +55,7 @@ import 'widgets/labeled_icon_actions.dart';
 import 'widgets/labeled_input.dart';
 import 'widgets/labeled_mobile_field.dart';
 import 'widgets/labeled_time_picker.dart';
+import '../accounts/model/list_escort_model.dart' show Escorts;
 import 'widgets/update_booking_parts.dart' show LabeledActionButton, UpdateFormPalette;
 
 // ---------------------------------------------------------------------------
@@ -99,7 +100,8 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
   /// dispose, so every visit starts empty and leaving clears it.
   late final DashboardController controller;
 
-  /// Clears the pickup time when the pickup resolves to an airport.
+  /// Keeps an untouched TIME showing the current time when the pickup
+  /// switches to or from an airport.
   late final Worker _airportTimeWorker;
 
   // Same zone/location-type controller the dashboard form reads
@@ -120,14 +122,12 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
     if (_locationController.locationtypezoneModel == null) {
       _locationController.getLocationTypeZone();
     }
-    // An airport pickup starts with no time — the operator sets it from the
-    // flight — unless one was already picked. Leaving the airport puts the
-    // "now" default back on an untouched field.
-    _airportTimeWorker = ever<bool>(controller.isAirportResponse, (airport) {
+    // TIME always shows the current time by default — an airport pickup
+    // included (it used to be cleared there). A time the operator picked is
+    // left alone.
+    _airportTimeWorker = ever<bool>(controller.isAirportResponse, (_) {
       if (controller.pickUpTimePicked) return;
-      if (airport) {
-        controller.pickUpTimeController.clear();
-      } else if (controller.pickUpTimeController.text.isEmpty) {
+      if (controller.pickUpTimeController.text.isEmpty) {
         controller.pickUpTimeController.text =
             DateFormat('HH:mm').format(DateTime.now());
       }
@@ -157,6 +157,8 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
       if (!mounted) return;
     }
     if (controller.seeZoneOnMapModel == null) controller.seeZoneOnMapp();
+    // The dashboard's list may still be loading (or have failed); fetch our own.
+    if (controller.escortList.isEmpty) controller.fetchEscortList();
     controller.update();
   }
 
@@ -835,9 +837,15 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                   controller.update();
                 }),
               )),
-              SpanField(LabeledInput('ESCORT',
-                  controller: controller.escortController,
-                  uppercase: true)),
+              SpanField(LabeledObjectDropdown<Escorts>(
+                'ESCORT',
+                items: controller.escortList,
+                value: controller.selectEscortValue,
+                itemLabel: (e) => (e.name ?? '').toUpperCase(),
+                hint: 'SELECT ESCORT',
+                onChanged: (v) =>
+                    setState(() => controller.selectEscortValue = v),
+              )),
               SpanField(Obx(() => LabeledInput(
                     'PASS',
                     controller: controller.passController,

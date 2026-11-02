@@ -205,6 +205,19 @@ class _LabeledMobileFieldState extends State<LabeledMobileField> {
     _scrollHighlightedIntoView();
   }
 
+  /// The mouse moved over row [i]: highlight it, so Enter picks what the
+  /// mouse is on and ↑ / ↓ carry on from there.
+  void _hoverHighlight(int i) {
+    if (_highlighted == i) return;
+    // After the frame: this fires during a pointer event, possibly while the
+    // overlay is mid-layout.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _entry == null || i >= _filtered.length) return;
+      _highlighted = i;
+      _entry?.markNeedsBuild();
+    });
+  }
+
   void _scrollHighlightedIntoView() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -269,7 +282,11 @@ class _LabeledMobileFieldState extends State<LabeledMobileField> {
         link: _layerLink,
         showWhenUnlinked: false,
         offset: Offset(0, height + 4),
-        child: TapRegion(
+        // TextFieldTapRegion, not TapRegion: it puts the panel in the same
+        // tap group as the field, so a click on a row no longer counts as a
+        // click outside the TextField — which unfocused it, closed the panel
+        // and swallowed the click before the row could be picked.
+        child: TextFieldTapRegion(
           onTapOutside: (_) => _focusNode.unfocus(),
           child: Material(
             elevation: 6,
@@ -299,15 +316,13 @@ class _LabeledMobileFieldState extends State<LabeledMobileField> {
                         final active = _highlighted == i;
                         return MouseRegion(
                           cursor: SystemMouseCursors.click,
-                          onEnter: (_) {
-                            if (_highlighted == i) return;
-                            WidgetsBinding.instance
-                                .addPostFrameCallback((_) {
-                              if (!mounted) return;
-                              _highlighted = i;
-                              _entry?.markNeedsBuild();
-                            });
-                          },
+                          // onHover, not onEnter: onEnter also fires when the
+                          // arrow keys scroll a row under a mouse that never
+                          // moved, snapping the highlight back under it.
+                          // onHover only follows a real mouse move, so the
+                          // mouse and ↑ / ↓ drive the one highlight and
+                          // whichever moved last wins.
+                          onHover: (_) => _hoverHighlight(i),
                           child: InkWell(
                             canRequestFocus: false,
                             onTap: () => _pick(c),

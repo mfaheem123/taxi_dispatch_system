@@ -15,6 +15,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../Model/via_point.dart';
+import '../../accounts/model/list_escort_model.dart' show EscortModel, Escorts;
 import '../../../alert/child_seats_alert.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/marker_class.dart';
@@ -138,6 +139,7 @@ class DashboardController extends GetxController {
     dashboardAllData ??= source.dashboardAllData;
     dashboardAccountData ??= source.dashboardAccountData;
     seeZoneOnMapModel ??= source.seeZoneOnMapModel;
+    if (escortList.isEmpty) escortList = source.escortList;
     applyOpeningSelections();
   }
 
@@ -2488,6 +2490,7 @@ class DashboardController extends GetxController {
 
       selectVehicleValue = dashboardAllData!.vehicleTypes![0];
       getAccountData(subsidiariesId: dashboardAllData!.subsidiaries![0].id);
+      fetchEscortList();
       getDashboardTableData(tableId: bookingTabsList!.first.id);
       dashboardDataLoader(false);
       update();
@@ -3198,9 +3201,36 @@ class DashboardController extends GetxController {
   final luggController = TextEditingController();
   final sluggController = TextEditingController();
 
-  /// ESCORT on the create-booking form (create_new_booking_form.dart). Typed
-  /// by hand for now — not yet sent with the booking.
-  final escortController = TextEditingController();
+  /// ESCORT dropdown on both booking forms (dashboard_form_widget.dart and
+  /// create_new_booking_form.dart). Not yet sent with the booking.
+  Escorts? selectEscortValue;
+
+  /// The company's active escorts, from the same `escorts/get` endpoint the
+  /// Accounts > Escort screen lists. Loaded by [fetchEscortList].
+  List<Escorts> escortList = [];
+
+  Future<void> fetchEscortList() async {
+    try {
+      // One big page: this feeds a dropdown, not a paginated table.
+      final response = await Api().get('escorts/get?',
+          queryParameters: {"page": 1, "limit": 1000},
+          sendCompanyId: true,
+          auth: true);
+      if (response.statusCode == 200) {
+        final escorts = EscortModel.fromJson(response.data).escorts ?? [];
+        escortList = escorts.where((e) => e.active != false).toList();
+        // A reload hands out new objects; drop a pick that is not among them.
+        if (selectEscortValue != null &&
+            !escortList.contains(selectEscortValue)) {
+          selectEscortValue = escortList.firstWhereOrNull(
+              (e) => e.id == selectEscortValue!.id);
+        }
+        update();
+      }
+    } catch (e) {
+      debugPrint('Error loading escorts: $e');
+    }
+  }
   List restrictedDrivers = [];
   List childSeatList = [];
   List extraFaresList = [];
@@ -3665,7 +3695,7 @@ class DashboardController extends GetxController {
     passController.text = "1";
     luggController.clear();
     sluggController.clear();
-    escortController.clear();
+    selectEscortValue = null;
     parkingChargesController.clear();
     congestionChargesController.clear();
     meetGreetController.clear();
@@ -3725,7 +3755,9 @@ class DashboardController extends GetxController {
     polylinePointsCoordinate.clear();
     polyLineMarkerInfo.clear();
     polylinePoints.clear();
-    multiReservationToTimeController.clear();
+    // Back to the current time rather than blank, like TIME / R/TIME above.
+    multiReservationToTimeController.text = nowHHmm;
+    returnMultiReservationToTimeController.text = nowHHmm;
     multiReservationDaysList.clear();
     multiReservationList.clear();
     viaTextEditingController.clear();
@@ -4481,7 +4513,6 @@ class DashboardController extends GetxController {
       dropOffTwoWayController,
       dropUpNoteController,
       emailController,
-      escortController,
       extraDropChargesController,
       luggController,
       meetGreetController,

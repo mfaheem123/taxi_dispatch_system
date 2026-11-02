@@ -26,6 +26,7 @@ import '../dashboard_view/widgets/fare_configuration.dart';
 import '../dashboard_view/widgets/via_location.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
 import '../locations_view/controller/locations_controller.dart';
+import '../accounts/model/list_escort_model.dart' show Escorts;
 
 // ════════════════════════════════════════════════════════════════════
 // Typography
@@ -880,12 +881,16 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   ),
 
 
-                                  // Same ESCORT text field as the create-booking
+                                  // Same ESCORT dropdown as the create-booking
                                   // form (create_new_booking_form.dart).
-                                  _field(
-                                    'Escort',
-                                    tab: _isReturnJourney ? 32 : 20,
-                                    controller: controller.escortController,
+                                  _dropdown<Escorts>(
+                                    'Select Escort',
+                                    controller.selectEscortValue,
+                                    controller.escortList,
+                                        (v) => setState(() =>
+                                    controller.selectEscortValue = v),
+                                    _isReturnJourney ? 32 : 20,
+                                    itemLabel: (e) => (e.name ?? '').toUpperCase(),
                                   ),
 
                                   _dropdown<DashboardVehicleTypeObject>(
