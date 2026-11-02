@@ -15,6 +15,7 @@ import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
 import 'complete_bookingview.dart';
 import 'controller.dart';
+import 'edit_multi_booking.dart';
 
 class MultiBooking extends StatefulWidget {
   const MultiBooking({super.key});
@@ -168,11 +169,14 @@ class _MultiBookingState extends State<MultiBooking> {
                         side: BorderSide.none, // 👈 remove border
                       ),
                       onPressed: () {
-                        setState(() => openEditBookingTab(item.id));
-                        // setState(() {
-                        //   // _currentPage = CompleteBookingsScreen();
-                        //   controller.menuBarController.menuBarRefresh(title: "COMPLETE BOOKINGS", pageName: CompleteBookingsScreen());
-                        // });
+                        // setState(() => MultiReservationScreen(item.id));
+                        // setState(() => openEditBookingTab(item.id));
+                        setState(() {
+                          // _currentPage = CompleteBookingsScreen();
+                          final DashboardController _controller = Get.find();
+                          _controller.currentPage.value = MultiReservationScreen();
+                          controller.menuBarController.menuBarRefresh(title: "MULTI BOOKING | UPDATE", pageName: MultiReservationScreen());
+                        });
 
                       },
                       child: Icon(Icons.edit_calendar, size: 20),

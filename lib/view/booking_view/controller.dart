@@ -285,7 +285,8 @@ class BookingController extends GetxController{
   final int multiBookId = 9;
   getMultiBookingData() async {
     webBookingLoad(true);
-    var response = await Api().get("bookings/getbytabs/${multiBookId}", sendCompanyId: true,
+    var response = await Api().get("bookings/multi-bookings", sendCompanyId: true,
+    // var response = await Api().get("bookings/getbytabs/${multiBookId}", sendCompanyId: true,
         queryParameters: {
           "page": multiBookingCurrentPage.value,
           "limit": multiBookingLimit,
