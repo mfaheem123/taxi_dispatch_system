@@ -1928,23 +1928,25 @@ class DriverController extends GetxController {
         updateItems.map((e) => e.booking).where((b) => b != null).toList();
 
     // 1. Cash Total
-    updateCashTotalValue = activeBookings.fold(0.0, (sum, b) {
-      bool isCash = b?.paymentType?.name?.toString().toLowerCase() == "cash";
-      if (isCash && b?.commission == true) {
-        return sum + parseDouble(calculateWithoutCommission(b));
-      }
-      return sum;
-    });
+    updateCashTotalValue = double.tryParse(updateDriverCommissionByIdModel?.driverCommission?.cashJobsTotal ?? "0") ?? 0.0;
+    // updateCashTotalValue = activeBookings.fold(0.0, (sum, b) {
+    //   bool isCash = b?.paymentType?.name?.toString().toLowerCase() == "cash";
+    //   if (isCash && b?.commission == true) {
+    //     return sum + parseDouble(calculateWithoutCommission(b));
+    //   }
+    //   return sum;
+    // });
 
     // 2. Account Fare Total
-    updateAccountFareTotalVar = activeBookings.fold(0.0, (sum, b) {
-      bool isAccount =
-          b?.paymentType?.name?.toString().toLowerCase() == "account";
-      if (isAccount && b?.commission == true) {
-        return sum + parseDouble(b?.fares);
-      }
-      return sum;
-    });
+    updateAccountFareTotalVar = double.tryParse(updateDriverCommissionByIdModel?.driverCommission?.accountJobsTotal ?? "0") ?? 0.0;
+    // updateAccountFareTotalVar = activeBookings.fold(0.0, (sum, b) {
+    //   bool isAccount =
+    //       b?.paymentType?.name?.toString().toLowerCase() == "account";
+    //   if (isAccount && b?.commission == true) {
+    //     return sum + parseDouble(b?.fares);
+    //   }
+    //   return sum;
+    // });
 
     // 3. Parking/Congestion
     updateParkingCongestionVar = activeBookings.fold(0.0, (sum, b) {
@@ -1959,9 +1961,10 @@ class DriverController extends GetxController {
     });
 
     // 4. Total Commission
-    updateTotalCommissionVar = activeBookings.fold(0.0, (sum, b) {
-      return sum + parseDouble(calculateFinalDriverComm(b));
-    });
+    updateTotalCommissionVar = double.tryParse(updateDriverCommissionByIdModel?.driverCommission?.commissionTotal ?? "0") ?? 0.0;
+    // updateTotalCommissionVar = activeBookings.fold(0.0, (sum, b) {
+    //   return sum + parseDouble(calculateFinalDriverComm(b));
+    // });
 
     // 5. Account Wo-Comm
     updateAccountWOCmmVar = activeBookings.fold(0.0, (sum, b) {
@@ -1996,6 +1999,8 @@ class DriverController extends GetxController {
   void updateCommissionOnToggle() {
     final updateItems = updateDriverCommissionByIdModel
         ?.driverCommission?.driverCommissionLineitems;
+
+    final updateBulkItems = getBulkCommissionModel?.data;
 
     if (updateItems == null) return;
 
@@ -2191,6 +2196,19 @@ class DriverController extends GetxController {
     updateFilterToDate = formatDate(data.toDate);
     updateTransactionDateController = formatDate(data.transactionDate);
     calculateUpdateTotals();
+  }
+
+
+  void _assignBulkApiResponseToVariables(dynamic item) {
+    if (item == null) return;
+    
+    updateCashTotalValue = double.tryParse(item.cashJobsTotal?.toString() ?? "0") ?? 0.0;
+    updateAccountFareTotalVar = double.tryParse(item.accountJobsTotal?.toString() ?? "0") ?? 0.0;
+    updateGrandTotalVar = double.tryParse(item.jobsTotal?.toString() ?? "0") ?? 0.0;
+    updateOwedVar = double.tryParse(item.owed?.toString() ?? "0") ?? 0.0;
+    oldBalanceVar = double.tryParse(item.oldBalance?.toString() ?? "0") ?? 0.0;
+    updateNewBalanceVar = double.tryParse(item.currentBalance?.toString() ?? "0") ?? 0.0;
+    updateTotalCommissionVar = double.tryParse(item.commissionTotal?.toString() ?? "0") ?? 0.0;
   }
 
   // UpdateScreenSave
@@ -3541,6 +3559,8 @@ class DriverController extends GetxController {
       "transaction_date": DateTime.now().toIso8601String().split("T").first,
       "items": jsonEncode(itemsList),
     };
+
+    print("Bulk Payload: $formData");
 
     var response = await Api().post(
         formData,
