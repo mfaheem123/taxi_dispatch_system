@@ -317,7 +317,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                       controller.selectBulkDrivers.value = v!;
                                       controller.update();
                                     }))),
-                            DataCell(Center(child: Text(item.driver?.name ?? ""))),
+                            DataCell(Center(child: Text(item.driver?.username ?? ""))),
                             DataCell(Center(child: Text(item.bookingsCount ?? ""))),
                             DataCell(Center(child: Text("£ ${item.cashJobsTotal ?? ""}"))),
                             DataCell(Center(child: Text("£ ${item.accountJobsTotal ?? ""}"))),
