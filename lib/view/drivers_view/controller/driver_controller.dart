@@ -3621,6 +3621,57 @@ class DriverController extends GetxController {
     update();
   }
 
+
+
+  ///POST Bulk Commission
+
+  bool isLoadBulkRent = false;
+  generateBulkRent() async {
+    isLoadBulkRent = true;
+    update();
+
+    List itemsList = [];
+
+    if (getBulkRentModel?.data != null) {
+      for (var item in getBulkRentModel!.data!) {
+        itemsList.add({
+          "driver_id": item.driverId,
+          "jobs_total": item.jobsTotal,
+          "rent_total": item.rentTotal,
+          "cash_jobs_total": item.cashJobsTotal,
+          "account_jobs_total": item.accountJobsTotal,
+          "owed": item.owed,
+          "old_balance": item.oldBalance,
+          "current_balance": item.currentBalance,
+          "driver_commission_lineitems": item.driverRentLineitems?.map((line) => {
+            "booking_id": line.bookingId,
+          }).toList() ?? [],
+        });
+      }
+    }
+
+    var formData = {
+      "from_date": bulkRentFromDate,
+      "to_date": bulkRentToDate,
+      "transaction_date": DateTime.now().toIso8601String().split("T").first,
+      "items": jsonEncode(itemsList),
+    };
+
+    print("Bulk Payload: $formData");
+
+    var response = await Api().post(
+        formData,
+        "driver_rent/bulk-create", sendCompanyId: true, auth: true);
+
+    if (response.statusCode == 200) {
+      BotToast.showText(text: "BULK DRIVER RENT GENERATED SUCCESSFULLY");
+      clearBulkRent();
+
+      isLoadBulkRent = false;
+      update();
+    }
+  }
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo BULK DRIVER RENT functionality
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER COMMISSION PAY functionality
