@@ -1905,7 +1905,6 @@ class DriverController extends GetxController {
     }
     update();
   }
-
   // Update Screen specific variables
   double updateCashTotalValue = 0.0;
   double updateAccountFareTotalVar = 0.0;
@@ -1926,7 +1925,7 @@ class DriverController extends GetxController {
     }
 
     final List<dynamic> activeBookings =
-        updateItems.map((e) => e.booking).where((b) => b != null).toList();
+    updateItems.map((e) => e.booking).where((b) => b != null).toList();
 
     // 1. Cash Total
     if (activeBookings.isNotEmpty) {
