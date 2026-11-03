@@ -3623,7 +3623,7 @@ class DriverController extends GetxController {
 
 
 
-  ///POST Bulk Commission
+  ///POST Bulk Rent
 
   bool isLoadBulkRent = false;
   generateBulkRent() async {
