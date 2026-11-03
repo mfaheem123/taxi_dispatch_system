@@ -3422,11 +3422,12 @@ class DashboardController extends GetxController {
       if (selectPaymentTypeValue != null)
         'payment_type_id': selectPaymentTypeValue!.id,
       if (selectVehicleValue != null) 'vehicle_type_id': selectVehicleValue!.id,
+      if (selectEscortValue != null) 'escort_id': selectEscortValue!.id,
       if (restrictedDrivers.isNotEmpty)
         'restricted_drivers': jsonEncode(restrictedDrivers),
       if (childSeatList.isNotEmpty) 'child_seat': jsonEncode(childSeatList),
       if (bookingAttributesList.isNotEmpty)
-        'attributes': jsonEncode(bookingAttributesList),
+        'driver_attributes': jsonEncode(bookingAttributesList),
       if (parkingChargesController.text.isNotEmpty)
         'parking_charges': parkingChargesController.text,
       if (congestionChargesController.text.isNotEmpty)
@@ -3729,6 +3730,8 @@ class DashboardController extends GetxController {
     arrivalReturnTimePicked = false;
     viaPostList.clear();
     viaReturnPostList.clear();
+    selectedBookingAttributes.clear();
+    bookingAttributesList.clear();
     restrictedDrivers.clear();
     childSeatList.clear();
     extraFaresList.clear();
@@ -4052,6 +4055,17 @@ class DashboardController extends GetxController {
         selectVehicleValue = dashboardAllData?.vehicleTypes?.firstWhereOrNull(
               (vehicle) => vehicle.id == jobDataaa!.booking[0].vehicleTypeId,
         );
+      }
+
+      if (escortList.isEmpty) {
+        await fetchEscortList();
+      }
+      if (jobDataaa!.booking[0].escortId != null) {
+        selectEscortValue = escortList.firstWhereOrNull(
+          (escort) => escort.id.toString() == jobDataaa!.booking[0].escortId.toString(),
+        );
+      } else {
+        selectEscortValue = null;
       }
 
       if (pickBooking == true ) {
