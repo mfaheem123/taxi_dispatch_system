@@ -1617,7 +1617,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     ]);
     final address = FocusTraversalOrder(
       order: NumericFocusOrder((tabBase + 1).toDouble()),
-      child: _AddressModelAutocomplete(
+      child: AddressModelAutocomplete(
         controller: controller,
         items: addresses,
         // Emptying the field by hand (backspace, or select-all + delete)
@@ -2219,7 +2219,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       const SizedBox(height: 4),
       FocusTraversalOrder(
         order: NumericFocusOrder(tab.toDouble()),
-        child: _CustomerModelAutocomplete(
+        child: CustomerModelAutocomplete(
           controller: controller,
           items: customers,
           onSelected: onPicked,
@@ -2590,9 +2590,11 @@ class _DropdownFieldState<T> extends State<_DropdownField<T>> {
 // ════════════════════════════════════════════════════════════════════
 // Autocomplete: backed by AllAddressesModel (name + postcode + lat/lon)
 // ════════════════════════════════════════════════════════════════════
-class _AddressModelAutocomplete extends StatefulWidget {
-  const _AddressModelAutocomplete({
+class AddressModelAutocomplete extends StatefulWidget {
+  const AddressModelAutocomplete({
+    super.key,
     required this.controller,
+    this.textStyle,
     required this.items,
     required this.decoration,
     this.onChanged,
@@ -2609,6 +2611,9 @@ class _AddressModelAutocomplete extends StatefulWidget {
   final ValueChanged<AllAddressesModel>? onSelected;
   final ValueChanged<int>? onPickIndex;
 
+  /// Optional value text style; defaults to the dashboard form's own.
+  final TextStyle? textStyle;
+
   /// Supplied by the parent when it needs to focus this field from the outside
   /// (F2 → PICKUP). Null means the field owns — and disposes — its own node.
   final FocusNode? focusNode;
@@ -2618,11 +2623,11 @@ class _AddressModelAutocomplete extends StatefulWidget {
   final FocusNode? fallbackFocusNode;
 
   @override
-  State<_AddressModelAutocomplete> createState() =>
+  State<AddressModelAutocomplete> createState() =>
       _AddressModelAutocompleteState();
 }
 
-class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
+class _AddressModelAutocompleteState extends State<AddressModelAutocomplete> {
   final _layerLink = LayerLink();
   late final FocusNode _focusNode = widget.focusNode ?? FocusNode();
   final _fieldKey = GlobalKey();
@@ -2668,7 +2673,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
   }
 
   @override
-  void didUpdateWidget(covariant _AddressModelAutocomplete oldWidget) {
+  void didUpdateWidget(covariant AddressModelAutocomplete oldWidget) {
     super.didUpdateWidget(oldWidget);
     // `items` is the controller's RxList, and getAddresses() refills it IN
     // PLACE (clear + addAll) — the reference never changes, so the old
@@ -2988,7 +2993,8 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
             focusNode: _focusNode,
             // Single line with a smaller, tighter font so a full address fits
             // on one row; anything longer scrolls horizontally in the field.
-            style: _kValueTextStyle.copyWith(fontSize: 11, letterSpacing: 0.1),
+            style: widget.textStyle ??
+                _kValueTextStyle.copyWith(fontSize: 11, letterSpacing: 0.1),
             maxLines: 1,
             textInputAction: TextInputAction.done,
             keyboardType: TextInputType.text,
@@ -3262,9 +3268,11 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
 // ════════════════════════════════════════════════════════════════════
 // Autocomplete: backed by CustomerObject (mobile + name + email)
 // ════════════════════════════════════════════════════════════════════
-class _CustomerModelAutocomplete extends StatefulWidget {
-  const _CustomerModelAutocomplete({
+class CustomerModelAutocomplete extends StatefulWidget {
+  const CustomerModelAutocomplete({
+    super.key,
     required this.controller,
+    this.textStyle,
     required this.items,
     required this.decoration,
     this.onChanged,
@@ -3277,13 +3285,16 @@ class _CustomerModelAutocomplete extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final ValueChanged<CustomerObject>? onSelected;
 
+  /// Optional value text style; defaults to the dashboard form's own.
+  final TextStyle? textStyle;
+
   @override
-  State<_CustomerModelAutocomplete> createState() =>
+  State<CustomerModelAutocomplete> createState() =>
       _CustomerModelAutocompleteState();
 }
 
 class _CustomerModelAutocompleteState
-    extends State<_CustomerModelAutocomplete> {
+    extends State<CustomerModelAutocomplete> {
   final _layerLink = LayerLink();
   final _focusNode = FocusNode();
   final _fieldKey = GlobalKey();
@@ -3307,7 +3318,7 @@ class _CustomerModelAutocompleteState
   }
 
   @override
-  void didUpdateWidget(covariant _CustomerModelAutocomplete oldWidget) {
+  void didUpdateWidget(covariant CustomerModelAutocomplete oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.items != widget.items && _userTyped) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -3629,7 +3640,7 @@ class _CustomerModelAutocompleteState
             onChanged: widget.onChanged,
             controller: widget.controller,
             focusNode: _focusNode,
-            style: _kValueTextStyle,
+            style: widget.textStyle ?? _kValueTextStyle,
             keyboardType: TextInputType.phone,
             decoration: widget.decoration,
           ),

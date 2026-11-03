@@ -1,14 +1,26 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/action_icon_button.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:timepickerfield/timepickerfield.dart';
 import '../../alert/account_details_alert.dart';
 import '../../alert/multi_booking_alert.dart';
 import '../../component/dropdown_button.dart';
 import '../../component/responsive_datatable_widget.dart';
+import '../../component/text_field.dart' show UpperCaseTextFormatter;
+import '../accounts/model/list_escort_model.dart' show Escorts;
+import '../auth/dashboard_form_widget.dart'
+    show AddressModelAutocomplete, CustomerModelAutocomplete;
+import '../dashboard_view/Controller/dashboard_controller.dart';
+import '../dashboard_view/models/account_darshboard_model.dart';
+import '../dashboard_view/models/dashboard_model.dart';
+import '../dashboard_view/widgets/via_location.dart';
+import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
+import '../locations_view/controller/locations_controller.dart';
 
 class MultiReservationScreen extends StatefulWidget {
   const MultiReservationScreen({super.key});
@@ -22,7 +34,6 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
 
   bool isAllSelected = false;
   Set<int> selectedRowIndices = {};
-  bool isQuotationSelected = false;
 
   static const Color _border = Color(0xFFE1E7F0);
   static const Color _fieldFill = Color(0xFFF2F5F9);
@@ -33,40 +44,228 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
 
   int selectedRowIndex = 0;
 
-  // Controllers
-  final TextEditingController pickController = TextEditingController();
-  final TextEditingController dropController = TextEditingController();
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController mobController = TextEditingController();
-  final TextEditingController telController = TextEditingController();
-  final TextEditingController fareController = TextEditingController();
-  final TextEditingController timeController = TextEditingController();
-  final TextEditingController leadController = TextEditingController();
-
   // ---------------------------------------------------------------------------
-  // STATIC DROPDOWN DATA LISTS
+  // Same controllers / variables the dashboard booking form
+  // (lib/view/auth/dashboard_form_widget.dart) reads and writes.
   // ---------------------------------------------------------------------------
-  final List<String> pickZoneList = ['Zone A', 'Zone B', 'Zone C', 'Zone D'];
-  final List<String> dropZoneList = ['Zone A', 'Zone B', 'Zone C', 'Zone D'];
-  final List<String> jourList = ['R/N', 'O/W', 'WAIT & RETURN'];
-  final List<String> vehList = ['Saloon', 'Estate', 'MPV', 'Exec'];
-  final List<String> accList = ['Account 1', 'Account 2', 'Account 3'];
-  final List<String> deptList = ['Dept A', 'Dept B', 'Dept C'];
-  final List<String> escList = ['Escort 1', 'Escort 2'];
-  final List<String> payList = ['ACCOUNT', 'CASH', 'CARD'];
-  final List<String> driverList = ['Driver 101', 'Driver 102', 'Driver 103'];
+  final DashboardController controller = Get.isRegistered<DashboardController>()
+      ? Get.find<DashboardController>()
+      : Get.put(DashboardController());
+  final LocationController _locationController =
+      Get.isRegistered<LocationController>()
+          ? Get.find<LocationController>()
+          : Get.put(LocationController());
 
-  // Selected State Values
-  String? selectedPickZone;
-  String? selectedDropZone;
-  String? selectedJour = 'R/N';
-  String? selectedVeh;
-  String? selectedAcc;
-  String? selectedDept;
-  String? selectedEsc;
-  String? selectedPay = 'ACCOUNT';
-  String? selectedDriver;
+  /// Zones list — same source as the PICKUP / DROP zone dropdowns on the
+  /// dashboard form.
+  List<ZoneObject> get _zoneList =>
+      _locationController.updateLocationValue.value == true ||
+              _locationController.locationtypezoneModel == null
+          ? []
+          : _locationController.locationtypezoneModel!.zonesList ?? [];
+
+  /// PICK / DROP address fields — the ✕ puts the caret back here after
+  /// clearing, the same as the dashboard form.
+  final FocusNode _pickupFocusNode = FocusNode();
+  final FocusNode _dropFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _pickupFocusNode.dispose();
+    _dropFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (controller.dashboardAllData == null) {
+      controller.dashboardData();
+    }
+    if (_locationController.locationtypezoneModel == null) {
+      _locationController.getLocationTypeZone();
+    }
+    if (controller.escortList.isEmpty) {
+      controller.fetchEscortList();
+    }
+  }
+
+  /// Journey type change — same mapping the dashboard form applies.
+  void _onJourneyChanged(JourneyTypeObject? v) {
+    if (controller.pickupController.text.isNotEmpty &&
+        controller.dropOffController.text.isNotEmpty) {
+      setState(() {
+        controller.dropDownShow.value = false;
+        controller.selectJourneyTypeValue = v;
+        final type = (v?.journeyType ?? '').trim().toLowerCase();
+        if (type == 'o/w') {
+          controller.jourValue = 'O/W';
+          controller.changeJourneyFtn();
+        } else if (type == 'r/n') {
+          controller.jourValue = 'R/N';
+        } else if (type == 'w/r') {
+          controller.jourValue = 'W/R';
+          controller.changeJourneyFtn();
+        } else {
+          controller.jourValue = null;
+        }
+      });
+      controller.getFaresCalculation();
+    } else {
+      BotToast.showText(text: 'Please select pickup and drop location first');
+    }
+  }
+
+  void _onAccountChanged(DashboardAccountObject? v) {
+    setState(() {
+      controller.selectAccountValue = v;
+      controller.selectDepartmentData = null;
+      if (controller.escortList.isEmpty) {
+        controller.fetchEscortList();
+      }
+    });
+  }
+
+  void _onDepartmentChanged(DepartmentObject? v) {
+    setState(() {
+      controller.selectDepartmentData = v;
+      controller.update();
+    });
+  }
+
+  void _onVehicleChanged(DashboardVehicleTypeObject? v) {
+    setState(() {
+      controller.selectVehicleValue = v;
+      if (v != null && v.passengers != null) {
+        controller.passController.text = v.passengers.toString();
+      }
+      controller.validatePassengerLimit(controller.passController.text);
+      controller.getFaresCalculation();
+    });
+  }
+
+  /// Typing in PICK / DROP — same search the dashboard form fires.
+  void _onAddressTyped(String fieldName, String value) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.dropDownShow.value = value.isNotEmpty;
+      controller.onChangeHandler(fieldName: fieldName, searchingText: value);
+    });
+    if (value.isEmpty) _clearLocation(fieldName);
+  }
+
+  /// Emptying PICK / DROP — same reset the dashboard form's clear runs.
+  void _clearLocation(String fieldName) {
+    final isPickup = fieldName == 'PICKUP LOCATION';
+    final polyIndex = controller.polyLineMarkerInfo
+        .indexWhere((e) => e.markerType == fieldName);
+    if (polyIndex >= 0) controller.polyLineMarkerInfo.removeAt(polyIndex);
+    final markerIndex = controller.markers
+        .indexWhere((e) => e.type == (isPickup ? 'pickup' : 'dropOff'));
+    if (markerIndex >= 0) controller.markers.removeAt(markerIndex);
+    (isPickup ? controller.pickupController : controller.dropOffController)
+        .clear();
+    controller.dropDownShow.value = false;
+    controller.suggestions.clear();
+    controller.clearViaIfNoPickupAndDrop();
+    controller.totalDistance.value = '0.00';
+    controller.totalTimeDuration.value = '0 min';
+    controller.fixedFare.value = '0';
+    controller.returnFareValue = '0';
+    controller.tempStoreViaMils = '0';
+    controller.slugController.clear();
+    controller.slugControllerReturn.clear();
+    controller.tempStoreMils = null;
+    controller.fetchRouteFromOSRM();
+    controller.update();
+  }
+
+  /// Address search field for PICK / DROP — same suggestion panel as the
+  /// dashboard form, wearing this screen's own field decoration.
+  Widget _addressField(TextEditingController ctrl, String fieldName,
+      InputDecoration decoration) {
+    return AddressModelAutocomplete(
+      controller: ctrl,
+      items: controller.allAddressesData,
+      textStyle: _valStyle,
+      decoration: decoration,
+      focusNode:
+          fieldName == 'PICKUP LOCATION' ? _pickupFocusNode : _dropFocusNode,
+      onChanged: (value) => _onAddressTyped(fieldName, value),
+      onPickIndex: (index) => controller.tapSelect(index),
+    );
+  }
+
+  /// Small loader in front of PICK / DROP while that field's address search
+  /// is running — same as the dashboard form. The slot is 0 wide the rest of
+  /// the time, so the field only gives up the space while searching.
+  Widget _searchLoader(String searchFieldName) {
+    return Obx(() {
+      final on = controller.addressSearchField.value == searchFieldName;
+      return ClipRect(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          curve: Curves.easeOut,
+          width: on ? 22 : 0,
+          height: 14,
+          child: OverflowBox(
+            alignment: Alignment.centerLeft,
+            minWidth: 0,
+            minHeight: 0,
+            maxWidth: 22,
+            child: on
+                ? SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.4,
+                      strokeAlign: CircularProgressIndicator.strokeAlignInside,
+                      color: DynamicColors.primaryClr,
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ),
+      );
+    });
+  }
+
+  /// DROP's via icon — same check and dialog as the dashboard form. No
+  /// formController: this screen runs on the untagged dashboard controller,
+  /// which is what ViaLocation falls back to.
+  void _openViaLocations() {
+    if (controller.pickupController.text.isEmpty) {
+      BotToast.showText(text: 'Please write pickup and dropoff location');
+      return;
+    }
+    showDialog(
+      context: context,
+      builder: (_) => ViaLocation(),
+    );
+  }
+
+  /// MOB field — same customer phone search as the dashboard form.
+  Widget _mobileField() {
+    return CustomerModelAutocomplete(
+      controller: controller.mobileController,
+      items: controller.customerPhoneNumber?.customerInfo ?? const [],
+      textStyle: _valStyle,
+      decoration: _fieldDec(suffix: Icons.search),
+      onChanged: (q) {
+        if (q.trim().isEmpty) return;
+        controller.onPhoneNoChangeHandler(
+            fieldName: 'Phone Number', searchingText: q);
+      },
+      onSelected: (c) => setState(() {
+        controller.mobileController.text = c.mobile ?? '';
+        controller.nameController.text = c.name ?? '';
+        controller.emailController.text = c.email ?? '';
+        controller.telController.text = c.telephone ?? '';
+      }),
+    );
+  }
+
+  List<DepartmentObject> get _departmentList =>
+      controller.selectAccountValue?.departments ?? [];
 
   final List<Map<String, String>> reservations = [
     {'datetime': 'MON 05-10-26 09:00', 'ref': 'NTG75891', 'jt': 'R/N'},
@@ -271,7 +470,8 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
 
   // ────────── Right Form Section Widget ──────────
   Widget _buildRightFormSection() {
-    return FocusTraversalGroup(
+    return GetBuilder<DashboardController>(
+      builder: (_) => FocusTraversalGroup(
         policy: OrderedTraversalPolicy(),
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -301,11 +501,19 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                     ),
                     child: Column(
                       children: [
-                        _buildLocationRow('PICK', pickController, 'PICKUP NOTES', LucideIcons.arrowDownUp,
-                            selectedPickZone, pickZoneList, (val) => setState(() => selectedPickZone = val)),
+                        _buildLocationRow('PICK', 'PICKUP LOCATION', controller.pickupController, controller.pickUpNoteController,
+                            'PICKUP NOTES', LucideIcons.arrowDownUp,
+                            controller.dashboardZoneValue, _zoneList, (val) => setState(() {
+                              controller.dashboardZoneValue = val;
+                              controller.getFaresCalculation();
+                            })),
                         const SizedBox(height: 8),
-                        _buildLocationRow('DROP', dropController, 'DROPOFF NOTES', LucideIcons.route,
-                            selectedDropZone, dropZoneList, (val) => setState(() => selectedDropZone = val)),
+                        _buildLocationRow('DROP', 'DROP LOCATION', controller.dropOffController, controller.dropUpNoteController,
+                            'DROPOFF NOTES', LucideIcons.route,
+                            controller.dashboardDZoneValue, _zoneList, (val) => setState(() {
+                              controller.dashboardDZoneValue = val;
+                              controller.getFaresCalculation();
+                            })),
                         const SizedBox(height: 10),
 
                         // Name, Email, Mob, Tel (Responsive)
@@ -313,16 +521,16 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                             ? Column(
                                 children: [
                                   _labelledField('NAME',
-                                      TextField(controller: nameController, style: _valStyle, decoration: _fieldDec(suffix: Icons.search))),
+                                      _tab(7, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.nameController, style: _valStyle, decoration: _fieldDec(suffix: Icons.search)))),
                                   const SizedBox(height: 8),
                                   _labelledField('EMAIL',
-                                      TextField(controller: emailController, style: _valStyle, decoration: _fieldDec())),
+                                      _tab(8, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.emailController, style: _valStyle, decoration: _fieldDec()))),
                                   const SizedBox(height: 8),
                                   _labelledField('MOB',
-                                      TextField(controller: mobController, style: _valStyle, decoration: _fieldDec(suffix: Icons.search))),
+                                      _tab(9, _mobileField())),
                                   const SizedBox(height: 8),
                                   _labelledField('TEL',
-                                      TextField(controller: telController, style: _valStyle, decoration: _fieldDec(suffix: Icons.search))),
+                                      _tab(10, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.telController, style: _valStyle, decoration: _fieldDec(suffix: Icons.search)))),
                                 ],
                               )
                             : Row(
@@ -330,22 +538,22 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                   Expanded(
                                       flex: 3,
                                       child: _labelledField('NAME',
-                                          TextField(controller: nameController, style: _valStyle, decoration: _fieldDec(suffix: Icons.search)))),
+                                          _tab(7, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.nameController, style: _valStyle, decoration: _fieldDec(suffix: Icons.search))))),
                                   const SizedBox(width: 8),
                                   Expanded(
                                       flex: 3,
                                       child: _labelledField('EMAIL',
-                                          TextField(controller: emailController, style: _valStyle, decoration: _fieldDec()))),
+                                          _tab(8, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.emailController, style: _valStyle, decoration: _fieldDec())))),
                                   const SizedBox(width: 8),
                                   Expanded(
                                       flex: 3,
                                       child: _labelledField('MOB',
-                                          TextField(controller: mobController, style: _valStyle, decoration: _fieldDec(suffix: Icons.search)))),
+                                          _tab(9, _mobileField()))),
                                   const SizedBox(width: 8),
                                   Expanded(
                                       flex: 3,
                                       child: _labelledField('TEL',
-                                          TextField(controller: telController, style: _valStyle, decoration: _fieldDec(suffix: Icons.search)))),
+                                          _tab(10, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.telController, style: _valStyle, decoration: _fieldDec(suffix: Icons.search))))),
                                 ],
                               ),
                         const SizedBox(height: 10),
@@ -356,7 +564,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                 children: [
                                   _labelledField('DATE', _dateBox()),
                                   const SizedBox(height: 8),
-                                  _labelledField('TIME', _timePickerBox()),
+                                  _labelledField('TIME', _tab(11, _timePickerBox(controller.pickUpTimeController))),
                                 ],
                               )
                             : Row(
@@ -365,7 +573,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                       child: _labelledField('DATE', SizedBox(height: _fieldHeight, child: _dateBox()))),
                                   const SizedBox(width: 8),
                                   Expanded(
-                                      child: _labelledField('TIME', SizedBox(height: _fieldHeight, child: _timePickerBox()))),
+                                      child: _labelledField('TIME', _tab(11, SizedBox(height: _fieldHeight, child: _timePickerBox(controller.pickUpTimeController))))),
                                   const SizedBox(width: 8),
                                   const Expanded(child: SizedBox()),
                                   const SizedBox(width: 8),
@@ -378,66 +586,62 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                         isFormMobile
                             ? Column(
                                 children: [
-                                  _labelledField('LEAD', _timePickerBox()),
+                                  _labelledField('LEAD', _tab(12, _timePickerBox(controller.minController))),
                                   const SizedBox(height: 8),
                                   _labelledField('JOUR',
-                                    _dropdown<String>(
-                                      value: selectedJour,
+                                    _tab(13, _dropdown<JourneyTypeObject>(
+                                      value: controller.selectJourneyTypeValue,
                                       hint: 'SELECT JOUR',
-                                      items: jourList,
-                                      label: (item) => item,
-                                      onChanged: (val) =>
-                                          setState(() => selectedJour = val),
-                                    ),
+                                      items: controller.dashboardAllData?.journeyTypes ?? [],
+                                      label: (item) => item.journeyType ?? '',
+                                      onChanged: _onJourneyChanged,
+                                    )),
                                   ),
                                   const SizedBox(height: 8),
                                   _labelledField('VEH',
-                                    _dropdown<String>(
-                                      value: selectedVeh,
+                                    _tab(14, _dropdown<DashboardVehicleTypeObject>(
+                                      value: controller.selectVehicleValue,
                                       hint: 'SELECT VEHICLE',
-                                      items: vehList,
-                                      label: (item) => item,
-                                      onChanged: (val) =>
-                                          setState(() => selectedVeh = val),
-                                    ),
+                                      items: controller.dashboardAllData?.vehicleTypes ?? [],
+                                      label: (item) => item.name ?? '',
+                                      onChanged: _onVehicleChanged,
+                                    )),
                                   ),
                                 ],
                               )
                             : Row(
                                 children: [
                                   Expanded(
-                                      child: _labelledField('LEAD', SizedBox(height: _fieldHeight, child: _timePickerBox()))),
+                                      child: _labelledField('LEAD', _tab(12, SizedBox(height: _fieldHeight, child: _timePickerBox(controller.minController))))),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: _labelledField('JOUR',
-                                      SizedBox(height: _fieldHeight,
-                                        child: _dropdown<String>(
+                                      _tab(13, SizedBox(height: _fieldHeight,
+                                        child: _dropdown<JourneyTypeObject>(
                                           height: _fieldHeight,
-                                          value: selectedJour,
+                                          value: controller.selectJourneyTypeValue,
                                           hint: 'SELECT JOUR',
-                                          items: jourList,
-                                          label: (item) => item,
-                                          onChanged: (val) => setState(
-                                              () => selectedJour = val),
+                                          items: controller.dashboardAllData?.journeyTypes ?? [],
+                                          label: (item) => item.journeyType ?? '',
+                                          onChanged: _onJourneyChanged,
                                         ),
-                                      ),
+                                      )),
                                     ),
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: _labelledField('VEH',
-                                      SizedBox(
+                                      _tab(14, SizedBox(
                                         height: _fieldHeight,
-                                        child: _dropdown<String>(
+                                        child: _dropdown<DashboardVehicleTypeObject>(
                                           height: _fieldHeight,
-                                          value: selectedVeh,
+                                          value: controller.selectVehicleValue,
                                           hint: 'SELECT VEHICLE',
-                                          items: vehList,
-                                          label: (item) => item,
-                                          onChanged: (val) =>
-                                              setState(() => selectedVeh = val),
+                                          items: controller.dashboardAllData?.vehicleTypes ?? [],
+                                          label: (item) => item.name ?? '',
+                                          onChanged: _onVehicleChanged,
                                         ),
-                                      ),
+                                      )),
                                     ),
                                   ),
                                   const SizedBox(width: 8),
@@ -451,21 +655,20 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                             ? Column(
                                 children: [
                                   _labelledField('ACC',
-                                    _dropdown<String>(
-                                      value: selectedAcc,
+                                    _tab(15, _dropdown<DashboardAccountObject>(
+                                      value: controller.selectAccountValue,
                                       hint: 'SELECT ACCOUNT',
-                                      items: accList,
-                                      label: (item) => item,
-                                      onChanged: (val) =>
-                                          setState(() => selectedAcc = val),
-                                    ),
+                                      items: controller.dashboardAccountData?.accounts ?? [],
+                                      label: (item) => item.name ?? '',
+                                      onChanged: _onAccountChanged,
+                                    )),
                                   ),
                                   const SizedBox(height: 8),
-                                  _labelledField('PASS', TextField(style: _valStyle, decoration: _fieldDec())),
+                                  _labelledField('PASS', _tab(16, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.passController, style: _valStyle, decoration: _fieldDec()))),
                                   const SizedBox(height: 8),
-                                  _labelledField('LUGG', TextField(style: _valStyle, decoration: _fieldDec())),
+                                  _labelledField('LUGG', _tab(17, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.luggController, style: _valStyle, decoration: _fieldDec()))),
                                   const SizedBox(height: 8),
-                                  _labelledField('SLGG', TextField(style: _valStyle, decoration: _fieldDec())),
+                                  _labelledField('SLGG', _tab(18, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.sluggController, style: _valStyle, decoration: _fieldDec()))),
                                 ],
                               )
                             : Row(
@@ -473,29 +676,28 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                   Expanded(
                                     flex: 3,
                                     child: _labelledField('ACC',
-                                      _dropdown<String>(
+                                      _tab(15, _dropdown<DashboardAccountObject>(
                                         height: _fieldHeight,
-                                        value: selectedAcc,
+                                        value: controller.selectAccountValue,
                                         hint: 'SELECT ACCOUNT',
-                                        items: accList,
-                                        label: (item) => item,
-                                        onChanged: (val) =>
-                                            setState(() => selectedAcc = val),
-                                      ),
+                                        items: controller.dashboardAccountData?.accounts ?? [],
+                                        label: (item) => item.name ?? '',
+                                        onChanged: _onAccountChanged,
+                                      )),
                                     ),
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
                                       flex: 3,
-                                      child: _labelledField('PASS', TextField(style: _valStyle, decoration: _fieldDec()))),
+                                      child: _labelledField('PASS', _tab(16, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.passController, style: _valStyle, decoration: _fieldDec())))),
                                   const SizedBox(width: 8),
                                   Expanded(
                                       flex: 3,
-                                      child: _labelledField('LUGG', TextField(style: _valStyle, decoration: _fieldDec()))),
+                                      child: _labelledField('LUGG', _tab(17, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.luggController, style: _valStyle, decoration: _fieldDec())))),
                                   const SizedBox(width: 8),
                                   Expanded(
                                       flex: 3,
-                                      child: _labelledField('SLGG', TextField(style: _valStyle, decoration: _fieldDec()))),
+                                      child: _labelledField('SLGG', _tab(18, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.sluggController, style: _valStyle, decoration: _fieldDec())))),
                                 ],
                               ),
                         const SizedBox(height: 10),
@@ -503,25 +705,23 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                             ? Column(
                                 children: [
                                   _labelledField('DEPT',
-                                    _dropdown<String>(
-                                      value: selectedDept,
+                                    _tab(19, _dropdown<DepartmentObject>(
+                                      value: controller.selectDepartmentData,
                                       hint: 'SELECT DEPT',
-                                      items: deptList,
-                                      label: (item) => item,
-                                      onChanged: (val) =>
-                                          setState(() => selectedDept = val),
-                                    ),
+                                      items: _departmentList,
+                                      label: (item) => item.name ?? '',
+                                      onChanged: _onDepartmentChanged,
+                                    )),
                                   ),
                                   const SizedBox(height: 8),
                                   _labelledField('ESC',
-                                    _dropdown<String>(
-                                      value: selectedEsc,
+                                    _tab(20, _dropdown<Escorts>(
+                                      value: controller.selectEscortValue,
                                       hint: 'SELECT ESC',
-                                      items: escList,
-                                      label: (item) => item,
-                                      onChanged: (val) =>
-                                          setState(() => selectedEsc = val),
-                                    ),
+                                      items: controller.escortList,
+                                      label: (item) => (item.name ?? '').toUpperCase(),
+                                      onChanged: (val) => setState(() => controller.selectEscortValue = val),
+                                    )),
                                   ),
                                 ],
                               )
@@ -529,29 +729,27 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                 children: [
                                   Expanded(
                                     child: _labelledField('DEPT',
-                                      _dropdown<String>(
+                                      _tab(19, _dropdown<DepartmentObject>(
                                         height: _fieldHeight,
-                                        value: selectedDept,
+                                        value: controller.selectDepartmentData,
                                         hint: 'SELECT DEPT',
-                                        items: deptList,
-                                        label: (item) => item,
-                                        onChanged: (val) =>
-                                            setState(() => selectedDept = val),
-                                      ),
+                                        items: _departmentList,
+                                        label: (item) => item.name ?? '',
+                                        onChanged: _onDepartmentChanged,
+                                      )),
                                     ),
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: _labelledField('ESC',
-                                      _dropdown<String>(
+                                      _tab(20, _dropdown<Escorts>(
                                         height: _fieldHeight,
-                                        value: selectedEsc,
+                                        value: controller.selectEscortValue,
                                         hint: 'SELECT ESC',
-                                        items: escList,
-                                        label: (item) => item,
-                                        onChanged: (val) =>
-                                            setState(() => selectedEsc = val),
-                                      ),
+                                        items: controller.escortList,
+                                        label: (item) => (item.name ?? '').toUpperCase(),
+                                        onChanged: (val) => setState(() => controller.selectEscortValue = val),
+                                      )),
                                     ),
                                   ),
                                   const SizedBox(width: 8),
@@ -568,19 +766,19 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   _labelledField('PAY',
-                                    _dropdown<String>(
-                                      value: selectedPay,
+                                    _tab(21, _dropdown<PaymentTypeObject>(
+                                      value: controller.selectPaymentTypeValue,
                                       hint: 'ACCOUNT',
-                                      items: payList,
-                                      label: (item) => item,
-                                      onChanged: (val) =>
-                                          setState(() => selectedPay = val),
-                                    ),
+                                      items: controller.dashboardAllData?.paymentTypes ?? [],
+                                      label: (item) => item.name ?? '',
+                                      onChanged: (val) => setState(() => controller.selectPaymentTypeValue = val),
+                                    )),
                                   ),
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
-                                      Focus(
+                                      _tab(22, Focus(
+                                        canRequestFocus: false,
                                         onKeyEvent: (node, event) {
                                           if (event is KeyDownEvent &&
                                               (event.logicalKey ==
@@ -588,8 +786,8 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                                   event.logicalKey ==
                                                       LogicalKeyboardKey.space)) {
                                             setState(() {
-                                              isQuotationSelected =
-                                                  !isQuotationSelected;
+                                              controller.dropDownShow.value =
+                                                  !controller.dropDownShow.value;
                                             });
                                             return KeyEventResult.handled;
                                           }
@@ -599,18 +797,18 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                           width: 18,
                                           height: 18,
                                           child: Checkbox(
-                                            value: isQuotationSelected,
+                                            value: controller.dropDownShow.value,
                                             activeColor: DynamicColors.primaryClr,
                                             onChanged: (val) {
                                               setState(() {
-                                                isQuotationSelected =
+                                                controller.dropDownShow.value =
                                                     val ?? false;
                                               });
                                             },
                                             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                           ),
                                         ),
-                                      ),
+                                      )),
                                       const SizedBox(width: 4),
                                       Text('QUOTATION', style: outFitRegular(fontSize: 12, fontWeight: FontWeight.w700)),
                                     ],
@@ -659,18 +857,17 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                 children: [
                                   Expanded(
                                     child: _labelledField('PAY',
-                                      SizedBox(
+                                      _tab(21, SizedBox(
                                         height: _fieldHeight,
-                                        child: _dropdown<String>(
+                                        child: _dropdown<PaymentTypeObject>(
                                           height: _fieldHeight,
-                                          value: selectedPay,
+                                          value: controller.selectPaymentTypeValue,
                                           hint: 'ACCOUNT',
-                                          items: payList,
-                                          label: (item) => item,
-                                          onChanged: (val) =>
-                                              setState(() => selectedPay = val),
+                                          items: controller.dashboardAllData?.paymentTypes ?? [],
+                                          label: (item) => item.name ?? '',
+                                          onChanged: (val) => setState(() => controller.selectPaymentTypeValue = val),
                                         ),
-                                      ),
+                                      )),
                                     ),
                                   ),
                                   const SizedBox(width: 8),
@@ -678,7 +875,8 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Focus(
+                                        _tab(22, Focus(
+                                          canRequestFocus: false,
                                           onKeyEvent: (node, event) {
                                             if (event is KeyDownEvent &&
                                                 (event.logicalKey ==
@@ -686,8 +884,8 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                                     event.logicalKey ==
                                                         LogicalKeyboardKey.space)) {
                                               setState(() {
-                                                isQuotationSelected =
-                                                    !isQuotationSelected;
+                                                controller.dropDownShow.value =
+                                                    !controller.dropDownShow.value;
                                               });
                                               return KeyEventResult.handled;
                                             }
@@ -697,18 +895,18 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                             width: 18,
                                             height: 18,
                                             child: Checkbox(
-                                              value: isQuotationSelected,
+                                              value: controller.dropDownShow.value,
                                               activeColor: DynamicColors.primaryClr,
                                               onChanged: (val) {
                                                 setState(() {
-                                                  isQuotationSelected =
+                                                  controller.dropDownShow.value =
                                                       val ?? false;
                                                 });
                                               },
                                               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                             ),
                                           ),
-                                        ),
+                                        )),
                                         const SizedBox(width: 4),
                                         Text('QUOTATION', style: outFitRegular(fontSize: 12, fontWeight: FontWeight.w700)),
                                       ],
@@ -790,7 +988,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                           const Icon(Icons.access_time,
                                               size: 14, color: _subtleText),
                                           const SizedBox(width: 3),
-                                          Text('ETA: 0 M', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold)),
+                                          Obx(() => Text('ETA: ${controller.totalTimeDuration.value}', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold))),
                                         ],
                                       ),
                                       Row(
@@ -799,7 +997,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                           const Icon(Icons.place_outlined,
                                               size: 14, color: _subtleText),
                                           const SizedBox(width: 3),
-                                          Text('DISTANCE: 0 M', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold)),
+                                          Obx(() => Text('DISTANCE: ${controller.totalDistance.value}', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold))),
                                         ],
                                       ),
                                       Row(
@@ -808,7 +1006,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                           const Icon(Icons.payments_outlined,
                                               size: 14, color: _subtleText),
                                           const SizedBox(width: 3),
-                                          Text('T/FARES: £ 0', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold)),
+                                          Obx(() => Text('T/FARES: £ ${controller.fixedFare.value}', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold))),
                                         ],
                                       ),
                                     ],
@@ -822,10 +1020,10 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                       SizedBox(
                                         width: 80,
                                         height: 30,
-                                        child: TextField(
-                                            controller: fareController,
+                                        child: _tab(23, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], 
+                                            controller: controller.slugController,
                                             style: _valStyle,
-                                            decoration: _fieldDec()),
+                                            decoration: _fieldDec())),
                                       ),
                                       const SizedBox(width: 6),
                                       Container(
@@ -853,16 +1051,16 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                       const Icon(Icons.access_time,
                                           size: 14, color: _subtleText),
                                       const SizedBox(width: 3),
-                                      Text('ETA: 0 M', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold)),
+                                      Obx(() => Text('ETA: ${controller.totalTimeDuration.value}', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold))),
                                       const SizedBox(width: 14),
                                       const Icon(Icons.place_outlined, size: 14, color: _subtleText),
                                       const SizedBox(width: 3),
-                                      Text('DISTANCE: 0 M', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold)),
+                                      Obx(() => Text('DISTANCE: ${controller.totalDistance.value}', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold))),
                                       const SizedBox(width: 14),
                                       const Icon(Icons.payments_outlined,
                                           size: 14, color: _subtleText),
                                       const SizedBox(width: 3),
-                                      Text('T/FARES: £ 0', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold)),
+                                      Obx(() => Text('T/FARES: £ ${controller.fixedFare.value}', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold))),
                                     ],
                                   ),
                                   const Spacer(),
@@ -871,10 +1069,10 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                   SizedBox(
                                     width: 80,
                                     height: 30,
-                                    child: TextField(
-                                        controller: fareController,
+                                    child: _tab(23, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], 
+                                        controller: controller.slugController,
                                         style: _valStyle,
-                                        decoration: _fieldDec()),
+                                        decoration: _fieldDec())),
                                   ),
                                   const SizedBox(width: 6),
                                   Container(
@@ -912,22 +1110,21 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                         const SizedBox(width: 6),
                         Expanded(
                           flex: 3,
-                          child: _dropdown<String>(
+                          child: _tab(24, _dropdown<DashboardDriverObject>(
                             height: 38,
-                            value: selectedDriver,
+                            value: controller.selectDriverValue,
                             hint: 'SELECT DRIVER',
-                            items: driverList,
-                            label: (item) => item,
-                            onChanged: (val) =>
-                                setState(() => selectedDriver = val),
-                          ),
+                            items: controller.dashboardAllData?.drivers ?? [],
+                            label: (item) => item.name ?? '',
+                            onChanged: (val) => setState(() => controller.checkDriverSinBinStatus(val)),
+                          )),
                         ),
                         const Spacer(flex: 3),
                         Expanded(
                           flex: 3,
                           child: SizedBox(
                             height: 38,
-                            child: ElevatedButton(
+                            child: _tab(25, ElevatedButton(
                               onPressed: () {
                                 showDialog(
                                   context: context,
@@ -942,7 +1139,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                     borderRadius: BorderRadius.circular(6)),
                               ),
                               child: Text('SAVE', style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.white)),
-                            ),
+                            )),
                           ),
                         ),
                       ],
@@ -952,10 +1149,15 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
               ),
             );
           },
-        ));
+        )),
+    );
   }
 
   // Helpers
+  /// Tab-key order: fields are visited 1, 2, 3 ... top to bottom, left to right.
+  Widget _tab(double order, Widget child) =>
+      FocusTraversalOrder(order: NumericFocusOrder(order), child: child);
+
   static final _valStyle = outFitRegular(
       fontSize: 12, fontWeight: FontWeight.w700, color: Colors.black);
 
@@ -975,23 +1177,36 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
 
   Widget _buildLocationRow(
     String label,
+    String searchFieldName,
     TextEditingController ctrl,
+    TextEditingController noteCtrl,
     String noteHint,
     IconData actionIcon,
-    String? zoneValue,
-    List<String> zoneList,
-    ValueChanged<String?> onZoneChanged,
+    ZoneObject? zoneValue,
+    List<ZoneObject> zoneList,
+    ValueChanged<ZoneObject?> onZoneChanged,
   ) {
     return LayoutBuilder(
       builder: (context, constraints) {
         bool isMobile = constraints.maxWidth < 600;
+        final double tabBase = label == 'PICK' ? 1 : 4;
 
         Widget buildSuffixIcons() {
           return Row(
+            // Pinned to the right end whether or not the ✕ is showing.
+            mainAxisAlignment: MainAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // 1st Icon: Swap Horiz
-              Focus(
+              // 1st Icon: Clear (✕) — only while the field has text, the
+              // same as the dashboard form. Tab stop right after the address.
+              // The wrapper only draws the focus border; the IconButton
+              // inside is the single Tab stop.
+              ValueListenableBuilder<TextEditingValue>(
+                valueListenable: ctrl,
+                builder: (context, value, _) => value.text.isEmpty
+                    ? const SizedBox.shrink()
+                    : _tab(tabBase + 0.3, Focus(
+                canRequestFocus: false,
                 child: Builder(
                   builder: (context) {
                     final bool hasFocus = Focus.of(context).hasFocus;
@@ -1006,9 +1221,14 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: IconButton(
-                        icon: const Icon(Icons.swap_horiz,
+                        tooltip: 'Clear',
+                        icon: const Icon(Icons.close,
                             size: 16, color: _subtleText),
-                        onPressed: () {},
+                        onPressed: () {
+                          _clearLocation(searchFieldName);
+                          (label == 'PICK' ? _pickupFocusNode : _dropFocusNode)
+                              .requestFocus();
+                        },
                         padding: EdgeInsets.zero,
                         constraints:
                             const BoxConstraints(minWidth: 24, minHeight: 24),
@@ -1016,10 +1236,11 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                     );
                   },
                 ),
-              ),
+              ))),
               const SizedBox(width: 6),
-              // 2nd Icon: Action Icon (Arrow/Route)
-              Focus(
+              // 2nd Icon: Action Icon (Arrow/Route) — next Tab stop.
+              _tab(tabBase + 0.6, Focus(
+                canRequestFocus: false,
                 child: Builder(
                   builder: (context) {
                     final bool hasFocus = Focus.of(context).hasFocus;
@@ -1034,8 +1255,11 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: IconButton(
+                        tooltip: label == 'DROP' ? 'Via locations' : null,
                         icon: Icon(actionIcon, size: 15, color: _subtleText),
-                        onPressed: () {},
+                        // DROP's route icon opens the via-points dialog, the
+                        // same as the dashboard form.
+                        onPressed: label == 'DROP' ? _openViaLocations : () {},
                         padding: EdgeInsets.zero,
                         constraints:
                             const BoxConstraints(minWidth: 24, minHeight: 24),
@@ -1043,7 +1267,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                     );
                   },
                 ),
-              ),
+              )),
               const SizedBox(width: 6),
             ],
           );
@@ -1061,18 +1285,19 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                         style: outFitRegular(
                             fontSize: _fsLabel, fontWeight: FontWeight.bold)),
                   ),
+                  _searchLoader(searchFieldName),
                   Expanded(
                     child: SizedBox(
                       height: 34,
-                      child: TextField(
-                        controller: ctrl,
-                        style: _valStyle,
-                        decoration: _fieldDec().copyWith(
+                      child: _tab(tabBase + 0, _addressField(
+                        ctrl,
+                        searchFieldName,
+                        _fieldDec().copyWith(
                           suffixIcon: buildSuffixIcons(),
                           suffixIconConstraints:
                               const BoxConstraints(minWidth: 55),
                         ),
-                      ),
+                      )),
                     ),
                   ),
                 ],
@@ -1081,20 +1306,21 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: _dropdown<String>(
+                    child: _tab(tabBase + 1, _dropdown<ZoneObject>(
                       height: 34,
                       value: zoneValue,
                       hint: 'SELECT ZONE',
                       items: zoneList,
-                      label: (item) => item,
+                      label: (item) => item.name ?? '',
                       onChanged: onZoneChanged,
-                    ),
+                    )),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: SizedBox(
                       height: 34,
-                      child: TextField(
+                      child: _tab(tabBase + 2, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], 
+                        controller: noteCtrl,
                         style: outFitRegular(fontSize: 12),
                         decoration: _fieldDec().copyWith(
                           hintText: noteHint,
@@ -1105,7 +1331,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                           prefixIconConstraints:
                               const BoxConstraints(minWidth: 24),
                         ),
-                      ),
+                      )),
                     ),
                   ),
                 ],
@@ -1122,37 +1348,39 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                   style: outFitRegular(
                       fontSize: _fsLabel, fontWeight: FontWeight.bold)),
             ),
+            _searchLoader(searchFieldName),
             Expanded(
               flex: 5,
               child: SizedBox(
                 height: 34,
-                child: TextField(
-                  controller: ctrl,
-                  style: _valStyle,
-                  decoration: _fieldDec().copyWith(
+                child: _tab(tabBase + 0, _addressField(
+                  ctrl,
+                  searchFieldName,
+                  _fieldDec().copyWith(
                     suffixIcon: buildSuffixIcons(),
                     suffixIconConstraints: const BoxConstraints(minWidth: 55),
                   ),
-                ),
+                )),
               ),
             ),
             const SizedBox(width: 8),
             SizedBox(
               width: 162,
-              child: _dropdown<String>(
+              child: _tab(tabBase + 1, _dropdown<ZoneObject>(
                 height: 34,
                 value: zoneValue,
                 hint: 'SELECT ZONE',
                 items: zoneList,
-                label: (item) => item,
+                label: (item) => item.name ?? '',
                 onChanged: onZoneChanged,
-              ),
+              )),
             ),
             const SizedBox(width: 8),
             SizedBox(
               width: 162,
               height: 34,
-              child: TextField(
+              child: _tab(tabBase + 2, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], 
+                controller: noteCtrl,
                 style: outFitRegular(fontSize: 12),
                 decoration: _fieldDec().copyWith(
                   hintText: noteHint,
@@ -1161,7 +1389,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                       size: 14, color: _subtleText),
                   prefixIconConstraints: const BoxConstraints(minWidth: 24),
                 ),
-              ),
+              )),
             ),
           ],
         );
@@ -1191,7 +1419,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
   }
 
   Widget _dateBox() {
-    final now = DateTime.now();
+    final now = controller.pickUpDate ?? DateTime.now();
     final currentDate = '${now.day.toString().padLeft(2, '0')}/'
         '${now.month.toString().padLeft(2, '0')}/'
         '${now.year}';
@@ -1212,11 +1440,11 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
     );
   }
 
-  Widget _timePickerBox() {
+  Widget _timePickerBox(TextEditingController timeCtrl) {
     return SizedBox(
       height: 32,
       child: TimePickerField(
-        controller: TextEditingController(),
+        controller: timeCtrl,
         showPrefixIcon: false,
         textStyle: _valStyle,
         accent: DynamicColors.primaryClr,
@@ -1251,7 +1479,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
       label: hint,
       items: items ?? [],
       value: value,
-      itemLabel: label,
+      itemLabel: (item) => label(item).toUpperCase(),
       onChanged: onChanged,
     );
   }
