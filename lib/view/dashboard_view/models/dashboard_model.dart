@@ -242,7 +242,6 @@ class PlotFareObject {
   };
 }
 
-
 class FareByVehicleObject {
   int? id;
   int? vehicleTypeId;

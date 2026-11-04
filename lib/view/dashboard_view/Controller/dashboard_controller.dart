@@ -36,7 +36,7 @@ import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
 import '../../../controller/fob_controller.dart';
 import '../models/checkDriverSinBinModel.dart';
 import '../../drivers_view/model/driver_attribute_model.dart';
-import '../models/dashboard_table_model.dart' hide Employee;
+import '../models/dashboard_table_model.dart' hide Employee, DriverAttribute;
 import '../models/jobs_details_model.dart';
 import '../models/tracking_drivers_model.dart';
 import '../models/users_phone_numbers_model.dart';

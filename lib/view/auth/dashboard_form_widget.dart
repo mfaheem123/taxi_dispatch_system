@@ -886,7 +886,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     itemLabel: (p) => p.name ?? "",
                                   ),
 
-
                                   // Same ESCORT dropdown as the create-booking
                                   // form (create_new_booking_form.dart).
                                   _dropdown<Escorts>(
