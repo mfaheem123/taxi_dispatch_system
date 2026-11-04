@@ -198,6 +198,9 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                                               style: mozillaTextSemiBoldText(fontSize: 11, color: DynamicColors.whiteClr),
                                               verticalPadding: 0.0,
                                               btnText: AppText.generate,
+                                              onTap: () {
+                                                controller.generateBulkRent();
+                                              },
                                             ),
                                           ],
                                         ),

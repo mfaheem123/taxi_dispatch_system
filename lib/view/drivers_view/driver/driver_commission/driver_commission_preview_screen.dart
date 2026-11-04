@@ -120,9 +120,6 @@ class DriverCommissionViewScreen extends StatelessWidget {
       } catch (_) {}
     }
 
-
-
-
     final fromDate = data?.fromDate != null ? data!.fromDate.toString().split(' ').first : (controller?.updateFilterFromDate ?? '');
     final toDate = data?.toDate != null ? data!.toDate.toString().split(' ').first : (controller?.updateFilterToDate ?? '');
     final transactionDate = data?.transactionDate != null ? data!.transactionDate.toString().split(' ').first : (controller?.updateTransactionDateController ?? '');
@@ -219,28 +216,17 @@ class DriverCommissionViewScreen extends StatelessWidget {
                     var parts = cleanTime.split(":");
                     cleanTime = "${parts[0]}:${parts[1]}";
                   }
-                  String formattedDateTime = "$cleanDate\n$cleanTime".trim();
+                  String formattedDateTime = "$cleanDate $cleanTime".trim();
                   return TableRow(
                     children: [
-                      _buildTableCell(b?.referenceNumber ?? "",
-                          hasEllipsis: true),
-                      _buildTableCell(
-                          formattedDateTime.isEmpty ? "-" : formattedDateTime),
-                      _buildTableCell((b?.pickup ?? "").toUpperCase(),
-                          hasEllipsis: true),
-                      _buildTableCell((b?.dropoff ?? "").toUpperCase(),
-                          hasEllipsis: true),
-                      _buildTableCell(
-                          (b?.vehicleType?.name ?? "").toUpperCase(),
-                          hasEllipsis: true),
-                      _buildTableCell((b?.account?.name ?? "").toUpperCase(),
-                          hasEllipsis: true),
-                      _buildTableCell(
-                          (b?.journeyType?.journeyType ?? "").toUpperCase(),
-                          hasEllipsis: true),
-                      _buildTableCell(
-                          (b?.paymentType?.name ?? "").toUpperCase(),
-                          hasEllipsis: true),
+                      _buildTableCell(b?.referenceNumber ?? "", hasEllipsis: true),
+                      _buildTableCell(formattedDateTime.isEmpty ? "-" : formattedDateTime),
+                      _buildTableCell((b?.pickup ?? "").toUpperCase(), hasEllipsis: true),
+                      _buildTableCell((b?.dropoff ?? "").toUpperCase(), hasEllipsis: true),
+                      _buildTableCell((b?.vehicleType?.name ?? "").toUpperCase(), hasEllipsis: true),
+                      _buildTableCell((b?.account?.name ?? "").toUpperCase(), hasEllipsis: true),
+                      _buildTableCell((b?.journeyType?.journeyType ?? "").toUpperCase(), hasEllipsis: true),
+                      _buildTableCell((b?.paymentType?.name ?? "").toUpperCase(), hasEllipsis: true),
                       _buildTableCell("£${b?.fares ?? '0'}"),
                       _buildTableCell("£${b?.parkingCharges ?? '0'}"),
                       _buildTableCell("£${b?.waitingCharges ?? '0'}"),
@@ -259,8 +245,7 @@ class DriverCommissionViewScreen extends StatelessWidget {
                                   * ((double.tryParse(data?.driver?.driverCommission?.toString() ?? '0') ?? 0) / 100)
                           ).toStringAsFixed(2)}"
                       ),
-                      _buildTableCell("£${b?.totalCharges ?? '0'}",
-                          isBold: true),
+                      _buildTableCell("£${b?.totalCharges ?? '0'}", isBold: true),
                     ],
                   );
                 }).toList(),
@@ -287,12 +272,9 @@ class DriverCommissionViewScreen extends StatelessWidget {
                   flex: 2,
                   child: Column(
                     children: [
-                      _buildFooterRowPlain("ACCOUNT W/COMM TOTAL",
-                          double.tryParse(data?.accountJobsTotal ?? '0') ?? controller?.updateAccountFareTotalVar ?? 0.0),
-                      _buildFooterRowPlain("ACCOUNT WO/COMM TOTAL",
-                          controller?.updateAccountWOCmmVar ?? 0.0),
-                      _buildFooterRowPlain("PARKING & CONGESTION CHARGES",
-                          controller?.updateParkingCongestionVar ?? 0.0),
+                      _buildFooterRowPlain("ACCOUNT W/COMM TOTAL", double.tryParse(data?.accountJobsTotal ?? '0') ?? controller?.updateAccountFareTotalVar ?? 0.0),
+                      _buildFooterRowPlain("ACCOUNT WO/COMM TOTAL", controller?.updateAccountWOCmmVar ?? 0.0),
+                      _buildFooterRowPlain("PARKING & CONGESTION CHARGES", controller?.updateParkingCongestionVar ?? 0.0),
                     ],
                   ),
                 ),
@@ -326,14 +308,11 @@ class DriverCommissionViewScreen extends StatelessWidget {
               child: Text(label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                      fontSize: labelFontSize,
-                      fontWeight: isBold ? FontWeight.bold : FontWeight.w600)),
+                  style: TextStyle(fontSize: labelFontSize, fontWeight: isBold ? FontWeight.bold : FontWeight.w600)),
             ),
             const SizedBox(width: 4),
             Text("£${value.toStringAsFixed(2)}",
-                style: TextStyle(
-                    fontSize: valueFontSize, fontWeight: FontWeight.bold)),
+                style: TextStyle(fontSize: valueFontSize, fontWeight: FontWeight.bold)),
           ],
         ),
       );
@@ -357,11 +336,7 @@ class DriverCommissionViewScreen extends StatelessWidget {
           textAlign: TextAlign.center,
           maxLines: isHeader ? 2 : (hasEllipsis ? 1 : 3),
           overflow: hasEllipsis ? TextOverflow.ellipsis : TextOverflow.clip,
-          style: TextStyle(
-              fontSize: finalFontSize,
-              fontWeight:
-                  (isHeader || isBold) ? FontWeight.bold : FontWeight.normal,
-              color: isHeader ? Colors.white : Colors.black),
+          style: TextStyle(fontSize: finalFontSize, fontWeight: (isHeader || isBold) ? FontWeight.bold : FontWeight.normal, color: isHeader ? Colors.white : Colors.black),
         ),
       );
     });
@@ -375,10 +350,7 @@ class DriverCommissionViewScreen extends StatelessWidget {
       children: [
         if (title.isNotEmpty)
           Text(title,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: DynamicColors.primaryClr)),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: DynamicColors.primaryClr)),
         const SizedBox(height: 5),
         ...lines.map((line) {
           if (line.isEmpty) return const SizedBox(height: 10);
@@ -390,21 +362,15 @@ class DriverCommissionViewScreen extends StatelessWidget {
                   TextSpan(children: [
                     TextSpan(
                         text: "${parts[0]}: ",
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.black)),
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black)),
                     TextSpan(
                         text: parts.sublist(1).join(":"),
-                        style: const TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 16,
-                            color: Colors.black87)),
+                        style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 14, color: Colors.black87)),
                   ]),
                   textAlign: alignEnd ? TextAlign.right : TextAlign.left),
             );
           }
-          return Text(line, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500));
+          return Text(line, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500));
         }),
       ],
     );
