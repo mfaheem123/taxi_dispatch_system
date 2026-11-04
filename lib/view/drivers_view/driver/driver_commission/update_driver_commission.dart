@@ -98,8 +98,7 @@ class _UpdateDriverCommissionScreenState
                       Padding(
                         padding: EdgeInsetsGeometry.symmetric(
                             vertical: 20, horizontal: 15),
-                        child: Text(
-                          AppText.driverCommission,
+                        child: Text(AppText.driverCommission,
                           style: titleDesign(),
                         ),
                       ),
@@ -119,22 +118,16 @@ class _UpdateDriverCommissionScreenState
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        AppText.driver,
-                                        style: mozillaTextSemiBoldText(
-                                            context: context, fontSize: 13),
-                                      ),
+                                      Text(AppText.driver,
+                                        style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                       SizedBox(height: 5),
                                       Container(
                                         height: 30,
-                                        padding: EdgeInsetsGeometry.symmetric(
-                                            horizontal: 10),
+                                        padding: EdgeInsetsGeometry.symmetric(horizontal: 10),
                                         decoration: BoxDecoration(
                                           color: Colors.grey.shade100,
-                                          border: Border.all(
-                                              color: Colors.grey),
-                                          borderRadius: BorderRadius.circular(6),
-                                        ),
+                                          border: Border.all(color: Colors.grey),
+                                          borderRadius: BorderRadius.circular(6)),
                                         alignment: Alignment.centerLeft,
                                         child: Text(
                                           controller.updateDriverSelectionController.text.isEmpty
@@ -150,8 +143,7 @@ class _UpdateDriverCommissionScreenState
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(AppText.transactionDate,
-                                        style: mozillaTextSemiBoldText(
-                                            context: context, fontSize: 13)),
+                                        style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                     SizedBox(
                                       width: fieldWidth,
                                       height: 30,
@@ -159,21 +151,11 @@ class _UpdateDriverCommissionScreenState
                                         key: ValueKey(controller.updateDriverCommissionByIdModel?.driverCommission?.transactionDate),
                                         initialDate: controller.updateDriverCommissionByIdModel?.driverCommission?.transactionDate ?? DateTime.now(),
                                         onChanged: (date) {
-                                          controller
-                                                  .updateTransactionDateController =
-                                              date
-                                                  .toIso8601String()
-                                                  .split("T")
-                                                  .first;
+                                          controller.updateTransactionDateController = date.toIso8601String().split("T").first;
                                           controller.update();
                                         },
                                         onSubmitted: (date) {
-                                          controller
-                                                  .updateTransactionDateController =
-                                              date
-                                                  .toIso8601String()
-                                                  .split("T")
-                                                  .first;
+                                          controller.updateTransactionDateController = date.toIso8601String().split("T").first;
                                           controller.update();
                                         },
                                       ),
@@ -182,8 +164,7 @@ class _UpdateDriverCommissionScreenState
                                 ),
                                 CustomTextField(
                                   borderRadius: 4,
-                                  controller:
-                                      controller.UpdateCommissionController,
+                                  controller: controller.UpdateCommissionController,
                                   width: fieldWidth,
                                   hintText: AppText.commission,
                                   columnText: true,
@@ -217,8 +198,7 @@ class _UpdateDriverCommissionScreenState
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(AppText.from,
-                                            style: mozillaTextSemiBoldText(
-                                                context: context, fontSize: 13)),
+                                            style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                         const SizedBox(height: 5),
                                         SizedBox(
                                           width: fieldWidth / 1.2,
@@ -246,8 +226,7 @@ class _UpdateDriverCommissionScreenState
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(AppText.to,
-                                            style: mozillaTextSemiBoldText(
-                                                context: context, fontSize: 13)),
+                                            style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                         const SizedBox(height: 5),
                                         SizedBox(
                                           width: fieldWidth / 1.2,
@@ -282,8 +261,7 @@ class _UpdateDriverCommissionScreenState
                                           btnText: AppText.pay,
                                           btnColor: DynamicColors.primaryClr,
                                           style: mozillaTextSemiBoldText(
-                                              fontSize: 13,
-                                              color: DynamicColors.whiteClr),
+                                              fontSize: 13, color: DynamicColors.whiteClr),
                                           onTap: () {
                                             PayDriverCommission.show();
                                           },
@@ -297,8 +275,7 @@ class _UpdateDriverCommissionScreenState
                                           btnText: AppText.email,
                                           btnColor: DynamicColors.primaryClr,
                                           style: mozillaTextSemiBoldText(
-                                              fontSize: 13,
-                                              color: DynamicColors.whiteClr),
+                                              fontSize: 13, color: DynamicColors.whiteClr),
                                           onTap: () {
                                             EmailDriverCommissionAlt.show();
                                           },
@@ -325,9 +302,7 @@ class _UpdateDriverCommissionScreenState
                                                       size: 20),
                                                   const SizedBox(width: 10),
                                                   Text("Download PDF",
-                                                      style:
-                                                          mozillaTextRegularText(
-                                                              fontSize: 12)),
+                                                      style: mozillaTextRegularText(fontSize: 12)),
                                                 ],
                                               ),
                                             ),
@@ -341,9 +316,7 @@ class _UpdateDriverCommissionScreenState
                                                       size: 20),
                                                   const SizedBox(width: 10),
                                                   Text("Download Excel",
-                                                      style:
-                                                          mozillaTextRegularText(
-                                                              fontSize: 12)),
+                                                      style: mozillaTextRegularText(fontSize: 12)),
                                                 ],
                                               ),
                                             ),
@@ -353,15 +326,11 @@ class _UpdateDriverCommissionScreenState
                                             height: 30,
                                             decoration: BoxDecoration(
                                               color: DynamicColors.primaryClr,
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
+                                              borderRadius: BorderRadius.circular(4),
                                             ),
                                             alignment: Alignment.center,
-                                            child: Text(
-                                              "EXPORT",
-                                              style: mozillaTextRegularText(
-                                                  fontSize: 10,
-                                                  color: DynamicColors.whiteClr),
+                                            child: Text("EXPORT",
+                                              style: mozillaTextSemiBoldText(fontSize: 13, color: DynamicColors.whiteClr),
                                             ),
                                           ),
                                         ),
@@ -374,8 +343,7 @@ class _UpdateDriverCommissionScreenState
                                           btnText: AppText.view,
                                           btnColor: DynamicColors.primaryClr,
                                           style: mozillaTextSemiBoldText(
-                                              fontSize: 13,
-                                              color: DynamicColors.whiteClr),
+                                              fontSize: 13, color: DynamicColors.whiteClr),
                                           onTap: () async {
                                             final commission = controller.updateDriverCommissionByIdModel;
                                             if (commission?.driverCommission == null) {
@@ -422,14 +390,9 @@ class _UpdateDriverCommissionScreenState
                                           btnText: AppText.save,
                                           btnColor: DynamicColors.primaryClr,
                                           style: mozillaTextSemiBoldText(
-                                              fontSize: 13,
-                                              color: DynamicColors.whiteClr),
+                                              fontSize: 13, color: DynamicColors.whiteClr),
                                           onTap: () {
-                                            final cId = controller
-                                                    .updateDriverCommissionByIdModel
-                                                    ?.driverCommission
-                                                    ?.id ??
-                                                0;
+                                            final cId = controller.updateDriverCommissionByIdModel?.driverCommission?.id ?? 0;
                                             controller.saveUpdatedCommission(cId);
                                           },
                                         ),
@@ -442,14 +405,10 @@ class _UpdateDriverCommissionScreenState
                           ],
                         ),
                       ),
-                      SizedBox(
-                        height: 25,
-                      ),
+                      SizedBox(height: 25),
                       controller.isLoadingUpdate
                           ? const Center(child: CircularProgressIndicator())
-                          : SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: ResponsiveDataTableWidget(
+                          : ResponsiveDataTableWidget(
                           totalWidth: totalAvailableWidth,
                           columnConfigs: [
                             TableColumnConfig(title: "COMM", sizeType: ColumnSizeType.small),
@@ -496,13 +455,8 @@ class _UpdateDriverCommissionScreenState
                                 ...totalKeys.map((key) {
 
                                   return Center(
-                                    child: Text(
-                                        "£ ${controller
-                                            .getUpdateColumnTotal(key)
-                                            .toStringAsFixed(2)}",
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 13)),
+                                    child: Text("£ ${controller.getUpdateColumnTotal(key).toStringAsFixed(2)}",
+                                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                                   );
                                 }),
                                 "",
@@ -598,7 +552,6 @@ class _UpdateDriverCommissionScreenState
                             ];
                           },
                         ),
-                      ),
                       SizedBox(
                         height: 30,
                       ),
@@ -610,24 +563,10 @@ class _UpdateDriverCommissionScreenState
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  customWidget(
-                                    title: AppText.cashTotal,
-                                    value:
-                                        "£ ${controller.updateCashTotalValue.toStringAsFixed(2)}",
-                                  ),
-                                  customWidget(
-                                      title: AppText.totalCommission,
-                                      value:
-                                          "£ ${controller.updateTotalCommissionVar.toStringAsFixed(2)}"),
-                                  customWidget(
-                                      title: AppText.owed,
-                                      value:
-                                          "£ ${controller.updateOwedVar.toStringAsFixed(2)}"),
-                                  customWidget(
-                                    title: AppText.total + ":",
-                                    value:
-                                        "£ ${controller.updateGrandTotalVar.toStringAsFixed(2)}",
-                                  ),
+                                  customWidget(title: AppText.cashTotal, value: "£ ${controller.updateCashTotalValue.toStringAsFixed(2)}"),
+                                  customWidget(title: AppText.totalCommission, value: "£ ${controller.updateTotalCommissionVar.toStringAsFixed(2)}"),
+                                  customWidget(title: AppText.owed, value: "£ ${controller.updateOwedVar.toStringAsFixed(2)}"),
+                                  customWidget(title: AppText.total + ":", value: "£ ${controller.updateGrandTotalVar.toStringAsFixed(2)}"),
                                 ],
                               ),
                               SizedBox(
@@ -636,19 +575,9 @@ class _UpdateDriverCommissionScreenState
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  customWidget(
-                                    title: AppText.accountWCmm,
-                                    value:
-                                        "£ ${controller.updateAccountFareTotalVar.toStringAsFixed(2)}",
-                                  ),
-                                  customWidget(
-                                      title: AppText.accountWOCmm,
-                                      value:
-                                          "£ ${controller.updateAccountWOCmmVar.toStringAsFixed(2)}"),
-                                  customWidget(
-                                      title: AppText.parkingCongestion,
-                                      value:
-                                          "£ ${controller.updateParkingCongestionVar.toStringAsFixed(2)}"),
+                                  customWidget(title: AppText.accountWCmm, value: "£ ${controller.updateAccountFareTotalVar.toStringAsFixed(2)}"),
+                                  customWidget(title: AppText.accountWOCmm, value: "£ ${controller.updateAccountWOCmmVar.toStringAsFixed(2)}"),
+                                  customWidget(title: AppText.parkingCongestion, value: "£ ${controller.updateParkingCongestionVar.toStringAsFixed(2)}"),
                                 ],
                               ),
                             ],
@@ -671,20 +600,14 @@ class _UpdateDriverCommissionScreenState
           child: Text(
             // title ?? AppText.cashTotal,
             title ?? "",
-            style: mozillaTextSemiBoldText(
-                fontSize: 17,
-                color: DynamicColors.textClr.withOpacity(0.8),
-                fontWeight: FontWeight.w800),
+            style: mozillaTextSemiBoldText(fontSize: 17, color: DynamicColors.textClr.withOpacity(0.8), fontWeight: FontWeight.w800),
           ),
         ),
         Padding(
           padding: EdgeInsets.only(left: 5.0),
           child: Text(
             value ?? "0",
-            style: mozillaTextSemiBoldText(
-                fontSize: 16,
-                color: DynamicColors.textClr.withOpacity(0.8),
-                fontWeight: FontWeight.w800),
+            style: mozillaTextSemiBoldText(fontSize: 17, color: DynamicColors.textClr.withOpacity(0.8), fontWeight: FontWeight.w800),
           ),
         ),
       ],

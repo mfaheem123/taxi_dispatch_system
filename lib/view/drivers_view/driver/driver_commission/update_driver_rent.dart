@@ -97,10 +97,8 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: EdgeInsetsGeometry.symmetric(
-                                vertical: 20, horizontal: 15),
-                            child: Text(
-                              AppText.driverRent,
+                            padding: EdgeInsetsGeometry.symmetric(vertical: 20, horizontal: 15),
+                            child: Text(AppText.driverRent,
                               style: titleDesign(),
                             ),
                           ),
@@ -120,30 +118,22 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            AppText.driver,
-                                            style: mozillaTextSemiBoldText(
-                                                context: context, fontSize: 13),
-                                          ),
+                                          Text(AppText.driver,
+                                            style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                           SizedBox(height: 5),
                                           Container(
                                             height: 30,
-                                            padding: EdgeInsetsGeometry.symmetric(
-                                                horizontal: 10),
+                                            padding: EdgeInsetsGeometry.symmetric(horizontal: 10),
                                             decoration: BoxDecoration(
                                               color: Colors.grey.shade100,
-                                              border: Border.all(
-                                                  color: Colors.grey),
+                                              border: Border.all(color: Colors.grey),
                                               borderRadius: BorderRadius.circular(6),
                                             ),
                                             alignment: Alignment.centerLeft,
-                                            child: Text(
-                                              controller.updateRentDriverSelectionController.text.isEmpty
+                                            child: Text(controller.updateRentDriverSelectionController.text.isEmpty
                                                   ? "NO DRIVER"
                                                   : controller.updateRentDriverSelectionController.text.toUpperCase(),
-                                              style: TextStyle(
-                                                  fontSize: 13,
-                                                  color: Colors.black),
+                                              style: TextStyle(fontSize: 13, color: Colors.black),
                                             ),
                                           ),
                                         ],
@@ -153,8 +143,7 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(AppText.transactionDate,
-                                            style: mozillaTextSemiBoldText(
-                                                context: context, fontSize: 13)),
+                                            style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                         SizedBox(
                                           width: fieldWidth,
                                           height: 30,
@@ -162,17 +151,11 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                             key: ValueKey(controller.updateDriverRentByIdModel?.driverRent?.transactionDate),
                                             initialDate: controller.updateDriverRentByIdModel?.driverRent?.transactionDate ?? DateTime.now(),
                                             onChanged: (date) {
-                                              controller.rentTransactionDateController = date
-                                                  .toIso8601String()
-                                                  .split("T")
-                                                  .first;
+                                              controller.rentTransactionDateController = date.toIso8601String().split("T").first;
                                               controller.update();
                                             },
                                             onSubmitted: (date) {
-                                              controller.rentTransactionDateController = date
-                                                  .toIso8601String()
-                                                  .split("T")
-                                                  .first;
+                                              controller.rentTransactionDateController = date.toIso8601String().split("T").first;
                                               controller.update();
                                             },
                                           ),
@@ -215,8 +198,7 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Text(AppText.from,
-                                                style: mozillaTextSemiBoldText(
-                                                    context: context, fontSize: 13)),
+                                                style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                             const SizedBox(height: 5),
                                             SizedBox(
                                               width: fieldWidth / 1.2,
@@ -244,8 +226,7 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Text(AppText.to,
-                                                style: mozillaTextSemiBoldText(
-                                                    context: context, fontSize: 13)),
+                                                style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                             const SizedBox(height: 5),
                                             SizedBox(
                                               width: fieldWidth / 1.2,
@@ -280,8 +261,7 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                               btnText: AppText.email,
                                               btnColor: DynamicColors.primaryClr,
                                               style: mozillaTextSemiBoldText(
-                                                  fontSize: 13,
-                                                  color: DynamicColors.whiteClr),
+                                                  fontSize: 13, color: DynamicColors.whiteClr),
                                               onTap: (){
                                                 EmailDriverRentAlt.show();
                                               },
@@ -329,9 +309,8 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                                   borderRadius: BorderRadius.circular(4),
                                                 ),
                                                 alignment: Alignment.center,
-                                                child: Text(
-                                                  "EXPORT",
-                                                  style: mozillaTextRegularText(fontSize: 13, color: DynamicColors.whiteClr),
+                                                child: Text("EXPORT",
+                                                  style: mozillaTextSemiBoldText(fontSize: 13, color: DynamicColors.whiteClr),
                                                 ),
                                               ),
                                             ),
@@ -344,8 +323,7 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                               btnText: AppText.view,
                                               btnColor: DynamicColors.primaryClr,
                                               style: mozillaTextSemiBoldText(
-                                                  fontSize: 13,
-                                                  color: DynamicColors.whiteClr),
+                                                  fontSize: 13, color: DynamicColors.whiteClr),
                                               onTap: () async {
                                                 final rent = controller.updateDriverRentByIdModel;
                                                 if(rent?.driverRent == null) {
@@ -392,8 +370,7 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                               btnText: AppText.save,
                                               btnColor: DynamicColors.primaryClr,
                                               style: mozillaTextSemiBoldText(
-                                                  fontSize: 13,
-                                                  color: DynamicColors.whiteClr),
+                                                  fontSize: 13, color: DynamicColors.whiteClr),
                                               onTap: (){
                                                 final rId = controller.updateDriverRentByIdModel?.driverRent?.id ?? 0;
                                                 controller.saveUpdatedRent(rId);
@@ -408,75 +385,31 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                               ],
                             ),
                           ),
-                          SizedBox(
-                            height: 25,
-                          ),
+                          SizedBox(height: 25),
                           controller.isLoadingRentUpdate
                               ? const Center(child: CircularProgressIndicator())
-                              : SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: ResponsiveDataTableWidget(
+                              : ResponsiveDataTableWidget(
                                   totalWidth: totalAvailableWidth,
                                   columnConfigs: [
-                                    TableColumnConfig(
-                                        title: "REF#",
-                                        sizeType: ColumnSizeType.medium),
-                                    TableColumnConfig(
-                                        title: "DATETIME",
-                                        sizeType: ColumnSizeType.medium),
-                                    TableColumnConfig(
-                                        title: "PICKUP",
-                                        sizeType: ColumnSizeType.large),
-                                    TableColumnConfig(
-                                        title: "DROPOFF",
-                                        sizeType: ColumnSizeType.large),
-                                    TableColumnConfig(
-                                        title: "VEH",
-                                        sizeType: ColumnSizeType.small),
-                                    TableColumnConfig(
-                                        title: "ACC",
-                                        sizeType: ColumnSizeType.small),
-                                    TableColumnConfig(
-                                        title: "J/T",
-                                        sizeType: ColumnSizeType.small),
-                                    TableColumnConfig(
-                                        title: "P/T",
-                                        sizeType: ColumnSizeType.small),
-                                    TableColumnConfig(
-                                        title: "FARE",
-                                        sizeType: ColumnSizeType.small),
-                                    TableColumnConfig(
-                                        title: "PC",
-                                        sizeType: ColumnSizeType.small),
-                                    TableColumnConfig(
-                                        title: "WC",
-                                        sizeType: ColumnSizeType.small),
-                                    TableColumnConfig(
-                                        title: "EDC",
-                                        sizeType: ColumnSizeType.small),
-                                    TableColumnConfig(
-                                        title: "CC",
-                                        sizeType: ColumnSizeType.small),
-                                    TableColumnConfig(
-                                        title: "TOTAL",
-                                        sizeType: ColumnSizeType.medium),
-                                    TableColumnConfig(
-                                        title: "ACTION",
-                                        sizeType: ColumnSizeType.fixed,
-                                        fixedWidth: 65,
-                                        removeSearching: true),
+                                    TableColumnConfig(title: "REF#", sizeType: ColumnSizeType.medium),
+                                    TableColumnConfig(title: "DATETIME", sizeType: ColumnSizeType.medium),
+                                    TableColumnConfig(title: "PICKUP", sizeType: ColumnSizeType.large),
+                                    TableColumnConfig(title: "DROPOFF", sizeType: ColumnSizeType.large),
+                                    TableColumnConfig(title: "VEH", sizeType: ColumnSizeType.small),
+                                    TableColumnConfig(title: "ACC", sizeType: ColumnSizeType.small),
+                                    TableColumnConfig(title: "J/T", sizeType: ColumnSizeType.small),
+                                    TableColumnConfig(title: "P/T", sizeType: ColumnSizeType.small),
+                                    TableColumnConfig(title: "FARE", sizeType: ColumnSizeType.small),
+                                    TableColumnConfig(title: "PC", sizeType: ColumnSizeType.small),
+                                    TableColumnConfig(title: "WC", sizeType: ColumnSizeType.small),
+                                    TableColumnConfig(title: "EDC", sizeType: ColumnSizeType.small),
+                                    TableColumnConfig(title: "CC", sizeType: ColumnSizeType.small),
+                                    TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium),
+                                    TableColumnConfig(title: "ACTION", sizeType: ColumnSizeType.fixed, fixedWidth: 65, removeSearching: true),
                                   ],
                                   items: [
-                                    ...(controller
-                                        .updateDriverRentByIdModel
-                                        ?.driverRent
-                                        ?.driverRentLineitems ??
-                                        []),
-                                    if (controller
-                                        .updateDriverRentByIdModel
-                                        ?.driverRent
-                                        ?.driverRentLineitems !=
-                                        null)
+                                    ...(controller.updateDriverRentByIdModel?.driverRent?.driverRentLineitems ?? []),
+                                    if (controller.updateDriverRentByIdModel?.driverRent?.driverRentLineitems != null)
                                       "TOTAL_ROW"
                                   ],
                                   rowBuilder: (item, widths) {
@@ -493,19 +426,11 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                         "", "", "", "", "", "", "",
                                         const Center(
                                             child: Text("TOTAL",
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                    FontWeight.bold,
-                                                    fontSize: 13))),
+                                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13))),
                                         ...totalKeys.map((key) {
                                           return Center(
-                                            child: Text(
-                                                "£ ${controller
-                                                    .getUpdateRentColumnTotal(key)
-                                                    .toStringAsFixed(2)}",
-                                                style: const TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 13)),
+                                            child: Text("£ ${controller.getUpdateRentColumnTotal(key).toStringAsFixed(2)}",
+                                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                                           );
                                         }),
                                         "",
@@ -524,14 +449,10 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                       "${(booking.pickupDate ?? "").toString().split(' ')[0]} ${(booking.pickupTime ?? "").toString().split('.')[0].substring(0, 5)}",
                                       (booking.pickup ?? "").toUpperCase(),
                                       (booking.dropoff ?? "").toUpperCase(),
-                                      (booking.vehicleType?.name ?? "")
-                                          .toUpperCase(),
-                                      (booking.account?.name ?? "")
-                                          .toUpperCase(),
-                                      (booking.journeyType?.journeyType ?? "")
-                                          .toUpperCase(),
-                                      (booking.paymentType?.name ?? "")
-                                          .toUpperCase(),
+                                      (booking.vehicleType?.name ?? "").toUpperCase(),
+                                      (booking.account?.name ?? "").toUpperCase(),
+                                      (booking.journeyType?.journeyType ?? "").toUpperCase(),
+                                      (booking.paymentType?.name ?? "").toUpperCase(),
 
                                       EditableCellWidget(
                                         initialValue: booking.fares,
@@ -569,8 +490,7 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                         },
                                       ),
                                       Center(
-                                          child: Text(
-                                              "${booking.totalCharges ?? "0"}")),
+                                          child: Text("${booking.totalCharges ?? "0"}")),
                                       Center(
                                         child: CustomButton(
                                           verticalPadding: 0.0,
@@ -580,26 +500,20 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                           btnText: "SAVE",
                                           btnColor: DynamicColors.primaryClr,
                                           style: mozillaTextRegularText(
-                                              fontSize: 10,
-                                              color: DynamicColors.whiteClr),
+                                              fontSize: 10, color: DynamicColors.whiteClr),
                                           onTap: () async {
                                             if (booking != null) {
-                                              await controller
-                                                  .updateBookingCharges(
-                                                  booking);
+                                              await controller.updateBookingCharges(booking);
                                               controller.updateTotals();
                                               controller.update();
-                                              print(
-                                                  "Updating Booking ID: ${booking.id}");
+                                              print("Updating Booking ID: ${booking.id}");
                                             }
                                           },
                                         ),
                                       ),
                                     ];
-                                  })),
-                          SizedBox(
-                            height: 30,
-                          ),
+                                  }),
+                          SizedBox(height: 30),
                           Padding(
                               padding: const EdgeInsets.only(right: 400.0),
                               child: Row(
@@ -608,42 +522,18 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      customWidget(
-                                        title: AppText.cashTotal,
-                                        value:
-                                        "£ ${controller.updateCashTotal.toStringAsFixed(2)}",
-                                      ),
-                                      customWidget(
-                                        title: AppText.total + ":",
-                                        value:
-                                        "£ ${controller.updateGrandTotal.toStringAsFixed(2)}",
-                                      ),
-                                      customWidget(
-                                          title: AppText.owed,
-                                          value:
-                                          "£ ${controller.updateOwed.toStringAsFixed(2)}"),
-
+                                      customWidget(title: AppText.cashTotal, value: "£ ${controller.updateCashTotal.toStringAsFixed(2)}"),
+                                      customWidget(title: AppText.total + ":", value: "£ ${controller.updateGrandTotal.toStringAsFixed(2)}"),
+                                      customWidget(title: AppText.owed, value: "£ ${controller.updateOwed.toStringAsFixed(2)}"),
                                     ],
                                   ),
-                                  SizedBox(
-                                    width: 80,
-                                  ),
+                                  SizedBox(width: 80),
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      customWidget(
-                                        title: "ACCOUNT TOTAL:",
-                                        value:
-                                        "£ ${controller.updateAccountTotal.toStringAsFixed(2)}",
-                                      ),
-                                      customWidget(
-                                          title: AppText.parkingCongestion,
-                                          value:
-                                          "£ ${controller.updateParkingCongestion.toStringAsFixed(2)}"),
-                                      customWidget(
-                                          title: "RENT TOTAL:",
-                                          value:
-                                          "£ ${controller.rTotal.toStringAsFixed(2)}"),
+                                      customWidget(title: "ACCOUNT TOTAL:", value: "£ ${controller.updateAccountTotal.toStringAsFixed(2)}"),
+                                      customWidget(title: AppText.parkingCongestion, value: "£ ${controller.updateParkingCongestion.toStringAsFixed(2)}"),
+                                      customWidget(title: "RENT TOTAL:", value: "£ ${controller.rTotal.toStringAsFixed(2)}"),
                                     ],
                                   ),
                                 ],
@@ -667,20 +557,14 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
           child: Text(
             // title ?? AppText.cashTotal,
             title ?? "",
-            style: mozillaTextSemiBoldText(
-                fontSize: 16,
-                color: DynamicColors.textClr.withOpacity(0.8),
-                fontWeight: FontWeight.w800),
+            style: mozillaTextSemiBoldText(fontSize: 16, color: DynamicColors.textClr.withOpacity(0.8), fontWeight: FontWeight.w800),
           ),
         ),
         Padding(
           padding: EdgeInsets.only(left: 5.0),
           child: Text(
             value ?? "0",
-            style: mozillaTextSemiBoldText(
-                fontSize: 17,
-                color: DynamicColors.textClr.withOpacity(0.8),
-                fontWeight: FontWeight.w800),
+            style: mozillaTextSemiBoldText(fontSize: 17, color: DynamicColors.textClr.withOpacity(0.8), fontWeight: FontWeight.w800),
           ),
         ),
       ],

@@ -1916,8 +1916,7 @@ class DriverController extends GetxController {
   double updateAccountWOCmmVar = 0.0;
 
   void calculateUpdateTotals() {
-    final updateItems = updateDriverCommissionByIdModel
-        ?.driverCommission?.driverCommissionLineitems;
+    final updateItems = updateDriverCommissionByIdModel?.driverCommission?.driverCommissionLineitems;
 
     if (updateItems == null || updateItems.isEmpty) {
       _resetTotals();
@@ -1937,24 +1936,20 @@ class DriverController extends GetxController {
         return sum;
       });
     } else {
-      updateCashTotalValue = double.tryParse(
-          updateDriverCommissionByIdModel?.driverCommission?.cashJobsTotal ?? "0") ?? 0.0;
+      updateCashTotalValue = double.tryParse(updateDriverCommissionByIdModel?.driverCommission?.cashJobsTotal ?? "0") ?? 0.0;
     }
 
     // 2. account total
     if (activeBookings.isNotEmpty) {
       updateAccountFareTotalVar = activeBookings.fold(0.0, (sum, b) {
-        bool isAccount =
-            b?.paymentType?.name?.toString().toLowerCase() == "account";
+        bool isAccount = b?.paymentType?.name?.toString().toLowerCase() == "account";
         if (isAccount && b?.commission == true) {
           return sum + parseDouble(b?.fares);
         }
         return sum;
       });
     } else {
-      updateAccountFareTotalVar = double.tryParse(
-          updateDriverCommissionByIdModel?.driverCommission?.accountJobsTotal ??
-              "0") ?? 0.0;
+      updateAccountFareTotalVar = double.tryParse(updateDriverCommissionByIdModel?.driverCommission?.accountJobsTotal ?? "0") ?? 0.0;
     }
 
 
@@ -1969,7 +1964,8 @@ class DriverController extends GetxController {
 
     // 4. Total Commission
 
-    if (activeBookings.isNotEmpty) { updateTotalCommissionVar = activeBookings.fold(0.0, (sum, b) {
+    if (activeBookings.isNotEmpty) {
+      updateTotalCommissionVar = activeBookings.fold(0.0, (sum, b) {
       return sum + parseDouble(calculateFinalDriverComm(b));
     });
     } else {
@@ -1988,9 +1984,7 @@ class DriverController extends GetxController {
 
     // 6. Grand Totals Logic
     updateGrandTotalVar = updateCashTotalValue + updateAccountFareTotalVar;
-    updateOwedVar = updateTotalCommissionVar -
-        updateAccountFareTotalVar -
-        updateParkingCongestionVar;
+    updateOwedVar = updateTotalCommissionVar - updateAccountFareTotalVar - updateParkingCongestionVar;
     updateNewBalanceVar = oldBalanceVar + updateOwedVar;
     update();
   }
@@ -2829,8 +2823,7 @@ class DriverController extends GetxController {
   double newBalance = 0.0;
 
   void calculateTotals() {
-    double parseD(dynamic val) =>
-        double.tryParse(val?.toString() ?? "0") ?? 0.0;
+    double parseD(dynamic val) => double.tryParse(val?.toString() ?? "0") ?? 0.0;
 
     if (driverRentFilterModel?.bookings == null || selectedIds.isEmpty) {
       cashTotal = 0.0;
@@ -2847,21 +2840,13 @@ class DriverController extends GetxController {
         ?.where((b) => selectedIds.contains(b.id.toString()));
 
     // Cash Total
-    cashTotal =
-        selectedBookings!.where((b) => b.paymentTypeId == 1).fold(0.0, (sum, b) {
-      return sum +
-          parseD(b.fares) +
-          parseD(b.waitingCharges) +
-          parseD(b.extraDropCharges);
+    cashTotal = selectedBookings!.where((b) => b.paymentTypeId == 1).fold(0.0, (sum, b) {
+      return sum + parseD(b.fares) + parseD(b.waitingCharges) + parseD(b.extraDropCharges);
     });
 
     // 2. ACCOUNT TOTAL
-    accountTotal =
-        selectedBookings.where((b) => b.paymentTypeId == 3).fold(0.0, (sum, b) {
-      return sum +
-          parseD(b.fares) +
-          parseD(b.waitingCharges) +
-          parseD(b.extraDropCharges);
+    accountTotal = selectedBookings.where((b) => b.paymentTypeId == 3).fold(0.0, (sum, b) {
+      return sum + parseD(b.fares) + parseD(b.waitingCharges) + parseD(b.extraDropCharges);
     });
 
     // 3. PARKING/CONGESTION TOTAL (All Selected Bookings)
@@ -3108,13 +3093,10 @@ class DriverController extends GetxController {
     updateNewBalance  = parse(data.currentBalance);
     updateAccountTotal  = parse(data.accountJobsTotal);
     // rTotal = parse(data.driver?.driverCommission);
-    updateRentDriverSelectionController.text =
-    "${data.driver?.username ?? ''} ${data.driver?.name ?? ''}";
-    updateRentWeekController.text =
-        (data.driver?.driverCommission ?? "0").toString();
+    updateRentDriverSelectionController.text = "${data.driver?.username ?? ''} ${data.driver?.name ?? ''}";
+    updateRentWeekController.text = (data.driver?.driverCommission ?? "0").toString();
     updatePdaRentWeekController.text = (data.driver?.pdaRent ?? "0").toString();
-    String formatDate(dynamic date) =>
-        date?.toString().split(' ')[0] ?? "2000-01-01";
+    String formatDate(dynamic date) => date?.toString().split(' ')[0] ?? "2000-01-01";
     updateRentFilterFromDate = formatDate(data.fromDate);
     updateRentFilterToDate = formatDate(data.toDate);
     rentTransactionDateController = formatDate(data.transactionDate);
@@ -3272,8 +3254,7 @@ class DriverController extends GetxController {
               headerDecoration: pw.BoxDecoration(
                   color: PdfColor.fromInt(DynamicColors.primaryClr.value)),
               cellStyle: const pw.TextStyle(fontSize: 7),
-              cellPadding:
-              const pw.EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+              cellPadding: const pw.EdgeInsets.symmetric(vertical: 4, horizontal: 2),
               cellAlignment: pw.Alignment.center,
               headerAlignment: pw.Alignment.center,
               columnWidths: {
@@ -3326,10 +3307,8 @@ class DriverController extends GetxController {
                 left: const pw.BorderSide(color: PdfColors.black, width: 0.5),
                 right: const pw.BorderSide(color: PdfColors.black, width: 0.5),
                 bottom: const pw.BorderSide(color: PdfColors.black, width: 0.5),
-                verticalInside:
-                const pw.BorderSide(color: PdfColors.black, width: 0.5),
-                horizontalInside:
-                const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                verticalInside: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                horizontalInside: const pw.BorderSide(color: PdfColors.black, width: 0.5),
               ),
               columnWidths: {
                 0: const pw.FlexColumnWidth(1),
@@ -3338,10 +3317,8 @@ class DriverController extends GetxController {
               children: [
                 _buildFooterRentRow("CASH TOTAL", updateCashTotal),
                 _buildFooterRentRow("TOTAL", updateGrandTotal),
-                _buildFooterRentRow(
-                    "ACCOUNT TOTAL", updateAccountTotal),
-                _buildFooterRentRow(
-                    "PARKING/CONGESTION TOTAL", updateParkingCongestion),
+                _buildFooterRentRow("ACCOUNT TOTAL", updateAccountTotal),
+                _buildFooterRentRow("PARKING/CONGESTION TOTAL", updateParkingCongestion),
                 _buildFooterRentRow("RENT TOTAL", rTotal),
                 _buildFooterRentRow("OWED", updateOwed),
               ],
@@ -3362,8 +3339,7 @@ class DriverController extends GetxController {
       alignEnd ? pw.CrossAxisAlignment.end : pw.CrossAxisAlignment.start,
       children: [
         pw.Text(label,
-            style: pw.TextStyle(
-                fontWeight: pw.FontWeight.bold, fontSize: 10, color: accent)),
+            style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10, color: accent)),
         ...lines.map((line) {
           return line.isEmpty
               ? pw.SizedBox(height: 10)
@@ -3381,15 +3357,13 @@ class DriverController extends GetxController {
           alignment: pw.Alignment.centerRight,
           padding: const pw.EdgeInsets.only(right: 5, top: 2, bottom: 2),
           child: pw.Text(label,
-              style: pw.TextStyle(
-                  fontSize: 7, fontWeight: isBold ? pw.FontWeight.bold : null)),
+              style: pw.TextStyle(fontSize: 7, fontWeight: isBold ? pw.FontWeight.bold : null)),
         ),
         pw.Container(
           alignment: pw.Alignment.center,
           padding: const pw.EdgeInsets.symmetric(vertical: 2),
           child: pw.Text("£${value.toStringAsFixed(2)}",
-              style: pw.TextStyle(
-                  fontSize: 7, fontWeight: isBold ? pw.FontWeight.bold : null)),
+              style: pw.TextStyle(fontSize: 7, fontWeight: isBold ? pw.FontWeight.bold : null)),
         ),
       ],
     );
@@ -3439,16 +3413,11 @@ class DriverController extends GetxController {
         TextCellValue((b.journeyType?.journeyType ?? "").toUpperCase()),
         TextCellValue((b.paymentType?.name ?? "").toUpperCase()),
         DoubleCellValue(double.tryParse(b.fares?.toString() ?? '0') ?? 0.0),
-        DoubleCellValue(
-            double.tryParse(b.parkingCharges?.toString() ?? '0') ?? 0.0),
-        DoubleCellValue(
-            double.tryParse(b.waitingCharges?.toString() ?? '0') ?? 0.0),
-        DoubleCellValue(
-            double.tryParse(b.extraDropCharges?.toString() ?? '0') ?? 0.0),
-        DoubleCellValue(
-            double.tryParse(b.congestionCharges?.toString() ?? '0') ?? 0.0),
-        DoubleCellValue(
-            double.tryParse(b.totalCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(double.tryParse(b.parkingCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(double.tryParse(b.waitingCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(double.tryParse(b.extraDropCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(double.tryParse(b.congestionCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(double.tryParse(b.totalCharges?.toString() ?? '0') ?? 0.0),
       ]);
     }
 
@@ -3457,8 +3426,7 @@ class DriverController extends GetxController {
       if (fileBytes != null) {
         final content = base64Encode(fileBytes);
         final anchor = html.AnchorElement(
-            href:
-            "data:application/octet-stream;charset=utf-16le;base64,$content")
+            href: "data:application/octet-stream;charset=utf-16le;base64,$content")
           ..setAttribute("download", "Driver_Rent_Report.xlsx")
           ..click();
       }
@@ -3620,8 +3588,6 @@ class DriverController extends GetxController {
     bulkRentEmailController.clear();
     update();
   }
-
-
 
   ///POST Bulk Rent
 
