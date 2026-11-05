@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:timepickerfield/timepickerfield.dart';
 import '../../../alert/restrict_drivers_alert.dart';
+import '../../alert/account_details_alert.dart';
 import '../../alert/child_seats_alert.dart';
 import '../../alert/extra_fares_alert.dart';
 import '../../alert/extra_info_alert.dart';
@@ -857,6 +858,15 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                           controller.fetchEscortList();
                                         }
                                       });
+                                      if (v?.information != null &&
+                                          v!.information!.trim().isNotEmpty) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AccountDetailsAlert(
+                                            information: v.information,
+                                          ),
+                                        );
+                                      }
                                     },
                                     18,
                                     itemLabel: (p) => p.name!,
