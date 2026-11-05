@@ -17,14 +17,14 @@ class DriverAttributesAlert extends StatefulWidget {
 
 class _DriverAttributesAlertState extends State<DriverAttributesAlert> {
   final DriverAttributeController controller =
-      Get.isRegistered<DriverAttributeController>()
-          ? Get.find<DriverAttributeController>()
-          : Get.put(DriverAttributeController());
+  Get.isRegistered<DriverAttributeController>()
+      ? Get.find<DriverAttributeController>()
+      : Get.put(DriverAttributeController());
 
   final DashboardController dashController =
-      Get.isRegistered<DashboardController>()
-          ? Get.find<DashboardController>()
-          : Get.put(DashboardController());
+  Get.isRegistered<DashboardController>()
+      ? Get.find<DashboardController>()
+      : Get.put(DashboardController());
 
   @override
   void initState() {
@@ -34,8 +34,10 @@ class _DriverAttributesAlertState extends State<DriverAttributesAlert> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
+    // Scrolls once the SETTINGS dialog reaches its 500px cap; below that the
+    // dialog is exactly as tall as this table.
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,18 +81,9 @@ class _DriverAttributesAlertState extends State<DriverAttributesAlert> {
               child: DatatableWidget(
                 columns: [
 
-                  buildHeaderWithSearch(
-                    title: "ATTRIBUTE NAME",
-                    removeSearching: true,
-                  ),
-                  buildHeaderWithSearch(
-                    title: "SHORT CODE",
-                    removeSearching: true,
-                  ),
-                  buildHeaderWithSearch(
-                    title: "ACTION",
-                    removeSearching: true,
-                  ),
+                  buildHeaderWithSearch(title: "ATTRIBUTE NAME", removeSearching: true),
+                  buildHeaderWithSearch(title: "SHORT CODE", removeSearching: true),
+                  buildHeaderWithSearch(title: "ACTION", removeSearching: true),
                 ],
                 totalRow: controller.allAttributes.length,
                 rows: controller.allAttributes.asMap().entries.map((entry) {
@@ -98,12 +91,10 @@ class _DriverAttributesAlertState extends State<DriverAttributesAlert> {
                   final item = entry.value;
                   final itemId = item.id;
                   final isSelected = itemId != null &&
-                      dashController.selectedBookingAttributes
-                          .any((a) => a.id == itemId);
+                      dashController.selectedBookingAttributes.any((a) => a.id == itemId);
 
                   return DataRow(
                     cells: [
-
                       DataCell(Center(child: Text((item.attributeName ?? '').toUpperCase()))),
                       DataCell(Center(child: Text((item.shortName ?? '').toUpperCase()))),
                       DataCell(
@@ -117,28 +108,24 @@ class _DriverAttributesAlertState extends State<DriverAttributesAlert> {
                               // Tab focus: thick primary outline plus a tinted
                               // halo, instead of the faint default overlay.
                               focusColor:
-                                  DynamicColors.primaryClr.withValues(alpha: 0.25),
+                              DynamicColors.primaryClr.withValues(alpha: 0.25),
                               side: WidgetStateBorderSide.resolveWith(
-                                (states) => states.contains(WidgetState.focused)
+                                    (states) => states.contains(WidgetState.focused)
                                     ? BorderSide(
-                                        color: DynamicColors.primaryClr,
-                                        width: 2.5)
+                                    color: DynamicColors.primaryClr,
+                                    width: 2.5)
                                     : const BorderSide(
-                                        color: Color(0xFFCBD5E1), width: 1.5),
+                                    color: Color(0xFFCBD5E1), width: 1.5),
                               ),
                               onChanged: (val) {
                                 setState(() {
                                   if (itemId != null) {
                                     if (val == true) {
-                                      if (!dashController
-                                          .selectedBookingAttributes
-                                          .any((a) => a.id == itemId)) {
-                                        dashController.selectedBookingAttributes
-                                            .add(item);
+                                      if (!dashController.selectedBookingAttributes.any((a) => a.id == itemId)) {
+                                        dashController.selectedBookingAttributes.add(item);
                                       }
                                     } else {
-                                      dashController.selectedBookingAttributes
-                                          .removeWhere((a) => a.id == itemId);
+                                      dashController.selectedBookingAttributes.removeWhere((a) => a.id == itemId);
                                     }
                                   }
                                 });
