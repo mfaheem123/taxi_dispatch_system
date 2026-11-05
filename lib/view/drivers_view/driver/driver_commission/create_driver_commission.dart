@@ -87,10 +87,8 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 20, horizontal: 15),
-                      child: Text(
-                        AppText.driverCommission,
+                      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                      child: Text(AppText.driverCommission,
                         style: titleDesign(),
                       ),
                     ),
@@ -125,8 +123,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(AppText.transactionDate,
-                                  style: mozillaTextSemiBoldText(
-                                      context: context, fontSize: 13)),
+                                  style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                               SizedBox(
                                 width: fieldWidth,
                                 height: 30,
@@ -134,13 +131,11 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                                   key: ValueKey("transaction_date_${controller.datePickerKey}"),
                                   initialDate: DateTime.now(),
                                   onChanged: (date) {
-                                    controller.transactionDate =
-                                        date.toIso8601String().split("T").first;
+                                    controller.transactionDate = date.toIso8601String().split("T").first;
                                     controller.update();
                                   },
                                   onSubmitted: (date) {
-                                    controller.transactionDate =
-                                        date.toIso8601String().split("T").first;
+                                    controller.transactionDate = date.toIso8601String().split("T").first;
                                     controller.update();
                                   },
                                 ),
@@ -172,9 +167,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 15,
-                    )
+                    SizedBox(height: 15)
                   ],
                 ),
               ),
@@ -195,8 +188,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(AppText.from,
-                            style: mozillaTextSemiBoldText(
-                                context: context, fontSize: 13)
+                            style: mozillaTextSemiBoldText(context: context, fontSize: 13)
                         ),
                         const SizedBox(width: 8),
                         SizedBox(
@@ -207,13 +199,11 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                             initialDate: DateTime.now(),
                             allowFutureDates: false,
                             onChanged: (date) {
-                              controller.filterFromDate =
-                                  date.toIso8601String().split("T").first;
+                              controller.filterFromDate = date.toIso8601String().split("T").first;
                               controller.update();
                             },
                             onSubmitted: (date) {
-                              controller.filterFromDate =
-                                  date.toIso8601String().split("T").first;
+                              controller.filterFromDate = date.toIso8601String().split("T").first;
                               controller.update();
                             },
                           ),
@@ -224,8 +214,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(AppText.to,
-                            style: mozillaTextSemiBoldText(
-                                context: context, fontSize: 13)
+                            style: mozillaTextSemiBoldText(context: context, fontSize: 13)
                         ),
                         const SizedBox(width: 8),
                         SizedBox(
@@ -235,13 +224,11 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                             key: ValueKey("to_date_${controller.datePickerKey}"),
                             initialDate: DateTime.now(),
                             onChanged: (date) {
-                              controller.filterToDate =
-                                  date.toIso8601String().split("T").first;
+                              controller.filterToDate = date.toIso8601String().split("T").first;
                               controller.update();
                             },
                             onSubmitted: (date) {
-                              controller.filterToDate =
-                                  date.toIso8601String().split("T").first;
+                              controller.filterToDate = date.toIso8601String().split("T").first;
                               controller.update();
                             },
                           ),
@@ -285,15 +272,12 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                             children: [
                               Checkbox(
                                 visualDensity: VisualDensity.compact,
-                                value: controller.selectedPaymentTypeIds
-                                    .contains(payment.id),
+                                value: controller.selectedPaymentTypeIds.contains(payment.id),
                                 onChanged: (v) {
                                   if (v == true) {
-                                    controller.selectedPaymentTypeIds
-                                        .add(payment.id!);
+                                    controller.selectedPaymentTypeIds.add(payment.id!);
                                   } else {
-                                    controller.selectedPaymentTypeIds
-                                        .remove(payment.id);
+                                    controller.selectedPaymentTypeIds.remove(payment.id);
                                   }
                                   controller.update();
                                 },
@@ -434,11 +418,9 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                                       value: isRowSelected,
                                       onChanged: (bool? val) {
                                         if (val == true) {
-                                          controller.selectedIds.add(
-                                              booking.id.toString());
+                                          controller.selectedIds.add(booking.id.toString());
                                         } else {
-                                          controller.selectedIds.remove(
-                                              booking.id.toString());
+                                          controller.selectedIds.remove(booking.id.toString());
                                         }
                                         controller.calculateAllTotals();
                                         controller.update();
@@ -450,22 +432,17 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                                       activeColor: DynamicColors.primaryClr,
                                       onChanged: (bool? newValue) {
                                         booking.commission = newValue;
-                                        controller.recalculateDriverCommissionRow(
-                                            booking);
+                                        controller.recalculateDriverCommissionRow(booking);
                                         controller.calculateAllTotals();
                                         controller.update();
                                       })),
                               booking.referenceNumber ?? "",
-                              "${(booking.pickupDate ?? "").toString().split(
-                                  ' ')[0]} ${(booking.pickupTime ?? "")
-                                  .toString()
-                                  .split('.')[0].substring(0, 5)}",
+                              "${(booking.pickupDate ?? "").toString().split(' ')[0]} ${(booking.pickupTime ?? "").toString().split('.')[0].substring(0, 5)}",
                               (booking.pickup ?? "").toUpperCase(),
                               (booking.dropoff ?? "").toUpperCase(),
                               (booking.vehicleType?.name ?? "").toUpperCase(),
                               (booking.account?.name ?? "").toUpperCase(),
-                              (booking.journeyType?.journeyType ?? "")
-                                  .toUpperCase(),
+                              (booking.journeyType?.journeyType ?? "").toUpperCase(),
                               (booking.paymentType?.name ?? "").toUpperCase(),
                               EditableCellWidget(
                                 initialValue: booking.fares,
@@ -502,14 +479,9 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                                   controller.recalculateDriverCommissionRow(booking);
                                 },
                               ),
-                              Center(child: Text(
-                                  "£ ${controller.calculateWithoutCommission(
-                                      booking)}")),
-                              Center(child: Text(
-                                  "£ ${controller.calculateFinalDriverComm(
-                                      booking)}")),
-                              Center(child: Text(
-                                  "£ ${booking.totalCharges ?? "0"}")),
+                              Center(child: Text("£ ${controller.calculateWithoutCommission(booking)}")),
+                              Center(child: Text("£ ${controller.calculateFinalDriverComm(booking)}")),
+                              Center(child: Text("£ ${booking.totalCharges ?? "0"}")),
                               Center(
                                 child: CustomButton(
                                   verticalPadding: 0.0,
@@ -522,8 +494,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                                       color: DynamicColors.whiteClr),
                                   onTap: () async {
                                     if (booking != null) {
-                                      await controller.updateBookingCharges(
-                                          booking);
+                                      await controller.updateBookingCharges(booking);
                                       controller.calculateAllTotals();
                                       controller.update();
                                       print("Updating Booking ID: ${booking.id}");
@@ -533,9 +504,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                               ),
                             ];
                           }),
-              SizedBox(
-                height: 30,
-              ),
+              SizedBox(height: 30),
               Padding(
                   padding: const EdgeInsets.only(right: 400.0),
                   child: Row(
@@ -544,28 +513,11 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          customWidget(
-                            title: AppText.cashTotal,
-                            value:
-                                "£ ${controller.cashTotalValue.toStringAsFixed(2)}",
-                          ),
-                          customWidget(
-                            title: AppText.total + ":",
-                            value:
-                                "£ ${controller.grandTotalVar.toStringAsFixed(2)}",
-                          ),
-                          customWidget(
-                              title: AppText.owed,
-                              value:
-                                  "£ ${controller.owedVar.toStringAsFixed(2)}"),
-                          customWidget(
-                              title: AppText.oldBalance,
-                              value:
-                                  "£ ${controller.oldBalanceVar.toStringAsFixed(2)}"),
-                          customWidget(
-                              title: AppText.newBalance,
-                              value:
-                                  "£ ${controller.newBalanceVar.toStringAsFixed(2)}"),
+                          customWidget(title: AppText.cashTotal, value: "£ ${controller.cashTotalValue.toStringAsFixed(2)}"),
+                          customWidget(title: AppText.total + ":", value: "£ ${controller.grandTotalVar.toStringAsFixed(2)}"),
+                          customWidget(title: AppText.owed, value: "£ ${controller.owedVar.toStringAsFixed(2)}"),
+                          customWidget(title: AppText.oldBalance, value: "£ ${controller.oldBalanceVar.toStringAsFixed(2)}"),
+                          customWidget(title: AppText.newBalance, value: "£ ${controller.newBalanceVar.toStringAsFixed(2)}"),
                         ],
                       ),
                       SizedBox(
@@ -574,23 +526,10 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          customWidget(
-                            title: AppText.accountWCmm,
-                            value:
-                                "£ ${controller.accountFareTotalVar.toStringAsFixed(2)}",
-                          ),
-                          customWidget(
-                              title: AppText.accountWOCmm,
-                              value:
-                                  "£ ${controller.accountWOCmmVar.toStringAsFixed(2)}"),
-                          customWidget(
-                              title: AppText.parkingCongestion,
-                              value:
-                                  "£ ${controller.parkingCongestionVar.toStringAsFixed(2)}"),
-                          customWidget(
-                              title: AppText.totalCommission,
-                              value:
-                                  "£ ${controller.totalCommissionVar.toStringAsFixed(2)}"),
+                          customWidget(title: AppText.accountWCmm, value: "£ ${controller.accountFareTotalVar.toStringAsFixed(2)}"),
+                          customWidget(title: AppText.accountWOCmm, value: "£ ${controller.accountWOCmmVar.toStringAsFixed(2)}"),
+                          customWidget(title: AppText.parkingCongestion, value: "£ ${controller.parkingCongestionVar.toStringAsFixed(2)}"),
+                          customWidget(title: AppText.totalCommission, value: "£ ${controller.totalCommissionVar.toStringAsFixed(2)}"),
                         ],
                       ),
                     ],

@@ -58,8 +58,8 @@ class _ListOfAccountPreInvoiceScreenState
                   const Spacer(),
                   CustomButton(
                     verticalPadding: 0.0,
-                    width: 60,
-                    height: 40,
+                    width: 70,
+                    height: 35,
                     borderRadius: 4,
                     btnText: AppText.create,
                     style: mozillaTextRegularText(
@@ -69,8 +69,8 @@ class _ListOfAccountPreInvoiceScreenState
                   const SizedBox(width: 12),
                   CustomButton(
                     onTap: () {},
-                    height: 40,
-                    width: 80,
+                    height: 35,
+                    width: 70,
                     verticalPadding: 0.0,
                     borderRadius: 4,
                     widget: Padding(
@@ -147,8 +147,8 @@ class _ListOfAccountPreInvoiceScreenState
                       CustomButton(
                         onTap: () {},
                         verticalPadding: 0.0,
-                        width: 60,
-                        height: 40,
+                        width: 70,
+                        height: 35,
                         borderRadius: 4,
                         btnText: AppText.clear,
                         style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
@@ -157,8 +157,8 @@ class _ListOfAccountPreInvoiceScreenState
                       CustomButton(
                         onTap: () {},
                         verticalPadding: 0.0,
-                        width: 60,
-                        height: 40,
+                        width: 70,
+                        height: 35,
                         borderRadius: 4,
                         btnText: AppText.search,
                         style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
@@ -202,6 +202,7 @@ class _ListOfAccountPreInvoiceScreenState
                       DataCell(Center(child: Text("SUBSIDIARY A"))),
                       DataCell(
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             OutlinedButton(
                               style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.transparent)),

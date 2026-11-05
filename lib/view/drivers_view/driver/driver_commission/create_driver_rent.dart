@@ -87,10 +87,8 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 20, horizontal: 15),
-                        child: Text(
-                          AppText.driverRent,
+                        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                        child: Text(AppText.driverRent,
                           style: titleDesign(),
                         ),
                       ),
@@ -125,8 +123,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(AppText.transactionDate,
-                                    style: mozillaTextSemiBoldText(
-                                        context: context, fontSize: 13)),
+                                    style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                 SizedBox(
                                   width: fieldWidth,
                                   height: 30,
@@ -134,13 +131,11 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                                     key: ValueKey("transaction_date_${controller.datePickerKey}"),
                                     initialDate: DateTime.now(),
                                     onChanged: (date) {
-                                      controller.rentTransactionDate =
-                                          date.toIso8601String().split("T").first;
+                                      controller.rentTransactionDate = date.toIso8601String().split("T").first;
                                       controller.update();
                                     },
                                     onSubmitted: (date) {
-                                      controller.rentTransactionDate =
-                                          date.toIso8601String().split("T").first;
+                                      controller.rentTransactionDate = date.toIso8601String().split("T").first;
                                       controller.update();
                                     },
                                   ),
@@ -172,15 +167,11 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                           ],
                         ),
                       ),
-                      SizedBox(
-                        height: 15,
-                      )
+                      SizedBox(height: 15),
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
+                SizedBox(height: 10),
 
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -206,13 +197,11 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                             initialDate: DateTime.now(),
                               allowFutureDates: false,
                             onChanged: (date) {
-                              controller.rentFilterFromDate =
-                                  date.toIso8601String().split("T").first;
+                              controller.rentFilterFromDate = date.toIso8601String().split("T").first;
                               controller.update();
                             },
                             onSubmitted: (date) {
-                              controller.rentFilterFromDate =
-                                  date.toIso8601String().split("T").first;
+                              controller.rentFilterFromDate = date.toIso8601String().split("T").first;
                               controller.update();
                             },
                           ),
@@ -234,13 +223,11 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                               key: ValueKey("to_date_${controller.datePickerKey}"),
                               initialDate: DateTime.now(),
                               onChanged: (date) {
-                                controller.rentFilterToDate =
-                                    date.toIso8601String().split("T").first;
+                                controller.rentFilterToDate = date.toIso8601String().split("T").first;
                                 controller.update();
                               },
                               onSubmitted: (date) {
-                                controller.rentFilterToDate =
-                                    date.toIso8601String().split("T").first;
+                                controller.rentFilterToDate = date.toIso8601String().split("T").first;
                                 controller.update();
                               },
                             ),
@@ -268,13 +255,10 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                             ?.map((payment) {
                           return InkWell(
                             onTap: () {
-                              if (controller.selectedPaymentTypeIds
-                                  .contains(payment.id)) {
-                                controller.selectedPaymentTypeIds
-                                    .remove(payment.id);
+                              if (controller.selectedPaymentTypeIds.contains(payment.id)) {
+                                controller.selectedPaymentTypeIds.remove(payment.id);
                               } else {
-                                controller.selectedPaymentTypeIds
-                                    .add(payment.id!);
+                                controller.selectedPaymentTypeIds.add(payment.id!);
                               }
                               controller.update();
                             },
@@ -283,22 +267,18 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                               children: [
                                 Checkbox(
                                   visualDensity: VisualDensity.compact,
-                                  value: controller.selectedPaymentTypeIds
-                                      .contains(payment.id),
+                                  value: controller.selectedPaymentTypeIds.contains(payment.id),
                                   onChanged: (v) {
                                     if (v == true) {
-                                      controller.selectedPaymentTypeIds
-                                          .add(payment.id!);
+                                      controller.selectedPaymentTypeIds.add(payment.id!);
                                     } else {
-                                      controller.selectedPaymentTypeIds
-                                          .remove(payment.id);
+                                      controller.selectedPaymentTypeIds.remove(payment.id);
                                     }
                                     controller.update();
                                   },
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 4.0, right: 8.0),
+                                  padding: const EdgeInsets.only(left: 4.0, right: 8.0),
                                   child: Text(
                                     payment.name?.toUpperCase() ?? "",
                                     style: mozillaTextSemiBoldText(
@@ -358,8 +338,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                                   onChanged: (bool? val) {
                                     if (val == true) {
                                       controller.selectedIds = controller.driverRentFilterModel!.bookings!
-                                          .map((booking) => booking.id.toString())
-                                          .toSet();
+                                          .map((booking) => booking.id.toString()).toSet();
                                     } else {
                                       controller.selectedIds.clear();
                                     }
@@ -399,45 +378,34 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                             return [
                               "", "", "", "", "", "", "", "",
                               const Center(
-                                child: Text("TOTAL", style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 13))),
+                                child: Text("TOTAL", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13))),
                               ...totalKeys.map((key) {
                                 return Center(
                                   child: Text(
-                                      "£ ${controller
-                                          .getCreateRentColumnTotal(key)
-                                          .toStringAsFixed(2)}",
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 13)),
+                                      "£ ${controller.getCreateRentColumnTotal(key).toStringAsFixed(2)}",
+                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                                 );
                               }),
                               "",
                             ];
                           }
                           final booking = item;
-                          final isRowSelected = controller.selectedIds.contains(
-                              booking.id.toString());
+                          final isRowSelected = controller.selectedIds.contains(booking.id.toString());
                           return [
                             Center(
                                 child: Checkbox(
                                     value: isRowSelected,
                                     onChanged: (bool? val) {
                                       if (val == true) {
-                                        controller.selectedIds.add(
-                                            booking.id.toString());
+                                        controller.selectedIds.add(booking.id.toString());
                                       } else {
-                                        controller.selectedIds.remove(
-                                            booking.id.toString());
+                                        controller.selectedIds.remove(booking.id.toString());
                                       }
                                       controller.calculateTotals();
                                       controller.update();
                                     })),
                             booking.referenceNumber ?? "",
-                            "${(booking.pickupDate ?? "").toString().split(
-                                ' ')[0]} ${(booking.pickupTime ?? "")
-                                .toString()
-                                .split('.')[0].substring(0, 5)}",
+                            "${(booking.pickupDate ?? "").toString().split(' ')[0]} ${(booking.pickupTime ?? "").toString().split('.')[0].substring(0, 5)}",
                             (booking.pickup ?? "").toUpperCase(),
                             (booking.dropoff ?? "").toUpperCase(),
                             (booking.vehicleType?.name ?? "").toUpperCase(),
@@ -495,8 +463,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                                     await controller.updateBookingCharges(booking);
                                     controller.calculateTotals();
                                     controller.update();
-                                    print(
-                                        "Updating Booking ID: ${booking.id}");
+                                    print("Updating Booking ID: ${booking.id}");
                                   }
                                 },
                               ),
@@ -515,25 +482,11 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            customWidget(
-                                title: AppText.cashTotal,
-                                value:
-                                    "£ ${controller.cashTotal.toStringAsFixed(2)}"),
-                            customWidget(
-                                title: AppText.total + ":",
-                                value:
-                                    "£ ${controller.grandTotal.toStringAsFixed(2)}"),
-                            customWidget(
-                                title: AppText.owed,
-                                value: "£ ${controller.owed.toStringAsFixed(2)}"),
-                            customWidget(
-                                title: AppText.oldBalance,
-                                value:
-                                    "£ ${controller.oldBalance.toStringAsFixed(2)}"),
-                            customWidget(
-                                title: AppText.newBalance,
-                                value:
-                                    "£ ${controller.newBalance.toStringAsFixed(2)}"),
+                            customWidget(title: AppText.cashTotal, value: "£ ${controller.cashTotal.toStringAsFixed(2)}"),
+                            customWidget(title: AppText.total + ":", value: "£ ${controller.grandTotal.toStringAsFixed(2)}"),
+                            customWidget(title: AppText.owed, value: "£ ${controller.owed.toStringAsFixed(2)}"),
+                            customWidget(title: AppText.oldBalance, value: "£ ${controller.oldBalance.toStringAsFixed(2)}"),
+                            customWidget(title: AppText.newBalance, value: "£ ${controller.newBalance.toStringAsFixed(2)}"),
                           ],
                         ),
                         SizedBox(
@@ -542,18 +495,9 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            customWidget(
-                                title: "ACCOUNT TOTAL:",
-                                value:
-                                    "£ ${controller.accountTotal.toStringAsFixed(2)}"),
-                            customWidget(
-                                title: AppText.parkingCongestion,
-                                value:
-                                    "£ ${controller.parkingCongestion.toStringAsFixed(2)}"),
-                            customWidget(
-                                title: "RENT TOTAL:",
-                                value:
-                                    "£ ${controller.rentTotal.toStringAsFixed(2)}"),
+                            customWidget(title: "ACCOUNT TOTAL:", value: "£ ${controller.accountTotal.toStringAsFixed(2)}"),
+                            customWidget(title: AppText.parkingCongestion, value: "£ ${controller.parkingCongestion.toStringAsFixed(2)}"),
+                            customWidget(title: "RENT TOTAL:", value: "£ ${controller.rentTotal.toStringAsFixed(2)}"),
                           ],
                         ),
                       ],

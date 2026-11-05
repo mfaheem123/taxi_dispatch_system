@@ -1,23 +1,16 @@
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/dropdown_button.dart';
-import 'package:dashboard_new1/view/accounts/controller/account_controller.dart';
 import 'package:dashboard_new1/view/administration/model/list_subsDiary.dart';
 import 'package:dashboard_new1/view/dashboard_view/Controller/dashboard_controller.dart';
-import 'package:dashboard_new1/view/dashboard_view/booking_table.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/time_picker_widget.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/user_info_widget.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../component/color.dart';
-import '../../../../component/datatable_widget.dart';
 import '../../../../component/textStyle.dart';
 import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
-import 'package:dashboard_new1/view/invoices/model/account_invoice_model.dart';
-
-import '../../../component/editable_cell_widget.dart';
-import '../../../component/networks/api.dart';
 import '../../../component/responsive_datatable_widget.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
 import '../controller/account_invoice_controller.dart';
@@ -38,12 +31,11 @@ class _CreateAccountPreInvoiceState
   InvoiceController Controller = Get.isRegistered<InvoiceController>()
       ? Get.find<InvoiceController>()
       : Get.put(InvoiceController());
-  List permissions = [];
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    permissions = Api().sp.read('all_permissions') ?? [];
     shortCutKeyValue.value = "CreateAccountInvoiceScreen";
   }
 
