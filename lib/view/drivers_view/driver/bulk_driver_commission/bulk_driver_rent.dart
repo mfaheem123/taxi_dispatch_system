@@ -7,6 +7,7 @@ import '../../../../component/datatable_widget.dart';
 import '../../../../component/dropdown_button.dart';
 import '../../../../component/textStyle.dart';
 import '../../../../component/text_widget.dart';
+import '../../../administration/model/list_subsDiary.dart';
 import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../../dashboard_view/booking_table.dart';
 import '../../../dashboard_view/widgets/time_picker_widget.dart';
@@ -31,6 +32,8 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
   void initState() {
     super.initState();
     shortCutKeyValue.value = "bulkDriverRent";
+    controller.getSubsidiary();
+    controller.clearBulkRent();
   }
 
   int selectedRowIndex = 0;
@@ -95,20 +98,15 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                                     spacing: isCompact ? 6 : 8,
                                     crossAxisAlignment: WrapCrossAlignment.center,
                                     children: [
-                                      CustomDropdownField(
+                                      CustomDropdownField<Subsidiaries>(
                                         width: isCompact ? fieldWidth / 2.4 : fieldWidth / 2,
                                         text: "SUBS",
                                         label: AppText.selectSubsidiary,
-                                        items: [
-                                          "25 GEORGE HAMPTON",
-                                          "26 PAUL DOUBLEDAY",
-                                          "27 RICHARD HARDWICK",
-                                          "28 LANRE OKERJO",
-                                        ],
-                                        value: selectSub,
-                                        itemLabel: (val) => val,
+                                        items: controller.subsDiaryModel?.subsidiaries ?? [],
+                                        value: controller.selectedSubsidiary,
+                                        itemLabel: (item) => item.name ?? "",
                                         onChanged: (val) {
-                                          selectSub = val;
+                                          controller.selectedSubsidiary = val;
                                           controller.update();
                                         },
                                       ),
@@ -121,7 +119,19 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                                           column: true,
                                           child: SizedBox(
                                             height: isCompact ? 28 : 30,
-                                            child: KeyboardDatePicker(),
+                                            child: KeyboardDatePicker(
+                                              initialDate: controller.bulkRentFromDate.isNotEmpty
+                                                  ? DateTime.parse(controller.bulkRentFromDate)
+                                                  : DateTime.now().subtract(Duration(days: 7)),
+                                              onChanged: (date) {
+                                                controller.bulkRentFromDate = date.toIso8601String().split("T").first;
+                                                controller.update();
+                                              },
+                                              onSubmitted: (date) {
+                                                controller.bulkRentFromDate = date.toIso8601String().split("T").first;
+                                                controller.update();
+                                              },
+                                            ),
                                           )),
 
                                       labeledField(
@@ -132,7 +142,19 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                                           column: true,
                                           child: SizedBox(
                                             height: isCompact ? 28 : 30,
-                                            child: KeyboardDatePicker(),
+                                            child: KeyboardDatePicker(
+                                              initialDate: controller.bulkRentToDate.isNotEmpty
+                                                  ? DateTime.parse(controller.bulkRentToDate)
+                                                  : DateTime.now(),
+                                              onChanged: (date) {
+                                                controller.bulkRentToDate = date.toIso8601String().split("T").first;
+                                                controller.update();
+                                              },
+                                              onSubmitted: (date) {
+                                                controller.bulkRentToDate = date.toIso8601String().split("T").first;
+                                                controller.update();
+                                              },
+                                            ),
                                           )),
 
                                       SizedBox(width: isCompact ? 20 : 50),
@@ -149,25 +171,31 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                                               height: isCompact ? 30 : 33,
                                               borderRadius: 4,
                                               btnColor: DynamicColors.primaryClr,
-                                              style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
+                                              style: mozillaTextSemiBoldText(fontSize: 11, color: DynamicColors.whiteClr),
                                               verticalPadding: 0.0,
                                               btnText: AppText.getBooking,
+                                              onTap: () {
+                                                controller.getBulkRent();
+                                              },
                                             ),
                                             CustomButton(
                                               width: isCompact ? 60 : 80,
                                               height: isCompact ? 30 : 33,
                                               borderRadius: 4,
                                               btnColor: DynamicColors.redClr,
-                                              style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
+                                              style: mozillaTextSemiBoldText(fontSize: 11, color: DynamicColors.whiteClr),
                                               verticalPadding: 0.0,
                                               btnText: AppText.clear,
+                                              onTap: () {
+                                                controller.clearBulkRent();
+                                              },
                                             ),
                                             CustomButton(
                                               width: isCompact ? 70 : 90,
                                               height: isCompact ? 30 : 33,
                                               borderRadius: 4,
                                               btnColor: DynamicColors.greenClr,
-                                              style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
+                                              style: mozillaTextSemiBoldText(fontSize: 11, color: DynamicColors.whiteClr),
                                               verticalPadding: 0.0,
                                               btnText: AppText.generate,
                                             ),
@@ -218,7 +246,7 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                                             context,
                                             isMobile,
                                             AppText.emailSubject,
-                                            controller.emailSubjectController,
+                                            controller.bulkRentEmailController,
                                             width: fieldWidth,
                                             column: true,
                                             textInputAction: TextInputAction.next),
@@ -232,7 +260,7 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                                           height: isCompact ? 30 : 33,
                                           borderRadius: 4,
                                           btnColor: DynamicColors.greenClr,
-                                          style: mozillaTextRegularText(fontSize: 11, color: DynamicColors.whiteClr),
+                                          style: mozillaTextSemiBoldText(fontSize: 11, color: DynamicColors.whiteClr),
                                           verticalPadding: 0.0,
                                           btnText: AppText.generateSendPdf,
                                         ),
@@ -247,16 +275,18 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                   ),
 
                   const SizedBox(height: 15),
-                  SingleChildScrollView(
+                  controller.isBulkRent
+                      ? const Center(child: CircularProgressIndicator())
+                      : SingleChildScrollView(
                     child: SizedBox(
                       width: Get.width,
                       child: DatatableWidget(
                         columns: [
                           buildHeaderWithSearch(
                               widget: Checkbox(
-                                  value: controller.selectAllDrivers.value,
+                                  value: controller.selectBulkRentDrivers.value,
                                   onChanged: (v) {
-                                    controller.selectAllDrivers.value = v!;
+                                    controller.selectBulkRentDrivers.value = v!;
                                     controller.update();
                                   })),
                           buildHeaderWithSearch(title: "DRIVER"),
@@ -270,28 +300,41 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                           buildHeaderWithSearch(title: "OWED"),
                           buildHeaderWithSearch(title: "ACTION"),
                         ],
-                        totalRow: totalRows,
-                        cells: [
-                          DataCell(Center(child: Checkbox(
-                              value: controller.selectAllDrivers.value,
-                              onChanged: (v) {
-                                controller.selectAllDrivers.value = v!;
-                                controller.update();
-                              }))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                        ],
+                        totalRow: controller.getBulkRentModel?.data?.length ?? 0,
+                        rows: controller.getBulkRentModel?.data?.map((item) {
+                          return DataRow(cells: [
+                            DataCell(Center(
+                                child: Checkbox(
+                                    value: controller.selectBulkDrivers.value,
+                                    onChanged: (v) {
+                                      controller.selectBulkDrivers.value = v!;
+                                      controller.update();
+                                    }))),
+                            DataCell(Center(child: Text(item.driver?.username ?? ""))),
+                            DataCell(Center(child: Text(item.bookingsCount ?? ""))),
+                            DataCell(Center(child: Text("£ ${item.cashJobsTotal ?? ""}"))),
+                            DataCell(Center(child: Text("£ ${item.accountJobsTotal ?? ""}"))),
+                            DataCell(Center(child: Text("£ ${item.jobsTotal ?? ""}"))),
+                            DataCell(Center(child: Text("£ ${item.rentTotal ?? ""}"))),
+                            DataCell(Center(child: Text("£ ${item.oldBalance ?? ""}"))),
+                            DataCell(Center(child: Text("£ ${item.currentBalance ?? ""}"))),
+                            DataCell(Center(child: Text("£ ${item.owed ?? ""}"))),
+                            DataCell(Center(child:
+                            CustomButton(
+                              width: 55,
+                              height: 26,
+                              btnText: AppText.view,
+                              btnColor: DynamicColors.primaryClr,
+                              borderRadius: 6,
+                              verticalPadding: 0.0,
+                              style: mozillaTextSemiBoldText(
+                                  fontSize: 11, color: DynamicColors.whiteClr),
+                            ))),
+                          ]);
+                        }).toList(),
                       ),
                     ),
-                  ),
+                  )
                 ],
               ),
             );

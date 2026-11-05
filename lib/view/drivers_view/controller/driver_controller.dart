@@ -43,6 +43,7 @@ import '../model/driver_rent_alt_model.dart';
 import '../model/driver_rent_filter_model.dart';
 import '../model/driver_rent_model.dart';
 import '../model/get_bulk_commission_model.dart';
+import '../model/get_bulk_rent_model.dart';
 import '../model/list_driver_commission_model.dart';
 import '../model/update_driver_commission_model.dart';
 import '../model/update_driver_rent_model.dart';
@@ -1928,48 +1929,58 @@ class DriverController extends GetxController {
         updateItems.map((e) => e.booking).where((b) => b != null).toList();
 
     // 1. Cash Total
-    updateCashTotalValue = double.tryParse(updateDriverCommissionByIdModel?.driverCommission?.cashJobsTotal ?? "0") ?? 0.0;
-    // updateCashTotalValue = activeBookings.fold(0.0, (sum, b) {
-    //   bool isCash = b?.paymentType?.name?.toString().toLowerCase() == "cash";
-    //   if (isCash && b?.commission == true) {
-    //     return sum + parseDouble(calculateWithoutCommission(b));
-    //   }
-    //   return sum;
-    // });
+    if (activeBookings.isNotEmpty) {
+      updateCashTotalValue = activeBookings.fold(0.0, (sum, b) {
+        bool isCash = b?.paymentType?.name?.toString().toLowerCase() == "cash";
+        if (isCash && b?.commission == true) {
+          return sum + parseDouble(calculateWithoutCommission(b));
+        }
+        return sum;
+      });
+    } else {
+      updateCashTotalValue = double.tryParse(
+          updateDriverCommissionByIdModel?.driverCommission?.cashJobsTotal ?? "0") ?? 0.0;
+    }
 
-    // 2. Account Fare Total
-    updateAccountFareTotalVar = double.tryParse(updateDriverCommissionByIdModel?.driverCommission?.accountJobsTotal ?? "0") ?? 0.0;
-    // updateAccountFareTotalVar = activeBookings.fold(0.0, (sum, b) {
-    //   bool isAccount =
-    //       b?.paymentType?.name?.toString().toLowerCase() == "account";
-    //   if (isAccount && b?.commission == true) {
-    //     return sum + parseDouble(b?.fares);
-    //   }
-    //   return sum;
-    // });
+    // 2. account total
+    if (activeBookings.isNotEmpty) {
+      updateAccountFareTotalVar = activeBookings.fold(0.0, (sum, b) {
+        bool isAccount =
+            b?.paymentType?.name?.toString().toLowerCase() == "account";
+        if (isAccount && b?.commission == true) {
+          return sum + parseDouble(b?.fares);
+        }
+        return sum;
+      });
+    } else {
+      updateAccountFareTotalVar = double.tryParse(
+          updateDriverCommissionByIdModel?.driverCommission?.accountJobsTotal ??
+              "0") ?? 0.0;
+    }
+
 
     // 3. Parking/Congestion
     updateParkingCongestionVar = activeBookings.fold(0.0, (sum, b) {
-      bool isAccount =
-          b?.paymentType?.name?.toString().toLowerCase() == "account";
+      bool isAccount = b?.paymentType?.name?.toString().toLowerCase() == "account";
       if (isAccount) {
-        return sum +
-            parseDouble(b?.parkingCharges) +
-            parseDouble(b?.congestionCharges);
+        return sum + parseDouble(b?.parkingCharges) + parseDouble(b?.congestionCharges);
       }
       return sum;
     });
 
     // 4. Total Commission
-    updateTotalCommissionVar = double.tryParse(updateDriverCommissionByIdModel?.driverCommission?.commissionTotal ?? "0") ?? 0.0;
-    // updateTotalCommissionVar = activeBookings.fold(0.0, (sum, b) {
-    //   return sum + parseDouble(calculateFinalDriverComm(b));
-    // });
+
+    if (activeBookings.isNotEmpty) { updateTotalCommissionVar = activeBookings.fold(0.0, (sum, b) {
+      return sum + parseDouble(calculateFinalDriverComm(b));
+    });
+    } else {
+      updateTotalCommissionVar = double.tryParse(updateDriverCommissionByIdModel?.driverCommission?.commissionTotal ?? "0") ?? 0.0;
+    }
+
 
     // 5. Account Wo-Comm
     updateAccountWOCmmVar = activeBookings.fold(0.0, (sum, b) {
-      bool isAccount =
-          b?.paymentType?.name?.toString().toLowerCase() == "account";
+      bool isAccount = b?.paymentType?.name?.toString().toLowerCase() == "account";
       if (isAccount && b?.commission == false) {
         return sum + parseDouble(calculateWithoutCommission(b));
       }
@@ -1999,8 +2010,6 @@ class DriverController extends GetxController {
   void updateCommissionOnToggle() {
     final updateItems = updateDriverCommissionByIdModel
         ?.driverCommission?.driverCommissionLineitems;
-
-    final updateBulkItems = getBulkCommissionModel?.data;
 
     if (updateItems == null) return;
 
@@ -2185,30 +2194,23 @@ class DriverController extends GetxController {
     updateNewBalanceVar = parse(data.currentBalance);
     updateAccountFareTotalVar = parse(data.accountJobsTotal);
     updateTotalCommissionVar = parse(data.commissionTotal);
-    updateDriverSelectionController.text =
-        "${data.driver?.username ?? ''} ${data.driver?.name ?? ''}";
-    UpdateCommissionController.text =
-        (data.driver?.driverCommission ?? "0").toString();
+    updateDriverSelectionController.text = "${data.driver?.username ?? ''} ${data.driver?.name ?? ''}";
+    UpdateCommissionController.text = (data.driver?.driverCommission ?? "0").toString();
     UpdatePdaRentController.text = (data.driver?.pdaRent ?? "0").toString();
-    String formatDate(dynamic date) =>
-        date?.toString().split(' ')[0] ?? "2000-01-01";
+    String formatDate(dynamic date) => date?.toString().split(' ')[0] ?? "2000-01-01";
     updateFilterFromDate = formatDate(data.fromDate);
     updateFilterToDate = formatDate(data.toDate);
     updateTransactionDateController = formatDate(data.transactionDate);
+
+    if (data.driverCommissionLineitems != null) {
+      for (var item in data.driverCommissionLineitems!) {
+        if (item.booking != null) {
+          item.booking.commission = true;
+        }
+      }
+    }
+
     calculateUpdateTotals();
-  }
-
-
-  void _assignBulkApiResponseToVariables(dynamic item) {
-    if (item == null) return;
-    
-    updateCashTotalValue = double.tryParse(item.cashJobsTotal?.toString() ?? "0") ?? 0.0;
-    updateAccountFareTotalVar = double.tryParse(item.accountJobsTotal?.toString() ?? "0") ?? 0.0;
-    updateGrandTotalVar = double.tryParse(item.jobsTotal?.toString() ?? "0") ?? 0.0;
-    updateOwedVar = double.tryParse(item.owed?.toString() ?? "0") ?? 0.0;
-    oldBalanceVar = double.tryParse(item.oldBalance?.toString() ?? "0") ?? 0.0;
-    updateNewBalanceVar = double.tryParse(item.currentBalance?.toString() ?? "0") ?? 0.0;
-    updateTotalCommissionVar = double.tryParse(item.commissionTotal?.toString() ?? "0") ?? 0.0;
   }
 
   // UpdateScreenSave
@@ -3568,12 +3570,59 @@ class DriverController extends GetxController {
 
     if (response.statusCode == 200) {
       BotToast.showText(text: "COMMISSION GENERATED SUCCESSFULLY");
+      clearBulkCommission();
+
       isLoadBulkCommission = false;
       update();
     }
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo BULK DRIVER COMMISSION functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo BULK DRIVER RENT functionality
+
+
+  final bulkRentEmailController = TextEditingController();
+
+  ///Get Bulk Commission
+
+  String bulkRentFromDate = "";
+  String bulkRentToDate = "";
+
+  RxBool selectBulkRentDrivers = false.obs;
+
+  bool isBulkRent = false;
+  GetBulkRentModel? getBulkRentModel;
+
+  getBulkRent() async {
+    isBulkRent = true;
+    update();
+
+    var response = await Api().get("driver_rent/bulk-preview", sendCompanyId: true,
+        queryParameters: {
+          "subsidiary_id": selectedSubsidiary?.id,
+          "from_date": bulkRentFromDate,
+          "to_date": bulkRentToDate
+        }
+    );
+
+    if (response.statusCode == 200) {
+      getBulkRentModel = GetBulkRentModel.fromJson(response.data);
+      isBulkRent = false;
+      update();
+    }
+  }
+
+  void clearBulkRent() {
+    bulkRentFromDate = "";
+    bulkRentToDate = "";
+    selectedSubsidiary = null;
+    getBulkRentModel = null;
+    selectBulkRentDrivers = false.obs;
+    bulkRentEmailController.clear();
+    update();
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo BULK DRIVER RENT functionality
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER COMMISSION PAY functionality
 
