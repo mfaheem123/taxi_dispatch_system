@@ -997,6 +997,35 @@ import 'dart:convert';
 
 import 'package:intl/intl.dart';
 
+import '../../drivers_view/model/driver_attribute_model.dart';
+import 'escort_by_account.dart';
+
+GetBulkCommissionModel getBulkCommissionModelFromJson(String str) => GetBulkCommissionModel.fromJson(json.decode(str));
+
+String getBulkCommissionModelToJson(GetBulkCommissionModel data) => json.encode(data.toJson());
+
+class GetBulkCommissionModel {
+  bool? success;
+  List<BookingObjectData>? booking;
+
+  GetBulkCommissionModel({
+    this.success,
+    this.booking,
+  });
+
+  factory GetBulkCommissionModel.fromJson(Map<String, dynamic> json) => GetBulkCommissionModel(
+    success: json["success"],
+    booking: json["booking"] == null ? [] : List<BookingObjectData>.from(json["booking"]!.map((x) => BookingObjectData.fromJson(x))),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "success": success,
+    "booking": booking == null ? [] : List<dynamic>.from(booking!.map((x) => x.toJson())),
+  };
+}
+
+typedef Booking = BookingObjectData;
+
 DashboardTableModel dashboardTableModelFromJson(String str) => DashboardTableModel.fromJson(json.decode(str));
 
 String dashboardTableModelToJson(DashboardTableModel data) => json.encode(data.toJson());
@@ -1157,6 +1186,12 @@ class BookingObjectData {
   Employee? employee;
   Airport? airport;
 
+  ///------------------------------------------------------
+  bool? fob;
+  bool? future;
+  List<DriverAttribute>? driverAttributes;
+  Escort? escort;
+
 
   BookingObjectData({
     this.id,
@@ -1265,6 +1300,12 @@ class BookingObjectData {
     this.customer,
     this.employee,
     this.airport,
+///---------------------------------------
+    this.fob,
+    this.future,
+    this.driverAttributes,
+    this.escort,
+
   });
 
   factory BookingObjectData.fromJson(Map<String, dynamic> json) => BookingObjectData(
@@ -1363,10 +1404,13 @@ class BookingObjectData {
     stripePaymentId: json["stripe_payment_id"],
     invoiceNumber: json["invoice_number"],
     initialSubsidiaryId: json["initial_subsidiary_id"],
-        createdAt: DateTime.  parse(json["created_at"]),
-
-    updatedAt: DateTime.parse(json["updated_at"]),
+    createdAt: json["created_at"] == null ? null : DateTime.tryParse(json["created_at"].toString()),
+    updatedAt: json["updated_at"] == null ? null : DateTime.tryParse(json["updated_at"].toString()),
     eta: json["eta"],
+    fob: json["fob"],
+    future: json["future"],
+    driverAttributes: json["driver_attributes"] == null ? [] : List<DriverAttribute>.from(json["driver_attributes"]!.map((x) => DriverAttribute.fromJson(x))),
+    escort: json["escort"] == null ? null : Escort.fromJson(json["escort"]),
     bookingStatus: json["booking_status"] == null ? null : BookingStatus.fromJson(json["booking_status"]),
     bookingType: json["booking_type"] == null ? null : BookingType.fromJson(json["booking_type"]),
     journeyType: json["journey_type"] == null ? null : JourneyType.fromJson(json["journey_type"]),
@@ -1473,9 +1517,13 @@ class BookingObjectData {
     "stripe_payment_id": stripePaymentId,
     "invoice_number": invoiceNumber,
     "initial_subsidiary_id": initialSubsidiaryId,
-    "created_at": createdAt!.toIso8601String(),
-    "updated_at": updatedAt!.toIso8601String(),
+    "created_at": createdAt?.toIso8601String(),
+    "updated_at": updatedAt?.toIso8601String(),
     "eta": eta,
+    "fob": fob,
+    "escort": escort?.toJson(),
+    "driver_attributes": driverAttributes == null ? [] : List<dynamic>.from(driverAttributes!.map((x) => x.toJson())),
+    "future": future,
     "booking_status": bookingStatus?.toJson(),
     "booking_type": bookingType?.toJson(),
     "journey_type": journeyType?.toJson(),
@@ -1583,6 +1631,32 @@ class Dropoff {
     "id": id,
     "name": name,
     "location_type": locationType?.toJson(),
+  };
+}
+
+class DriverAttribute {
+  int? id;
+  String? attributeName;
+  String? shortName;
+
+  DriverAttribute({
+    this.id,
+    this.attributeName,
+    this.shortName,
+  });
+
+  factory DriverAttribute.fromJson(Map<String, dynamic> json) {
+    return DriverAttribute(
+      id: json["id"],
+      attributeName: json["attribute_name"],
+      shortName: json["short_name"],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "attribute_name": attributeName,
+    "short_name": shortName,
   };
 }
 
@@ -1794,6 +1868,42 @@ class Employee {
   };
 }
 
+class Escort {
+  int? id;
+  String? name;
+  String? email;
+  String? mobile;
+  String? address;
+  bool? active;
+
+  Escort({
+    this.id,
+    this.name,
+    this.email,
+    this.mobile,
+    this.address,
+    this.active,
+  });
+
+  factory Escort.fromJson(Map<String, dynamic> json) => Escort(
+    id: json["id"],
+    name: json["name"],
+    email: json["email"],
+    mobile: json["mobile"],
+    address: json["address"],
+    active: json["active"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "email": email,
+    "mobile": mobile,
+    "address": address,
+    "active": active,
+  };
+}
+
 class JourneyType {
   String? journeyType;
 
@@ -1889,16 +1999,19 @@ class RestrictedDriver {
 class Subsidiary {
   int? id;
   String? name;
+  String? email;
   String? telephoneNumber;
 
   Subsidiary({
     this.id,
     this.name,
+    this.email,
     this.telephoneNumber,
   });
 
   factory Subsidiary.fromJson(Map<String, dynamic> json) => Subsidiary(
     id: json["id"],
+    email: json["email"],
     name: json["name"],
     telephoneNumber: json["telephone_number"],
   );
@@ -1906,6 +2019,7 @@ class Subsidiary {
   Map<String, dynamic> toJson() => {
     "id": id,
     "name": name,
+    "email": email,
     "telephone_number": telephoneNumber,
   };
 }

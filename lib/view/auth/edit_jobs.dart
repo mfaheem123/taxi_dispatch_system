@@ -28,6 +28,7 @@
 // claiming the hook would leave the dashboard without one once this screen pops.
 
 import 'package:bot_toast/bot_toast.dart';
+import 'package:dashboard_new1/view/accounts/model/list_escort_model.dart';
 import 'package:dashboard_new1/view/auth/receipt_pdf.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/material.dart';
@@ -1177,6 +1178,16 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                           32,
                                           itemLabel: (p) => p.name ?? "",
                                         ),
+                                        _dropdown<Escorts>(
+                                          'Select Escort',
+                                          controller.selectEscortValue,
+                                          controller.escortList,
+                                              (v) => setState(() =>
+                                          controller.selectEscortValue = v),
+                                          _isReturnJourney ? 32 : 20,
+                                          itemLabel: (e) => (e.name ?? '').toUpperCase(),
+                                        ),
+
                                         _commsAndActionsRow(isMobile),
                                       ]),
                                       // Row 10 — R/LEAD, on its own.

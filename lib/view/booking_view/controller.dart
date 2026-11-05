@@ -70,42 +70,116 @@ class BookingController extends GetxController{
 
 
   final int tableId = 2;
-  getDashboardTableData() async {
 
-    preBookingLoad(true);
-    var response = await Api().get("bookings/getbytabs/${tableId}", sendCompanyId: true,
-        queryParameters: {
-          "page": preBookingCurrentPage.value,
-          "limit": dashboardTableLimit,
-          "reference_number": referenceNumber.text,
-          "pickup_date": pickupDate.text,
-          "pickup_time": pickupTime.text,
-          "name": name.text,
-          "pickup": pickup.text,
-          "dropoff": dropOff.text,
-          "account_name": accountName.text,
-          "driver_name": driverName.text,
-          "payment_type": paymentType.text,
-          "vehicle_type_name": vehicleTypeName.text,
-          "notes": notes.text,
-          "fares": fares.text,
-          "booking_status": bookingStatus.text,
-          "journey_type": journeyType.text,
-          "subsidiary" : subsidiary.text,
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Reusable Tab Fetching API
 
-
-        }
+  Future<DashboardTableModel?> fetchBookingTab({
+    required int tabId,
+    required RxBool loadRx,
+    required RxInt totalPagesRx,
+    required RxList<BookingObjectData> allListRx,
+    required RxList<BookingObjectData> filteredListRx,
+    required int page,
+    required int limit,
+    required Map<String, dynamic> queryParameters,
+    String? customPath,
+    bool auth = false,
+  }) async {
+    loadRx(true);
+    String path = customPath ?? "bookings/getbytabs/$tabId";
+    var response = await Api().get(
+      path,
+      sendCompanyId: true,
+      queryParameters: queryParameters,
+      auth: auth,
     );
-    if(response.statusCode == 200){
-      dashboardTableModelData = DashboardTableModel.fromJson(response.data);
-      preBookingTotalPages.value = dashboardTableModelData!.totalPages ?? 1;
-      preBookingAll.value = dashboardTableModelData?.data ?? [];
-      preBookingFiltered.value = preBookingAll;
 
-      update();
-      preBookingLoad(false);
-
+    DashboardTableModel? modelData;
+    if (response != null && response.statusCode == 200) {
+      modelData = DashboardTableModel.fromJson(response.data);
+      totalPagesRx.value = modelData.totalPages ?? 1;
+      allListRx.value = modelData.data ?? [];
+      filteredListRx.value = allListRx;
     }
+    loadRx(false);
+    update();
+    return modelData;
+  }
+
+  Map<String, dynamic> _buildCommonQueryParams({
+    required int page,
+    required int limit,
+    required TextEditingController refNum,
+    required TextEditingController pDate,
+    required TextEditingController pTime,
+    required TextEditingController pName,
+    required TextEditingController pPickup,
+    required TextEditingController pDropOff,
+    required TextEditingController pAccountName,
+    required TextEditingController pDriverName,
+    required TextEditingController pPaymentType,
+    required TextEditingController pVehicleTypeName,
+    required TextEditingController pNotes,
+    required TextEditingController pFares,
+    required TextEditingController pBookingStatus,
+    required TextEditingController pJourneyType,
+    required TextEditingController pSubsidiary,
+    String? bookingSource,
+  }) {
+    final map = <String, dynamic>{
+      "page": page,
+      "limit": limit,
+      "reference_number": refNum.text,
+      "pickup_date": pDate.text,
+      "pickup_time": pTime.text,
+      "name": pName.text,
+      "pickup": pPickup.text,
+      "dropoff": pDropOff.text,
+      "account_name": pAccountName.text,
+      "driver_name": pDriverName.text,
+      "payment_type": pPaymentType.text,
+      "vehicle_type_name": pVehicleTypeName.text,
+      "notes": pNotes.text,
+      "fares": pFares.text,
+      "booking_status": pBookingStatus.text,
+      "journey_type": pJourneyType.text,
+      "subsidiary": pSubsidiary.text,
+    };
+    if (bookingSource != null) {
+      map["booking_source"] = bookingSource;
+    }
+    return map;
+  }
+
+  getDashboardTableData() async {
+    dashboardTableModelData = await fetchBookingTab(
+      tabId: tableId,
+      loadRx: preBookingLoad,
+      totalPagesRx: preBookingTotalPages,
+      allListRx: preBookingAll,
+      filteredListRx: preBookingFiltered,
+      page: preBookingCurrentPage.value,
+      limit: dashboardTableLimit,
+      queryParameters: _buildCommonQueryParams(
+        page: preBookingCurrentPage.value,
+        limit: dashboardTableLimit,
+        refNum: referenceNumber,
+        pDate: pickupDate,
+        pTime: pickupTime,
+        pName: name,
+        pPickup: pickup,
+        pDropOff: dropOff,
+        pAccountName: accountName,
+        pDriverName: driverName,
+        pPaymentType: paymentType,
+        pVehicleTypeName: vehicleTypeName,
+        pNotes: notes,
+        pFares: fares,
+        pBookingStatus: bookingStatus,
+        pJourneyType: journeyType,
+        pSubsidiary: subsidiary,
+      ),
+    );
   }
 
   void preBookingPageChange(int page) {
@@ -148,37 +222,34 @@ class BookingController extends GetxController{
 
   final int webBookId = 7;
   getWebBookingData() async {
-    webBookingLoad(true);
-    var response = await Api().get("bookings/getbytabs/${webBookId}", sendCompanyId: true,
-        queryParameters: {
-          "page": webBookingCurrentPage.value,
-          "limit": webBookingLimit,
-          "reference_number": webreferenceNumber.text,
-          "pickup_date": webpickupDate.text,
-          "pickup_time": webpickupTime.text,
-          "name": webname.text,
-          "pickup": webpickup.text,
-          "dropoff": webdropOff.text,
-          "account_name": webaccountName.text,
-          "driver_name": webdriverName.text,
-          "payment_type": webpaymentType.text,
-          "vehicle_type_name": webvehicleTypeName.text,
-          "notes": webnotes.text,
-          "fares": webfares.text,
-          "booking_status": webbookingStatus.text,
-          "journey_type": webjourneyType.text,
-          "subsidiary" : websubsidiary.text,
-        }
+    webBookingModelData = await fetchBookingTab(
+      tabId: webBookId,
+      loadRx: webBookingLoad,
+      totalPagesRx: webBookingTotalPages,
+      allListRx: webBookingAll,
+      filteredListRx: webBookingFiltered,
+      page: webBookingCurrentPage.value,
+      limit: webBookingLimit,
+      queryParameters: _buildCommonQueryParams(
+        page: webBookingCurrentPage.value,
+        limit: webBookingLimit,
+        refNum: webreferenceNumber,
+        pDate: webpickupDate,
+        pTime: webpickupTime,
+        pName: webname,
+        pPickup: webpickup,
+        pDropOff: webdropOff,
+        pAccountName: webaccountName,
+        pDriverName: webdriverName,
+        pPaymentType: webpaymentType,
+        pVehicleTypeName: webvehicleTypeName,
+        pNotes: webnotes,
+        pFares: webfares,
+        pBookingStatus: webbookingStatus,
+        pJourneyType: webjourneyType,
+        pSubsidiary: websubsidiary,
+      ),
     );
-    if(response.statusCode == 200){
-      webBookingModelData = DashboardTableModel.fromJson(response.data);
-      webBookingTotalPages.value = webBookingModelData?.totalPages ?? 1;
-      webBookingAll.value = webBookingModelData?.data ?? [];
-      webBookingFiltered.value = webBookingAll;
-      webBookingLoad(false);
-      update();
-
-    }
   }
   void webBookingPageChange(int page) {
     webBookingCurrentPage.value = page;
@@ -221,37 +292,35 @@ class BookingController extends GetxController{
 
   final int completedBookId = 4;
   getcompletedBookingData() async {
-    completedBookingLoad(true);
-    var response = await Api().get("bookings/getbytabs/${completedBookId}", sendCompanyId: true,
-        queryParameters: {
-          "page": completedBookingCurrentPage.value,
-          "limit": completedBookingLimit,
-          "booking_source": completedSource.text,
-          "reference_number": completedreferenceNumber.text,
-          "pickup_date": completedpickupDate.text,
-          "pickup_time": completedpickupTime.text,
-          "name": completedname.text,
-          "pickup": completedpickup.text,
-          "dropoff": completeddropOff.text,
-          "account_name": completedaccountName.text,
-          "driver_name": completeddriverName.text,
-          "payment_type": completedpaymentType.text,
-          "vehicle_type_name": completedvehicleTypeName.text,
-          "notes": completednotes.text,
-          "fares": completedfares.text,
-          "booking_status": completedbookingStatus.text,
-          "journey_type": completedjourneyType.text,
-          "subsidiary" : completedsubsidiary.text,
-        }
+    completedBookingModelData = await fetchBookingTab(
+      tabId: completedBookId,
+      loadRx: completedBookingLoad,
+      totalPagesRx: completedBookingTotalPages,
+      allListRx: completedBookingAll,
+      filteredListRx: completedBookingFiltered,
+      page: completedBookingCurrentPage.value,
+      limit: completedBookingLimit,
+      queryParameters: _buildCommonQueryParams(
+        page: completedBookingCurrentPage.value,
+        limit: completedBookingLimit,
+        refNum: completedreferenceNumber,
+        pDate: completedpickupDate,
+        pTime: completedpickupTime,
+        pName: completedname,
+        pPickup: completedpickup,
+        pDropOff: completeddropOff,
+        pAccountName: completedaccountName,
+        pDriverName: completeddriverName,
+        pPaymentType: completedpaymentType,
+        pVehicleTypeName: completedvehicleTypeName,
+        pNotes: completednotes,
+        pFares: completedfares,
+        pBookingStatus: completedbookingStatus,
+        pJourneyType: completedjourneyType,
+        pSubsidiary: completedsubsidiary,
+        bookingSource: completedSource.text,
+      ),
     );
-    if(response.statusCode == 200){
-      completedBookingModelData = DashboardTableModel.fromJson(response.data);
-      completedBookingAll.value = completedBookingModelData?.data ?? [];
-      completedBookingTotalPages.value = completedBookingModelData?.totalPages ?? 1;
-      completedBookingFiltered.value = completedBookingAll;
-      completedBookingLoad(false);
-      update();
-    }
   }
 
   void completedBookingPageChange(int page) {
@@ -284,28 +353,26 @@ class BookingController extends GetxController{
 
   final int multiBookId = 9;
   getMultiBookingData() async {
-    webBookingLoad(true);
-    var response = await Api().get("bookings/multi-bookings", sendCompanyId: true,
-    // var response = await Api().get("bookings/getbytabs/${multiBookId}", sendCompanyId: true,
-        queryParameters: {
-          "page": multiBookingCurrentPage.value,
-          "limit": multiBookingLimit,
-          "pickup_date": multipickupDate.text,
-          "pickup_time": multipickupTime.text,
-          "customer": multiCustomerName.text,
-          "pickup": multipickup.text,
-          "dropoff": multidropOff.text,
-          "mobile": multiMobile.text,
-        }
+    multiBookingModelData = await fetchBookingTab(
+      tabId: multiBookId,
+      loadRx: multiBookingLoad,
+      totalPagesRx: multiBookingTotalPages,
+      allListRx: multiBookingAll,
+      filteredListRx: multiBookingFiltered,
+      page: multiBookingCurrentPage.value,
+      limit: multiBookingLimit,
+      customPath: "bookings/multi-bookings",
+      queryParameters: {
+        "page": multiBookingCurrentPage.value,
+        "limit": multiBookingLimit,
+        "pickup_date": multipickupDate.text,
+        "pickup_time": multipickupTime.text,
+        "customer": multiCustomerName.text,
+        "pickup": multipickup.text,
+        "dropoff": multidropOff.text,
+        "mobile": multiMobile.text,
+      },
     );
-    if(response.statusCode == 200){
-      multiBookingModelData = DashboardTableModel.fromJson(response.data);
-      multiBookingTotalPages.value = multiBookingModelData?.totalPages ?? 1;
-      multiBookingAll.value = multiBookingModelData?.data ?? [];
-      multiBookingFiltered.value = multiBookingAll;
-      multiBookingLoad(false);
-      update();
-    }
   }
 
   void multiBookingPageChange(int page) {
@@ -346,36 +413,34 @@ class BookingController extends GetxController{
 
   final int appBookId = 8;
   getAppBookingData() async {
-    appBookingLoad(true);
-    var response = await Api().get("bookings/getbytabs/${appBookId}", sendCompanyId: true,
-        queryParameters: {
-          "page": appBookingCurrentPage.value,
-          "limit": appBookingLimit,
-          "reference_number": appreferenceNumber.text,
-          "pickup_date": apppickupDate.text,
-          "pickup_time": apppickupTime.text,
-          "name": appname.text,
-          "pickup": apppickup.text,
-          "dropoff": appdropOff.text,
-          "account_name": appaccountName.text,
-          "driver_name": appdriverName.text,
-          "payment_type": apppaymentType.text,
-          "vehicle_type_name": appvehicleTypeName.text,
-          "notes": appnotes.text,
-          "fares": appfares.text,
-          "booking_status": appbookingStatus.text,
-          "journey_type": appjourneyType.text,
-          "subsidiary" : appsubsidiary.text,
-        }
+    appBookingModelData = await fetchBookingTab(
+      tabId: appBookId,
+      loadRx: appBookingLoad,
+      totalPagesRx: appBookingTotalPages,
+      allListRx: appBookingAll,
+      filteredListRx: appBookingFiltered,
+      page: appBookingCurrentPage.value,
+      limit: appBookingLimit,
+      queryParameters: _buildCommonQueryParams(
+        page: appBookingCurrentPage.value,
+        limit: appBookingLimit,
+        refNum: appreferenceNumber,
+        pDate: apppickupDate,
+        pTime: apppickupTime,
+        pName: appname,
+        pPickup: apppickup,
+        pDropOff: appdropOff,
+        pAccountName: appaccountName,
+        pDriverName: appdriverName,
+        pPaymentType: apppaymentType,
+        pVehicleTypeName: appvehicleTypeName,
+        pNotes: appnotes,
+        pFares: appfares,
+        pBookingStatus: appbookingStatus,
+        pJourneyType: appjourneyType,
+        pSubsidiary: appsubsidiary,
+      ),
     );
-    if(response.statusCode == 200){
-      appBookingModelData = DashboardTableModel.fromJson(response.data);
-      appBookingTotalPages.value = appBookingModelData?.totalPages ?? 1;
-      appBookingAll.value = appBookingModelData?.data ?? [];
-      appBookingFiltered.value = appBookingAll;
-      appBookingLoad(false);
-      update();
-    }
   }
 
   void appBookingPageChange(int page) {
@@ -418,36 +483,34 @@ class BookingController extends GetxController{
 
   final int trashBookId = 11;
   getTrashBookingData() async {
-    appBookingLoad(true);
-    var response = await Api().get("bookings/getbytabs/${trashBookId}", sendCompanyId: true,
-        queryParameters: {
-          "page": trashBookingCurrentPage.value,
-          "limit": trashBookingLimit,
-          "reference_number": trashreferenceNumber.text,
-          "pickup_date": trashpickupDate.text,
-          "pickup_time": trashpickupTime.text,
-          "name": trashname.text,
-          "pickup": trashpickup.text,
-          "dropoff": trashdropOff.text,
-          "account_name": trashaccountName.text,
-          "driver_name": trashdriverName.text,
-          "payment_type": trashpaymentType.text,
-          "vehicle_type_name": trashvehicleTypeName.text,
-          "notes": trashnotes.text,
-          "fares": trashfares.text,
-          "booking_status": trashbookingStatus.text,
-          "journey_type": trashjourneyType.text,
-          "subsidiary" : trashsubsidiary.text,
-        }
+    trashBookingModelData = await fetchBookingTab(
+      tabId: trashBookId,
+      loadRx: trashBookingLoad,
+      totalPagesRx: trashBookingTotalPages,
+      allListRx: trashBookingAll,
+      filteredListRx: trashBookingFiltered,
+      page: trashBookingCurrentPage.value,
+      limit: trashBookingLimit,
+      queryParameters: _buildCommonQueryParams(
+        page: trashBookingCurrentPage.value,
+        limit: trashBookingLimit,
+        refNum: trashreferenceNumber,
+        pDate: trashpickupDate,
+        pTime: trashpickupTime,
+        pName: trashname,
+        pPickup: trashpickup,
+        pDropOff: trashdropOff,
+        pAccountName: trashaccountName,
+        pDriverName: trashdriverName,
+        pPaymentType: trashpaymentType,
+        pVehicleTypeName: trashvehicleTypeName,
+        pNotes: trashnotes,
+        pFares: trashfares,
+        pBookingStatus: trashbookingStatus,
+        pJourneyType: trashjourneyType,
+        pSubsidiary: trashsubsidiary,
+      ),
     );
-    if(response.statusCode == 200){
-      trashBookingModelData = DashboardTableModel.fromJson(response.data);
-      trashBookingTotalPages.value = trashBookingModelData?.totalPages ?? 1;
-      trashBookingAll.value = trashBookingModelData?.data ?? [];
-      trashBookingFiltered.value = trashBookingAll;
-      trashBookingLoad(false);
-      update();
-    }
   }
 
   void trashBookingPageChange(int page) {
@@ -492,36 +555,35 @@ class BookingController extends GetxController{
 
   final int pendingBookId = 10;
   getPendingBookingData() async {
-    pendingBookingLoad(true);
-    var response = await Api().get("bookings/getbytabs/${pendingBookId}", sendCompanyId: true,
-        queryParameters: {
-          "page": pendingBookingCurrentPage.value,
-          "limit": pendingBookingLimit,
-          "reference_number": pendingreferenceNumber.text,
-          "pickup_date": pendingpickupDate.text,
-          "pickup_time": pendingpickupTime.text,
-          "name": pendingname.text,
-          "pickup": pendingpickup.text,
-          "dropoff": pendingdropOff.text,
-          "account_name": pendingaccountName.text,
-          "driver_name": pendingdriverName.text,
-          "payment_type": pendingpaymentType.text,
-          "vehicle_type_name": pendingvehicleTypeName.text,
-          "notes": pendingnotes.text,
-          "fares": pendingfares.text,
-          "booking_status": pendingbookingStatus.text,
-          "journey_type": pendingjourneyType.text,
-          "subsidiary" : pendingsubsidiary.text,
-        }, auth: true,
+    pendingBookingModelData = await fetchBookingTab(
+      tabId: pendingBookId,
+      loadRx: pendingBookingLoad,
+      totalPagesRx: pendingBookingTotalPages,
+      allListRx: pendingBookingAll,
+      filteredListRx: pendingBookingFiltered,
+      page: pendingBookingCurrentPage.value,
+      limit: pendingBookingLimit,
+      auth: true,
+      queryParameters: _buildCommonQueryParams(
+        page: pendingBookingCurrentPage.value,
+        limit: pendingBookingLimit,
+        refNum: pendingreferenceNumber,
+        pDate: pendingpickupDate,
+        pTime: pendingpickupTime,
+        pName: pendingname,
+        pPickup: pendingpickup,
+        pDropOff: pendingdropOff,
+        pAccountName: pendingaccountName,
+        pDriverName: pendingdriverName,
+        pPaymentType: pendingpaymentType,
+        pVehicleTypeName: pendingvehicleTypeName,
+        pNotes: pendingnotes,
+        pFares: pendingfares,
+        pBookingStatus: pendingbookingStatus,
+        pJourneyType: pendingjourneyType,
+        pSubsidiary: pendingsubsidiary,
+      ),
     );
-    if(response.statusCode == 200){
-      pendingBookingModelData = DashboardTableModel.fromJson(response.data);
-      pendingBookingTotalPages.value = pendingBookingModelData?.totalPages ?? 1;
-      pendingBookingAll.value = pendingBookingModelData?.data ?? [];
-      pendingBookingFiltered.value = pendingBookingAll;
-      pendingBookingLoad(false);
-      update();
-    }
   }
 
   void pendingBookingPageChange(int page) {
