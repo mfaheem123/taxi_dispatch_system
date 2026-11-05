@@ -2532,20 +2532,13 @@ class DriverController extends GetxController {
         TextCellValue((b.journeyType?.journeyType ?? "").toUpperCase()),
         TextCellValue((b.paymentType?.name ?? "").toUpperCase()),
         DoubleCellValue(double.tryParse(b.fares?.toString() ?? '0') ?? 0.0),
-        DoubleCellValue(
-            double.tryParse(b.parkingCharges?.toString() ?? '0') ?? 0.0),
-        DoubleCellValue(
-            double.tryParse(b.waitingCharges?.toString() ?? '0') ?? 0.0),
-        DoubleCellValue(
-            double.tryParse(b.extraDropCharges?.toString() ?? '0') ?? 0.0),
-        DoubleCellValue(
-            double.tryParse(b.congestionCharges?.toString() ?? '0') ?? 0.0),
-        DoubleCellValue(
-            double.tryParse(calculateWithoutCommission(b).toString()) ?? 0.0),
-        DoubleCellValue(
-            double.tryParse(calculateFinalDriverComm(b).toString()) ?? 0.0),
-        DoubleCellValue(
-            double.tryParse(b.totalCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(double.tryParse(b.parkingCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(double.tryParse(b.waitingCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(double.tryParse(b.extraDropCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(double.tryParse(b.congestionCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(double.tryParse(calculateWithoutCommission(b).toString()) ?? 0.0),
+        DoubleCellValue(double.tryParse(calculateFinalDriverComm(b).toString()) ?? 0.0),
+        DoubleCellValue(double.tryParse(b.totalCharges?.toString() ?? '0') ?? 0.0),
       ]);
     }
 
@@ -2973,8 +2966,7 @@ class DriverController extends GetxController {
           .toList(),
     };
     print("Submitting Payload: $formData");
-    var response =
-    await Api().post(formData, "driver_rent/add",sendCompanyId: true, auth: true);
+    var response = await Api().post(formData, "driver_rent/add",sendCompanyId: true, auth: true);
     if (response.statusCode == 200) {
       BotToast.showText(text: "DRIVER RENT ADDED SUCCESSFULLY!");
       clearDriverRent();
@@ -3609,7 +3601,7 @@ class DriverController extends GetxController {
           "owed": item.owed,
           "old_balance": item.oldBalance,
           "current_balance": item.currentBalance,
-          "driver_commission_lineitems": item.driverRentLineitems?.map((line) => {
+          "driver_rent_lineitems": item.driverRentLineitems?.map((line) => {
             "booking_id": line.bookingId,
           }).toList() ?? [],
         });
