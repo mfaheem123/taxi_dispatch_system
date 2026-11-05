@@ -20,6 +20,29 @@ class _SettingsDialogState extends State<SettingsDialog> {
 
   /// Which left-panel item keyboard focus is on, for its focus border.
   int? _focusedNav;
+  late final List<FocusNode> _navFocusNodes;
+
+  @override
+  void initState() {
+    super.initState();
+    _navFocusNodes = List.generate(3, (index) => FocusNode());
+  }
+
+  @override
+  void dispose() {
+    for (var node in _navFocusNodes) {
+      node.dispose();
+    }
+    super.dispose();
+  }
+
+  void _selectTab(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+    _navFocusNodes[index].requestFocus();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +169,8 @@ class _SettingsDialogState extends State<SettingsDialog> {
     return FocusTraversalOrder(
       order: NumericFocusOrder(index + 1.0),
       child: InkWell(
-        onTap: () => setState(() => selectedIndex = index),
+        focusNode: _navFocusNodes[index],
+        onTap: () => _selectTab(index),
         onFocusChange: (has) => setState(() {
           if (has) {
             _focusedNav = index;
