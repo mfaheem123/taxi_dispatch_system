@@ -50,380 +50,377 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
     // Escape closes the alert: see EscapeDismissible for why the framework's
     // own Escape-to-dismiss never reached these dialogs.
     return GetBuilder<DashboardController>(
-    // return EscapeDismissible(
-    //   child: Dialog(
-    //     insetPadding: EdgeInsets.all(20),
-    //     backgroundColor: Colors.white,
-    //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-    //     child: GetBuilder<DashboardController>(
-            // Follows whichever form opened the dialog.
-            tag: dashBoardCntrl.formTag,
-            builder: (controller) {
-              return SizedBox(
-                // width: 450,
-                // child: controller.allDriverData == null?SizedBox.shrink(): Column(
-                //   crossAxisAlignment: CrossAxisAlignment.start,
-                //   children: [
-                child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Container(
-                      //     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      //     color: DynamicColors.gryClr.withOpacity(0.5),
-                      //     child: Row(
-                      //       children: [
-                      //         // Icon(Icons., color: DynamicColors.primaryClr, size: 20),
-                      //         const SizedBox(width: 8),
-                      //         Text(
-                      //           AppText.restrictDrivers,
-                      //           style: mozillaTextSemiBoldText(fontWeight: FontWeight.w700, fontSize: 18),
-                      //         ),
-                      //         const Spacer(),
-                      //         FocusTraversalOrder(
-                      //           order: const NumericFocusOrder(999),
-                      //           child: const AlertCloseButton(),
-                      //         ),
-                      //       ],
-                      //     )),
+      // return EscapeDismissible(
+      //   child: Dialog(
+      //     insetPadding: EdgeInsets.all(20),
+      //     backgroundColor: Colors.white,
+      //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      //     child: GetBuilder<DashboardController>(
+      // Follows whichever form opened the dialog.
+        tag: dashBoardCntrl.formTag,
+        builder: (controller) {
+          return SizedBox(
+            // width: 450,
+            // child: controller.allDriverData == null?SizedBox.shrink(): Column(
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Container(
+                  //     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  //     color: DynamicColors.gryClr.withOpacity(0.5),
+                  //     child: Row(
+                  //       children: [
+                  //         // Icon(Icons., color: DynamicColors.primaryClr, size: 20),
+                  //         const SizedBox(width: 8),
+                  //         Text(
+                  //           AppText.restrictDrivers,
+                  //           style: mozillaTextSemiBoldText(fontWeight: FontWeight.w700, fontSize: 18),
+                  //         ),
+                  //         const Spacer(),
+                  //         FocusTraversalOrder(
+                  //           order: const NumericFocusOrder(999),
+                  //           child: const AlertCloseButton(),
+                  //         ),
+                  //       ],
+                  //     )),
 
-                      SizedBox(height: 15),
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.center,
-                      //   children: [
-                      //   Container(
-                      //     padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 10),
-                      //     decoration: BoxDecoration(
-                      //       border: const Border(
-                      //         top: BorderSide(color: Colors.grey),
-                      //         left: BorderSide(color: Colors.grey),
-                      //         bottom: BorderSide(color: Colors.grey),
-                      //         // 👉 right side intentionally remove kiya (no border)
-                      //       ),
-                      //     ),
-                      //     child: Center(
-                      //       child: Text("#"),
-                      //     ),
-                      //   ),
-                      Flexible(
-                          child: controller.allDriverData == null
-                              ? const SizedBox.shrink()
-                              : SingleChildScrollView(
-                                  padding: const EdgeInsets.all(20.0),
-                                  child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        // --- SELECT DRIVER TO RESTRICT SECTION ---
-                                        Text(
-                                          "SELECT DRIVER TO RESTRICT",
-                                          style: mozillaTextSemiBoldText(
-                                            fontWeight: FontWeight.bold, fontSize: 13, color: const Color(0xFF374151),
-                                          ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //   Container(
+                  //     padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 10),
+                  //     decoration: BoxDecoration(
+                  //       border: const Border(
+                  //         top: BorderSide(color: Colors.grey),
+                  //         left: BorderSide(color: Colors.grey),
+                  //         bottom: BorderSide(color: Colors.grey),
+                  //         // 👉 right side intentionally remove kiya (no border)
+                  //       ),
+                  //     ),
+                  //     child: Center(
+                  //       child: Text("#"),
+                  //     ),
+                  //   ),
+                  Flexible(
+                      child: controller.allDriverData == null
+                          ? const SizedBox.shrink()
+                          : SingleChildScrollView(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // --- SELECT DRIVER TO RESTRICT SECTION ---
+                              Text(
+                                "SELECT DRIVER TO RESTRICT",
+                                style: mozillaTextSemiBoldText(
+                                  fontWeight: FontWeight.bold, fontSize: 13, color: const Color(0xFF374151),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF9FAFB),
+                                  border: Border.all(color: const Color(0xFFE5E7EB)),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: SizedBox(
+                                        height: 38,
+                                        child: CustomDropdownField<DriverObject>(
+                                          label: "SELECT DRIVERS",
+                                          width: 320,
+                                          height: 35,
+                                          items: controller.allDriverData!.drivers!,
+                                          value: controller.selectDriverObject,
+                                          itemLabel: (driver) => "${driver.username} ${driver.name}".toUpperCase(),
+                                          onChanged: (val) {
+                                            controller.selectDriverObject = val;
+                                            controller.update();
+                                          },
                                         ),
-                                        const SizedBox(height: 8),
-                                        Container(
-                                          padding: const EdgeInsets.all(12),
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFFF9FAFB),
-                                            border: Border.all(color: const Color(0xFFE5E7EB)),
-                                            borderRadius: BorderRadius.circular(4),
+                                      ),
+                                    ),
+                                    // GestureDetector(
+                                    //   onTap: (){
+                                    //     if(controller.selectDriverObject != null){
+                                    //     controller.driversList
+                                    //         .add(controller.selectDriverObject!);
+                                    //     controller.selectDriverObject = null;
+                                    //     controller.update();
+                                    //   }
+                                    // },
+                                    //   child: Container(
+                                    //       padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 10),
+                                    //       decoration: BoxDecoration(
+                                    //         border: const Border(
+                                    //           top: BorderSide(color: Colors.grey),
+                                    //           right: BorderSide(color: Colors.grey),
+                                    //           bottom: BorderSide(color: Colors.grey),
+                                    //           // 👉 right side intentionally remove kiya (no border)
+                                    //         ),
+                                    //       ),
+                                    //       child: Center(child: Icon(Icons.remove_circle,
+                                    //         color: DynamicColors.primaryClr,
+                                    //       ))),
+                                    // )
+                                    const SizedBox(width: 10),
+                                    Focus(
+                                      onKeyEvent: (node, event) {
+                                        if (event is KeyDownEvent &&
+                                            (event.logicalKey == LogicalKeyboardKey.enter ||
+                                                event.logicalKey == LogicalKeyboardKey.space)) {
+                                          if (controller.selectDriverObject != null) {
+                                            final isAlreadyAdded = controller.driversList.any(
+                                                  (driver) => driver.id == controller.selectDriverObject!.id, // ya driver.username
+                                            );
+
+                                            if (!isAlreadyAdded) {
+                                              controller.driversList.add(controller.selectDriverObject!);
+                                              controller.selectDriverObject = null;
+                                              controller.update();
+                                            }
+                                          }
+                                          return KeyEventResult.handled;
+                                        }
+                                        return KeyEventResult.ignored;
+                                      },
+                                      child: Builder(
+                                        builder: (context) {
+                                          final isFocused =
+                                              Focus.of(context).hasFocus;
+                                          return GestureDetector(
+                                            onTap: () {
+                                              if (controller.selectDriverObject != null) {
+                                                final isAlreadyAdded = controller.driversList.any(
+                                                      (driver) => driver.id == controller.selectDriverObject!.id, // ya driver.username
+                                                );
+
+                                                if (!isAlreadyAdded) {
+                                                  controller.driversList.add(controller.selectDriverObject!);
+                                                  controller.selectDriverObject = null;
+                                                  controller.update();
+                                                }
+                                              }
+                                            },
+                                            child: Container(
+                                              height: 35,
+                                              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                                              decoration: BoxDecoration(
+                                                color: DynamicColors.primaryClr,
+                                                borderRadius: BorderRadius.circular(4),
+                                                // Focus cue: a white inner ring with a
+                                                // primary halo, readable on the solid fill.
+                                                border: Border.all(
+                                                  color: isFocused ? Colors.white : DynamicColors.primaryClr,
+                                                  width: 2,
+                                                ),
+                                                boxShadow: isFocused
+                                                    ? [BoxShadow(color: DynamicColors.primaryClr, spreadRadius: 2)]
+                                                    : null,
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  const Icon(Icons.add_circle, color: Colors.white, size: 16,
+                                                  ),
+                                                  const SizedBox(width: 6),
+                                                  Text(
+                                                    "RESTRICT",
+                                                    style: mozillaTextSemiBoldText(
+                                                      color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              const SizedBox(height: 24),
+                              Text(
+                                "CURRENTLY RESTRICTED DRIVERS",
+                                style: mozillaTextSemiBoldText(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                  color: const Color(0xFF374151),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+
+                              Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: const Color(0xFFE5E7EB)),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Column(
+                                  children: [
+                                    // TABLE HEADER BAR
+                                    Container(
+                                      height: 38,
+                                      color: const Color(0xFFEEF2F6),
+                                      child: Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 45,
+                                            child: Center(
+                                              child: Text(
+                                                "#",
+                                                style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 13),
+                                              ),
+                                            ),
                                           ),
-                                          child: Row(
-                                            children: [
-                                              Expanded(
-                                                child: SizedBox(
-                                                  height: 38,
-                                                  child: CustomDropdownField<
-                                                      DriverObject>(
-                                                    label: "SELECT DRIVERS",
-                                                    width: 320,
-                                                    height: 35,
-                                                    items: controller.allDriverData!.drivers!,
-                                                    value: controller.selectDriverObject,
-                                                    itemLabel: (driver) => "${driver.username} ${driver.name}".toUpperCase(),
-                                                    onChanged: (val) {
-                                                      controller.selectDriverObject = val;
-                                                      controller.update();
-                                                    },
+                                          Container(width: 1, color: const Color(0xFFE5E7EB)),
+                                          Expanded(
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(left: 12.0),
+                                              child: Text(
+                                                "DRIVER NAME",
+                                                style: mozillaTextSemiBoldText(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Container(width: 1, color: const Color(0xFFE5E7EB)),
+                                          const SizedBox(
+                                            width: 50,
+                                            child: Center(child: Icon(Icons.settings, size: 16, color: Colors.grey,
+                                            ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+
+                                    for (var index = 0; index < controller.driversList.length; index++)
+                                      Builder(builder: (context) {
+                                        final driver = controller.driversList[index];
+                                        return Column(mainAxisSize: MainAxisSize.min, children: [
+                                          const Divider(height: 1, color: Color(0xFFE5E7EB)),
+                                          SizedBox(
+                                            height: 44,
+                                            // padding: const EdgeInsets.symmetric(vertical: 3.0),
+                                            // color: Colors.white,
+                                            child: Row(
+                                              // mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                // Container(
+                                                //   padding: const EdgeInsets.symmetric(vertical: 7,horizontal: 10),
+                                                //   decoration: BoxDecoration(
+                                                //     border: const Border(
+                                                //       top: BorderSide(color: Colors.grey),
+                                                //       left: BorderSide(color: Colors.grey),
+                                                //       bottom: BorderSide(color: Colors.grey),
+                                                //     ),
+                                                //   ),
+                                                SizedBox(
+                                                  width: 45,
+                                                  child: Center(child: Text("${index + 1}"),
                                                   ),
                                                 ),
-                                              ),
-                                              // GestureDetector(
-                                              //   onTap: (){
-                                              //     if(controller.selectDriverObject != null){
-                                              //     controller.driversList
-                                              //         .add(controller.selectDriverObject!);
-                                              //     controller.selectDriverObject = null;
-                                              //     controller.update();
-                                              //   }
-                                              // },
-                                              //   child: Container(
-                                              //       padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 10),
-                                              //       decoration: BoxDecoration(
-                                              //         border: const Border(
-                                              //           top: BorderSide(color: Colors.grey),
-                                              //           right: BorderSide(color: Colors.grey),
-                                              //           bottom: BorderSide(color: Colors.grey),
-                                              //           // 👉 right side intentionally remove kiya (no border)
-                                              //         ),
-                                              //       ),
-                                              //       child: Center(child: Icon(Icons.remove_circle,
-                                              //         color: DynamicColors.primaryClr,
-                                              //       ))),
-                                              // )
-                                              const SizedBox(width: 10),
-                                              Focus(
-                                                onKeyEvent: (node, event) {
-                                                  if (event is KeyDownEvent &&
-                                                      (event.logicalKey == LogicalKeyboardKey.enter ||
-                                                          event.logicalKey == LogicalKeyboardKey.space)) {
-                                                    if (controller.selectDriverObject != null) {
-                                                      final isAlreadyAdded = controller.driversList.any(
-                                                            (driver) => driver.id == controller.selectDriverObject!.id, // ya driver.username
-                                                      );
-
-                                                      if (!isAlreadyAdded) {
-                                                        controller.driversList.add(controller.selectDriverObject!);
-                                                        controller.selectDriverObject = null;
-                                                        controller.update();
-                                                      }
-                                                    }
-                                                    return KeyEventResult.handled;
-                                                  }
-                                                  return KeyEventResult.ignored;
-                                                },
-                                                child: Builder(
-                                                  builder: (context) {
-                                                    final isFocused =
-                                                        Focus.of(context).hasFocus;
-                                                    return GestureDetector(
-                                                      onTap: () {
-                                                        if (controller.selectDriverObject != null) {
-                                                          final isAlreadyAdded = controller.driversList.any(
-                                                                (driver) => driver.id == controller.selectDriverObject!.id, // ya driver.username
-                                                          );
-
-                                                          if (!isAlreadyAdded) {
-                                                            controller.driversList.add(controller.selectDriverObject!);
-                                                            controller.selectDriverObject = null;
-                                                            controller.update();
-                                                          }
-                                                        }
+                                                Container(width: 1, color: const Color(0xFFE5E7EB)),
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                                                    child: Row(
+                                                      children: [
+                                                        // Driver Username Tag (Green Box)
+                                                        Container(
+                                                          width: 100,
+                                                          height: 28,
+                                                          decoration: BoxDecoration(
+                                                            color: DynamicColors.primaryClr,
+                                                            borderRadius: BorderRadius.circular(2),
+                                                          ),
+                                                          child: Center(
+                                                            child: Text(
+                                                              driver.username ?? "${index + 1}",
+                                                              style: mozillaTextSemiBoldText(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        const SizedBox(width: 12),
+                                                        Expanded(
+                                                          child: Text(
+                                                            (driver.name ?? "").toUpperCase(),
+                                                            maxLines: 1,
+                                                            overflow: TextOverflow.ellipsis,
+                                                            style: mozillaTextSemiBoldText(
+                                                              fontSize: 12,
+                                                              color: const Color(0xFF1F2937),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                                Container(width: 1, color: const Color(0xFFE5E7EB)),
+                                                SizedBox(
+                                                    width: 50,
+                                                    child: Focus(
+                                                      onKeyEvent: (node, event) {
+                                                        if (event is KeyDownEvent &&
+                                                            (event.logicalKey ==LogicalKeyboardKey.enter || event.logicalKey == LogicalKeyboardKey.space)) {
+                                                          controller.driversList.removeAt(index);
+                                                          controller.update();
+                                                          return KeyEventResult.handled;
+                                                        } return KeyEventResult.ignored;
                                                       },
-                                                      child: Container(
-                                                        height: 35,
-                                                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-                                                        decoration: BoxDecoration(
-                                                          color: DynamicColors.primaryClr,
-                                                          borderRadius: BorderRadius.circular(4),
-                                                          // Focus cue: a white inner ring with a
-                                                          // primary halo, readable on the solid fill.
-                                                          border: Border.all(
-                                                            color: isFocused ? Colors.white : DynamicColors.primaryClr,
-                                                            width: 2,
-                                                          ),
-                                                          boxShadow: isFocused
-                                                              ? [BoxShadow(color: DynamicColors.primaryClr, spreadRadius: 2)]
-                                                              : null,
-                                                        ),
-                                                        child: Row(
-                                                          children: [
-                                                            const Icon(Icons.add_circle, color: Colors.white, size: 16,
-                                                            ),
-                                                            const SizedBox(width: 6),
-                                                            Text(
-                                                              "RESTRICT",
-                                                              style: mozillaTextSemiBoldText(
-                                                                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12,
+                                                      child: Builder(
+                                                        builder: (context) {
+                                                          final isFocused = Focus.of(context).hasFocus;
+                                                          return GestureDetector(
+                                                            onTap: () {
+                                                              controller.driversList.removeAt(index);
+                                                              controller.update();
+                                                            },
+                                                            child: Container(
+                                                              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                                                              decoration: BoxDecoration(
+                                                                color: isFocused ? DynamicColors.redClr.withOpacity(0.10) : Colors.transparent,
+                                                                borderRadius: BorderRadius.circular(4),
+                                                                border: Border.all(
+                                                                  color: isFocused ? DynamicColors.redClr : Colors.transparent,
+                                                                  width: 2,
+                                                                ),
                                                               ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
-                                        const SizedBox(height: 24),
-                                        Text(
-                                          "CURRENTLY RESTRICTED DRIVERS",
-                                          style: mozillaTextSemiBoldText(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 13,
-                                            color: const Color(0xFF374151),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 8),
-
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            border: Border.all(color: const Color(0xFFE5E7EB)),
-                                            borderRadius: BorderRadius.circular(4),
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              // TABLE HEADER BAR
-                                              Container(
-                                                height: 38,
-                                                color: const Color(0xFFEEF2F6),
-                                                child: Row(
-                                                  children: [
-                                                    SizedBox(
-                                                      width: 45,
-                                                      child: Center(
-                                                        child: Text(
-                                                          "#",
-                                                          style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 13),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Container(width: 1, color: const Color(0xFFE5E7EB)),
-                                                    Expanded(
-                                                      child: Padding(
-                                                        padding: const EdgeInsets.only(left: 12.0),
-                                                        child: Text(
-                                                          "DRIVER NAME",
-                                                          style: mozillaTextSemiBoldText(
-                                                            fontWeight: FontWeight.bold,
-                                                            fontSize: 12,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Container(width: 1, color: const Color(0xFFE5E7EB)),
-                                                    const SizedBox(
-                                                      width: 50,
-                                                      child: Center(child: Icon(Icons.settings, size: 16, color: Colors.grey,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-
-                                              ListView.separated(
-                                                    itemCount: controller.driversList.length,
-                                                    scrollDirection: Axis.vertical,
-                                                    shrinkWrap: true,
-                                                    physics: AlwaysScrollableScrollPhysics(),
-                                                    separatorBuilder: (context, index) => const Divider(height: 1, color: Color(0xFFE5E7EB)),
-                                                    itemBuilder: (context, index) {
-                                                      final driver = controller.driversList[index];
-                                                      return SizedBox(
-                                                        height: 44,
-                                                        // padding: const EdgeInsets.symmetric(vertical: 3.0),
-                                                        // color: Colors.white,
-                                                        child: Row(
-                                                          // mainAxisAlignment: MainAxisAlignment.center,
-                                                          children: [
-                                                            // Container(
-                                                            //   padding: const EdgeInsets.symmetric(vertical: 7,horizontal: 10),
-                                                            //   decoration: BoxDecoration(
-                                                            //     border: const Border(
-                                                            //       top: BorderSide(color: Colors.grey),
-                                                            //       left: BorderSide(color: Colors.grey),
-                                                            //       bottom: BorderSide(color: Colors.grey),
-                                                            //     ),
-                                                            //   ),
-                                                            SizedBox(
-                                                              width: 45,
-                                                              child: Center(child: Text("${index + 1}"),
-                                                              ),
-                                                            ),
-                                                            Container(width: 1, color: const Color(0xFFE5E7EB)),
-                                                            Expanded(
-                                                              child: Padding(
-                                                                padding: const EdgeInsets.symmetric(horizontal: 10),
-                                                                child: Row(
-                                                                  children: [
-                                                                    // Driver Username Tag (Green Box)
-                                                                    Container(
-                                                                      width: 100,
-                                                                      height: 28,
-                                                                      decoration: BoxDecoration(
-                                                                        color: DynamicColors.primaryClr,
-                                                                        borderRadius: BorderRadius.circular(2),
-                                                                      ),
-                                                                      child: Center(
-                                                                        child: Text(
-                                                                          driver.username ?? "${index + 1}",
-                                                                          style: mozillaTextSemiBoldText(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                    const SizedBox(width: 12),
-                                                                    Expanded(
-                                                                      child: Text(
-                                                                        (driver.name ?? "").toUpperCase(),
-                                                                        maxLines: 1,
-                                                                        overflow: TextOverflow.ellipsis,
-                                                                        style: mozillaTextSemiBoldText(
-                                                                          fontSize: 12,
-                                                                          color: const Color(0xFF1F2937),
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ],
+                                                              child: Center(
+                                                                child: Icon(Icons.delete_forever, color: DynamicColors.redClr,
                                                                 ),
                                                               ),
                                                             ),
-                                                            Container(width: 1, color: const Color(0xFFE5E7EB)),
-                                                        SizedBox(
-                                                          width: 50,
-                                                          child: Focus(
-                                                              onKeyEvent: (node, event) {
-                                                                if (event is KeyDownEvent &&
-                                                                    (event.logicalKey ==LogicalKeyboardKey.enter || event.logicalKey == LogicalKeyboardKey.space)) {
-                                                                  controller.driversList.removeAt(index);
-                                                                  controller.update();
-                                                                  return KeyEventResult.handled;
-                                                                } return KeyEventResult.ignored;
-                                                              },
-                                                              child: Builder(
-                                                                builder: (context) {
-                                                                  final isFocused = Focus.of(context).hasFocus;
-                                                                  return GestureDetector(
-                                                                    onTap: () {
-                                                                      controller.driversList.removeAt(index);
-                                                                      controller.update();
-                                                                    },
-                                                                    child: Container(
-                                                                      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                                                                      decoration: BoxDecoration(
-                                                                        color: isFocused ? DynamicColors.redClr.withOpacity(0.10) : Colors.transparent,
-                                                                        borderRadius: BorderRadius.circular(4),
-                                                                        border: Border.all(
-                                                                          color: isFocused ? DynamicColors.redClr : Colors.transparent,
-                                                                          width: 2,
-                                                                        ),
-                                                                      ),
-                                                                      child: Center(
-                                                                        child: Icon(Icons.delete_forever, color: DynamicColors.redClr,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  );
-                                                                },
-                                                              ),
-                                                            )
-                                                        )],
-                                                        ),
-                                                      );
-                                                    }),
-                                            ],
+                                                          );
+                                                        },
+                                                      ),
+                                                    )
+                                                )],
+                                            ),
                                           ),
-                                        )
-                                      ]),
-                                )),
-                      SizedBox(height: 20),
-                    ]),
-              );
-            }
+                                        ]);
+                                      }),
+                                  ],
+                                ),
+                              )
+                            ]),
+                      )),
+                  SizedBox(height: 20),
+                ]),
+          );
+        }
     );
   }
 
@@ -452,12 +449,12 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
 class RestrictedDrivers extends StatefulWidget {
   RestrictedDrivers(
       {super.key,
-      this.driversList,
-      this.titleText,
-      this.border,
-      this.width,
-      this.height,
-      this.padding});
+        this.driversList,
+        this.titleText,
+        this.border,
+        this.width,
+        this.height,
+        this.padding});
 
   final List<String>? driversList;
   final BoxBorder? border;

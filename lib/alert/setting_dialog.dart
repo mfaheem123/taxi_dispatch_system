@@ -20,6 +20,29 @@ class _SettingsDialogState extends State<SettingsDialog> {
 
   /// Which left-panel item keyboard focus is on, for its focus border.
   int? _focusedNav;
+  late final List<FocusNode> _navFocusNodes;
+
+  @override
+  void initState() {
+    super.initState();
+    _navFocusNodes = List.generate(3, (index) => FocusNode());
+  }
+
+  @override
+  void dispose() {
+    for (var node in _navFocusNodes) {
+      node.dispose();
+    }
+    super.dispose();
+  }
+
+  void _selectTab(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+    _navFocusNodes[index].requestFocus();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -31,23 +54,20 @@ class _SettingsDialogState extends State<SettingsDialog> {
     // GetX controllers, so rebuilding them on the way back loses nothing.
     final compact = selectedIndex == 0;
 
+    final fitsContent = selectedIndex == 1 || selectedIndex == 2;
+
     final panel = FocusTraversalOrder(
       order: const NumericFocusOrder(10),
       // One stop in the outer order; inside it, the panel's own fields go in
-      // reading order (left to right, top to bottom). IndexedStack keeps the
-      // hidden panels out of traversal.
+      // reading order (left to right, top to bottom). Only the open panel is
+      // built, so hidden ones stay out of traversal and out of the sizing.
       child: FocusTraversalGroup(
         policy: ReadingOrderTraversalPolicy(),
-        child: compact
-            ? const ExtraFaresAlert()
-            : IndexedStack(
-                index: selectedIndex,
-                children: [
-                  const ExtraFaresAlert(),
-                  RestrictDriversAlert(),
-                  const DriverAttributesAlert(),
-                ],
-              ),
+        child: switch (selectedIndex) {
+          0 => const ExtraFaresAlert(),
+          1 => RestrictDriversAlert(),
+          _ => const DriverAttributesAlert(),
+        },
       ),
     );
 
@@ -56,8 +76,9 @@ class _SettingsDialogState extends State<SettingsDialog> {
       child: Row(
         // Compact: the left menu's grey panel is stretched to the fields'
         // height (IntrinsicHeight below) rather than to a fixed one.
-        crossAxisAlignment:
-            compact ? CrossAxisAlignment.stretch : CrossAxisAlignment.center,
+        crossAxisAlignment: (compact || fitsContent)
+            ? CrossAxisAlignment.stretch
+            : CrossAxisAlignment.start,
         children: [
           // Left Panel
           Container(
@@ -92,7 +113,8 @@ class _SettingsDialogState extends State<SettingsDialog> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Container(
           width: 850,
-          height: compact ? null : 500,
+          height: (compact || fitsContent) ? null : 500,
+          constraints: const BoxConstraints(maxHeight: 500),
           // padding: const EdgeInsets.all(16),
           // Tab order: left menu (1–3) → the open panel's fields (10) → close
           // (999). Without OrderedTraversalPolicy the close button's 999 was
@@ -100,33 +122,40 @@ class _SettingsDialogState extends State<SettingsDialog> {
           child: FocusTraversalGroup(
             policy: OrderedTraversalPolicy(),
             child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // 1. Header
-              Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: DynamicColors.gryClr.withOpacity(0.5),
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
-                  ),
-                  child:  Row(
-                    children: [
-                      Icon(Icons.tune, color: DynamicColors.primaryClr, size: 20),
-                      const SizedBox(width: 10),
-                      Text("SETTINGS", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 18)),
-                      const Spacer(),
-                      FocusTraversalOrder(
-                        order: const NumericFocusOrder(999),
-                        child: const AlertCloseButton(),
-                      ),
-                    ],
-                  )),
-              const Divider(height: 1, thickness: 1),
-              // SizedBox(height: 30),
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // 1. Header
+                Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: DynamicColors.gryClr.withOpacity(0.5),
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                    ),
+                    child:  Row(
+                      children: [
+                        Icon(Icons.tune, color: DynamicColors.primaryClr, size: 20),
+                        const SizedBox(width: 10),
+                        Text("SETTINGS", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 18)),
+                        const Spacer(),
+                        FocusTraversalOrder(
+                          order: const NumericFocusOrder(999),
+                          child: const AlertCloseButton(),
+                        ),
+                      ],
+                    )),
+                const Divider(height: 1, thickness: 1),
+                // SizedBox(height: 30),
 
-              compact ? IntrinsicHeight(child: body) : Expanded(child: body),
-            ],
-          ),
+                if (compact)
+                  IntrinsicHeight(child: body)
+                else if (fitsContent)
+                // Only as tall as the table needs (grey menu stretched to
+                // match), capped by the dialog's 500px maxHeight.
+                  Flexible(child: IntrinsicHeight(child: body))
+                else
+                  Expanded(child: body),
+              ],
+            ),
           ),
         ),
       ),
@@ -140,47 +169,48 @@ class _SettingsDialogState extends State<SettingsDialog> {
     return FocusTraversalOrder(
       order: NumericFocusOrder(index + 1.0),
       child: InkWell(
-      onTap: () => setState(() => selectedIndex = index),
-      onFocusChange: (has) => setState(() {
-        if (has) {
-          _focusedNav = index;
-        } else if (_focusedNav == index) {
-          _focusedNav = null;
-        }
-      }),
-      // The border below is the focus cue.
-      focusColor: Colors.transparent,
-      borderRadius: BorderRadius.circular(6),
-      child: Container(
-        // 10 less the 2px border that is always drawn, so focus can't
-        // resize the item.
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.transparent,
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(
-            width: 2,
-            color: isFocused
-                ? DynamicColors.primaryClr
-                : (isSelected ? Colors.grey.shade300 : Colors.transparent),
+        focusNode: _navFocusNodes[index],
+        onTap: () => _selectTab(index),
+        onFocusChange: (has) => setState(() {
+          if (has) {
+            _focusedNav = index;
+          } else if (_focusedNav == index) {
+            _focusedNav = null;
+          }
+        }),
+        // The border below is the focus cue.
+        focusColor: Colors.transparent,
+        borderRadius: BorderRadius.circular(6),
+        child: Container(
+          // 10 less the 2px border that is always drawn, so focus can't
+          // resize the item.
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.white : Colors.transparent,
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(
+              width: 2,
+              color: isFocused
+                  ? DynamicColors.primaryClr
+                  : (isSelected ? Colors.grey.shade300 : Colors.transparent),
+            ),
+            boxShadow: isSelected
+                ? [ BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            )
+            ]
+                : null,
           ),
-          boxShadow: isSelected
-              ? [ BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          )
-          ]
-              : null,
+          child: Row(
+            children: [
+              Icon(icon, size: 16, color: isSelected ? Colors.black87 : Colors.black54),
+              const SizedBox(width: 8),
+              Text(title, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: isSelected ? Colors.black : Colors.black87,)),
+            ],
+          ),
         ),
-        child: Row(
-          children: [
-            Icon(icon, size: 16, color: isSelected ? Colors.black87 : Colors.black54),
-            const SizedBox(width: 8),
-            Text(title, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: isSelected ? Colors.black : Colors.black87,)),
-          ],
-        ),
-      ),
       ),
     );
   }
