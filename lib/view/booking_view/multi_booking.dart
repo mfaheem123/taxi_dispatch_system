@@ -174,8 +174,9 @@ class _MultiBookingState extends State<MultiBooking> {
                         setState(() {
                           // _currentPage = CompleteBookingsScreen();
                           final DashboardController _controller = Get.find();
-                          _controller.currentPage.value = MultiReservationScreen();
-                          controller.menuBarController.menuBarRefresh(title: "MULTI BOOKING | UPDATE", pageName: MultiReservationScreen());
+                          final screen = MultiReservationScreen(multiBookingId: item.id);
+                          _controller.currentPage.value = screen;
+                          controller.menuBarController.menuBarRefresh(title: "MULTI BOOKING | UPDATE", pageName: screen);
                         });
 
                       },

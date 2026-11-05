@@ -18,12 +18,17 @@ import '../auth/dashboard_form_widget.dart'
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/models/account_darshboard_model.dart';
 import '../dashboard_view/models/dashboard_model.dart';
+import 'controller.dart';
 import '../dashboard_view/widgets/via_location.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
 import '../locations_view/controller/locations_controller.dart';
 
 class MultiReservationScreen extends StatefulWidget {
-  const MultiReservationScreen({super.key});
+  const MultiReservationScreen({super.key, this.multiBookingId});
+
+  /// The multi booking whose reservations fill the left table — the `id` of
+  /// the row picked on the MULTI BOOKINGS list.
+  final String? multiBookingId;
 
   @override
   State<MultiReservationScreen> createState() => _MultiReservationScreenState();
@@ -88,7 +93,19 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
     if (controller.escortList.isEmpty) {
       controller.fetchEscortList();
     }
+    _bookingController.getMultiReservations(widget.multiBookingId);
   }
+
+  /// Owns the reservations table's data (API call and row mapping).
+  final BookingController _bookingController =
+      Get.isRegistered<BookingController>()
+          ? Get.find<BookingController>()
+          : Get.put(BookingController());
+
+  /// Rows of the left table, loaded by
+  /// [BookingController.getMultiReservations].
+  List<Map<String, String>> get reservations =>
+      _bookingController.multiReservations;
 
   /// Journey type change — same mapping the dashboard form applies.
   void _onJourneyChanged(JourneyTypeObject? v) {
@@ -267,21 +284,6 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
   List<DepartmentObject> get _departmentList =>
       controller.selectAccountValue?.departments ?? [];
 
-  final List<Map<String, String>> reservations = [
-    {'datetime': 'MON 05-10-26 09:00', 'ref': 'NTG75891', 'jt': 'R/N'},
-    {'datetime': 'WED 07-10-26 09:00', 'ref': 'NTG75892', 'jt': 'R/N'},
-    {'datetime': 'FRI 09-10-26 09:00', 'ref': 'NTG75881', 'jt': 'R/N'},
-    {'datetime': 'MON 12-10-26 09:00', 'ref': 'NTG75893', 'jt': 'R/N'},
-    {'datetime': 'WED 14-10-26 09:00', 'ref': 'NTG75894', 'jt': 'R/N'},
-    {'datetime': 'FRI 16-10-26 09:00', 'ref': 'NTG75895', 'jt': 'R/N'},
-    {'datetime': 'MON 19-10-26 09:00', 'ref': 'NTG75896', 'jt': 'R/N'},
-    {'datetime': 'WED 21-10-26 09:00', 'ref': 'NTG75897', 'jt': 'R/N'},
-    {'datetime': 'FRI 23-10-26 09:00', 'ref': 'NTG75898', 'jt': 'R/N'},
-    {'datetime': 'MON 26-10-26 09:00', 'ref': 'NTG75899', 'jt': 'R/N'},
-    {'datetime': 'WED 28-10-26 09:00', 'ref': 'NTG75900', 'jt': 'R/N'},
-    {'datetime': 'FRI 30-10-26 09:00', 'ref': 'NTG75901', 'jt': 'R/N'},
-    {'datetime': 'MON 05-10-26 18:10', 'ref': 'NTG75891', 'jt': 'R/N'},
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -328,7 +330,34 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
       decoration: const BoxDecoration(
         border: Border(right: BorderSide(color: _border, width: 1)),
       ),
-      child: ResponsiveDataTableWidget(
+      // Rebuilds when the controller's rows or loading flag change.
+      child: Obx(() => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _reservationsTable(reservations.toList()),
+          if (_bookingController.multiReservationsLoad.value)
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                    strokeWidth: 2.4, color: DynamicColors.primaryClr),
+              ),
+            )
+          else if (reservations.isEmpty)
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text('NO RESERVATIONS FOUND',
+                  style: outFitRegular(fontSize: 12, color: Colors.grey)),
+            ),
+        ],
+      )),
+    );
+  }
+
+  Widget _reservationsTable(List<Map<String, String>> rows) {
+    return ResponsiveDataTableWidget(
         totalWidth: 390,
         headerBackgroundColor: Colors.grey.shade200,
         columnConfigs: [
@@ -384,7 +413,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
           TableColumnConfig(title: "J/T", sizeType: ColumnSizeType.small),
           TableColumnConfig(title: "ACTION", sizeType: ColumnSizeType.fixed, fixedWidth: 36.0, removeSearching: true),
         ],
-        items: reservations,
+        items: rows,
         rowBuilder: (item, widths) {
           final index = reservations.indexOf(item);
           final bool isRowSelected = selectedRowIndices.contains(index);
@@ -464,8 +493,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
             ),
           ];
         },
-      ),
-    );
+      );
   }
 
   // ────────── Right Form Section Widget ──────────

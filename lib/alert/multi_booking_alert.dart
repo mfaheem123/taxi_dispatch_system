@@ -41,27 +41,30 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
   }
 
   void _initializeControllers() {
+    // Every value comes from the booking row that was clicked (see
+    // _reservationRow in edit_multi_booking.dart).
+    String v(String key) => widget.item[key] ?? '';
     _controllers = {
-      'PICKUP': TextEditingController(text: 'PITTENWEEM ROAD ST. MONANS ANSTRUTHER KY10 2AJ'),
-      'PICKUP NOTES': TextEditingController(text: widget.item['pickup_notes'] ?? ''),
-      'DROPOFF': TextEditingController(text: 'CANMORE ROAD GLENROTHES KY7 4BD'),
-      'DROPOFF NOTES': TextEditingController(text: widget.item['dropoff_notes'] ?? ''),
-      'NAME': TextEditingController(text: 'ROWDEN'),
-      'EMAIL': TextEditingController(text: widget.item['email'] ?? ''),
-      'MOBILE': TextEditingController(text: '07485464242'),
-      'TELEPHONE': TextEditingController(text: widget.item['telephone'] ?? ''),
-      'DATE': TextEditingController(text: '2026-10-12'),
-      'TIME': TextEditingController(text: '09:00:00'),
-      'LEAD': TextEditingController(text: widget.item['lead'] ?? ''),
-      'JOURNEY TYPE': TextEditingController(text: widget.item['jt'] ?? 'R/N'),
-      'PAYMENT TYPE': TextEditingController(text: 'ACCOUNT'),
-      'FARES': TextEditingController(text: '45'),
-      'VEHICLE': TextEditingController(text: 'SALOON'),
-      'DRIVER': TextEditingController(text: '()'),
-      'PASSENGERS': TextEditingController(text: widget.item['passengers'] ?? ''),
-      'LUGGAGES': TextEditingController(text: widget.item['luggages'] ?? ''),
-      'HAND LUGGAGES': TextEditingController(text: widget.item['hand_luggages'] ?? ''),
-      'ACCOUNT': TextEditingController(text: 'CAPITA BUSINESS PLS'),
+      'PICKUP': TextEditingController(text: v('pickup')),
+      'PICKUP NOTES': TextEditingController(text: v('pickup_notes')),
+      'DROPOFF': TextEditingController(text: v('dropoff')),
+      'DROPOFF NOTES': TextEditingController(text: v('dropoff_notes')),
+      'NAME': TextEditingController(text: v('name')),
+      'EMAIL': TextEditingController(text: v('email')),
+      'MOBILE': TextEditingController(text: v('mobile')),
+      'TELEPHONE': TextEditingController(text: v('telephone')),
+      'DATE': TextEditingController(text: v('date')),
+      'TIME': TextEditingController(text: v('time')),
+      'LEAD': TextEditingController(text: v('lead')),
+      'JOURNEY TYPE': TextEditingController(text: v('jt')),
+      'PAYMENT TYPE': TextEditingController(text: v('payment_type')),
+      'FARES': TextEditingController(text: v('fares')),
+      'VEHICLE': TextEditingController(text: v('vehicle')),
+      'DRIVER': TextEditingController(text: v('driver')),
+      'PASSENGERS': TextEditingController(text: v('passengers')),
+      'LUGGAGES': TextEditingController(text: v('luggages')),
+      'HAND LUGGAGES': TextEditingController(text: v('hand_luggages')),
+      'ACCOUNT': TextEditingController(text: v('account')),
     };
   }
 

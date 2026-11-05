@@ -7,6 +7,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:intl/intl.dart';
 
 import '../../component/networks/api.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
@@ -383,6 +384,83 @@ class BookingController extends GetxController{
   void multiBookingonSearch() {
     multiBookingCurrentPage.value = 1;
     getMultiBookingData();
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Multi Booking | Update
+
+  /// Rows of the reservations table on MULTI BOOKING | UPDATE
+  /// (edit_multi_booking.dart), one per booking in the multi booking.
+  /// `datetime`, `ref` and `jt` are the table's columns; the rest is what the
+  /// row's view (eye) icon shows in MultiReservationAlert.
+  RxList<Map<String, String>> multiReservations = <Map<String, String>>[].obs;
+  RxBool multiReservationsLoad = false.obs;
+
+  /// Loads every booking of [multiBookingId] into [multiReservations].
+  Future<void> getMultiReservations(String? multiBookingId) async {
+    multiReservations.clear();
+    if (multiBookingId == null || multiBookingId.isEmpty) return;
+    multiReservationsLoad.value = true;
+    try {
+      final response = await Api().interceptorGet(
+        'bookings/multi-bookings-id',
+        queryParameters: {
+          'multiBookingId': multiBookingId,
+          'company_id': Api.singleton.globalCompanyId,
+        },
+      );
+      final data = response?.data;
+      final List rawBookings =
+          (data is Map && data['bookings'] is List) ? data['bookings'] : const [];
+      multiReservations.value = rawBookings
+          .map((e) => _multiReservationRow(
+              BookingObjectData.fromJson(Map<String, dynamic>.from(e))))
+          .toList();
+    } catch (e) {
+      debugPrint('Multi booking reservations failed: $e');
+      BotToast.showText(text: 'Could not load reservations');
+    } finally {
+      multiReservationsLoad.value = false;
+    }
+  }
+
+  Map<String, String> _multiReservationRow(BookingObjectData b) {
+    String up(String? v) => (v ?? '').toUpperCase();
+    String num(int? v) => v?.toString() ?? '';
+    final tableDate = b.pickupDate == null
+        ? ''
+        : DateFormat('EEE dd-MM-yy').format(b.pickupDate!).toUpperCase();
+    final driverName = up(b.driver?.name);
+    final driverUser = up(b.driver?.username);
+    return {
+      'id': b.id ?? '',
+      'datetime': '$tableDate ${b.pickupTime ?? ''}'.trim(),
+      'ref': b.referenceNumber ?? '',
+      'jt': up(b.journeyType?.journeyType),
+      'pickup': up(b.pickup),
+      // The booking form saves PICKUP / DROPOFF NOTES as the door numbers.
+      'pickup_notes': up(b.pickupDoorNumber),
+      'dropoff': up(b.dropoff),
+      'dropoff_notes': up(b.dropoffDoorNumber),
+      'name': up(b.name),
+      'email': up(b.email),
+      'mobile': b.mobile ?? '',
+      'telephone': b.telephone ?? '',
+      'date': b.pickupDate == null
+          ? ''
+          : DateFormat('yyyy-MM-dd').format(b.pickupDate!),
+      'time': b.pickupTime ?? '',
+      'lead': b.leadTime ?? '',
+      'payment_type': up(b.paymentType?.name),
+      'fares': b.fares ?? '',
+      'vehicle': up(b.vehicleType?.name),
+      'driver': driverUser.isEmpty && driverName.isEmpty
+          ? ''
+          : '$driverUser ($driverName)'.trim(),
+      'passengers': num(b.passengers),
+      'luggages': num(b.luggages),
+      'hand_luggages': num(b.handLuggages),
+      'account': up(b.account?.name),
+    };
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> App Bookings
