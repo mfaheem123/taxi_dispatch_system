@@ -44,6 +44,7 @@ import '../model/driver_rent_filter_model.dart';
 import '../model/driver_rent_model.dart';
 import '../model/get_bulk_commission_model.dart';
 import '../model/get_bulk_rent_model.dart';
+import '../model/get_driver_pay_model.dart';
 import '../model/list_driver_commission_model.dart';
 import '../model/update_driver_commission_model.dart';
 import '../model/update_driver_rent_model.dart';
@@ -1664,6 +1665,10 @@ class DriverController extends GetxController {
       commissionController.text = driver.driverCommission ?? "0";
       pdaRentController.text = driver.pdaRent ?? "0";
       oldBalanceVar = double.tryParse(driver.balance?.toString() ?? "0") ?? 0.0;
+
+      //  fields (Commission Pay)
+      commissionDueController.text = driver.driverCommission ?? "0";
+      currentBalanceController.text = driver.balance?.toString() ?? "0";
       update();
     }
   }
@@ -2714,8 +2719,10 @@ class DriverController extends GetxController {
       rentWeekController.text = driver.driverCommission ?? "0";
       pdaRentWeekController.text = driver.pdaRent ?? "0";
       oldBalance = double.tryParse(driver.balance?.toString() ?? "0") ?? 0.0;
-      rentTotal =
-          double.tryParse(driver.driverCommission?.toString() ?? "0") ?? 0.0;
+      rentTotal = double.tryParse(driver.driverCommission?.toString() ?? "0") ?? 0.0;
+
+      commissionDueController.text = driver.driverCommission ?? "0";
+      currentBalanceController.text = driver.balance?.toString() ?? "0";
       update();
     }
   }
@@ -3635,15 +3642,107 @@ class DriverController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER COMMISSION PAY functionality
 
   /// RxBool variable
-  final creditValue = ValueNotifier<bool>(false);
-  final debitValue = ValueNotifier<bool>(false);
+  // final creditValue = ValueNotifier<bool>(false);
+  // final debitValue = ValueNotifier<bool>(false);
 
   /// TextEditingControllers
   final commissionDueController = TextEditingController();
   final amountController = TextEditingController();
+  final currentBalanceController = TextEditingController();
   final descriptionController = TextEditingController();
 
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER COMMISSION PAY functionality
+
+  /// create ledger
+  int? selectedDriverId;
+  String? selectedType;
+  bool isLoadingLedger = false;
+
+  createDriverLedger({String? invoiceType}) async {
+    if (selectedDriverId == null) {
+      BotToast.showText(text: "PLEASE SELECT A DRIVER FIRST");
+      return;
+    }
+
+    if (selectedType == null) {
+      BotToast.showText(text: "PLEASE SELECT CREDIT OR DEBIT");
+      return;
+    }
+
+    if (amountController.text.isEmpty) {
+      BotToast.showText(text: "PLEASE ENTER AN AMOUNT");
+      return;
+    }
+
+    isLoadingLedger = true;
+    update();
+
+    var formData = {
+      "driver_id": selectedDriverId,
+      "date": DateTime.now().toIso8601String().split(".").first,
+      "amount": double.tryParse(amountController.text) ?? 0.0,
+      "current_balance": double.tryParse(currentBalanceController.text) ?? 0.0,
+      "type": selectedType,
+      "invoice_type": invoiceType,
+      "description": descriptionController.text.trim().toUpperCase(),
+    };
+
+    var response = await Api().post(formData, "driver-pay/create-ledger", sendCompanyId: true, auth: true);
+    if (response.statusCode == 200) {
+      BotToast.showText(text: "LEDGER SAVED SUCCESSFULLY");
+      getAllDriverPay();
+      clearLedgerOnSave();
+    }
+    isLoadingLedger = false;
+    update();
+  }
+
+  void clearLedgerOnSave() {
+    amountController.clear();
+    descriptionController.clear();
+  }
+  void clearLedgerForm() {
+    driverSelectionController.clear();
+    commissionDueController.clear();
+    amountController.clear();
+    currentBalanceController.clear();
+    descriptionController.clear();
+    selectedDriverId = null;
+    selectedType = null;
+    getAllDriverPayModel = null;
+    update();
+  }
+
+  /// Get Driver Ledger
+
+  GetAllDriverPayModel? getAllDriverPayModel;
+  bool isLoadingDriverPay = false;
+  getAllDriverPay({String? invoiceType}) async {
+    isLoadingDriverPay = true;
+    update();
+
+    var response = await Api().get("driver-pay/get-all-ledgers",
+        queryParameters: {
+          "invoice_type": invoiceType,
+          "driver_id": selectedDriverId,
+        }
+    );
+    if (response.statusCode == 200) {
+      getAllDriverPayModel = GetAllDriverPayModel.fromJson(response.data);
+      isLoadingDriverPay = false;
+      update();
+    }
+  }
+
+  /// Delete Drivers Ledger
+  deleteDriverLedger(int? id) async {
+    var response = await Api().delete("driver-pay/delete-ledger/$id");
+    if (response.statusCode == 200) {
+      getAllDriverPay();
+      BotToast.showText(text:"LEDGER DELETED SUCCESSFULLY!");
+    }
+  }
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER COMMISSION PAY functionality
 
 }
 
