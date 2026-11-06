@@ -44,9 +44,12 @@ class DashboardAccountObject {
   String? paymentTypes;
   String? information;
   bool? hasEscort;
+  bool? hasBookedBy;
+  bool? hasOrderNumber;
   String? backgroundColor;
   String? foregroundColor;
   List<DepartmentObject>? departments;
+  List<dynamic>? orderNumbers;
   Subsidiary? subsidiary;
 
   DashboardAccountObject({
@@ -59,9 +62,12 @@ class DashboardAccountObject {
     this.paymentTypes,
     this.information,
     this.hasEscort,
+    this.hasBookedBy,
+    this.hasOrderNumber,
     this.backgroundColor,
     this.foregroundColor,
     this.departments,
+    this.orderNumbers,
     this.subsidiary,
   });
 
@@ -75,10 +81,13 @@ class DashboardAccountObject {
     paymentTypes: json["payment_types"],
     information: json["information"],
     hasEscort: json["has_escort"],
+    hasBookedBy: json["has_booked_by"],
+    hasOrderNumber: json["has_order_number"],
     backgroundColor: json["background_color"],
     foregroundColor: json["foreground_color"],
-    departments: List<DepartmentObject>.from(json["departments"].map((x) => DepartmentObject.fromJson(x))),
-    subsidiary: Subsidiary.fromJson(json["subsidiary"]),
+    departments: json["departments"] == null ? [] : List<DepartmentObject>.from(json["departments"].map((x) => DepartmentObject.fromJson(x))),
+    orderNumbers: json["order_numbers"] == null ? [] : List<dynamic>.from(json["order_numbers"]),
+    subsidiary: json["subsidiary"] == null ? null : Subsidiary.fromJson(json["subsidiary"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -91,10 +100,13 @@ class DashboardAccountObject {
     "payment_types": paymentTypes,
     "information": information,
     "has_escort": hasEscort,
+    "has_booked_by": hasBookedBy,
+    "has_order_number": hasOrderNumber,
     "background_color": backgroundColor,
     "foreground_color": foregroundColor,
-    "departments": List<dynamic>.from(departments!.map((x) => x.toJson())),
-    "subsidiary": subsidiary!.toJson(),
+    "departments": departments == null ? [] : List<dynamic>.from(departments!.map((x) => x.toJson())),
+    "order_numbers": orderNumbers == null ? [] : List<dynamic>.from(orderNumbers!.map((x) => x is Map ? x : {"order_number": x})),
+    "subsidiary": subsidiary?.toJson(),
   };
 
   @override

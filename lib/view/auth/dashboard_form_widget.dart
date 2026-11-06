@@ -826,7 +826,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       tab: 15,
                                       controller: controller.minController),
                                 ]),
-                                _grid(isMobile ? 1 : 3, [
+                                _grid(isMobile ? 1 : 4, [
                                   Obx(
                                         () => _field(
                                       'No. of Passengers',
@@ -841,10 +841,18 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       ],
                                     ),
                                   ),
-                                  _field('FARE',
-                                      tab: 17,
-                                      prefix: Icons.currency_pound,
-                                      controller: controller.slugController),
+                                  luggageField(
+                                    'luggage'.toUpperCase(),
+                                    Icons.luggage,
+                                    controller.luggController,
+                                    _isReturnJourney ? 35 : 17,
+                                  ),
+                                  luggageField(
+                                    'small luggage'.toUpperCase(),
+                                    Icons.luggage,
+                                    controller.sluggController,
+                                    _isReturnJourney ? 36 : 18,
+                                  ),
                                   _dropdown<DashboardAccountObject>(
                                     'SELECT ACCOUNT',
                                     controller.selectAccountValue,
@@ -854,6 +862,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       setState(() {
                                         controller.selectAccountValue = v;
                                         controller.selectDepartmentData = null;
+                                        controller.selectOrderValue = null;
                                         if (controller.escortList.isEmpty) {
                                           controller.fetchEscortList();
                                         }
@@ -868,46 +877,63 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                         );
                                       }
                                     },
-                                    18,
+                                    19,
                                     itemLabel: (p) => p.name!,
                                   ),
                                 ]),
-                                if (_isReturnJourney)
-                                  _returnJourneySection(
-                                      isMobile, cols, controller),
                                 const Divider(height: 10),
                                 _sectionHeader(
                                     Icons.directions_car, 'VEHICLE & PAYMENT'),
                                 const SizedBox(height: 4),
                                 _grid(isMobile ? 1 : (isTablet ? 2 : 4), [
-
-                                  _dropdown<DepartmentObject>(
-                                    'Select Department',
-                                    controller.selectDepartmentData,
-                                    controller.selectAccountValue == null
-                                        ? []
-                                        : controller
-                                        .selectAccountValue!.departments!,
-                                        (v) => setState(() {
-                                      controller.selectDepartmentData = v;
-                                      controller.update();
-                                    }),
-                                    _isReturnJourney ? 31 : 19,
-                                    itemLabel: (p) => p.name ?? "",
-                                  ),
-
-                                  // Same ESCORT dropdown as the create-booking
-                                  // form (create_new_booking_form.dart).
-                                  _dropdown<Escorts>(
-                                    'Select Escort',
-                                    controller.selectEscortValue,
-                                    controller.escortList,
-                                        (v) => setState(() =>
-                                    controller.selectEscortValue = v),
-                                    _isReturnJourney ? 32 : 20,
-                                    itemLabel: (e) => (e.name ?? '').toUpperCase(),
-                                  ),
-
+                                  if (controller.selectAccountValue != null &&
+                                      controller.selectAccountValue!.departments != null &&
+                                      controller.selectAccountValue!.departments!.isNotEmpty)
+                                    _dropdown<DepartmentObject>(
+                                      'Select Department',
+                                      controller.selectDepartmentData,
+                                      controller.selectAccountValue!.departments!,
+                                          (v) => setState(() {
+                                        controller.selectDepartmentData = v;
+                                        controller.update();
+                                      }),
+                                      _isReturnJourney ? 31 : 20,
+                                      itemLabel: (p) => p.name ?? "",
+                                    ),
+                                  if (controller.selectAccountValue != null &&
+                                      controller.selectAccountValue!.hasEscort == true)
+                                    _dropdown<Escorts>(
+                                      'Select Escort',
+                                      controller.selectEscortValue,
+                                      controller.escortList,
+                                          (v) => setState(() =>
+                                      controller.selectEscortValue = v),
+                                      _isReturnJourney ? 32 : 21,
+                                      itemLabel: (e) => (e.name ?? '').toUpperCase(),
+                                    ),
+                                  if (controller.selectAccountValue != null &&
+                                      (controller.selectAccountValue!.hasOrderNumber == true ||
+                                          (controller.selectAccountValue!.orderNumbers != null &&
+                                              controller.selectAccountValue!.orderNumbers!.isNotEmpty)))
+                                    _dropdown<dynamic>(
+                                      'ORDER',
+                                      controller.selectOrderValue,
+                                      controller.selectAccountValue?.orderNumbers ?? [],
+                                          (v) => setState(() =>
+                                      controller.selectOrderValue = v),
+                                      _isReturnJourney ? 32.5 : 22,
+                                      itemLabel: (p) => p is Map
+                                          ? (p['order_number']?.toString() ?? '')
+                                          : p.toString(),
+                                    ),
+                                  if (controller.selectAccountValue != null &&
+                                      controller.selectAccountValue!.hasBookedBy == true)
+                                    _field(
+                                      'BY',
+                                      tab: _isReturnJourney ? 32.8 : 23,
+                                      prefix: Icons.perm_identity,
+                                      controller: controller.bookedByController,
+                                    ),
                                   _dropdown<DashboardVehicleTypeObject>(
                                     'Vehicle Type',
                                     controller.selectVehicleValue,
@@ -926,13 +952,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                           controller.passController.text);
                                       controller.getFaresCalculation();
                                     }),
-                                    _isReturnJourney ? 33 : 21,
+                                    _isReturnJourney ? 33 : 24,
                                     itemLabel: (p) => p.name!,
                                     allowUnselect: false,
                                   ),
-
-
-
                                   _dropdown<PaymentTypeObject>(
                                       'Pay By',
                                       controller.selectPaymentTypeValue,
@@ -941,15 +964,20 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                           const [],
                                           (v) => setState(() => controller
                                           .selectPaymentTypeValue = v),
-                                      _isReturnJourney ? 34 : 22,
+                                      _isReturnJourney ? 34 : 25,
                                       itemLabel: (p) => p.name!,
                                       allowUnselect: false),
 
 
 
-
-
+                                  _field('FARE',
+                                      tab: 17,
+                                      prefix: Icons.currency_pound,
+                                      controller: controller.slugController),
                                 ]),
+                                if (_isReturnJourney)
+                                  _returnJourneySection(
+                                      isMobile, cols, controller),
 
                                 ///todo multi reservation
                                 // _grid(cols, [
@@ -1832,45 +1860,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             ]),
           ),
         );
-    Widget luggageField(String label, IconData icon,
-        TextEditingController controller, int tab) =>
-        SizedBox(
-          width: _sz(130),
-          child:
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            // Text(label,
-            //     style:
-            //     const TextStyle(fontSize: _fsLabel, color: Colors.black)),
-            const SizedBox(height: 2),
-            FocusTraversalOrder(
-              order: NumericFocusOrder(tab.toDouble()),
-              child: GlowFocus(
-                child: TextField(
-                  controller: controller,
-                  style: _kValueTextStyle,
-                  keyboardType:
-                  const TextInputType.numberWithOptions(decimal: false),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(2),
-                  ],
-                  decoration: _inputDecoration().copyWith(
-                    label: Text(label, style: _kLabelTextStyle),
-                    prefixIconConstraints:
-                    const BoxConstraints(minWidth: 26, minHeight: 0),
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.only(left: 6, right: 2),
-                      child: Icon(icon, size: 13, color: Colors.grey),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ]),
-        );
+
 
     Widget iconBtn(IconData icon,
-        {VoidCallback? onPressed, required int tab}) =>
+        {VoidCallback? onPressed, required num tab}) =>
         FocusTraversalOrder(
           order: NumericFocusOrder(tab.toDouble()),
           child: GlowFocus(
@@ -1914,10 +1907,16 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       children: [
         Expanded(
           child: Wrap(
-            spacing: 4,
-            runSpacing: 2,
+            spacing: 15,
+            runSpacing: 15,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
+              // luggageField(
+              //   'BY'.toUpperCase(),
+              //   Icons.perm_identity_sharp,
+              //   controller.sluggController,
+              //   _isReturnJourney ? 36 : 25,
+              // ),
               // 21.2 / 21.4 (36.2 / 36.4 in return mode): these previously reused 20
               // and 21, which are the Vehicle Type and Department dropdowns in the
               // row above — a duplicate order leaves the relative position of the
@@ -1928,18 +1927,18 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               checkbox('EMAIL', controller.emailCheckbox.value,
                       (v) => setState(() => controller.emailCheckbox.value = v ?? false),
                   tab: _isReturnJourney ? 34.4 : 23.4),
-              luggageField(
-                'luggage'.toUpperCase(),
-                Icons.luggage,
-                controller.luggController,
-                _isReturnJourney ? 35 : 24,
-              ),
-              luggageField(
-                'small luggage'.toUpperCase(),
-                Icons.luggage,
-                controller.sluggController,
-                _isReturnJourney ? 36 : 25,
-              ),
+              // luggageField(
+              //   'luggage'.toUpperCase(),
+              //   Icons.luggage,
+              //   controller.luggController,
+              //   _isReturnJourney ? 35 : 24,
+              // ),
+              // luggageField(
+              //   'small luggage'.toUpperCase(),
+              //   Icons.luggage,
+              //   controller.sluggController,
+              //   _isReturnJourney ? 36 : 25,
+              // ),
               _quotationToggle(),
             ],
           ),
@@ -1948,6 +1947,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (controller.selectPaymentTypeValue?.name?.toUpperCase().contains('CREDIT') == true)
+              iconBtn(Icons.credit_card, tab: _isReturnJourney ? 36.5 : 25.8, onPressed: () {}),
             iconBtn(Icons.settings_suggest, tab: _isReturnJourney ? 37 : 26,
                 onPressed: () {
                   showDialog(
@@ -2278,6 +2279,39 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     ]);
   }
 
+  Widget luggageField(String label, IconData icon,
+      TextEditingController controller, num tab) =>
+      SizedBox(
+        width: _sz(130),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const SizedBox(height: 2),
+          FocusTraversalOrder(
+            order: NumericFocusOrder(tab.toDouble()),
+            child: GlowFocus(
+              child: TextField(
+                controller: controller,
+                style: _kValueTextStyle,
+                keyboardType:
+                const TextInputType.numberWithOptions(decimal: false),
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(2),
+                ],
+                decoration: _inputDecoration().copyWith(
+                  label: Text(label, style: _kLabelTextStyle),
+                  prefixIconConstraints:
+                  const BoxConstraints(minWidth: 26, minHeight: 0),
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.only(left: 6, right: 2),
+                    child: Icon(icon, size: 13, color: Colors.grey),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ]),
+      );
+
   Widget _field(
       String label, {
         required num tab,
@@ -2350,7 +2384,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       T? value,
       List<T> items,
       ValueChanged<T?> onChanged,
-      int tab, {
+      num tab, {
         String Function(T item)? itemLabel,
         String? hint,
         bool isExpanded = true,

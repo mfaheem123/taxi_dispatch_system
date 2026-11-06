@@ -3200,6 +3200,8 @@ class DashboardController extends GetxController {
   TextEditingController passController = TextEditingController(text: '1');
   final luggController = TextEditingController();
   final sluggController = TextEditingController();
+  dynamic selectOrderValue;
+  final bookedByController = TextEditingController();
 
   /// ESCORT dropdown on both booking forms (dashboard_form_widget.dart and
   /// create_new_booking_form.dart). Not yet sent with the booking.
@@ -3412,6 +3414,12 @@ class DashboardController extends GetxController {
           selectJourneyTypeValue != null ? selectJourneyTypeValue!.id : 1,
       if (selectAccountValue != null) 'account_id': selectAccountValue!.id,
       if (selectDepartmentData != null) 'department': selectDepartmentData!.id,
+      if (selectOrderValue != null)
+        'order_number': selectOrderValue is Map
+            ? selectOrderValue["order_number"]
+            : selectOrderValue.toString(),
+      if (bookedByController.text.isNotEmpty)
+        'booked_by': bookedByController.text.trim(),
       'quotation': switchController.value,
       'sms': true /*smsCheckbox.value*/,
       'emailFlag': emailCheckbox.value,
@@ -3751,6 +3759,8 @@ class DashboardController extends GetxController {
     _controller.zoneDValue = null;
     selectAccountValue = null;
     selectDepartmentData = null;
+    selectOrderValue = null;
+    bookedByController.clear();
     selectDriverValueReturn = null;
     switchController.value = false;
     smsCheckbox.value = true;

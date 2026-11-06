@@ -34,12 +34,12 @@ class OrderAlert {
                   if (editingIndex == null) {
 
                     controller.orderAccountList.add({
-                      "order": controller.orderCtrl.text,
+                      "order_number": controller.orderCtrl.text,
 
                     });
                   } else {
                     controller.orderAccountList[editingIndex!] = {
-                      "order": controller.orderCtrl.text,
+                      "order_number": controller.orderCtrl.text,
 
                     };
                     editingIndex = null;
