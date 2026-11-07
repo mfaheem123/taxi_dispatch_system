@@ -3673,14 +3673,24 @@ class DriverController extends GetxController {
       return;
     }
 
+    double currentBalance = double.tryParse(currentBalanceController.text) ?? 0.0;
+    double enteredAmount = double.tryParse(amountController.text) ?? 0.0;
+    double updatedBalance = currentBalance;
+
+    if (selectedType == "CREDIT") {
+      updatedBalance = currentBalance + enteredAmount;
+    } else if (selectedType == "DEBIT") {
+      updatedBalance = currentBalance - enteredAmount;
+    }
+
     isLoadingLedger = true;
     update();
 
     var formData = {
       "driver_id": selectedDriverId,
       "date": DateTime.now().toIso8601String().split(".").first,
-      "amount": double.tryParse(amountController.text) ?? 0.0,
-      "current_balance": double.tryParse(currentBalanceController.text) ?? 0.0,
+      "amount": enteredAmount,
+      "current_balance": updatedBalance,
       "type": selectedType,
       "invoice_type": invoiceType,
       "description": descriptionController.text.trim().toUpperCase(),
@@ -3689,7 +3699,9 @@ class DriverController extends GetxController {
     var response = await Api().post(formData, "driver-pay/create-ledger", sendCompanyId: true, auth: true);
     if (response.statusCode == 200) {
       BotToast.showText(text: "LEDGER SAVED SUCCESSFULLY");
-      getAllDriverPay();
+
+      currentBalanceController.text = updatedBalance.toStringAsFixed(2);
+      getAllDriverPay(invoiceType: invoiceType);
       clearLedgerOnSave();
     }
     isLoadingLedger = false;
