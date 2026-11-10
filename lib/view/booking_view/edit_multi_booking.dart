@@ -7,7 +7,10 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:timepickerfield/timepickerfield.dart';
-import '../../alert/account_details_alert.dart';
+import 'package:flutter_web_date_picker/flutter_web_date_picker.dart' show GlowFocus;
+import '../../alert/child_seats_alert.dart';
+import '../../alert/extra_info_alert.dart';
+import '../../alert/setting_dialog.dart';
 import '../../alert/multi_booking_alert.dart';
 import '../../component/dropdown_button.dart';
 import '../../component/responsive_datatable_widget.dart';
@@ -107,29 +110,60 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
   List<Map<String, String>> get reservations =>
       _bookingController.multiReservations;
 
-  /// Journey type change — same mapping the dashboard form applies.
-  void _onJourneyChanged(JourneyTypeObject? v) {
-    if (controller.pickupController.text.isNotEmpty &&
-        controller.dropOffController.text.isNotEmpty) {
+  /// The O/W entry of the journey types (falls back to the first one, which
+  /// is O/W in the dashboard data).
+  JourneyTypeObject? get _oneWayJourney {
+    final types = controller.dashboardAllData?.journeyTypes ?? [];
+    if (types.isEmpty) return null;
+    return types.firstWhere(
+      (t) => (t.journeyType ?? '').trim().toUpperCase() == 'O/W',
+      orElse: () => types.first,
+    );
+  }
+
+  /// JOUR is fixed to O/W on this screen: it looks like the other dropdowns
+  /// but can't be opened, tabbed to or changed. The controller is kept on
+  /// O/W too, so a booking loaded from the table (which may be R/N or W/R)
+  /// can't switch the journey or its fares.
+  Widget _lockedJourneyField({double height = 48}) {
+    final oneWay = _oneWayJourney;
+    if (oneWay != null) {
+      controller.selectJourneyTypeValue = oneWay;
+      controller.jourValue = 'O/W';
+    }
+    return IgnorePointer(
+      child: ExcludeFocus(
+        child: _dropdown<JourneyTypeObject>(
+          height: height,
+          value: oneWay,
+          hint: 'O/W',
+          items: oneWay == null ? [] : [oneWay],
+          label: (item) => item.journeyType ?? '',
+          onChanged: (_) {},
+        ),
+      ),
+    );
+  }
+
+  /// SAVE: applies the form's pickup / dropoff (with lat/lng), date and time
+  /// to every booking ticked in the left table. Clears the ticks on success.
+  Future<void> _saveSelectedReservations() async {
+    if (_bookingController.multiReservationsSaving.value) return;
+    final rows = reservations;
+    final ids = (selectedRowIndices.toList()..sort())
+        .where((i) => i < rows.length)
+        .map((i) => rows[i]['id'] ?? '')
+        .where((id) => id.isNotEmpty)
+        .toList();
+    final ok = await _bookingController.updateMultiReservations(
+      ids: ids,
+      multiBookingId: widget.multiBookingId,
+    );
+    if (ok && mounted) {
       setState(() {
-        controller.dropDownShow.value = false;
-        controller.selectJourneyTypeValue = v;
-        final type = (v?.journeyType ?? '').trim().toLowerCase();
-        if (type == 'o/w') {
-          controller.jourValue = 'O/W';
-          controller.changeJourneyFtn();
-        } else if (type == 'r/n') {
-          controller.jourValue = 'R/N';
-        } else if (type == 'w/r') {
-          controller.jourValue = 'W/R';
-          controller.changeJourneyFtn();
-        } else {
-          controller.jourValue = null;
-        }
+        selectedRowIndices.clear();
+        isAllSelected = false;
       });
-      controller.getFaresCalculation();
-    } else {
-      BotToast.showText(text: 'Please select pickup and drop location first');
     }
   }
 
@@ -437,6 +471,9 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                               reservations.length) {
                             isAllSelected = true;
                           }
+                          // Same as ticking with the mouse: load this
+                          // booking (addresses, lat/lng, vias) into the form.
+                          controller.dashBoardDataBinding(id: item['id']);
                         }
                       });
                       return KeyEventResult.handled;
@@ -617,13 +654,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                   _labelledField('LEAD', _tab(12, _timePickerBox(controller.minController))),
                                   const SizedBox(height: 8),
                                   _labelledField('JOUR',
-                                    _tab(13, _dropdown<JourneyTypeObject>(
-                                      value: controller.selectJourneyTypeValue,
-                                      hint: 'SELECT JOUR',
-                                      items: controller.dashboardAllData?.journeyTypes ?? [],
-                                      label: (item) => item.journeyType ?? '',
-                                      onChanged: _onJourneyChanged,
-                                    )),
+                                    _lockedJourneyField(),
                                   ),
                                   const SizedBox(height: 8),
                                   _labelledField('VEH',
@@ -644,16 +675,9 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: _labelledField('JOUR',
-                                      _tab(13, SizedBox(height: _fieldHeight,
-                                        child: _dropdown<JourneyTypeObject>(
-                                          height: _fieldHeight,
-                                          value: controller.selectJourneyTypeValue,
-                                          hint: 'SELECT JOUR',
-                                          items: controller.dashboardAllData?.journeyTypes ?? [],
-                                          label: (item) => item.journeyType ?? '',
-                                          onChanged: _onJourneyChanged,
-                                        ),
-                                      )),
+                                      SizedBox(height: _fieldHeight,
+                                        child: _lockedJourneyField(height: _fieldHeight),
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(width: 8),
@@ -850,34 +874,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                       borderRadius: BorderRadius.circular(4),
                                       color: _fieldFill,
                                     ),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const Icon(
-                                                Icons.shopping_cart_outlined,
-                                                size: 14,
-                                                color: _subtleText),
-                                            const SizedBox(width: 3),
-                                            Text('( )', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold)),
-                                          ],
-                                        ),
-                                        Text('£', style: outFitRegular(fontSize: 12, fontWeight: FontWeight.bold)),
-                                        Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const Icon(
-                                                Icons.sticky_note_2_outlined,
-                                                size: 14,
-                                                color: _subtleText),
-                                            const SizedBox(width: 3),
-                                            Text('( )', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold)),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                                    child: _alertIconButtons(),
                                   ),
                                 ],
                               )
@@ -952,34 +949,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                         borderRadius: BorderRadius.circular(4),
                                         color: _fieldFill,
                                       ),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                        children: [
-                                          Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              const Icon(
-                                                  Icons.shopping_cart_outlined,
-                                                  size: 14,
-                                                  color: _subtleText),
-                                              const SizedBox(width: 3),
-                                              Text('( )',style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold)),
-                                            ],
-                                          ),
-                                          Text('£', style: outFitRegular(fontSize: 12, fontWeight: FontWeight.bold)),
-                                          Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              const Icon(
-                                                  Icons.sticky_note_2_outlined,
-                                                  size: 14,
-                                                  color: _subtleText),
-                                              const SizedBox(width: 3),
-                                              Text('( )', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold)),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
+                                      child: _alertIconButtons(),
                                     ),
                                   ),
                                 ],
@@ -1153,12 +1123,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                           child: SizedBox(
                             height: 38,
                             child: _tab(25, ElevatedButton(
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => const AccountDetailsAlert(),
-                                );
-                              },
+                              onPressed: _saveSelectedReservations,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: DynamicColors.primaryClr,
                                 foregroundColor: Colors.white,
@@ -1179,6 +1144,59 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
           },
         )),
     );
+  }
+
+  /// SETTINGS, CHILD SEATS and EXTRA INFO — the same three icon buttons (and
+  /// alerts) that sit after QUOTATION on the dashboard booking form, spread
+  /// across the grey box beside QUOTATION. Tab stops fall between QUOTATION
+  /// (22) and FARE (23).
+  Widget _alertIconButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        _alertIconBtn(Icons.settings_suggest, 22.2,
+            () => showDialog(context: context, builder: (_) => SettingsDialog())),
+        _alertIconBtn(Icons.attach_money, 22.4,
+            () => showDialog(context: context, builder: (_) => ChildSeatsAlert())),
+        _alertIconBtn(Icons.sticky_note_2, 22.6,
+            () => showDialog(context: context, builder: (_) => ExtraInfoAlert())),
+      ],
+    );
+  }
+
+  /// One icon button, styled and keyboard-driven like the dashboard form's
+  /// iconBtn: Enter / Space open the alert, GlowFocus rings it on focus.
+  Widget _alertIconBtn(IconData icon, double tab, VoidCallback onPressed) {
+    return _tab(tab, GlowFocus(
+      child: Focus(
+        // Key handling only: the IconButton inside is the single Tab stop.
+        canRequestFocus: false,
+        onKeyEvent: (node, event) {
+          if (event is KeyDownEvent &&
+              (event.logicalKey == LogicalKeyboardKey.enter ||
+                  event.logicalKey == LogicalKeyboardKey.space)) {
+            onPressed();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFFEEF2FF),
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: Colors.black),
+          ),
+          child: IconButton(
+            onPressed: onPressed,
+            padding: const EdgeInsets.all(3),
+            // Small enough to sit inside the 32–34px grey box.
+            constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
+            splashRadius: 16,
+            icon: Icon(icon, size: 16, color: Colors.black),
+          ),
+        ),
+      ),
+    ));
   }
 
   // Helpers

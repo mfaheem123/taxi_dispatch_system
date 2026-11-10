@@ -309,6 +309,21 @@ Future<dynamic> delete(String url, {isProgressShow = false, formData}) async {
   dynamic returnResponse(Response? response) {
     BotToast.closeAllLoading();
     if (response != null) {
+      // Some errors come back as plain text or HTML (e.g. Express's
+      // "Cannot POST /api/..." 404), not JSON. Reading data["message"] on a
+      // String throws a TypeError, so report those here instead. 401 and 420
+      // still go through the switch for their logout handling.
+      final status = response.statusCode;
+      if (status != 200 && status != 401 && status != 420 &&
+          response.data is! Map) {
+        final body = response.data?.toString() ?? '';
+        print('Non-JSON error $status from ${response.requestOptions.path}: $body');
+        BotToast.showText(
+            text: status == 404
+                ? 'API not found (404): ${response.requestOptions.path}'
+                : 'Request failed with status $status');
+        return response;
+      }
       switch (response.statusCode) {
         case 200:
           var responseJson = json.decode(response.data.toString());

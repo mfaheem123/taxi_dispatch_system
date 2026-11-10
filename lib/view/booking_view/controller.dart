@@ -423,6 +423,103 @@ class BookingController extends GetxController{
     }
   }
 
+  /// Endpoint that applies the form's pickup / dropoff / vias / date / time
+  /// to the ticked bookings.
+  static const String multiReservationsUpdateUrl =
+      'bookings/multi-bookings-update';
+
+  RxBool multiReservationsSaving = false.obs;
+
+  /// Posts the booking form's pickup, dropoff (with lat/lng), date and time
+  /// for the bookings in [ids], as form-data:
+  /// pickup, pickup_latitude, pickup_longitude, dropoff, dropoff_latitude,
+  /// dropoff_longitude, pickup_date (yyyy-MM-dd), pickup_time, ids ([1, 2])
+  /// and, when the form has vias, viapoints (same JSON as bookings/add).
+  /// Reloads [multiReservations] for [multiBookingId] on success.
+  Future<bool> updateMultiReservations({
+    required List<String> ids,
+    String? multiBookingId,
+  }) async {
+    final form = menuBarController;
+    if (ids.isEmpty) {
+      BotToast.showText(text: 'Select at least one reservation');
+      return false;
+    }
+    final pickup = form.pickupController.text.trim();
+    final dropoff = form.dropOffController.text.trim();
+    // Same source as the dashboard save: the route markers hold the
+    // coordinates of the picked (or loaded) addresses.
+    final pickupMarker =
+        form.markers.firstWhereOrNull((m) => m.type == 'pickup');
+    final dropoffMarker =
+        form.markers.firstWhereOrNull((m) => m.type == 'dropOff');
+    if (pickup.isEmpty || dropoff.isEmpty) {
+      BotToast.showText(text: 'Please select pickup and drop location first');
+      return false;
+    }
+    if (pickupMarker == null || dropoffMarker == null) {
+      BotToast.showText(
+          text: 'Pickup / drop location has no coordinates, select it again');
+      return false;
+    }
+    final time = form.pickUpTimeController.text.trim();
+    if (time.isEmpty) {
+      BotToast.showText(text: 'Please enter pickup time');
+      return false;
+    }
+
+    // Vias: built exactly like bookings/add — postViaListConfig turns the
+    // form's viaPoints (address, name, mobile, lat/lng) into viaPostList.
+    if (form.viaPoints.isNotEmpty) {
+      await form.postViaListConfig();
+    } else {
+      form.viaPostList.clear();
+    }
+
+    final formData = {
+      'pickup': pickup,
+      'pickup_latitude': pickupMarker.point.latitude.toString(),
+      'pickup_longitude': pickupMarker.point.longitude.toString(),
+      'dropoff': dropoff,
+      'dropoff_latitude': dropoffMarker.point.latitude.toString(),
+      'dropoff_longitude': dropoffMarker.point.longitude.toString(),
+      'pickup_date':
+          DateFormat('yyyy-MM-dd').format(form.pickUpDate ?? DateTime.now()),
+      'pickup_time': time,
+      // Sent as the text "[1370, 1371, 1372]", as the API expects.
+      'ids': jsonEncode(ids.map((id) => int.tryParse(id) ?? id).toList()),
+      // Same key and JSON as bookings/add.
+      if (form.viaPostList.isNotEmpty)
+        'viapoints': jsonEncode(form.viaPostList),
+    };
+
+    print(formData);
+    multiReservationsSaving.value = true;
+    try {
+      final response = await Api().post(
+        formData,
+        multiReservationsUpdateUrl,
+        // multiPart: true,
+        sendCompanyId: true,
+      );
+      final ok = response != null &&
+          (response.statusCode == 200 || response.statusCode == 201);
+      if (ok) {
+        BotToast.showText(text: 'RESERVATIONS UPDATED SUCCESSFULLY');
+        await getMultiReservations(multiBookingId);
+      } else {
+        BotToast.showText(text: 'Could not update reservations');
+      }
+      return ok;
+    } catch (e) {
+      debugPrint('Multi booking update failed: $e');
+      BotToast.showText(text: 'Could not update reservations');
+      return false;
+    } finally {
+      multiReservationsSaving.value = false;
+    }
+  }
+
   Map<String, String> _multiReservationRow(BookingObjectData b) {
     String up(String? v) => (v ?? '').toUpperCase();
     String num(int? v) => v?.toString() ?? '';
