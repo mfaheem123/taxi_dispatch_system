@@ -489,7 +489,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       CrossAxisAlignment.center,
                                       children: [
                                         SizedBox(
-                                            width: _sz(_kLabelColumnWidth - 2),
+                                            width: _sz(_kLabelColumnWidth),
                                             child: Row(
                                                 mainAxisSize:
                                                 MainAxisSize.min,
@@ -508,28 +508,26 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                                           fontSize:
                                                           _fsLabel)),
                                                 ])),
-                                        const SizedBox(width: 2),
+                                        const SizedBox(width: 20),
                                         Expanded(
-                                          flex: 3,
+                                          flex: 5,
                                           child: _field('FL',
                                               tab: 4.3,
                                               controller: controller
                                                   .selectAirportController),
                                         ),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          flex: 1,
+                                        const SizedBox(width: _kFieldGap),
+                                        SizedBox(
+                                          width: _sz(110),
                                           child: _field('ARP',
                                               tab: 4.6,
                                               controller: controller
                                                   .arrivalTimeController),
-
-                                          // _timeField('ARP',
-                                          // tab: 4.6,
-                                          // controller: controller
-                                          //     .arrivalTimeController,
-                                          // onPicked: () => controller
-                                          //     .arrivalTimePicked = true),
+                                        ),
+                                        const SizedBox(width: _kFieldGap),
+                                        SizedBox(
+                                          width: _sz(90),
+                                          child: const SizedBox(),
                                         ),
                                       ],
                                     ),
@@ -845,13 +843,13 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     'luggage'.toUpperCase(),
                                     Icons.luggage,
                                     controller.luggController,
-                                    _isReturnJourney ? 35 : 17,
+                                    _isReturnJourney ? 17 : 17,
                                   ),
                                   luggageField(
                                     'small luggage'.toUpperCase(),
                                     Icons.luggage,
                                     controller.sluggController,
-                                    _isReturnJourney ? 36 : 18,
+                                    _isReturnJourney ? 18 : 18,
                                   ),
                                   _dropdown<DashboardAccountObject>(
                                     'SELECT ACCOUNT',
@@ -881,6 +879,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     itemLabel: (p) => p.name!,
                                   ),
                                 ]),
+
+                                if (_isReturnJourney)
+                                  _returnJourneySection(
+                                      isMobile, cols, controller),
                                 const Divider(height: 10),
                                 _sectionHeader(
                                     Icons.directions_car, 'VEHICLE & PAYMENT'),
@@ -971,13 +973,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
 
 
                                   _field('FARE',
-                                      tab: 17,
+                                      tab:       _isReturnJourney ? 35 : 26,
                                       prefix: Icons.currency_pound,
                                       controller: controller.slugController),
                                 ]),
-                                if (_isReturnJourney)
-                                  _returnJourneySection(
-                                      isMobile, cols, controller),
 
                                 ///todo multi reservation
                                 // _grid(cols, [
@@ -1204,7 +1203,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
-                    width: _sz(_kLabelColumnWidth - 2),
+                    width: _sz(_kLabelColumnWidth),
                     child: Row(mainAxisSize: MainAxisSize.min, children: [
                       Icon(Icons.circle, size: 9, color: Colors.green),
                       const SizedBox(width: 6),
@@ -1215,25 +1214,24 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                     ])),
                 const SizedBox(width: 2),
                 Expanded(
-                  flex: 3,
+                  flex: 5,
                   child: _field('FL',
-                      tab: 21.3,
+                      tab: 18.3,
                       controller:
                       controller.selectAirportControllerReturn),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 1,
+                const SizedBox(width: _kFieldGap),
+                SizedBox(
+                  width: _sz(200),
                   child: _field('ARP',
-                      tab: 21.6,
+                      tab: 18.6,
                       controller: controller.arrivalReturnTimeController),
-
-                  // _timeField('ARP',
-                  //     tab: 22.6,
-                  //     controller: controller
-                  //         .arrivalReturnTimeController,
-                  //     onPicked: () => controller.arrivalTimePicked = true),
                 ),
+                const SizedBox(width: _kFieldGap),
+                // SizedBox(
+                //   width: _sz(90),
+                //   child: const SizedBox(),
+                // ),
               ],
             ),
           ),
@@ -1329,7 +1327,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         const SizedBox(height: 8),
         _grid(cols, [
           WebDateField('R/Date',
-              tab: 25,
+              tab: 38,
               baseTextStyle: const TextStyle(fontFamily: _kFontFamily),
               textStyle: _kValueTextStyle,
               style: WebDatePickerStyle.of(context)
@@ -1341,12 +1339,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 controller.pickUpDateReturnPicked = true;
               })),
           _timeField('R/Time',
-              tab: 26,
+              tab: 39,
               controller: controller.pickUpTimeControllerReturn,
               onPicked: () => controller.pickUpTimeReturnPicked = true),
-          _field('R/Lead', tab: 27, controller: controller.minControllerReturn),
+          _field('R/Lead', tab: 40, controller: controller.minControllerReturn),
           _field('R/Fare',
-              tab: 28,
+              tab: 41,
               prefix: Icons.currency_pound,
               controller: controller.slugControllerReturn),
         ]),
@@ -1451,7 +1449,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   //   controller.update();
                 });
               },
-              29,
+              42,
               itemLabel: (p) => p.name!,
               allowUnselect: false,
             ),
@@ -1465,7 +1463,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     controller.selectDriverValueReturn, // Jab ye null hoga to Hint Text dikhega
     controller.dashboardAllData?.drivers ?? const [],
     (v) => controller.checkDriverSinBinStatus(v, isReturn: true), // Directly call method
-    30,
+    43,
     itemLabel: (p) => p.name ?? '',
     );
     },
@@ -1481,7 +1479,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         // Between R/Fare (31) and Select R/VEH (32). Orderless before this, so
         // Tab reached it only after the whole form had been traversed.
         FocusTraversalOrder(
-          order: const NumericFocusOrder(28.5),
+          order: const NumericFocusOrder(41.5),
           child: GlowFocus(
             radius: 4,
             child: SizedBox(
@@ -1923,10 +1921,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               // colliding pair up to a geometry tie-break instead of to us.
               checkbox('SMS', controller.smsCheckbox.value,
                       (v) => setState(() => controller.smsCheckbox.value = v ?? false),
-                  tab: _isReturnJourney ? 34.2 : 23.2),
+                  tab: _isReturnJourney ? 34.2 : 26.1),
               checkbox('EMAIL', controller.emailCheckbox.value,
                       (v) => setState(() => controller.emailCheckbox.value = v ?? false),
-                  tab: _isReturnJourney ? 34.4 : 23.4),
+                  tab: _isReturnJourney ? 34.4 : 26.3),
               // luggageField(
               //   'luggage'.toUpperCase(),
               //   Icons.luggage,
@@ -1948,22 +1946,22 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (controller.selectPaymentTypeValue?.name?.toUpperCase().contains('CREDIT') == true)
-              iconBtn(Icons.credit_card, tab: _isReturnJourney ? 36.5 : 25.8, onPressed: () {}),
-            iconBtn(Icons.settings_suggest, tab: _isReturnJourney ? 37 : 26,
+              iconBtn(Icons.credit_card, tab: _isReturnJourney ? 34.8 : 26.8, onPressed: () {}),
+            iconBtn(Icons.settings_suggest, tab: _isReturnJourney ? 35 : 27,
                 onPressed: () {
                   showDialog(
                     context: context,
                     builder: (_) => SettingsDialog(),
                   );
                 }),
-            iconBtn(Icons.attach_money, tab: _isReturnJourney ? 38 : 27,
+            iconBtn(Icons.attach_money, tab: _isReturnJourney ? 36 : 28,
                 onPressed: () {
                   showDialog(
                     context: context,
                     builder: (_) => ChildSeatsAlert(),
                   );
                 }),
-            iconBtn(Icons.sticky_note_2, tab: _isReturnJourney ? 39 : 28,
+            iconBtn(Icons.sticky_note_2, tab: _isReturnJourney ? 37 : 29,
                 onPressed: () {
                   showDialog(
                     context: context,
@@ -2070,7 +2068,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       hint: 'Select Driver',
     );
     final clear = FocusTraversalOrder(
-      order: NumericFocusOrder((_isReturnJourney ? 41 : 30).toDouble()),
+      order: NumericFocusOrder((_isReturnJourney ? 44 : 30).toDouble()),
       child: GlowFocus(
         child: ElevatedButton(
           onPressed: () {
@@ -2090,7 +2088,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ),
     );
     final home = FocusTraversalOrder(
-      order: NumericFocusOrder((_isReturnJourney ? 42 : 31).toDouble()),
+      order: NumericFocusOrder((_isReturnJourney ? 45 : 31).toDouble()),
       child: GlowFocus(
         child: Focus(
           // Intercept Tab so focus jumps from the Home button directly to the
@@ -2422,7 +2420,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       // after Department (21, or 36 in return mode). Previously orderless,
       // which parked it behind every numbered field.
       FocusTraversalOrder(
-        order: NumericFocusOrder(_isReturnJourney ? 36.5 : 25.5),
+        order: NumericFocusOrder(_isReturnJourney ? 34.6 : 26.5),
         child: CallbackShortcuts(
           bindings: {
             const SingleActivator(LogicalKeyboardKey.enter): () {
