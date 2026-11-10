@@ -64,6 +64,9 @@ class _DriverCommissionPayState extends State<DriverCommissionPay> {
                   ? maxWidth / 2
                   : maxWidth / 4;
 
+          final int ledgerCount = controller.getAllDriverPayModel?.driverCommissionLedgers?.length ?? 0;
+          final bool isDriverSelected = controller.driverSelectionController.text.isNotEmpty;
+
           return SingleChildScrollView(
             padding: EdgeInsets.all(12.0),
             child: Column(
@@ -73,7 +76,12 @@ class _DriverCommissionPayState extends State<DriverCommissionPay> {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                   color: DynamicColors.gryClr.withOpacity(0.5),
-                  child: Text(AppText.driverCommissionPay, style: titleDesign()),
+                  child: Text(
+                    isDriverSelected
+                        ? "${AppText.driverCommissionPay} ($ledgerCount)"
+                        : AppText.driverCommissionPay,
+                    style: titleDesign(),
+                  ),
                 ),
                 const SizedBox(height: 15),
                 Padding(

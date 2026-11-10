@@ -66,6 +66,9 @@ class _DriverRentPayState extends State<DriverRentPay> {
                   ? maxWidth / 2
                   : maxWidth / 4;
 
+          final int ledgerCount = controller.getAllDriverPayModel?.driverCommissionLedgers?.length ?? 0;
+          final bool isDriverSelected = controller.rentDriverSelectionController.text.isNotEmpty;
+
           return SingleChildScrollView(
             padding: EdgeInsets.all(12.0),
             child: Column(
@@ -75,7 +78,12 @@ class _DriverRentPayState extends State<DriverRentPay> {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                   color: DynamicColors.gryClr.withOpacity(0.5),
-                  child: Text(AppText.driverRentPay, style: titleDesign()),
+                  child: Text(
+                      isDriverSelected
+                          ? "${AppText.driverRentPay} ($ledgerCount)"
+                          : AppText.driverRentPay,
+                      style: titleDesign(),
+                  ),
                 ),
                 const SizedBox(height: 15),
                 Padding(
