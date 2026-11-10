@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
 
 import '../component/textStyle.dart';
-// Apne project ke mutabiq textStyle import kar lein agar zaroorat ho
-// import '../../../../component/textStyle.dart';
 
 class BookingAuditReportView extends StatelessWidget {
   const BookingAuditReportView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white, // Outer background white kar di hai taake koi extra border/shadow na lage
-      body: SingleChildScrollView(
+    return SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Container(
-          color: Colors.white, // Shadow aur outer decoration hata di hai
+          color: Colors.white,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // 1. Top Custom Logo & Header Section
+              // Header Section
               SizedBox(
                 height: 45,
                 child: Image.asset(
@@ -43,7 +39,7 @@ class BookingAuditReportView extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              // 2. Customer & Driver Info Header Box
+              // Driver Info Header
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
@@ -54,18 +50,31 @@ class BookingAuditReportView extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _buildInfoColumn("CUSTOMER", "NADEM", "MOBILE", "07590455607"),
-                    _buildInfoColumn("DRIVER DETAILS", "", "NADEEM KHAN", "(USER: 50)", crossAlign: CrossAxisAlignment.end),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        const Text("DRIVER DETAILS", style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 2),
+                        const Text("NADEEM KHAN", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 2),
+                        Text("(USER: 50)", style: TextStyle(fontSize: 11, color: Colors.grey.shade700, fontWeight: FontWeight.w600)),
+                      ],
+                    ),
                   ],
                 ),
               ),
               const SizedBox(height: 20),
 
-              // 3. Main Booking Info Table
+              // Booking Table
               _buildSectionHeader("BOOKING DETAILS"),
               const SizedBox(height: 10),
               Table(
                 border: TableBorder(
                   horizontalInside: BorderSide(color: Colors.grey.shade200, width: 1),
+                  verticalInside: BorderSide(color: Colors.grey.shade200, width: 1),
+                  top: BorderSide(color: Colors.grey.shade300, width: 1),
+                  left: BorderSide(color: Colors.grey.shade300, width: 1),
+                  right: BorderSide(color: Colors.grey.shade300, width: 1),
                   bottom: BorderSide(color: Colors.grey.shade200, width: 1),
                 ),
                 columnWidths: const {
@@ -104,12 +113,13 @@ class BookingAuditReportView extends StatelessWidget {
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(6.0),
+                        child: Center(
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                           decoration: BoxDecoration(color: Colors.green, borderRadius: BorderRadius.circular(4)),
                           child: const Text("DCB78FE0", style: TextStyle(color: Colors.white, fontSize: 9), textAlign: TextAlign.center),
                         ),
-                      ),
+                      )),
                       const Padding(padding: EdgeInsets.all(6.0), child: Text("DEMO COMPANY", style: TextStyle(fontSize: 10))),
                       const Padding(padding: EdgeInsets.all(6.0), child: Text("27-10-26\n21:49", style: TextStyle(fontSize: 9))),
                       const Padding(padding: EdgeInsets.all(6.0), child: Text("NADEM", style: TextStyle(fontSize: 10))),
@@ -140,21 +150,31 @@ class BookingAuditReportView extends StatelessWidget {
             ],
           ),
         ),
-      ),
     );
   }
 
   Widget _buildInfoColumn(String title1, String val1, String title2, String val2, {CrossAxisAlignment crossAlign = CrossAxisAlignment.start}) {
-    return Column(
-      crossAxisAlignment: crossAlign,
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title1, style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 2),
-        Text(val1, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 4),
-        Text(title2, style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 2),
-        Text(val2, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+        Column(
+          crossAxisAlignment: crossAlign,
+          children: [
+            Text(title1, style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 2),
+            Text(val1, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        const SizedBox(width: 24),
+        Column(
+          crossAxisAlignment: crossAlign,
+          children: [
+            Text(title2, style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 2),
+            Text(val2, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+          ],
+        ),
       ],
     );
   }
@@ -216,6 +236,10 @@ class BookingAuditReportView extends StatelessWidget {
     return Table(
       border: TableBorder(
         horizontalInside: BorderSide(color: Colors.grey.shade200, width: 1),
+        verticalInside: BorderSide(color: Colors.grey.shade200, width: 1),
+        top: BorderSide(color: Colors.grey.shade300, width: 1),
+        left: BorderSide(color: Colors.grey.shade300, width: 1),
+        right: BorderSide(color: Colors.grey.shade300, width: 1),
         bottom: BorderSide(color: Colors.grey.shade200, width: 1),
       ),
       columnWidths: const {
@@ -254,6 +278,10 @@ class BookingAuditReportView extends StatelessWidget {
     return Table(
       border: TableBorder(
         horizontalInside: BorderSide(color: Colors.grey.shade200, width: 1),
+        verticalInside: BorderSide(color: Colors.grey.shade200, width: 1),
+        top: BorderSide(color: Colors.grey.shade300, width: 1),
+        left: BorderSide(color: Colors.grey.shade300, width: 1),
+        right: BorderSide(color: Colors.grey.shade300, width: 1),
         bottom: BorderSide(color: Colors.grey.shade200, width: 1),
       ),
       columnWidths: const {
