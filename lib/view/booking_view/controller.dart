@@ -425,7 +425,7 @@ class BookingController extends GetxController{
 
   /// Endpoint that applies the multi booking form to the ticked bookings.
   static const String multiReservationsUpdateUrl =
-      'bookings/multi-bookings-update';
+      'bookings/multi-update';
 
   RxBool multiReservationsSaving = false.obs;
 
@@ -595,6 +595,7 @@ class BookingController extends GetxController{
       final ok = response != null &&
           (response.statusCode == 200 || response.statusCode == 201);
       if (ok) {
+        form.refreshPostAllFields();
         BotToast.showText(text: 'RESERVATIONS UPDATED SUCCESSFULLY');
         await getMultiReservations(multiBookingId);
       } else {
