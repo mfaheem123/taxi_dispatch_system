@@ -2,10 +2,12 @@ import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../component/action_icon_button.dart';
 import '../../../../component/color.dart';
 import '../../../../component/customButton.dart';
 import '../../../../component/datatable_widget.dart';
 import '../../../../component/textStyle.dart';
+import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
 import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../../dashboard_view/booking_table.dart';
@@ -38,7 +40,11 @@ class _DriverRentPayState extends State<DriverRentPay> {
   @override
   Widget build(BuildContext context) {
     return PageScrollWrapper(
-      child: GetBuilder<DriverController>(builder: (controller) {
+      child: GetBuilder<DriverController>(initState: (state) {
+        controller.clearLedgerForm();
+        controller.getDriver();
+        // controller.getAllDriverPay(invoiceType: "rent");
+      }, builder: (controller) {
         return LayoutBuilder(builder: (context, constraints) {
           final double maxWidth = constraints.maxWidth;
           final bool isMobile = maxWidth < 600;
@@ -70,44 +76,58 @@ class _DriverRentPayState extends State<DriverRentPay> {
                     children: [
                       Expanded(
                           flex: 1,
-                          child: CustomDropdownField(
-                              text: "DRIVER",
-                              items: [
-                                "25 GEORGE HAMPTON",
-                                "26 PAUL DOUBLEDAY",
-                                "27 RICHARD HARDWICK",
-                                "28 LANRE OKERJO",
-                              ],
-                              value: selectDrv,
-                              itemLabel: (val) => val,
-                              onChanged: (val) {
-                                selectDrv = val;
+                          child: CustomDropdownField<dynamic>(
+                            width: fieldWidth,
+                            height: 30,
+                            text: AppText.driver,
+                            label: "SELECT DRIVER",
+                            value: controller.rentDriverSelectionController.text.isEmpty
+                                ? null
+                                : controller.driverRentModel?.drivers?.firstWhereOrNull(
+                                    (d) => "${d.username} ${d.name}" == controller.rentDriverSelectionController.text
+                            ),
+                            items: controller.driverRentModel?.drivers ?? [],
+                            itemLabel: (driver) => "${driver.username} ${driver.name}".toUpperCase(),
+                            onChanged: (driver) {
+                              if (driver != null) {
+                                String selectedText = "${driver.username} ${driver.name}";
+                                controller.rentDriverSelectionController.text = selectedText;
+                                controller.selectedDriverId = driver.id;
+                                controller.fillDriverDetails(selectedText);
+                                controller.getAllDriverPay(invoiceType: "rent");
                                 controller.update();
-                              })),
+                              }
+                            },
+                          ),
+                      ),
 
                       const SizedBox(width: 12),
 
                       Expanded(
                         flex: 1,
                         child: labeledTextField(
-                            context, isMobile,
-                            AppText.rentDue,
-                            controller.commissionDueController,
-                            width: fieldWidth,
-                            textInputAction: TextInputAction.next,
-                            column: true),
+                          context, isMobile,
+                          AppText.rentDue,
+                          controller.commissionDueController,
+                          width: fieldWidth,
+                          textInputAction: TextInputAction.next,
+                          column: true,
+                          readOnly: true,
+                        ),
                       ),
 
                       const SizedBox(width: 12),
                       Expanded(
                         flex: 1,
-                        child: labeledTextField(
-                            context, isMobile,
-                            AppText.amount,
-                            controller.amountController,
-                            width: fieldWidth,
-                            textInputAction: TextInputAction.next,
-                            column: true),
+                        child: CustomTextField(
+                          borderRadius: 4,
+                          controller: controller.amountController,
+                          width: fieldWidth,
+                          hintText: AppText.amount,
+                          columnText: true,
+                          keyboardType: TextInputType.numberWithOptions(decimal: true),
+                          suffixIcon: arrowIcons(controller.amountController),
+                        )
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -115,9 +135,11 @@ class _DriverRentPayState extends State<DriverRentPay> {
                         child: labeledTextField(
                             context, isMobile,
                             "CURRENT BALANCE",
-                            controller.amountController,
+                            controller.currentBalanceController,
                             width: fieldWidth,
-                            column: true),
+                            column: true,
+                          readOnly: true,
+                        ),
                       ),
 
                       const SizedBox(width: 12),
@@ -130,54 +152,35 @@ class _DriverRentPayState extends State<DriverRentPay> {
                             controller.descriptionController,
                             width: fieldWidth,
                             textInputAction: TextInputAction.next,
-                            column: true),
+                            column: true,
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Radio<int>(
-                            value: 0,
-                            groupValue: 0,
-                            onChanged: (v) {},
+                          Radio<String>(
+                            value: "CREDIT",
+                            groupValue: controller.selectedType,
+                            onChanged: (v) {
+                              controller.selectedType = v;
+                              controller.update();
+                            },
                           ),
                           Text(AppText.credit),
                           const SizedBox(width: 8),
-                          Radio<int>(
-                            value: 1,
-                            groupValue: 0,
-                            onChanged: (v) {},
+                          Radio<String>(
+                            value: "DEBIT",
+                            groupValue: controller.selectedType,
+                            onChanged: (v) {
+                              controller.selectedType = v;
+                              controller.update();
+                            },
                           ),
                           Text(AppText.debit),
                         ],
                       ),
                       const SizedBox(width: 30),
-                      // Checkbox(value: controller.creditValue.value, onChanged: (v){
-                      //   controller.creditValue.value = v!;
-                      //   controller.update();
-                      // }),
-                      // DynamicSwitch(
-                      //   controller: controller.creditValue,
-                      //   activeColor: DynamicColors.primaryClr,
-                      //   inactiveColor: DynamicColors.gryClr,
-                      //   focusScale: 1.5,
-                      //   onToggle: () {
-                      //     print(
-                      //         "Switch toggled: ${controller.creditValue.value}");
-                      //   },
-                      // ),
-                      // Text(AppText.credit),
-                      // DynamicSwitch(
-                      //   controller: controller.debitValue,
-                      //   activeColor: DynamicColors.primaryClr,
-                      //   inactiveColor: DynamicColors.gryClr,
-                      //   focusScale: 1.5,
-                      //   onToggle: () {
-                      //     print(
-                      //         "Switch toggled: ${controller.debitValue.value}");
-                      //   },
-                      // ),
-                      // Text(AppText.debit),
                       CustomButton(
                         width: 100,
                         height: 33,
@@ -185,6 +188,9 @@ class _DriverRentPayState extends State<DriverRentPay> {
                         style: mozillaTextSemiBoldText(fontSize: 13, color: DynamicColors.whiteClr),
                         verticalPadding: 0.0,
                         btnText: AppText.save,
+                        onTap: () {
+                          controller.createDriverLedger(invoiceType: "rent");
+                        },
                       ),
                     ],
                   ),
@@ -202,15 +208,37 @@ class _DriverRentPayState extends State<DriverRentPay> {
                         buildHeaderWithSearch(title: "BALANCE", removeSearching: true),
                         buildHeaderWithSearch(title: "ACTION", removeSearching: true),
                       ],
-                      totalRow: totalRows,
-                      cells: [
-                        DataCell(Center(child: Text("20/10/2025"))),
-                        DataCell(Center(child: Text("PHC VEHICLE"))),
-                        DataCell(Center(child: Text("PHC VEHICLE"))),
-                        DataCell(Center(child: Text("#PHC VEHICLE"))),
-                        DataCell(Center(child: Text("PHC VEHICLE"))),
-                        DataCell(Center(child: Text("PHC VEHICLE"))),
-                      ],
+                      totalRow: controller.getAllDriverPayModel?.driverCommissionLedgers?.length ?? 0,
+                      rows: controller.getAllDriverPayModel?.driverCommissionLedgers?.map((item) {
+
+                        String formatDateTime(String? dateStr) {
+                          if (dateStr == null || dateStr.isEmpty) return "";
+                          try {
+                            DateTime parsed = DateTime.parse(dateStr);
+                            String datePart = parsed.toIso8601String().split('T').first;
+                            String timePart = "${parsed.hour.toString().padLeft(2, '0')}:${parsed.minute.toString().padLeft(2, '0')}";
+                            return "$datePart   $timePart";
+                          } catch (e) {
+                            return dateStr;
+                          }
+                        }
+                        return DataRow(cells: [
+                          DataCell(Center(child: Text(formatDateTime(item.date)))),
+                          DataCell(Center(child: Text(item.type ?? ""))),
+                          DataCell(Center(child: Text(item.amount ?? ""))),
+                          DataCell(Center(child: Text(item.description ?? ""))),
+                          DataCell(Center(child: Text(item.currentBalance ?? ""))),
+                          DataCell(Center(child:
+                          ActionIconButton(
+                            icon: Icons.delete_forever,
+                            color: DynamicColors.redClr,
+                            onPressed: () {
+                              controller.deleteDriverLedger(item.id);
+                            },
+                          ),
+                          )),
+                        ]);
+                      }).toList(),
                     ),
                   ),
                 ),
@@ -221,4 +249,18 @@ class _DriverRentPayState extends State<DriverRentPay> {
       }),
     );
   }
+
+  Widget arrowIcons(TextEditingController ctrl) => Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      InkWell(
+        onTap: () => ctrl.text = ((double.tryParse(ctrl.text) ?? 0) + 1).toString(),
+        child: const Icon(Icons.arrow_drop_up, size: 13),
+      ),
+      InkWell(
+        onTap: () => ctrl.text = ((double.tryParse(ctrl.text) ?? 0) - 1).toString(),
+        child: const Icon(Icons.arrow_drop_down, size: 13),
+      ),
+    ],
+  );
 }
