@@ -423,18 +423,16 @@ class BookingController extends GetxController{
     }
   }
 
-  /// Endpoint that applies the form's pickup / dropoff / vias / date / time
-  /// to the ticked bookings.
+  /// Endpoint that applies the multi booking form to the ticked bookings.
   static const String multiReservationsUpdateUrl =
       'bookings/multi-bookings-update';
 
   RxBool multiReservationsSaving = false.obs;
 
-  /// Posts the booking form's pickup, dropoff (with lat/lng), date and time
-  /// for the bookings in [ids], as form-data:
-  /// pickup, pickup_latitude, pickup_longitude, dropoff, dropoff_latitude,
-  /// dropoff_longitude, pickup_date (yyyy-MM-dd), pickup_time, ids ([1, 2])
-  /// and, when the form has vias, viapoints (same JSON as bookings/add).
+  /// Posts the MULTI BOOKING | UPDATE form for the bookings in [ids]
+  /// ("[1, 2]"). Always sends pickup / dropoff with lat/lng, date and time;
+  /// every other field (vias, customer, account, vehicle, driver, fares,
+  /// charges, alerts, ...) only when filled. Keys match bookings/add.
   /// Reloads [multiReservations] for [multiBookingId] on success.
   Future<bool> updateMultiReservations({
     required List<String> ids,
@@ -476,21 +474,113 @@ class BookingController extends GetxController{
       form.viaPostList.clear();
     }
 
-    final formData = {
+    // Restricted drivers, child seats, extra fares (notes) and driver
+    // attributes from the SETTINGS / CHILD SEATS alerts, built the same way
+    // as bookings/add. That method also appends the dashboard's multi
+    // reservation days to multiReservationTemp, which this screen doesn't
+    // send, so those additions are dropped again.
+    final multiTempBefore = form.multiReservationTemp.length;
+    await form.restrictedDriversListConfig();
+    if (form.multiReservationTemp.length > multiTempBefore) {
+      form.multiReservationTemp.removeRange(
+          multiTempBefore, form.multiReservationTemp.length);
+    }
+
+    String t(TextEditingController c) => c.text.trim();
+    final distance = form.totalDistance.value.trim();
+    final eta = form.totalTimeDuration.value.trim();
+
+    // Keys as in DashboardController.postDashboardApi (bookings/add); each
+    // optional field is only sent when it has a value.
+    final formData = <String, dynamic>{
+      'ids': jsonEncode(ids.map((id) => int.tryParse(id) ?? id).toList()),
+
+      // Pickup / dropoff / vias
       'pickup': pickup,
-      'pickup_latitude': pickupMarker.point.latitude.toString(),
-      'pickup_longitude': pickupMarker.point.longitude.toString(),
+      if (form.dashboardZoneValue != null)
+        'pickup_plot': form.dashboardZoneValue!.id,
+      if (t(form.pickUpNoteController).isNotEmpty)
+        'pickup_door_number': t(form.pickUpNoteController),
+      'pickup_latitude': pickupMarker.point.latitude,
+      'pickup_longitude': pickupMarker.point.longitude,
       'dropoff': dropoff,
-      'dropoff_latitude': dropoffMarker.point.latitude.toString(),
-      'dropoff_longitude': dropoffMarker.point.longitude.toString(),
+      if (form.dashboardDZoneValue != null)
+        'dropoff_plot': form.dashboardDZoneValue!.id,
+      if (t(form.dropUpNoteController).isNotEmpty)
+        'dropoff_door_number': t(form.dropUpNoteController),
+      'dropoff_latitude': dropoffMarker.point.latitude,
+      'dropoff_longitude': dropoffMarker.point.longitude,
+      if (form.viaPostList.isNotEmpty)
+        'viapoints': jsonEncode(form.viaPostList),
+
+      // Customer
+      if (t(form.nameController).isNotEmpty) 'name': t(form.nameController),
+      if (t(form.emailController).isNotEmpty) 'email': t(form.emailController),
+      if (t(form.mobileController).isNotEmpty)
+        'mobile': t(form.mobileController),
+      if (t(form.telController).isNotEmpty) 'telephone': t(form.telController),
+
+      // Date / time / journey (always O/W on this screen)
       'pickup_date':
           DateFormat('yyyy-MM-dd').format(form.pickUpDate ?? DateTime.now()),
       'pickup_time': time,
-      // Sent as the text "[1370, 1371, 1372]", as the API expects.
-      'ids': jsonEncode(ids.map((id) => int.tryParse(id) ?? id).toList()),
-      // Same key and JSON as bookings/add.
-      if (form.viaPostList.isNotEmpty)
-        'viapoints': jsonEncode(form.viaPostList),
+      if (t(form.minController).isNotEmpty) 'lead_time': t(form.minController),
+      if (form.selectJourneyTypeValue != null)
+        'journey_type_id': form.selectJourneyTypeValue!.id,
+
+      // Account / payment / vehicle / driver
+      if (form.selectAccountValue != null)
+        'account_id': form.selectAccountValue!.id,
+      if (form.selectDepartmentData != null)
+        'department': form.selectDepartmentData!.id,
+      if (form.selectPaymentTypeValue != null)
+        'payment_type_id': form.selectPaymentTypeValue!.id,
+      if (form.selectVehicleValue != null)
+        'vehicle_type_id': form.selectVehicleValue!.id,
+      if (form.selectEscortValue != null)
+        'escort_id': form.selectEscortValue!.id,
+      if (form.selectDriverValue != null)
+        'driver_id': form.selectDriverValue!.id,
+
+      // Passengers / luggage
+      if (t(form.passController).isNotEmpty)
+        'passengers': t(form.passController),
+      if (t(form.luggController).isNotEmpty)
+        'luggages': t(form.luggController),
+      if (t(form.sluggController).isNotEmpty)
+        'hand_luggages': t(form.sluggController),
+
+      // Fare, route
+      if (t(form.slugController).isNotEmpty) 'fares': t(form.slugController),
+      if (eta.isNotEmpty) 'eta': eta,
+      if (distance.isNotEmpty) 'miles': distance,
+
+      // Alerts: SETTINGS (extra fares, restrictions, attributes),
+      // CHILD SEATS, EXTRA INFO
+      if (form.restrictedDrivers.isNotEmpty)
+        'restricted_drivers': jsonEncode(form.restrictedDrivers),
+      if (form.childSeatList.isNotEmpty)
+        'child_seat': jsonEncode(form.childSeatList),
+      if (form.bookingAttributesList.isNotEmpty)
+        'driver_attributes': jsonEncode(form.bookingAttributesList),
+      if (form.extraFaresList.isNotEmpty)
+        'notes': jsonEncode(form.extraFaresList),
+      if (t(form.parkingChargesController).isNotEmpty)
+        'parking_charges': t(form.parkingChargesController),
+      if (t(form.congestionChargesController).isNotEmpty)
+        'congestion_charges': t(form.congestionChargesController),
+      if (t(form.meetGreetController).isNotEmpty)
+        'meet_and_greet': t(form.meetGreetController),
+      if (t(form.waitingChargesController).isNotEmpty)
+        'waiting_charges': t(form.waitingChargesController),
+      if (t(form.extraDropChargesController).isNotEmpty)
+        'extra_drop_charges': t(form.extraDropChargesController),
+      if (t(form.creditCardChargesController).isNotEmpty)
+        'credit_card_charges': t(form.creditCardChargesController),
+      if (t(form.companyPriceController).isNotEmpty)
+        'company_price': t(form.companyPriceController),
+      if (t(form.specialRequirementsController).isNotEmpty)
+        'special_instructions': t(form.specialRequirementsController),
     };
 
     print(formData);
