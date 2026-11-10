@@ -293,7 +293,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                               widget: Checkbox(
                                   value: controller.selectBulkDrivers.value,
                                   onChanged: (v) {
-                                    controller.selectBulkDrivers.value = v!;
+                                    controller.toggleSelectAllDrivers(v);
                                     controller.update();
                                   })),
                           buildHeaderWithSearch(title: "DRIVER", removeSearching: true),
@@ -309,12 +309,16 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                         ],
                         totalRow: controller.getBulkCommissionModel?.data?.length ?? 0,
                         rows: controller.getBulkCommissionModel?.data?.map((item) {
+
+                          String driverId = item.driverId?.toString() ?? "";
+                          bool isSelected = controller.selectedDriverIds.contains(driverId);
+                          
                           return DataRow(cells: [
                             DataCell(Center(
                                 child: Checkbox(
-                                    value: controller.selectBulkDrivers.value,
+                                    value: isSelected,
                                     onChanged: (v) {
-                                      controller.selectBulkDrivers.value = v!;
+                                      controller.toggleDriverSelection(driverId);
                                       controller.update();
                                     }))),
                             DataCell(Center(child: Text(item.driver?.username ?? ""))),

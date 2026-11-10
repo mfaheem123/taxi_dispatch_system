@@ -289,28 +289,32 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                               widget: Checkbox(
                                   value: controller.selectBulkRentDrivers.value,
                                   onChanged: (v) {
-                                    controller.selectBulkRentDrivers.value = v!;
+                                    controller.toggleSelectAllDrivers(v);
                                     controller.update();
                                   })),
-                          buildHeaderWithSearch(title: "DRIVER"),
-                          buildHeaderWithSearch(title: "BOOKINGS"),
-                          buildHeaderWithSearch(title: "CASH TOTAL"),
-                          buildHeaderWithSearch(title: "ACCOUNT TOTALS"),
-                          buildHeaderWithSearch(title: "TOTALS"),
-                          buildHeaderWithSearch(title: "RENT"),
-                          buildHeaderWithSearch(title: "OLD BALANCE"),
-                          buildHeaderWithSearch(title: "BALANCE"),
-                          buildHeaderWithSearch(title: "OWED"),
-                          buildHeaderWithSearch(title: "ACTION"),
+                          buildHeaderWithSearch(title: "DRIVER", removeSearching: true),
+                          buildHeaderWithSearch(title: "BOOKINGS", removeSearching: true),
+                          buildHeaderWithSearch(title: "CASH TOTAL", removeSearching: true),
+                          buildHeaderWithSearch(title: "ACCOUNT TOTALS", removeSearching: true),
+                          buildHeaderWithSearch(title: "TOTALS", removeSearching: true),
+                          buildHeaderWithSearch(title: "RENT", removeSearching: true),
+                          buildHeaderWithSearch(title: "OLD BALANCE", removeSearching: true),
+                          buildHeaderWithSearch(title: "BALANCE", removeSearching: true),
+                          buildHeaderWithSearch(title: "OWED", removeSearching: true),
+                          buildHeaderWithSearch(title: "ACTION", removeSearching: true),
                         ],
                         totalRow: controller.getBulkRentModel?.data?.length ?? 0,
                         rows: controller.getBulkRentModel?.data?.map((item) {
+
+                          String driverId = item.driverId?.toString() ?? "";
+                          bool isSelected = controller.selectedDriverIds.contains(driverId);
+
                           return DataRow(cells: [
                             DataCell(Center(
                                 child: Checkbox(
-                                    value: controller.selectBulkDrivers.value,
+                                    value: isSelected,
                                     onChanged: (v) {
-                                      controller.selectBulkDrivers.value = v!;
+                                      controller.toggleDriverSelection(driverId);
                                       controller.update();
                                     }))),
                             DataCell(Center(child: Text(item.driver?.username ?? ""))),

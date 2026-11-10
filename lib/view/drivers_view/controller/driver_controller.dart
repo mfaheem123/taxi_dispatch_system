@@ -3555,6 +3555,28 @@ class DriverController extends GetxController {
   String bulkRentToDate = "";
 
   RxBool selectBulkRentDrivers = false.obs;
+  List<String> selectedDriverIds = [];
+
+  void toggleDriverSelection(String id) {
+    selectedDriverIds.contains(id) ? selectedDriverIds.remove(id) : selectedDriverIds.add(id);
+    update();
+  }
+
+  void toggleSelectAllDrivers(bool? val) {
+    selectBulkRentDrivers.value = val ?? false;
+    selectedDriverIds = selectBulkRentDrivers.value
+        ? getBulkRentModel?.data?.map((e) => e.driverId.toString()).toList() ?? []
+        : [];
+    update();
+  }
+
+  void toggleSelectAllComDrivers(bool? val) {
+    selectBulkDrivers.value = val ?? false;
+    selectedDriverIds = selectBulkDrivers.value
+        ? getBulkCommissionModel?.data?.map((e) => e.driverId.toString()).toList() ?? []
+        : [];
+    update();
+  }
 
   bool isBulkRent = false;
   GetBulkRentModel? getBulkRentModel;

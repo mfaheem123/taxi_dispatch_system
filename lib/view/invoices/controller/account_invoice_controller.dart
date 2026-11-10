@@ -8,8 +8,10 @@ import 'dart:html' as html;
 import '../../../component/networks/api.dart';
 import '../../administration/model/list_subsDiary.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
+import '../../setting/model/get_document_number_model.dart';
 import '../model/account_invoice_booking_model.dart';
 import '../model/account_invoice_number_model.dart' hide Subsidiary;
+import '../model/account_pre_inv_filter_model.dart';
 import '../model/list_of_account_invoice_model.dart';
 import '../model/update_account_invoice_model.dart'
     hide Account, Subsidiary, Booking;
@@ -29,6 +31,28 @@ class InvoiceController extends GetxController {
   final orderNumber = TextEditingController();
   DateTime? fromDate = DateTime.now();
   DateTime? toDate = DateTime.now();
+
+  /// account pre invoice dates
+  String preInvFromDate = "";
+  String preInvToDate = "";
+
+
+  GetDocumentNumberModel? documentNumberModel;
+  bool isDocumentNumber = false;
+
+  getAccInvoiceNumber({bool showLoading = true}) async {
+    if (showLoading) {
+      isDocumentNumber = true;
+      update();
+    }
+
+    var response = await Api().get("document/document_numbers/get", sendCompanyId: true);
+    if (response.statusCode == 200) {
+      documentNumberModel = GetDocumentNumberModel.fromJson(response.data);
+    }
+    isDocumentNumber = false;
+    update();
+  }
 
   InvoiceNumberModel? invoiceNumberModel;
   bool isInvoiceNumber = false;
@@ -74,6 +98,74 @@ class InvoiceController extends GetxController {
     }
   }
 
+  // ================ Pre Invoice Filter Button ====================
+
+  AccPreInvFilterModel? accPreInvFilterModel;
+  bool isLoadingPreInv = false;
+
+  RxList<PreBooking> preInvoiceAll = <PreBooking>[].obs;
+  RxList<PreBooking> filteredAccountPreInvoice = <PreBooking>[].obs;
+
+  RxString searchRef = ''.obs;
+  RxString searchDateTime = ''.obs;
+  RxString searchPickup = ''.obs;
+  RxString searchDropOff = ''.obs;
+  RxString searchVehicle = ''.obs;
+  RxString searchJourType = ''.obs;
+  RxString searchPaymentType = ''.obs;
+  RxString searchFare = ''.obs;
+  RxString searchPc = ''.obs;
+  RxString searchWc = ''.obs;
+  RxString searchEdc = ''.obs;
+  RxString searchMg = ''.obs;
+  RxString searchCc = ''.obs;
+  RxString searchTotal = ''.obs;
+
+  getPreInvoiceFilter() async {
+    if (subsidiaries == null || fromDate == null || toDate == null) {
+      BotToast.showText(text: 'PLEASE FILL ALL REQUIRED FIELDS!');
+      return;
+    }
+    isLoadingPreInv = true;
+
+    var response = await Api().get("account_invoice/pre-bookings",
+      queryParameters: {
+        "subsidiary_id": subsidiaries!.id,
+        "account_id": selectAccountValue!.id,
+        "department": selectDepartmentData!.id,
+        "from_date": preInvFromDate,
+        "to_date": preInvToDate,
+        "order_number": orderNumber.text,
+        "reference_number": searchRef.value.toLowerCase(),
+        "pickup_date": searchDateTime.value.toLowerCase(),
+        "pickup": searchPickup.value.toLowerCase(),
+        "dropoff": searchDropOff.value.toLowerCase(),
+        "vehicle_type": searchVehicle.value.toLowerCase(),
+        "journey_type": searchJourType.value.toLowerCase(),
+        "payment_type": searchPaymentType.value.toLowerCase(),
+        "fares": searchFare.value.toLowerCase(),
+        "parking_charges": searchPc.value.toLowerCase(),
+        "waiting_charges": searchWc.value.toLowerCase(),
+        "extra_drop_charges": searchEdc.value.toLowerCase(),
+        "meet_and_greet": searchMg.value.toLowerCase(),
+        "congestion_charges": searchCc.value.toLowerCase(),
+        "total_charges": searchTotal.value.toLowerCase(),
+      },
+    );
+
+    if (response.statusCode == 200) {
+      accPreInvFilterModel = AccPreInvFilterModel.fromJson(response.data);
+      preInvoiceAll.value = accPreInvFilterModel?.bookings ?? [];
+      filteredAccountPreInvoice = preInvoiceAll;
+    }
+    isLoadingPreInv = false;
+    update();
+  }
+
+  void onSearchPreInvoice() {
+    getPreInvoiceFilter();
+  }
+
   // ================ Filter Button ====================
   AccountInvoiceBookingModel? accountInvoiceBookingModel;
   bool isLoadingInvoice = false;
@@ -96,8 +188,7 @@ class InvoiceController extends GetxController {
       },
     );
     if (response.statusCode == 200) {
-      accountInvoiceBookingModel =
-          AccountInvoiceBookingModel.fromJson(response.data);
+      accountInvoiceBookingModel = AccountInvoiceBookingModel.fromJson(response.data);
       recalculateCreateInvoiceTotal(null);
       if (accountInvoiceBookingModel?.bookings != null && accountInvoiceBookingModel!.bookings!.isNotEmpty) {
         BotToast.showText(text: 'FILTER DONE');
@@ -134,17 +225,9 @@ class InvoiceController extends GetxController {
         'account_invoice_lineitems': lineItems,
         'amount': accountInvoiceBookingModel!.total![0].total ?? "0",
         'department_id': selectDepartmentData?.id, // Optional check
-        'from_date': fromDate
-            ?.toIso8601String()
-            .split('T')
-            .first,
-        'to_date': toDate
-            ?.toIso8601String()
-            .split('T')
-            .first,
-        'invoice_number':
-        "${invoiceNumberModel?.documentNumber?.prefix ?? ''}${invoiceNumberModel
-            ?.documentNumber?.endNumber ?? ''}",
+        'from_date': fromDate?.toIso8601String().split('T').first,
+        'to_date': toDate?.toIso8601String().split('T').first,
+        'invoice_number': "${invoiceNumberModel?.documentNumber?.prefix ?? ''}${invoiceNumberModel?.documentNumber?.endNumber ?? ''}",
         'invoice_date': invoiceDateController,
         'invoice_due_date': invoiceDueDateController,
         'invoice_type': 'post',
@@ -157,10 +240,7 @@ class InvoiceController extends GetxController {
         auth: true,
       );
       if (response.statusCode == 200) {
-        orderNumber.text =
-            updateInvoiceByIdModel?.accountInvoice?.accountInvoice
-                ?.orderNumber ??
-                "";
+        orderNumber.text = updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.orderNumber ?? "";
 
         BotToast.showText(text: 'ACCOUNT INVOICE CREATED');
         clearInvoiceData();

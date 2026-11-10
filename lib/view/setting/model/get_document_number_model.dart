@@ -44,7 +44,7 @@ class DocumentNumber {
   bool? autoIncrement;
   String? createdAt;
   String? updatedAt;
-  Subsidiary? subsidiary;
+  DocumentSubsidiary? subsidiary;
 
   DocumentNumber({
     this.id,
@@ -73,7 +73,7 @@ class DocumentNumber {
     autoIncrement: json["auto_increment"],
     createdAt: json["created_at"],
     updatedAt: json["updated_at"],
-    subsidiary: json["subsidiary"] == null ? null : Subsidiary.fromJson(json["subsidiary"]),
+    subsidiary: json["subsidiary"] == null ? null : DocumentSubsidiary.fromJson(json["subsidiary"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -92,14 +92,14 @@ class DocumentNumber {
   };
 }
 
-class Subsidiary {
+class DocumentSubsidiary {
   String? name;
 
-  Subsidiary({
+  DocumentSubsidiary({
     this.name,
   });
 
-  factory Subsidiary.fromJson(Map<String, dynamic> json) => Subsidiary(
+  factory DocumentSubsidiary.fromJson(Map<String, dynamic> json) => DocumentSubsidiary(
     name: json["name"],
   );
 
