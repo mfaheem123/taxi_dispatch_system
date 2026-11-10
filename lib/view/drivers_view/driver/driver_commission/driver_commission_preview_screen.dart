@@ -2,10 +2,8 @@ import 'package:dashboard_new1/view/drivers_view/controller/driver_controller.da
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-
 import '../../../../component/color.dart';
 import '../../../../component/textStyle.dart';
-import '../../model/list_driver_commission_model.dart';
 import '../../model/update_driver_commission_model.dart' show UpdateDriverCommission;
 
 class DriverComissionWindowWrapper extends StatefulWidget {
@@ -123,6 +121,22 @@ class DriverCommissionViewScreen extends StatelessWidget {
     final fromDate = data?.fromDate != null ? data!.fromDate.toString().split(' ').first : (controller?.updateFilterFromDate ?? '');
     final toDate = data?.toDate != null ? data!.toDate.toString().split(' ').first : (controller?.updateFilterToDate ?? '');
     final transactionDate = data?.transactionDate != null ? data!.transactionDate.toString().split(' ').first : (controller?.updateTransactionDateController ?? '');
+
+    double calculatedParkingCongestionTotal = 0.0;
+    for (var item in items) {
+      final b = item.booking;
+      final paymentTypeName = (b?.paymentType?.name ?? "").trim().toUpperCase();
+      final accountName = (b?.account?.name ?? "").trim().toUpperCase();
+
+      bool isAccountJob = !paymentTypeName.contains("CASH") &&
+          (paymentTypeName.contains("ACCOUNT") || accountName.isNotEmpty);
+
+      if (isAccountJob) {
+        double pc = double.tryParse(b?.parkingCharges?.toString() ?? '0') ?? 0.0;
+        double cc = double.tryParse(b?.congestionCharges?.toString() ?? '0') ?? 0.0;
+        calculatedParkingCongestionTotal += (pc + cc);
+      }
+    }
 
     const tableBorder = TableBorder(
       verticalInside: BorderSide(color: Colors.black, width: 0.5),
@@ -274,7 +288,10 @@ class DriverCommissionViewScreen extends StatelessWidget {
                     children: [
                       _buildFooterRowPlain("ACCOUNT W/COMM TOTAL", double.tryParse(data?.accountJobsTotal ?? '0') ?? controller?.updateAccountFareTotalVar ?? 0.0),
                       _buildFooterRowPlain("ACCOUNT WO/COMM TOTAL", controller?.updateAccountWOCmmVar ?? 0.0),
-                      _buildFooterRowPlain("PARKING & CONGESTION CHARGES", controller?.updateParkingCongestionVar ?? 0.0),
+                      _buildFooterRowPlain("PARKING & CONGESTION CHARGES", calculatedParkingCongestionTotal > 0
+                          ? calculatedParkingCongestionTotal
+                          : (controller?.updateParkingCongestionVar ?? 0.0),
+                      )
                     ],
                   ),
                 ),

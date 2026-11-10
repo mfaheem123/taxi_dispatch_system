@@ -1,6 +1,7 @@
 import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../../component/action_icon_button.dart';
 import '../../../../component/color.dart';
@@ -26,12 +27,20 @@ class _DriverRentPayState extends State<DriverRentPay> {
       ? Get.find<DriverController>()
       : Get.put(DriverController());
 
+  final FocusNode _amountFocusNode = FocusNode();
+
   String? selectDrv = "SELECT DRIVER";
 
   @override
   void initState() {
     super.initState();
     shortCutKeyValue.value = "driverRentPay";
+  }
+
+  @override
+  void dispose() {
+    _amountFocusNode.dispose();
+    super.dispose();
   }
 
   int selectedRowIndex = 0;
@@ -119,15 +128,30 @@ class _DriverRentPayState extends State<DriverRentPay> {
                       const SizedBox(width: 12),
                       Expanded(
                         flex: 1,
-                        child: CustomTextField(
-                          borderRadius: 4,
-                          controller: controller.amountController,
-                          width: fieldWidth,
-                          hintText: AppText.amount,
-                          columnText: true,
-                          keyboardType: TextInputType.numberWithOptions(decimal: true),
-                          suffixIcon: arrowIcons(controller.amountController),
-                        )
+                          child: KeyboardListener(
+                              focusNode: _amountFocusNode,
+                              onKeyEvent: (event) {
+                                if (event is KeyDownEvent) {
+                                  double currentVal = double.tryParse(controller.amountController.text) ?? 0.0;
+                                  if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                                    controller.amountController.text = (currentVal + 1).toString();
+                                    controller.update();
+                                  } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                                    controller.amountController.text = (currentVal - 1).toString();
+                                    controller.update();
+                                  }
+                                }
+                              },
+                              child: CustomTextField(
+                                borderRadius: 4,
+                                controller: controller.amountController,
+                                width: fieldWidth,
+                                hintText: AppText.amount,
+                                columnText: true,
+                                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                suffixIcon: arrowIcons(controller.amountController),
+                              )
+                          )
                       ),
                       const SizedBox(width: 12),
                       Expanded(
