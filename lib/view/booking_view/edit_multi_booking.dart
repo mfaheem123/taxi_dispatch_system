@@ -171,11 +171,52 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
     setState(() {
       controller.selectAccountValue = v;
       controller.selectDepartmentData = null;
+      controller.selectOrderValue = null;
       if (controller.escortList.isEmpty) {
         controller.fetchEscortList();
       }
     });
   }
+
+  // ESC / ORDER / BY follow the selected account, as on the dashboard form.
+  bool get _showEscort => controller.selectAccountValue?.hasEscort == true;
+
+  bool get _showOrder {
+    final acc = controller.selectAccountValue;
+    if (acc == null) return false;
+    return acc.hasOrderNumber == true ||
+        (acc.orderNumbers != null && acc.orderNumbers!.isNotEmpty);
+  }
+
+  bool get _showBookedBy => controller.selectAccountValue?.hasBookedBy == true;
+
+  Widget _escortDropdown({double height = 48}) => _dropdown<Escorts>(
+        height: height,
+        value: controller.selectEscortValue,
+        hint: 'SELECT ESCORT',
+        items: controller.escortList,
+        label: (item) => (item.name ?? '').toUpperCase(),
+        onChanged: (val) => setState(() => controller.selectEscortValue = val),
+      );
+
+  Widget _orderDropdown({double height = 48}) => _dropdown<dynamic>(
+        height: height,
+        value: controller.selectOrderValue,
+        hint: 'ORDER',
+        items: controller.selectAccountValue?.orderNumbers ?? [],
+        label: (p) => p is Map
+            ? (p['order_number']?.toString() ?? '')
+            : p.toString(),
+        onChanged: (val) => setState(() => controller.selectOrderValue = val),
+      );
+
+  Widget _bookedByField() => TextField(
+        textCapitalization: TextCapitalization.characters,
+        inputFormatters: [UpperCaseTextFormatter()],
+        controller: controller.bookedByController,
+        style: _valStyle,
+        decoration: _fieldDec(),
+      );
 
   void _onDepartmentChanged(DepartmentObject? v) {
     setState(() {
@@ -765,16 +806,18 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                       onChanged: _onDepartmentChanged,
                                     )),
                                   ),
-                                  const SizedBox(height: 8),
-                                  _labelledField('ESC',
-                                    _tab(20, _dropdown<Escorts>(
-                                      value: controller.selectEscortValue,
-                                      hint: 'SELECT ESC',
-                                      items: controller.escortList,
-                                      label: (item) => (item.name ?? '').toUpperCase(),
-                                      onChanged: (val) => setState(() => controller.selectEscortValue = val),
-                                    )),
-                                  ),
+                                  if (_showEscort) ...[
+                                    const SizedBox(height: 8),
+                                    _labelledField('ESC', _tab(20, _escortDropdown())),
+                                  ],
+                                  if (_showOrder) ...[
+                                    const SizedBox(height: 8),
+                                    _labelledField('ORDER', _tab(20.2, _orderDropdown())),
+                                  ],
+                                  if (_showBookedBy) ...[
+                                    const SizedBox(height: 8),
+                                    _labelledField('BY', _tab(20.4, _bookedByField())),
+                                  ],
                                 ],
                               )
                             : Row(
@@ -791,23 +834,27 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                       )),
                                     ),
                                   ),
+                                  // ESC / ORDER / BY only for accounts that use
+                                  // them, as on the dashboard form; an empty
+                                  // slot keeps the column widths.
                                   const SizedBox(width: 8),
                                   Expanded(
-                                    child: _labelledField('ESC',
-                                      _tab(20, _dropdown<Escorts>(
-                                        height: _fieldHeight,
-                                        value: controller.selectEscortValue,
-                                        hint: 'SELECT ESC',
-                                        items: controller.escortList,
-                                        label: (item) => (item.name ?? '').toUpperCase(),
-                                        onChanged: (val) => setState(() => controller.selectEscortValue = val),
-                                      )),
-                                    ),
+                                    child: _showEscort
+                                        ? _labelledField('ESC', _tab(20, _escortDropdown(height: _fieldHeight)))
+                                        : const SizedBox(),
                                   ),
                                   const SizedBox(width: 8),
-                                  const Expanded(child: SizedBox()),
+                                  Expanded(
+                                    child: _showOrder
+                                        ? _labelledField('ORDER', _tab(20.2, _orderDropdown(height: _fieldHeight)))
+                                        : const SizedBox(),
+                                  ),
                                   const SizedBox(width: 8),
-                                  const Expanded(child: SizedBox()),
+                                  Expanded(
+                                    child: _showBookedBy
+                                        ? _labelledField('BY', _tab(20.4, SizedBox(height: _fieldHeight, child: _bookedByField())))
+                                        : const SizedBox(),
+                                  ),
                                 ],
                               ),
                         const SizedBox(height: 10),
@@ -1168,34 +1215,7 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
   /// iconBtn: Enter / Space open the alert, GlowFocus rings it on focus.
   Widget _alertIconBtn(IconData icon, double tab, VoidCallback onPressed) {
     return _tab(tab, GlowFocus(
-      child: Focus(
-        // Key handling only: the IconButton inside is the single Tab stop.
-        canRequestFocus: false,
-        onKeyEvent: (node, event) {
-          if (event is KeyDownEvent &&
-              (event.logicalKey == LogicalKeyboardKey.enter ||
-                  event.logicalKey == LogicalKeyboardKey.space)) {
-            onPressed();
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFFEEF2FF),
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: Colors.black),
-          ),
-          child: IconButton(
-            onPressed: onPressed,
-            padding: const EdgeInsets.all(3),
-            // Small enough to sit inside the 32–34px grey box.
-            constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
-            splashRadius: 16,
-            icon: Icon(icon, size: 16, color: Colors.black),
-          ),
-        ),
-      ),
+      child: _AlertIconButton(icon: icon, onPressed: onPressed),
     ));
   }
 
@@ -1527,6 +1547,59 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
       value: value,
       itemLabel: (item) => label(item).toUpperCase(),
       onChanged: onChanged,
+    );
+  }
+}
+
+
+/// One of the SETTINGS / CHILD SEATS / EXTRA INFO icons after QUOTATION.
+/// Its black border only shows while it has keyboard focus.
+class _AlertIconButton extends StatefulWidget {
+  const _AlertIconButton({required this.icon, required this.onPressed});
+
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  @override
+  State<_AlertIconButton> createState() => _AlertIconButtonState();
+}
+
+class _AlertIconButtonState extends State<_AlertIconButton> {
+  bool _focused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Focus(
+      // Key handling only: the IconButton inside is the single Tab stop.
+      // onFocusChange still fires when that IconButton gains or loses focus.
+      canRequestFocus: false,
+      onFocusChange: (has) => setState(() => _focused = has),
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent &&
+            (event.logicalKey == LogicalKeyboardKey.enter ||
+                event.logicalKey == LogicalKeyboardKey.space)) {
+          widget.onPressed();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFFEEF2FF),
+          borderRadius: BorderRadius.circular(6),
+          // Transparent when unfocused, so focusing doesn't resize it.
+          border: Border.all(
+              color: _focused ? Colors.black : Colors.transparent),
+        ),
+        child: IconButton(
+          onPressed: widget.onPressed,
+          padding: const EdgeInsets.all(3),
+          // Small enough to sit inside the 32–34px grey box.
+          constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
+          splashRadius: 16,
+          icon: Icon(widget.icon, size: 16, color: Colors.black),
+        ),
+      ),
     );
   }
 }

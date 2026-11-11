@@ -539,6 +539,12 @@ class BookingController extends GetxController{
         'vehicle_type_id': form.selectVehicleValue!.id,
       if (form.selectEscortValue != null)
         'escort_id': form.selectEscortValue!.id,
+      // if (form.selectOrderValue != null)
+      //   'order_number': form.selectOrderValue is Map
+      //       ? form.selectOrderValue['order_number']
+      //       : form.selectOrderValue.toString(),
+      // if (t(form.bookedByController).isNotEmpty)
+      //   'booked_by': t(form.bookedByController),
       if (form.selectDriverValue != null)
         'driver_id': form.selectDriverValue!.id,
 
