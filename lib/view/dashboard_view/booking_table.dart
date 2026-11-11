@@ -665,33 +665,70 @@ class _BookingTableState extends State<BookingTable> {
                                                     : Color(int.parse("0xFF${item.airport!.pickup!.locationType!.foregroundColor}")),
                                               ),
                                             ),
-                                            if (item.flightNumber != null && item.flightNumber!.isNotEmpty) ...[
-                                              const SizedBox(width: 4),
-                                              Tooltip(
-                                                message: "FLIGHT: ${item.flightNumber}\nARRIVAL: ${item.arrivingFrom ?? ""}".toUpperCase(),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.black87,
-                                                  borderRadius: BorderRadius.circular(6),
-                                                ),
-                                                waitDuration: const Duration(milliseconds: 200),
-                                                child: Container(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.blue.shade100,
-                                                    borderRadius: BorderRadius.circular(4),
-                                                    border: Border.all(color: Colors.blue.shade300, width: 0.8),
-                                                  ),
-                                                  child: Text(
-                                                    item.arrivingFrom ?? "AIR",maxLines: 1,overflow: TextOverflow.ellipsis,
-                                                    style: TextStyle(
-                                                      fontSize: widthss / 160,
-                                                      fontWeight: FontWeight.bold,
-                                                      color: Colors.blue.shade900,
+                                            Row(
+                                              children: [
+                                                // 1. Separate Box for Pickup Notes (pickup_notes / pickupDoorNumber)
+                                                if (item.pickupDoorNumber != null && item.pickupDoorNumber!.isNotEmpty) ...[
+                                                  const SizedBox(height: 2),
+                                                  Tooltip(
+                                                    message: "NOTES: ${item.pickupDoorNumber}".toUpperCase(),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.black87,
+                                                      borderRadius: BorderRadius.circular(6),
+                                                    ),
+                                                    waitDuration: const Duration(milliseconds: 200),
+                                                    child: Container(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                                                      decoration: BoxDecoration(
+                                                        color: DynamicColors.primaryClr,
+                                                        borderRadius: BorderRadius.circular(4),
+                                                        border: Border.all(color: Colors.blue.shade300, width: 0.8),
+                                                      ),
+                                                      child: const Icon(Icons.note_sharp, size: 10, color: Colors.white),
                                                     ),
                                                   ),
-                                                ),
-                                              ),
-                                            ],
+                                                ],
+                                                // 2. Separate Box for Arriving From / Flight
+                                                if ((item.flightNumber != null && item.flightNumber!.isNotEmpty) || (item.arrivingFrom != null && item.arrivingFrom!.isNotEmpty)) ...[
+                                                  const SizedBox(height: 2),
+                                                  Tooltip(
+                                                    message: "FLIGHT: ${item.flightNumber ?? ""}\nARRIVAL: ${item.arrivingFrom ?? ""}".trim().toUpperCase(),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.black87,
+                                                      borderRadius: BorderRadius.circular(6),
+                                                    ),
+                                                    waitDuration: const Duration(milliseconds: 200),
+                                                    child: Container(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                                                      decoration: BoxDecoration(
+                                                        color: DynamicColors.primaryClr,
+                                                        borderRadius: BorderRadius.circular(4),
+                                                        border: Border.all(color: Colors.blue.shade300, width: 0.8),
+                                                      ),
+                                                      child: Row(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        children: [
+                                                          Icon(Icons.flight, size: 10, color: Colors.white),
+                                                          const SizedBox(width: 2),
+                                                          Text(
+                                                            ( item.flightNumber ?? "AIR").toUpperCase(),
+                                                            maxLines: 1,
+                                                            overflow: TextOverflow.ellipsis,
+                                                            style: TextStyle(
+                                                              fontSize: widthss / 160,
+                                                              fontWeight: FontWeight.bold,
+                                                              color: Colors.white,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ],
+                                            ),
+
+
                                           ],
                                         ),
                                       ),
@@ -732,57 +769,84 @@ class _BookingTableState extends State<BookingTable> {
                                               ),
                                               overflow: TextOverflow.ellipsis,
                                             ),
-                                            // 2. VIA Tag with Multi-Address Hover Tooltip
-                                            if (item.viapoints != null && item.viapoints!.isNotEmpty) ...[
-                                              const SizedBox(width: 4),
-                                              Tooltip(
-                                                richMessage: WidgetSpan(
-                                                  child: Container(
-                                                    padding: const EdgeInsets.all(6),
-                                                    constraints: const BoxConstraints(maxWidth: 250),
-                                                    child: Column(
-                                                      mainAxisSize: MainAxisSize.min,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: item.viapoints!.asMap().entries.map((entry) {
-                                                        int index = entry.key;
-                                                        var via = entry.value;
-                                                        return Padding(
-                                                          padding: const EdgeInsets.symmetric(vertical: 2.0),
-                                                          child: Text(
-                                                            "${index + 1}. ${via.viapoint ?? 'No address'}",
-                                                            style: const TextStyle(
-                                                              color: Colors.white,
-                                                              fontSize: 11,
-                                                            ),
-                                                          ),
-                                                        );
-                                                      }).toList(),
+                                            Row(
+                                              children: [
+                                                // 2. Separate Box for Dropoff Notes (dropoffDoorNumber)
+                                                if (item.dropoffDoorNumber != null && item.dropoffDoorNumber!.isNotEmpty) ...[
+                                                  const SizedBox(height: 2),
+                                                  Tooltip(
+                                                    message: "NOTES: ${item.dropoffDoorNumber}".toUpperCase(),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.black87,
+                                                      borderRadius: BorderRadius.circular(6),
+                                                    ),
+                                                    waitDuration: const Duration(milliseconds: 200),
+                                                    child: Container(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                                                      decoration: BoxDecoration(
+                                                        color: DynamicColors.primaryClr,
+                                                        borderRadius: BorderRadius.circular(4),
+                                                        border: Border.all(color: Colors.blue.shade300, width: 0.8),
+                                                      ),
+                                                      child: const Icon(Icons.note_sharp, size: 10, color: Colors.white),
                                                     ),
                                                   ),
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.black87,
-                                                  borderRadius: BorderRadius.circular(6),
-                                                ),
-                                                waitDuration: const Duration(milliseconds: 200),
-                                                child: Container(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.blue.shade100,
-                                                    borderRadius: BorderRadius.circular(4),
-                                                    border: Border.all(color: Colors.blue.shade300, width: 0.8),
-                                                  ),
-                                                  child: Text(
-                                                    "VIA",
-                                                    style: TextStyle(
-                                                      fontSize: widthss / 160,
-                                                      fontWeight: FontWeight.bold,
-                                                      color: Colors.blue.shade900,
+                                                ],
+                                                SizedBox(width: 2,),
+                                                // 3. Separate Box for VIA Tag with Multi-Address Hover Tooltip
+                                                if (item.viapoints != null && item.viapoints!.isNotEmpty) ...[
+                                                  const SizedBox(height: 2),
+                                                  Tooltip(
+                                                    richMessage: WidgetSpan(
+                                                      child: Container(
+                                                        padding: const EdgeInsets.all(6),
+                                                        constraints: const BoxConstraints(maxWidth: 250),
+                                                        child: Column(
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: item.viapoints!.asMap().entries.map((entry) {
+                                                            int index = entry.key;
+                                                            var via = entry.value;
+                                                            return Padding(
+                                                              padding: const EdgeInsets.symmetric(vertical: 2.0),
+                                                              child: Text(
+                                                                "${index + 1}. ${via.viapoint ?? 'No address'}",
+                                                                style: const TextStyle(
+                                                                  color: Colors.white,
+                                                                  fontSize: 11,
+                                                                ),
+                                                              ),
+                                                            );
+                                                          }).toList(),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.black87,
+                                                      borderRadius: BorderRadius.circular(6),
+                                                    ),
+                                                    waitDuration: const Duration(milliseconds: 200),
+                                                    child: Container(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                                                      decoration: BoxDecoration(
+                                                        color: DynamicColors.primaryClr,
+                                                        borderRadius: BorderRadius.circular(4),
+                                                        border: Border.all(color: Colors.blue.shade300, width: 0.8),
+                                                      ),
+                                                      child: Text(
+                                                        "VIA",
+                                                        style: TextStyle(
+                                                          fontSize: widthss / 160,
+                                                          fontWeight: FontWeight.bold,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                              ),
-                                            ],
+                                                ],
+                                              ],
+                                            ),
+
 
 
                                           ],
@@ -801,7 +865,7 @@ class _BookingTableState extends State<BookingTable> {
                                       print("RIGHT CLICK ACCOUNT: ${item.account?.name}");
                                     },
                                     child: Tooltip(
-                                      message: "ACCOUNT: ${item.account?.name?.toUpperCase() ?? "-"}",
+                                      message: "ACCOUNT: ${item.account?.name?.toUpperCase() ?? "-"}""\n""${ item.orderNumber ?.toUpperCase() ?? "".toUpperCase()}",
                                       child: Container(
                                           width: widthss/20.5,
                                           height: double.infinity,
@@ -812,7 +876,14 @@ class _BookingTableState extends State<BookingTable> {
                                             color: item.account!.backgroundColor == null?Colors.transparent: Color(int.parse("0xFF${item.account!.backgroundColor}")),
                                             // Optional: borderRadius: BorderRadius.circular(2),
                                           ),
-                                          child: Text(item.account?.name?.toUpperCase() ?? "".toUpperCase(),
+
+                                          child:
+
+                                          Text(
+
+                                            "${item.account?.name?.toUpperCase() ?? "".toUpperCase()}""\n""${ item.orderNumber ?.toUpperCase() ?? "".toUpperCase()}",
+
+
                                             style: mozillaTextRegularText(
                                               fontSize: widthss/140,
                                               color: item.account!.foregroundColor == null?DynamicColors.black: Color(int.parse("0xFF${item.account!.foregroundColor}")),
@@ -886,12 +957,36 @@ class _BookingTableState extends State<BookingTable> {
                                       width: widthss/20.5,
                                       child: Tooltip(
                                         message: "NOTES:\n${item.notes?.map((e) => e.note?.toUpperCase()).join('\n') ?? "NONE"}",
-                                        child: Text(
-                                          item.notes!.isEmpty ? "".toUpperCase() : item.notes![0].note?.toUpperCase() ?? "-",
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: widthss/140,
-                                          ),
+                                        child: Row(
+                                          children: [
+                                            if (item.childSeat != null && item.childSeat!.isNotEmpty) ...[
+                                              const SizedBox(height: 2),
+                                              Tooltip(
+                                                message: "Child Seat: ${item.childSeat}".toUpperCase(),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black87,
+                                                  borderRadius: BorderRadius.circular(6),
+                                                ),
+                                                waitDuration: const Duration(milliseconds: 200),
+                                                child: Container(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                                                  decoration: BoxDecoration(
+                                                    color: DynamicColors.primaryClr,
+                                                    borderRadius: BorderRadius.circular(4),
+                                                    border: Border.all(color: Colors.blue.shade300, width: 0.8),
+                                                  ),
+                                                  child: const Icon(Icons.child_friendly_sharp, size: 10, color: Colors.white),
+                                                ),
+                                              ),
+                                            ],
+                                            Text(
+                                              item.notes!.isEmpty ? "".toUpperCase() : item.notes![0].note?.toUpperCase() ?? "-",
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontSize: widthss/140,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),

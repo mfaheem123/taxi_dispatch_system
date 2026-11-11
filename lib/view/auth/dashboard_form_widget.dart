@@ -525,10 +525,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                                   .arrivalTimeController),
                                         ),
                                         const SizedBox(width: _kFieldGap),
-                                        SizedBox(
-                                          width: _sz(90),
-                                          child: const SizedBox(),
-                                        ),
+                                        // SizedBox(
+                                        //   width: _sz(90),
+                                        //   child: const SizedBox(),
+                                        // ),
                                       ],
                                     ),
                                   ),
