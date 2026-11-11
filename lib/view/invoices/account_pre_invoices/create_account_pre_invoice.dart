@@ -11,6 +11,7 @@ import '../../../../component/color.dart';
 import '../../../../component/textStyle.dart';
 import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
+import '../../../component/editable_cell_widget.dart';
 import '../../../component/responsive_datatable_widget.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
 import '../../setting/model/get_document_number_model.dart';
@@ -58,6 +59,11 @@ class _CreateAccountPreInvoiceState extends State<CreateAccountPreInvoice> {
         // controller.fromDate = DateTime.now();
         // controller.toDate = DateTime.now();
       }, builder: (controller) {
+
+        final listToShow = controller.filteredAccountPreInvoice.isNotEmpty
+            ? controller.filteredAccountPreInvoice
+            : controller.preInvoiceAll;
+
         return LayoutBuilder(builder: (context, constraints) {
           final double maxWidth = constraints.maxWidth;
           final bool isMobile = maxWidth < 600;
@@ -177,11 +183,8 @@ class _CreateAccountPreInvoiceState extends State<CreateAccountPreInvoice> {
                       width: fieldWidth / 1.5,
                       label: "ACCOUNT",
                       items: controller.dashboardAccountData?.accounts ?? [],
-                      value: (controller.dashboardAccountData?.accounts
-                                  ?.contains(controller.selectAccountValue) ??
-                              false)
-                          ? controller.selectAccountValue
-                          : null,
+                      value: (controller.dashboardAccountData?.accounts?.contains(controller.selectAccountValue) ?? false)
+                          ? controller.selectAccountValue : null,
                       itemLabel: (item) => item.name ?? "",
                       onChanged: (val) {
                         controller.selectAccountValue = val;
@@ -195,11 +198,8 @@ class _CreateAccountPreInvoiceState extends State<CreateAccountPreInvoice> {
                       width: fieldWidth / 1.5,
                       label: "DEPARTMENT",
                       items: controller.selectAccountValue?.departments ?? [],
-                      value: (controller.selectAccountValue?.departments
-                                  ?.contains(controller.selectDepartmentData) ??
-                              false)
-                          ? controller.selectDepartmentData
-                          : null,
+                      value: (controller.selectAccountValue?.departments?.contains(controller.selectDepartmentData) ?? false)
+                          ? controller.selectDepartmentData : null,
                       itemLabel: (item) => item.name ?? "",
                       onChanged: (val) {
                         controller.selectDepartmentData = val;
@@ -276,7 +276,10 @@ class _CreateAccountPreInvoiceState extends State<CreateAccountPreInvoice> {
                         borderRadius: 4,
                         btnText: AppText.filter,
                         style: mozillaTextSemiBoldText(fontSize: 13, color: DynamicColors.whiteClr),
-                        onTap: () {},
+                        onTap: () {
+                          controller.getAccInvoiceNumber();
+                          controller.getPreInvoiceFilter();
+                        },
                       ),
                     ),
                     SizedBox(
@@ -298,13 +301,24 @@ class _CreateAccountPreInvoiceState extends State<CreateAccountPreInvoice> {
                         totalWidth: totalAvailableWidth,
                         columnConfigs: [
                           TableColumnConfig(
-                              title: "CHECKBOX",
-                              sizeType: ColumnSizeType.fixed,
-                              fixedWidth: 40,
-                              customHeader: Checkbox(
-                                value: false,
-                                onChanged: (bool? val) {},
-                              )),
+                            title: "SELECT",
+                            sizeType: ColumnSizeType.fixed,
+                            fixedWidth: 35,
+                            removeSearching: true,
+                            customHeader: Checkbox(
+                              value: controller.isAllSelected,
+                              onChanged: (val) {
+                                controller.isAllSelected = val ?? false;
+                                controller.selectedCreateBookingIds.clear();
+                                if (controller.isAllSelected) {
+                                  controller.selectedCreateBookingIds.addAll(
+                                      controller.accPreInvFilterModel!.bookings!.map((e) => e.id.toString()));
+                                }
+                                controller.recalculateCreateInvoiceTotal(null);
+                                controller.update();
+                              },
+                            ),
+                          ),
                           TableColumnConfig(
                               title: "REF#", sizeType: ColumnSizeType.medium,
                               onChanged: (v) {
@@ -327,6 +341,12 @@ class _CreateAccountPreInvoiceState extends State<CreateAccountPreInvoice> {
                               title: "DROPOFF", sizeType: ColumnSizeType.large,
                               onChanged: (v) {
                                 controller.searchDropOff.value = v;
+                                controller.onSearchPreInvoice();
+                              }),
+                          TableColumnConfig(
+                              title: "CUST", sizeType: ColumnSizeType.small,
+                              onChanged: (v) {
+                                controller.searchCustomer.value = v;
                                 controller.onSearchPreInvoice();
                               }),
                           TableColumnConfig(
@@ -395,107 +415,118 @@ class _CreateAccountPreInvoiceState extends State<CreateAccountPreInvoice> {
                               fixedWidth: 70,
                               removeSearching: true),
                         ],
-                        items: const ["ROW_1", "ROW_2", "TOTAL_ROW"],
+                        items: listToShow.isEmpty
+                            ? []
+                            : [
+                          ...listToShow,
+                          ...?controller.accPreInvFilterModel?.total?.map((t) => {'type': 'TOTAL', 'data': t}),
+                          ...?controller.accPreInvFilterModel?.total?.map((t) => {'type': 'GRAND_TOTAL', 'data': t}),
+                        ],
                         rowBuilder: (item, widths) {
-                          if (item == "TOTAL_ROW") {
+
+                          if (item is Map && item['type'] == 'TOTAL') {
+                            final totalData = item['data'];
                             return [
-                              "",
-                              "",
-                              "",
-                              "",
-                              "",
-                              "",
-                              "",
-                              const Center(
-                                child: Text("TOTAL",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 11)),
-                              ),
-                              const Center(
-                                  child: Text("£ 60.00",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 11))),
-                              const Center(
-                                  child: Text("£ 5.00",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 11))),
-                              const Center(
-                                  child: Text("£ 0.00",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 11))),
-                              const Center(
-                                  child: Text("£ 0.00",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 11))),
-                              const Center(
-                                  child: Text("£ 0.00",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 11))),
-                              const Center(
-                                  child: Text("£ 0.00",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 11))),
-                              const Center(
-                                  child: Text("£ 65.00",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 11))),
+                              "", "", "", "", "", "", "", "",
+                              Center(child: Text("TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900, fontSize: 12))),
+                              Center(child: Text("£${totalData.fareTotal ?? "0.00"}")),
+                              Center(child: Text("£${totalData.parkingChargesTotal ?? "0.00"}")),
+                              Center(child: Text("£${totalData.waitingChargesTotal ?? "0.00"}")),
+                              Center(child: Text("£${totalData.extraDropChargesTotal ?? "0.00"}")),
+                              Center(child: Text("£${totalData.meetAndGreetTotal ?? "0.00"}")),
+                              Center(child: Text("£${totalData.congestionChargesTotal ?? "0.00"}")),
+                              Center(child: Text("£${totalData.total ?? "0.00"}", style: mozillaTextSemiBoldText(color: Colors.blue, fontSize: 12))),
                               "",
                             ];
                           }
 
-                          // Static Dummy Data Helper Widget for Editable Cells
-                          Widget staticEditableCell(String initialVal) {
-                            return Center(
-                              child: SizedBox(
-                                width: 50,
-                                child: TextFormField(
-                                  initialValue: initialVal,
-                                  keyboardType:
-                                      const TextInputType.numberWithOptions(
-                                          decimal: true),
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(fontSize: 11),
-                                  decoration: const InputDecoration(
-                                    isDense: true,
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 6, horizontal: 4),
-                                    border: OutlineInputBorder(),
-                                  ),
-                                  onChanged: (val) {},
-                                ),
-                              ),
-                            );
+                          // 2. GRAND TOTAL ROW HANDLING
+                          if (item is Map && item['type'] == 'GRAND_TOTAL') {
+                            final totalData = item['data'];
+                            return [
+                              "", "", "", "", "", "", "", "",
+                              Center(child: Text("GRAND\nTOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900, fontSize: 12))),
+                              "", "", "", "", "", "",
+                              Center(child: Text("£${totalData.grandTotal ?? "0.00"}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
+                              "",
+                            ];
                           }
 
+                          final modelItem = item;
                           return [
                             Center(
-                              child: Checkbox(
-                                value: false,
-                                onChanged: (bool? val) {},
+                              child:  Checkbox(
+                                value: controller.selectedCreateBookingIds.contains(modelItem.id),
+                                onChanged: (val) {
+                                  if (val == true) {
+                                    controller.selectedCreateBookingIds.add(modelItem.id!);
+                                  } else {
+                                    controller.selectedCreateBookingIds.remove(modelItem.id);
+                                  }
+                                  controller.isAllSelected = controller.selectedCreateBookingIds.length ==
+                                      controller.accPreInvFilterModel!.bookings!.length;
+                                  controller.recalculateCreateInvoiceTotal(modelItem, isPreInvoice: true);
+                                  controller.update();
+                                },
                               ),
                             ),
-                            const Center(child: Text("REF-1001")),
-                            const Center(child: Text("2026-04-01 12:18")),
-                            const Center(child: Text("1 WARRIOR GARDENS")),
-                            const Center(child: Text("36 DUKE ROAD")),
-                            const Center(child: Text("SALOON")),
-                            const Center(child: Text("ASAP")),
-                            const Center(child: Text("CASH")),
-                            staticEditableCell("30.00"),
-                            staticEditableCell("5.00"),
-                            staticEditableCell("0.00"),
-                            staticEditableCell("0.00"),
-                            staticEditableCell("0.00"),
-                            staticEditableCell("0.00"),
-                            const Center(child: Text("£ 35.00")),
+                            Center(child: Text(modelItem.referenceNumber ?? "")),
+                            Center(child: Text("${(modelItem.pickupDate ?? "").toString().split(' ')[0]} ${(modelItem.pickupTime ?? "").toString().split('.')[0].substring(0, 5)}")),
+                            Center(child: Text(modelItem.pickup ?? "")),
+                            Center(child: Text(modelItem.dropoff ?? "")),
+                            Center(child: Text(modelItem.customer?.address1 ?? "")),
+                            Center(child: Text(modelItem.vehicleType?.name ?? "")),
+                            Center(child: Text(modelItem.journeyType?.journeyType ?? "")),
+                            Center(child: Text(modelItem.paymentType?.name ?? "")),
+                            EditableCellWidget(
+                              initialValue: modelItem.fares,
+                              onChanged: (val) {
+                                modelItem.fares = (double.tryParse(val) ?? 0.0).toString();
+                                controller.recalculateCreateInvoiceTotal(modelItem, isPreInvoice: true);
+                              },
+                            ),
+                            EditableCellWidget(
+                              initialValue: modelItem.parkingCharges,
+                              onChanged: (val) {
+                                modelItem.parkingCharges = (double.tryParse(val) ?? 0.0).toString();
+                                controller.recalculateCreateInvoiceTotal(modelItem, isPreInvoice: true);
+                              },
+                            ),
+                            EditableCellWidget(
+                              initialValue: modelItem.waitingCharges,
+                              onChanged: (val) {
+                                modelItem.waitingCharges = (double.tryParse(val) ?? 0.0).toString();
+                                controller.recalculateCreateInvoiceTotal(modelItem, isPreInvoice: true);
+                              },
+                            ),
+                            EditableCellWidget(
+                              initialValue: modelItem.extraDropCharges,
+                              onChanged: (val) {
+                                modelItem.extraDropCharges = (double.tryParse(val) ?? 0.0).toString();
+                                controller.recalculateCreateInvoiceTotal(modelItem, isPreInvoice: true);
+                              },
+                            ),
+                            EditableCellWidget(
+                              initialValue: modelItem.meetAndGreet,
+                              onChanged: (val) {
+                                modelItem.meetAndGreet = (double.tryParse(val) ?? 0.0).toString();
+                                controller.recalculateCreateInvoiceTotal(modelItem, isPreInvoice: true);
+                              },
+                            ),
+                            EditableCellWidget(
+                              initialValue: modelItem.congestionCharges,
+                              onChanged: (val) {
+                                modelItem.congestionCharges = (double.tryParse(val) ?? 0.0).toString();
+                                controller.recalculateCreateInvoiceTotal(modelItem, isPreInvoice: true);
+                                controller.update();
+                              },
+                            ),
+                            Center(
+                              child: Text(
+                                "£${modelItem.totalCharges ?? '0.0'}",
+                                style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12),
+                              ),
+                            ),
                             Center(
                               child: CustomButton(
                                 verticalPadding: 0.0,
@@ -507,7 +538,12 @@ class _CreateAccountPreInvoiceState extends State<CreateAccountPreInvoice> {
                                 style: mozillaTextRegularText(
                                     fontSize: 10,
                                     color: DynamicColors.whiteClr),
-                                onTap: () {},
+                                onTap: () {
+                                  if (modelItem != null) {
+                                    controller.updateBookingCharges(modelItem);
+                                    print("Updating Booking ID: ${modelItem.id}");
+                                  }
+                                },
                               ),
                             ),
                           ];

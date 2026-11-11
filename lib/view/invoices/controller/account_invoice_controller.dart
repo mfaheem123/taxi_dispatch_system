@@ -25,7 +25,7 @@ class InvoiceController extends GetxController {
       "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
 
   bool isFilterApplied = false;
-  List<int> selectedCreateBookingIds = [];
+  List selectedCreateBookingIds = [];
   bool isAllSelected = false;
 
   final orderNumber = TextEditingController();
@@ -110,6 +110,7 @@ class InvoiceController extends GetxController {
   RxString searchDateTime = ''.obs;
   RxString searchPickup = ''.obs;
   RxString searchDropOff = ''.obs;
+  RxString searchCustomer = ''.obs;
   RxString searchVehicle = ''.obs;
   RxString searchJourType = ''.obs;
   RxString searchPaymentType = ''.obs;
@@ -130,20 +131,21 @@ class InvoiceController extends GetxController {
 
     var response = await Api().get("account_invoice/pre-bookings",
       queryParameters: {
-        "subsidiary_id": subsidiaries!.id,
-        "account_id": selectAccountValue!.id,
-        "department": selectDepartmentData!.id,
+        "subsidiary_id": subsidiaries?.id,
+        "account_id": selectAccountValue?.id,
+        "department": selectDepartmentData?.id,
         "from_date": preInvFromDate,
         "to_date": preInvToDate,
         "order_number": orderNumber.text,
-        "reference_number": searchRef.value.toLowerCase(),
-        "pickup_date": searchDateTime.value.toLowerCase(),
+        "ref_number": searchRef.value.toLowerCase(),
+        "datetime": searchDateTime.value.toLowerCase(),
         "pickup": searchPickup.value.toLowerCase(),
         "dropoff": searchDropOff.value.toLowerCase(),
-        "vehicle_type": searchVehicle.value.toLowerCase(),
+        "customer": searchCustomer.value.toLowerCase(),
+        "vehicle": searchVehicle.value.toLowerCase(),
         "journey_type": searchJourType.value.toLowerCase(),
         "payment_type": searchPaymentType.value.toLowerCase(),
-        "fares": searchFare.value.toLowerCase(),
+        "fare": searchFare.value.toLowerCase(),
         "parking_charges": searchPc.value.toLowerCase(),
         "waiting_charges": searchWc.value.toLowerCase(),
         "extra_drop_charges": searchEdc.value.toLowerCase(),
@@ -157,6 +159,12 @@ class InvoiceController extends GetxController {
       accPreInvFilterModel = AccPreInvFilterModel.fromJson(response.data);
       preInvoiceAll.value = accPreInvFilterModel?.bookings ?? [];
       filteredAccountPreInvoice = preInvoiceAll;
+      recalculateCreateInvoiceTotal(null);
+      // if (accPreInvFilterModel?.bookings != null && accPreInvFilterModel!.bookings!.isNotEmpty) {
+      //   BotToast.showText(text: 'FILTER DONE');
+      // } else {
+      //   BotToast.showText(text: 'NO DATA FOUND');
+      // }
     }
     isLoadingPreInv = false;
     update();
@@ -270,10 +278,9 @@ class InvoiceController extends GetxController {
     datePickerKey++;
     getInvoiceNumber();
   }
-  void recalculateCreateInvoiceTotal(dynamic booking) {
+  void recalculateCreateInvoiceTotal(dynamic booking, {bool isPreInvoice = false}) {
     if (booking != null) {
-      double pV(dynamic v) =>
-          double.tryParse(v?.toString().trim() ?? '') ?? 0.0;
+      double pV(dynamic v) => double.tryParse(v?.toString().trim() ?? '') ?? 0.0;
 
       // 1. Row Total Calculation (Current Booking)
       booking.totalCharges = (pV(booking.fares) +
@@ -285,7 +292,8 @@ class InvoiceController extends GetxController {
           .toStringAsFixed(2);
     }
 
-    final model = accountInvoiceBookingModel;
+    final dynamic model = isPreInvoice ? accPreInvFilterModel : accountInvoiceBookingModel;
+
     if (model?.bookings != null && model!.bookings!.isNotEmpty) {
       // Initialize totals
       double fT = 0, pT = 0, wT = 0, eT = 0, mT = 0, cT = 0, grandT = 0;
