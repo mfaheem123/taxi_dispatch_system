@@ -508,7 +508,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                                           fontSize:
                                                           _fsLabel)),
                                                 ])),
-                                        const SizedBox(width: 20),
+                                        const SizedBox(width: 2),
                                         Expanded(
                                           flex: 5,
                                           child: _field('FL',
@@ -518,7 +518,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                         ),
                                         const SizedBox(width: _kFieldGap),
                                         SizedBox(
-                                          width: _sz(110),
+                                          width: _sz(200),
                                           child: _field('ARP',
                                               tab: 4.6,
                                               controller: controller
