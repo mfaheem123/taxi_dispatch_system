@@ -955,20 +955,17 @@ class _BookingTableState extends State<BookingTable> {
                                     // },
                                     child: SizedBox(
                                       width: widthss/20.5,
-                                      child: Tooltip(
-                                        message: "NOTES:\n${item.notes?.map((e) => e.note?.toUpperCase()).join('\n') ?? "NONE"}",
-                                        child: Row(
-                                          children: [
-                                            if (item.childSeat != null && item.childSeat!.isNotEmpty) ...[
-                                              const SizedBox(height: 2),
-                                              Tooltip(
-                                                message: "Child Seat: ${item.childSeat}".toUpperCase(),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.black87,
-                                                  borderRadius: BorderRadius.circular(6),
-                                                ),
-                                                waitDuration: const Duration(milliseconds: 200),
-                                                child: Container(
+                                      child: Row(
+                                        children: [
+                                          if (item.childSeat != null && item.childSeat!.isNotEmpty) ...[
+                                            SizedBox(
+                                              height: 20,
+                                              width: 20,
+                                              child: PopupMenuButton<String>(
+                                                padding: EdgeInsets.zero,
+                                                constraints: const BoxConstraints(),
+                                                tooltip: "CHILD SEATS",
+                                                icon: Container(
                                                   padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
                                                   decoration: BoxDecoration(
                                                     color: DynamicColors.primaryClr,
@@ -977,17 +974,135 @@ class _BookingTableState extends State<BookingTable> {
                                                   ),
                                                   child: const Icon(Icons.child_friendly_sharp, size: 10, color: Colors.white),
                                                 ),
-                                              ),
-                                            ],
-                                            Text(
-                                              item.notes!.isEmpty ? "".toUpperCase() : item.notes![0].note?.toUpperCase() ?? "-",
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                fontSize: widthss/140,
+                                                itemBuilder: (context) => [
+                                                  PopupMenuItem<String>(
+                                                    enabled: false,
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        const Text("CHILD SEATS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                                        const Divider(height: 8),
+                                                        ...item.childSeat!.map((cs) => Padding(
+                                                          padding: const EdgeInsets.symmetric(vertical: 2.0),
+                                                          child: Text(
+                                                            "NO OF CHILD: ${cs.child ?? "-"}\nAGE: ${cs.age ?? "-"}".toUpperCase(),
+                                                            style: const TextStyle(fontSize: 11),
+                                                          ),
+                                                        )),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
+                                            const SizedBox(width: 4),
                                           ],
-                                        ),
+                                          // if (item.specialInstructions != null && item.specialInstructions!.trim().isNotEmpty) ...[
+                                          //   SizedBox(
+                                          //     height: 20,
+                                          //     width: 20,
+                                          //     child: PopupMenuButton<String>(
+                                          //       padding: EdgeInsets.zero,
+                                          //       constraints: const BoxConstraints(),
+                                          //       tooltip: "SPECIAL INSTRUCTIONS",
+                                          //       icon: Container(
+                                          //         padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                                          //         decoration: BoxDecoration(
+                                          //           color: DynamicColors.primaryClr,
+                                          //           borderRadius: BorderRadius.circular(4),
+                                          //           border: Border.all(color: Colors.blue.shade300, width: 0.8),
+                                          //         ),
+                                          //         child: const Icon(Icons.info, size: 10, color: Colors.white),
+                                          //       ),
+                                          //       itemBuilder: (context) => [
+                                          //         PopupMenuItem<String>(
+                                          //           enabled: false,
+                                          //           child: Column(
+                                          //             crossAxisAlignment: CrossAxisAlignment.start,
+                                          //             mainAxisSize: MainAxisSize.min,
+                                          //             children: [
+                                          //               const Text("SPECIAL INSTRUCTIONS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                          //               const Divider(height: 8),
+                                          //               Padding(
+                                          //                 padding: const EdgeInsets.symmetric(vertical: 2.0),
+                                          //                 child: Text(
+                                          //                   item.specialInstructions!.toUpperCase(),
+                                          //                   style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                                          //                 ),
+                                          //               ),
+                                          //             ],
+                                          //           ),
+                                          //         ),
+                                          //       ],
+                                          //     ),
+                                          //   ),
+                                          //   const SizedBox(width: 4),
+                                          // ],
+                                            if (item.notes != null && item.notes!.isNotEmpty) ...[
+                                            SizedBox(
+                                              height: 20,
+                                              width: 20,
+                                              child: PopupMenuButton<String>(
+                                                padding: EdgeInsets.zero,
+                                                constraints: const BoxConstraints(),
+                                                tooltip: "NOTES",
+                                                icon: Container(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                                                  decoration: BoxDecoration(
+                                                    color: DynamicColors.primaryClr,
+                                                    borderRadius: BorderRadius.circular(4),
+                                                    border: Border.all(color: Colors.blue.shade300, width: 0.8),
+                                                  ),
+                                                  child: const Icon(Icons.note_sharp, size: 10, color: Colors.white),
+                                                ),
+                                                itemBuilder: (context) => [
+                                                  PopupMenuItem<String>(
+                                                    enabled: false,
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        const Text("NOTES", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                                        const Divider(height: 8),
+                                                        ...item.notes!.map((e) => Padding(
+                                                          padding: const EdgeInsets.symmetric(vertical: 2.0),
+                                                          child: Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Text(
+                                                                (e.note ?? "").toUpperCase(),
+                                                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                                                              ),
+                                                              if ((e.createdBy != null && e.createdBy!.isNotEmpty) || (e.createdAt != null && e.createdAt!.isNotEmpty))
+                                                                Text(
+                                                                  "${e.createdBy ?? ""} ${e.createdAt ?? ""}".trim().toUpperCase(),
+                                                                  style: const TextStyle(fontSize: 10, color: Colors.black),
+                                                                ),
+                                                            ],
+                                                          ),
+                                                        )),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(width: 4),
+                                          ],
+                                          Expanded(
+                                            child: Tooltip(
+                                              message: item.notes!.isEmpty ? "" : item.notes![0].note?.toUpperCase() ?? "-",
+                                              child: Text(
+                                                item.notes!.isEmpty ? "".toUpperCase() : item.notes![0].note?.toUpperCase() ?? "-",
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  fontSize: widthss/140,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
