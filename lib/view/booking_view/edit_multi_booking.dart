@@ -7,7 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:timepickerfield/timepickerfield.dart';
-import 'package:flutter_web_date_picker/flutter_web_date_picker.dart' show GlowFocus;
+import 'package:flutter_web_date_picker/flutter_web_date_picker.dart'
+    show GlowFocus;
 import '../../alert/child_seats_alert.dart';
 import '../../alert/extra_info_alert.dart';
 import '../../alert/setting_dialog.dart';
@@ -25,6 +26,7 @@ import 'controller.dart';
 import '../dashboard_view/widgets/via_location.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
 import '../locations_view/controller/locations_controller.dart';
+import '../page_scroller.dart';
 
 class MultiReservationScreen extends StatefulWidget {
   const MultiReservationScreen({super.key, this.multiBookingId});
@@ -77,11 +79,44 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
   final FocusNode _pickupFocusNode = FocusNode();
   final FocusNode _dropFocusNode = FocusNode();
 
+  /// The page's own (non-Tab-stop) focus point, so arrow up / down scroll the
+  /// page even when no field has been focused yet.
+  final FocusNode _pageFocusNode = FocusNode(debugLabel: 'MultiBookingPage');
+
+  /// TIME and LEAD belong to this screen only (not the dashboard's shared
+  /// controllers), so they start blank ("--:-- --") here without touching the
+  /// dashboard form. Filled by the picker or by loading a ticked booking.
+  final TextEditingController _timeController = TextEditingController();
+  final TextEditingController _leadController = TextEditingController();
+
+  /// Header search boxes of the reservations table (DATETIME / REF # / J/T).
+  final TextEditingController _dateSearchController = TextEditingController();
+  final TextEditingController _refSearchController = TextEditingController();
+  final TextEditingController _jtSearchController = TextEditingController();
+
   @override
   void dispose() {
     _pickupFocusNode.dispose();
     _dropFocusNode.dispose();
+    _pageFocusNode.dispose();
+    _timeController.dispose();
+    _leadController.dispose();
+    _dateSearchController.dispose();
+    _refSearchController.dispose();
+    _jtSearchController.dispose();
     super.dispose();
+  }
+
+  /// A click on empty space (labels, gaps, the table body) leaves nothing
+  /// focused inside the page, and the arrows would then do nothing. Take
+  /// focus back in that case; a click that focused a field, dropdown or row
+  /// is left alone, and so is anything while a dialog is on top.
+  void _reclaimPageFocus(PointerDownEvent _) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _pageFocusNode.hasFocus) return;
+      if (ModalRoute.of(context)?.isCurrent == false) return;
+      _pageFocusNode.requestFocus();
+    });
   }
 
   @override
@@ -96,7 +131,13 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
     if (controller.escortList.isEmpty) {
       controller.fetchEscortList();
     }
-    _bookingController.getMultiReservations(widget.multiBookingId);
+    _bookingController.getMultiReservations(widget.multiBookingId,
+        clearSearch: true);
+    // Arrows scroll straight away, without clicking into the page first.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (!_pageFocusNode.hasFocus) _pageFocusNode.requestFocus();
+    });
   }
 
   /// Owns the reservations table's data (API call and row mapping).
@@ -157,6 +198,8 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
         .toList();
     final ok = await _bookingController.updateMultiReservations(
       ids: ids,
+      time: _timeController.text,
+      leadTime: _leadController.text,
       multiBookingId: widget.multiBookingId,
     );
     if (ok && mounted) {
@@ -165,6 +208,17 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
         isAllSelected = false;
       });
     }
+  }
+
+  /// Loads a ticked booking into the form (addresses, lat/lng, vias, ...),
+  /// then copies its time and lead time into this screen's own fields.
+  Future<void> _loadBooking(String? id) async {
+    await controller.dashBoardDataBinding(id: id);
+    if (!mounted) return;
+    setState(() {
+      _timeController.text = controller.pickUpTimeController.text;
+      _leadController.text = controller.minController.text;
+    });
   }
 
   void _onAccountChanged(DashboardAccountObject? v) {
@@ -204,9 +258,8 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
         value: controller.selectOrderValue,
         hint: 'ORDER',
         items: controller.selectAccountValue?.orderNumbers ?? [],
-        label: (p) => p is Map
-            ? (p['order_number']?.toString() ?? '')
-            : p.toString(),
+        label: (p) =>
+            p is Map ? (p['order_number']?.toString() ?? '') : p.toString(),
         onChanged: (val) => setState(() => controller.selectOrderValue = val),
       );
 
@@ -359,41 +412,53 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
   List<DepartmentObject> get _departmentList =>
       controller.selectAccountValue?.departments ?? [];
 
-
   @override
   Widget build(BuildContext context) {
     return FocusTraversalGroup(
       policy: WidgetOrderTraversalPolicy(),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            bool isScreenMobile = constraints.maxWidth < 850;
+        // Arrow up / down scrolls the page, as on the dashboard form. It sits
+        // inside the scroll view so it finds this one first (and the app
+        // shell's when this one has nothing to scroll). An open dropdown,
+        // time picker or suggestion list is nearer the focused field and
+        // claims the arrows first, so the page stays put while one is open.
+        child: Listener(
+          // translucent: the fields still get the click; this only sees it.
+          behavior: HitTestBehavior.translucent,
+          onPointerDown: _reclaimPageFocus,
+          child: PageScrollWrapper(
+            focusNode: _pageFocusNode,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                bool isScreenMobile = constraints.maxWidth < 850;
 
-            return isScreenMobile
-                ? Column(
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: _buildLeftTableSection(),
-                ),
-                const SizedBox(height: 16),
-                _buildRightFormSection(),
-              ],
-            )
-                : Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: 390,
-                  child: _buildLeftTableSection(),
-                ),
-                Expanded(
-                  child: _buildRightFormSection(),
-                ),
-              ],
-            );
-          },
+                return isScreenMobile
+                    ? Column(
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            child: _buildLeftTableSection(),
+                          ),
+                          const SizedBox(height: 16),
+                          _buildRightFormSection(),
+                        ],
+                      )
+                    : Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 390,
+                            child: _buildLeftTableSection(),
+                          ),
+                          Expanded(
+                            child: _buildRightFormSection(),
+                          ),
+                        ],
+                      );
+              },
+            ),
+          ),
         ),
       ),
     );
@@ -407,53 +472,140 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
       ),
       // Rebuilds when the controller's rows or loading flag change.
       child: Obx(() => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _reservationsTable(reservations.toList()),
-          if (_bookingController.multiReservationsLoad.value)
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                    strokeWidth: 2.4, color: DynamicColors.primaryClr),
-              ),
-            )
-          else if (reservations.isEmpty)
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Text('NO RESERVATIONS FOUND',
-                  style: outFitRegular(fontSize: 12, color: Colors.grey)),
-            ),
-        ],
-      )),
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _reservationsTable(reservations.toList()),
+              if (_bookingController.multiReservationsLoad.value)
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2.4, color: DynamicColors.primaryClr),
+                  ),
+                )
+              else if (reservations.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Text('NO RESERVATIONS FOUND',
+                      style: outFitRegular(fontSize: 12, color: Colors.grey)),
+                ),
+            ],
+          )),
     );
+  }
+
+  /// A header search reloads the rows, so ticks (kept as row indices) would
+  /// point at different bookings: clear them.
+  void _onTableSearch(String key, String value) {
+    setState(() {
+      selectedRowIndices.clear();
+      isAllSelected = false;
+    });
+    _bookingController.searchMultiReservations(key, value);
   }
 
   Widget _reservationsTable(List<Map<String, String>> rows) {
     return ResponsiveDataTableWidget(
-        totalWidth: 390,
-        headerBackgroundColor: Colors.grey.shade200,
-        columnConfigs: [
-          TableColumnConfig(
-            title: "CHECKBOX",
+      totalWidth: 390,
+      headerBackgroundColor: Colors.grey.shade200,
+      columnConfigs: [
+        TableColumnConfig(
+          title: "CHECKBOX",
+          sizeType: ColumnSizeType.fixed,
+          fixedWidth: 32.0,
+          removeSearching: true,
+          customHeader: Center(
+            child: Focus(
+              onKeyEvent: (node, event) {
+                if (event is KeyDownEvent &&
+                    (event.logicalKey == LogicalKeyboardKey.enter ||
+                        event.logicalKey == LogicalKeyboardKey.space)) {
+                  setState(() {
+                    isAllSelected = !isAllSelected;
+                    if (isAllSelected) {
+                      selectedRowIndices = Set.from(
+                          List.generate(reservations.length, (i) => i));
+                    } else {
+                      selectedRowIndices.clear();
+                    }
+                  });
+                  return KeyEventResult.handled;
+                }
+                return KeyEventResult.ignored;
+              },
+              child: SizedBox(
+                width: 18,
+                height: 18,
+                child: Checkbox(
+                  value: isAllSelected,
+                  activeColor: DynamicColors.primaryClr,
+                  onChanged: (val) {
+                    setState(() {
+                      isAllSelected = val ?? false;
+                      if (isAllSelected) {
+                        selectedRowIndices = Set.from(
+                            List.generate(reservations.length, (i) => i));
+                      } else {
+                        selectedRowIndices.clear();
+                      }
+                    });
+                  },
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+              ),
+            ),
+          ),
+        ),
+        // Header searches are done by the API (bookings/multi-bookings-id).
+        TableColumnConfig(
+            title: "DATETIME",
+            sizeType: ColumnSizeType.large,
+            searchController: _dateSearchController,
+            onChanged: (v) => _onTableSearch('pickup_date', v)),
+        TableColumnConfig(
+            title: "REF #",
+            sizeType: ColumnSizeType.medium,
+            searchController: _refSearchController,
+            onChanged: (v) => _onTableSearch('reference_number', v)),
+        TableColumnConfig(
+            title: "J/T",
+            sizeType: ColumnSizeType.small,
+            searchController: _jtSearchController,
+            onChanged: (v) => _onTableSearch('journey_type_id', v)),
+        TableColumnConfig(
+            title: "ACTION",
             sizeType: ColumnSizeType.fixed,
-            fixedWidth: 32.0,
-            removeSearching: true,
-            customHeader: Center(
+            fixedWidth: 36.0,
+            removeSearching: true),
+      ],
+      items: rows,
+      rowBuilder: (item, widths) {
+        final index = reservations.indexOf(item);
+        final bool isRowSelected = selectedRowIndices.contains(index);
+
+        return [
+          Center(
+            child: SizedBox(
+              width: widths["CHECKBOX"],
               child: Focus(
                 onKeyEvent: (node, event) {
                   if (event is KeyDownEvent &&
                       (event.logicalKey == LogicalKeyboardKey.enter ||
                           event.logicalKey == LogicalKeyboardKey.space)) {
                     setState(() {
-                      isAllSelected = !isAllSelected;
-                      if (isAllSelected) {
-                        selectedRowIndices = Set.from(
-                            List.generate(reservations.length, (i) => i));
+                      if (isRowSelected) {
+                        selectedRowIndices.remove(index);
+                        isAllSelected = false;
                       } else {
-                        selectedRowIndices.clear();
+                        selectedRowIndices.add(index);
+                        if (selectedRowIndices.length == reservations.length) {
+                          isAllSelected = true;
+                        }
+                        // Same as ticking with the mouse: load this
+                        // booking (addresses, lat/lng, vias) into the form.
+                        _loadBooking(item['id']);
                       }
                     });
                     return KeyEventResult.handled;
@@ -464,533 +616,706 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                   width: 18,
                   height: 18,
                   child: Checkbox(
-                    value: isAllSelected,
+                    value: isRowSelected,
                     activeColor: DynamicColors.primaryClr,
                     onChanged: (val) {
                       setState(() {
-                        isAllSelected = val ?? false;
-                        if (isAllSelected) {
-                          selectedRowIndices = Set.from(
-                              List.generate(reservations.length, (i) => i));
-                        } else {
-                          selectedRowIndices.clear();
-                        }
-                      });
-                    },
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          TableColumnConfig(title: "DATETIME", sizeType: ColumnSizeType.large),
-          TableColumnConfig(title: "REF #", sizeType: ColumnSizeType.medium),
-          TableColumnConfig(title: "J/T", sizeType: ColumnSizeType.small),
-          TableColumnConfig(title: "ACTION", sizeType: ColumnSizeType.fixed, fixedWidth: 36.0, removeSearching: true),
-        ],
-        items: rows,
-        rowBuilder: (item, widths) {
-          final index = reservations.indexOf(item);
-          final bool isRowSelected = selectedRowIndices.contains(index);
-
-          return [
-            Center(
-              child: SizedBox(
-                width: widths["CHECKBOX"],
-                child: Focus(
-                  onKeyEvent: (node, event) {
-                    if (event is KeyDownEvent &&
-                        (event.logicalKey == LogicalKeyboardKey.enter ||
-                            event.logicalKey == LogicalKeyboardKey.space)) {
-                      setState(() {
-                        if (isRowSelected) {
-                          selectedRowIndices.remove(index);
-                          isAllSelected = false;
-                        } else {
+                        if (val == true) {
                           selectedRowIndices.add(index);
                           if (selectedRowIndices.length ==
                               reservations.length) {
                             isAllSelected = true;
                           }
-                          // Same as ticking with the mouse: load this
-                          // booking (addresses, lat/lng, vias) into the form.
-                          controller.dashBoardDataBinding(id: item['id']);
+                        } else {
+                          selectedRowIndices.remove(index);
+                          isAllSelected = false;
                         }
                       });
-                      return KeyEventResult.handled;
-                    }
-                    return KeyEventResult.ignored;
-                  },
-                  child: SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: Checkbox(
-                      value: isRowSelected,
-                      activeColor: DynamicColors.primaryClr,
-                      onChanged: (val) {
-                        setState(() {
-                          if (val == true) {
-                            selectedRowIndices.add(index);
-                            if (selectedRowIndices.length ==
-                                reservations.length) {
-                              isAllSelected = true;
-                            }
-                          } else {
-                            selectedRowIndices.remove(index);
-                            isAllSelected = false;
-                          }
-                        });
-                      },
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: VisualDensity.compact,
-                    ),
+                    },
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    visualDensity: VisualDensity.compact,
                   ),
                 ),
               ),
             ),
-            Center(child: Text(item['datetime']!,
-                    style: outFitRegular(fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0xFF1E293B)))),
-            Center(child: Text(item['ref']!,
-                    style: outFitRegular(fontSize: 12, color: const Color(0xFF1E293B)))),
-            Center(child: Text(item['jt']!,
-                    style: outFitRegular(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF1E293B)))),
-            Center(child: SizedBox(
-                width: widths["ACTION"],
-                child: ActionIconButton(
-                  icon: Icons.visibility_outlined,
-                  size: 16,
-                  color: const Color(0xFF16A34A),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => MultiReservationAlert(item: item),
-                    );
-                  },
-                ),
+          ),
+          Center(
+              child: Text(item['datetime']!,
+                  style: outFitRegular(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF1E293B)))),
+          Center(
+              child: Text(item['ref']!,
+                  style: outFitRegular(
+                      fontSize: 12, color: const Color(0xFF1E293B)))),
+          Center(
+              child: Text(item['jt']!,
+                  style: outFitRegular(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF1E293B)))),
+          Center(
+            child: SizedBox(
+              width: widths["ACTION"],
+              child: ActionIconButton(
+                icon: Icons.visibility_outlined,
+                size: 16,
+                color: const Color(0xFF16A34A),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => MultiReservationAlert(item: item),
+                  );
+                },
               ),
             ),
-          ];
-        },
-      );
+          ),
+        ];
+      },
+    );
   }
 
   // ────────── Right Form Section Widget ──────────
   Widget _buildRightFormSection() {
     return GetBuilder<DashboardController>(
       builder: (_) => FocusTraversalGroup(
-        policy: OrderedTraversalPolicy(),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            bool isFormMobile = constraints.maxWidth < 650;
+          policy: OrderedTraversalPolicy(),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              bool isFormMobile = constraints.maxWidth < 650;
 
-            return Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    children: [
-                      Text('USER : ', style: outFitRegular(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey.shade700)),
-                      Text('NADEEM', style: outFitRegular(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.red)),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-
-                  // 1. Main Form Fields Container
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: _border),
-                    ),
-                    child: Column(
+              return Container(
+                color: Colors.white,
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
                       children: [
-                        _buildLocationRow('PICK', 'PICKUP LOCATION', controller.pickupController, controller.pickUpNoteController,
-                            'PICKUP NOTES', LucideIcons.arrowDownUp,
-                            controller.dashboardZoneValue, _zoneList, (val) => setState(() {
-                              controller.dashboardZoneValue = val;
-                              controller.getFaresCalculation();
-                            })),
-                        const SizedBox(height: 8),
-                        _buildLocationRow('DROP', 'DROP LOCATION', controller.dropOffController, controller.dropUpNoteController,
-                            'DROPOFF NOTES', LucideIcons.route,
-                            controller.dashboardDZoneValue, _zoneList, (val) => setState(() {
-                              controller.dashboardDZoneValue = val;
-                              controller.getFaresCalculation();
-                            })),
-                        const SizedBox(height: 10),
+                        Text('USER : ',
+                            style: outFitRegular(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey.shade700)),
+                        Text('NADEEM',
+                            style: outFitRegular(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red)),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
 
-                        // Name, Email, Mob, Tel (Responsive)
-                        isFormMobile
-                            ? Column(
-                                children: [
-                                  _labelledField('NAME',
-                                      _tab(7, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.nameController, style: _valStyle, decoration: _fieldDec(suffix: Icons.search)))),
-                                  const SizedBox(height: 8),
-                                  _labelledField('EMAIL',
-                                      _tab(8, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.emailController, style: _valStyle, decoration: _fieldDec()))),
-                                  const SizedBox(height: 8),
-                                  _labelledField('MOB',
-                                      _tab(9, _mobileField())),
-                                  const SizedBox(height: 8),
-                                  _labelledField('TEL',
-                                      _tab(10, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.telController, style: _valStyle, decoration: _fieldDec(suffix: Icons.search)))),
-                                ],
-                              )
-                            : Row(
-                                children: [
-                                  Expanded(
-                                      flex: 3,
-                                      child: _labelledField('NAME',
-                                          _tab(7, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.nameController, style: _valStyle, decoration: _fieldDec(suffix: Icons.search))))),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                      flex: 3,
-                                      child: _labelledField('EMAIL',
-                                          _tab(8, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.emailController, style: _valStyle, decoration: _fieldDec())))),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                      flex: 3,
-                                      child: _labelledField('MOB',
-                                          _tab(9, _mobileField()))),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                      flex: 3,
-                                      child: _labelledField('TEL',
-                                          _tab(10, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.telController, style: _valStyle, decoration: _fieldDec(suffix: Icons.search))))),
-                                ],
-                              ),
-                        const SizedBox(height: 10),
+                    // 1. Main Form Fields Container
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: _border),
+                      ),
+                      child: Column(
+                        children: [
+                          _buildLocationRow(
+                              'PICK',
+                              'PICKUP LOCATION',
+                              controller.pickupController,
+                              controller.pickUpNoteController,
+                              'PICKUP NOTES',
+                              LucideIcons.arrowDownUp,
+                              controller.dashboardZoneValue,
+                              _zoneList,
+                              (val) => setState(() {
+                                    controller.dashboardZoneValue = val;
+                                    controller.getFaresCalculation();
+                                  })),
+                          const SizedBox(height: 8),
+                          _buildLocationRow(
+                              'DROP',
+                              'DROP LOCATION',
+                              controller.dropOffController,
+                              controller.dropUpNoteController,
+                              'DROPOFF NOTES',
+                              LucideIcons.route,
+                              controller.dashboardDZoneValue,
+                              _zoneList,
+                              (val) => setState(() {
+                                    controller.dashboardDZoneValue = val;
+                                    controller.getFaresCalculation();
+                                  })),
+                          const SizedBox(height: 10),
 
-                        // Date & Time (Responsive)
-                        isFormMobile
-                            ? Column(
-                                children: [
-                                  _labelledField('DATE', _dateBox()),
-                                  const SizedBox(height: 8),
-                                  _labelledField('TIME', _tab(11, _timePickerBox(controller.pickUpTimeController))),
-                                ],
-                              )
-                            : Row(
-                                children: [
-                                  Expanded(
-                                      child: _labelledField('DATE', SizedBox(height: _fieldHeight, child: _dateBox()))),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                      child: _labelledField('TIME', _tab(11, SizedBox(height: _fieldHeight, child: _timePickerBox(controller.pickUpTimeController))))),
-                                  const SizedBox(width: 8),
-                                  const Expanded(child: SizedBox()),
-                                  const SizedBox(width: 8),
-                                  const Expanded(child: SizedBox()),
-                                ],
-                              ),
-                        const SizedBox(height: 10),
+                          // Name, Email, Mob, Tel (Responsive)
+                          isFormMobile
+                              ? Column(
+                                  children: [
+                                    _labelledField(
+                                        'NAME',
+                                        _tab(
+                                            7,
+                                            TextField(
+                                                textCapitalization:
+                                                    TextCapitalization
+                                                        .characters,
+                                                inputFormatters: [
+                                                  UpperCaseTextFormatter()
+                                                ],
+                                                controller:
+                                                    controller.nameController,
+                                                style: _valStyle,
+                                                decoration: _fieldDec(
+                                                    suffix: Icons.search)))),
+                                    const SizedBox(height: 8),
+                                    _labelledField(
+                                        'EMAIL',
+                                        _tab(
+                                            8,
+                                            TextField(
+                                                textCapitalization:
+                                                    TextCapitalization
+                                                        .characters,
+                                                inputFormatters: [
+                                                  UpperCaseTextFormatter()
+                                                ],
+                                                controller:
+                                                    controller.emailController,
+                                                style: _valStyle,
+                                                decoration: _fieldDec()))),
+                                    const SizedBox(height: 8),
+                                    _labelledField(
+                                        'MOB', _tab(9, _mobileField())),
+                                    const SizedBox(height: 8),
+                                    _labelledField(
+                                        'TEL',
+                                        _tab(
+                                            10,
+                                            TextField(
+                                                textCapitalization:
+                                                    TextCapitalization
+                                                        .characters,
+                                                inputFormatters: [
+                                                  UpperCaseTextFormatter()
+                                                ],
+                                                controller:
+                                                    controller.telController,
+                                                style: _valStyle,
+                                                decoration: _fieldDec(
+                                                    suffix: Icons.search)))),
+                                  ],
+                                )
+                              : Row(
+                                  children: [
+                                    Expanded(
+                                        flex: 3,
+                                        child: _labelledField(
+                                            'NAME',
+                                            _tab(
+                                                7,
+                                                TextField(
+                                                    textCapitalization:
+                                                        TextCapitalization
+                                                            .characters,
+                                                    inputFormatters: [
+                                                      UpperCaseTextFormatter()
+                                                    ],
+                                                    controller: controller
+                                                        .nameController,
+                                                    style: _valStyle,
+                                                    decoration: _fieldDec(
+                                                        suffix:
+                                                            Icons.search))))),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                        flex: 3,
+                                        child: _labelledField(
+                                            'EMAIL',
+                                            _tab(
+                                                8,
+                                                TextField(
+                                                    textCapitalization:
+                                                        TextCapitalization
+                                                            .characters,
+                                                    inputFormatters: [
+                                                      UpperCaseTextFormatter()
+                                                    ],
+                                                    controller: controller
+                                                        .emailController,
+                                                    style: _valStyle,
+                                                    decoration: _fieldDec())))),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                        flex: 3,
+                                        child: _labelledField(
+                                            'MOB', _tab(9, _mobileField()))),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                        flex: 3,
+                                        child: _labelledField(
+                                            'TEL',
+                                            _tab(
+                                                10,
+                                                TextField(
+                                                    textCapitalization:
+                                                        TextCapitalization
+                                                            .characters,
+                                                    inputFormatters: [
+                                                      UpperCaseTextFormatter()
+                                                    ],
+                                                    controller: controller
+                                                        .telController,
+                                                    style: _valStyle,
+                                                    decoration: _fieldDec(
+                                                        suffix:
+                                                            Icons.search))))),
+                                  ],
+                                ),
+                          const SizedBox(height: 10),
 
-                        // Lead, Jour, Veh (Responsive)
-                        isFormMobile
-                            ? Column(
-                                children: [
-                                  _labelledField('LEAD', _tab(12, _timePickerBox(controller.minController))),
-                                  const SizedBox(height: 8),
-                                  _labelledField('JOUR',
-                                    _lockedJourneyField(),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  _labelledField('VEH',
-                                    _tab(14, _dropdown<DashboardVehicleTypeObject>(
-                                      value: controller.selectVehicleValue,
-                                      hint: 'SELECT VEHICLE',
-                                      items: controller.dashboardAllData?.vehicleTypes ?? [],
-                                      label: (item) => item.name ?? '',
-                                      onChanged: _onVehicleChanged,
-                                    )),
-                                  ),
-                                ],
-                              )
-                            : Row(
-                                children: [
-                                  Expanded(
-                                      child: _labelledField('LEAD', _tab(12, SizedBox(height: _fieldHeight, child: _timePickerBox(controller.minController))))),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: _labelledField('JOUR',
-                                      SizedBox(height: _fieldHeight,
-                                        child: _lockedJourneyField(height: _fieldHeight),
+                          // Date & Time (Responsive)
+                          isFormMobile
+                              ? Column(
+                                  children: [
+                                    _labelledField('DATE', _dateBox()),
+                                    const SizedBox(height: 8),
+                                    _labelledField(
+                                        'TIME',
+                                        _tab(
+                                            11,
+                                            _timePickerBox(_timeController))),
+                                  ],
+                                )
+                              : Row(
+                                  children: [
+                                    Expanded(
+                                        child: _labelledField(
+                                            'DATE',
+                                            SizedBox(
+                                                height: _fieldHeight,
+                                                child: _dateBox()))),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                        child: _labelledField(
+                                            'TIME',
+                                            _tab(
+                                                11,
+                                                SizedBox(
+                                                    height: _fieldHeight,
+                                                    child: _timePickerBox(_timeController))))),
+                                    const SizedBox(width: 8),
+                                    const Expanded(child: SizedBox()),
+                                    const SizedBox(width: 8),
+                                    const Expanded(child: SizedBox()),
+                                  ],
+                                ),
+                          const SizedBox(height: 10),
+
+                          // Lead, Jour, Veh (Responsive)
+                          isFormMobile
+                              ? Column(
+                                  children: [
+                                    _labelledField(
+                                        'LEAD',
+                                        _tab(
+                                            12,
+                                            _timePickerBox(_leadController))),
+                                    const SizedBox(height: 8),
+                                    _labelledField(
+                                      'JOUR',
+                                      _lockedJourneyField(),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    _labelledField(
+                                      'VEH',
+                                      _tab(
+                                          14,
+                                          _dropdown<DashboardVehicleTypeObject>(
+                                            value:
+                                                controller.selectVehicleValue,
+                                            hint: 'SELECT VEHICLE',
+                                            items: controller.dashboardAllData
+                                                    ?.vehicleTypes ??
+                                                [],
+                                            label: (item) => item.name ?? '',
+                                            onChanged: _onVehicleChanged,
+                                          )),
+                                    ),
+                                  ],
+                                )
+                              : Row(
+                                  children: [
+                                    Expanded(
+                                        child: _labelledField(
+                                            'LEAD',
+                                            _tab(
+                                                12,
+                                                SizedBox(
+                                                    height: _fieldHeight,
+                                                    child: _timePickerBox(_leadController))))),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: _labelledField(
+                                        'JOUR',
+                                        SizedBox(
+                                          height: _fieldHeight,
+                                          child: _lockedJourneyField(
+                                              height: _fieldHeight),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: _labelledField('VEH',
-                                      _tab(14, SizedBox(
-                                        height: _fieldHeight,
-                                        child: _dropdown<DashboardVehicleTypeObject>(
-                                          height: _fieldHeight,
-                                          value: controller.selectVehicleValue,
-                                          hint: 'SELECT VEHICLE',
-                                          items: controller.dashboardAllData?.vehicleTypes ?? [],
-                                          label: (item) => item.name ?? '',
-                                          onChanged: _onVehicleChanged,
-                                        ),
-                                      )),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: _labelledField(
+                                        'VEH',
+                                        _tab(
+                                            14,
+                                            SizedBox(
+                                              height: _fieldHeight,
+                                              child: _dropdown<
+                                                  DashboardVehicleTypeObject>(
+                                                height: _fieldHeight,
+                                                value: controller
+                                                    .selectVehicleValue,
+                                                hint: 'SELECT VEHICLE',
+                                                items: controller
+                                                        .dashboardAllData
+                                                        ?.vehicleTypes ??
+                                                    [],
+                                                label: (item) =>
+                                                    item.name ?? '',
+                                                onChanged: _onVehicleChanged,
+                                              ),
+                                            )),
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  const Expanded(child: SizedBox()),
-                                ],
-                              ),
-                        const SizedBox(height: 10),
+                                    const SizedBox(width: 8),
+                                    const Expanded(child: SizedBox()),
+                                  ],
+                                ),
+                          const SizedBox(height: 10),
 
-                        // Acc, Pass, Lugg, Slgg (Responsive)
-                        isFormMobile
-                            ? Column(
-                                children: [
-                                  _labelledField('ACC',
-                                    _tab(15, _dropdown<DashboardAccountObject>(
-                                      value: controller.selectAccountValue,
-                                      hint: 'SELECT ACCOUNT',
-                                      items: controller.dashboardAccountData?.accounts ?? [],
-                                      label: (item) => item.name ?? '',
-                                      onChanged: _onAccountChanged,
-                                    )),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  _labelledField('PASS', _tab(16, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.passController, style: _valStyle, decoration: _fieldDec()))),
-                                  const SizedBox(height: 8),
-                                  _labelledField('LUGG', _tab(17, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.luggController, style: _valStyle, decoration: _fieldDec()))),
-                                  const SizedBox(height: 8),
-                                  _labelledField('SLGG', _tab(18, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.sluggController, style: _valStyle, decoration: _fieldDec()))),
-                                ],
-                              )
-                            : Row(
-                                children: [
-                                  Expanded(
-                                    flex: 3,
-                                    child: _labelledField('ACC',
-                                      _tab(15, _dropdown<DashboardAccountObject>(
-                                        height: _fieldHeight,
-                                        value: controller.selectAccountValue,
-                                        hint: 'SELECT ACCOUNT',
-                                        items: controller.dashboardAccountData?.accounts ?? [],
-                                        label: (item) => item.name ?? '',
-                                        onChanged: _onAccountChanged,
-                                      )),
+                          // Acc, Pass, Lugg, Slgg (Responsive)
+                          isFormMobile
+                              ? Column(
+                                  children: [
+                                    _labelledField(
+                                      'ACC',
+                                      _tab(
+                                          15,
+                                          _dropdown<DashboardAccountObject>(
+                                            value:
+                                                controller.selectAccountValue,
+                                            hint: 'SELECT ACCOUNT',
+                                            items: controller
+                                                    .dashboardAccountData
+                                                    ?.accounts ??
+                                                [],
+                                            label: (item) => item.name ?? '',
+                                            onChanged: _onAccountChanged,
+                                          )),
                                     ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                      flex: 3,
-                                      child: _labelledField('PASS', _tab(16, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.passController, style: _valStyle, decoration: _fieldDec())))),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                      flex: 3,
-                                      child: _labelledField('LUGG', _tab(17, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.luggController, style: _valStyle, decoration: _fieldDec())))),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                      flex: 3,
-                                      child: _labelledField('SLGG', _tab(18, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], controller: controller.sluggController, style: _valStyle, decoration: _fieldDec())))),
-                                ],
-                              ),
-                        const SizedBox(height: 10),
-                        isFormMobile
-                            ? Column(
-                                children: [
-                                  _labelledField('DEPT',
-                                    _tab(19, _dropdown<DepartmentObject>(
-                                      value: controller.selectDepartmentData,
-                                      hint: 'SELECT DEPT',
-                                      items: _departmentList,
-                                      label: (item) => item.name ?? '',
-                                      onChanged: _onDepartmentChanged,
-                                    )),
-                                  ),
-                                  if (_showEscort) ...[
                                     const SizedBox(height: 8),
-                                    _labelledField('ESC', _tab(20, _escortDropdown())),
-                                  ],
-                                  if (_showOrder) ...[
+                                    _labelledField(
+                                        'PASS',
+                                        _tab(
+                                            16,
+                                            TextField(
+                                                textCapitalization:
+                                                    TextCapitalization
+                                                        .characters,
+                                                inputFormatters: [
+                                                  UpperCaseTextFormatter()
+                                                ],
+                                                controller:
+                                                    controller.passController,
+                                                style: _valStyle,
+                                                decoration: _fieldDec()))),
                                     const SizedBox(height: 8),
-                                    _labelledField('ORDER', _tab(20.2, _orderDropdown())),
-                                  ],
-                                  if (_showBookedBy) ...[
+                                    _labelledField(
+                                        'LUGG',
+                                        _tab(
+                                            17,
+                                            TextField(
+                                                textCapitalization:
+                                                    TextCapitalization
+                                                        .characters,
+                                                inputFormatters: [
+                                                  UpperCaseTextFormatter()
+                                                ],
+                                                controller:
+                                                    controller.luggController,
+                                                style: _valStyle,
+                                                decoration: _fieldDec()))),
                                     const SizedBox(height: 8),
-                                    _labelledField('BY', _tab(20.4, _bookedByField())),
+                                    _labelledField(
+                                        'SLGG',
+                                        _tab(
+                                            18,
+                                            TextField(
+                                                textCapitalization:
+                                                    TextCapitalization
+                                                        .characters,
+                                                inputFormatters: [
+                                                  UpperCaseTextFormatter()
+                                                ],
+                                                controller:
+                                                    controller.sluggController,
+                                                style: _valStyle,
+                                                decoration: _fieldDec()))),
                                   ],
-                                ],
-                              )
-                            : Row(
-                                children: [
-                                  Expanded(
-                                    child: _labelledField('DEPT',
-                                      _tab(19, _dropdown<DepartmentObject>(
-                                        height: _fieldHeight,
-                                        value: controller.selectDepartmentData,
-                                        hint: 'SELECT DEPT',
-                                        items: _departmentList,
-                                        label: (item) => item.name ?? '',
-                                        onChanged: _onDepartmentChanged,
-                                      )),
+                                )
+                              : Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 3,
+                                      child: _labelledField(
+                                        'ACC',
+                                        _tab(
+                                            15,
+                                            _dropdown<DashboardAccountObject>(
+                                              height: _fieldHeight,
+                                              value:
+                                                  controller.selectAccountValue,
+                                              hint: 'SELECT ACCOUNT',
+                                              items: controller
+                                                      .dashboardAccountData
+                                                      ?.accounts ??
+                                                  [],
+                                              label: (item) => item.name ?? '',
+                                              onChanged: _onAccountChanged,
+                                            )),
+                                      ),
                                     ),
-                                  ),
-                                  // ESC / ORDER / BY only for accounts that use
-                                  // them, as on the dashboard form; an empty
-                                  // slot keeps the column widths.
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: _showEscort
-                                        ? _labelledField('ESC', _tab(20, _escortDropdown(height: _fieldHeight)))
-                                        : const SizedBox(),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: _showOrder
-                                        ? _labelledField('ORDER', _tab(20.2, _orderDropdown(height: _fieldHeight)))
-                                        : const SizedBox(),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: _showBookedBy
-                                        ? _labelledField('BY', _tab(20.4, SizedBox(height: _fieldHeight, child: _bookedByField())))
-                                        : const SizedBox(),
-                                  ),
-                                ],
-                              ),
-                        const SizedBox(height: 10),
-
-                        // Pay, Quotation, Icons (Responsive)
-                        isFormMobile
-                            ? Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  _labelledField('PAY',
-                                    _tab(21, _dropdown<PaymentTypeObject>(
-                                      value: controller.selectPaymentTypeValue,
-                                      hint: 'ACCOUNT',
-                                      items: controller.dashboardAllData?.paymentTypes ?? [],
-                                      label: (item) => item.name ?? '',
-                                      onChanged: (val) => setState(() => controller.selectPaymentTypeValue = val),
-                                    )),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      _tab(22, Focus(
-                                        canRequestFocus: false,
-                                        onKeyEvent: (node, event) {
-                                          if (event is KeyDownEvent &&
-                                              (event.logicalKey ==
-                                                      LogicalKeyboardKey.enter ||
-                                                  event.logicalKey ==
-                                                      LogicalKeyboardKey.space)) {
-                                            setState(() {
-                                              controller.dropDownShow.value =
-                                                  !controller.dropDownShow.value;
-                                            });
-                                            return KeyEventResult.handled;
-                                          }
-                                          return KeyEventResult.ignored;
-                                        },
-                                        child: SizedBox(
-                                          width: 18,
-                                          height: 18,
-                                          child: Checkbox(
-                                            value: controller.dropDownShow.value,
-                                            activeColor: DynamicColors.primaryClr,
-                                            onChanged: (val) {
-                                              setState(() {
-                                                controller.dropDownShow.value =
-                                                    val ?? false;
-                                              });
-                                            },
-                                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                          ),
-                                        ),
-                                      )),
-                                      const SizedBox(width: 4),
-                                      Text('QUOTATION', style: outFitRegular(fontSize: 12, fontWeight: FontWeight.w700)),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                        flex: 3,
+                                        child: _labelledField(
+                                            'PASS',
+                                            _tab(
+                                                16,
+                                                TextField(
+                                                    textCapitalization:
+                                                        TextCapitalization
+                                                            .characters,
+                                                    inputFormatters: [
+                                                      UpperCaseTextFormatter()
+                                                    ],
+                                                    controller: controller
+                                                        .passController,
+                                                    style: _valStyle,
+                                                    decoration: _fieldDec())))),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                        flex: 3,
+                                        child: _labelledField(
+                                            'LUGG',
+                                            _tab(
+                                                17,
+                                                TextField(
+                                                    textCapitalization:
+                                                        TextCapitalization
+                                                            .characters,
+                                                    inputFormatters: [
+                                                      UpperCaseTextFormatter()
+                                                    ],
+                                                    controller: controller
+                                                        .luggController,
+                                                    style: _valStyle,
+                                                    decoration: _fieldDec())))),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                        flex: 3,
+                                        child: _labelledField(
+                                            'SLGG',
+                                            _tab(
+                                                18,
+                                                TextField(
+                                                    textCapitalization:
+                                                        TextCapitalization
+                                                            .characters,
+                                                    inputFormatters: [
+                                                      UpperCaseTextFormatter()
+                                                    ],
+                                                    controller: controller
+                                                        .sluggController,
+                                                    style: _valStyle,
+                                                    decoration: _fieldDec())))),
+                                  ],
+                                ),
+                          const SizedBox(height: 10),
+                          isFormMobile
+                              ? Column(
+                                  children: [
+                                    _labelledField(
+                                      'DEPT',
+                                      _tab(
+                                          19,
+                                          _dropdown<DepartmentObject>(
+                                            value:
+                                                controller.selectDepartmentData,
+                                            hint: 'SELECT DEPT',
+                                            items: _departmentList,
+                                            label: (item) => item.name ?? '',
+                                            onChanged: _onDepartmentChanged,
+                                          )),
+                                    ),
+                                    if (_showEscort) ...[
+                                      const SizedBox(height: 8),
+                                      _labelledField(
+                                          'ESC', _tab(20, _escortDropdown())),
                                     ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Container(
-                                    height: 32,
-                                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: _border),
-                                      borderRadius: BorderRadius.circular(4),
-                                      color: _fieldFill,
+                                    if (_showOrder) ...[
+                                      const SizedBox(height: 8),
+                                      _labelledField('ORDER',
+                                          _tab(20.2, _orderDropdown())),
+                                    ],
+                                    if (_showBookedBy) ...[
+                                      const SizedBox(height: 8),
+                                      _labelledField(
+                                          'BY', _tab(20.4, _bookedByField())),
+                                    ],
+                                  ],
+                                )
+                              : Row(
+                                  children: [
+                                    Expanded(
+                                      child: _labelledField(
+                                        'DEPT',
+                                        _tab(
+                                            19,
+                                            _dropdown<DepartmentObject>(
+                                              height: _fieldHeight,
+                                              value: controller
+                                                  .selectDepartmentData,
+                                              hint: 'SELECT DEPT',
+                                              items: _departmentList,
+                                              label: (item) => item.name ?? '',
+                                              onChanged: _onDepartmentChanged,
+                                            )),
+                                      ),
                                     ),
-                                    child: _alertIconButtons(),
-                                  ),
-                                ],
-                              )
-                            : Row(
-                                children: [
-                                  Expanded(
-                                    child: _labelledField('PAY',
-                                      _tab(21, SizedBox(
-                                        height: _fieldHeight,
-                                        child: _dropdown<PaymentTypeObject>(
-                                          height: _fieldHeight,
-                                          value: controller.selectPaymentTypeValue,
-                                          hint: 'ACCOUNT',
-                                          items: controller.dashboardAllData?.paymentTypes ?? [],
-                                          label: (item) => item.name ?? '',
-                                          onChanged: (val) => setState(() => controller.selectPaymentTypeValue = val),
-                                        ),
-                                      )),
+                                    // ESC / ORDER / BY only for accounts that use
+                                    // them, as on the dashboard form; an empty
+                                    // slot keeps the column widths.
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: _showEscort
+                                          ? _labelledField(
+                                              'ESC',
+                                              _tab(
+                                                  20,
+                                                  _escortDropdown(
+                                                      height: _fieldHeight)))
+                                          : const SizedBox(),
                                     ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: _showOrder
+                                          ? _labelledField(
+                                              'ORDER',
+                                              _tab(
+                                                  20.2,
+                                                  _orderDropdown(
+                                                      height: _fieldHeight)))
+                                          : const SizedBox(),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: _showBookedBy
+                                          ? _labelledField(
+                                              'BY',
+                                              _tab(
+                                                  20.4,
+                                                  SizedBox(
+                                                      height: _fieldHeight,
+                                                      child: _bookedByField())))
+                                          : const SizedBox(),
+                                    ),
+                                  ],
+                                ),
+                          const SizedBox(height: 10),
+
+                          // Pay, Quotation, Icons (Responsive)
+                          isFormMobile
+                              ? Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    _labelledField(
+                                      'PAY',
+                                      _tab(
+                                          21,
+                                          _dropdown<PaymentTypeObject>(
+                                            value: controller
+                                                .selectPaymentTypeValue,
+                                            hint: 'ACCOUNT',
+                                            items: controller.dashboardAllData
+                                                    ?.paymentTypes ??
+                                                [],
+                                            label: (item) => item.name ?? '',
+                                            onChanged: (val) => setState(() =>
+                                                controller
+                                                        .selectPaymentTypeValue =
+                                                    val),
+                                          )),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
                                       children: [
-                                        _tab(22, Focus(
-                                          canRequestFocus: false,
-                                          onKeyEvent: (node, event) {
-                                            if (event is KeyDownEvent &&
-                                                (event.logicalKey ==
-                                                        LogicalKeyboardKey.enter ||
-                                                    event.logicalKey ==
-                                                        LogicalKeyboardKey.space)) {
-                                              setState(() {
-                                                controller.dropDownShow.value =
-                                                    !controller.dropDownShow.value;
-                                              });
-                                              return KeyEventResult.handled;
-                                            }
-                                            return KeyEventResult.ignored;
-                                          },
-                                          child: SizedBox(
-                                            width: 18,
-                                            height: 18,
-                                            child: Checkbox(
-                                              value: controller.dropDownShow.value,
-                                              activeColor: DynamicColors.primaryClr,
-                                              onChanged: (val) {
-                                                setState(() {
-                                                  controller.dropDownShow.value =
-                                                      val ?? false;
-                                                });
+                                        _tab(
+                                            22,
+                                            Focus(
+                                              canRequestFocus: false,
+                                              onKeyEvent: (node, event) {
+                                                if (event is KeyDownEvent &&
+                                                    (event.logicalKey ==
+                                                            LogicalKeyboardKey
+                                                                .enter ||
+                                                        event.logicalKey ==
+                                                            LogicalKeyboardKey
+                                                                .space)) {
+                                                  setState(() {
+                                                    controller.dropDownShow
+                                                            .value =
+                                                        !controller
+                                                            .dropDownShow.value;
+                                                  });
+                                                  return KeyEventResult.handled;
+                                                }
+                                                return KeyEventResult.ignored;
                                               },
-                                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                            ),
-                                          ),
-                                        )),
+                                              child: SizedBox(
+                                                width: 18,
+                                                height: 18,
+                                                child: Checkbox(
+                                                  value: controller
+                                                      .dropDownShow.value,
+                                                  activeColor:
+                                                      DynamicColors.primaryClr,
+                                                  onChanged: (val) {
+                                                    setState(() {
+                                                      controller.dropDownShow
+                                                          .value = val ?? false;
+                                                    });
+                                                  },
+                                                  materialTapTargetSize:
+                                                      MaterialTapTargetSize
+                                                          .shrinkWrap,
+                                                ),
+                                              ),
+                                            )),
                                         const SizedBox(width: 4),
-                                        Text('QUOTATION', style: outFitRegular(fontSize: 12, fontWeight: FontWeight.w700)),
+                                        Text('QUOTATION',
+                                            style: outFitRegular(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w700)),
                                       ],
                                     ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  const Expanded(child: SizedBox()),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Container(
-                                      height: _fieldHeight,
-                                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                                    const SizedBox(height: 8),
+                                    Container(
+                                      height: 32,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10),
                                       decoration: BoxDecoration(
                                         border: Border.all(color: _border),
                                         borderRadius: BorderRadius.circular(4),
@@ -998,198 +1323,344 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                                       ),
                                       child: _alertIconButtons(),
                                     ),
-                                  ),
-                                ],
-                              )
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  // 2. ETA / Distance / Fare Container Bar
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: _fieldFill,
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: _border),
-                    ),
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        bool isBarMobile = constraints.maxWidth < 550;
-
-                        return isBarMobile
-                            ? Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  // Left metrics tightly grouped together
-                                  Wrap(
-                                    spacing: 12,
-                                    runSpacing: 6,
-                                    children: [
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(Icons.access_time,
-                                              size: 14, color: _subtleText),
-                                          const SizedBox(width: 3),
-                                          Obx(() => Text('ETA: ${controller.totalTimeDuration.value}', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold))),
-                                        ],
+                                  ],
+                                )
+                              : Row(
+                                  children: [
+                                    Expanded(
+                                      child: _labelledField(
+                                        'PAY',
+                                        _tab(
+                                            21,
+                                            SizedBox(
+                                              height: _fieldHeight,
+                                              child:
+                                                  _dropdown<PaymentTypeObject>(
+                                                height: _fieldHeight,
+                                                value: controller
+                                                    .selectPaymentTypeValue,
+                                                hint: 'ACCOUNT',
+                                                items: controller
+                                                        .dashboardAllData
+                                                        ?.paymentTypes ??
+                                                    [],
+                                                label: (item) =>
+                                                    item.name ?? '',
+                                                onChanged: (val) => setState(
+                                                    () => controller
+                                                            .selectPaymentTypeValue =
+                                                        val),
+                                              ),
+                                            )),
                                       ),
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(Icons.place_outlined,
-                                              size: 14, color: _subtleText),
-                                          const SizedBox(width: 3),
-                                          Obx(() => Text('DISTANCE: ${controller.totalDistance.value}', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold))),
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(Icons.payments_outlined,
-                                              size: 14, color: _subtleText),
-                                          const SizedBox(width: 3),
-                                          Obx(() => Text('T/FARES: £ ${controller.fixedFare.value}', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold))),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  // Fare section aligned to right on mobile
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text('FARE  ', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold)),
-                                      SizedBox(
-                                        width: 80,
-                                        height: 30,
-                                        child: _tab(23, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], 
-                                            controller: controller.slugController,
-                                            style: _valStyle,
-                                            decoration: _fieldDec())),
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Container(
-                                        height: 30,
-                                        width: 30,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          border: Border.all(color: _border),
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                        child: Icon(Icons.calculate,
-                                            size: 16,
-                                            color: DynamicColors.primaryClr),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              )
-                            : Row(
-                                children: [
-                                  // Left items tightly grouped together exactly like original
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      const Icon(Icons.access_time,
-                                          size: 14, color: _subtleText),
-                                      const SizedBox(width: 3),
-                                      Obx(() => Text('ETA: ${controller.totalTimeDuration.value}', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold))),
-                                      const SizedBox(width: 14),
-                                      const Icon(Icons.place_outlined, size: 14, color: _subtleText),
-                                      const SizedBox(width: 3),
-                                      Obx(() => Text('DISTANCE: ${controller.totalDistance.value}', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold))),
-                                      const SizedBox(width: 14),
-                                      const Icon(Icons.payments_outlined,
-                                          size: 14, color: _subtleText),
-                                      const SizedBox(width: 3),
-                                      Obx(() => Text('T/FARES: £ ${controller.fixedFare.value}', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold))),
-                                    ],
-                                  ),
-                                  const Spacer(),
-                                  // Right aligned FARE input section
-                                  Text('FARE  ', style: outFitRegular(fontSize: 11, fontWeight: FontWeight.bold)),
-                                  SizedBox(
-                                    width: 80,
-                                    height: 30,
-                                    child: _tab(23, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], 
-                                        controller: controller.slugController,
-                                        style: _valStyle,
-                                        decoration: _fieldDec())),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Container(
-                                    height: 30,
-                                    width: 30,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      border: Border.all(color: _border),
-                                      borderRadius: BorderRadius.circular(4),
                                     ),
-                                    child: Icon(Icons.calculate,
-                                        size: 16,
-                                        color: DynamicColors.primaryClr),
-                                  ),
-                                ],
-                              );
-                      },
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          _tab(
+                                              22,
+                                              Focus(
+                                                canRequestFocus: false,
+                                                onKeyEvent: (node, event) {
+                                                  if (event is KeyDownEvent &&
+                                                      (event.logicalKey ==
+                                                              LogicalKeyboardKey
+                                                                  .enter ||
+                                                          event.logicalKey ==
+                                                              LogicalKeyboardKey
+                                                                  .space)) {
+                                                    setState(() {
+                                                      controller.dropDownShow
+                                                              .value =
+                                                          !controller
+                                                              .dropDownShow
+                                                              .value;
+                                                    });
+                                                    return KeyEventResult
+                                                        .handled;
+                                                  }
+                                                  return KeyEventResult.ignored;
+                                                },
+                                                child: SizedBox(
+                                                  width: 18,
+                                                  height: 18,
+                                                  child: Checkbox(
+                                                    value: controller
+                                                        .dropDownShow.value,
+                                                    activeColor: DynamicColors
+                                                        .primaryClr,
+                                                    onChanged: (val) {
+                                                      setState(() {
+                                                        controller.dropDownShow
+                                                                .value =
+                                                            val ?? false;
+                                                      });
+                                                    },
+                                                    materialTapTargetSize:
+                                                        MaterialTapTargetSize
+                                                            .shrinkWrap,
+                                                  ),
+                                                ),
+                                              )),
+                                          const SizedBox(width: 4),
+                                          Text('QUOTATION',
+                                              style: outFitRegular(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w700)),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    const Expanded(child: SizedBox()),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Container(
+                                        height: _fieldHeight,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: _border),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                          color: _fieldFill,
+                                        ),
+                                        child: _alertIconButtons(),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
-                  // 3. Driver & Save Button Container
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: _border),
+                    // 2. ETA / Distance / Fare Container Bar
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: _fieldFill,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: _border),
+                      ),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          bool isBarMobile = constraints.maxWidth < 550;
+
+                          return isBarMobile
+                              ? Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    // Left metrics tightly grouped together
+                                    Wrap(
+                                      spacing: 12,
+                                      runSpacing: 6,
+                                      children: [
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(Icons.access_time,
+                                                size: 14, color: _subtleText),
+                                            const SizedBox(width: 3),
+                                            Obx(() => Text(
+                                                'ETA: ${controller.totalTimeDuration.value}',
+                                                style: outFitRegular(
+                                                    fontSize: 11,
+                                                    fontWeight:
+                                                        FontWeight.bold))),
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(Icons.place_outlined,
+                                                size: 14, color: _subtleText),
+                                            const SizedBox(width: 3),
+                                            Obx(() => Text(
+                                                'DISTANCE: ${controller.totalDistance.value}',
+                                                style: outFitRegular(
+                                                    fontSize: 11,
+                                                    fontWeight:
+                                                        FontWeight.bold))),
+                                          ],
+                                        ),
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(Icons.payments_outlined,
+                                                size: 14, color: _subtleText),
+                                            const SizedBox(width: 3),
+                                            Obx(() => Text(
+                                                'T/FARES: £ ${controller.fixedFare.value}',
+                                                style: outFitRegular(
+                                                    fontSize: 11,
+                                                    fontWeight:
+                                                        FontWeight.bold))),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    // Fare section aligned to right on mobile
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Text('FARE  ',
+                                            style: outFitRegular(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.bold)),
+                                        SizedBox(
+                                          width: 80,
+                                          height: 30,
+                                          child: _tab(
+                                              23,
+                                              TextField(
+                                                  textCapitalization:
+                                                      TextCapitalization
+                                                          .characters,
+                                                  inputFormatters: [
+                                                    UpperCaseTextFormatter()
+                                                  ],
+                                                  controller:
+                                                      controller.slugController,
+                                                  style: _valStyle,
+                                                  decoration: _fieldDec())),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                )
+                              : Row(
+                                  children: [
+                                    // Left items tightly grouped together exactly like original
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(Icons.access_time,
+                                            size: 14, color: _subtleText),
+                                        const SizedBox(width: 3),
+                                        Obx(() => Text(
+                                            'ETA: ${controller.totalTimeDuration.value}',
+                                            style: outFitRegular(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.bold))),
+                                        const SizedBox(width: 14),
+                                        const Icon(Icons.place_outlined,
+                                            size: 14, color: _subtleText),
+                                        const SizedBox(width: 3),
+                                        Obx(() => Text(
+                                            'DISTANCE: ${controller.totalDistance.value}',
+                                            style: outFitRegular(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.bold))),
+                                        const SizedBox(width: 14),
+                                        const Icon(Icons.payments_outlined,
+                                            size: 14, color: _subtleText),
+                                        const SizedBox(width: 3),
+                                        Obx(() => Text(
+                                            'T/FARES: £ ${controller.fixedFare.value}',
+                                            style: outFitRegular(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.bold))),
+                                      ],
+                                    ),
+                                    const Spacer(),
+                                    // Right aligned FARE input section
+                                    Text('FARE  ',
+                                        style: outFitRegular(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.bold)),
+                                    SizedBox(
+                                      width: 80,
+                                      height: 30,
+                                      child: _tab(
+                                          23,
+                                          TextField(
+                                              textCapitalization:
+                                                  TextCapitalization.characters,
+                                              inputFormatters: [
+                                                UpperCaseTextFormatter()
+                                              ],
+                                              controller:
+                                                  controller.slugController,
+                                              style: _valStyle,
+                                              decoration: _fieldDec())),
+                                    ),
+                                  ],
+                                );
+                        },
+                      ),
                     ),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                            width: 35,
-                            child: Text('DRV', style: outFitRegular(fontSize: _fsLabel, fontWeight: FontWeight.bold))),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          flex: 3,
-                          child: _tab(24, _dropdown<DashboardDriverObject>(
-                            height: 38,
-                            value: controller.selectDriverValue,
-                            hint: 'SELECT DRIVER',
-                            items: controller.dashboardAllData?.drivers ?? [],
-                            label: (item) => item.name ?? '',
-                            onChanged: (val) => setState(() => controller.checkDriverSinBinStatus(val)),
-                          )),
-                        ),
-                        const Spacer(flex: 3),
-                        Expanded(
-                          flex: 3,
-                          child: SizedBox(
-                            height: 38,
-                            child: _tab(25, ElevatedButton(
-                              onPressed: _saveSelectedReservations,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: DynamicColors.primaryClr,
-                                foregroundColor: Colors.white,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6)),
-                              ),
-                              child: Text('SAVE', style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.white)),
-                            )),
+                    const SizedBox(height: 10),
+
+                    // 3. Driver & Save Button Container
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: _border),
+                      ),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                              width: 35,
+                              child: Text('DRV',
+                                  style: outFitRegular(
+                                      fontSize: _fsLabel,
+                                      fontWeight: FontWeight.bold))),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            flex: 3,
+                            child: _tab(
+                                24,
+                                _dropdown<DashboardDriverObject>(
+                                  height: 38,
+                                  value: controller.selectDriverValue,
+                                  hint: 'SELECT DRIVER',
+                                  items: controller.dashboardAllData?.drivers ??
+                                      [],
+                                  label: (item) => item.name ?? '',
+                                  onChanged: (val) => setState(() =>
+                                      controller.checkDriverSinBinStatus(val)),
+                                )),
                           ),
-                        ),
-                      ],
+                          const Spacer(flex: 3),
+                          Expanded(
+                            flex: 3,
+                            child: SizedBox(
+                              height: 38,
+                              child: _tab(
+                                  25,
+                                  ElevatedButton(
+                                    onPressed: _saveSelectedReservations,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: DynamicColors.primaryClr,
+                                      foregroundColor: Colors.white,
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(6)),
+                                    ),
+                                    child: Text('SAVE',
+                                        style: mozillaTextSemiBoldText(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13,
+                                            color: Colors.white)),
+                                  )),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
-        )),
+                  ],
+                ),
+              );
+            },
+          )),
     );
   }
 
@@ -1201,12 +1672,21 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        _alertIconBtn(Icons.settings_suggest, 22.2,
-            () => showDialog(context: context, builder: (_) => SettingsDialog())),
-        _alertIconBtn(Icons.attach_money, 22.4,
-            () => showDialog(context: context, builder: (_) => ChildSeatsAlert())),
-        _alertIconBtn(Icons.sticky_note_2, 22.6,
-            () => showDialog(context: context, builder: (_) => ExtraInfoAlert())),
+        _alertIconBtn(
+            Icons.settings_suggest,
+            22.2,
+            () =>
+                showDialog(context: context, builder: (_) => SettingsDialog())),
+        _alertIconBtn(
+            Icons.attach_money,
+            22.4,
+            () => showDialog(
+                context: context, builder: (_) => ChildSeatsAlert())),
+        _alertIconBtn(
+            Icons.sticky_note_2,
+            22.6,
+            () =>
+                showDialog(context: context, builder: (_) => ExtraInfoAlert())),
       ],
     );
   }
@@ -1214,9 +1694,11 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
   /// One icon button, styled and keyboard-driven like the dashboard form's
   /// iconBtn: Enter / Space open the alert, GlowFocus rings it on focus.
   Widget _alertIconBtn(IconData icon, double tab, VoidCallback onPressed) {
-    return _tab(tab, GlowFocus(
-      child: _AlertIconButton(icon: icon, onPressed: onPressed),
-    ));
+    return _tab(
+        tab,
+        GlowFocus(
+          child: _AlertIconButton(icon: icon, onPressed: onPressed),
+        ));
   }
 
   // Helpers
@@ -1233,7 +1715,11 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
       children: [
         SizedBox(
           width: 38,
-          child: Text(label, style: outFitRegular(fontSize: _fsLabel, fontWeight: FontWeight.bold, color: _subtleText)),
+          child: Text(label,
+              style: outFitRegular(
+                  fontSize: _fsLabel,
+                  fontWeight: FontWeight.bold,
+                  color: _subtleText)),
         ),
         const SizedBox(width: 4),
         Expanded(child: child),
@@ -1268,72 +1754,81 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
               // The wrapper only draws the focus border; the IconButton
               // inside is the single Tab stop.
               ValueListenableBuilder<TextEditingValue>(
-                valueListenable: ctrl,
-                builder: (context, value, _) => value.text.isEmpty
-                    ? const SizedBox.shrink()
-                    : _tab(tabBase + 0.3, Focus(
-                canRequestFocus: false,
-                child: Builder(
-                  builder: (context) {
-                    final bool hasFocus = Focus.of(context).hasFocus;
-                    return Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: hasFocus
-                              ? DynamicColors.primaryClr
-                              : Colors.transparent,
-                          width: 1.5,
-                        ),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: IconButton(
-                        tooltip: 'Clear',
-                        icon: const Icon(Icons.close,
-                            size: 16, color: _subtleText),
-                        onPressed: () {
-                          _clearLocation(searchFieldName);
-                          (label == 'PICK' ? _pickupFocusNode : _dropFocusNode)
-                              .requestFocus();
-                        },
-                        padding: EdgeInsets.zero,
-                        constraints:
-                            const BoxConstraints(minWidth: 24, minHeight: 24),
-                      ),
-                    );
-                  },
-                ),
-              ))),
+                  valueListenable: ctrl,
+                  builder: (context, value, _) => value.text.isEmpty
+                      ? const SizedBox.shrink()
+                      : _tab(
+                          tabBase + 0.3,
+                          Focus(
+                            canRequestFocus: false,
+                            child: Builder(
+                              builder: (context) {
+                                final bool hasFocus =
+                                    Focus.of(context).hasFocus;
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: hasFocus
+                                          ? DynamicColors.primaryClr
+                                          : Colors.transparent,
+                                      width: 1.5,
+                                    ),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: IconButton(
+                                    tooltip: 'Clear',
+                                    icon: const Icon(Icons.close,
+                                        size: 16, color: _subtleText),
+                                    onPressed: () {
+                                      _clearLocation(searchFieldName);
+                                      (label == 'PICK'
+                                              ? _pickupFocusNode
+                                              : _dropFocusNode)
+                                          .requestFocus();
+                                    },
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(
+                                        minWidth: 24, minHeight: 24),
+                                  ),
+                                );
+                              },
+                            ),
+                          ))),
               const SizedBox(width: 6),
               // 2nd Icon: Action Icon (Arrow/Route) — next Tab stop.
-              _tab(tabBase + 0.6, Focus(
-                canRequestFocus: false,
-                child: Builder(
-                  builder: (context) {
-                    final bool hasFocus = Focus.of(context).hasFocus;
-                    return Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: hasFocus
-                              ? DynamicColors.primaryClr
-                              : Colors.transparent,
-                          width: 1.5,
-                        ),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: IconButton(
-                        tooltip: label == 'DROP' ? 'Via locations' : null,
-                        icon: Icon(actionIcon, size: 15, color: _subtleText),
-                        // DROP's route icon opens the via-points dialog, the
-                        // same as the dashboard form.
-                        onPressed: label == 'DROP' ? _openViaLocations : () {},
-                        padding: EdgeInsets.zero,
-                        constraints:
-                            const BoxConstraints(minWidth: 24, minHeight: 24),
-                      ),
-                    );
-                  },
-                ),
-              )),
+              _tab(
+                  tabBase + 0.6,
+                  Focus(
+                    canRequestFocus: false,
+                    child: Builder(
+                      builder: (context) {
+                        final bool hasFocus = Focus.of(context).hasFocus;
+                        return Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: hasFocus
+                                  ? DynamicColors.primaryClr
+                                  : Colors.transparent,
+                              width: 1.5,
+                            ),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: IconButton(
+                            tooltip: label == 'DROP' ? 'Via locations' : null,
+                            icon:
+                                Icon(actionIcon, size: 15, color: _subtleText),
+                            // DROP's route icon opens the via-points dialog, the
+                            // same as the dashboard form.
+                            onPressed:
+                                label == 'DROP' ? _openViaLocations : () {},
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(
+                                minWidth: 24, minHeight: 24),
+                          ),
+                        );
+                      },
+                    ),
+                  )),
               const SizedBox(width: 6),
             ],
           );
@@ -1355,15 +1850,17 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
                   Expanded(
                     child: SizedBox(
                       height: 34,
-                      child: _tab(tabBase + 0, _addressField(
-                        ctrl,
-                        searchFieldName,
-                        _fieldDec().copyWith(
-                          suffixIcon: buildSuffixIcons(),
-                          suffixIconConstraints:
-                              const BoxConstraints(minWidth: 55),
-                        ),
-                      )),
+                      child: _tab(
+                          tabBase + 0,
+                          _addressField(
+                            ctrl,
+                            searchFieldName,
+                            _fieldDec().copyWith(
+                              suffixIcon: buildSuffixIcons(),
+                              suffixIconConstraints:
+                                  const BoxConstraints(minWidth: 55),
+                            ),
+                          )),
                     ),
                   ),
                 ],
@@ -1372,32 +1869,38 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: _tab(tabBase + 1, _dropdown<ZoneObject>(
-                      height: 34,
-                      value: zoneValue,
-                      hint: 'SELECT ZONE',
-                      items: zoneList,
-                      label: (item) => item.name ?? '',
-                      onChanged: onZoneChanged,
-                    )),
+                    child: _tab(
+                        tabBase + 1,
+                        _dropdown<ZoneObject>(
+                          height: 34,
+                          value: zoneValue,
+                          hint: 'SELECT ZONE',
+                          items: zoneList,
+                          label: (item) => item.name ?? '',
+                          onChanged: onZoneChanged,
+                        )),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: SizedBox(
                       height: 34,
-                      child: _tab(tabBase + 2, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], 
-                        controller: noteCtrl,
-                        style: outFitRegular(fontSize: 12),
-                        decoration: _fieldDec().copyWith(
-                          hintText: noteHint,
-                          hintStyle:
-                              outFitRegular(fontSize: 9, color: Colors.grey),
-                          prefixIcon: const Icon(Icons.directions_car,
-                              size: 14, color: _subtleText),
-                          prefixIconConstraints:
-                              const BoxConstraints(minWidth: 24),
-                        ),
-                      )),
+                      child: _tab(
+                          tabBase + 2,
+                          TextField(
+                            textCapitalization: TextCapitalization.characters,
+                            inputFormatters: [UpperCaseTextFormatter()],
+                            controller: noteCtrl,
+                            style: outFitRegular(fontSize: 12),
+                            decoration: _fieldDec().copyWith(
+                              hintText: noteHint,
+                              hintStyle: outFitRegular(
+                                  fontSize: 9, color: Colors.grey),
+                              prefixIcon: const Icon(Icons.directions_car,
+                                  size: 14, color: _subtleText),
+                              prefixIconConstraints:
+                                  const BoxConstraints(minWidth: 24),
+                            ),
+                          )),
                     ),
                   ),
                 ],
@@ -1419,43 +1922,52 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
               flex: 5,
               child: SizedBox(
                 height: 34,
-                child: _tab(tabBase + 0, _addressField(
-                  ctrl,
-                  searchFieldName,
-                  _fieldDec().copyWith(
-                    suffixIcon: buildSuffixIcons(),
-                    suffixIconConstraints: const BoxConstraints(minWidth: 55),
-                  ),
-                )),
+                child: _tab(
+                    tabBase + 0,
+                    _addressField(
+                      ctrl,
+                      searchFieldName,
+                      _fieldDec().copyWith(
+                        suffixIcon: buildSuffixIcons(),
+                        suffixIconConstraints:
+                            const BoxConstraints(minWidth: 55),
+                      ),
+                    )),
               ),
             ),
             const SizedBox(width: 8),
             SizedBox(
               width: 162,
-              child: _tab(tabBase + 1, _dropdown<ZoneObject>(
-                height: 34,
-                value: zoneValue,
-                hint: 'SELECT ZONE',
-                items: zoneList,
-                label: (item) => item.name ?? '',
-                onChanged: onZoneChanged,
-              )),
+              child: _tab(
+                  tabBase + 1,
+                  _dropdown<ZoneObject>(
+                    height: 34,
+                    value: zoneValue,
+                    hint: 'SELECT ZONE',
+                    items: zoneList,
+                    label: (item) => item.name ?? '',
+                    onChanged: onZoneChanged,
+                  )),
             ),
             const SizedBox(width: 8),
             SizedBox(
               width: 162,
               height: 34,
-              child: _tab(tabBase + 2, TextField(textCapitalization: TextCapitalization.characters, inputFormatters: [UpperCaseTextFormatter()], 
-                controller: noteCtrl,
-                style: outFitRegular(fontSize: 12),
-                decoration: _fieldDec().copyWith(
-                  hintText: noteHint,
-                  hintStyle: outFitRegular(fontSize: 9, color: Colors.grey),
-                  prefixIcon: const Icon(Icons.directions_car,
-                      size: 14, color: _subtleText),
-                  prefixIconConstraints: const BoxConstraints(minWidth: 24),
-                ),
-              )),
+              child: _tab(
+                  tabBase + 2,
+                  TextField(
+                    textCapitalization: TextCapitalization.characters,
+                    inputFormatters: [UpperCaseTextFormatter()],
+                    controller: noteCtrl,
+                    style: outFitRegular(fontSize: 12),
+                    decoration: _fieldDec().copyWith(
+                      hintText: noteHint,
+                      hintStyle: outFitRegular(fontSize: 9, color: Colors.grey),
+                      prefixIcon: const Icon(Icons.directions_car,
+                          size: 14, color: _subtleText),
+                      prefixIconConstraints: const BoxConstraints(minWidth: 24),
+                    ),
+                  )),
             ),
           ],
         );
@@ -1515,14 +2027,22 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
         textStyle: _valStyle,
         accent: DynamicColors.primaryClr,
         borderColor: _border,
+        // Styled like a browser time input: white box, "--:-- --" while
+        // empty, outlined clock on the right.
         decoration: _fieldDec().copyWith(
+          fillColor: Colors.white,
+          hintText: '--:-- --',
+          hintStyle: outFitRegular(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Colors.black54),
           suffixIcon: const Icon(
-            Icons.access_time,
-            size: 14,
-            color: _subtleText,
+            Icons.schedule,
+            size: 15,
+            color: Colors.black87,
           ),
           suffixIconConstraints: const BoxConstraints(
-            minWidth: 28,
+            minWidth: 30,
             minHeight: 0,
           ),
         ),
@@ -1550,7 +2070,6 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
     );
   }
 }
-
 
 /// One of the SETTINGS / CHILD SEATS / EXTRA INFO icons after QUOTATION.
 /// Its black border only shows while it has keyboard focus.
@@ -1588,8 +2107,8 @@ class _AlertIconButtonState extends State<_AlertIconButton> {
           color: const Color(0xFFEEF2FF),
           borderRadius: BorderRadius.circular(6),
           // Transparent when unfocused, so focusing doesn't resize it.
-          border: Border.all(
-              color: _focused ? Colors.black : Colors.transparent),
+          border:
+              Border.all(color: _focused ? Colors.black : Colors.transparent),
         ),
         child: IconButton(
           onPressed: widget.onPressed,

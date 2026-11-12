@@ -1,6 +1,7 @@
 
 
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:bot_toast/bot_toast.dart';
@@ -395,10 +396,142 @@ class BookingController extends GetxController{
   RxList<Map<String, String>> multiReservations = <Map<String, String>>[].obs;
   RxBool multiReservationsLoad = false.obs;
 
-  /// Loads every booking of [multiBookingId] into [multiReservations].
-  Future<void> getMultiReservations(String? multiBookingId) async {
+  /// Header search values of the reservations table, sent to the API as
+  /// query parameters: `reference_number` (REF #), `pickup_date` (DATETIME)
+  /// and `journey_type_id` (J/T).
+  final Map<String, String> multiReservationSearch = {};
+  String? _multiReservationsId;
+  Timer? _multiSearchDebounce;
+  int _multiReservationsRequest = 0;
+
+  /// Called on each keystroke in a header search box; reloads the table
+  /// once typing pauses.
+  void searchMultiReservations(String key, String value) {
+    multiReservationSearch[key] = value.trim();
+    _multiSearchDebounce?.cancel();
+    // A date still being typed ("05-1") isn't searched yet; the API only
+    // gets whole dates.
+    if (key == 'pickup_date' &&
+        value.trim().isNotEmpty &&
+        _searchDate(value) == null) {
+      return;
+    }
+    // A cleared box reloads at once (that filter is simply dropped); typing
+    // waits for a pause so each keystroke doesn't hit the API.
+    if (value.trim().isEmpty) {
+      getMultiReservations(_multiReservationsId);
+      return;
+    }
+    _multiSearchDebounce = Timer(const Duration(milliseconds: 500),
+        () => getMultiReservations(_multiReservationsId));
+  }
+
+  /// DATETIME search → the `yyyy-MM-dd` the API takes (e.g. 2026-11-05).
+  /// The user can type it the easy way:
+  ///   * as the table shows it: `THU 05-11-26` or `05-11-26`
+  ///   * day-month(-year) with `-`, `/`, `.` or spaces: `5/11`, `05.11.2026`
+  ///     (no year → this year; a 2-digit year → 20xx)
+  ///   * digits only: `0511`, `051126`, `05112026`
+  ///   * already in API form: `2026-11-05`
+  /// Returns null while the text isn't a whole, real date yet.
+  String? _searchDate(String text) {
+    // Drop a weekday name ("THU") and anything else that isn't part of a date.
+    final cleaned = text.replaceAll(RegExp(r'[A-Za-z]'), ' ').trim();
+    if (cleaned.isEmpty) return null;
+    final thisYear = DateTime.now().year;
+
+    int? day, month, year;
+    final parts = cleaned
+        .split(RegExp(r'[\s\-/.]+'))
+        .where((p) => p.isNotEmpty)
+        .toList();
+    if (parts.any((p) => int.tryParse(p) == null)) return null;
+
+    if (parts.length == 1) {
+      final d = parts.first;
+      if (d.length == 4) {
+        day = int.parse(d.substring(0, 2));
+        month = int.parse(d.substring(2, 4));
+        year = thisYear;
+      } else if (d.length == 6 || d.length == 8) {
+        day = int.parse(d.substring(0, 2));
+        month = int.parse(d.substring(2, 4));
+        year = int.parse(d.substring(4));
+      } else {
+        return null;
+      }
+    } else if (parts.length == 2) {
+      // Two-digit month, so "05-1" (half way to "05-11") isn't read as
+      // 5 January while the user is still typing.
+      if (parts[1].length != 2) return null;
+      day = int.parse(parts[0]);
+      month = int.parse(parts[1]);
+      year = thisYear;
+    } else if (parts.length == 3) {
+      if (parts[0].length == 4) {
+        // yyyy-MM-dd
+        year = int.parse(parts[0]);
+        month = int.parse(parts[1]);
+        day = int.parse(parts[2]);
+      } else {
+        day = int.parse(parts[0]);
+        month = int.parse(parts[1]);
+        if (parts[2].length != 2 && parts[2].length != 4) return null;
+        year = int.parse(parts[2]);
+      }
+    } else {
+      return null;
+    }
+    if (year < 100) year += 2000;
+
+    // Reject impossible dates (31-02, month 13...): DateTime would roll them
+    // over into another day instead of failing.
+    final date = DateTime(year, month, day);
+    if (date.year != year || date.month != month || date.day != day) {
+      return null;
+    }
+    return DateFormat('yyyy-MM-dd').format(date);
+  }
+
+  /// J/T search → journey type id. Takes an id, or a name such as "O/W"
+  /// (exact match first, then the first name starting with the text).
+  /// null when nothing matches.
+  String? _searchJourneyTypeId(String text) {
+    if (int.tryParse(text) != null) return text;
+    final types = menuBarController.dashboardAllData?.journeyTypes ?? [];
+    final t = text.toUpperCase();
+    final match = types.firstWhereOrNull(
+            (j) => (j.journeyType ?? '').toUpperCase() == t) ??
+        types.firstWhereOrNull(
+            (j) => (j.journeyType ?? '').toUpperCase().startsWith(t));
+    return match?.id?.toString();
+  }
+
+  /// Loads the bookings of [multiBookingId] into [multiReservations],
+  /// filtered by [multiReservationSearch]. [clearSearch] starts without
+  /// filters (when the screen opens).
+  Future<void> getMultiReservations(String? multiBookingId,
+      {bool clearSearch = false}) async {
+    if (clearSearch) {
+      _multiSearchDebounce?.cancel();
+      multiReservationSearch.clear();
+    }
+    _multiReservationsId = multiBookingId;
+    final request = ++_multiReservationsRequest;
     multiReservations.clear();
     if (multiBookingId == null || multiBookingId.isEmpty) return;
+
+    final ref = multiReservationSearch['reference_number'] ?? '';
+    // Sent as yyyy-MM-dd; an unfinished date is left out.
+    final date = _searchDate(multiReservationSearch['pickup_date'] ?? '');
+    final journey = multiReservationSearch['journey_type_id'] ?? '';
+    String? journeyId;
+    if (journey.isNotEmpty) {
+      journeyId = _searchJourneyTypeId(journey);
+      // A journey type that doesn't exist matches no booking.
+      if (journeyId == null) return;
+    }
+
     multiReservationsLoad.value = true;
     try {
       final response = await Api().interceptorGet(
@@ -406,8 +539,13 @@ class BookingController extends GetxController{
         queryParameters: {
           'multiBookingId': multiBookingId,
           'company_id': Api.singleton.globalCompanyId,
+          if (ref.isNotEmpty) 'reference_number': ref,
+          if (date != null) 'pickup_date': date,
+          if (journeyId != null) 'journey_type_id': journeyId,
         },
       );
+      // A newer search was started while this one was in flight.
+      if (request != _multiReservationsRequest) return;
       final data = response?.data;
       final List rawBookings =
           (data is Map && data['bookings'] is List) ? data['bookings'] : const [];
@@ -419,7 +557,9 @@ class BookingController extends GetxController{
       debugPrint('Multi booking reservations failed: $e');
       BotToast.showText(text: 'Could not load reservations');
     } finally {
-      multiReservationsLoad.value = false;
+      if (request == _multiReservationsRequest) {
+        multiReservationsLoad.value = false;
+      }
     }
   }
 
@@ -436,6 +576,8 @@ class BookingController extends GetxController{
   /// Reloads [multiReservations] for [multiBookingId] on success.
   Future<bool> updateMultiReservations({
     required List<String> ids,
+    required String time,
+    String leadTime = '',
     String? multiBookingId,
   }) async {
     final form = menuBarController;
@@ -460,7 +602,17 @@ class BookingController extends GetxController{
           text: 'Pickup / drop location has no coordinates, select it again');
       return false;
     }
-    final time = form.pickUpTimeController.text.trim();
+    // TIME and LEAD come from the multi booking screen's own fields, not the
+    // dashboard form's shared controllers.
+    time = time.trim();
+    leadTime = leadTime.trim();
+    // No time entered: use the pickup time of the first selected job (ids
+    // are in table order), as loaded from the API into multiReservations.
+    if (time.isEmpty) {
+      final firstJob =
+          multiReservations.firstWhereOrNull((r) => r['id'] == ids.first);
+      time = _hhmm(firstJob?['time']);
+    }
     if (time.isEmpty) {
       BotToast.showText(text: 'Please enter pickup time');
       return false;
@@ -524,7 +676,7 @@ class BookingController extends GetxController{
       'pickup_date':
           DateFormat('yyyy-MM-dd').format(form.pickUpDate ?? DateTime.now()),
       'pickup_time': time,
-      if (t(form.minController).isNotEmpty) 'lead_time': t(form.minController),
+      if (leadTime.isNotEmpty) 'lead_time': leadTime,
       if (form.selectJourneyTypeValue != null)
         'journey_type_id': form.selectJourneyTypeValue!.id,
 
@@ -539,12 +691,12 @@ class BookingController extends GetxController{
         'vehicle_type_id': form.selectVehicleValue!.id,
       if (form.selectEscortValue != null)
         'escort_id': form.selectEscortValue!.id,
-      // if (form.selectOrderValue != null)
-      //   'order_number': form.selectOrderValue is Map
-      //       ? form.selectOrderValue['order_number']
-      //       : form.selectOrderValue.toString(),
-      // if (t(form.bookedByController).isNotEmpty)
-      //   'booked_by': t(form.bookedByController),
+      if (form.selectOrderValue != null)
+        'order_number': form.selectOrderValue is Map
+            ? form.selectOrderValue['order_number']
+            : form.selectOrderValue.toString(),
+      if (t(form.bookedByController).isNotEmpty)
+        'booked_by': t(form.bookedByController),
       if (form.selectDriverValue != null)
         'driver_id': form.selectDriverValue!.id,
 
@@ -615,6 +767,15 @@ class BookingController extends GetxController{
     } finally {
       multiReservationsSaving.value = false;
     }
+  }
+
+  /// "10:30:00" / "10:30" → "10:30" (the HH:mm the booking API takes);
+  /// anything else is returned trimmed, null → "".
+  String _hhmm(String? value) {
+    final v = (value ?? '').trim();
+    final m = RegExp(r'^(\d{1,2}):(\d{2})').firstMatch(v);
+    if (m == null) return v;
+    return '${m.group(1)!.padLeft(2, '0')}:${m.group(2)}';
   }
 
   Map<String, String> _multiReservationRow(BookingObjectData b) {

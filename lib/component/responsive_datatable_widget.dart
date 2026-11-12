@@ -12,6 +12,10 @@ class TableColumnConfig {
   final bool removeSearching;
   final Widget? customHeader;
 
+  /// Optional controller for the header search box, so its text is owned by
+  /// the screen (kept across rebuilds, can be read or cleared from there).
+  final TextEditingController? searchController;
+
   TableColumnConfig({
     required this.title,
     required this.sizeType,
@@ -19,6 +23,7 @@ class TableColumnConfig {
     this.onChanged,
     this.removeSearching = false,
     this.customHeader,
+    this.searchController,
   });
 }
 
@@ -126,6 +131,7 @@ class _ResponsiveDataTableWidgetState extends State<ResponsiveDataTableWidget> {
                     : calculatedWidths[config.title]!,
                 title: config.title,
                 onChanged: config.onChanged,
+                controller: config.searchController,
                 removeSearching: config.removeSearching,
               );
             }).toList(),

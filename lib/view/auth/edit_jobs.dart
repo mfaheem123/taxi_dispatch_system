@@ -1123,6 +1123,10 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                               controller.selectAccountValue = v;
                                               controller.selectDepartmentData =
                                               null;
+                                              controller.selectOrderValue = null;
+                                              if (controller.escortList.isEmpty) {
+                                                controller.fetchEscortList();
+                                              }
                                             });
                                           },
                                           25,
@@ -1178,15 +1182,52 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                           32,
                                           itemLabel: (p) => p.name ?? "",
                                         ),
-                                        _dropdown<Escorts>(
-                                          'Select Escort',
-                                          controller.selectEscortValue,
-                                          controller.escortList,
-                                              (v) => setState(() =>
-                                          controller.selectEscortValue = v),
-                                          _isReturnJourney ? 32 : 20,
-                                          itemLabel: (e) => (e.name ?? '').toUpperCase(),
-                                        ),
+                                        // ESC / ORDER / BY only for accounts that
+                                        // use them, as on the dashboard form.
+                                        if (controller.selectAccountValue
+                                                ?.hasEscort ==
+                                            true)
+                                          _dropdown<Escorts>(
+                                            'Select Escort',
+                                            controller.selectEscortValue,
+                                            controller.escortList,
+                                                (v) => setState(() =>
+                                            controller.selectEscortValue = v),
+                                            32.2,
+                                            itemLabel: (e) => (e.name ?? '').toUpperCase(),
+                                          ),
+                                        if (controller.selectAccountValue != null &&
+                                            (controller.selectAccountValue!
+                                                        .hasOrderNumber ==
+                                                    true ||
+                                                (controller.selectAccountValue!
+                                                            .orderNumbers !=
+                                                        null &&
+                                                    controller.selectAccountValue!
+                                                        .orderNumbers!
+                                                        .isNotEmpty)))
+                                          _dropdown<dynamic>(
+                                            'ORDER',
+                                            controller.selectOrderValue,
+                                            controller.selectAccountValue
+                                                    ?.orderNumbers ??
+                                                [],
+                                                (v) => setState(() =>
+                                            controller.selectOrderValue = v),
+                                            32.4,
+                                            itemLabel: (p) => p is Map
+                                                ? (p['order_number']?.toString() ?? '')
+                                                : p.toString(),
+                                          ),
+                                        if (controller.selectAccountValue
+                                                ?.hasBookedBy ==
+                                            true)
+                                          _field(
+                                            'BY',
+                                            tab: 32.6,
+                                            prefix: Icons.perm_identity,
+                                            controller: controller.bookedByController,
+                                          ),
 
                                         _commsAndActionsRow(isMobile),
                                       ]),
@@ -2943,7 +2984,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       T? value,
       List<T> items,
       ValueChanged<T?> onChanged,
-      int tab, {
+      num tab, {
         String Function(T item)? itemLabel,
         String? hint,
         bool isExpanded = true,
