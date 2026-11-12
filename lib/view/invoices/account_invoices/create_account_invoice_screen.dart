@@ -20,6 +20,7 @@ import '../../../component/editable_cell_widget.dart';
 import '../../../component/networks/api.dart';
 import '../../../component/responsive_datatable_widget.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
+import '../../setting/model/get_document_number_model.dart';
 import '../controller/account_invoice_controller.dart';
 
 class CreateAccountInvoiceScreen extends StatefulWidget {
@@ -59,13 +60,13 @@ class _CreateAccountInvoiceScreenState
       child: GetBuilder<InvoiceController>(initState: (state) {
         Controller.clearInvoiceData();
         Controller.getSubsidiary();
-        Controller.getInvoiceNumber();
+        Controller.getAccInvoiceNumber();
         Controller.subsidiaries = null;
         Controller.selectAccountValue = null;
         Controller.selectDepartmentData = null;
         Controller.orderNumber.clear();
-        Controller.fromDate = DateTime.now();
-        Controller.toDate = DateTime.now();
+        // Controller.fromDate = DateTime.now();
+        // Controller.toDate = DateTime.now();
       }, builder: (controller) {
         return LayoutBuilder(builder: (context, constraints) {
           final double maxWidth = constraints.maxWidth;
@@ -156,16 +157,21 @@ class _CreateAccountInvoiceScreenState
                         child: RichText(
                             text: TextSpan(
                                 text: 'INVOICE #',
-                                style: mozillaTextSemiBoldText(
-                                    fontWeight: FontWeight.bold),
+                                style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold),
                                 children: [
-                              TextSpan(
-                                  text:
-                                      " ${controller.invoiceNumberModel!.documentNumber!.prefix}"
-                                      "${controller.invoiceNumberModel!.documentNumber!.endNumber}".toUpperCase(),
-                                  style: mozillaTextRegularText(
-                                      color: DynamicColors.redClr))
-                            ]))),
+                                  TextSpan(
+                                    text: () {
+                                      final preInvoice = controller.documentNumberModel?.documentNumbers?.firstWhere(
+                                            (doc) => doc.documentTable == 'account_invoice',
+                                        orElse: () => DocumentNumber(),
+                                      );
+                                      return " ${preInvoice?.prefix ?? ''}${preInvoice?.endNumber ?? ''}".toUpperCase();
+                                    }(),
+                                    style: mozillaTextSemiBoldText(color: DynamicColors.redClr, fontWeight: FontWeight.bold),
+                                  ),
+                                ])
+                        )
+                    ),
                     CustomDropdownField<Subsidiaries>(
                       height: 35,
                       text: AppText.subsidiary,
@@ -176,7 +182,6 @@ class _CreateAccountInvoiceScreenState
                       itemLabel: (item) => item.name ?? "",
                       onChanged: (val) {
                         controller.subsidiaries = val;
-
                         controller.selectAccountValue = null;
                         controller.selectDepartmentData = null;
                         controller.dashboardAccountData = null;
@@ -322,14 +327,20 @@ class _CreateAccountInvoiceScreenState
                       child: SizedBox(
                           height: 35,
                           child: KeyboardDatePicker(
-                              key: ValueKey("from_date_${controller.datePickerKey}"),
-                              initialDate: controller.fromDate ?? DateTime.now(),
-                              allowFutureDates: false,
-                              onChanged: (fromDate) {
-                                controller.fromDate = fromDate;
-                                controller.update();
-                              })),
-                    ),
+                            key: ValueKey("from_date_${controller.datePickerKey}"),
+                            initialDate: controller.fromDate.isNotEmpty
+                                ? DateTime.parse(controller.fromDate)
+                                : DateTime.now().subtract(Duration(days: 7)),
+                            onChanged: (date) {
+                              controller.fromDate = date.toIso8601String().split("T").first;
+                              controller.update();
+                            },
+                            onSubmitted: (date) {
+                              controller.fromDate = date.toIso8601String().split("T").first;
+                              controller.update();
+                            },
+                          ),
+                      )),
                     SizedBox(
                       width: 15,
                     ),
@@ -341,14 +352,21 @@ class _CreateAccountInvoiceScreenState
                       width: fieldWidth / 1.8,
                       child: SizedBox(
                           height: 35,
-                          child: KeyboardDatePicker(
+                          child:  KeyboardDatePicker(
                             key: ValueKey("to_date_${controller.datePickerKey}"),
-                            initialDate: controller.toDate ?? DateTime.now(),
-                            onChanged: (toDate) {
-                              controller.toDate = toDate;
+                            initialDate: controller.toDate.isNotEmpty
+                                ? DateTime.parse(controller.toDate)
+                                : DateTime.now(),
+                            onChanged: (date) {
+                              controller.toDate = date.toIso8601String().split("T").first;
                               controller.update();
-                            },
-                          )),
+                              },
+                            onSubmitted: (date) {
+                              controller.toDate = date.toIso8601String().split("T").first;
+                              controller.update();
+                              },
+                          )
+                      ),
                     ),
                     SizedBox(width: 50),
                     Padding(
@@ -362,7 +380,7 @@ class _CreateAccountInvoiceScreenState
                         style: mozillaTextSemiBoldText(
                             fontSize: 10, color: DynamicColors.whiteClr),
                         onTap: () {
-                          controller.getInvoiceNumber();
+                          controller.getAccInvoiceNumber();
                           controller.getAccountInvoiceByFilter();
                           },
                       ),
@@ -381,7 +399,7 @@ class _CreateAccountInvoiceScreenState
                         style: mozillaTextSemiBoldText(
                             fontSize: 10, color: DynamicColors.whiteClr),
                         onTap: () {
-                          Controller.addAccountInvoice();
+                          Controller.addAccountInvoice(documentTableType: 'account_invoice');
                           },
                       ),
                     ),
@@ -410,21 +428,81 @@ class _CreateAccountInvoiceScreenState
                               },
                             ),
                           ),
-                          TableColumnConfig(title: "REF #", sizeType: ColumnSizeType.small),
-                          TableColumnConfig(title: "DATETIME", sizeType: ColumnSizeType.medium),
-                          TableColumnConfig(title: "PICKUP", sizeType: ColumnSizeType.large),
-                          TableColumnConfig(title: "DROPOFF", sizeType: ColumnSizeType.large),
-                          TableColumnConfig(title: "CUST", sizeType: ColumnSizeType.small),
-                          TableColumnConfig(title: "VEH", sizeType: ColumnSizeType.small),
-                          TableColumnConfig(title: "J/T", sizeType: ColumnSizeType.small),
-                          TableColumnConfig(title: "P/T", sizeType: ColumnSizeType.small),
-                          TableColumnConfig(title: "FARE", sizeType: ColumnSizeType.small),
-                          TableColumnConfig(title: "PC", sizeType: ColumnSizeType.small),
-                          TableColumnConfig(title: "WC", sizeType: ColumnSizeType.small),
-                          TableColumnConfig(title: "EDC", sizeType: ColumnSizeType.small),
-                          TableColumnConfig(title: "M&G", sizeType: ColumnSizeType.small),
-                          TableColumnConfig(title: "CC", sizeType: ColumnSizeType.small),
-                          TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium),
+                          TableColumnConfig(title: "REF #", sizeType: ColumnSizeType.small,
+                              onChanged: (v) {
+                                controller.searchInvRef.value = v;
+                                controller.onSearchInvoice();
+                              }),
+                          TableColumnConfig(title: "DATETIME", sizeType: ColumnSizeType.medium,
+                              onChanged: (v) {
+                                controller.searchInvDateTime.value = v;
+                                controller.onSearchInvoice();
+                              }),
+                          TableColumnConfig(title: "PICKUP", sizeType: ColumnSizeType.large,
+                              onChanged: (v) {
+                                controller.searchInvPickup.value = v;
+                                controller.onSearchInvoice();
+                              }),
+                          TableColumnConfig(title: "DROPOFF", sizeType: ColumnSizeType.large,
+                              onChanged: (v) {
+                                controller.searchInvDropOff.value = v;
+                                controller.onSearchInvoice();
+                              }),
+                          TableColumnConfig(title: "CUST", sizeType: ColumnSizeType.small,
+                              onChanged: (v) {
+                                controller.searchInvCustomer.value = v;
+                                controller.onSearchInvoice();
+                              }),
+                          TableColumnConfig(title: "VEH", sizeType: ColumnSizeType.small,
+                              onChanged: (v) {
+                                controller.searchInvVehicle.value = v;
+                                controller.onSearchInvoice();
+                              }),
+                          TableColumnConfig(title: "J/T", sizeType: ColumnSizeType.small,
+                              onChanged: (v) {
+                                controller.searchInvJourType.value = v;
+                                controller.onSearchInvoice();
+                              }),
+                          TableColumnConfig(title: "P/T", sizeType: ColumnSizeType.small,
+                              onChanged: (v) {
+                                controller.searchInvPaymentType.value = v;
+                                controller.onSearchInvoice();
+                              }),
+                          TableColumnConfig(title: "FARE", sizeType: ColumnSizeType.small,
+                              onChanged: (v) {
+                                controller.searchInvFare.value = v;
+                                controller.onSearchInvoice();
+                              }),
+                          TableColumnConfig(title: "PC", sizeType: ColumnSizeType.small,
+                              onChanged: (v) {
+                                controller.searchInvPc.value = v;
+                                controller.onSearchInvoice();
+                              }),
+                          TableColumnConfig(title: "WC", sizeType: ColumnSizeType.small,
+                              onChanged: (v) {
+                                controller.searchInvWc.value = v;
+                                controller.onSearchInvoice();
+                              }),
+                          TableColumnConfig(title: "EDC", sizeType: ColumnSizeType.small,
+                              onChanged: (v) {
+                                controller.searchInvEdc.value = v;
+                                controller.onSearchInvoice();
+                              }),
+                          TableColumnConfig(title: "M&G", sizeType: ColumnSizeType.small,
+                              onChanged: (v) {
+                                controller.searchInvMg.value = v;
+                                controller.onSearchInvoice();
+                              }),
+                          TableColumnConfig(title: "CC", sizeType: ColumnSizeType.small,
+                              onChanged: (v) {
+                                controller.searchInvCc.value = v;
+                                controller.onSearchInvoice();
+                              }),
+                          TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium,
+                              onChanged: (v) {
+                                controller.searchInvTotal.value = v;
+                                controller.onSearchInvoice();
+                              }),
                           TableColumnConfig(title: "ACTIONS", sizeType: ColumnSizeType.fixed, fixedWidth: 70, removeSearching: true),
                         ],
                         items: (controller.accountInvoiceBookingModel?.bookings?.isEmpty ?? true)

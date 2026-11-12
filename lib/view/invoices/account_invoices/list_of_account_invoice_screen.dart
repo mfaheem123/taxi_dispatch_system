@@ -58,7 +58,7 @@ class _ListOfAccountInvoiceScreenState
       child: GetBuilder<InvoiceController>(
           initState: (state) {
             permissions = Api().sp.read('all_permissions') ?? [];
-            controller.listAccountInvoice(isFirstTime: true);
+            controller.listAccountInvoice(isFirstTime: true, invoiceType: "POST");
           },
           builder: (controller) {
             final listToShow = controller.filteredAccountInvoice.isNotEmpty
@@ -132,7 +132,7 @@ class _ListOfAccountInvoiceScreenState
                           ),
                           CustomButton(
       onTap: () {
-        controller.listAccountInvoice();
+        controller.listAccountInvoice(invoiceType: "POST");
       },
                             height: 40,
                             width: 80,
@@ -230,7 +230,7 @@ class _ListOfAccountInvoiceScreenState
                                   controller.status = "ALL";
                                   controller.invoiceListFromDate = DateTime.now();
                                   controller.invoiceListToDate = DateTime.now();
-                                  controller.listAccountInvoice();
+                                  controller.listAccountInvoice(invoiceType: "POST");
                                 },
                                 verticalPadding: 0.0,
                                 width: 60,
@@ -243,7 +243,7 @@ class _ListOfAccountInvoiceScreenState
                               CustomButton(
                                 onTap: () {
                                   // Yahan explicit status state parameter bheja ja raha hai text query filtering ke liye
-                                  controller.listAccountInvoice(isFirstTime: true);
+                                  controller.listAccountInvoice(isFirstTime: true, invoiceType: "POST");
                                 },
                                 verticalPadding: 0.0,
                                 width: 60,
@@ -285,63 +285,63 @@ class _ListOfAccountInvoiceScreenState
                                 title: "INVOICE #",
                                 onChanged: (v) {
                                   controller.invoiceNumber.value = v;
-                                  controller.listAccountInvoice(activeFilter: "invoice");
+                                  controller.listAccountInvoice(activeFilter: "invoice", invoiceType: "POST");
                                 },
                               ),
                               buildHeaderWithSearch(
                                 title: "ACCOUNT",
                                 onChanged: (v) {
                                   controller.searchAccount.value = v;
-                                  controller.listAccountInvoice(activeFilter: "account");
+                                  controller.listAccountInvoice(activeFilter: "account", invoiceType: "POST");
                                 },
                               ),
                               buildHeaderWithSearch(
                                 title: "DEPARTMENT",
                                 onChanged: (v) {
                                   controller.searchDepartment.value = v;
-                                  controller.listAccountInvoice(activeFilter: "department");
+                                  controller.listAccountInvoice(activeFilter: "department", invoiceType: "POST");
                                   },
                               ),
                               buildHeaderWithSearch(
                                 title: "ORDER #",
                                 onChanged: (v) {
                                   controller.searchOrder.value = v;
-                                  controller.listAccountInvoice(activeFilter: "order");
+                                  controller.listAccountInvoice(activeFilter: "order", invoiceType: "POST");
                                 }
                               ),
                               buildHeaderWithSearch(
                                 title: "DATE",
                                 onChanged: (v) {
                                   controller.searchDate.value = v;
-                                  controller.listAccountInvoice(activeFilter: "invoicedate");
+                                  controller.listAccountInvoice(activeFilter: "invoicedate", invoiceType: "POST");
                                  }
                               ),
                               buildHeaderWithSearch(
                                 title: "DUE DATE",
                                 onChanged: (v) {
                                   controller.searchDueDate.value = v;
-                                  controller.listAccountInvoice(activeFilter: "duedate");
+                                  controller.listAccountInvoice(activeFilter: "duedate", invoiceType: "POST");
                                 }
                               ),
                               buildHeaderWithSearch(
                                 title: "STATUS",
                                 onChanged: (v) {
                                   controller.searchStatus.value = v;
-                                  controller.listAccountInvoice(activeFilter: "status");;
+                                  controller.listAccountInvoice(activeFilter: "status", invoiceType: "POST");;
                                 }
                               ),
                               buildHeaderWithSearch(
                                 title: "AMOUNT",
                                 onChanged: (v) {
                                   controller.searchAmount.value = v;
-                                  controller.listAccountInvoice(activeFilter: "amount");
+                                  controller.listAccountInvoice(activeFilter: "amount", invoiceType: "POST");
                                 }
                               ),
                               buildHeaderWithSearch(
                                 title: "SUBSIDIARY",
                                 onChanged: (v) {
                                   controller.searchSubsidiary.value = v;
-                                  controller.listAccountInvoice(activeFilter: "subsidiary");
+                                  controller.listAccountInvoice(activeFilter: "subsidiary", invoiceType: "POST");
                                 }
                               ),
                               buildHeaderWithSearch(

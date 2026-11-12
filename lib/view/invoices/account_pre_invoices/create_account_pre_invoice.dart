@@ -37,7 +37,7 @@ class _CreateAccountPreInvoiceState extends State<CreateAccountPreInvoice> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    shortCutKeyValue.value = "CreateAccountInvoiceScreen";
+    shortCutKeyValue.value = "CreateAccountPreInvoiceScreen";
   }
 
   @override
@@ -50,6 +50,7 @@ class _CreateAccountPreInvoiceState extends State<CreateAccountPreInvoice> {
 
     return PageScrollWrapper(
       child: GetBuilder<InvoiceController>(initState: (state) {
+        controller.clearInvoiceData();
         controller.getAccInvoiceNumber();
         controller.getSubsidiary();
         controller.subsidiaries = null;
@@ -227,15 +228,15 @@ class _CreateAccountPreInvoiceState extends State<CreateAccountPreInvoice> {
                       child: SizedBox(
                         height: 35,
                         child: KeyboardDatePicker(
-                          initialDate: controller.preInvFromDate.isNotEmpty
-                              ? DateTime.parse(controller.preInvFromDate)
+                          initialDate: controller.fromDate.isNotEmpty
+                              ? DateTime.parse(controller.fromDate)
                               : DateTime.now().add(Duration(days: 1)),
                           onChanged: (date) {
-                            controller.preInvFromDate = date.toIso8601String().split("T").first;
+                            controller.fromDate = date.toIso8601String().split("T").first;
                             controller.update();
                           },
                           onSubmitted: (date) {
-                            controller.preInvFromDate = date.toIso8601String().split("T").first;
+                            controller.fromDate = date.toIso8601String().split("T").first;
                             controller.update();
                           },
                         ),
@@ -253,15 +254,15 @@ class _CreateAccountPreInvoiceState extends State<CreateAccountPreInvoice> {
                       child: SizedBox(
                           height: 35,
                           child: KeyboardDatePicker(
-                            initialDate: controller.preInvToDate.isNotEmpty
-                                ? DateTime.parse(controller.preInvToDate)
+                            initialDate: controller.toDate.isNotEmpty
+                                ? DateTime.parse(controller.toDate)
                                 : DateTime.now().add(Duration(days: 7)),
                             onChanged: (date) {
-                              controller.preInvToDate = date.toIso8601String().split("T").first;
+                              controller.toDate = date.toIso8601String().split("T").first;
                               controller.update();
                             },
                             onSubmitted: (date) {
-                              controller.preInvToDate = date.toIso8601String().split("T").first;
+                              controller.toDate = date.toIso8601String().split("T").first;
                               controller.update();
                             },
                           )),
@@ -294,10 +295,16 @@ class _CreateAccountPreInvoiceState extends State<CreateAccountPreInvoice> {
                         borderRadius: 4,
                         btnText: AppText.save,
                         style: mozillaTextSemiBoldText(fontSize: 13, color: DynamicColors.whiteClr),
-                        onTap: () {},
+                        onTap: () {
+                          controller.addAccountInvoice(documentTableType: 'account_pre_invoice');
+                        },
                       ),
                     ),
-                    ResponsiveDataTableWidget(
+
+                    controller.isLoadingPreInv
+                        ? Center(child: CircularProgressIndicator())
+                        : Padding(padding: EdgeInsets.symmetric(horizontal: 5.0),
+                    child: ResponsiveDataTableWidget(
                         totalWidth: totalAvailableWidth,
                         columnConfigs: [
                           TableColumnConfig(
@@ -314,7 +321,7 @@ class _CreateAccountPreInvoiceState extends State<CreateAccountPreInvoice> {
                                   controller.selectedCreateBookingIds.addAll(
                                       controller.accPreInvFilterModel!.bookings!.map((e) => e.id.toString()));
                                 }
-                                controller.recalculateCreateInvoiceTotal(null);
+                                controller.recalculateCreateInvoiceTotal(null, isPreInvoice: true);
                                 controller.update();
                               },
                             ),
@@ -547,7 +554,8 @@ class _CreateAccountPreInvoiceState extends State<CreateAccountPreInvoice> {
                               ),
                             ),
                           ];
-                        }),
+                        })
+                    ),
                   ],
                 );
         });

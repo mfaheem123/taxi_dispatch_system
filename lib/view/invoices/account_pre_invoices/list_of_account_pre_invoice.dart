@@ -8,8 +8,13 @@ import 'package:dashboard_new1/view/dashboard_view/widgets/time_picker_widget.da
 import 'package:dashboard_new1/view/dashboard_view/widgets/user_info_widget.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:get/get_state_manager/src/simple/get_state.dart';
 
 import '../../../alert/search_booking.dart';
+import '../../dashboard_view/Controller/dashboard_controller.dart';
+import '../controller/account_invoice_controller.dart';
 
 class ListOfAccountPreInvoiceScreen extends StatefulWidget {
   const ListOfAccountPreInvoiceScreen({super.key});
@@ -19,8 +24,21 @@ class ListOfAccountPreInvoiceScreen extends StatefulWidget {
       _ListOfAccountPreInvoiceScreenState();
 }
 
-class _ListOfAccountPreInvoiceScreenState
-    extends State<ListOfAccountPreInvoiceScreen> {
+class _ListOfAccountPreInvoiceScreenState extends State<ListOfAccountPreInvoiceScreen> {
+
+  InvoiceController controller = Get.isRegistered<InvoiceController>()
+      ? Get.find<InvoiceController>()
+      :Get.put(InvoiceController());
+
+
+  final DashboardController _controller = Get.find();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    shortCutKeyValue.value = "ListOfAccountPreInvoiceScreen";
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = WidgetsBinding
@@ -28,7 +46,16 @@ class _ListOfAccountPreInvoiceScreenState
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return PageScrollWrapper(
-      child: LayoutBuilder(builder: (context, constraints) {
+      child: GetBuilder<InvoiceController>(
+          initState: (state) {
+            controller.listAccountInvoice(isFirstTime: true);
+          },
+          builder: (controller) {
+            final listToShow = controller.filteredAccountInvoice.isNotEmpty
+                ? controller.filteredAccountInvoice
+                : controller.accountInvoiceListAll;
+
+      return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
@@ -225,7 +252,8 @@ class _ListOfAccountPreInvoiceScreenState
             ),
           ],
         );
-      }),
+      });
+        }),
     );
   }
 }
