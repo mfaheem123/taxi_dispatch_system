@@ -1217,7 +1217,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                             controller.selectOrderValue = v),
                                             32.4,
                                             itemLabel: (p) => p is Map
-                                                ? (p['order_number']?.toString() ?? '')
+                                                ? (p['order_numbers']?.toString() ?? '')
                                                 : p.toString(),
                                           ),
                                         if (controller.selectAccountValue
