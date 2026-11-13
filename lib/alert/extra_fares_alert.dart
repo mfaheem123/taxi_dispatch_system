@@ -52,6 +52,11 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
         dashBoardCntrl.meetGreetController,
         dashBoardCntrl.companyPriceController,
         dashBoardCntrl.returnCompanyPriceController,
+        dashBoardCntrl.parkingChargesReturnController,
+        dashBoardCntrl.congestionChargesReturnController,
+        dashBoardCntrl.waitingChargesReturnController,
+        dashBoardCntrl.extraDropChargesReturnController,
+        dashBoardCntrl.meetGreetReturnController,
       ];
 
   /// True while CLEAR / SAVE is waiting on the fares call, so a second tap
@@ -174,6 +179,35 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                     _buildFareField(label: "COMPANY PRICE", controller: dashBoardCntrl.companyPriceController),
                     const SizedBox(width: 8),
                     _buildFareField(label: "RETURN COMPANY PRICE", controller: dashBoardCntrl.returnCompanyPriceController),
+                  ],
+                ),
+                SizedBox(height: 10),
+                const Divider(),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "RETURN TRIP FARES",
+                    style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 12, color: Color(0xFF374151)),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Row(
+                  children: [
+                    _buildFareField(label: "PARKING", controller: dashBoardCntrl.parkingChargesReturnController),
+                    const SizedBox(width: 8),
+                    _buildFareField(label: "CONGESTION", controller: dashBoardCntrl.congestionChargesReturnController),
+                    const SizedBox(width: 8),
+                    _buildFareField(label: "MEET & GREET", controller: dashBoardCntrl.meetGreetReturnController),
+                  ],
+                ),
+                SizedBox(height: 10),
+                Row(
+                  children: [
+                    _buildFareField(label: "WAITING", controller: dashBoardCntrl.waitingChargesReturnController),
+                    const SizedBox(width: 8),
+                    _buildFareField(label: "EXTRA DROP", controller: dashBoardCntrl.extraDropChargesReturnController),
+                    const SizedBox(width: 8),
+                    const Expanded(child: SizedBox()),
                   ],
                 ),
                 SizedBox(height: 14),

@@ -7,9 +7,11 @@ import '../component/escape_dismissible.dart';
 import '../component/textStyle.dart';
 import 'driver_attributes_alert.dart';
 import 'extra_fares_alert.dart';
+import '../view/dashboard_view/Controller/dashboard_controller.dart';
 
 class SettingsDialog extends StatefulWidget {
-  const SettingsDialog({super.key});
+  const SettingsDialog({super.key, this.formController});
+  final DashboardController? formController;
 
   @override
   State<SettingsDialog> createState() => _SettingsDialogState();
@@ -64,9 +66,9 @@ class _SettingsDialogState extends State<SettingsDialog> {
       child: FocusTraversalGroup(
         policy: ReadingOrderTraversalPolicy(),
         child: switch (selectedIndex) {
-          0 => const ExtraFaresAlert(),
-          1 => RestrictDriversAlert(),
-          _ => const DriverAttributesAlert(),
+          0 => ExtraFaresAlert(formController: widget.formController),
+          1 => RestrictDriversAlert(formController: widget.formController),
+          _ => DriverAttributesAlert(formController: widget.formController),
         },
       ),
     );

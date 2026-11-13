@@ -45,6 +45,7 @@ import '../../alert/resend_email_alert.dart';
 import '../../component/networks/loader.dart';
 import '../../alert/extra_fares_alert.dart';
 import '../../alert/extra_info_alert.dart';
+import '../../alert/setting_dialog.dart';
 import '../../alert/search_booking.dart';
 import '../../component/marker_class.dart';
 import '../../component/text_field.dart';
@@ -2313,10 +2314,13 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       ],
     );
     final right = Row(mainAxisSize: MainAxisSize.min, children: [
-      _actionIconBtn(Icons.person, tab: 35, onPressed: () {
+      if (controller.selectPaymentTypeValue?.name?.toUpperCase().contains('CREDIT') == true)
+        _actionIconBtn(Icons.credit_card, tab: 34, onPressed: () {}),
+      _actionIconBtn(Icons.settings_suggest, tab: 35, onPressed: () {
         showDialog(
-            context: context,
-            builder: (_) => RestrictDriversAlert(formController: controller));
+          context: context,
+          builder: (_) => SettingsDialog(formController: controller),
+        );
       }),
       _actionIconBtn(Icons.attach_money, tab: 36, onPressed: () {
         showDialog(
@@ -2324,14 +2328,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
           builder: (_) => ChildSeatsAlert(formController: controller),
         );
       }),
-      _actionIconBtn(Icons.note_add, tab: 37, onPressed: () {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => ExtraFaresAlert(formController: controller),
-        );
-      }),
-      _actionIconBtn(Icons.calculate, tab: 38, onPressed: () {
+      _actionIconBtn(Icons.sticky_note_2, tab: 37, onPressed: () {
         showDialog(
           context: context,
           builder: (_) => ExtraInfoAlert(formController: controller),

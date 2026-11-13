@@ -995,6 +995,11 @@ class DashboardController extends GetxController {
   final creditCardChargesController = TextEditingController();
   final companyPriceController = TextEditingController();
   final returnCompanyPriceController = TextEditingController();
+  final parkingChargesReturnController = TextEditingController();
+  final congestionChargesReturnController = TextEditingController();
+  final waitingChargesReturnController = TextEditingController();
+  final extraDropChargesReturnController = TextEditingController();
+  final meetGreetReturnController = TextEditingController();
   final specialRequirementsController = TextEditingController();
   final specialRequirementsReturnController = TextEditingController();
   final controllerNoteController = TextEditingController();
@@ -3450,10 +3455,24 @@ class DashboardController extends GetxController {
         'credit_card_charges': creditCardChargesController.text,
       if (companyPriceController.text.isNotEmpty)
         'company_price': companyPriceController.text,
+      if (returnCompanyPriceController.text.isNotEmpty)
+        'return_company_price': returnCompanyPriceController.text,
+      if (parkingChargesReturnController.text.isNotEmpty)
+        'return_parking_charges': parkingChargesReturnController.text,
+      if (congestionChargesReturnController.text.isNotEmpty)
+        'return_congestion_charges': congestionChargesReturnController.text,
+      if (waitingChargesReturnController.text.isNotEmpty)
+        'return_waiting_charges': waitingChargesReturnController.text,
+      if (extraDropChargesReturnController.text.isNotEmpty)
+        'return_extra_drop_charges': extraDropChargesReturnController.text,
+      if (meetGreetReturnController.text.isNotEmpty)
+        'return_meet_and_greet': meetGreetReturnController.text,
       // "total_charges": ,
       // "RETURN COMPANY PRICE": "????????????????????????????????????????????? taj missing",
       if (specialRequirementsController.text.isNotEmpty)
         'special_instructions': specialRequirementsController.text,
+      if (specialRequirementsReturnController.text.isNotEmpty)
+        'return_special_instructions': specialRequirementsReturnController.text,
       if (extraFaresList.isNotEmpty) 'notes': jsonEncode(extraFaresList),
       if (selectDriverValue != null) 'driver_id': selectDriverValue!.id,
       if (slugController.text.isNotEmpty) 'fares': slugController.text,
@@ -3532,27 +3551,6 @@ class DashboardController extends GetxController {
     // the save.
     if (response != null && response.statusCode == 200) {
       refreshPostAllFields();
-      // selectedMenuItems.remove(item);
-      // currentPage.value =
-      //     ByDefaultDashboard();
-      // if (id != null) {
-      //   refreshPostAllFields();
-      //
-      // } else {
-      //   if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" ==
-      //           "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
-      //       selectedTabId == 1) {
-      //     // dashboardTableModelData!.data!.insert(
-      //     //     0, BookingObjectData.fromJson(response.data['bookings'][0]));
-      //   } else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" !=
-      //           "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
-      //       selectedTabId == 2) {
-      //     dashboardTableModelData!.data!.insert(
-      //         0, BookingObjectData.fromJson(response.data['bookings'][0]));
-      //   }
-      //
-      //   refreshPostAllFields();
-      // }
       print(response.data);
       return true;
     }
@@ -3582,18 +3580,20 @@ class DashboardController extends GetxController {
     if (controllerAlert.isNotEmpty) {
       extraFaresList.clear();
       extraFaresReturnList.clear();
+      String currentTime = DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now());
+      String currentEmployee = Employee.selectedEmployee?.username ?? "";
       for (var index in controllerAlert) {
         if (index.title == "controller return note") {
           extraFaresReturnList.add({
             "note": index.note,
-            "created_at": "2025-11-25 16:10",
-            "created_by": "nadeem"
+            "created_at": currentTime,
+            "created_by": currentEmployee
           });
         } else {
           extraFaresList.add({
             "note": index.note,
-            "created_at": "2025-11-25 16:10",
-            "created_by": "nadeem"
+            "created_at": currentTime,
+            "created_by": currentEmployee
           });
         }
       }
@@ -3715,6 +3715,11 @@ class DashboardController extends GetxController {
     creditCardChargesController.clear();
     companyPriceController.clear();
     returnCompanyPriceController.clear();
+    parkingChargesReturnController.clear();
+    congestionChargesReturnController.clear();
+    waitingChargesReturnController.clear();
+    extraDropChargesReturnController.clear();
+    meetGreetReturnController.clear();
     specialRequirementsController.clear();
     specialRequirementsReturnController.clear();
     controllerNoteController.clear();
@@ -3837,6 +3842,7 @@ class DashboardController extends GetxController {
       String currentTimeStr = DateFormat('HH:mm').format(now);
 
       jobDataaa = JobsDetailsJobs.fromJson(response.data);
+      controllerAlert.clear();
 
       if (jobDataaa!.booking.isEmpty) {
         BotToast.showText(text: "BOOKING NOT FOUND");
@@ -3990,10 +3996,44 @@ class DashboardController extends GetxController {
       if (jobDataaa!.booking[0].companyPrice != null) {
         companyPriceController.text = jobDataaa!.booking[0].companyPrice.toString();
       }
+      if (jobDataaa!.booking[0].returnParkingCharges != null) {
+        parkingChargesReturnController.text = jobDataaa!.booking[0].returnParkingCharges.toString();
+      }
+      if (jobDataaa!.booking[0].returnCongestionCharges != null) {
+        congestionChargesReturnController.text = jobDataaa!.booking[0].returnCongestionCharges.toString();
+      }
+      if (jobDataaa!.booking[0].returnWaitingCharges != null) {
+        waitingChargesReturnController.text = jobDataaa!.booking[0].returnWaitingCharges.toString();
+      }
+      if (jobDataaa!.booking[0].returnExtraDropCharges != null) {
+        extraDropChargesReturnController.text = jobDataaa!.booking[0].returnExtraDropCharges.toString();
+      }
+      if (jobDataaa!.booking[0].returnMeetAndGreet != null) {
+        meetGreetReturnController.text = jobDataaa!.booking[0].returnMeetAndGreet.toString();
+      }
+      if (jobDataaa!.booking[0].returnCompanyPrice != null) {
+        returnCompanyPriceController.text = jobDataaa!.booking[0].returnCompanyPrice.toString();
+      }
       if (jobDataaa!.booking[0].specialInstructions != null) {
         specialRequirementsController.text =
             jobDataaa!.booking[0].specialInstructions.toString();
       }
+      if (jobDataaa!.booking[0].returnSpecialInstructions != null) {
+        specialRequirementsReturnController.text =
+            jobDataaa!.booking[0].returnSpecialInstructions.toString();
+      }
+      jobDataaa!.booking[0].notes?.forEach((action) {
+        controllerAlert.add(NoteClass(
+            note: action.note,
+            title: 'controller note'
+        ));
+      });
+      jobDataaa!.booking[0].returnNotes?.forEach((action) {
+        controllerAlert.add(NoteClass(
+            note: action.note,
+            title: 'controller return note'
+        ));
+      });
       slugController.text = jobDataaa!.booking[0].fares.toString();
 
       if (jobDataaa!.booking[0].pickupDoorNumber != null) {
@@ -4035,6 +4075,24 @@ class DashboardController extends GetxController {
       selectAccountValue = dashboardAccountData?.accounts?.firstWhereOrNull(
             (account) => account.id == jobDataaa!.booking[0].accountId,
       );
+
+      if (jobDataaa!.booking[0].bookedBy != null) {
+        bookedByController.text = jobDataaa!.booking[0].bookedBy.toString();
+      }
+      if (jobDataaa!.booking[0].orderNumber != null) {
+        final orderNum = jobDataaa!.booking[0].orderNumber.toString();
+        if (selectAccountValue?.orderNumbers != null) {
+          selectOrderValue = selectAccountValue!.orderNumbers!.firstWhereOrNull((ord) {
+            if (ord is Map) {
+              return ord['order_number']?.toString() == orderNum;
+            } else {
+              return ord.toString() == orderNum;
+            }
+          }) ?? orderNum;
+        } else {
+          selectOrderValue = orderNum;
+        }
+      }
 
       selectDepartmentData = dashboardAccountData?.accounts
           ?.expand((account) => account.departments ?? [])
@@ -4224,8 +4282,55 @@ class DashboardController extends GetxController {
     if (bookingData.pickupTime != null) {
       pickUpTimeControllerReturn.text = bookingData.pickupTime!;
     }
-    controllerAlert.clear();
+    if (bookingData.parkingCharges != null) {
+      parkingChargesReturnController.text = bookingData.parkingCharges.toString();
+    }
+    if (bookingData.congestionCharges != null) {
+      congestionChargesReturnController.text = bookingData.congestionCharges.toString();
+    }
+    if (bookingData.waitingCharges != null) {
+      waitingChargesReturnController.text = bookingData.waitingCharges.toString();
+    }
+    if (bookingData.extraDropCharges != null) {
+      extraDropChargesReturnController.text = bookingData.extraDropCharges.toString();
+    }
+    if (bookingData.meetAndGreet != null) {
+      meetGreetReturnController.text = bookingData.meetAndGreet.toString();
+    }
+    if (bookingData.companyPrice != null) {
+      returnCompanyPriceController.text = bookingData.companyPrice.toString();
+    }
+    if (bookingData.returnParkingCharges != null) {
+      parkingChargesReturnController.text = bookingData.returnParkingCharges.toString();
+    }
+    if (bookingData.returnCongestionCharges != null) {
+      congestionChargesReturnController.text = bookingData.returnCongestionCharges.toString();
+    }
+    if (bookingData.returnWaitingCharges != null) {
+      waitingChargesReturnController.text = bookingData.returnWaitingCharges.toString();
+    }
+    if (bookingData.returnExtraDropCharges != null) {
+      extraDropChargesReturnController.text = bookingData.returnExtraDropCharges.toString();
+    }
+    if (bookingData.returnMeetAndGreet != null) {
+      meetGreetReturnController.text = bookingData.returnMeetAndGreet.toString();
+    }
+    if (bookingData.returnCompanyPrice != null) {
+      returnCompanyPriceController.text = bookingData.returnCompanyPrice.toString();
+    }
+    if (bookingData.specialInstructions != null) {
+      specialRequirementsReturnController.text = bookingData.specialInstructions.toString();
+    }
+    if (bookingData.returnSpecialInstructions != null) {
+      specialRequirementsReturnController.text = bookingData.returnSpecialInstructions.toString();
+    }
     bookingData.notes?.forEach((action){
+      controllerAlert.add(NoteClass(
+          note: action.note,
+          title: 'controller return note'
+      ));
+    });
+    bookingData.returnNotes?.forEach((action){
       controllerAlert.add(NoteClass(
           note: action.note,
           title: 'controller return note'

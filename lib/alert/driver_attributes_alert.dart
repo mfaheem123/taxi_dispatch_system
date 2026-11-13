@@ -9,7 +9,8 @@ import '../view/dashboard_view/booking_table.dart';
 import '../view/drivers_view/controller/driver_attribute_controller.dart';
 
 class DriverAttributesAlert extends StatefulWidget {
-  const DriverAttributesAlert({super.key});
+  const DriverAttributesAlert({super.key, this.formController});
+  final DashboardController? formController;
 
   @override
   State<DriverAttributesAlert> createState() => _DriverAttributesAlertState();
@@ -21,10 +22,10 @@ class _DriverAttributesAlertState extends State<DriverAttributesAlert> {
       ? Get.find<DriverAttributeController>()
       : Get.put(DriverAttributeController());
 
-  final DashboardController dashController =
-  Get.isRegistered<DashboardController>()
-      ? Get.find<DashboardController>()
-      : Get.put(DashboardController());
+  late final DashboardController dashController = widget.formController ??
+      (Get.isRegistered<DashboardController>()
+          ? Get.find<DashboardController>()
+          : Get.put(DashboardController()));
 
   @override
   void initState() {
