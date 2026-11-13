@@ -160,6 +160,10 @@ class InvoiceController extends GetxController {
       preInvoiceAll.value = accPreInvFilterModel?.bookings ?? [];
       filteredAccountPreInvoice = preInvoiceAll;
       recalculateCreateInvoiceTotal(null, isPreInvoice: true);
+      if (accPreInvFilterModel?.bookings == null ||
+          accPreInvFilterModel!.bookings!.isEmpty) {
+        BotToast.showText(text: "No Booking Found!");
+      }
     }
     isLoadingPreInv = false;
     update();
@@ -194,7 +198,7 @@ class InvoiceController extends GetxController {
   RxString searchInvTotal = ''.obs;
 
   getAccountInvoiceByFilter() async {
-    if (subsidiaries == null || selectAccountValue == null || selectDepartmentData == null || fromDate == null || toDate == null) {
+    if (subsidiaries == null || selectAccountValue == null|| fromDate == null || toDate == null) {
       BotToast.showText(text: 'PLEASE FILL ALL REQUIRED FIELDS!');
       return;
     }
@@ -204,7 +208,7 @@ class InvoiceController extends GetxController {
       queryParameters: {
         "subsidiary_id": subsidiaries!.id,
         "account_id": selectAccountValue!.id,
-        "department": selectDepartmentData!.id,
+        "department": selectDepartmentData?.id,
         "from_date": fromDate,
         "to_date": toDate,
         "order_number": orderNumber.text,
@@ -230,10 +234,9 @@ class InvoiceController extends GetxController {
       invoiceAll.value = accountInvoiceBookingModel?.bookings ?? [];
       filteredInvoice = invoiceAll;
       recalculateCreateInvoiceTotal(null);
-      if (accountInvoiceBookingModel?.bookings != null && accountInvoiceBookingModel!.bookings!.isNotEmpty) {
-        BotToast.showText(text: 'FILTER DONE');
-      } else {
-        BotToast.showText(text: 'NO DATA FOUND');
+      if (accountInvoiceBookingModel?.bookings == null ||
+          accountInvoiceBookingModel!.bookings!.isEmpty) {
+        BotToast.showText(text: "No Booking Found!");
       }
       print(' Filter Data');
     }
@@ -451,24 +454,43 @@ class InvoiceController extends GetxController {
       statusParam = status!.toUpperCase();
     }
 
+    // var response = await Api().get("account_invoice/get", queryParameters: {
+    //   "page": currentPage.value,
+    //   "limit": limit,
+    //   "invoice_type": invoiceType,
+    //   "invoice_number": activeFilter == "invoice" ? invoiceNumber.value.toLowerCase() : null,
+    //   "account_name": activeFilter == "account" ? searchAccount.value.toLowerCase() : null,
+    //   "department_name": activeFilter == "department" ? searchDepartment.value.toLowerCase() : null,
+    //   "order_number": activeFilter == "order" ? searchOrder.value.toLowerCase() : null,
+    //   "amount": activeFilter == "amount" ? searchAmount.value.toLowerCase() : null,
+    //   "subsidiary_name": activeFilter == "subsidiary" ? searchSubsidiary.value.toLowerCase() : null,
+    //   "invoice_date": activeFilter == "invoicedate" ? searchDate.value : null,
+    //   "invoice_due_date": activeFilter == "duedate" ? searchDueDate.value : null,
+    //   "status": statusParam,
+    //   "from_date": fromDateStr,
+    //   "to_date": toDateStr,
+    // }, sendCompanyId: true);
+    //
+    // if (response.statusCode == 200) {
     var response = await Api().get("account_invoice/get", queryParameters: {
       "page": currentPage.value,
       "limit": limit,
       "invoice_type": invoiceType,
-      "invoice_number": activeFilter == "invoice" ? invoiceNumber.value.toLowerCase() : null,
-      "account_name": activeFilter == "account" ? searchAccount.value.toLowerCase() : null,
-      "department_name": activeFilter == "department" ? searchDepartment.value.toLowerCase() : null,
-      "order_number": activeFilter == "order" ? searchOrder.value.toLowerCase() : null,
-      "amount": activeFilter == "amount" ? searchAmount.value.toLowerCase() : null,
-      "subsidiary_name": activeFilter == "subsidiary" ? searchSubsidiary.value.toLowerCase() : null,
-      "invoice_date": activeFilter == "invoicedate" ? searchDate.value : null,
-      "invoice_due_date": activeFilter == "duedate" ? searchDueDate.value : null,
+      "invoice_number": invoiceNumber.value.toLowerCase(),
+      "account_name": searchAccount.value.toLowerCase(),
+      "department_name": searchDepartment.value.toLowerCase(),
+      "order_number": searchOrder.value.toLowerCase(),
+      "amount": searchAmount.value.toLowerCase(),
+      "subsidiary_name": searchSubsidiary.value.toLowerCase(),
+      "invoice_date": searchDate.value,
+      "invoice_due_date": searchDueDate.value,
       "status": statusParam,
       "from_date": fromDateStr,
       "to_date": toDateStr,
     }, sendCompanyId: true);
 
     if (response.statusCode == 200) {
+      print("RAW API RESPONSE: ${response.data}");
       listOfAccountInvoice = ListOfAccountInvoiceModel.fromJson(response.data);
       totalPages.value = listOfAccountInvoice?.totalPages ?? 1;
       accountInvoiceListAll.value = listOfAccountInvoice?.accountInvoices ?? [];
@@ -479,9 +501,9 @@ class InvoiceController extends GetxController {
   }
 
   // -----------Search changes function
-  void onSearchAccountInvoice() {
+  void onSearchAccountInvoice({String? invoiceType}) {
     currentPage.value = 1;
-    listAccountInvoice(isFirstTime: true);
+    listAccountInvoice(isFirstTime: true, invoiceType: invoiceType);
   }
 
   /// ------- pagination function

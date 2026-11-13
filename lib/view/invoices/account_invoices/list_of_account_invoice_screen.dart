@@ -22,20 +22,16 @@ class ListOfAccountInvoiceScreen extends StatefulWidget {
   const ListOfAccountInvoiceScreen({super.key});
 
   @override
-  State<ListOfAccountInvoiceScreen> createState() =>
-      _ListOfAccountInvoiceScreenState();
+  State<ListOfAccountInvoiceScreen> createState() => _ListOfAccountInvoiceScreenState();
 }
 
-class _ListOfAccountInvoiceScreenState
-    extends State<ListOfAccountInvoiceScreen> {
-  int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
+class _ListOfAccountInvoiceScreenState extends State<ListOfAccountInvoiceScreen> {
+  int selectedRowIndex = 0;
+  final int totalRows = 5;
 
-
-  InvoiceController controller = Get.isRegistered<InvoiceController>()?
-      Get.find<InvoiceController>()
-      :Get.put(InvoiceController());
-
+  InvoiceController controller = Get.isRegistered<InvoiceController>()
+      ? Get.find<InvoiceController>()
+      : Get.put(InvoiceController());
 
   final DashboardController _controller = Get.find();
   @override
@@ -44,6 +40,7 @@ class _ListOfAccountInvoiceScreenState
     super.initState();
     shortCutKeyValue.value = "ListOfAccountInvoiceScreen";
   }
+
   List permissions = [];
 
   @override
@@ -51,403 +48,330 @@ class _ListOfAccountInvoiceScreenState
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     double width = WidgetsBinding
-        .instance.platformDispatcher.views.first.physicalSize.width /
+            .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return PageScrollWrapper(
-      child: GetBuilder<InvoiceController>(
-          initState: (state) {
-            permissions = Api().sp.read('all_permissions') ?? [];
-            controller.listAccountInvoice(isFirstTime: true, invoiceType: "POST");
-          },
-          builder: (controller) {
-            final listToShow = controller.filteredAccountInvoice.isNotEmpty
-                ? controller.filteredAccountInvoice
-                : controller.accountInvoiceListAll;
-            bool isAllSelected = listToShow.isNotEmpty && controller.selectedIds.length == listToShow.length;
+      child: GetBuilder<InvoiceController>(initState: (state) {
+        permissions = Api().sp.read('all_permissions') ?? [];
+        controller.listAccountInvoice(isFirstTime: true, invoiceType: "POST");
+      }, builder: (controller) {
+        final listToShow = controller.filteredAccountInvoice.isNotEmpty
+            ? controller.filteredAccountInvoice
+            : controller.accountInvoiceListAll;
+        bool isAllSelected = listToShow.isNotEmpty &&
+            controller.selectedIds.length == listToShow.length;
 
-            return LayoutBuilder(builder: (context, constraints) {
+        return LayoutBuilder(builder: (context, constraints) {
+          final double maxWidth = constraints.maxWidth;
+          final bool isMobile = maxWidth < 600;
+          final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-
-              final double maxWidth = constraints.maxWidth;
-              final bool isMobile = maxWidth < 600;
-              final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
-
-              // Instead of fixed width, we calculate flexible field widths
-              final double fieldWidth = isMobile
-                  ? maxWidth // full width
-                  : isTablet
+          // Instead of fixed width, we calculate flexible field widths
+          final double fieldWidth = isMobile
+              ? maxWidth // full width
+              : isTablet
                   ? maxWidth / 2
                   : maxWidth / 4;
 
-              return
-                controller.isLoadingListOfAccountInvoice == true?
-                CircularProgressIndicator():
-
-                Wrap(
-                  runSpacing: 10,
-                  spacing: 10,
+          return Wrap(
+            runSpacing: 10,
+            spacing: 10,
+            children: [
+              Container(
+                width: Get.width,
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                color: DynamicColors.gryClr.withOpacity(0.5),
+                child: Row(
                   children: [
-                    Container(
-                      width: Get.width,
-                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                      color: DynamicColors.gryClr.withOpacity(0.5),
-                      child: Row(
-                        children: [
-                          Text(
-                            "ACCOUNT INVOICES (${controller.listOfAccountInvoice!.count ?? "0"})",
-                            style: mozillaTextSemiBoldText(
-                                fontWeight: FontWeight.w800, fontSize: 17),
-                          ),
-                          Spacer(),
-                          if(permissions.contains('create_account_invoice')) CustomButton(
-                            verticalPadding: 0.0,
-                            width: 60,
-                            height: 40,
-                            borderRadius: 4,
-                            btnText: AppText.create,
-                            style: mozillaTextRegularText(
-                                fontSize: 10, color: DynamicColors.whiteClr),
-                            onTap: () {
-                              int index = _controller.selectedMenuItems
-                                  .indexWhere((element) =>
-                              element.title == "CREATE ACCOUNT INVOICE");
-                              if (index != -1) {
-                                _controller.selectedMenuItems[index]
-                                    .selectedItem = true;
-                                _controller.currentPage.value =
-                                    CreateAccountInvoiceScreen();
-                              } else {
-                                _controller.currentPage.value =
-                                    CreateAccountInvoiceScreen();
-                                _controller.menuBarRefresh(
-                                    title: "CREATE ACCOUNT INVOICE",
-                                    pageName: CreateAccountInvoiceScreen());
-                              }
-                              controller.update();
-                            },
-                          ),
-                          SizedBox(
-                            width: 12,
-                          ),
-                          CustomButton(
-      onTap: () {
-        controller.listAccountInvoice(invoiceType: "POST");
-      },
-                            height: 40,
-                            width: 80,
-                            verticalPadding: 0.0,
-                            borderRadius: 4,
-                            widget: Padding(
-                              padding:
-                              EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
-                              child: Icon(
-                                Icons.refresh,
-                                color: DynamicColors.whiteClr,
-                                size: 25,
-                              ),
-                            ),
-                          ),
-                        ],
+                    Text(
+                      "ACCOUNT INVOICES (${controller.listOfAccountInvoice!.count ?? "0"})",
+                      style: mozillaTextSemiBoldText(fontWeight: FontWeight.w800, fontSize: 17),
+                    ),
+                    Spacer(),
+                    if (permissions.contains('create_account_invoice'))
+                      CustomButton(
+                        verticalPadding: 0.0,
+                        width: 60,
+                        height: 40,
+                        borderRadius: 4,
+                        btnText: AppText.create,
+                        style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
+                        onTap: () {
+                          int index = _controller.selectedMenuItems.indexWhere((element) =>
+                                  element.title == "CREATE ACCOUNT INVOICE");
+                          if (index != -1) {
+                            _controller.selectedMenuItems[index].selectedItem = true;
+                            _controller.currentPage.value = CreateAccountInvoiceScreen();
+                          } else {
+                            _controller.currentPage.value = CreateAccountInvoiceScreen();
+                            _controller.menuBarRefresh(
+                                title: "CREATE ACCOUNT INVOICE",
+                                pageName: CreateAccountInvoiceScreen());
+                          }
+                          controller.update();
+                        },
+                      ),
+                    SizedBox(width: 12),
+                    CustomButton(
+                      onTap: () {
+                        controller.listAccountInvoice(isFirstTime: true, invoiceType: "POST");
+                      },
+                      height: 40,
+                      width: 80,
+                      verticalPadding: 0.0,
+                      borderRadius: 4,
+                      widget: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
+                        child: Icon(
+                          Icons.refresh,
+                          color: DynamicColors.whiteClr,
+                          size: 25,
+                        ),
                       ),
                     ),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Wrap(
-                        spacing: 15,
-                        runSpacing: 15,
-                        alignment: WrapAlignment.start,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          labeledField(
-                            context: context,
-                            isMobile: isMobile,
-                            label: AppText.from,
-                            width: fieldWidth / 1.8,
-                            child: SizedBox(
-                              height: 30,
-                              child: KeyboardDatePicker(
-                                initialDate: controller.invoiceListFromDate ?? DateTime.now(),
-                                onChanged: (fromDate) {
-                                  controller.invoiceListFromDate = fromDate;
-                                  controller.update();
-                                },
-                              ),
-                            ),
-                          ),
-                          labeledField(
-                            context: context,
-                            isMobile: isMobile,
-                            label: AppText.to,
-                            width: fieldWidth / 1.8,
-                            child: SizedBox(
-                              height: 30,
-                              child: KeyboardDatePicker(
-                                initialDate: controller.invoiceListToDate ?? DateTime.now(),
-                                onChanged: (toDate) {
-                                  controller.invoiceListToDate = toDate;
-                                  controller.update();
-                                },
-                              ),
-                            ),
-                          ),
-
-                          // Fixed & Formatted Dropdown Row
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text("STATUS", style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                              const SizedBox(width: 14),
-                              CustomDropdownField<String>(
-                                width: fieldWidth / 4,
-                                label: "STATUS",
-                                items: ["ALL", "PAID", "UNPAID"],
-                                value: (controller.status == null || controller.status!.isEmpty)
-                                    ? "ALL"
-                                    : controller.status!.toUpperCase(),
-                                itemLabel: (val) => val,
-                                onChanged: (val) {
-                                  if (val != null) {
-                                    controller.status = val;
-                                    controller.update();
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-
-                          // Action Buttons
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              CustomButton(
-                                onTap: () {
-                                  controller.invoiceNumber.value = "";
-                                  controller.searchAccount.value = "";
-                                  controller.status = "ALL";
-                                  controller.invoiceListFromDate = DateTime.now();
-                                  controller.invoiceListToDate = DateTime.now();
-                                  controller.listAccountInvoice(invoiceType: "POST");
-                                },
-                                verticalPadding: 0.0,
-                                width: 60,
-                                height: 40,
-                                borderRadius: 4,
-                                btnText: AppText.clear,
-                                style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
-                              ),
-                              const SizedBox(width: 15),
-                              CustomButton(
-                                onTap: () {
-                                  // Yahan explicit status state parameter bheja ja raha hai text query filtering ke liye
-                                  controller.listAccountInvoice(isFirstTime: true, invoiceType: "POST");
-                                },
-                                verticalPadding: 0.0,
-                                width: 60,
-                                height: 40,
-                                borderRadius: 4,
-                                btnText: AppText.search,
-                                style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
-                SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: SizedBox(
-                        width: isMobile || isTablet ? Get.width + 600 : Get.width,
-                        child: DatatableWidget(
-                            columns: [
-                              // DataColumn(
-                              //   label: Checkbox(
-                              //     value: isAllSelected,
-                              //     tristate: false,
-                              //     onChanged: (bool? val) {
-                              //       setState(() {
-                              //         if (val == true) {
-                              //           controller.selectedIds = listToShow.map((item) => item.id.toString()).toSet();
-                              //         } else {
-                              //           controller.selectedIds.clear();
-                              //         }
-                              //       });
-                              //     },
-                              //   ),
-                              // ),
-                              buildHeaderWithSearch(
-                                title: "INVOICE #",
-                                onChanged: (v) {
-                                  controller.invoiceNumber.value = v;
-                                  controller.listAccountInvoice(activeFilter: "invoice", invoiceType: "POST");
-                                },
-                              ),
-                              buildHeaderWithSearch(
-                                title: "ACCOUNT",
-                                onChanged: (v) {
-                                  controller.searchAccount.value = v;
-                                  controller.listAccountInvoice(activeFilter: "account", invoiceType: "POST");
-                                },
-                              ),
-                              buildHeaderWithSearch(
-                                title: "DEPARTMENT",
-                                onChanged: (v) {
-                                  controller.searchDepartment.value = v;
-                                  controller.listAccountInvoice(activeFilter: "department", invoiceType: "POST");
-                                  },
-                              ),
-                              buildHeaderWithSearch(
-                                title: "ORDER #",
-                                onChanged: (v) {
-                                  controller.searchOrder.value = v;
-                                  controller.listAccountInvoice(activeFilter: "order", invoiceType: "POST");
-                                }
-                              ),
-                              buildHeaderWithSearch(
-                                title: "DATE",
-                                onChanged: (v) {
-                                  controller.searchDate.value = v;
-                                  controller.listAccountInvoice(activeFilter: "invoicedate", invoiceType: "POST");
-                                 }
-                              ),
-                              buildHeaderWithSearch(
-                                title: "DUE DATE",
-                                onChanged: (v) {
-                                  controller.searchDueDate.value = v;
-                                  controller.listAccountInvoice(activeFilter: "duedate", invoiceType: "POST");
-                                }
-                              ),
-                              buildHeaderWithSearch(
-                                title: "STATUS",
-                                onChanged: (v) {
-                                  controller.searchStatus.value = v;
-                                  controller.listAccountInvoice(activeFilter: "status", invoiceType: "POST");;
-                                }
-                              ),
-                              buildHeaderWithSearch(
-                                title: "AMOUNT",
-                                onChanged: (v) {
-                                  controller.searchAmount.value = v;
-                                  controller.listAccountInvoice(activeFilter: "amount", invoiceType: "POST");
-                                }
-                              ),
-                              buildHeaderWithSearch(
-                                title: "SUBSIDIARY",
-                                onChanged: (v) {
-                                  controller.searchSubsidiary.value = v;
-                                  controller.listAccountInvoice(activeFilter: "subsidiary", invoiceType: "POST");
-                                }
-                              ),
-                              buildHeaderWithSearch(
-                                  title: "ACTIONS", removeSearching: true),
-                            ],
-                            totalRow: listToShow.length ?? 0,
-                            rows: (listToShow ?? []).map((item) {
-                              bool isRowSelected = controller.selectedIds.contains(item.id.toString());
-                              return DataRow(cells: [
-                                // DataCell(
-                                //   Checkbox(
-                                //     value: isRowSelected,
-                                //     onChanged: (bool? val) {
-                                //       setState(() {
-                                //         if (val == true) {
-                                //           controller.selectedIds.add(item.id.toString());
-                                //         } else {
-                                //           controller.selectedIds.remove(item.id.toString());
-                                //         }
-                                //       });
-                                //     },
-                                //   ),
-                                // ),
-                                // 1. Invoice Number
-                                DataCell(Center(child: Text((item.invoiceNumber ?? "-").toUpperCase()))),
-                                DataCell(Center(child: Text((item.account?.name ?? "-").toUpperCase()))),
-                                DataCell(Center(child: Text((
-                                    item.department is Map
-                                        ? item.department['name'] ?? "-"
-                                        : item.department?.name ?? "-"
-                                ).toUpperCase()))),
-                                DataCell(Center(child: Text((item.orderNumber ?? "-").toUpperCase()))),
-                                DataCell(Center(child: Text(item.invoiceDate != null ? item.invoiceDate!.toIso8601String().split('T').first : "-"))),
-                                DataCell(Center(child: Text(item.invoiceDueDate != null ? item.invoiceDueDate!.toIso8601String().split('T').first : "-"))),
-                                DataCell(Center(
-                                  child: Text(item.status?.toUpperCase() ?? "-",))),
-                                DataCell(Center(child: Text(item.amount ?? "0.00"))),
-                                DataCell(Center(child: Text((item.account?.subsidiary?.name ?? "-").toUpperCase()))),
-                                DataCell(
-                                  Row(
-                                    children: [
-                                      if(permissions.contains('update_account_invoice')) OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          side: BorderSide(
-                                            color: Colors.transparent,
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          controller.getAccountInvoice(selectedInvoiceId:  item.id);
-
-                                          int index = _controller.selectedMenuItems
-                                              .indexWhere((element) =>
-                                          element.title == "UPDATE ACCOUNT INVOICE");
-                                          if (index != -1) {
-                                            _controller.selectedMenuItems[index]
-                                                .selectedItem = true;
-                                            _controller.currentPage.value =
-                                                UpdateAccountInvoiceScreen();
-                                          } else {
-                                            _controller.currentPage.value =
-                                                UpdateAccountInvoiceScreen();
-                                            _controller.menuBarRefresh(
-                                                title: "UPDATE ACCOUNT INVOICE",
-                                                pageName: UpdateAccountInvoiceScreen());
-                                          }
-                                          controller.update();
-                                          // Get.to();
-                                        },
-                                        child: Icon(
-                                          Icons.edit_calendar_rounded,
-                                          size: 28,
-                                          color: DynamicColors.primaryClr,
-                                        ),
-                                      ),
-                                      Text("|"),
-                                      if(permissions.contains('delete_account_invoice')) OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          side: BorderSide(
-                                            color: Colors.transparent,
-                                          ), // border color & thickness
-                                        ),
-                                        onPressed: () {
-                                          controller.accountInvoiceDelete(item.id);
-                                        },
-                                        child: Icon(
-                                          Icons.delete_forever,
-                                          size: 28,
-                                          color: DynamicColors.redClr,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ]);
-                            }).toList()),
-                      ),
-                    ),
-                    PaginationWidget(
-                      currentPage: controller.currentPage.value,
-                      totalPages: controller.totalPages.value,
-                      onPageChange: controller.onPageAccountInvoice,
-                    )
                   ],
-                );
-            });
-          }),
+                ),
+              ),
+              SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Wrap(
+                  spacing: 15,
+                  runSpacing: 15,
+                  alignment: WrapAlignment.start,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    labeledField(
+                      context: context,
+                      isMobile: isMobile,
+                      label: AppText.from,
+                      width: fieldWidth / 1.8,
+                      child: SizedBox(
+                        height: 30,
+                        child: KeyboardDatePicker(
+                          initialDate: controller.invoiceListFromDate ?? DateTime.now(),
+                          onChanged: (fromDate) {
+                            controller.invoiceListFromDate = fromDate;
+                            controller.update();
+                          },
+                        ),
+                      ),
+                    ),
+                    labeledField(
+                      context: context,
+                      isMobile: isMobile,
+                      label: AppText.to,
+                      width: fieldWidth / 1.8,
+                      child: SizedBox(
+                        height: 30,
+                        child: KeyboardDatePicker(
+                          initialDate: controller.invoiceListToDate ?? DateTime.now(),
+                          onChanged: (toDate) {
+                            controller.invoiceListToDate = toDate;
+                            controller.update();
+                          },
+                        ),
+                      ),
+                    ),
+
+                    // Fixed & Formatted Dropdown Row
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text("STATUS",
+                            style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+                        const SizedBox(width: 14),
+                        CustomDropdownField<String>(
+                          width: fieldWidth / 4,
+                          label: "STATUS",
+                          items: ["ALL", "PAID", "UNPAID"],
+                          value: (controller.status == null || controller.status!.isEmpty)
+                              ? "ALL"
+                              : controller.status!.toUpperCase(),
+                          itemLabel: (val) => val,
+                          onChanged: (val) {
+                            if (val != null) {
+                              controller.status = val;
+                              controller.update();
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+
+                    // Action Buttons
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CustomButton(
+                          onTap: () {
+                            controller.invoiceNumber.value = "";
+                            controller.searchAccount.value = "";
+                            controller.status = "ALL";
+                            controller.invoiceListFromDate = DateTime.now();
+                            controller.invoiceListToDate = DateTime.now();
+                            controller.listAccountInvoice(invoiceType: "POST");
+                          },
+                          verticalPadding: 0.0,
+                          width: 60,
+                          height: 40,
+                          borderRadius: 4,
+                          btnText: AppText.clear,
+                          style: mozillaTextSemiBoldText(fontSize: 10, color: DynamicColors.whiteClr),
+                        ),
+                        const SizedBox(width: 15),
+                        CustomButton(
+                          onTap: () {
+                            controller.listAccountInvoice(isFirstTime: true, invoiceType: "POST");
+                          },
+                          verticalPadding: 0.0,
+                          width: 60,
+                          height: 40,
+                          borderRadius: 4,
+                          btnText: AppText.search,
+                          style: mozillaTextSemiBoldText(
+                              fontSize: 10, color: DynamicColors.whiteClr),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 8),
+              SingleChildScrollView(
+                child: SizedBox(
+                  width: isMobile || isTablet ? Get.width + 600 : Get.width,
+                  child: DatatableWidget(
+                      columns: [
+                        buildHeaderWithSearch(title: "INVOICE #",
+                          onChanged: (v) {
+                            controller.invoiceNumber.value = v;
+                            controller.onSearchAccountInvoice(invoiceType: "POST");
+                          }),
+                        buildHeaderWithSearch(title: "ACCOUNT",
+                          onChanged: (v) {
+                            controller.searchAccount.value = v;
+                            controller.onSearchAccountInvoice(invoiceType: "POST");
+                          }),
+                        buildHeaderWithSearch(title: "DEPARTMENT",
+                          onChanged: (v) {
+                            controller.searchDepartment.value = v;
+                            controller.onSearchAccountInvoice(invoiceType: "POST");
+                          }),
+                        buildHeaderWithSearch(title: "ORDER #",
+                            onChanged: (v) {
+                              controller.searchOrder.value = v;
+                              controller.onSearchAccountInvoice(invoiceType: "POST");
+                            }),
+                        buildHeaderWithSearch(title: "DATE",
+                            onChanged: (v) {
+                              controller.searchDate.value = v;
+                              controller.onSearchAccountInvoice(invoiceType: "POST");
+                            }),
+                        buildHeaderWithSearch(title: "DUE DATE",
+                            onChanged: (v) {
+                              controller.searchDueDate.value = v;
+                              controller.onSearchAccountInvoice(invoiceType: "POST");
+                            }),
+                        buildHeaderWithSearch(title: "STATUS",
+                            onChanged: (v) {
+                              controller.searchStatus.value = v;
+                              controller.onSearchAccountInvoice(invoiceType: "POST");
+                            }),
+                        buildHeaderWithSearch(title: "AMOUNT",
+                            onChanged: (v) {
+                              controller.searchAmount.value = v;
+                              controller.onSearchAccountInvoice(invoiceType: "POST");
+                            }),
+                        buildHeaderWithSearch(title: "SUBSIDIARY",
+                            onChanged: (v) {
+                              controller.searchSubsidiary.value = v;
+                              controller.onSearchAccountInvoice(invoiceType: "POST");
+                            }),
+                        buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
+                      ],
+                      totalRow: listToShow.length ?? 0,
+                      rows: (listToShow).map((item) {
+                        return DataRow(cells: [
+                          DataCell(Center(child: Text((item.invoiceNumber ?? "").toUpperCase()))),
+                          DataCell(Center(child: Text((item.account?.name ?? "").toUpperCase()))),
+                          DataCell(Center(child: Text((item.department?.name ?? "").toUpperCase()))),
+                          DataCell(Center(child: Text((item.orderNumber ?? "").toUpperCase()))),
+                          DataCell(Center(child: Text(item.invoiceDate != null ? item.invoiceDate!.toIso8601String().split('T').first : "-"))),
+                          DataCell(Center(child: Text(item.invoiceDueDate != null ? item.invoiceDueDate!.toIso8601String().split('T').first : "-"))),
+                          DataCell(Center(child: Text(item.status?.toUpperCase() ?? "",))),
+                          DataCell(Center(child: Text(item.amount ?? "0.00"))),
+                          DataCell(Center(child: Text((item.account?.subsidiary?.name ?? "").toUpperCase()))),
+                          DataCell(
+                            Row(
+                              children: [
+                                if (permissions.contains('update_account_invoice'))
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(color: Colors.transparent,
+                                      )),
+                                    onPressed: () {
+                                      controller.getAccountInvoice(
+                                          selectedInvoiceId: item.id);
+
+                                      int index = _controller.selectedMenuItems
+                                          .indexWhere((element) => element.title ==
+                                              "UPDATE ACCOUNT INVOICE");
+                                      if (index != -1) {
+                                        _controller.selectedMenuItems[index]
+                                            .selectedItem = true;
+                                        _controller.currentPage.value =
+                                            UpdateAccountInvoiceScreen();
+                                      } else {
+                                        _controller.currentPage.value =
+                                            UpdateAccountInvoiceScreen();
+                                        _controller.menuBarRefresh(
+                                            title: "UPDATE ACCOUNT INVOICE",
+                                            pageName: UpdateAccountInvoiceScreen());
+                                      }
+                                      controller.update();
+                                      // Get.to();
+                                    },
+                                    child: Icon(
+                                      Icons.edit_calendar_rounded,
+                                      size: 28,
+                                      color: DynamicColors.primaryClr,
+                                    ),
+                                  ),
+                                Text("|"),
+                                if (permissions.contains('delete_account_invoice'))
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(
+                                        color: Colors.transparent,
+                                      ), // border color & thickness
+                                    ),
+                                    onPressed: () {
+                                      controller.accountInvoiceDelete(item.id);
+                                    },
+                                    child: Icon(
+                                      Icons.delete_forever,
+                                      size: 28,
+                                      color: DynamicColors.redClr,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ]);
+                      }).toList()),
+                ),
+              ),
+              PaginationWidget(
+                currentPage: controller.currentPage.value,
+                totalPages: controller.totalPages.value,
+                onPageChange: controller.onPageAccountInvoice,
+              )
+            ],
+          );
+        });
+      }),
     );
   }
 }

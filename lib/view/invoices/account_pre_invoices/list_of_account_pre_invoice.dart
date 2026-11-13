@@ -48,7 +48,7 @@ class _ListOfAccountPreInvoiceScreenState extends State<ListOfAccountPreInvoiceS
     return PageScrollWrapper(
       child: GetBuilder<InvoiceController>(
           initState: (state) {
-            controller.listAccountInvoice(isFirstTime: true);
+            controller.listAccountInvoice();
           },
           builder: (controller) {
             final listToShow = controller.filteredAccountInvoice.isNotEmpty
