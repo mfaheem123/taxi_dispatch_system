@@ -54,6 +54,7 @@ class _ListOfAccountInvoiceScreenState extends State<ListOfAccountInvoiceScreen>
     return PageScrollWrapper(
       child: GetBuilder<InvoiceController>(initState: (state) {
         permissions = Api().sp.read('all_permissions') ?? [];
+        controller.clearData();
         controller.listAccountInvoice(isFirstTime: true, invoiceType: "POST");
       }, builder: (controller) {
         final listToShow = controller.filteredAccountInvoice.isNotEmpty
@@ -85,18 +86,18 @@ class _ListOfAccountInvoiceScreenState extends State<ListOfAccountInvoiceScreen>
                 child: Row(
                   children: [
                     Text(
-                      "ACCOUNT INVOICES (${controller.listOfAccountInvoice!.count ?? "0"})",
+                      "ACCOUNT INVOICES (${controller.listOfAccountInvoice?.count ?? "0"})",
                       style: mozillaTextSemiBoldText(fontWeight: FontWeight.w800, fontSize: 17),
                     ),
                     Spacer(),
                     if (permissions.contains('create_account_invoice'))
                       CustomButton(
                         verticalPadding: 0.0,
-                        width: 60,
-                        height: 40,
+                        width: 70,
+                        height: 30,
                         borderRadius: 4,
                         btnText: AppText.create,
-                        style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
+                        style: mozillaTextRegularText(fontSize: 12, color: DynamicColors.whiteClr),
                         onTap: () {
                           int index = _controller.selectedMenuItems.indexWhere((element) =>
                                   element.title == "CREATE ACCOUNT INVOICE");
@@ -117,8 +118,8 @@ class _ListOfAccountInvoiceScreenState extends State<ListOfAccountInvoiceScreen>
                       onTap: () {
                         controller.listAccountInvoice(isFirstTime: true, invoiceType: "POST");
                       },
-                      height: 40,
-                      width: 80,
+                      height: 30,
+                      width: 70,
                       verticalPadding: 0.0,
                       borderRadius: 4,
                       widget: Padding(
@@ -214,11 +215,11 @@ class _ListOfAccountInvoiceScreenState extends State<ListOfAccountInvoiceScreen>
                             controller.listAccountInvoice(invoiceType: "POST");
                           },
                           verticalPadding: 0.0,
-                          width: 60,
-                          height: 40,
+                          width: 70,
+                          height: 30,
                           borderRadius: 4,
                           btnText: AppText.clear,
-                          style: mozillaTextSemiBoldText(fontSize: 10, color: DynamicColors.whiteClr),
+                          style: mozillaTextSemiBoldText(fontSize: 12, color: DynamicColors.whiteClr),
                         ),
                         const SizedBox(width: 15),
                         CustomButton(
@@ -226,12 +227,12 @@ class _ListOfAccountInvoiceScreenState extends State<ListOfAccountInvoiceScreen>
                             controller.listAccountInvoice(isFirstTime: true, invoiceType: "POST");
                           },
                           verticalPadding: 0.0,
-                          width: 60,
-                          height: 40,
+                          width: 70,
+                          height: 30,
                           borderRadius: 4,
                           btnText: AppText.search,
                           style: mozillaTextSemiBoldText(
-                              fontSize: 10, color: DynamicColors.whiteClr),
+                              fontSize: 12, color: DynamicColors.whiteClr),
                         ),
                       ],
                     ),
@@ -305,6 +306,7 @@ class _ListOfAccountInvoiceScreenState extends State<ListOfAccountInvoiceScreen>
                           DataCell(Center(child: Text((item.account?.subsidiary?.name ?? "").toUpperCase()))),
                           DataCell(
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 if (permissions.contains('update_account_invoice'))
                                   OutlinedButton(

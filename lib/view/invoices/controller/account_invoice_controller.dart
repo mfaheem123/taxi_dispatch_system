@@ -520,6 +520,20 @@ class InvoiceController extends GetxController {
       BotToast.showText(text: "ACCOUNT INVOICE DELETED SUCCESSFULLY!");
     }
   }
+
+
+  void clearData() {
+    invoiceNumber.value = "";
+    searchAccount.value = "";
+    searchDepartment.value = "";
+    searchOrder.value = "";
+    searchAmount.value = "";
+    searchSubsidiary.value = "";
+    status = "ALL";
+    invoiceListFromDate = DateTime.now();
+    invoiceListToDate = DateTime.now();
+  }
+
   ///================================================ list of Account Invoice END
 
   ///================================================ Update Invoice Screen
@@ -575,13 +589,13 @@ class InvoiceController extends GetxController {
       invoiceDueDateController =
           "${data?.invoiceDueDate?.year}-${data?.invoiceDueDate?.month}-${data?.invoiceDueDate?.day}";
       if (data != null) {
-        subsidiaries = subsDiaryModel?.subsidiaries
-            ?.firstWhere((s) => "${s.id}" == "${data.subsidiaryId}");
+        subsidiaries = subsDiaryModel?.subsidiaries?.firstWhere(
+                (s) => "${s.id}" == "${data.subsidiaryId}");
         await getAccountData(subsidiariesId: data.subsidiaryId);
         selectAccountValue = dashboardAccountData?.accounts
-            ?.firstWhere((a) => "${a.id}" == "${data.accountId}");
+            ?.firstWhereOrNull((a) => "${a.id}" == "${data.accountId}");
         selectDepartmentData = selectAccountValue?.departments
-            ?.firstWhere((d) => "${d.id}" == "${data.departmentId}");
+            ?.firstWhereOrNull((d) => "${d.id}" == "${data.departmentId}");
       }
       isLoadingUpdate = false;
       update();
