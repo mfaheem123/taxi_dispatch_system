@@ -121,7 +121,7 @@ class AccountInvoiceViewScreen extends StatelessWidget {
     for (var item in lineItems) {
       final b = item.booking;
       if (b == null) continue;
-      totalFare += (b.companyPrice ?? 0).toDouble();
+      totalFare += (b.fares ?? 0).toDouble();
       totalPC += (b.parkingCharges ?? 0).toDouble();
       totalWC += (b.waitingCharges ?? 0).toDouble();
       totalEDC += (b.extraDropCharges ?? 0).toDouble();
@@ -215,7 +215,7 @@ class AccountInvoiceViewScreen extends StatelessWidget {
                       _cell(b?.name ?? ""),
                       _cell(b?.pickup ?? ""),
                       _cell(b?.dropoff ?? ""),
-                      _cell("£${(b?.companyPrice ?? 0).toStringAsFixed(2)}"),
+                      _cell("£${(b?.fares ?? 0).toStringAsFixed(2)}"),
                       _cell("£${(b?.parkingCharges ?? 0).toStringAsFixed(2)}"),
                       _cell("£${(b?.waitingCharges ?? 0).toStringAsFixed(2)}"),
                       _cell(
