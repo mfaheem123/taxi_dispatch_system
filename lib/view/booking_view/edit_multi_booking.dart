@@ -156,8 +156,14 @@ class _MultiReservationScreenState extends State<MultiReservationScreen> {
   JourneyTypeObject? get _oneWayJourney {
     final types = controller.dashboardAllData?.journeyTypes ?? [];
     if (types.isEmpty) return null;
+    final journeyType = _bookingController.multiReservations.isNotEmpty
+        ? (_bookingController.multiReservations[0]['jt'] ?? 'O/W')
+        .toString()
+        .trim()
+        .toUpperCase()
+        : 'O/W';
     return types.firstWhere(
-      (t) => (t.journeyType ?? '').trim().toUpperCase() == 'O/W',
+      (t) => (t.journeyType ?? '').trim().toUpperCase() == journeyType,
       orElse: () => types.first,
     );
   }

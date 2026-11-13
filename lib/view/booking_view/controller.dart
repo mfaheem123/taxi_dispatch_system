@@ -739,6 +739,17 @@ class BookingController extends GetxController{
         'company_price': t(form.companyPriceController),
       if (t(form.specialRequirementsController).isNotEmpty)
         'special_instructions': t(form.specialRequirementsController),
+
+      if (t(form.parkingChargesReturnController).isNotEmpty && form.selectJourneyTypeValue!.id == 3)
+        'return_parking_charges': t(form.parkingChargesReturnController),
+      if (t(form.congestionChargesReturnController).isNotEmpty && form.selectJourneyTypeValue!.id == 3)
+        'return_congestion_charges': t(form.congestionChargesReturnController),
+      if (t(form.waitingChargesReturnController).isNotEmpty && form.selectJourneyTypeValue!.id == 3)
+        'return_waiting_charges': t(form.waitingChargesReturnController),
+      if (t(form.extraDropChargesReturnController).isNotEmpty && form.selectJourneyTypeValue!.id == 3)
+        'return_extra_drop_charges': t(form.extraDropChargesReturnController),
+      if (t(form.meetGreetReturnController).isNotEmpty && form.selectJourneyTypeValue!.id == 3)
+        'return_meet_and_greet': t(form.meetGreetReturnController),
     };
 
     print(formData);

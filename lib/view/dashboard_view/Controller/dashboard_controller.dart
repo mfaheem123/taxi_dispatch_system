@@ -3463,15 +3463,15 @@ class DashboardController extends GetxController {
         'company_price': companyPriceController.text,
       if (returnCompanyPriceController.text.isNotEmpty)
         'return_company_price': returnCompanyPriceController.text,
-      if (parkingChargesReturnController.text.isNotEmpty)
+      if (parkingChargesReturnController.text.isNotEmpty && selectJourneyTypeValue!.id == 3)
         'return_parking_charges': parkingChargesReturnController.text,
-      if (congestionChargesReturnController.text.isNotEmpty)
+      if (congestionChargesReturnController.text.isNotEmpty && selectJourneyTypeValue!.id == 3)
         'return_congestion_charges': congestionChargesReturnController.text,
-      if (waitingChargesReturnController.text.isNotEmpty)
+      if (waitingChargesReturnController.text.isNotEmpty && selectJourneyTypeValue!.id == 3)
         'return_waiting_charges': waitingChargesReturnController.text,
-      if (extraDropChargesReturnController.text.isNotEmpty)
+      if (extraDropChargesReturnController.text.isNotEmpty && selectJourneyTypeValue!.id == 3)
         'return_extra_drop_charges': extraDropChargesReturnController.text,
-      if (meetGreetReturnController.text.isNotEmpty)
+      if (meetGreetReturnController.text.isNotEmpty && selectJourneyTypeValue!.id == 3)
         'return_meet_and_greet': meetGreetReturnController.text,
       // "total_charges": ,
       // "RETURN COMPANY PRICE": "????????????????????????????????????????????? taj missing",

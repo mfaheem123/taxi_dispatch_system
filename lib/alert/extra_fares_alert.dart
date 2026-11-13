@@ -182,35 +182,43 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                   ],
                 ),
                 SizedBox(height: 10),
-                const Divider(),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "RETURN TRIP FARES",
-                    style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 12, color: Color(0xFF374151)),
+                Visibility(
+                  visible: dashBoardCntrl.selectJourneyTypeValue!.id == 3?true:false,
+                  child: Column(
+                    children: [
+
+                      const Divider(),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "RETURN TRIP FARES",
+                          style: outFitRegular(fontWeight: FontWeight.bold, fontSize: 12, color: Color(0xFF374151)),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          _buildFareField(label: "PARKING", controller: dashBoardCntrl.parkingChargesReturnController),
+                          const SizedBox(width: 8),
+                          _buildFareField(label: "CONGESTION", controller: dashBoardCntrl.congestionChargesReturnController),
+                          const SizedBox(width: 8),
+                          _buildFareField(label: "MEET & GREET", controller: dashBoardCntrl.meetGreetReturnController),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          _buildFareField(label: "WAITING", controller: dashBoardCntrl.waitingChargesReturnController),
+                          const SizedBox(width: 8),
+                          _buildFareField(label: "EXTRA DROP", controller: dashBoardCntrl.extraDropChargesReturnController),
+                          const SizedBox(width: 8),
+                          const Expanded(child: SizedBox()),
+                        ],
+                      ),
+                      SizedBox(height: 14),
+                    ],
                   ),
                 ),
-                SizedBox(height: 10),
-                Row(
-                  children: [
-                    _buildFareField(label: "PARKING", controller: dashBoardCntrl.parkingChargesReturnController),
-                    const SizedBox(width: 8),
-                    _buildFareField(label: "CONGESTION", controller: dashBoardCntrl.congestionChargesReturnController),
-                    const SizedBox(width: 8),
-                    _buildFareField(label: "MEET & GREET", controller: dashBoardCntrl.meetGreetReturnController),
-                  ],
-                ),
-                SizedBox(height: 10),
-                Row(
-                  children: [
-                    _buildFareField(label: "WAITING", controller: dashBoardCntrl.waitingChargesReturnController),
-                    const SizedBox(width: 8),
-                    _buildFareField(label: "EXTRA DROP", controller: dashBoardCntrl.extraDropChargesReturnController),
-                    const SizedBox(width: 8),
-                    const Expanded(child: SizedBox()),
-                  ],
-                ),
-                SizedBox(height: 14),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
