@@ -3414,11 +3414,16 @@ class DashboardController extends GetxController {
           selectJourneyTypeValue != null ? selectJourneyTypeValue!.id : 1,
       if (selectAccountValue != null) 'account_id': selectAccountValue!.id,
       if (selectDepartmentData != null) 'department': selectDepartmentData!.id,
-      if (selectOrderValue != null)
+      // ORDER / BY / ESCORT are sent only while the selected account shows
+      // them, so a value left over from another account isn't posted.
+      if (selectOrderValue != null &&
+          (selectAccountValue?.hasOrderNumber == true ||
+              (selectAccountValue?.orderNumbers?.isNotEmpty ?? false)))
         'order_number': selectOrderValue is Map
             ? selectOrderValue["order_number"]
             : selectOrderValue.toString(),
-      if (bookedByController.text.isNotEmpty)
+      if (bookedByController.text.trim().isNotEmpty &&
+          selectAccountValue?.hasBookedBy == true)
         'booked_by': bookedByController.text.trim(),
       'quotation': switchController.value,
       'sms': true /*smsCheckbox.value*/,
@@ -3430,7 +3435,8 @@ class DashboardController extends GetxController {
       if (selectPaymentTypeValue != null)
         'payment_type_id': selectPaymentTypeValue!.id,
       if (selectVehicleValue != null) 'vehicle_type_id': selectVehicleValue!.id,
-      if (selectEscortValue != null) 'escort_id': selectEscortValue!.id,
+      if (selectEscortValue != null && selectAccountValue?.hasEscort == true)
+        'escort_id': selectEscortValue!.id,
       if (restrictedDrivers.isNotEmpty)
         'restricted_drivers': jsonEncode(restrictedDrivers),
       if (childSeatList.isNotEmpty) 'child_seat': jsonEncode(childSeatList),

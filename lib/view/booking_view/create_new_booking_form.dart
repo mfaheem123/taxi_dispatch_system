@@ -418,6 +418,18 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
     controller.update();
   }
 
+  // ESCORT / ORDER / BY are shown only for accounts that use them.
+  bool get _showEscort => controller.selectAccountValue?.hasEscort == true;
+
+  bool get _showOrder {
+    final acc = controller.selectAccountValue;
+    if (acc == null) return false;
+    return acc.hasOrderNumber == true ||
+        (acc.orderNumbers != null && acc.orderNumbers!.isNotEmpty);
+  }
+
+  bool get _showBookedBy => controller.selectAccountValue?.hasBookedBy == true;
+
   // ---- Actions -------------------------------------------------------------
 
   void _onSave() {
@@ -824,6 +836,9 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                 onChanged: (v) => setState(() {
                   controller.selectAccountValue = v;
                   controller.selectDepartmentData = null;
+                  // Order numbers belong to the account, so a new account
+                  // can't keep the old one's order.
+                  controller.selectOrderValue = null;
                 }),
               )),
               SpanField(LabeledObjectDropdown<DepartmentObject>(
@@ -837,28 +852,50 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                   controller.update();
                 }),
               )),
-              SpanField(LabeledObjectDropdown<Escorts>(
-                'ESCORT',
-                items: controller.escortList,
-                value: controller.selectEscortValue,
-                itemLabel: (e) => (e.name ?? '').toUpperCase(),
-                hint: 'SELECT ESCORT',
-                onChanged: (v) =>
-                    setState(() => controller.selectEscortValue = v),
-              )),
-              SpanField(Obx(() => LabeledInput(
-                    'PASS',
-                    controller: controller.passController,
-                    keyboardType: TextInputType.number,
-                    isError: controller.isPassengerError.value,
-                    onChanged: controller.validatePassengerLimit,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(2),
-                    ],
-                  )),
-                  // Obx hides the LabelledField label the grid keys cells by.
-                  id: 'PASS'),
+
+              // ESCORT / ORDER / BY follow the selected account, as on the
+              // dashboard form; all three are posted by postDashboardApi.
+              ///todo
+              // if (_showEscort)
+              //   SpanField(LabeledObjectDropdown<Escorts>(
+              //     'ESCORT',
+              //     items: controller.escortList,
+              //     value: controller.selectEscortValue,
+              //     itemLabel: (e) => (e.name ?? '').toUpperCase(),
+              //     hint: 'SELECT ESCORT',
+              //     onChanged: (v) =>
+              //         setState(() => controller.selectEscortValue = v),
+              //   )),
+              // if (_showOrder)
+              //   SpanField(LabeledObjectDropdown<dynamic>(
+              //     'ORDER',
+              //     items: controller.selectAccountValue?.orderNumbers ??
+              //         const [],
+              //     value: controller.selectOrderValue,
+              //     itemLabel: (p) => p is Map
+              //         ? (p['order_number']?.toString() ?? '')
+              //         : p.toString(),
+              //     hint: 'ORDER',
+              //     onChanged: (v) =>
+              //         setState(() => controller.selectOrderValue = v),
+              //   )),
+              // if (_showBookedBy)
+              //   SpanField(LabeledInput('BY',
+              //       controller: controller.bookedByController)),
+              // SpanField(Obx(() => LabeledInput(
+              //       'PASS',
+              //       controller: controller.passController,
+              //       keyboardType: TextInputType.number,
+              //       isError: controller.isPassengerError.value,
+              //       onChanged: controller.validatePassengerLimit,
+              //       inputFormatters: [
+              //         FilteringTextInputFormatter.digitsOnly,
+              //         LengthLimitingTextInputFormatter(2),
+              //       ],
+              //     )),
+              //     // Obx hides the LabelledField label the grid keys cells by.
+              //     id: 'PASS'),
+              ///todo
               SpanField(LabeledInput('LUGG',
                   controller: controller.luggController,
                   keyboardType: TextInputType.number,
