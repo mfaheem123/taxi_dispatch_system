@@ -76,6 +76,7 @@ import 'receipt_details.dart';
 const _kFontFamily = 'MozillaText-Regular';
 
 /// Hints, field labels and section titles — the chrome around the values —
+/// Hints, field labels and section titles — the chrome around the values —
 /// are set in Outfit instead, so they read as a separate layer from the data
 /// the user typed. Declared in pubspec.yaml against
 /// assets/font-family/Outfit-Regular.ttf.
@@ -93,6 +94,7 @@ const _kValueTextStyle = TextStyle(
 /// Placeholder text, unchanged from before [_kValueTextStyle] went bold.
 ///
 /// The weight and the tracking have to be spelled out even though they are the
+/// The weight and the tracking have to be spelled out even though they are the
 /// old values: InputDecorator derives the hint from `titleMedium` merged with
 /// the field's own `style`, and the Material 2 defaults this app runs on
 /// contribute only a colour — so without this the bold and the tracking of the
@@ -105,6 +107,8 @@ const _kHintTextStyle = TextStyle(
   letterSpacing: 0.15,
 );
 
+
+
 /// Floating field labels — pinned for the same reason as [_kHintTextStyle].
 const _kLabelTextStyle = TextStyle(
   fontFamily: _kChromeFontFamily,
@@ -113,6 +117,8 @@ const _kLabelTextStyle = TextStyle(
   letterSpacing: 0.15,
   color: Colors.black,
 );
+
+
 
 /// The chrome every field on this form wears — border, focus tint, floating
 /// label. Lives at top level so the dropdowns can be decorated from the same
@@ -202,6 +208,7 @@ class EditJobsWidget extends StatefulWidget {
   State<EditJobsWidget> createState() => _EditJobsWidgetState();
 }
 class _EditJobsWidgetState extends State<EditJobsWidget> {
+
   // ────────── palette
   static const _purple = Color(0xFF312E81);
   static const _purpleDark = Color(0xFF312E81);
