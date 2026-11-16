@@ -6,6 +6,7 @@ import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/time_picker_widget.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/user_info_widget.dart';
+import 'package:dashboard_new1/view/invoices/account_pre_invoices/update_acc_pre_inv.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -13,8 +14,11 @@ import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 
 import '../../../alert/search_booking.dart';
+import '../../../component/pagination.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
+import '../account_invoices/update_account_invoice.dart';
 import '../controller/account_invoice_controller.dart';
+import 'create_account_pre_invoice.dart';
 
 class ListOfAccountPreInvoiceScreen extends StatefulWidget {
   const ListOfAccountPreInvoiceScreen({super.key});
@@ -46,10 +50,10 @@ class _ListOfAccountPreInvoiceScreenState extends State<ListOfAccountPreInvoiceS
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return PageScrollWrapper(
-      child: GetBuilder<InvoiceController>(
-          initState: (state) {
-            controller.listAccountInvoice(isFirstTime: true);
-          },
+      child: GetBuilder<InvoiceController>(initState: (state) {
+        controller.clearData();
+        controller.listAccountInvoice(isFirstTime: true, invoiceType: "PRE");
+      },
           builder: (controller) {
             final listToShow = controller.filteredAccountInvoice.isNotEmpty
                 ? controller.filteredAccountInvoice
@@ -70,7 +74,6 @@ class _ListOfAccountPreInvoiceScreenState extends State<ListOfAccountPreInvoiceS
           runSpacing: 10,
           spacing: 10,
           children: [
-            // Top Header Bar
             Container(
               width: width,
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
@@ -78,25 +81,39 @@ class _ListOfAccountPreInvoiceScreenState extends State<ListOfAccountPreInvoiceS
               child: Row(
                 children: [
                   Text(
-                    "ACCOUNT PRE INVOICES",
-                    style: mozillaTextSemiBoldText(
-                        fontWeight: FontWeight.w800, fontSize: 17),
+                    "ACCOUNT PRE INVOICES (${controller.listOfAccountInvoice?.count ?? "0"})",
+                    style: mozillaTextSemiBoldText(fontWeight: FontWeight.w800, fontSize: 17),
                   ),
                   const Spacer(),
                   CustomButton(
                     verticalPadding: 0.0,
                     width: 70,
-                    height: 35,
+                    height: 30,
                     borderRadius: 4,
                     btnText: AppText.create,
-                    style: mozillaTextRegularText(
-                        fontSize: 10, color: DynamicColors.whiteClr),
-                    onTap: () {},
+                    style: mozillaTextSemiBoldText(fontSize: 12, color: DynamicColors.whiteClr),
+                    onTap: () {
+                      int index = _controller.selectedMenuItems.indexWhere((element) =>
+                      element.title == "CREATE ACCOUNT PRE INVOICE");
+                      if (index != -1) {
+                        _controller.selectedMenuItems[index].selectedItem = true;
+                        _controller.currentPage.value = CreateAccountPreInvoice();
+                      } else {
+                        _controller.currentPage.value = CreateAccountPreInvoice();
+                        _controller.menuBarRefresh(
+                            title: "CREATE ACCOUNT PRE INVOICE",
+                            pageName: CreateAccountPreInvoice());
+                      }
+                      controller.update();
+                    },
                   ),
                   const SizedBox(width: 12),
                   CustomButton(
-                    onTap: () {},
-                    height: 35,
+                    onTap: () {
+                      controller.listAccountInvoice(isFirstTime: true, invoiceType: "PRE");
+                      controller.update();
+                    },
+                    height: 30,
                     width: 70,
                     verticalPadding: 0.0,
                     borderRadius: 4,
@@ -131,8 +148,11 @@ class _ListOfAccountPreInvoiceScreenState extends State<ListOfAccountPreInvoiceS
                     child: SizedBox(
                       height: 30,
                       child: KeyboardDatePicker(
-                        initialDate: DateTime.now(),
-                        onChanged: (fromDate) {},
+                        initialDate: controller.invoiceListFromDate ?? DateTime.now(),
+                        onChanged: (fromDate) {
+                          controller.invoiceListFromDate = fromDate;
+                          controller.update();
+                        },
                       ),
                     ),
                   ),
@@ -144,8 +164,11 @@ class _ListOfAccountPreInvoiceScreenState extends State<ListOfAccountPreInvoiceS
                     child: SizedBox(
                       height: 30,
                       child: KeyboardDatePicker(
-                        initialDate: DateTime.now(),
-                        onChanged: (toDate) {},
+                        initialDate: controller.invoiceListToDate ?? DateTime.now(),
+                        onChanged: (toDate) {
+                          controller.invoiceListToDate = toDate;
+                          controller.update();
+                        },
                       ),
                     ),
                   ),
@@ -160,9 +183,16 @@ class _ListOfAccountPreInvoiceScreenState extends State<ListOfAccountPreInvoiceS
                         width: fieldWidth / 4,
                         label: "STATUS",
                         items: const ["ALL", "PAID", "UNPAID"],
-                        value: "ALL",
+                        value: (controller.status == null || controller.status!.isEmpty)
+                            ? "ALL"
+                            : controller.status!.toUpperCase(),
                         itemLabel: (val) => val,
-                        onChanged: (val) {},
+                        onChanged: (val) {
+                          if (val != null) {
+                            controller.status = val;
+                            controller.update();
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -172,23 +202,32 @@ class _ListOfAccountPreInvoiceScreenState extends State<ListOfAccountPreInvoiceS
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       CustomButton(
-                        onTap: () {},
+                        onTap: () {
+                          controller.invoiceNumber.value = "";
+                          controller.searchAccount.value = "";
+                          controller.status = "ALL";
+                          controller.invoiceListFromDate = DateTime.now();
+                          controller.invoiceListToDate = DateTime.now();
+                          controller.listAccountInvoice(isFirstTime: true, invoiceType: "PRE");
+                        },
                         verticalPadding: 0.0,
                         width: 70,
-                        height: 35,
+                        height: 30,
                         borderRadius: 4,
                         btnText: AppText.clear,
-                        style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
+                        style: mozillaTextSemiBoldText(fontSize: 12, color: DynamicColors.whiteClr),
                       ),
                       const SizedBox(width: 15),
                       CustomButton(
-                        onTap: () {},
+                        onTap: () {
+                          controller.listAccountInvoice(isFirstTime: true, invoiceType: "PRE");
+                        },
                         verticalPadding: 0.0,
                         width: 70,
-                        height: 35,
+                        height: 30,
                         borderRadius: 4,
                         btnText: AppText.search,
-                        style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
+                        style: mozillaTextSemiBoldText(fontSize: 12, color: DynamicColors.whiteClr),
                       ),
                     ],
                   ),
@@ -198,62 +237,128 @@ class _ListOfAccountPreInvoiceScreenState extends State<ListOfAccountPreInvoiceS
             const SizedBox(height: 8),
 
             SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
               child: SizedBox(
                 width: isMobile || isTablet ? width + 600 : width,
                 child: DatatableWidget(
                   columns: [
-                    buildHeaderWithSearch(title: "INVOICE #", onChanged: (v) {}),
-                    buildHeaderWithSearch(title: "ACCOUNT", onChanged: (v) {}),
-                    buildHeaderWithSearch(title: "DEPARTMENT", onChanged: (v) {}),
-                    buildHeaderWithSearch(title: "ORDER #", onChanged: (v) {}),
-                    buildHeaderWithSearch(title: "DATE", onChanged: (v) {}),
-                    buildHeaderWithSearch(title: "DUE DATE", onChanged: (v) {}),
-                    buildHeaderWithSearch(title: "STATUS", onChanged: (v) {}),
-                    buildHeaderWithSearch(title: "AMOUNT", onChanged: (v) {}),
-                    buildHeaderWithSearch(title: "SUBSIDIARY", onChanged: (v) {}),
+                    buildHeaderWithSearch(title: "INVOICE #", onChanged: (v) {
+                      controller.invoiceNumber.value = v;
+                      controller.onSearchAccountInvoice(invoiceType: "PRE");
+                    }),
+                    buildHeaderWithSearch(title: "ACCOUNT", onChanged: (v) {
+                      controller.searchAccount.value = v;
+                      controller.onSearchAccountInvoice(invoiceType: "PRE");
+                    }),
+                    buildHeaderWithSearch(title: "DEPARTMENT", onChanged: (v) {
+                      controller.searchDepartment.value = v;
+                      controller.onSearchAccountInvoice(invoiceType: "PRE");
+                    }),
+                    buildHeaderWithSearch(title: "ORDER #", onChanged: (v) {
+                      controller.searchOrder.value = v;
+                      controller.onSearchAccountInvoice(invoiceType: "PRE");
+                    }),
+                    buildHeaderWithSearch(title: "DATE", onChanged: (v) {
+                      controller.searchDate.value = v;
+                      controller.onSearchAccountInvoice(invoiceType: "PRE");
+                    }),
+                    buildHeaderWithSearch(title: "DUE DATE", onChanged: (v) {
+                      controller.searchDueDate.value = v;
+                      controller.onSearchAccountInvoice(invoiceType: "PRE");
+                    }),
+                    buildHeaderWithSearch(title: "STATUS", onChanged: (v) {
+                      controller.searchStatus.value = v;
+                      controller.onSearchAccountInvoice(invoiceType: "PRE");
+                    }),
+                    buildHeaderWithSearch(title: "AMOUNT", onChanged: (v) {
+                      controller.searchAmount.value = v;
+                      controller.onSearchAccountInvoice(invoiceType: "PRE");
+                    }),
+                    buildHeaderWithSearch(title: "SUBSIDIARY", onChanged: (v) {
+                      controller.searchSubsidiary.value = v;
+                      controller.onSearchAccountInvoice(invoiceType: "PRE");
+                    }),
                     buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
                   ],
-                  totalRow: 3,
-                  rows: [
-                    // Row 1
-                    DataRow(cells: [
-                      DataCell(Center(child: Text("INV-001"))),
-                      DataCell(Center(child: Text("ABC CORPORATION"))),
-                      DataCell(Center(child: Text("SALES"))),
-                      DataCell(Center(child: Text("ORD-9876"))),
-                      DataCell(Center(child: Text("2026-06-01"))),
-                      DataCell(Center(child: Text("2026-06-15"))),
-                      DataCell(Center(child: Text("PAID"))),
-                      DataCell(Center(child: Text("1,500.00"))),
-                      DataCell(Center(child: Text("SUBSIDIARY A"))),
-                      DataCell(
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            OutlinedButton(
-                              style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.transparent)),
-                              onPressed: () {},
-                              child: Icon(Icons.edit_calendar_rounded, size: 28, color: DynamicColors.primaryClr),
-                            ),
-                            const Text("|"),
-                            OutlinedButton(
-                              style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.transparent)),
-                              onPressed: () {},
-                              child: Icon(Icons.delete_forever, size: 28, color: DynamicColors.redClr),
-                            ),
-                          ],
+                    totalRow: listToShow.length ?? 0,
+                    rows: (listToShow).map((item) {
+                      return DataRow(cells: [
+                        DataCell(Center(child: Text((item.invoiceNumber ?? "").toUpperCase()))),
+                        DataCell(Center(child: Text((item.account?.name ?? "").toUpperCase()))),
+                        DataCell(Center(child: Text((item.department?.name ?? "").toUpperCase()))),
+                        DataCell(Center(child: Text((item.orderNumber ?? "").toUpperCase()))),
+                        DataCell(Center(child: Text(item.invoiceDate != null ? item.invoiceDate!.toIso8601String().split('T').first : "-"))),
+                        DataCell(Center(child: Text(item.invoiceDueDate != null ? item.invoiceDueDate!.toIso8601String().split('T').first : "-"))),
+                        DataCell(Center(child: Text(item.status?.toUpperCase() ?? "",))),
+                        DataCell(Center(child: Text(item.amount ?? "0.00"))),
+                        DataCell(Center(child: Text((item.account?.subsidiary?.name ?? "").toUpperCase()))),
+                        DataCell(
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                      side: BorderSide(color: Colors.transparent,
+                                      )),
+                                  onPressed: () {
+                                    controller.getAccountInvoice(
+                                        selectedInvoiceId: item.id);
+
+                                    int index = _controller.selectedMenuItems
+                                        .indexWhere((element) => element.title ==
+                                        "UPDATE ACCOUNT PRE INVOICE");
+                                    if (index != -1) {
+                                      _controller.selectedMenuItems[index]
+                                          .selectedItem = true;
+                                      _controller.currentPage.value =
+                                          UpdateAccountPreInvoice();
+                                    } else {
+                                      _controller.currentPage.value =
+                                          UpdateAccountPreInvoice();
+                                      _controller.menuBarRefresh(
+                                          title: "UPDATE ACCOUNT PRE INVOICE",
+                                          pageName: UpdateAccountPreInvoice());
+                                    }
+                                    controller.update();
+                                    // Get.to();
+                                  },
+                                  child: Icon(
+                                    Icons.edit_calendar_rounded,
+                                    size: 28,
+                                    color: DynamicColors.primaryClr,
+                                  ),
+                                ),
+                              Text("|"),
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(
+                                      color: Colors.transparent,
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    controller.accountInvoiceDelete(item.id);
+                                  },
+                                  child: Icon(
+                                    Icons.delete_forever,
+                                    size: 28,
+                                    color: DynamicColors.redClr,
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ]),
-                  ],
-                ),
+                      ]);
+                    }).toList()),
               ),
             ),
+            PaginationWidget(
+              currentPage: controller.currentPage.value,
+              totalPages: controller.totalPages.value,
+              onPageChange: controller.onPageAccountInvoice,
+            )
           ],
         );
       });
-        }),
+          }),
     );
   }
 }

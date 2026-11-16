@@ -1122,6 +1122,14 @@ class BookingObjectData {
   String? leadTime;
   List<Note>? notes;
   String? specialInstructions;
+  String? returnSpecialInstructions;
+  List<Note>? returnNotes;
+  String? returnParkingCharges;
+  String? returnCongestionCharges;
+  String? returnWaitingCharges;
+  String? returnExtraDropCharges;
+  String? returnMeetAndGreet;
+  String? returnCompanyPrice;
   int? paymentTypeId;
   String? companyPrice;
   String? fares;
@@ -1237,6 +1245,14 @@ class BookingObjectData {
     this.leadTime,
     this.notes,
     this.specialInstructions,
+    this.returnSpecialInstructions,
+    this.returnNotes,
+    this.returnParkingCharges,
+    this.returnCongestionCharges,
+    this.returnWaitingCharges,
+    this.returnExtraDropCharges,
+    this.returnMeetAndGreet,
+    this.returnCompanyPrice,
     this.paymentTypeId,
     this.companyPrice,
     this.fares,
@@ -1355,6 +1371,14 @@ class BookingObjectData {
     leadTime: json["lead_time"],
     notes: json["notes"] == null ? [] : List<Note>.from(json["notes"]!.map((x) => Note.fromJson(x))),
     specialInstructions: json["special_instructions"],
+    returnSpecialInstructions: json["return_special_instructions"],
+    returnNotes: json["return_notes"] == null ? [] : List<Note>.from(json["return_notes"]!.map((x) => Note.fromJson(x))),
+    returnParkingCharges: json["return_parking_charges"],
+    returnCongestionCharges: json["return_congestion_charges"],
+    returnWaitingCharges: json["return_waiting_charges"],
+    returnExtraDropCharges: json["return_extra_drop_charges"],
+    returnMeetAndGreet: json["return_meet_and_greet"],
+    returnCompanyPrice: json["return_company_price"],
     paymentTypeId: json["payment_type_id"],
     companyPrice: json["company_price"],
     fares: json["fares"],
@@ -1468,6 +1492,14 @@ class BookingObjectData {
     "lead_time": leadTime,
     "notes": notes == null ? [] : List<dynamic>.from(notes!.map((x) => x.toJson())),
     "special_instructions": specialInstructions,
+    "return_special_instructions": returnSpecialInstructions,
+    "return_notes": returnNotes == null ? [] : List<dynamic>.from(returnNotes!.map((x) => x.toJson())),
+    "return_parking_charges": returnParkingCharges,
+    "return_congestion_charges": returnCongestionCharges,
+    "return_waiting_charges": returnWaitingCharges,
+    "return_extra_drop_charges": returnExtraDropCharges,
+    "return_meet_and_greet": returnMeetAndGreet,
+    "return_company_price": returnCompanyPrice,
     "payment_type_id": paymentTypeId,
     "company_price": companyPrice,
     "fares": fares,

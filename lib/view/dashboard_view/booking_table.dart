@@ -611,6 +611,7 @@ class _BookingTableState extends State<BookingTable> {
                                     ),
                                   ),
                                 ),
+
                                 /// CUSTOMER ✅
                                 DataCell(
                                   SizedBox(
@@ -727,8 +728,6 @@ class _BookingTableState extends State<BookingTable> {
                                                 ],
                                               ],
                                             ),
-
-
                                           ],
                                         ),
                                       ),
@@ -846,9 +845,6 @@ class _BookingTableState extends State<BookingTable> {
                                                 ],
                                               ],
                                             ),
-
-
-
                                           ],
                                         ),
                                       ),
@@ -876,14 +872,8 @@ class _BookingTableState extends State<BookingTable> {
                                             color: item.account!.backgroundColor == null?Colors.transparent: Color(int.parse("0xFF${item.account!.backgroundColor}")),
                                             // Optional: borderRadius: BorderRadius.circular(2),
                                           ),
-
-                                          child:
-
-                                          Text(
-
+                                          child: Text(
                                             "${item.account?.name?.toUpperCase() ?? "".toUpperCase()}""\n""${ item.orderNumber ?.toUpperCase() ?? "".toUpperCase()}",
-
-
                                             style: mozillaTextRegularText(
                                               fontSize: widthss/140,
                                               color: item.account!.foregroundColor == null?DynamicColors.black: Color(int.parse("0xFF${item.account!.foregroundColor}")),
@@ -892,6 +882,7 @@ class _BookingTableState extends State<BookingTable> {
                                     ),
                                   ),
                                 ),
+
                                 /// DRIVER ✅
                                 DataCell(
                                   SizedBox(
@@ -968,7 +959,7 @@ class _BookingTableState extends State<BookingTable> {
                                                 icon: Container(
                                                   padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
                                                   decoration: BoxDecoration(
-                                                    color: DynamicColors.primaryClr,
+                                                    color: DynamicColors.secondaryClr,
                                                     borderRadius: BorderRadius.circular(4),
                                                     border: Border.all(color: Colors.blue.shade300, width: 0.8),
                                                   ),
@@ -981,13 +972,13 @@ class _BookingTableState extends State<BookingTable> {
                                                       crossAxisAlignment: CrossAxisAlignment.start,
                                                       mainAxisSize: MainAxisSize.min,
                                                       children: [
-                                                        const Text("CHILD SEATS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                                         Text("CHILD SEATS", style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12)),
                                                         const Divider(height: 8),
                                                         ...item.childSeat!.map((cs) => Padding(
                                                           padding: const EdgeInsets.symmetric(vertical: 2.0),
                                                           child: Text(
                                                             "NO OF CHILD: ${cs.child ?? "-"}\nAGE: ${cs.age ?? "-"}".toUpperCase(),
-                                                            style: const TextStyle(fontSize: 11),
+                                                            style: mozillaTextRegularText(fontSize: 11),
                                                           ),
                                                         )),
                                                       ],
@@ -1050,7 +1041,7 @@ class _BookingTableState extends State<BookingTable> {
                                                 icon: Container(
                                                   padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
                                                   decoration: BoxDecoration(
-                                                    color: DynamicColors.primaryClr,
+                                                    color: DynamicColors.secondaryClr,
                                                     borderRadius: BorderRadius.circular(4),
                                                     border: Border.all(color: Colors.blue.shade300, width: 0.8),
                                                   ),
@@ -1063,7 +1054,7 @@ class _BookingTableState extends State<BookingTable> {
                                                       crossAxisAlignment: CrossAxisAlignment.start,
                                                       mainAxisSize: MainAxisSize.min,
                                                       children: [
-                                                        const Text("NOTES", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                                         Text("NOTES", style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12)),
                                                         const Divider(height: 8),
                                                         ...item.notes!.map((e) => Padding(
                                                           padding: const EdgeInsets.symmetric(vertical: 2.0),
@@ -1072,12 +1063,12 @@ class _BookingTableState extends State<BookingTable> {
                                                             children: [
                                                               Text(
                                                                 (e.note ?? "").toUpperCase(),
-                                                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                                                                style: mozillaTextRegularText(fontSize: 11, fontWeight: FontWeight.w600),
                                                               ),
                                                               if ((e.createdBy != null && e.createdBy!.isNotEmpty) || (e.createdAt != null && e.createdAt!.isNotEmpty))
                                                                 Text(
                                                                   "${e.createdBy ?? ""} ${e.createdAt ?? ""}".trim().toUpperCase(),
-                                                                  style: const TextStyle(fontSize: 10, color: Colors.black),
+                                                                  style: mozillaTextRegularText(fontSize: 10, color: Colors.grey),
                                                                 ),
                                                             ],
                                                           ),

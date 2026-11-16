@@ -754,6 +754,11 @@ void _saveRoute(Routing? routing) {
   // it would strand a user who signs in right after seeing it.
   if (name.isEmpty || name == Routes.loginScreen) return;
   if (!_isRegisteredRoute(name)) return;
+  // The create-booking form opens in its own browser tab. Storage is shared
+  // between tabs, so saving it here would make the main tab reopen on the form
+  // after a reload instead of the dashboard. The tab's own reload still finds
+  // the form from its URL fragment.
+  if ((Uri.tryParse(name)?.path ?? name) == Routes.createBooking) return;
   // Stored whole, query string included — Get.parameters is rebuilt from it on
   // the way back in, so the restored screen opens the same record.
   GetStorage().write(_kLastRouteKey, name);

@@ -271,7 +271,7 @@ class _UpdateAccountInvoiceScreenState
                 )
                 )),
               Padding(
-                  padding: EdgeInsets.only(top: 25),
+                  padding: EdgeInsets.only(top: 15),
                   child: RichText(
                       text: TextSpan(
                           text: 'INVOICE #',
@@ -279,7 +279,7 @@ class _UpdateAccountInvoiceScreenState
                               fontWeight: FontWeight.bold),
                           children: [
                         TextSpan(
-                            text: controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.invoiceNumber.toString() ?? "-",
+                            text: (controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.invoiceNumber.toString() ?? "").toUpperCase(),
                             style: mozillaTextRegularText(
                                 color: DynamicColors.redClr)
                         )

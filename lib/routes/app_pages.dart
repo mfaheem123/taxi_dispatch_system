@@ -7,6 +7,7 @@ import '../view/auth/edit_jobs.dart';
 import '../view/auth/new_login_screen.dart';
 import '../view/auth/receipt_details.dart';
 import '../view/booking_view/complete_bookingview.dart';
+import '../view/booking_view/create_new_booking_form.dart';
 import '../view/customer/add_customerScreen.dart';
 import '../view/customer/create_complaint.dart';
 import '../view/customer/create_lost_propertyScreen.dart';
@@ -70,6 +71,13 @@ class AppPages {
         // booking: EditJobDetails(id: int.tryParse(Get.parameters['id'] ?? '')),
       ),
       binding: DashBoardBindings(),
+    ),
+    // Opened in a new browser tab from BOOKINGS > CREATE BOOKINGS. The form
+    // creates its own DashboardController and loads the dashboard data itself
+    // when the tab has no dashboard, so it needs no binding.
+    GetPage(
+      name: _Paths.createBooking,
+      page: () => const CreateNewBookingForm(),
     ),
     GetPage(
       name: _Paths.CustomerFormScreen,

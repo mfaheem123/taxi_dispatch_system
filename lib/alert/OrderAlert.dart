@@ -34,12 +34,12 @@ class OrderAlert {
                   if (editingIndex == null) {
 
                     controller.orderAccountList.add({
-                      "order_number": controller.orderCtrl.text,
+                      "order_numbers": controller.orderCtrl.text,
 
                     });
                   } else {
                     controller.orderAccountList[editingIndex!] = {
-                      "order_number": controller.orderCtrl.text,
+                      "order_numbers": controller.orderCtrl.text,
 
                     };
                     editingIndex = null;
@@ -178,7 +178,7 @@ class OrderAlert {
                             Expanded(flex: 3,
                           child: Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                            child: Center(child: Text(row["order"] ?? "")))),
+                            child: Center(child: Text(row["order_numbers"] ?? "")))),
                             VerticalDivider(
                                 width: 1,
                                 thickness: 1,
@@ -196,7 +196,7 @@ class OrderAlert {
                                       onPressed: () {
                                         setState(() {
                                           editingIndex = index;
-                                          controller.orderCtrl.text = row["order"] ?? "";
+                                          controller.orderCtrl.text = row["order_numbers"] ?? "";
 
                                         });
                                       },

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import '../../../routes/app_pages.dart';
+import '../../../utils/open_new_tab_web.dart';
 import 'app_menu_item.dart';
 
 import '../../booking_view/app_booking.dart';
 import '../../booking_view/complete_bookingview.dart';
-import '../../booking_view/create_new_booking_form.dart';
 import '../../booking_view/multi_booking.dart';
 import '../../booking_view/pending_booking.dart';
 import '../../booking_view/pre_booking.dart';
@@ -17,15 +17,13 @@ AppMenuItem buildBookingsMenu(MenuActions actions) {
   return AppMenuItem(title: "BOOKINGS", icon: Icons.event_note, children: [
     AppMenuItem(
       title: "CREATE BOOKINGS",
-      // The booking form is pushed as a route of its own instead of becoming a
-      // chip, so the open-page limit only warns here — the form opens either
-      // way.
-      onTap: () {
-        if (!actions.canOpenAnotherPage) {
-          actions.showLimitReached();
-        }
-        Get.to(CreateNewBookingForm());
-      },
+      // Opens the booking form in a new browser tab, on its own route
+      // (Routes.createBooking → CreateNewBookingForm). It is not a chip in
+      // this tab's strip, so the open-page limit doesn't apply. The route goes
+      // in the fragment, the same as the wallboard and drivers map, because
+      // _getInitialRoute in main.dart reads it from there.
+      onTap: () =>
+          openInNewTab('${Uri.base.origin}/#${Routes.createBooking}'),
     ),
     AppMenuItem(
       title: "COMPLETE BOOKINGS",
