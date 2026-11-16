@@ -183,7 +183,11 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                 ),
                 SizedBox(height: 10),
                 Visibility(
-                  visible: dashBoardCntrl.selectJourneyTypeValue!.id == 3?true:false,
+                  visible: (dashBoardCntrl.selectJourneyTypeValue?.id == 3) ||
+                      (dashBoardCntrl.selectJourneyTypeValue?.journeyType?.toUpperCase().trim() == 'R/N') ||
+                      (dashBoardCntrl.selectJourneyTypeValue?.journeyType?.toUpperCase().trim() == 'RETURN') ||
+                      (dashBoardCntrl.jourValue == 'R/N') ||
+                      (dashBoardCntrl.returnTrip.value == true),
                   child: Column(
                     children: [
 

@@ -241,12 +241,16 @@ class _LabeledMobileFieldState extends State<LabeledMobileField> {
       return KeyEventResult.ignored;
     }
     final key = event.logicalKey;
+    // ↑ / ↓ belong to the dropdown panel only while it is open. With it closed,
+    // they bubble up to the screen's PageScrollWrapper to scroll the page instead.
     if (key == LogicalKeyboardKey.arrowDown) {
-      if (_entry != null) _moveHighlight(1);
+      if (_entry == null) return KeyEventResult.ignored;
+      _moveHighlight(1);
       return KeyEventResult.handled;
     }
     if (key == LogicalKeyboardKey.arrowUp) {
-      if (_entry != null) _moveHighlight(-1);
+      if (_entry == null) return KeyEventResult.ignored;
+      _moveHighlight(-1);
       return KeyEventResult.handled;
     }
     if (key == LogicalKeyboardKey.enter ||

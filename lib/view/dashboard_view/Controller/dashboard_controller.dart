@@ -2494,7 +2494,7 @@ class DashboardController extends GetxController {
       }
 
       selectVehicleValue = dashboardAllData!.vehicleTypes![0];
-      getAccountData(subsidiariesId: dashboardAllData!.subsidiaries![0].id);
+      await getAccountData(subsidiariesId: dashboardAllData!.subsidiaries![0].id);
       fetchEscortList();
       getDashboardTableData(tableId: bookingTabsList!.first.id);
       dashboardDataLoader(false);
@@ -2507,9 +2507,9 @@ class DashboardController extends GetxController {
   DashboardAccountObject? selectAccountValue;
   DepartmentObject? selectDepartmentData;
 
-  getAccountData({subsidiariesId}) async {
+  Future<void> getAccountData({subsidiariesId}) async {
     var response = await Api().get("accounts/subsidiary/$subsidiariesId", sendCompanyId: true,);
-    if (response.statusCode == 200) {
+    if (response != null && response.statusCode == 200) {
       selectDepartmentData = null;
       selectAccountValue = null;
       dashboardAccountData = DashboardAccountModel.fromJson(response.data);

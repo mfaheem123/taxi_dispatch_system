@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../routes/app_pages.dart';
 import '../../../utils/open_new_tab_web.dart';
+import '../../booking_view/create_new_booking_form.dart';
 import 'app_menu_item.dart';
 
 import '../../booking_view/app_booking.dart';
@@ -22,8 +24,14 @@ AppMenuItem buildBookingsMenu(MenuActions actions) {
       // this tab's strip, so the open-page limit doesn't apply. The route goes
       // in the fragment, the same as the wallboard and drivers map, because
       // _getInitialRoute in main.dart reads it from there.
-      onTap: () =>
-          openInNewTab('${Uri.base.origin}/#${Routes.createBooking}'),
+      onTap: () {
+        if (!actions.canOpenAnotherPage) {
+          actions.showLimitReached();
+        }
+        Get.to(CreateNewBookingForm());
+      },
+      // onTap: () =>
+      //     openInNewTab('${Uri.base.origin}/#${Routes.createBooking}'),
     ),
     AppMenuItem(
       title: "COMPLETE BOOKINGS",

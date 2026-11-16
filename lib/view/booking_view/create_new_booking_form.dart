@@ -156,9 +156,34 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
       await controller.dashboardData();
       if (!mounted) return;
     }
+
+    // Ensure the default subsidiary is set if not already selected.
+    if (controller.selectSubsidiariesValue == null &&
+        (controller.dashboardAllData?.subsidiaries?.isNotEmpty ?? false)) {
+      controller.selectSubsidiariesValue =
+          controller.dashboardAllData!.subsidiaries!.first;
+    }
+
+    // Always ensure account data is loaded for this form's selected subsidiary.
+    // If the account data is missing (e.g. cold start / new tab) or belongs
+    // to a different subsidiary, fetch it directly for this controller.
+    if (controller.selectSubsidiariesValue != null) {
+      final subId = controller.selectSubsidiariesValue!.id;
+      final existingAccounts = controller.dashboardAccountData?.accounts;
+      final hasAccountsForSub = existingAccounts != null &&
+          existingAccounts.isNotEmpty &&
+          existingAccounts.every((a) => a.subsidiaryId == subId);
+
+      if (!hasAccountsForSub) {
+        await controller.getAccountData(subsidiariesId: subId);
+        if (!mounted) return;
+      }
+    }
+
     if (controller.seeZoneOnMapModel == null) controller.seeZoneOnMapp();
     // The dashboard's list may still be loading (or have failed); fetch our own.
     if (controller.escortList.isEmpty) controller.fetchEscortList();
+    if (mounted) setState(() {});
     controller.update();
   }
 
@@ -577,12 +602,16 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                 value: controller.selectSubsidiariesValue,
                 itemLabel: (s) => s.name ?? '',
                 allowUnselect: false,
-                onChanged: (v) {
+                onChanged: (v) async {
                   if (v == null) return;
                   setState(() {
                     controller.selectSubsidiariesValue = v;
-                    controller.getAccountData(subsidiariesId: v.id);
+                    controller.selectAccountValue = null;
+                    controller.selectDepartmentData = null;
+                    controller.selectOrderValue = null;
                   });
+                  await controller.getAccountData(subsidiariesId: v.id);
+                  if (mounted) setState(() {});
                 },
               )),
             ],
@@ -829,6 +858,8 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
               ))),
               SpanField(LabeledObjectDropdown<DashboardAccountObject>(
                 'ACC',
+                key: ValueKey(
+                    'acc_${controller.selectSubsidiariesValue?.id}_${controller.dashboardAccountData?.accounts?.length ?? 0}'),
                 items: controller.dashboardAccountData?.accounts ?? const [],
                 value: controller.selectAccountValue,
                 itemLabel: (a) => a.name ?? '',
@@ -843,6 +874,8 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
               )),
               SpanField(LabeledObjectDropdown<DepartmentObject>(
                 'DEPT',
+                key: ValueKey(
+                    'dept_${controller.selectAccountValue?.id}_${controller.selectAccountValue?.departments?.length ?? 0}'),
                 items: controller.selectAccountValue?.departments ?? const [],
                 value: controller.selectDepartmentData,
                 itemLabel: (d) => d.name ?? '',
@@ -985,7 +1018,9 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                     icon: Icons.settings_suggest,
                     tooltip: 'SETTINGS',
                     onTap: () => showDialog(
-                        context: context, builder: (_) => SettingsDialog()),
+                        context: context,
+                        builder: (_) =>
+                            SettingsDialog(formController: controller)),
                   ),
                   IconAction(
                     icon: Icons.attach_money,
@@ -1034,7 +1069,14 @@ class _CreateNewBookingFormState extends State<CreateNewBookingForm> {
                     Icons.payments_outlined, 'T/FARES:', _fareText()),
               ]));
           final buttons = ActionButtons(
-            onClear: controller.refreshPostAllFields,
+            onClear: () {
+              controller.refreshPostAllFields();
+              if (controller.selectSubsidiariesValue != null) {
+                controller.getAccountData(
+                    subsidiariesId: controller.selectSubsidiariesValue!.id);
+              }
+              setState(() {});
+            },
             onSave: _onSave,
           );
           return Column(children: [
