@@ -83,8 +83,8 @@ class CustomerInvoiceController extends GetxController {
 
   /// todo Customer Pre Invoice filter Api
 
-  RxList<Booking> preInvoiceAll = <Booking>[].obs;
-  RxList<Booking> filteredAccountPreInvoice = <Booking>[].obs;
+  RxList<PreBooking> preInvoiceAll = <PreBooking>[].obs;
+  RxList<PreBooking> filteredAccountPreInvoice = <PreBooking>[].obs;
 
   RxString searchRef = ''.obs;
   RxString searchDateTime = ''.obs;

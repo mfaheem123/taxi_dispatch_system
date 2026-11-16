@@ -11,7 +11,7 @@ String customerPreInvFilterModelToJson(CustomerPreInvFilterModel data) => json.e
 class CustomerPreInvFilterModel {
   bool? status;
   int? totalRecords;
-  List<Booking>? bookings;
+  List<PreBooking>? bookings;
 
   CustomerPreInvFilterModel({
     this.status,
@@ -22,7 +22,7 @@ class CustomerPreInvFilterModel {
   factory CustomerPreInvFilterModel.fromJson(Map<String, dynamic> json) => CustomerPreInvFilterModel(
     status: json["status"],
     totalRecords: json["total_records"],
-    bookings: json["bookings"] == null ? [] : List<Booking>.from(json["bookings"]!.map((x) => Booking.fromJson(x))),
+    bookings: json["bookings"] == null ? [] : List<PreBooking>.from(json["bookings"]!.map((x) => PreBooking.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -32,7 +32,7 @@ class CustomerPreInvFilterModel {
   };
 }
 
-class Booking {
+class PreBooking {
   String? id;
   String? referenceNumber;
   int? subsidiaryId;
@@ -144,7 +144,7 @@ class Booking {
   Employee? employee;
   Airport? airport;
 
-  Booking({
+  PreBooking({
     this.id,
     this.referenceNumber,
     this.subsidiaryId,
@@ -257,7 +257,7 @@ class Booking {
     this.airport,
   });
 
-  factory Booking.fromJson(Map<String, dynamic> json) => Booking(
+  factory PreBooking.fromJson(Map<String, dynamic> json) => PreBooking(
     id: json["id"],
     referenceNumber: json["reference_number"],
     subsidiaryId: json["subsidiary_id"],
