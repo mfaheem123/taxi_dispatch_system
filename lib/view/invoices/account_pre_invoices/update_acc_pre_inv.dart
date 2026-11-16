@@ -408,14 +408,14 @@ class _UpdateAccountPreInvoiceState extends State<UpdateAccountPreInvoice> {
                       if (item is Map && item['type'] == 'TOTAL') {
                         return [
                           "", "", "", "", "", "", "",
-                          Text("TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900)),
-                          Text("£${controller.totalFare.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()),
-                          Text("£${controller.totalPC.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()),
-                          Text("£${controller.totalWC.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()),
-                          Text("£${controller.totalEDC.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()),
-                          Text("£${controller.totalMG.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()),
-                          Text("£${controller.totalCC.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()),
-                          Text("£${controller.subTotal.toStringAsFixed(2)}", style: mozillaTextSemiBoldText(color: Colors.blue, fontWeight: FontWeight.bold)),
+                          Center(child: Text("TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900, fontSize: 18))),
+                          Center(child: Text("£${controller.totalFare.toStringAsFixed(2)}", style: mozillaTextSemiBoldText(fontSize: 18))),
+                          Center(child: Text("£${controller.totalPC.toStringAsFixed(2)}", style: mozillaTextSemiBoldText(fontSize: 18))),
+                          Center(child: Text("£${controller.totalWC.toStringAsFixed(2)}", style: mozillaTextSemiBoldText(fontSize: 18))),
+                          Center(child: Text("£${controller.totalEDC.toStringAsFixed(2)}", style: mozillaTextSemiBoldText(fontSize: 18))),
+                          Center(child: Text("£${controller.totalMG.toStringAsFixed(2)}", style: mozillaTextSemiBoldText(fontSize: 18))),
+                          Center(child: Text("£${controller.totalCC.toStringAsFixed(2)}", style: mozillaTextSemiBoldText(fontSize: 18))),
+                          Center(child: Text("£${controller.subTotal.toStringAsFixed(2)}", style: mozillaTextSemiBoldText(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 18))),
                           "",
                         ];
                       }
@@ -423,23 +423,23 @@ class _UpdateAccountPreInvoiceState extends State<UpdateAccountPreInvoice> {
                       if (item is Map && item['type'] == 'ADMIN_FEES') {
                         return [
                           "", "", "", "", "", "", "",
-                          Text("ADMIN FEES", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900)),
+                          Center(child: Text("ADMIN FEES", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900, fontSize: 18))),
                           "", "", "", "", "", "",
-                          Text("£${controller.adminFees ?? ""}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900)),
+                          Center(child: Text("£${controller.adminFees.toStringAsFixed(2)}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900, fontSize: 18))),
                           "",
                         ];
                       }
 
                       if (item is Map && item['type'] == 'GRAND_TOTAL') {
+                        final rawAmount = double.tryParse(controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.amount?.toString() ?? "0") ?? 0.0;
                         return [
                           "", "", "", "", "", "", "",
-                          Text("GRAND TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900)),
+                          Center(child: Text("GRAND TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900, fontSize: 17))),
                           "", "", "", "", "", "",
-                          Text("£${controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.amount ?? "0"}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900)),
+                          Center(child: Text("£${rawAmount.toStringAsFixed(2)}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900, fontSize: 18))),
                           "",
                         ];
                       }
-
 
                       final lineItem = item;
                       final booking = lineItem.booking;
@@ -456,51 +456,51 @@ class _UpdateAccountPreInvoiceState extends State<UpdateAccountPreInvoice> {
                         (booking?.paymentType?.name ?? "-").toUpperCase(),
 
                         EditableCellWidget(
-                          initialValue: booking.fares,
+                          initialValue: booking.fares?.toString() ?? "0.0",
                           onChanged: (val) {
-                            booking.fares = (double.tryParse(val) ?? 0.0).toString();
+                            booking.fares = double.tryParse(val) ?? 0.0;
                             controller.recalculateRowTotal(booking);
                           },
                         ),
                         EditableCellWidget(
-                          initialValue: booking.parkingCharges,
+                          initialValue: booking.parkingCharges?.toString() ?? "0.0",
                           onChanged: (val) {
-                            booking.parkingCharges = (double.tryParse(val) ?? 0.0).toString();
+                            booking.parkingCharges = double.tryParse(val) ?? 0.0;
                             controller.recalculateRowTotal(booking);
                           },
                         ),
                         EditableCellWidget(
-                          initialValue: booking.waitingCharges,
+                          initialValue: booking.waitingCharges?.toString() ?? "0.0",
                           onChanged: (val) {
-                            booking.waitingCharges = (double.tryParse(val) ?? 0.0).toString();
+                            booking.waitingCharges = double.tryParse(val) ?? 0.0;
                             controller.recalculateRowTotal(booking);
                           },
                         ),
                         EditableCellWidget(
-                          initialValue: booking.extraDropCharges,
+                          initialValue: booking.extraDropCharges?.toString() ?? "0.0",
                           onChanged: (val) {
-                            booking.extraDropCharges = (double.tryParse(val) ?? 0.0).toString();
+                            booking.extraDropCharges = double.tryParse(val) ?? 0.0;
                             controller.recalculateRowTotal(booking);
                           },
                         ),
                         EditableCellWidget(
-                          initialValue: booking.meetAndGreet,
+                          initialValue: booking.meetAndGreet?.toString() ?? "0.0",
                           onChanged: (val) {
-                            booking.meetAndGreet = (double.tryParse(val) ?? 0.0).toString();
+                            booking.meetAndGreet = double.tryParse(val) ?? 0.0;
                             controller.recalculateRowTotal(booking);
                           },
                         ),
                         EditableCellWidget(
-                          initialValue: booking.congestionCharges,
+                          initialValue: booking.congestionCharges?.toString() ?? "0.0",
                           onChanged: (val) {
-                            booking.congestionCharges = (double.tryParse(val) ?? 0.0).toString();
+                            booking.congestionCharges = double.tryParse(val) ?? 0.0;
                             controller.recalculateRowTotal(booking);
                           },
                         ),
 
                         Center(
                           child: Text(
-                            "£${booking?.totalCharges ?? 0}",
+                            "£${(booking?.totalCharges ?? 0.0).toStringAsFixed(2)}",
                             style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold),
                           ),
                         ),

@@ -545,7 +545,7 @@ class InvoiceController extends GetxController {
   void togglePaidStatus(AccountInvoiceAccountInvoice invoice) {
     isPaid.value = !isPaid.value;
     invoice.status = isPaid.value ? "PAID" : "UNPAID";
-    updateBookingAmount(invoice);
+    // updateBookingAmount(invoice);
   }
 
   bool isFilterUpdateApplied = false;
@@ -584,8 +584,7 @@ class InvoiceController extends GetxController {
         }
       }
       orderNumber.text = data?.orderNumber ?? "";
-      invoiceDateController =
-          "${data?.invoiceDate?.year}-${data?.invoiceDate?.month}-${data?.invoiceDate?.day}";
+      invoiceDateController = "${data?.invoiceDate?.year}-${data?.invoiceDate?.month}-${data?.invoiceDate?.day}";
       invoiceDueDateController =
           "${data?.invoiceDueDate?.year}-${data?.invoiceDueDate?.month}-${data?.invoiceDueDate?.day}";
       if (data != null) {
@@ -902,20 +901,85 @@ CC: CONGESTION CHARGES
       subTotal = 0;
   double adminFees = 0.0;
 
-  void recalculateRowTotal(dynamic lineItem) {
-    final booking = lineItem.booking;
+  // void recalculateRowTotal(dynamic lineItem) {
+  //   final booking = lineItem.booking;
+  //   if (booking != null) {
+  //     // 1. Row Total Calculation
+  //     booking
+  //         .totalCharges = ((double.tryParse(booking.fares?.toString() ?? "0") ??
+  //             0.0) +
+  //         (double.tryParse(booking.parkingCharges?.toString() ?? "0") ?? 0.0) +
+  //         (double.tryParse(booking.waitingCharges?.toString() ?? "0") ?? 0.0) +
+  //         (double.tryParse(booking.extraDropCharges?.toString() ?? "0") ??
+  //             0.0) +
+  //         (double.tryParse(booking.meetAndGreet?.toString() ?? "0") ?? 0.0) +
+  //         (double.tryParse(booking.congestionCharges?.toString() ?? "0") ??
+  //             0.0));
+  //
+  //     // 2. Reset Totals before loop
+  //     totalFare = 0;
+  //     totalPC = 0;
+  //     totalWC = 0;
+  //     totalEDC = 0;
+  //     totalMG = 0;
+  //     totalCC = 0;
+  //     subTotal = 0;
+  //
+  //     var lineItems = updateInvoiceByIdModel
+  //             ?.accountInvoice?.accountInvoice?.accountInvoiceLineitems ??
+  //         [];
+  //
+  //     for (var item in lineItems) {
+  //       var b = item.booking;
+  //       totalFare += (b?.fares ?? 0.0);
+  //       totalPC += (b?.parkingCharges ?? 0.0);
+  //       totalWC += (b?.waitingCharges ?? 0.0);
+  //       totalEDC += (b?.extraDropCharges ?? 0.0);
+  //       totalMG += (b?.meetAndGreet ?? 0.0);
+  //       totalCC += (b?.congestionCharges ?? 0.0);
+  //       subTotal += (b?.totalCharges ?? 0.0);
+  //     }
+  //
+  //     var accountData = updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.account;
+  //
+  //
+  //     double rawAdminFees = double.tryParse(accountData?.adminFees?.toString() ?? "0") ?? 0.0;
+  //     if (accountData?.adminFeesType == "AMOUNT") {
+  //       adminFees = rawAdminFees;
+  //     } else if (accountData?.adminFeesType == "PERCENTAGE") {
+  //       adminFees = (subTotal * rawAdminFees) / 100;
+  //     }
+  //     // double adminFees = double.tryParse(updateInvoiceByIdModel
+  //     //             ?.accountInvoice?.accountInvoice?.account?.adminFees
+  //     //             ?.toString() ??
+  //     //         "0") ??
+  //     //     0.0;
+  //     updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.amount =
+  //         (subTotal + adminFees).toStringAsFixed(2);
+  //
+  //     update();
+  //   }
+  // }
+
+  void recalculateRowTotal(dynamic input) {
+    dynamic booking;
+    if (input.runtimeType.toString().contains('Lineitem') || (input.runtimeType.toString().contains('Item'))) {
+      booking = input.booking;
+    } else {
+      booking = input;
+    }
+
     if (booking != null) {
-      // 1. Row Total Calculation
-      booking
-          .totalCharges = ((double.tryParse(booking.fares?.toString() ?? "0") ??
-              0.0) +
-          (double.tryParse(booking.parkingCharges?.toString() ?? "0") ?? 0.0) +
-          (double.tryParse(booking.waitingCharges?.toString() ?? "0") ?? 0.0) +
-          (double.tryParse(booking.extraDropCharges?.toString() ?? "0") ??
-              0.0) +
-          (double.tryParse(booking.meetAndGreet?.toString() ?? "0") ?? 0.0) +
-          (double.tryParse(booking.congestionCharges?.toString() ?? "0") ??
-              0.0));
+      double pV(dynamic v) => double.tryParse(v?.toString().trim() ?? '') ?? 0.0;
+
+      double f = pV(booking.fares);
+      double p = pV(booking.parkingCharges);
+      double w = pV(booking.waitingCharges);
+      double e = pV(booking.extraDropCharges);
+      double m = pV(booking.meetAndGreet);
+      double c = pV(booking.congestionCharges);
+
+      booking.totalCharges = f + p + w + e + m + c;
 
       // 2. Reset Totals before loop
       totalFare = 0;
@@ -927,36 +991,34 @@ CC: CONGESTION CHARGES
       subTotal = 0;
 
       var lineItems = updateInvoiceByIdModel
-              ?.accountInvoice?.accountInvoice?.accountInvoiceLineitems ??
+          ?.accountInvoice?.accountInvoice?.accountInvoiceLineitems ??
           [];
 
       for (var item in lineItems) {
         var b = item.booking;
-        totalFare += (b?.fares ?? 0.0);
-        totalPC += (b?.parkingCharges ?? 0.0);
-        totalWC += (b?.waitingCharges ?? 0.0);
-        totalEDC += (b?.extraDropCharges ?? 0.0);
-        totalMG += (b?.meetAndGreet ?? 0.0);
-        totalCC += (b?.congestionCharges ?? 0.0);
-        subTotal += (b?.totalCharges ?? 0.0);
+        if (b != null) {
+          totalFare += pV(b.fares);
+          totalPC += pV(b.parkingCharges);
+          totalWC += pV(b.waitingCharges);
+          totalEDC += pV(b.extraDropCharges);
+          totalMG += pV(b.meetAndGreet);
+          totalCC += pV(b.congestionCharges);
+          subTotal += pV(b.totalCharges);
+        }
       }
 
       var accountData = updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.account;
 
-
-      double rawAdminFees = double.tryParse(accountData?.adminFees?.toString() ?? "0") ?? 0.0;
+      double rawAdminFees = pV(accountData?.adminFees);
       if (accountData?.adminFeesType == "AMOUNT") {
         adminFees = rawAdminFees;
       } else if (accountData?.adminFeesType == "PERCENTAGE") {
-        adminFees = (subTotal * rawAdminFees) / 100;
+        adminFees = double.parse(((subTotal * rawAdminFees) / 100).toStringAsFixed(2));
       }
-      // double adminFees = double.tryParse(updateInvoiceByIdModel
-      //             ?.accountInvoice?.accountInvoice?.account?.adminFees
-      //             ?.toString() ??
-      //         "0") ??
-      //     0.0;
+
+      double finalGrandTotal = subTotal + adminFees;
       updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.amount =
-          (subTotal + adminFees).toStringAsFixed(2);
+          finalGrandTotal.toStringAsFixed(2);
 
       update();
     }
@@ -975,6 +1037,7 @@ CC: CONGESTION CHARGES
     var response = await Api()
         .post(formData, "bookings/fare-charges/${booking.id}", auth: true);
     if (response.statusCode == 200) {
+      update();
       BotToast.showText(text: "CHARGES UPDATED!");
     }
   }
@@ -990,11 +1053,9 @@ CC: CONGESTION CHARGES
         "from_date": "${invoice.fromDate!.year}-${invoice.fromDate!.month}-${invoice.fromDate!.day}",
       if (invoice.toDate != null)
         "to_date": "${invoice.toDate!.year}-${invoice.toDate!.month}-${invoice.toDate!.day}",
-      // Note: Agar ye controllers text fields hain, toh yahan .text lagana mat bhooliyega (e.g., invoiceDateController.text)
       if (invoiceDateController != null) "invoice_date": invoiceDateController,
       if (invoiceDueDateController != null) "invoice_due_date": invoiceDueDateController,
       if (invoice.invoiceType != null) "invoice_type": invoice.invoiceType,
-      // Yahan aapka status "PAID" ya "UNPAID" chala jayega form data me
       if (invoice.status != null) "status": invoice.status,
     };
 
@@ -1006,7 +1067,6 @@ CC: CONGESTION CHARGES
       clearUpdateInvoiceData();
     }
   }
-
 
   void clearUpdateInvoiceData() {
     updateInvoiceByIdModel = null;
