@@ -84,13 +84,12 @@ class CustomerInvoiceController extends GetxController {
   /// todo Customer Pre Invoice filter Api
 
   RxList<PreBooking> preInvoiceAll = <PreBooking>[].obs;
-  RxList<PreBooking> filteredAccountPreInvoice = <PreBooking>[].obs;
+  RxList<PreBooking> filteredPreInvoice = <PreBooking>[].obs;
 
   RxString searchRef = ''.obs;
   RxString searchDateTime = ''.obs;
   RxString searchPickup = ''.obs;
   RxString searchDropOff = ''.obs;
-  RxString searchCustomer = ''.obs;
   RxString searchVehicle = ''.obs;
   RxString searchJourType = ''.obs;
   RxString searchPaymentType = ''.obs;
@@ -117,6 +116,45 @@ class CustomerInvoiceController extends GetxController {
     String pTIds = selectedPaymentTypeIds.isNotEmpty
         ? "[${selectedPaymentTypeIds.join(",")}]"
         : "";
+
+    var response = await Api().get("bookings/customer-pre-invoice-bookings",
+      queryParameters: {
+        "customer_id": selectedCustomerId.toString(),
+        "from_date": filterFromDate,
+        "to_date": filterToDate,
+        "payment_type_ids": pTIds,
+        "ref_number": searchRef.value.toLowerCase(),
+        "datetime": searchDateTime.value.toLowerCase(),
+        "pickup": searchPickup.value.toLowerCase(),
+        "dropoff": searchDropOff.value.toLowerCase(),
+        "vehicle": searchVehicle.value.toLowerCase(),
+        "journey_type": searchJourType.value.toLowerCase(),
+        "payment_type": searchPaymentType.value.toLowerCase(),
+        "fare": searchFare.value.toLowerCase(),
+        "parking_charges": searchPc.value.toLowerCase(),
+        "waiting_charges": searchWc.value.toLowerCase(),
+        "extra_drop_charges": searchEdc.value.toLowerCase(),
+        "meet_and_greet": searchMg.value.toLowerCase(),
+        "congestion_charges": searchCc.value.toLowerCase(),
+        "total_charges": searchTotal.value.toLowerCase(),
+      },
+    );
+
+    if (response.statusCode == 200) {
+      customerPreInvFilterModel = CustomerPreInvFilterModel.fromJson(response.data);
+      preInvoiceAll.value = customerPreInvFilterModel?.bookings ?? [];
+      filteredPreInvoice = preInvoiceAll;
+
+      // recalculateTotalRow(null);
+
+      if (customerPreInvFilterModel?.bookings == null ||
+          customerPreInvFilterModel!.bookings!.isEmpty) {
+        BotToast.showText(text: "No Booking Found!");
+      }
+      print("API Response: ${response.data}");
+    }
+    isLoadingPreInv = false;
+    update();
   }
 
   /// todo filter Api
@@ -154,8 +192,7 @@ class CustomerInvoiceController extends GetxController {
       },
     );
     if (response.statusCode == 200) {
-      customerInvoiceFilterModel =
-          CustomerInvoiceFilterModel.fromJson(response.data);
+      customerInvoiceFilterModel = CustomerInvoiceFilterModel.fromJson(response.data);
       print("API Response: ${response.data}");
     }
     isFilteredLoading = false;
