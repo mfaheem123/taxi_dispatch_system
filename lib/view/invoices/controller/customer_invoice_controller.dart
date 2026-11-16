@@ -11,6 +11,7 @@ import '../../customer/model/search_customer_by_mobile.dart';
 import '../../drivers_view/model/driver_commission_payment_model.dart';
 import '../model/customer_invoice_filter_model.dart';
 import '../model/customer_invoice_number_model.dart';
+import '../model/customer_pre_inv_filter_model.dart';
 import '../model/list_of_customer_invoice_model.dart';
 import '../model/update_customer_invoice_model.dart';
 
@@ -82,7 +83,41 @@ class CustomerInvoiceController extends GetxController {
 
   /// todo Customer Pre Invoice filter Api
 
+  RxList<Booking> preInvoiceAll = <Booking>[].obs;
+  RxList<Booking> filteredAccountPreInvoice = <Booking>[].obs;
 
+  RxString searchRef = ''.obs;
+  RxString searchDateTime = ''.obs;
+  RxString searchPickup = ''.obs;
+  RxString searchDropOff = ''.obs;
+  RxString searchCustomer = ''.obs;
+  RxString searchVehicle = ''.obs;
+  RxString searchJourType = ''.obs;
+  RxString searchPaymentType = ''.obs;
+  RxString searchFare = ''.obs;
+  RxString searchPc = ''.obs;
+  RxString searchWc = ''.obs;
+  RxString searchEdc = ''.obs;
+  RxString searchMg = ''.obs;
+  RxString searchCc = ''.obs;
+  RxString searchTotal = ''.obs;
+
+
+  CustomerPreInvFilterModel? customerPreInvFilterModel;
+  bool isLoadingPreInv = false;
+
+  getCustomersPreInvoiceFilter() async {
+    if (selectedCustomerId == null) {
+      BotToast.showText(text: "PLEASE SELECT A CUSTOMER FIRST");
+      return;
+    }
+    isLoadingPreInv = true;
+    update();
+
+    String pTIds = selectedPaymentTypeIds.isNotEmpty
+        ? "[${selectedPaymentTypeIds.join(",")}]"
+        : "";
+  }
 
   /// todo filter Api
   int? selectedCustomerId;
