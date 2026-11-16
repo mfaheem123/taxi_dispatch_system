@@ -59,8 +59,7 @@ class CustomerInvoiceController extends GetxController {
       sendCompanyId: true,
     );
     if (response.statusCode == 200) {
-      searchCustomerByMobileModel =
-          SearchCustomerByMobileModel.fromJson(response.data);
+      searchCustomerByMobileModel = SearchCustomerByMobileModel.fromJson(response.data);
       isSearchingCustomer = false;
       update();
     }
@@ -80,6 +79,10 @@ class CustomerInvoiceController extends GetxController {
       update();
     }
   }
+
+  /// todo Customer Pre Invoice filter Api
+
+
 
   /// todo filter Api
   int? selectedCustomerId;

@@ -8,6 +8,7 @@ import '../../../component/color.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
+import '../../customer/model/search_customer_by_mobile.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../dashboard_view/widgets/user_info_widget.dart';
@@ -20,8 +21,6 @@ class CreateCustomerPreInvoice extends StatefulWidget {
   State<CreateCustomerPreInvoice> createState() => _CreateCustomerPreInvoiceState();
 }
 
-/// ye screen Customer invoice ki hai   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
 class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
   int selectedRowIndex = 0;
   final int totalRows = 5;
@@ -31,18 +30,12 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
       ? Get.find<CustomerInvoiceController>()
       : Get.put(CustomerInvoiceController());
 
-  final nameController = TextEditingController();
-  final emailController = TextEditingController();
-  final mobileController = TextEditingController();
-  final telephoneController = TextEditingController();
-
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "CreateCustomerPreInvoice";
-    controller.setDefaultDates();
+    // controller.setDefaultDates();
   }
 
   @override
@@ -81,9 +74,7 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
                       color: DynamicColors.gryClr.withOpacity(0.5),
                       child: Text(AppText.customerPreInvoice, style: titleDesign()),
                     ),
-                  SizedBox(
-                    height: 8,
-                  ),
+                  SizedBox(height: 8),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
                     child: Wrap(
@@ -102,6 +93,20 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
                               child: KeyboardDatePicker(
                                 key: ValueKey("invoice_date_${controller.datePickerKey}"),
                                 initialDate: DateTime.now(),
+                                onChanged: (date) {
+                                  setState(() {
+                                    controller.customerInvoiceDateController =
+                                    "${date.year}-${date.month}-${date.day}";
+                                    print(date);
+                                  });
+                                },
+                                onSubmitted: (date) {
+                                  setState(() {
+                                    controller.customerInvoiceDateController =
+                                    "${date.year}-${date.month}-${date.day}";
+                                  });
+                                  print("User pressed enter: $date");
+                                },
                               )),
                         ),
                         labeledField(
@@ -115,6 +120,20 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
                               child: KeyboardDatePicker(
                                 key: ValueKey("invoice_due_date_${controller.datePickerKey}"),
                                 initialDate: DateTime.now().add(Duration(days: 7)),
+                                onChanged: (date) {
+                                  setState(() {
+                                    controller.customerInvoiceDueDateController =
+                                    "${date.year}-${date.month}-${date.day}";
+                                    print(date);
+                                  });
+                                },
+                                onSubmitted: (date) {
+                                  setState(() {
+                                    controller.customerInvoiceDueDateController =
+                                    "${date.year}-${date.month}-${date.day}";
+                                  });
+                                  print("User pressed enter: $date");
+                                },
                               )),
                         ),
                         SizedBox(width: 20),
@@ -138,53 +157,232 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
                         Expanded(
                           child: CustomTextField(
                             borderRadius: 4,
-                            controller: nameController,
+                            controller: controller.customerNameController,
                             width: double.infinity,
                             hintText: AppText.name,
                             columnText: true,
                             height: 30,
+                            inputFormatters: [UpperCaseTextFormatter(),
+                            ],
                           ),
                         ),
                         SizedBox(width: 10),
                         Expanded(
                           child: CustomTextField(
                             borderRadius: 4,
-                            controller: emailController,
+                            controller: controller.customerEmailController,
                             width: double.infinity,
                             hintText: AppText.email,
                             columnText: true,
                             height: 30,
+                            inputFormatters: [UpperCaseTextFormatter(),
+                            ],
                           ),
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: LayoutBuilder(builder: (context, constraints) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(AppText.mobile,
+                                    style: mozillaTextSemiBoldText(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.black)),
+                                const SizedBox(height: 4),
+                                SizedBox(
+                                  height: 30,
+                                  child: RawAutocomplete<SearchCustomer>(
+                                    optionsBuilder:
+                                        (TextEditingValue textEditingValue) async {
+                                      if (textEditingValue.text.length < 2) {
+                                        return const Iterable<
+                                            SearchCustomer>.empty();
+                                      }
+                                      await controller.getCustomer(textEditingValue.text);
+                                      return controller.searchCustomerByMobileModel?.customer ??
+                                          const Iterable<SearchCustomer>.empty();
+                                    },
+                                    displayStringForOption: (SearchCustomer option) => option.mobile ?? '',
+
+                                    //  INPUT FIELD VIEW
+                                    fieldViewBuilder: (context,
+                                        textEditingController,
+                                        focusNode,
+                                        onFieldSubmitted) {
+                                      if (controller.customerMobileController.text.isEmpty) {
+                                        textEditingController.clear();
+                                      } else if (textEditingController.text.isEmpty &&
+                                          controller.customerMobileController.text.isNotEmpty) {
+                                        textEditingController.text = controller.customerMobileController.text;
+                                      }
+
+                                      return TextField(
+                                        controller: textEditingController,
+                                        focusNode: focusNode,
+                                        onSubmitted: (value) => onFieldSubmitted(),
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly,
+                                        ],
+                                        decoration: InputDecoration(
+                                          // isDense: true,
+                                          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                                          hintText: AppText.mobile,
+                                          hintStyle: mozillaTextSemiBoldText(
+                                              fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black),
+                                          border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(4)),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(4),
+                                            borderSide: BorderSide(color: DynamicColors.primaryClr),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(4),
+                                            borderSide: BorderSide(color: DynamicColors.primaryClr),
+                                          ),
+                                          suffixIcon: controller.isSearchingCustomer
+                                              ? const Padding(
+                                            padding: EdgeInsets.all(6.0),
+                                            child: SizedBox(
+                                                width: 12,
+                                                height: 12,
+                                                child:
+                                                CircularProgressIndicator(strokeWidth: 1.5)),
+                                          ) : null,
+                                        ),
+                                        style: mozillaTextSemiBoldText(
+                                            fontSize: 10, fontWeight: FontWeight.w800),
+                                        onChanged: (val) {
+                                          controller.customerMobileController.text = val;
+                                        },
+                                      );
+                                    },
+
+                                    optionsViewBuilder: (context, onSelected, options) {
+                                      return Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Material(
+                                          elevation: 4.0,
+                                          borderRadius: BorderRadius.circular(8),
+                                          color: Colors.white,
+                                          child: Container(
+                                            width: constraints.maxWidth,
+                                            height: 250,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius: BorderRadius.circular(8),
+                                              border: Border.all(color: Colors.grey.shade200),
+                                            ),
+                                            child: Builder(
+                                              builder: (context) {
+                                                final int highlightedIndex = AutocompleteHighlightedOption.of(context);
+                                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                                  if (_autocompleteScrollController.hasClients && highlightedIndex >= 0) {
+                                                    final double itemHeight = 35.0;
+                                                    final double targetOffset = highlightedIndex * itemHeight;
+
+                                                    final double currentScroll = _autocompleteScrollController.position.pixels;
+                                                    final double viewportHeight = 250.0;
+                                                    if (targetOffset + itemHeight > currentScroll + viewportHeight) {
+                                                      _autocompleteScrollController.animateTo(
+                                                        (targetOffset + itemHeight - viewportHeight).clamp(0.0, _autocompleteScrollController.position.maxScrollExtent),
+                                                        duration: const Duration(milliseconds: 80),
+                                                        curve: Curves.easeOut,
+                                                      );
+                                                    }
+                                                    else if (targetOffset < currentScroll) {
+                                                      _autocompleteScrollController.animateTo(
+                                                        targetOffset.clamp(0.0, _autocompleteScrollController.position.maxScrollExtent),
+                                                        duration: const Duration(milliseconds: 80),
+                                                        curve: Curves.easeOut,
+                                                      );
+                                                    }
+                                                  }
+                                                });
+
+                                                return ListView.builder(
+                                                  controller: _autocompleteScrollController,
+                                                  padding: EdgeInsets.zero,
+                                                  shrinkWrap: true,
+                                                  itemCount: options.length,
+                                                  itemBuilder: (BuildContext context, int index) {
+                                                    final SearchCustomer option = options.elementAt(index);
+                                                    final bool highlight = highlightedIndex == index;
+
+                                                    return InkWell(
+                                                      onTap: () => onSelected(option),
+                                                      child: Container(
+                                                        color: highlight ? const Color(0xFFE1F2FE) : null,
+                                                        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                                                        child: Row(
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          children: [
+                                                            Text(
+                                                              (option.name ?? '').toUpperCase(),
+                                                              style: const TextStyle(
+                                                                  fontWeight: FontWeight.bold,
+                                                                  fontSize: 13,
+                                                                  color: Colors.black),
+                                                            ),
+                                                            const SizedBox(width: 10),
+                                                            Text(
+                                                              "${option.mobile ?? ''}",
+                                                              style: const TextStyle(color: Colors.black, fontSize: 13),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+
+                                    // ACTION ON SELECTION
+                                    onSelected: (SearchCustomer selection) {
+                                      controller.selectedCustomerId = selection.id;
+                                      controller.customerMobileController.text =
+                                          selection.mobile ?? '';
+                                      controller.customerNameController.text =
+                                          (selection.name ?? '').toUpperCase();
+                                      controller.customerEmailController.text =
+                                          (selection.email ?? '').toUpperCase();
+                                      controller.customerTelephoneController.text =
+                                          selection.telephone ?? '';
+                                      controller.update();
+                                    },
+                                  ),
+                                ),
+                              ],
+                            );
+                          }),
                         ),
                         SizedBox(width: 10),
                         Expanded(
                           child: CustomTextField(
                             borderRadius: 4,
-                            controller: mobileController,
-                            width: double.infinity,
-                            hintText: AppText.mobile,
-                            columnText: true,
-                            height: 30,
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: CustomTextField(
-                            borderRadius: 4,
-                            controller: telephoneController,
+                            controller: controller.customerTelephoneController,
                             width: double.infinity,
                             hintText: AppText.tel,
                             columnText: true,
                             height: 30,
-                            inputFormatters: [],
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 8,
-                  ),
+                  SizedBox(height: 8),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
                     child: Wrap(
@@ -200,7 +398,17 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
                             height: 30,
                             child: KeyboardDatePicker(
                               key: ValueKey("from_date_${controller.datePickerKey}"),
-                              initialDate: DateTime.now(),
+                              initialDate: controller.filterFromDate.isNotEmpty
+                                  ? DateTime.parse(controller.filterFromDate)
+                                  : DateTime.now().add(Duration(days: 1)),
+                              onChanged: (date) {
+                                controller.filterFromDate = date.toIso8601String().split("T").first;
+                                controller.update();
+                              },
+                              onSubmitted: (date) {
+                                controller.filterFromDate = date.toIso8601String().split("T").first;
+                                controller.update();
+                              },
                             ),
                           ),
                         ),
@@ -213,7 +421,17 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
                             height: 30,
                             child: KeyboardDatePicker(
                               key: ValueKey("to_date_${controller.datePickerKey}"),
-                              initialDate: DateTime.now(),
+                              initialDate: controller.filterToDate.isNotEmpty
+                                  ? DateTime.parse(controller.filterToDate)
+                                  : DateTime.now().add(Duration(days: 7)),
+                              onChanged: (date) {
+                                controller.filterToDate = date.toIso8601String().split("T").first;
+                                controller.update();
+                              },
+                              onSubmitted: (date) {
+                                controller.filterToDate = date.toIso8601String().split("T").first;
+                                controller.update();
+                              },
                             ),
                           ),
                         ),
@@ -287,7 +505,7 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
                                 ),
                               ),
                             );
-                          }).toList(),
+                          }),
                         SizedBox(width: maxWidth < 1366 ? 10 : 40),
                         CustomButton(
                           verticalPadding: 0.0,
