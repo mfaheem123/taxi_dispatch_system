@@ -49,6 +49,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
   final TextEditingController _searchRefController = TextEditingController();
   final TextEditingController _searchDateTimeController = TextEditingController();
   final TextEditingController _searchVehicleController = TextEditingController();
+  final TextEditingController _searchNoteController = TextEditingController();
   final TextEditingController _searchPickupController = TextEditingController();
   final TextEditingController _searchDropoffController = TextEditingController();
   final TextEditingController _searchFareController = TextEditingController();
@@ -94,6 +95,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
   RxString searchToDate = ''.obs;
 
   RxString searchRef = ''.obs;
+  RxString searchNote = ''.obs;
   RxString searchPickup = ''.obs;
   RxString searchDropoff = ''.obs;
   RxString searchStatus = ''.obs;
@@ -138,6 +140,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     _nameFocusNode.dispose();
     _mobileFocusNode.dispose();
     _telephoneFocusNode.dispose();
+    _searchNoteController.dispose();
     _filterButtonFocusNode.dispose();
     _clearButtonFocusNode.dispose();
     _fromDateFocusNode.dispose();
@@ -282,6 +285,9 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
         "from_date": _fromDateController.text.trim(),
         "to_date": _toDateController.text.trim(),
         "search_ref": searchRef.value.toLowerCase(),
+        "search_note": searchNote.value.toLowerCase(),
+        "search_notes": searchNote.value.toLowerCase(),
+        "notes": searchNote.value.toLowerCase(),
         "search_pickup": searchPickup.value.toLowerCase(),
         "search_dropoff": searchDropoff.value.toLowerCase(),
         "search_status": searchStatus.value.toLowerCase(),
@@ -326,6 +332,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
 
     searchRef.value = _searchRefController.text.trim();
     searchVehicle.value = _searchVehicleController.text.trim();
+    searchNote.value = _searchNoteController.text.trim();
     searchPickup.value = _searchPickupController.text.trim();
     searchDropoff.value = _searchDropoffController.text.trim();
     searchFare.value = _searchFareController.text.trim();
@@ -346,6 +353,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
     _searchRefController.clear();
     _searchDateTimeController.clear();
     _searchVehicleController.clear();
+    _searchNoteController.clear();
     _searchPickupController.clear();
     _searchDropoffController.clear();
     _searchFareController.clear();
@@ -365,6 +373,7 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
 
       searchFromDate.value = _fromDateController.text;
       searchToDate.value = _toDateController.text;
+      searchNote.value = '';
     });
   }
 
@@ -620,6 +629,12 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
                                             widhtss: 55,
                                           ),
                                           buildHeaderWithSearch(
+                                            title: "NOTE",
+                                            controller: _searchNoteController,
+                                            onChanged: (v) => onSearchBooking(),
+                                            widhtss: 90,
+                                          ),
+                                          buildHeaderWithSearch(
                                             title: "PICKUP",
                                             controller: _searchPickupController,
                                             onChanged: (v) => onSearchBooking(),
@@ -715,9 +730,9 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
       return [
         DataRow(
           cells: List.generate(
-            13,
+            14,
                 (index) => DataCell(
-              index == 6
+              index == 7
                   ? const Center(
                 child: SizedBox(
                   height: 25,
@@ -736,9 +751,9 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
       return [
         DataRow(
           cells: List.generate(
-            13,
+            14,
                 (index) => DataCell(
-              index == 6
+              index == 7
                   ? Center(
                 child: Text(
                   ("No bookings found.").toUpperCase(),
@@ -858,6 +873,121 @@ class _SearchBookingAlertState extends State<SearchBookingAlert> {
           DataCell(
             Center(
               child: _buildCellText(booking.vehicleType?.name ?? '', width: 55, isSmall: true),
+            ),
+          ),
+          DataCell(
+            SizedBox(
+              width: 90,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (booking.childSeat != null && booking.childSeat!.isNotEmpty) ...[
+                    SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: PopupMenuButton<String>(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        tooltip: "CHILD SEATS",
+                        icon: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: Colors.transparent, width: 0.8),
+                          ),
+                          child: Icon(Icons.child_friendly_sharp, size: 12, color: DynamicColors.primaryClr),
+                        ),
+                        itemBuilder: (context) => [
+                          PopupMenuItem<String>(
+                            enabled: false,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text("CHILD SEATS", style: _kOutfitStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                const Divider(height: 8),
+                                ...booking.childSeat!.map((cs) => Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 2.0),
+                                  child: Text(
+                                    "NO OF CHILD: ${cs.child ?? "-"}\nAGE: ${cs.age ?? "-"}".toUpperCase(),
+                                    style: _kOutfitStyle(fontSize: 11),
+                                  ),
+                                )),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                  ],
+                  if (booking.notes != null && booking.notes!.isNotEmpty) ...[
+                    SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: PopupMenuButton<String>(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        tooltip: "NOTES",
+                        icon: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: Colors.transparent, width: 0.8),
+                          ),
+                          child: Icon(Icons.note_sharp, size: 12, color: DynamicColors.primaryClr),
+                        ),
+                        itemBuilder: (context) => [
+                          PopupMenuItem<String>(
+                            enabled: false,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text("NOTES", style: _kOutfitStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                const Divider(height: 8),
+                                ...booking.notes!.map((e) => Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 2.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        (e.note ?? "").toUpperCase(),
+                                        style: _kOutfitStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                                      ),
+                                      if ((e.createdBy != null && e.createdBy!.isNotEmpty) || (e.createdAt != null && e.createdAt!.isNotEmpty))
+                                        Text(
+                                          "${e.createdBy ?? ""} ${e.createdAt ?? ""}".trim().toUpperCase(),
+                                          style: _kOutfitStyle(fontSize: 10, color: Colors.grey),
+                                        ),
+                                    ],
+                                  ),
+                                )),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                  ],
+                  Expanded(
+                    flex: 2,
+                    child: Tooltip(
+                      message: booking.notes == null || booking.notes!.isEmpty ? "" : booking.notes![0].note?.toUpperCase() ?? "-",
+                      child: Text(
+                        booking.notes == null || booking.notes!.isEmpty ? "" : booking.notes![0].note?.toUpperCase() ?? "-",
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: _kOutfitStyle(fontSize: 13),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           DataCell(

@@ -1620,6 +1620,7 @@ class DashboardController extends GetxController {
     return fetch;
   }
 
+
   Future<void> _fetchRouteFromOSRM() async {
     markers.clear();
     polylines.clear();
@@ -2023,6 +2024,8 @@ class DashboardController extends GetxController {
     }
     update();
   }
+
+
 
   final suggestionFocusNode = FocusNode();
   final suggestionScrollController = ScrollController();

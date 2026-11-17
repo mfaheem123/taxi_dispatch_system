@@ -681,11 +681,11 @@ class _BookingTableState extends State<BookingTable> {
                                                     child: Container(
                                                       padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
                                                       decoration: BoxDecoration(
-                                                        color: DynamicColors.primaryClr,
+                                                        color: Colors.transparent,
                                                         borderRadius: BorderRadius.circular(4),
-                                                        border: Border.all(color: Colors.blue.shade300, width: 0.8),
+                                                        border: Border.all(color: Colors.transparent, width: 0.8),
                                                       ),
-                                                      child: const Icon(Icons.note_sharp, size: 10, color: Colors.white),
+                                                      child:  Icon(Icons.note_sharp, size: 12, color: DynamicColors.primaryClr),
                                                     ),
                                                   ),
                                                 ],
@@ -709,7 +709,7 @@ class _BookingTableState extends State<BookingTable> {
                                                       child: Row(
                                                         mainAxisSize: MainAxisSize.min,
                                                         children: [
-                                                          Icon(Icons.flight, size: 10, color: Colors.white),
+                                                          Icon(Icons.flight, size: 12, color: Colors.white),
                                                           const SizedBox(width: 2),
                                                           Text(
                                                             ( item.flightNumber ?? "AIR").toUpperCase(),
@@ -783,11 +783,11 @@ class _BookingTableState extends State<BookingTable> {
                                                     child: Container(
                                                       padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
                                                       decoration: BoxDecoration(
-                                                        color: DynamicColors.primaryClr,
+                                                        color: Colors.transparent,
                                                         borderRadius: BorderRadius.circular(4),
-                                                        border: Border.all(color: Colors.blue.shade300, width: 0.8),
+                                                        border: Border.all(color: Colors.transparent, width: 0.8),
                                                       ),
-                                                      child: const Icon(Icons.note_sharp, size: 10, color: Colors.white),
+                                                      child: Icon(Icons.note_sharp, size: 12, color: DynamicColors.primaryClr),
                                                     ),
                                                   ),
                                                 ],
@@ -947,6 +947,8 @@ class _BookingTableState extends State<BookingTable> {
                                     child: SizedBox(
                                       width: widthss/20.5,
                                       child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           if (item.childSeat != null && item.childSeat!.isNotEmpty) ...[
                                             SizedBox(
@@ -959,11 +961,11 @@ class _BookingTableState extends State<BookingTable> {
                                                 icon: Container(
                                                   padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
                                                   decoration: BoxDecoration(
-                                                    color: DynamicColors.secondaryClr,
+                                                    color: Colors.transparent,
                                                     borderRadius: BorderRadius.circular(4),
-                                                    border: Border.all(color: Colors.blue.shade300, width: 0.8),
+                                                    border: Border.all(color: Colors.transparent, width: 0.8),
                                                   ),
-                                                  child: const Icon(Icons.child_friendly_sharp, size: 10, color: Colors.white),
+                                                  child:  Icon(Icons.child_friendly_sharp, size: 12, color: DynamicColors.primaryClr),
                                                 ),
                                                 itemBuilder: (context) => [
                                                   PopupMenuItem<String>(
@@ -987,7 +989,7 @@ class _BookingTableState extends State<BookingTable> {
                                                 ],
                                               ),
                                             ),
-                                            const SizedBox(width: 4),
+                                            const SizedBox(width: 2),
                                           ],
                                           // if (item.specialInstructions != null && item.specialInstructions!.trim().isNotEmpty) ...[
                                           //   SizedBox(
@@ -1041,11 +1043,11 @@ class _BookingTableState extends State<BookingTable> {
                                                 icon: Container(
                                                   padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
                                                   decoration: BoxDecoration(
-                                                    color: DynamicColors.secondaryClr,
+                                                    color: Colors.transparent,
                                                     borderRadius: BorderRadius.circular(4),
-                                                    border: Border.all(color: Colors.blue.shade300, width: 0.8),
+                                                    border: Border.all(color: Colors.transparent, width: 0.8),
                                                   ),
-                                                  child: const Icon(Icons.note_sharp, size: 10, color: Colors.white),
+                                                  child:  Icon(Icons.note_sharp, size: 12, color: DynamicColors.primaryClr),
                                                 ),
                                                 itemBuilder: (context) => [
                                                   PopupMenuItem<String>(
@@ -1079,7 +1081,7 @@ class _BookingTableState extends State<BookingTable> {
                                                 ],
                                               ),
                                             ),
-                                            const SizedBox(width: 4),
+                                            const SizedBox(width: 2),
                                           ],
                                           Expanded(
                                             child: Tooltip(

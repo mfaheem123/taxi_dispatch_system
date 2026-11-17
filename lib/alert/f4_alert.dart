@@ -223,7 +223,7 @@ class _DriverEarningsAlertState extends State<DriverEarningsAlert> {
                                     Center(
                                       child: Text(
                                         displayedDriver != null
-                                            ? "${displayedDriver.id} ${displayedDriver.name ?? ''}".trim().toUpperCase()
+                                            ? "${displayedDriver.name ?? ''}".trim().toUpperCase()
                                             : "NO DRIVER SELECTED",
                                         style: outFitRegular(fontSize: 13, color: Colors.black87),
                                       ),

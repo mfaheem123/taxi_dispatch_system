@@ -104,13 +104,13 @@ class Bookings {
   int? passengers;
   int? luggages;
   int? handLuggages;
-  String? childSeat;
+  List<ChildSeat>? childSeat;
   String? name;
   String? email;
   String? mobile;
   String? telephone;
   String? leadTime;
-  String? notes;
+  List<Note>? notes;
   String? specialInstructions;
   int? paymentTypeId;
   String? companyPrice;
@@ -327,13 +327,25 @@ class Bookings {
     passengers = _parseInt(json['passengers']);
     luggages = _parseInt(json['luggages']);
     handLuggages = _parseInt(json['hand_luggages']);
-    childSeat = _parseString(json['child_seat']);
+    childSeat = json['child_seat'] == null
+        ? []
+        : (json['child_seat'] is List
+            ? List<ChildSeat>.from(json['child_seat']!.map((x) => ChildSeat.fromJson(Map<String, dynamic>.from(x))))
+            : (json['child_seat'] is String && json['child_seat'].toString().isNotEmpty
+                ? [ChildSeat(child: json['child_seat'].toString())]
+                : []));
     name = _parseString(json['name']);
     email = _parseString(json['email']);
     mobile = _parseString(json['mobile']);
     telephone = _parseString(json['telephone']);
     leadTime = _parseString(json['lead_time']);
-    notes = _parseString(json['notes']);
+    notes = json['notes'] == null
+        ? []
+        : (json['notes'] is List
+            ? List<Note>.from(json['notes']!.map((x) => Note.fromJson(Map<String, dynamic>.from(x))))
+            : (json['notes'] is String && json['notes'].toString().isNotEmpty
+                ? [Note(note: json['notes'].toString())]
+                : []));
     specialInstructions = _parseString(json['special_instructions']);
     paymentTypeId = _parseInt(json['payment_type_id']);
     companyPrice = _parseString(json['company_price']);
@@ -462,13 +474,13 @@ class Bookings {
     data['passengers'] = passengers;
     data['luggages'] = luggages;
     data['hand_luggages'] = handLuggages;
-    data['child_seat'] = childSeat;
+    data['child_seat'] = childSeat == null ? [] : List<dynamic>.from(childSeat!.map((x) => x.toJson()));
     data['name'] = name;
     data['email'] = email;
     data['mobile'] = mobile;
     data['telephone'] = telephone;
     data['lead_time'] = leadTime;
-    data['notes'] = notes;
+    data['notes'] = notes == null ? [] : List<dynamic>.from(notes!.map((x) => x.toJson()));
     data['special_instructions'] = specialInstructions;
     data['payment_type_id'] = paymentTypeId;
     data['company_price'] = companyPrice;
@@ -940,4 +952,41 @@ class LocationType {
     data['foreground_color'] = foregroundColor;
     return data;
   }
+}
+
+class ChildSeat {
+  String? child;
+  String? age;
+
+  ChildSeat({this.child, this.age});
+
+  factory ChildSeat.fromJson(Map<String, dynamic> json) => ChildSeat(
+        child: json["child"]?.toString(),
+        age: json["age"]?.toString(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "child": child,
+        "age": age,
+      };
+}
+
+class Note {
+  String? note;
+  String? createdAt;
+  String? createdBy;
+
+  Note({this.note, this.createdAt, this.createdBy});
+
+  factory Note.fromJson(Map<String, dynamic> json) => Note(
+        note: json["note"]?.toString(),
+        createdAt: json["created_at"]?.toString(),
+        createdBy: json["created_by"]?.toString(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "note": note,
+        "created_at": createdAt,
+        "created_by": createdBy,
+      };
 }
