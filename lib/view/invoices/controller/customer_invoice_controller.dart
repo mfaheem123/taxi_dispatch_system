@@ -9,6 +9,7 @@ import 'dart:html' as html;
 import '../../../component/networks/api.dart';
 import '../../customer/model/search_customer_by_mobile.dart';
 import '../../drivers_view/model/driver_commission_payment_model.dart';
+import '../../setting/model/get_document_number_model.dart';
 import '../model/customer_invoice_filter_model.dart';
 import '../model/customer_invoice_number_model.dart';
 import '../model/customer_pre_inv_filter_model.dart';
@@ -67,19 +68,38 @@ class CustomerInvoiceController extends GetxController {
   }
 
   /// todo invoice number
-  CustomerInvoiceModel? customerInvoiceModel;
-  bool isCustomerInvoiceNumber = false;
 
-  getCustomerInvoiceNumber() async {
-    isCustomerInvoiceNumber = true;
-    update();
-    var response = await Api().get("customer-invoice/invoice-number");
-    if (response.statusCode == 200) {
-      customerInvoiceModel = CustomerInvoiceModel.fromJson(response.data);
-      isCustomerInvoiceNumber = false;
+  GetDocumentNumberModel? documentNumberModel;
+  bool isDocumentNumber = false;
+
+  getInvoiceNumber({bool showLoading = true}) async {
+    if (showLoading) {
+      isDocumentNumber = true;
       update();
     }
+    var response = await Api().get("document/document_numbers/get", sendCompanyId: true);
+    if (response.statusCode == 200) {
+      documentNumberModel = GetDocumentNumberModel.fromJson(response.data);
+    }
+    isDocumentNumber = false;
+    update();
   }
+
+
+  /// todo invoice number
+  // CustomerInvoiceModel? customerInvoiceModel;
+  // bool isCustomerInvoiceNumber = false;
+  //
+  // getCustomerInvoiceNumber() async {
+  //   isCustomerInvoiceNumber = true;
+  //   update();
+  //   var response = await Api().get("customer-invoice/invoice-number");
+  //   if (response.statusCode == 200) {
+  //     customerInvoiceModel = CustomerInvoiceModel.fromJson(response.data);
+  //     isCustomerInvoiceNumber = false;
+  //     update();
+  //   }
+  // }
 
   /// todo Customer Pre Invoice filter Api
 
@@ -111,7 +131,7 @@ class CustomerInvoiceController extends GetxController {
       return;
     }
     isLoadingPreInv = true;
-    update();
+    // update();
 
     String pTIds = selectedPaymentTypeIds.isNotEmpty
         ? "[${selectedPaymentTypeIds.join(",")}]"
@@ -147,14 +167,17 @@ class CustomerInvoiceController extends GetxController {
 
       // recalculateTotalRow(null);
 
-      if (customerPreInvFilterModel?.bookings == null ||
-          customerPreInvFilterModel!.bookings!.isEmpty) {
-        BotToast.showText(text: "No Booking Found!");
+      if (customerPreInvFilterModel?.bookings == null || customerPreInvFilterModel!.bookings!.isEmpty) {
+        BotToast.showText(text: "NO BOOKING FOUND!");
       }
       print("API Response: ${response.data}");
     }
     isLoadingPreInv = false;
     update();
+  }
+
+  void onSearchPreInvoice() {
+    getCustomersPreInvoiceFilter();
   }
 
   /// todo filter Api
@@ -168,6 +191,26 @@ class CustomerInvoiceController extends GetxController {
     filterFromDate = DateTime(now.year, now.month, 1).toIso8601String().split("T").first;
     filterToDate = now.toIso8601String().split("T").first;
   }
+
+  RxList<InvBooking> invoiceAll = <InvBooking>[].obs;
+  RxList<InvBooking> filteredInvoice = <InvBooking>[].obs;
+
+  RxString searchInvRef = ''.obs;
+  RxString searchInvDateTime = ''.obs;
+  RxString searchInvPickup = ''.obs;
+  RxString searchInvDropOff = ''.obs;
+  RxString searchInvVehicle = ''.obs;
+  RxString searchInvJourType = ''.obs;
+  RxString searchInvPaymentType = ''.obs;
+  RxString searchInvFare = ''.obs;
+  RxString searchInvPc = ''.obs;
+  RxString searchInvWc = ''.obs;
+  RxString searchInvEdc = ''.obs;
+  RxString searchInvMg = ''.obs;
+  RxString searchInvCc = ''.obs;
+  RxString searchInvTotal = ''.obs;
+
+
   bool isFilteredLoading = false;
   CustomerInvoiceFilterModel? customerInvoiceFilterModel;
   getCustomerInvoiceByFilter() async {
@@ -176,27 +219,51 @@ class CustomerInvoiceController extends GetxController {
       return;
     }
     isFilteredLoading = true;
-    update();
+    // update();
 
     String pTIds = selectedPaymentTypeIds.isNotEmpty
         ? "[${selectedPaymentTypeIds.join(",")}]"
         : "";
 
-    var response = await Api().get(
-      "bookings/customer-invoice-bookings",
+    var response = await Api().get("bookings/customer-invoice-bookings",
       queryParameters: {
         "customer_id": selectedCustomerId.toString(),
         "from_date": filterFromDate,
         "to_date": filterToDate,
         "payment_type_ids": pTIds,
+        "ref_number": searchInvRef.value.toLowerCase(),
+        "datetime": searchInvDateTime.value.toLowerCase(),
+        "pickup": searchInvPickup.value.toLowerCase(),
+        "dropoff": searchInvDropOff.value.toLowerCase(),
+        "vehicle": searchInvVehicle.value.toLowerCase(),
+        "journey_type": searchInvJourType.value.toLowerCase(),
+        "payment_type": searchInvPaymentType.value.toLowerCase(),
+        "fare": searchInvFare.value.toLowerCase(),
+        "parking_charges": searchInvPc.value.toLowerCase(),
+        "waiting_charges": searchInvWc.value.toLowerCase(),
+        "extra_drop_charges": searchInvEdc.value.toLowerCase(),
+        "meet_and_greet": searchInvMg.value.toLowerCase(),
+        "congestion_charges": searchInvCc.value.toLowerCase(),
+        "total_charges": searchInvTotal.value.toLowerCase(),
       },
     );
     if (response.statusCode == 200) {
       customerInvoiceFilterModel = CustomerInvoiceFilterModel.fromJson(response.data);
+      invoiceAll.value = customerInvoiceFilterModel?.bookings ?? [];
+      filteredInvoice = invoiceAll;
+
+      if (customerInvoiceFilterModel?.bookings == null || customerInvoiceFilterModel!.bookings!.isEmpty) {
+        BotToast.showText(text: "NO BOOKING FOUND!");
+      }
+
       print("API Response: ${response.data}");
     }
     isFilteredLoading = false;
     update();
+  }
+
+  void onSearchInvoice() {
+    getCustomerInvoiceByFilter();
   }
 
   /// editable cell
@@ -219,23 +286,24 @@ class CustomerInvoiceController extends GetxController {
 
   /// total row
 
-  double parseDouble(dynamic value) =>
-      double.tryParse(value?.toString() ?? "0") ?? 0.0;
+  double parseDouble(dynamic value) => double.tryParse(value?.toString() ?? "0") ?? 0.0;
 
   double getInvoiceTableColumnTotal(String field) {
     if (selectedIds.isEmpty) return 0.0;
 
-    final list = customerInvoiceFilterModel?.bookings
-        ?.where((b) => selectedIds.contains(b.id.toString()))
-        .toList() ??
+    final List<dynamic> activeSource = customerPreInvFilterModel?.bookings ??
+        customerInvoiceFilterModel?.bookings ??
         [];
+
+    final list = activeSource
+        .where((b) => selectedIds.contains(b.id?.toString()))
+        .toList();
 
     return _calculateInvoiceListTotal(list, field);
   }
 
   double getUpdateColumnTotal(String field) {
-    final updateItems =
-        customerInvoiceByIdModel?.customerInvoice?.customerInvoiceLineitems;
+    final updateItems = customerInvoiceByIdModel?.customerInvoice?.customerInvoiceLineitems;
 
     if (updateItems == null || updateItems.isEmpty) return 0.0;
     final list =
@@ -281,7 +349,7 @@ class CustomerInvoiceController extends GetxController {
   /// todo save Api
   bool isCustomerInvoiceLoad = false;
 
-  saveCustomerInvoice() async {
+  saveCustomerInvoice({required String documentTableType}) async {
     isCustomerInvoiceLoad = true;
     update();
 
@@ -294,24 +362,38 @@ class CustomerInvoiceController extends GetxController {
         ? currentDate
         : customerInvoiceDueDateController!;
 
+    final targetDoc = documentNumberModel?.documentNumbers?.firstWhere(
+          (doc) => doc.documentTable == documentTableType,
+      orElse: () => DocumentNumber(),
+    );
+
+    String invoiceNo = "${targetDoc?.prefix ?? ''}${targetDoc?.endNumber ?? ''}";
+    String invoiceType = documentTableType == 'customer_pre_invoice' ? 'pre' : 'post';
+
+
     double totalAmount = getInvoiceTableColumnTotal('total');
 
     var formData = {
       "customer_id": selectedCustomerId,
-      "invoice_number": customerInvoiceModel?.invoiceNumber ?? "",
+      "invoice_number": invoiceNo,
       "invoice_date": finalInvoiceDate,
       "invoice_due_date": finalDueDate,
       "from_date": filterFromDate,
       "to_date": filterToDate,
-      "invoice_type": "post",
+      "invoice_type": invoiceType,
       "amount": totalAmount.toStringAsFixed(2),
       "customer_invoice_lineitems": selectedIds
           .map((id) => {"booking_id": int.tryParse(id) ?? id})
           .toList(),
     };
     print("Submitting Payload: $formData");
-    var response =
-    await Api().post(formData, "customer-invoice/add",sendCompanyId: true, auth: true);
+
+
+    var response = await Api().post(formData, "customer-invoice/add",sendCompanyId: true, auth: true);
+
+    print("SERVER STATUS CODE: ${response.statusCode}");
+    print("SERVER RESPONSE DATA: ${response.data}");
+
     if (response.statusCode == 200) {
       print("Response Data: ${response.data}");
       BotToast.showText(text: "CUSTOMER INVOICE ADDED SUCCESSFULLY!");
@@ -319,7 +401,7 @@ class CustomerInvoiceController extends GetxController {
 
       // selectedIds.clear();
       // customerInvoiceFilterModel?.bookings?.clear();
-      getCustomerInvoiceNumber();
+      getInvoiceNumber();
     }
     isCustomerInvoiceLoad = false;
     update();
@@ -334,8 +416,12 @@ class CustomerInvoiceController extends GetxController {
     customerEmailController.clear();
     customerMobileController.clear();
     customerTelephoneController.clear();
+    filteredPreInvoice.clear();
+    preInvoiceAll.clear();
+    isLoadingPreInv = false;
     selectedCustomerId = null;
     customerInvoiceFilterModel = null;
+    customerPreInvFilterModel = null;
     datePickerKey++;
     customerInvoiceDateController = "";
     customerInvoiceDueDateController = "";
@@ -350,52 +436,77 @@ class CustomerInvoiceController extends GetxController {
   final FocusNode paidNode = FocusNode();
 
   ListOfCustomerInvoiceModel? listOfCustomerInvoiceModel;
-  bool isLoadingList = false;
+  RxBool isLoadingList = false.obs;
 
-  RxString searchQuery = "".obs;
-  List<CustomerInvoice> get filteredInvoices {
-    final allInvoices = listOfCustomerInvoiceModel?.customerInvoices ?? [];
-    if (searchQuery.isEmpty) {
-      return allInvoices;
-    }
-    final query = searchQuery.value.toLowerCase();
+  // RxString searchQuery = "".obs;
+  // List<CustomerInvoice> get filteredInvoices {
+  //   final allInvoices = listOfCustomerInvoiceModel?.customerInvoices ?? [];
+  //   if (searchQuery.isEmpty) {
+  //     return allInvoices;
+  //   }
+  //   final query = searchQuery.value.toLowerCase();
+  //
+  //   return allInvoices.where((invoice) {
+  //     final invNumber = (invoice.invoiceNumber ?? "").toLowerCase();
+  //     final custName = (invoice.customer?.name ?? "").toLowerCase();
+  //     final status = (invoice.status ?? "").toLowerCase();
+  //     // final date = (invoice.invoiceDate ?? "").toLowerCase();
+  //     final amount = (invoice.amount ?? "").toLowerCase();
+  //
+  //     String dateStr = "";
+  //     if (invoice.invoiceDate != null) {
+  //       dateStr =
+  //           DateFormat("yyyy-MM-dd").format(invoice.invoiceDate!).toLowerCase();
+  //     }
+  //
+  //     return invNumber.contains(query) ||
+  //         custName.contains(query) ||
+  //         status.contains(query) ||
+  //         dateStr.contains(query) ||
+  //         amount.contains(query);
+  //   }).toList();
+  // }
 
-    return allInvoices.where((invoice) {
-      final invNumber = (invoice.invoiceNumber ?? "").toLowerCase();
-      final custName = (invoice.customer?.name ?? "").toLowerCase();
-      final status = (invoice.status ?? "").toLowerCase();
-      // final date = (invoice.invoiceDate ?? "").toLowerCase();
-      final amount = (invoice.amount ?? "").toLowerCase();
 
-      String dateStr = "";
-      if (invoice.invoiceDate != null) {
-        dateStr =
-            DateFormat("yyyy-MM-dd").format(invoice.invoiceDate!).toLowerCase();
-      }
+  RxList<CustomerInvoice> customerInvoiceListAll = <CustomerInvoice>[].obs;
+  RxList<CustomerInvoice> filteredCustomerInvoice = <CustomerInvoice>[].obs;
 
-      return invNumber.contains(query) ||
-          custName.contains(query) ||
-          status.contains(query) ||
-          dateStr.contains(query) ||
-          amount.contains(query);
-    }).toList();
-  }
+  RxString searchInvoiceNumber = ''.obs;
+  RxString searchCustomer = ''.obs;
+  RxString searchDate = ''.obs;
+  RxString searchDueDate = ''.obs;
+  RxString searchStatus = ''.obs;
+  RxString searchAmount = ''.obs;
 
-  getCustomerInvoice() async {
-    isLoadingList = true;
-    update();
+  getCustomerInvoice({String? invoiceType}) async {
+    isLoadingList(true);
+    // update();
 
     String statusParam = paid.value == true ? "paid" : "unpaid";
-    var response = await Api().get("customer-invoice/get", sendCompanyId: true, queryParameters: {
-      "status": statusParam,
-    });
+    var response = await Api().get("customer-invoice/get",
+        queryParameters: {
+          "status": statusParam,
+          "invoice_type": invoiceType,
+          "invoice_number": searchInvoiceNumber.value.toLowerCase(),
+          "invoice_date": searchDate.value.toLowerCase(),
+          "invoice_due_date": searchDueDate.value.toLowerCase(),
+          "customer_name": searchCustomer.value.toLowerCase(),
+          "amount": searchAmount.value.toLowerCase(),
+        }, sendCompanyId: true);
+
     if (response.statusCode == 200) {
-      listOfCustomerInvoiceModel =
-          ListOfCustomerInvoiceModel.fromJson(response.data);
+      listOfCustomerInvoiceModel = ListOfCustomerInvoiceModel.fromJson(response.data);
+      customerInvoiceListAll.value = listOfCustomerInvoiceModel?.customerInvoices ?? [];
+      filteredCustomerInvoice = customerInvoiceListAll;
     }
-    isLoadingList = false;
+    isLoadingList(false);
     update();
   }
+
+  void onSearchCustomerInvoice() {
+    getCustomerInvoice();
+  }
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo LIST OF CUSTOMER INVOICE functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo UPDATE CUSTOMER INVOICE functionality
