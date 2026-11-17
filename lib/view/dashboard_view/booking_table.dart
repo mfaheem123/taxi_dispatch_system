@@ -1280,33 +1280,34 @@ class _BookingTableState extends State<BookingTable> {
                                                         children: [
                                                           Divider(thickness: 1,),
                                                           if ((item.id != null && item.id!.isNotEmpty) )
+
                                                             Text(
                                                               "${"DATE/TIME:"} ${item.pickupDate ?? ""}".trim().toUpperCase(),
-                                                              style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12),
+                                                              style: mozillaTextRegularText(fontWeight: FontWeight.normal, fontSize: 12),
                                                             ),
                                                           Divider(thickness: 1,),
                                                           Text(
                                                               "${"CUSTOMER:"} ${item.name ?? ""}".trim().toUpperCase(),
-                                                            style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12),
+                                                            style: mozillaTextRegularText(fontWeight: FontWeight.normal, fontSize: 12),
                                                             ),
                                                           Divider(thickness: 1,),
                                                           Text(
                                                               "${"PICKUP:"} ${item.pickup ?? ""}".trim().toUpperCase(),
-                                                            style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12),
+                                                            style: mozillaTextRegularText(fontWeight: FontWeight.normal, fontSize: 12),
                                                             ),    Divider(thickness: 1,),
                                                           Text(
                                                               "${"DROPOFF:"} ${item.dropoff ?? ""}".trim().toUpperCase(),
-                                                            style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12),
+                                                            style: mozillaTextRegularText(fontWeight: FontWeight.normal, fontSize: 12),
                                                             ),
                                                           Divider(thickness: 1,),
                                                           Text(
-                                                              "${"ACCOUNT:"} ${item.account ?? ""}".trim().toUpperCase(),
-                                                            style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12),
+                                                              "${"ACCOUNT:"} ${item.account?.name ?? ""}".trim().toUpperCase(),
+                                                            style: mozillaTextRegularText(fontWeight: FontWeight.normal, fontSize: 12),
                                                             ),
                                                           Divider(thickness: 1,),
                                                           Text(
                                                               "${"INSTRUCTION:"} ${item.specialInstructions ?? ""}".trim().toUpperCase(),
-                                                            style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12),
+                                                            style: mozillaTextRegularText(fontWeight: FontWeight.normal, fontSize: 12),
                                                             ),
                                                         ],
                                                       ),
