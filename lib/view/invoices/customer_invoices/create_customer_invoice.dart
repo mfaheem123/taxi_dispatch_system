@@ -14,6 +14,7 @@ import '../../customer/model/search_customer_by_mobile.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../dashboard_view/widgets/user_info_widget.dart';
+import '../../setting/model/get_document_number_model.dart';
 import '../controller/customer_invoice_controller.dart';
 
 class CreateCustomerInvoice extends StatefulWidget {
@@ -56,7 +57,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
       child: GetBuilder<CustomerInvoiceController>(initState: (v) {
         controller.clearCustomerInvoice();
         controller.getPaymentTypes();
-        controller.getCustomerInvoiceNumber();
+        controller.getInvoiceNumber();
         permissions = Api().sp.read('all_permissions') ?? [];
       }, builder: (controller) {
         return LayoutBuilder(builder: (context, constraints) {
@@ -152,19 +153,25 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                         ),
                         SizedBox(width: 20),
                         Padding(
-                          padding: EdgeInsets.only(top: 25),
-                          child: RichText(
-                              text: TextSpan(
-                                  text: 'INVOICE #',
-                                  style: mozillaTextSemiBoldText(
-                                      fontWeight: FontWeight.bold),
-                                  children: [
-                                    TextSpan(
-                                        text:
-                                        " ${controller.customerInvoiceModel?.invoiceNumber}",
-                                        style: mozillaTextRegularText(
-                                            color: DynamicColors.redClr)),
-                                  ])),
+                            padding: EdgeInsets.only(top: 25),
+                            child: RichText(
+                                text: TextSpan(
+                                    text: 'INVOICE #',
+                                    style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold),
+                                    children: [
+                                      TextSpan(
+                                        text: () {
+                                          final preInvoice = controller.documentNumberModel?.documentNumbers?.firstWhere(
+                                                (doc) => doc.documentTable == 'customer_invoice',
+                                            orElse: () => DocumentNumber(),
+                                          );
+                                          return " ${preInvoice?.prefix ?? ''}${preInvoice?.endNumber ?? ''}".toUpperCase();
+                                        }(),
+                                        style: mozillaTextSemiBoldText(color: DynamicColors.redClr, fontWeight: FontWeight.bold),
+                                      ),
+                                    ]
+                                )
+                            )
                         ),
                       ],
                     ),
@@ -570,7 +577,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                           style: mozillaTextRegularText(
                               fontSize: 10, color: DynamicColors.whiteClr),
                           onTap: () {
-                            controller.saveCustomerInvoice();
+                            controller.saveCustomerInvoice(documentTableType: 'customer_invoice');
                           },
                         ),
                       ],
@@ -603,39 +610,78 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                                 controller.update();
                               },
                             )),
-                        TableColumnConfig(
-                            title: "REF#", sizeType: ColumnSizeType.medium),
-                        TableColumnConfig(
-                            title: "DATETIME", sizeType: ColumnSizeType.medium),
-                        TableColumnConfig(
-                            title: "PICKUP", sizeType: ColumnSizeType.large),
-                        TableColumnConfig(
-                            title: "DROPOFF", sizeType: ColumnSizeType.large),
-                        TableColumnConfig(
-                            title: "VEH", sizeType: ColumnSizeType.small),
-                        TableColumnConfig(
-                            title: "J/T", sizeType: ColumnSizeType.small),
-                        TableColumnConfig(
-                            title: "P/T", sizeType: ColumnSizeType.small),
-                        TableColumnConfig(
-                            title: "FARE", sizeType: ColumnSizeType.small),
-                        TableColumnConfig(
-                            title: "PC", sizeType: ColumnSizeType.small),
-                        TableColumnConfig(
-                            title: "WC", sizeType: ColumnSizeType.small),
-                        TableColumnConfig(
-                            title: "EDC", sizeType: ColumnSizeType.small),
-                        TableColumnConfig(
-                            title: "M&G", sizeType: ColumnSizeType.small),
-                        TableColumnConfig(
-                            title: "CC", sizeType: ColumnSizeType.small),
-                        TableColumnConfig(
-                            title: "TOTAL", sizeType: ColumnSizeType.medium),
-                        TableColumnConfig(
-                            title: "ACTIONS",
-                            sizeType: ColumnSizeType.fixed,
-                            fixedWidth: 70,
-                            removeSearching: true),
+                        TableColumnConfig(title: "REF#", sizeType: ColumnSizeType.medium,
+                            onChanged: (v) {
+                              controller.searchInvRef.value = v;
+                              controller.onSearchInvoice();
+                            }),
+                        TableColumnConfig(title: "DATETIME", sizeType: ColumnSizeType.medium,
+                            onChanged: (v) {
+                              controller.searchInvDateTime.value = v;
+                              controller.onSearchInvoice();
+                            }),
+                        TableColumnConfig(title: "PICKUP", sizeType: ColumnSizeType.large,
+                            onChanged: (v) {
+                              controller.searchInvPickup.value = v;
+                              controller.onSearchInvoice();
+                            }),
+                        TableColumnConfig(title: "DROPOFF", sizeType: ColumnSizeType.large,
+                            onChanged: (v) {
+                              controller.searchInvDropOff.value = v;
+                              controller.onSearchInvoice();
+                            }),
+                        TableColumnConfig(title: "VEH", sizeType: ColumnSizeType.small,
+                            onChanged: (v) {
+                              controller.searchInvVehicle.value = v;
+                              controller.onSearchInvoice();
+                            }),
+                        TableColumnConfig(title: "J/T", sizeType: ColumnSizeType.small,
+                            onChanged: (v) {
+                              controller.searchInvJourType.value = v;
+                              controller.onSearchInvoice();
+                            }),
+                        TableColumnConfig(title: "P/T", sizeType: ColumnSizeType.small,
+                            onChanged: (v) {
+                              controller.searchInvPaymentType.value = v;
+                              controller.onSearchInvoice();
+                            }),
+                        TableColumnConfig(title: "FARE", sizeType: ColumnSizeType.small,
+                            onChanged: (v) {
+                              controller.searchInvFare.value = v;
+                              controller.onSearchInvoice();
+                            }),
+                        TableColumnConfig(title: "PC", sizeType: ColumnSizeType.small,
+                            onChanged: (v) {
+                              controller.searchInvPc.value = v;
+                              controller.onSearchInvoice();
+                            }),
+                        TableColumnConfig(title: "WC", sizeType: ColumnSizeType.small,
+                            onChanged: (v) {
+                              controller.searchInvWc.value = v;
+                              controller.onSearchInvoice();
+                            }),
+                        TableColumnConfig(title: "EDC", sizeType: ColumnSizeType.small,
+                            onChanged: (v) {
+                              controller.searchInvEdc.value = v;
+                              controller.onSearchInvoice();
+                            }),
+                        TableColumnConfig(title: "M&G", sizeType: ColumnSizeType.small,
+                            onChanged: (v) {
+                              controller.searchInvMg.value = v;
+                              controller.onSearchInvoice();
+                            }),
+                        TableColumnConfig(title: "CC", sizeType: ColumnSizeType.small,
+                            onChanged: (v) {
+                              controller.searchInvCc.value = v;
+                              controller.onSearchInvoice();
+                            }),
+                        TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium,
+                            onChanged: (v) {
+                              controller.searchInvTotal.value = v;
+                              controller.onSearchInvoice();
+                            }),
+                        TableColumnConfig(title: "ACTIONS", sizeType: ColumnSizeType.fixed,
+                            fixedWidth: 70, removeSearching: true),
                       ],
                       items: [
                         ...(controller.customerInvoiceFilterModel?.bookings ?? []),
@@ -652,46 +698,23 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                             "",
                             "",
                             "",
-                            const Center(
-                              child: Text("TOTAL",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold, fontSize: 11)),
+                            Center(
+                              child: Text("TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900, fontSize: 12)),
                             ),
-                            Center(
-                                child: Text(
-                                    "£ ${controller.getInvoiceTableColumnTotal('fare').toStringAsFixed(2)}",
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold, fontSize: 11))),
-                            Center(
-                                child: Text(
-                                    "£ ${controller.getInvoiceTableColumnTotal('pc').toStringAsFixed(2)}",
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold, fontSize: 11))),
-                            Center(
-                                child: Text(
-                                    "£ ${controller.getInvoiceTableColumnTotal('wc').toStringAsFixed(2)}",
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold, fontSize: 11))),
-                            Center(
-                                child: Text(
-                                    "£ ${controller.getInvoiceTableColumnTotal('edc').toStringAsFixed(2)}",
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold, fontSize: 11))),
-                            Center(
-                                child: Text(
-                                    "£ ${controller.getInvoiceTableColumnTotal('mg').toStringAsFixed(2)}",
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold, fontSize: 11))),
-                            Center(
-                                child: Text(
-                                    "£ ${controller.getInvoiceTableColumnTotal('cc').toStringAsFixed(2)}",
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold, fontSize: 11))),
-                            Center(
-                                child: Text(
-                                    "£ ${controller.getInvoiceTableColumnTotal('total').toStringAsFixed(2)}",
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold, fontSize: 11))),
+                            Center(child: Text("£ ${controller.getInvoiceTableColumnTotal('fare').toStringAsFixed(2)}",
+                                    style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
+                            Center(child: Text("£ ${controller.getInvoiceTableColumnTotal('pc').toStringAsFixed(2)}",
+                                    style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
+                            Center(child: Text("£ ${controller.getInvoiceTableColumnTotal('wc').toStringAsFixed(2)}",
+                                    style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
+                            Center(child: Text("£ ${controller.getInvoiceTableColumnTotal('edc').toStringAsFixed(2)}",
+                                    style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
+                            Center(child: Text("£ ${controller.getInvoiceTableColumnTotal('mg').toStringAsFixed(2)}",
+                                    style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
+                            Center(child: Text("£ ${controller.getInvoiceTableColumnTotal('cc').toStringAsFixed(2)}",
+                                    style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
+                            Center(child: Text("£ ${controller.getInvoiceTableColumnTotal('total').toStringAsFixed(2)}",
+                                    style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
                             "",
                           ];
                         }

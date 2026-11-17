@@ -5,6 +5,7 @@ import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../component/color.dart';
+import '../../../component/editable_cell_widget.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
@@ -12,6 +13,7 @@ import '../../customer/model/search_customer_by_mobile.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../dashboard_view/widgets/user_info_widget.dart';
+import '../../setting/model/get_document_number_model.dart';
 import '../controller/customer_invoice_controller.dart';
 
 class CreateCustomerPreInvoice extends StatefulWidget {
@@ -48,8 +50,15 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
 
     return PageScrollWrapper(
       child: GetBuilder<CustomerInvoiceController>(initState: (v) {
+        controller.clearCustomerInvoice();
         controller.getPaymentTypes();
+        controller.getInvoiceNumber();
       }, builder: (controller) {
+
+        final listToShow = controller.filteredPreInvoice.isNotEmpty
+            ? controller.filteredPreInvoice
+            : controller.preInvoiceAll;
+
         return LayoutBuilder(builder: (context, constraints) {
           final double maxWidth = constraints.maxWidth;
           final bool isMobile = maxWidth < 600;
@@ -138,13 +147,25 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
                         ),
                         SizedBox(width: 20),
                         Padding(
-                          padding: EdgeInsets.only(top: 25),
-                          child: RichText(
-                              text: TextSpan(
-                                  text: 'INVOICE #',
-                                  style: mozillaTextSemiBoldText(
-                                      fontWeight: FontWeight.bold),
-                              )),
+                            padding: EdgeInsets.only(top: 25),
+                            child: RichText(
+                                text: TextSpan(
+                                    text: 'INVOICE #',
+                                    style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold),
+                                    children: [
+                                      TextSpan(
+                                        text: () {
+                                          final preInvoice = controller.documentNumberModel?.documentNumbers?.firstWhere(
+                                                (doc) => doc.documentTable == 'customer_pre_invoice',
+                                            orElse: () => DocumentNumber(),
+                                          );
+                                          return " ${preInvoice?.prefix ?? ''}${preInvoice?.endNumber ?? ''}".toUpperCase();
+                                        }(),
+                                        style: mozillaTextSemiBoldText(color: DynamicColors.redClr, fontWeight: FontWeight.bold),
+                                      ),
+                                    ]
+                                )
+                            )
                         ),
                       ],
                     ),
@@ -516,6 +537,7 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
                           style: mozillaTextRegularText(
                               fontSize: 10, color: DynamicColors.whiteClr),
                           onTap: () {
+                            controller.getCustomersPreInvoiceFilter();
                           },
                         ),
                         CustomButton(
@@ -527,49 +549,116 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
                           style: mozillaTextRegularText(
                               fontSize: 10, color: DynamicColors.whiteClr),
                           onTap: () {
+                            controller.saveCustomerInvoice(documentTableType: 'customer_pre_invoice');
                           },
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  ResponsiveDataTableWidget(
+                  SizedBox(height: 8),
+              controller.isLoadingPreInv
+                  ? Center(child: CircularProgressIndicator())
+                  : Padding(padding: EdgeInsets.symmetric(horizontal: 5.0),
+                child: ResponsiveDataTableWidget(
                       totalWidth: totalAvailableWidth,
                       columnConfigs: [
                         TableColumnConfig(
                             title: "CHECKBOX",
-                            sizeType: ColumnSizeType.fixed,
-                            fixedWidth: 40,
+                            sizeType: ColumnSizeType.fixed, fixedWidth: 40,
                             customHeader: Checkbox(
-                              value: false,
-                              onChanged: (bool? val) {},
+                              value: controller.selectedIds.isNotEmpty &&
+                                  controller.selectedIds.length ==
+                                      controller.customerPreInvFilterModel?.bookings
+                                          ?.length,
+                              onChanged: (bool? val) {
+                                if (val == true) {
+                                  controller.selectedIds = controller
+                                      .customerPreInvFilterModel!.bookings!
+                                      .map((booking) => booking.id.toString())
+                                      .toSet();
+                                } else {
+                                  controller.selectedIds.clear();
+                                }
+                                controller.update();
+                              },
                             )),
-                        TableColumnConfig(title: "REF#", sizeType: ColumnSizeType.medium),
-                        TableColumnConfig(title: "DATETIME", sizeType: ColumnSizeType.medium),
-                        TableColumnConfig(title: "PICKUP", sizeType: ColumnSizeType.large),
-                        TableColumnConfig(title: "DROPOFF", sizeType: ColumnSizeType.large),
-                        TableColumnConfig(title: "VEH", sizeType: ColumnSizeType.small),
-                        TableColumnConfig(title: "J/T", sizeType: ColumnSizeType.small),
-                        TableColumnConfig(title: "P/T", sizeType: ColumnSizeType.small),
-                        TableColumnConfig(title: "FARE", sizeType: ColumnSizeType.small),
-                        TableColumnConfig(title: "PC", sizeType: ColumnSizeType.small),
-                        TableColumnConfig(title: "WC", sizeType: ColumnSizeType.small),
-                        TableColumnConfig(title: "EDC", sizeType: ColumnSizeType.small),
-                        TableColumnConfig(title: "M&G", sizeType: ColumnSizeType.small),
-                        TableColumnConfig(title: "CC", sizeType: ColumnSizeType.small),
-                        TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium),
-                        TableColumnConfig(
-                            title: "ACTIONS",
-                            sizeType: ColumnSizeType.fixed,
-                            fixedWidth: 70,
-                            removeSearching: true),
+                        TableColumnConfig(title: "REF#", sizeType: ColumnSizeType.medium,
+                            onChanged: (v) {
+                              controller.searchRef.value = v;
+                              controller.onSearchPreInvoice();
+                            }),
+                        TableColumnConfig(title: "DATETIME", sizeType: ColumnSizeType.medium,
+                            onChanged: (v) {
+                              controller.searchDateTime.value = v;
+                              controller.onSearchPreInvoice();
+                            }),
+                        TableColumnConfig(title: "PICKUP", sizeType: ColumnSizeType.large,
+                            onChanged: (v) {
+                              controller.searchPickup.value = v;
+                              controller.onSearchPreInvoice();
+                            }),
+                        TableColumnConfig(title: "DROPOFF", sizeType: ColumnSizeType.large,
+                            onChanged: (v) {
+                              controller.searchDropOff.value = v;
+                              controller.onSearchPreInvoice();
+                            }),
+                        TableColumnConfig(title: "VEH", sizeType: ColumnSizeType.small,
+                            onChanged: (v) {
+                              controller.searchVehicle.value = v;
+                              controller.onSearchPreInvoice();
+                            }),
+                        TableColumnConfig(title: "J/T", sizeType: ColumnSizeType.small,
+                            onChanged: (v) {
+                              controller.searchJourType.value = v;
+                              controller.onSearchPreInvoice();
+                            }),
+                        TableColumnConfig(title: "P/T", sizeType: ColumnSizeType.small,
+                            onChanged: (v) {
+                              controller.searchPaymentType.value = v;
+                              controller.onSearchPreInvoice();
+                            }),
+                        TableColumnConfig(title: "FARE", sizeType: ColumnSizeType.small,
+                            onChanged: (v) {
+                              controller.searchFare.value = v;
+                              controller.onSearchPreInvoice();
+                            }),
+                        TableColumnConfig(title: "PC", sizeType: ColumnSizeType.small,
+                            onChanged: (v) {
+                              controller.searchPc.value = v;
+                              controller.onSearchPreInvoice();
+                            }),
+                        TableColumnConfig(title: "WC", sizeType: ColumnSizeType.small,
+                            onChanged: (v) {
+                              controller.searchWc.value = v;
+                              controller.onSearchPreInvoice();
+                            }),
+                        TableColumnConfig(title: "EDC", sizeType: ColumnSizeType.small,
+                            onChanged: (v) {
+                              controller.searchEdc.value = v;
+                              controller.onSearchPreInvoice();
+                            }),
+                        TableColumnConfig(title: "M&G", sizeType: ColumnSizeType.small,
+                            onChanged: (v) {
+                              controller.searchMg.value = v;
+                              controller.onSearchPreInvoice();
+                            }),
+                        TableColumnConfig(title: "CC", sizeType: ColumnSizeType.small,
+                            onChanged: (v) {
+                              controller.searchCc.value = v;
+                              controller.onSearchPreInvoice();
+                            }),
+                        TableColumnConfig(title: "TOTAL", sizeType: ColumnSizeType.medium,
+                            onChanged: (v) {
+                              controller.searchTotal.value = v;
+                              controller.onSearchPreInvoice();
+                            }),
+                        TableColumnConfig(title: "ACTIONS", sizeType: ColumnSizeType.fixed,
+                            fixedWidth: 70, removeSearching: true),
                       ],
-                      items: const [
-                        "ROW_1",
-                        "ROW_2",
-                        "TOTAL_ROW"
+                      items: [
+                        ...listToShow,
+                        if (listToShow.isNotEmpty)
+                          "TOTAL_ROW"
                       ],
                       rowBuilder: (item, widths) {
                         if (item == "TOTAL_ROW") {
@@ -581,86 +670,96 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
                             "",
                             "",
                             "",
-                            const Center(
-                              child: Text("TOTAL",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold, fontSize: 11)),
+                             Center(
+                              child: Text("TOTAL",  style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900, fontSize: 12)),
                             ),
-                            const Center(
-                                child: Text("£ 60.00",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold, fontSize: 11))),
-                            const Center(
-                                child: Text("£ 5.00",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold, fontSize: 11))),
-                            const Center(
-                                child: Text("£ 0.00",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold, fontSize: 11))),
-                            const Center(
-                                child: Text("£ 0.00",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold, fontSize: 11))),
-                            const Center(
-                                child: Text("£ 0.00",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold, fontSize: 11))),
-                            const Center(
-                                child: Text("£ 0.00",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold, fontSize: 11))),
-                            const Center(
-                                child: Text("£ 65.00",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold, fontSize: 11))),
+                            Center(child: Text("£ ${controller.getInvoiceTableColumnTotal('fare').toStringAsFixed(2)}",
+                                    style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
+                            Center(child: Text("£ ${controller.getInvoiceTableColumnTotal('pc').toStringAsFixed(2)}",
+                                    style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
+                            Center(child: Text("£ ${controller.getInvoiceTableColumnTotal('wc').toStringAsFixed(2)}",
+                                    style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
+                            Center(child: Text("£ ${controller.getInvoiceTableColumnTotal('edc').toStringAsFixed(2)}",
+                                    style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
+                            Center(child: Text("£ ${controller.getInvoiceTableColumnTotal('mg').toStringAsFixed(2)}",
+                                    style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
+                            Center(child: Text("£ ${controller.getInvoiceTableColumnTotal('cc').toStringAsFixed(2)}",
+                                    style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
+                            Center(child: Text("£ ${controller.getInvoiceTableColumnTotal('total').toStringAsFixed(2)}",
+                                    style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
                             "",
                           ];
                         }
 
-                        // Static Dummy Data Helper Widget for Editable Cells
-                        Widget staticEditableCell(String initialVal) {
-                          return Center(
-                            child: SizedBox(
-                              width: 50,
-                              child: TextFormField(
-                                initialValue: initialVal,
-                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(fontSize: 11),
-                                decoration: const InputDecoration(
-                                  isDense: true,
-                                  contentPadding: EdgeInsets.symmetric(
-                                      vertical: 6, horizontal: 4),
-                                  border: OutlineInputBorder(),
-                                ),
-                                onChanged: (val) {},
-                              ),
-                            ),
-                          );
-                        }
+                        final booking = item;
+                        final isRowSelected =
+                        controller.selectedIds.contains(booking.id.toString());
 
                         return [
                           Center(
                             child: Checkbox(
-                              value: false,
-                              onChanged: (bool? val) {},
+                              value: isRowSelected,
+                              onChanged: (bool? val) {
+                                if (val == true) {
+                                  controller.selectedIds.add(booking.id.toString());
+                                } else {
+                                  controller.selectedIds
+                                      .remove(booking.id.toString());
+                                }
+                                controller.update();
+                              },
                             ),
                           ),
-                          const Center(child: Text("REF-1001")),
-                          const Center(child: Text("2026-04-01 12:18")),
-                          const Center(child: Text("1 WARRIOR GARDENS")),
-                          const Center(child: Text("36 DUKE ROAD")),
-                          const Center(child: Text("SALOON")),
-                          const Center(child: Text("ASAP")),
-                          const Center(child: Text("CASH")),
-                          staticEditableCell("30.00"),
-                          staticEditableCell("5.00"),
-                          staticEditableCell("0.00"),
-                          staticEditableCell("0.00"),
-                          staticEditableCell("0.00"),
-                          staticEditableCell("0.00"),
-                          const Center(child: Text("£ 35.00")),
+                          booking.referenceNumber ?? "",
+                          "${(booking.pickupDate ?? "").toString().split(' ')[0]} ${(booking.pickupTime ?? "").toString().split('.')[0].substring(0, 5)}",
+                          (booking.pickup ?? "").toUpperCase(),
+                          (booking.dropoff ?? "").toUpperCase(),
+                          (booking.vehicleType?.name ?? "").toUpperCase(),
+                          (booking.journeyType?.journeyType ?? "").toUpperCase(),
+                          (booking.paymentType?.name ?? "").toUpperCase(),
+                          EditableCellWidget(
+                            initialValue: booking.fares,
+                            onChanged: (val) {
+                              booking.fares = val;
+                              controller.recalculateTotalRow(booking);
+                            },
+                          ),
+                          EditableCellWidget(
+                            initialValue: booking.parkingCharges,
+                            onChanged: (val) {
+                              booking.parkingCharges = val;
+                              controller.recalculateTotalRow(booking);
+                            },
+                          ),
+                          EditableCellWidget(
+                            initialValue: booking.waitingCharges,
+                            onChanged: (val) {
+                              booking.waitingCharges = val;
+                              controller.recalculateTotalRow(booking);
+                            },
+                          ),
+                          EditableCellWidget(
+                            initialValue: booking.extraDropCharges,
+                            onChanged: (val) {
+                              booking.extraDropCharges = val;
+                              controller.recalculateTotalRow(booking);
+                            },
+                          ),
+                          EditableCellWidget(
+                            initialValue: booking.meetAndGreet,
+                            onChanged: (val) {
+                              booking.meetAndGreet = val;
+                              controller.recalculateTotalRow(booking);
+                            },
+                          ),
+                          EditableCellWidget(
+                            initialValue: booking.congestionCharges,
+                            onChanged: (val) {
+                              booking.congestionCharges = val;
+                              controller.recalculateTotalRow(booking);
+                            },
+                          ),
+                          Center(child: Text("£ ${booking.totalCharges ?? "0"}")),
                           Center(
                             child: CustomButton(
                               verticalPadding: 0.0,
@@ -671,12 +770,17 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
                               btnColor: DynamicColors.primaryClr,
                               style: mozillaTextRegularText(
                                   fontSize: 10, color: DynamicColors.whiteClr),
-                              onTap: () {},
+                              onTap: () async {
+                                if (booking != null) {
+                                  await controller.updateBookingCharges(booking);
+                                  controller.update();
+                                }
+                              },
                             ),
                           ),
                         ];
                       }),
-                ],
+              )],
               ));
         });
       }),
