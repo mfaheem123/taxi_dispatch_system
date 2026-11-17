@@ -170,6 +170,7 @@ class _AppBookingState extends State<AppBooking> {
                         onChanged: (v) {
                           controller.appvehicleTypeName.text = v;
                           controller.appBookingonSearch();
+
                         }),
                     TableColumnConfig(
                         title: "NOTE",

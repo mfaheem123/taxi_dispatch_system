@@ -23,6 +23,7 @@ import '../view/invoices/model/update_account_invoice_model.dart'
     show UpdateInvoiceByIdModel;
 import '../view/invoices/model/update_customer_invoice_model.dart'
     show CustomerInvoiceByIdModel;
+import '../view/Audit_Report/booking_audit_report.dart';
 import '../view/main_appbar/main_appbar.dart';
 import '../view/setting/wallboard_screen.dart';
 part 'app_routes.dart';
@@ -139,6 +140,13 @@ class AppPages {
         builder: (context, data) =>
             DriverRentViewScreen(rent: data.driverRent),
       ),
+    ),
+    GetPage(
+      name: _Paths.bookingAuditReport,
+      page: () {
+        final id = int.tryParse(Get.parameters['booking_id'] ?? '') ?? 0;
+        return BookingAuditReportScreen(bookingId: id);
+      },
     ),
   ];
 }

@@ -20,6 +20,7 @@ abstract class Routes {
   static const accountInvoiceView = _Paths.accountInvoiceView;
   static const driverCommissionView = _Paths.driverCommissionView;
   static const driverRentView = _Paths.driverRentView;
+  static const bookingAuditReport = _Paths.bookingAuditReport;
 }
 
 abstract class _Paths {
@@ -41,4 +42,5 @@ abstract class _Paths {
   static const accountInvoiceView = '/view/accountInvoice';
   static const driverCommissionView = '/view/driverCommission';
   static const driverRentView = '/view/driverRent';
+  static const bookingAuditReport = '/view/bookingAudit';
 }
