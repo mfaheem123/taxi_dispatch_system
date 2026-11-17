@@ -43,7 +43,7 @@ class VehicleInformation extends StatelessWidget {
               borderRadius: BorderRadius.circular(6),
               border: Border.all(color: Colors.grey.shade400, width: 1),
             ),
-            margin: EdgeInsets.only(bottom: 12),
+            margin: const EdgeInsets.only(bottom: 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -59,14 +59,15 @@ class VehicleInformation extends StatelessWidget {
                     ),
                   ),
                 ),
-                Divider(height: 1),
+                const Divider(height: 1),
                 Expanded(
                   child: SingleChildScrollView(
                     child: Wrap(
                       spacing: 7,
                       runSpacing: 10,
-                      crossAxisAlignment: WrapCrossAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.start,
                       children: [
+                        /// vehicleInformation
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(18),
                           child: Checkbox(
@@ -78,20 +79,17 @@ class VehicleInformation extends StatelessWidget {
                           ),
                         ),
                         Text(AppText.usedCompanyVehicle),
+                        /// COMPANY TYPE
                         FocusTraversalOrder(
-
                           order: const NumericFocusOrder(19),
                           child: CustomDropdownField<CompanyVehicleObject>(
                             text: "COMPANY TYPE",
                             label: "SELECT COMPANY ",
-                            width: fieldWidth/2,
+                            width: fieldWidth / 2,
                             height: 35,
-                            // items: controller.vehicleInformation.value ==false?[]: controller.getCombineVehicleData!.companyVehicles!,
                             items: (controller.vehicleInformation.value == false || controller.getCombineVehicleData == null)
                                 ? []
                                 : controller.getCombineVehicleData?.companyVehicles ?? [],
-                            // items: controller.locationtypezoneModel!
-                            //     .zonesList!,
                             value: controller.vehicleType,
                             itemLabel: (templateList) =>
                                 templateList.vehicleTypeName!.toUpperCase(),
@@ -101,6 +99,7 @@ class VehicleInformation extends StatelessWidget {
                             },
                           ),
                         ),
+                        /// Date
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(20),
                           child: labeledField(
@@ -108,30 +107,18 @@ class VehicleInformation extends StatelessWidget {
                               isMobile: isMobile,
                               label: AppText.startDate,
                               width: fieldWidth / 1.4,
-                              child:
-                              SizedBox(height: 30, child:
-                              KeyboardDatePicker(
-                                key: ValueKey("vehicle_start_date${controller.datePickerKey}"),
-                                initialDate: DateTime.tryParse(controller.vehicleStartDate ?? '') ?? DateTime.now(),
-                                onChanged: (date) => controller.vehicleStartDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
-                                onSubmitted: (date) => controller.vehicleStartDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
-                              )
-                                // KeyboardDatePicker(
-                                //   initialDate: DateTime.now(),
-                                //   onChanged: (date) {
-                                //     // jab bhi user change kare
-                                //     controller.vehicleStartDate = "${date.year}-${date.month}-${date.day}";
-                                //     print(date);
-                                //   },
-                                //   onSubmitted: (date) {
-                                //     // jab user enter press kare
-                                //     controller.vehicleStartDate = "${date.year}-${date.month}-${date.day}";
-                                //     print("User pressed enter: $date");
-                                //   },
-                                // )
+                              child: SizedBox(
+                                height: 30,
+                                child: KeyboardDatePicker(
+                                  key: ValueKey("vehicle_start_date${controller.datePickerKey}"),
+                                  initialDate: DateTime.tryParse(controller.vehicleStartDate ?? '') ?? DateTime.now(),
+                                  onChanged: (date) => controller.vehicleStartDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                                  onSubmitted: (date) => controller.vehicleStartDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                                ),
                               ),
                               column: true),
                         ),
+                        /// end date
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(21),
                           child: labeledField(
@@ -139,72 +126,63 @@ class VehicleInformation extends StatelessWidget {
                               isMobile: isMobile,
                               label: AppText.endDate,
                               width: fieldWidth / 1.4,
-                              child:
-                              SizedBox(height: 30, child:
-                              KeyboardDatePicker(
-                                key: ValueKey("vehicle_end_date${controller.datePickerKey}"),
-                                initialDate: DateTime.tryParse(controller.vehicleEndeDate ?? '') ?? DateTime.now(),
-                                onChanged: (date) => controller.vehicleEndeDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
-                                onSubmitted: (date) => controller.vehicleEndeDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
-                              )
-                                // KeyboardDatePicker(
-                                //   initialDate: DateTime.now(),
-                                //   onChanged: (date) {
-                                //     // jab bhi user change kare
-                                //     controller.vehicleEndeDate = "${date.year}-${date.month}-${date.day}";
-                                //     print(date);
-                                //   },
-                                //   onSubmitted: (date) {
-                                //     // jab user enter press kare
-                                //     controller.vehicleEndeDate = "${date.year}-${date.month}-${date.day}";
-                                //     print("User pressed enter: $date");
-                                //   },
-                                // )
+                              child: SizedBox(
+                                height: 30,
+                                child: KeyboardDatePicker(
+                                  key: ValueKey("vehicle_end_date${controller.datePickerKey}"),
+                                  initialDate: DateTime.tryParse(controller.vehicleEndeDate ?? '') ?? DateTime.now(),
+                                  onChanged: (date) => controller.vehicleEndeDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                                  onSubmitted: (date) => controller.vehicleEndeDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
+                                ),
                               ),
                               column: true),
                         ),
+                        /// vehicle
                         FocusTraversalOrder(
-                          order: NumericFocusOrder(22),
+                          order: const NumericFocusOrder(22),
                           child: labeledTextField(context, isMobile, AppText.vehicle,
                               controller.vehicleNameController,
                               width: fieldWidth / 1.4,
                               textInputAction: TextInputAction.next,
-                              readOnly:controller.vehicleInformation.value,
-                              borderWidth: controller.vehicleInformation.value?0:2,
-                              borderColor: controller.vehicleInformation.value?Colors.grey:DynamicColors.primaryClr,
+                              readOnly: controller.vehicleInformation.value,
+                              borderWidth: controller.vehicleInformation.value ? 0 : 2,
+                              borderColor: controller.vehicleInformation.value ? Colors.grey : DynamicColors.primaryClr,
                               column: true),
                         ),
+                        /// make
                         FocusTraversalOrder(
-                          order: NumericFocusOrder(23),
+                          order: const NumericFocusOrder(23),
                           child: labeledTextField(context, isMobile, AppText.make,
                               controller.vehicleMakeController,
                               width: fieldWidth / 1.4,
                               textInputAction: TextInputAction.next,
-                              readOnly:controller.vehicleInformation.value,
-                              borderWidth: controller.vehicleInformation.value?0:2,
-                              borderColor: controller.vehicleInformation.value?Colors.grey:DynamicColors.primaryClr,
+                              readOnly: controller.vehicleInformation.value,
+                              borderWidth: controller.vehicleInformation.value ? 0 : 2,
+                              borderColor: controller.vehicleInformation.value ? Colors.grey : DynamicColors.primaryClr,
                               column: true),
                         ),
+                        /// Model
                         FocusTraversalOrder(
-                          order: NumericFocusOrder(24),
+                          order: const NumericFocusOrder(24),
                           child: labeledTextField(context, isMobile, AppText.model,
                               controller.vehicleModelController,
                               width: fieldWidth / 1.4,
                               textInputAction: TextInputAction.next,
-                              readOnly:controller.vehicleInformation.value,
-                              borderWidth: controller.vehicleInformation.value?0:2,
-                              borderColor: controller.vehicleInformation.value?Colors.grey:DynamicColors.primaryClr,
+                              readOnly: controller.vehicleInformation.value,
+                              borderWidth: controller.vehicleInformation.value ? 0 : 2,
+                              borderColor: controller.vehicleInformation.value ? Colors.grey : DynamicColors.primaryClr,
                               column: true),
                         ),
+                        /// Color
                         FocusTraversalOrder(
-                          order: NumericFocusOrder(25),
+                          order: const NumericFocusOrder(25),
                           child: labeledTextField(context, isMobile, AppText.color,
                             controller.vehicleColorController,
                             width: fieldWidth / 1.4,
                             textInputAction: TextInputAction.next,
-                            readOnly:controller.vehicleInformation.value,
-                            borderWidth: controller.vehicleInformation.value?0:2,
-                            borderColor: controller.vehicleInformation.value?Colors.grey:DynamicColors.primaryClr,
+                            readOnly: controller.vehicleInformation.value,
+                            borderWidth: controller.vehicleInformation.value ? 0 : 2,
+                            borderColor: controller.vehicleInformation.value ? Colors.grey : DynamicColors.primaryClr,
                             column: true,
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
@@ -212,41 +190,41 @@ class VehicleInformation extends StatelessWidget {
                             ],
                           ),
                         ),
+                        /// owner
                         FocusTraversalOrder(
-                          order: NumericFocusOrder(26),
+                          order: const NumericFocusOrder(26),
                           child: labeledTextField(context, isMobile, AppText.owner,
                               controller.vehicleOwnerController,
                               width: fieldWidth / 1.4,
                               textInputAction: TextInputAction.next,
-                              readOnly:controller.vehicleInformation.value,
-                              borderColor: controller.vehicleInformation.value?Colors.grey:DynamicColors.primaryClr,
-                              borderWidth: controller.vehicleInformation.value?0:2,
+                              readOnly: controller.vehicleInformation.value,
+                              borderColor: controller.vehicleInformation.value ? Colors.grey : DynamicColors.primaryClr,
+                              borderWidth: controller.vehicleInformation.value ? 0 : 2,
                               column: true),
                         ),
+                        /// Log book
                         FocusTraversalOrder(
-                          order: NumericFocusOrder(27),
+                          order: const NumericFocusOrder(27),
                           child: labeledTextField(context, isMobile, AppText.logBook,
                               controller.vehicleLogBookController,
                               width: fieldWidth / 1.4,
                               textInputAction: TextInputAction.next,
-                              readOnly:controller.vehicleInformation.value,
-                              borderColor: controller.vehicleInformation.value?Colors.grey:DynamicColors.primaryClr,
-                              borderWidth: controller.vehicleInformation.value?0:2,
+                              readOnly: controller.vehicleInformation.value,
+                              borderColor: controller.vehicleInformation.value ? Colors.grey : DynamicColors.primaryClr,
+                              borderWidth: controller.vehicleInformation.value ? 0 : 2,
                               column: true),
                         ),
+                        /// VEHICLE TYPE
                         FocusTraversalOrder(
-                          order: NumericFocusOrder(28),
+                          order: const NumericFocusOrder(28),
                           child: CustomDropdownField<SubsidiaryObject>(
                             label: "VEHICLE TYPE",
-                            width: fieldWidth/2,
+                            text: "VEHICLE TYPE",
+                            width: fieldWidth / 1.4,
                             height: 35,
-                            // items: controller.vehicleInformation.value?[]: controller.getCombineVehicleData!.vehicleTypes!,
                             items: (controller.vehicleInformation.value == true || controller.getCombineVehicleData == null)
                                 ? []
                                 : controller.getCombineVehicleData?.vehicleTypes ?? [],
-                            // items: controller.locationtypezoneModel!
-                            //     .zonesList!,
-                            // value: controller.selectCompanyVehicle,
                             value: (controller.vehicleInformation.value == true || controller.getCombineVehicleData == null)
                                 ? null
                                 : controller.selectCompanyVehicle,
@@ -258,188 +236,154 @@ class VehicleInformation extends StatelessWidget {
                             },
                           ),
                         ),
-                        SizedBox(
-                          width: Get.width / 6,
-                          height: 150,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Stack(
+                        /// CHOOSE FILE
+                        FocusTraversalOrder(
+                          order: const NumericFocusOrder(29),
+                          child: Container(
+                            height: 130,
+                            width: fieldWidth / 1.4,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Row(
                               children: [
-                                SizedBox(
-                                  height: 150,
-                                  width: Get.width / 6,
-                                  // width: 150,
-                                  child: (controller.imageList.isEmpty) && ((controller.singleDriverData == null)||(controller.singleDriverData!.driver!.vehicle == null))?SizedBox.shrink():
-                                  controller.imageList.isNotEmpty? Image.memory(
-                                    controller.imageList[0].bytes,
-                                    width: 500,
-                                    height: 150,
-                                    fit: BoxFit.fill,
-                                  ):Image(image: NetworkImage(controller.singleDriverData?.driver?.vehicle?.logBook?.logBookDocument ?? "")),
-                                ),
-                                controller.imageList.isEmpty?SizedBox.shrink():
+                                /// Choose File Button
                                 GestureDetector(
                                   onTap: () {
-                                    controller.imageList.remove(controller.imageList[0]);
-                                    controller.update();
+                                    if (controller.vehicleInformation.value == false) {
+                                      controller.pickImage();
+                                    }
                                   },
-                                  child: CircleAvatar(
-                                    radius: 10,
-                                    backgroundColor: DynamicColors.whiteClr,
-                                    child: Icon(
-                                      Icons.close,
-                                      color: DynamicColors.primaryClr,
-                                      size: 15,
+                                  child: Container(
+                                    height: double.infinity,
+                                    color: Colors.grey[300],
+                                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                                    alignment: Alignment.center,
+                                    child: const Text(
+                                      "CHOOSE FILE",
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
-                                )
+                                ),
+                                const SizedBox(width: 8),
+
+                                /// Column containing Picture (top) and File Name / NO FILE CHOSEN text (bottom)
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      /// Picture inside CHOOSE FILE container (if image exists)
+                                      if (controller.imageList.isNotEmpty ||
+                                          ((controller.singleDriverData?.driver?.vehicle?.logBook?.logBookDocument != null) &&
+                                              controller.singleDriverData!.driver!.vehicle!.logBook!.logBookDocument!.isNotEmpty)) ...[
+                                        Padding(
+                                          padding: const EdgeInsets.only(bottom: 2.0),
+                                          child: SizedBox(
+                                            height: 50,
+                                            child: Stack(
+                                              clipBehavior: Clip.none,
+                                              children: [
+                                                ClipRRect(
+                                                  borderRadius: BorderRadius.circular(4),
+                                                  child: controller.imageList.isNotEmpty
+                                                      ? Image.memory(
+                                                          controller.imageList[0].bytes,
+                                                          width: 160,
+                                                          height: 190,
+                                                          fit: BoxFit.cover,
+                                                        )
+                                                      : Image(
+                                                          image: NetworkImage(
+                                                            controller.singleDriverData?.driver?.vehicle?.logBook?.logBookDocument ?? "",
+                                                          ),
+                                                          width: 160,
+                                                          height: 250,
+                                                          fit: BoxFit.cover,
+                                                          errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+                                                        ),
+                                                ),
+                                                Positioned(
+                                                  top: -4,
+                                                  right: -4,
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      controller.imageList.clear();
+                                                      if (controller.singleDriverData?.driver?.vehicle?.logBook != null) {
+                                                        controller.singleDriverData!.driver!.vehicle!.logBook!.logBookDocument = null;
+                                                      }
+                                                      controller.update();
+                                                    },
+                                                    child: CircleAvatar(
+                                                      radius: 7,
+                                                      backgroundColor: DynamicColors.whiteClr,
+                                                      child: Icon(
+                                                        Icons.close,
+                                                        color: DynamicColors.primaryClr,
+                                                        size: 11,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+
+                                      /// Text: File name or "NO FILE CHOSEN"
+                                      Text(
+                                        controller.imageList.isNotEmpty
+                                            ? controller.imageList[0].name
+                                            : (controller.singleDriverData?.driver?.vehicle?.logBook?.logBookDocument != null &&
+                                                    controller.singleDriverData!.driver!.vehicle!.logBook!.logBookDocument!.isNotEmpty)
+                                                ? controller.singleDriverData!.driver!.vehicle!.logBook!.logBookDocument!.split('/').last
+                                                : "NO FILE CHOSEN",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                          color: Colors.black54,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                /// Delete Button
+                                GestureDetector(
+                                  onTap: () {
+                                    controller.imageList.clear();
+                                    if (controller.singleDriverData?.driver?.vehicle?.logBook != null) {
+                                      controller.singleDriverData!.driver!.vehicle!.logBook!.logBookDocument = null;
+                                    }
+                                    controller.update();
+                                  },
+                                  child: Container(
+                                    height: double.infinity,
+                                    color: Colors.red,
+                                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                                    alignment: Alignment.center,
+                                    child: const Icon(
+                                      Icons.delete,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                          // child: ListView.builder(
-                          //     itemCount: controller.imageList.length,
-                          //     shrinkWrap: true,
-                          //     scrollDirection: Axis.horizontal,
-                          //     physics: AlwaysScrollableScrollPhysics(),
-                          //     itemBuilder: (BuildContext context, index) {
-                          //       return Padding(
-                          //         padding: const EdgeInsets.all(8.0),
-                          //         child: Stack(
-                          //           children: [
-                          //             SizedBox(
-                          //               height: 150,
-                          //               width: Get.width / 6,
-                          //               // width: 150,
-                          //               child: Image.memory(
-                          //                 controller.imageList[index].bytes,
-                          //                 width: 500,
-                          //                 height: 150,
-                          //                 fit: BoxFit.fill,
-                          //               ),
-                          //             ),
-                          //             GestureDetector(
-                          //               onTap: () {
-                          //                 controller.imageList
-                          //                     .remove(controller.imageList[index]);
-                          //                 controller.update();
-                          //               },
-                          //               child: CircleAvatar(
-                          //                 radius: 10,
-                          //                 backgroundColor: DynamicColors.whiteClr,
-                          //                 child: Icon(
-                          //                   Icons.close,
-                          //                   color: DynamicColors.primaryClr,
-                          //                   size: 15,
-                          //                 ),
-                          //               ),
-                          //             )
-                          //           ],
-                          //         ),
-                          //       );
-                          //     }),
-                        )
+                        ),
                       ],
                     ),
                   ),
                 ),
-                FocusTraversalOrder(
-                  order: NumericFocusOrder(29),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 23, vertical: 15),
-                    child: Container(
-                      height: 40,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Row(
-                        children: [
-                          // Choose File
-                          GestureDetector(
-                            onTap: () {
-                              if(controller.vehicleInformation.value == false){
-                                controller.pickImage();
-                              }
-                            },
-                            child: Container(
-                              height: double.infinity,
-                              color: Colors.grey[300],
-                              padding: const EdgeInsets.symmetric(horizontal: 12),
-                              alignment: Alignment.center,
-                              child: const Text(
-                                "CHOOSE FILE",
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(width: 8),
-                          const Expanded(
-                            child: Text(
-                              "NO FILE CHOSEN",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                                color: Colors.black54,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-
-                          GestureDetector(
-                            onTap: () {
-                              controller.imageList.clear();
-                              controller.update();
-                            },
-                            child: Container(
-                              height: double.infinity,
-                              color: Colors.red,
-                              padding: const EdgeInsets.symmetric(horizontal: 12),
-                              child: const Icon(
-                                Icons.delete,
-                                color: Colors.white,
-                                size: 18,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 12),
-                /*      Container(
-                          alignment: Alignment.centerLeft,
-                          padding: EdgeInsets.only(left: 23),
-                          child: FocusTraversalOrder(
-                            order: const NumericFocusOrder(11),
-                            child: labeledTextField(context,
-                                isMobile,
-                                AppText.address,
-                                controller.driverAddressController,
-                                width: fieldWidth,
-                                column: true,
-                                textInputAction: TextInputAction.next,
-                                keyboardType: TextInputType.phone,
-                                formatDigitsOnly: false),
-                          ),
-                        ),
-
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: CustomButton(
-                            verticalPadding: 0.0,
-                            width: fieldWidth*2,
-                            borderRadius: 4,
-                            height: 35,
-
-                            btnColor: DynamicColors.primaryClr,
-                            btnText: AppText.save,
-                          ),
-                        )*/
               ],
             ),
           );

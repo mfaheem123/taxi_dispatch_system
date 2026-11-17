@@ -1239,17 +1239,87 @@ class _BookingTableState extends State<BookingTable> {
                                         },
                                       ),
                                       Text("|"),
-                                      if(permissions.contains('update_booking')) Expanded(
-                                        child: IconButton(
-                                          icon:  Icon(Icons.more_horiz, color: Colors.green),
-                                         // onPressed: (){
-                                         //   controller.dashBoardDataBinding(id: item.id!);
-                                         // },
-                                          onPressed: () {
-                                            setState(() => openEditBookingTab(item.id));
-                                          },
-                                        ),
+                                      if(permissions.contains('update_booking')) IconButton(
+                                        icon:  Icon(Icons.more_horiz, color: Colors.green),
+                                       // onPressed: (){
+                                       //   controller.dashBoardDataBinding(id: item.id!);
+                                       // },
+                                        onPressed: () {
+                                          setState(() => openEditBookingTab(item.id));
+                                        },
                                       ),
+                                      Text("|"),
+                                      if (item.id != null) ...[
+                                        SizedBox(
+                                          height: 20,
+                                          width: 20,
+                                          child: PopupMenuButton<String>(
+                                            padding: EdgeInsets.zero,
+                                            constraints: const BoxConstraints(),
+                                            tooltip: "INFORMATION",
+                                            icon: Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                                              child:  Icon(Icons.info,  color: DynamicColors.greenClr),
+                                            ),
+                                            itemBuilder: (context) => [
+                                              PopupMenuItem<String>(
+                                                enabled: false,
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Text(
+                                                      "${"REF#:"} ${item.referenceNumber ?? ""}".trim().toUpperCase(),
+                                                      style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12),
+                                                    ),
+                                                    const Divider(height: 8),
+                                                     Padding(
+                                                      padding: const EdgeInsets.symmetric(vertical: 2.0),
+                                                      child: Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Divider(thickness: 1,),
+                                                          if ((item.id != null && item.id!.isNotEmpty) )
+                                                            Text(
+                                                              "${"DATE/TIME:"} ${item.pickupDate ?? ""}".trim().toUpperCase(),
+                                                              style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12),
+                                                            ),
+                                                          Divider(thickness: 1,),
+                                                          Text(
+                                                              "${"CUSTOMER:"} ${item.name ?? ""}".trim().toUpperCase(),
+                                                            style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12),
+                                                            ),
+                                                          Divider(thickness: 1,),
+                                                          Text(
+                                                              "${"PICKUP:"} ${item.pickup ?? ""}".trim().toUpperCase(),
+                                                            style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12),
+                                                            ),    Divider(thickness: 1,),
+                                                          Text(
+                                                              "${"DROPOFF:"} ${item.dropoff ?? ""}".trim().toUpperCase(),
+                                                            style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12),
+                                                            ),
+                                                          Divider(thickness: 1,),
+                                                          Text(
+                                                              "${"ACCOUNT:"} ${item.account ?? ""}".trim().toUpperCase(),
+                                                            style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12),
+                                                            ),
+                                                          Divider(thickness: 1,),
+                                                          Text(
+                                                              "${"INSTRUCTION:"} ${item.specialInstructions ?? ""}".trim().toUpperCase(),
+                                                            style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12),
+                                                            ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(width: 2),
+                                      ],
+
                                     ],
                                   ),
                                 ),
