@@ -39,11 +39,15 @@ class _InvoiceListState extends State<InvoiceList> {
     return PageScrollWrapper(
       child: GetBuilder<CustomerInvoiceController>(
         initState: (state) {
-          controller.getCustomerInvoice();
+          controller.getCustomerInvoice(invoiceType: "post");
         },
         builder: (controller) {
-          final invoices = controller.filteredInvoices;
-          final totalRows = invoices.length;
+
+          final listToShow = controller.filteredCustomerInvoice.isNotEmpty
+              ? controller.filteredCustomerInvoice
+              : controller.customerInvoiceListAll;
+          // final invoices = controller.filteredInvoices;
+          // final totalRows = invoices.length;
 
           return LayoutBuilder(builder: (context, constraints) {
             final double maxWidth = constraints.maxWidth;
@@ -108,7 +112,7 @@ class _InvoiceListState extends State<InvoiceList> {
                   ),
                   const SizedBox(height: 8),
 
-                  controller.isLoadingList
+                  controller.isLoadingList.value
                       ? const Center(
                     child: Padding(
                       padding: EdgeInsets.all(40.0),
@@ -131,42 +135,41 @@ class _InvoiceListState extends State<InvoiceList> {
                         columns: [
                           buildHeaderWithSearch(title: "INVOICE #",
                               onChanged: (value) {
-                                controller.searchQuery.value = value;
-                                controller.update();
+                                controller.searchInvoiceNumber.value = value;
+                                controller.onSearchCustomerInvoice();
                               }),
                           buildHeaderWithSearch(title: "CUSTOMER",
                               onChanged: (value) {
-                                controller.searchQuery.value = value;
-                                controller.update();
+                                controller.searchCustomer.value = value;
+                                controller.onSearchCustomerInvoice();
                               }),
                           buildHeaderWithSearch(title: "DATE",
                               onChanged: (value) {
-                                controller.searchQuery.value = value;
-                                controller.update();
+                                controller.searchDate.value = value;
+                                controller.onSearchCustomerInvoice();
                               }),
                           buildHeaderWithSearch(title: "DUE DATE",
                               onChanged: (value) {
-                                controller.searchQuery.value = value;
-                                controller.update();
+                                controller.searchDueDate.value = value;
+                                controller.onSearchCustomerInvoice();
                               }),
                           buildHeaderWithSearch(title: "STATUS",
                               onChanged: (value) {
-                                controller.searchQuery.value = value;
-                                controller.update();
+                                controller.searchStatus.value = value;
+                                controller.onSearchCustomerInvoice();
                               }),
                           buildHeaderWithSearch(title: "AMOUNT",
                               onChanged: (value) {
-                                controller.searchQuery.value = value;
-                                controller.update();
+                                controller.searchAmount.value = value;
+                                controller.onSearchCustomerInvoice();
                               }),
                           buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
                         ],
-                        totalRow: totalRows,
-
-                        rows: invoices.map((invoice) {
+                        totalRow: listToShow.length ?? 0,
+                        rows: (listToShow).map((invoice) {
                           return DataRow(
                             cells: [
-                              DataCell(Center(child: Text(invoice.invoiceNumber ?? "-"))),
+                              DataCell(Center(child: Text((invoice.invoiceNumber ?? "-").toUpperCase()))),
                               DataCell(Center(child: Text((invoice.customer?.name ?? "-").toUpperCase()))),
                               DataCell(Center(child: Text(invoice.invoiceDate != null ? invoice.invoiceDate!.toIso8601String().split('T').first : "-"))),
                               DataCell(Center(child: Text(invoice.invoiceDueDate != null ? invoice.invoiceDueDate!.toIso8601String().split('T').first : "-"))),

@@ -436,52 +436,77 @@ class CustomerInvoiceController extends GetxController {
   final FocusNode paidNode = FocusNode();
 
   ListOfCustomerInvoiceModel? listOfCustomerInvoiceModel;
-  bool isLoadingList = false;
+  RxBool isLoadingList = false.obs;
 
-  RxString searchQuery = "".obs;
-  List<CustomerInvoice> get filteredInvoices {
-    final allInvoices = listOfCustomerInvoiceModel?.customerInvoices ?? [];
-    if (searchQuery.isEmpty) {
-      return allInvoices;
-    }
-    final query = searchQuery.value.toLowerCase();
+  // RxString searchQuery = "".obs;
+  // List<CustomerInvoice> get filteredInvoices {
+  //   final allInvoices = listOfCustomerInvoiceModel?.customerInvoices ?? [];
+  //   if (searchQuery.isEmpty) {
+  //     return allInvoices;
+  //   }
+  //   final query = searchQuery.value.toLowerCase();
+  //
+  //   return allInvoices.where((invoice) {
+  //     final invNumber = (invoice.invoiceNumber ?? "").toLowerCase();
+  //     final custName = (invoice.customer?.name ?? "").toLowerCase();
+  //     final status = (invoice.status ?? "").toLowerCase();
+  //     // final date = (invoice.invoiceDate ?? "").toLowerCase();
+  //     final amount = (invoice.amount ?? "").toLowerCase();
+  //
+  //     String dateStr = "";
+  //     if (invoice.invoiceDate != null) {
+  //       dateStr =
+  //           DateFormat("yyyy-MM-dd").format(invoice.invoiceDate!).toLowerCase();
+  //     }
+  //
+  //     return invNumber.contains(query) ||
+  //         custName.contains(query) ||
+  //         status.contains(query) ||
+  //         dateStr.contains(query) ||
+  //         amount.contains(query);
+  //   }).toList();
+  // }
 
-    return allInvoices.where((invoice) {
-      final invNumber = (invoice.invoiceNumber ?? "").toLowerCase();
-      final custName = (invoice.customer?.name ?? "").toLowerCase();
-      final status = (invoice.status ?? "").toLowerCase();
-      // final date = (invoice.invoiceDate ?? "").toLowerCase();
-      final amount = (invoice.amount ?? "").toLowerCase();
 
-      String dateStr = "";
-      if (invoice.invoiceDate != null) {
-        dateStr =
-            DateFormat("yyyy-MM-dd").format(invoice.invoiceDate!).toLowerCase();
-      }
+  RxList<CustomerInvoice> customerInvoiceListAll = <CustomerInvoice>[].obs;
+  RxList<CustomerInvoice> filteredCustomerInvoice = <CustomerInvoice>[].obs;
 
-      return invNumber.contains(query) ||
-          custName.contains(query) ||
-          status.contains(query) ||
-          dateStr.contains(query) ||
-          amount.contains(query);
-    }).toList();
-  }
+  RxString searchInvoiceNumber = ''.obs;
+  RxString searchCustomer = ''.obs;
+  RxString searchDate = ''.obs;
+  RxString searchDueDate = ''.obs;
+  RxString searchStatus = ''.obs;
+  RxString searchAmount = ''.obs;
 
-  getCustomerInvoice() async {
-    isLoadingList = true;
-    update();
+  getCustomerInvoice({String? invoiceType}) async {
+    isLoadingList(true);
+    // update();
 
     String statusParam = paid.value == true ? "paid" : "unpaid";
-    var response = await Api().get("customer-invoice/get", sendCompanyId: true, queryParameters: {
-      "status": statusParam,
-    });
+    var response = await Api().get("customer-invoice/get",
+        queryParameters: {
+          "status": statusParam,
+          "invoice_type": invoiceType,
+          "invoice_number": searchInvoiceNumber.value.toLowerCase(),
+          "invoice_date": searchDate.value.toLowerCase(),
+          "invoice_due_date": searchDueDate.value.toLowerCase(),
+          "customer_name": searchCustomer.value.toLowerCase(),
+          "amount": searchAmount.value.toLowerCase(),
+        }, sendCompanyId: true);
+
     if (response.statusCode == 200) {
-      listOfCustomerInvoiceModel =
-          ListOfCustomerInvoiceModel.fromJson(response.data);
+      listOfCustomerInvoiceModel = ListOfCustomerInvoiceModel.fromJson(response.data);
+      customerInvoiceListAll.value = listOfCustomerInvoiceModel?.customerInvoices ?? [];
+      filteredCustomerInvoice = customerInvoiceListAll;
     }
-    isLoadingList = false;
+    isLoadingList(false);
     update();
   }
+
+  void onSearchCustomerInvoice() {
+    getCustomerInvoice();
+  }
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo LIST OF CUSTOMER INVOICE functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo UPDATE CUSTOMER INVOICE functionality
