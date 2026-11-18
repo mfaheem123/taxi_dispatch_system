@@ -23,7 +23,7 @@ class AppBrandLogo extends StatelessWidget {
           borderRadius: BorderRadius.circular(6),
         ),
         child: Image.asset(
-          'assets/cab_logo.png',
+          'assets/cab_flow_logo.png',
           height: 30,
           fit: BoxFit.contain,
           filterQuality: FilterQuality.high,

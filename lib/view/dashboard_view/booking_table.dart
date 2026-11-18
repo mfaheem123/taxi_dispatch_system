@@ -712,7 +712,7 @@ class _BookingTableState extends State<BookingTable> {
                                                       child: Row(
                                                         mainAxisSize: MainAxisSize.min,
                                                         children: [
-                                                          Icon(Icons.flight, size: 12, color: Colors.white),
+                                                          Icon(Icons.flight, size: 20, color: Colors.white),
                                                           const SizedBox(width: 2),
                                                           Text(
                                                             ( item.flightNumber ?? "AIR").toUpperCase(),
@@ -790,7 +790,7 @@ class _BookingTableState extends State<BookingTable> {
                                                         borderRadius: BorderRadius.circular(4),
                                                         border: Border.all(color: Colors.transparent, width: 0.8),
                                                       ),
-                                                      child: Icon(Icons.note_sharp, size: 12, color: DynamicColors.primaryClr),
+                                                      child: Icon(Icons.note_sharp, size: 20, color: DynamicColors.primaryClr),
                                                     ),
                                                   ),
                                                 ],
@@ -968,7 +968,7 @@ class _BookingTableState extends State<BookingTable> {
                                                     borderRadius: BorderRadius.circular(4),
                                                     border: Border.all(color: Colors.transparent, width: 0.8),
                                                   ),
-                                                  child:  Icon(Icons.child_friendly_sharp, size: 12, color: DynamicColors.primaryClr),
+                                                  child:  Icon(Icons.child_friendly_sharp, size: 20, color: DynamicColors.primaryClr),
                                                 ),
                                                 itemBuilder: (context) => [
                                                   PopupMenuItem<String>(
@@ -1050,7 +1050,7 @@ class _BookingTableState extends State<BookingTable> {
                                                     borderRadius: BorderRadius.circular(4),
                                                     border: Border.all(color: Colors.transparent, width: 0.8),
                                                   ),
-                                                  child:  Icon(Icons.note_sharp, size: 12, color: DynamicColors.primaryClr),
+                                                  child:  Icon(Icons.note_sharp, size: 20, color: DynamicColors.primaryClr),
                                                 ),
                                                 itemBuilder: (context) => [
                                                   PopupMenuItem<String>(
