@@ -759,6 +759,9 @@ void _saveRoute(Routing? routing) {
   // after a reload instead of the dashboard. The tab's own reload still finds
   // the form from its URL fragment.
   if ((Uri.tryParse(name)?.path ?? name) == Routes.createBooking) return;
+  // Same for the big drivers map, which opens in its own tab from the map
+  // button: saving it would make the dashboard tab reopen on the map.
+  if ((Uri.tryParse(name)?.path ?? name) == Routes.viewDriversMap) return;
   // Stored whole, query string included — Get.parameters is rebuilt from it on
   // the way back in, so the restored screen opens the same record.
   GetStorage().write(_kLastRouteKey, name);

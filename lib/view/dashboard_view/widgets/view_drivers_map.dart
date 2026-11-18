@@ -22,131 +22,368 @@ class ViewDriversMap extends StatefulWidget {
 }
 
 class _ViewDriversMapState extends State<ViewDriversMap> {
-  final dashBoardCntrl = Get.find<DashboardController>();
+  // final dashBoardCntrl = Get.find<DashboardController>();
+  final dashBoardCntrl = Get.put(DashboardController());
 
   late final MapController mapController;
   int? selectTrackingCarId;
 
   /// Reactive marker list
   final RxList<CustomMarker> trackingMarkers = <CustomMarker>[].obs;
-  WebSocketChannel? _channel;
-  StreamSubscription? _channelSub;
-  Timer? _reconnectTimer;
+  // ---------------------------------------------------------------------
+  // Sockets. This screen opens its OWN connections - it does not borrow the
+  // dashboard controller's. A socket belongs to one tab (every tab is a
+  // separate app), so sharing the dashboard's would leave this tab with
+  // nothing to listen to.
+  // ---------------------------------------------------------------------
+
+  final Map<String, WebSocketChannel> _channels = {};
+  final Map<String, StreamSubscription> _subs = {};
+  final Map<String, Timer> _retryTimers = {};
+  final Map<String, int> _failures = {};
+
+  /// Names of the sockets that are connected right now.
+  final Set<String> _up = {};
+
+  Timer? _pollTimer;
+  Timer? _reconcileTimer;
+  bool _fetching = false;
   bool _disposed = false;
+
+  String get _companyQuery => "company_id=${Api.singleton.globalCompanyId}";
 
   @override
   void initState() {
     super.initState();
     mapController = MapController();
-    dashBoardCntrl.getAllDriversTracking();
-    trackingDriverSocket();
+    _loadDrivers();
+    _connect("location", "/driver-tracking-dashboard", _onLocationMessage);
+    _connect("login", "/driver-login?$_companyQuery", _onLoginMessage);
+    _connect("busy", "/driver-busy?$_companyQuery", _onBusyMessage);
+    _startPolling();
   }
 
   @override
   void dispose() {
     _disposed = true;
-    _reconnectTimer?.cancel();
-    _reconnectTimer = null;
-    _channelSub?.cancel();
-    _channelSub = null;
-    _channel?.sink.close();
-    _channel = null;
+    _pollTimer?.cancel();
+    _reconcileTimer?.cancel();
+    for (final t in _retryTimers.values) {
+      t.cancel();
+    }
+    for (final s in _subs.values) {
+      s.cancel();
+    }
+    for (final c in _channels.values) {
+      try {
+        c.sink.close();
+      } catch (_) {}
+    }
+    _retryTimers.clear();
+    _subs.clear();
+    _channels.clear();
     super.dispose();
   }
 
-  void trackingDriverSocket() {
-    // Never open (or re-open) a socket for a State that is gone from the tree.
+  /// Opens one socket and keeps it open: a failed connect or a drop is retried
+  /// after 2s, 4s, 8s ... up to 30s, with one log line per attempt.
+  void _connect(String name, String path, void Function(dynamic) onMessage) {
     if (_disposed || !mounted) return;
+    _retryTimers.remove(name)?.cancel();
+    _subs.remove(name)?.cancel();
 
-    final url = Uri.parse("$socketUrl/driver-tracking-dashboard");
+    final url = Uri.parse("$socketUrl$path");
+    late final WebSocketChannel channel;
     try {
-      _channel = WebSocketChannel.connect(url);
-
-      _channelSub = _channel!.stream.listen(
-            (message) {
-          if (_disposed || !mounted) return;
-          final data = jsonDecode(message);
-          if (data['event'] == 'DRIVER_LOCATION_UPDATE' ||
-              data['event'] == "DRIVER_BOOKING_STATUS_UPDATE") {
-            int indexxx = trackingMarkers
-                .indexWhere((test) => test.id == data['data']['id']);
-
-            if (indexxx == -1) return;
-
-            double lat = double.parse(data['data']['latitude'].toString());
-            double lng = double.parse(data['data']['longitude'].toString());
-            final target = LatLng(lat, lng);
-
-            final oldMarker = trackingMarkers[indexxx];
-
-            int indexes = dashBoardCntrl
-                .onlineBusyDriversList!.trackingDrivers!
-                .indexWhere((test) => test.id == data['data']['id']);
-
-            TrackingDriverObject objectData =
-            dashBoardCntrl.onlineBusyDriversList!.trackingDrivers![indexes];
-
-            objectData.latitude = lat.toString();
-            objectData.longitude = lng.toString();
-            objectData.bookingStatus = data['data']['booking_status'];
-
-            print("booking status ${data['data']['booking_status']}");
-
-            trackingMarkers[indexxx] = CustomMarker(
-              id: oldMarker.id,
-              withReturnType: oldMarker.withReturnType,
-              type: oldMarker.type,
-              width: oldMarker.width,
-              height: oldMarker.height,
-              point: target,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Image.asset(
-                    _statusImage(objectData.bookingStatus ?? ""),
-                    width: 70,
-                    height: 70,
-                    fit: BoxFit.contain,
-                  ),
-
-                  Container(
-                    // color: _statusColor(objectData.bookingStatus),
-                    padding: const EdgeInsets.only(
-                        bottom: 10.0, left: 4, right: 4),
-                    child: Text(
-                      objectData.username ?? "",
-                      style: const TextStyle(
-                          fontSize: 12, color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-            );
-
-            if (!mounted) return;
-            setState(() {});
-          }
-        },
-        onError: (error) => print("Connection Error: $error"),
-        onDone: () {
-          print("🔌 Socket Disconnected");
-          _scheduleReconnect();
-        },
-      );
+      channel = WebSocketChannel.connect(url);
     } catch (e) {
-      print("Error: $e");
+      print("❌ Drivers map '$name' socket: $e");
+      _scheduleRetry(name, path, onMessage);
+      return;
+    }
+    _channels[name] = channel;
+
+    // A failed connect only shows up on `ready`; with nothing listening there
+    // it surfaces as an uncaught WebSocketChannelException.
+    channel.ready.then((_) {
+      if (_disposed) return;
+      _failures[name] = 0;
+      _up.add(name);
+      print("✅ Drivers map '$name' socket connected");
+    }).catchError((Object e) {
+      _up.remove(name);
+      final n = (_failures[name] ?? 0) + 1;
+      _failures[name] = n;
+      print("❌ Drivers map '$name' socket could not connect (attempt $n), "
+          "retrying in ${_delayFor(name).inSeconds}s - url: $url");
+    });
+
+    _subs[name] = channel.stream.listen(
+      (message) {
+        if (_disposed || !mounted) return;
+        try {
+          onMessage(message);
+        } catch (e) {
+          print("Drivers map '$name' message error: $e");
+        }
+      },
+      onError: (_) {}, // a failure is reported once, by `ready`, above
+      onDone: () {
+        _up.remove(name);
+        if (identical(_channels[name], channel)) _channels.remove(name);
+        _scheduleRetry(name, path, onMessage);
+      },
+    );
+  }
+
+  Duration _delayFor(String name) {
+    final n = (_failures[name] ?? 0).clamp(0, 4);
+    final seconds = 2 << n;
+    return Duration(seconds: seconds > 30 ? 30 : seconds);
+  }
+
+  void _scheduleRetry(
+      String name, String path, void Function(dynamic) onMessage) {
+    if (_disposed || !mounted) return;
+    _retryTimers[name]?.cancel();
+    _retryTimers[name] =
+        Timer(_delayFor(name), () => _connect(name, path, onMessage));
+  }
+
+  // ---------------------------------------------------------------------
+  // The driver list: loading, and live changes from the sockets.
+  // ---------------------------------------------------------------------
+
+  /// Fetches the whole list. Returns false when the request got no answer, in
+  /// which case the list keeps what it had.
+  Future<bool> _fetchDrivers() async {
+    if (_fetching || _disposed) return false;
+    _fetching = true;
+    try {
+      final response =
+          await Api().get("drivers/tracking-drivers", sendCompanyId: true);
+      if (_disposed) return false;
+      if (response == null || response.statusCode != 200) return false;
+      dashBoardCntrl.onlineBusyDriversList =
+          GetAllLabelsFromWidowModel.fromJson(response.data);
+      _listChanged();
+      return true;
+    } catch (e) {
+      print("Drivers map list load error: $e");
+      return false;
+    } finally {
+      _fetching = false;
     }
   }
 
-  /// Reconnects only while this widget is still mounted, and after a short
-  /// delay so a failing endpoint can't spin a tight reconnect loop.
-  void _scheduleReconnect() {
-    if (_disposed || !mounted) return;
-    _reconnectTimer?.cancel();
-    _reconnectTimer = Timer(const Duration(seconds: 2), () {
-      if (_disposed || !mounted) return;
-      trackingDriverSocket();
+  /// First load, retried until the server answers.
+  Future<void> _loadDrivers() async {
+    var wait = 2;
+    while (!_disposed && !await _fetchDrivers()) {
+      await Future.delayed(Duration(seconds: wait));
+      wait = wait >= 16 ? 16 : wait * 2;
+    }
+  }
+
+  /// While either list socket is down, the list is refetched every 15s, so it
+  /// still follows logins and logouts in a browser where sockets fail.
+  void _startPolling() {
+    _pollTimer = Timer.periodic(const Duration(seconds: 15), (_) {
+      if (_up.contains("login") && _up.contains("busy")) return;
+      _fetchDrivers();
     });
+  }
+
+  /// Re-reads the list shortly after an event that doesn't say where the driver
+  /// went (a busy driver who is available again, or logged out).
+  void _reconcileSoon() {
+    _reconcileTimer?.cancel();
+    _reconcileTimer = Timer(const Duration(milliseconds: 1500), _fetchDrivers);
+  }
+
+  List<TrackingDriverObject>? get _list =>
+      dashBoardCntrl.onlineBusyDriversList?.trackingDrivers;
+
+  void _listChanged() {
+    if (_disposed || !mounted) return;
+    _syncMarkers();
+    dashBoardCntrl.update(); // rebuilds the sidebar's GetBuilder
+    setState(() {});
+  }
+
+  /// True once the camera has framed all the drivers, so later updates don't
+  /// keep pulling the map back while the user pans or zooms.
+  bool _cameraFitted = false;
+
+  /// Shows EVERY driver in the list on the map (as the dashboard's map does),
+  /// not only the one picked in the sidebar. A driver with no position yet has
+  /// no pin; pins of drivers who left the list are dropped.
+  void _syncMarkers() {
+    final list = _list ?? const <TrackingDriverObject>[];
+    final markers = <CustomMarker>[];
+    final points = <LatLng>[];
+    for (final d in list) {
+      final lat = double.tryParse(d.latitude ?? "");
+      final lng = double.tryParse(d.longitude ?? "");
+      if (lat == null || lng == null) continue;
+      final point = LatLng(lat, lng);
+      points.add(point);
+      markers.add(CustomMarker(
+        withReturnType: "driverMarker",
+        type: "driverMarker",
+        point: point,
+        width: 70,
+        height: 70,
+        id: d.id,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Image.asset(_statusImage(d.bookingStatus ?? ""),
+                width: 70, height: 70, fit: BoxFit.contain),
+            Container(
+              padding: const EdgeInsets.only(bottom: 10.0, left: 4, right: 4),
+              child: Text(d.username ?? "",
+                  style: const TextStyle(fontSize: 9, color: Colors.white)),
+            ),
+          ],
+        ),
+      ));
+    }
+    trackingMarkers.assignAll(markers);
+
+    // Frame all the drivers once, on the first list that has positions. The
+    // map may not be built yet, so this is retried on the next update.
+    if (!_cameraFitted && points.isNotEmpty) {
+      try {
+        if (points.length == 1) {
+          mapController.move(points.first, 14);
+        } else {
+          mapController.fitCamera(CameraFit.coordinates(
+            coordinates: points,
+            padding: const EdgeInsets.fromLTRB(60, 60, 310, 60),
+            maxZoom: 15,
+          ));
+        }
+        _cameraFitted = true;
+      } catch (_) {}
+    }
+  }
+
+  void _upsertDriver(Map data) {
+    final list = _list;
+    final id = data['id']?.toString();
+    if (list == null || id == null) return;
+    String? s(Object? v) => v?.toString();
+    final i = list.indexWhere((d) => d.id.toString() == id);
+    final old = i == -1 ? null : list[i];
+    final driver = TrackingDriverObject(
+      id: int.tryParse(id) ?? old?.id,
+      name: s(data['name']) ?? old?.name,
+      username: s(data['username']) ?? old?.username,
+      zone: data['zone'] ?? old?.zone,
+      latitude: s(data['latitude']) ?? old?.latitude,
+      longitude: s(data['longitude']) ?? old?.longitude,
+      bookingStatus: s(data['booking_status']) ?? old?.bookingStatus,
+      sessionStatus: s(data['session_status']) ?? old?.sessionStatus,
+      driverStatus: s(data['driver_status']) ?? old?.driverStatus,
+      lastLoginAt: data['last_login_at'] ?? old?.lastLoginAt,
+      vehicleType: s(data['vehicle_type']) ?? old?.vehicleType,
+    );
+    if (i == -1) {
+      list.add(driver);
+    } else {
+      list[i] = driver;
+    }
+    _listChanged();
+  }
+
+  void _removeDriver(Object? rawId) {
+    final list = _list;
+    final id = rawId?.toString();
+    if (list == null || id == null) return;
+    final before = list.length;
+    list.removeWhere((d) => d.id.toString() == id);
+    trackingMarkers.removeWhere((m) => m.id.toString() == id);
+    if (selectTrackingCarId?.toString() == id) selectTrackingCarId = null;
+    if (list.length != before) _listChanged();
+  }
+
+  void _setStatus(Object? rawId, {Object? booking, Object? driver}) {
+    final list = _list;
+    final id = rawId?.toString();
+    if (list == null || id == null) return;
+    final i = list.indexWhere((d) => d.id.toString() == id);
+    if (i == -1) return;
+    if (booking != null) list[i].bookingStatus = booking.toString();
+    if (driver != null) list[i].driverStatus = driver.toString();
+    _listChanged();
+  }
+
+  /// driver-login socket: a driver logs in, changes status, or logs out.
+  void _onLoginMessage(dynamic message) {
+    final data = jsonDecode(message as String);
+    final event = data['event'];
+    final payload = data['data'];
+    if (event == "DRIVER_LOGIN") {
+      if (payload is Map) _upsertDriver(payload);
+    } else if (event == "DRIVER_BREAK_STATUS_UPDATE" ||
+        event == "DRIVER_SIN_BIN_STATUS_UPDATE") {
+      if (payload is Map) {
+        _setStatus(payload['id'],
+            booking: payload['booking_status'],
+            driver: payload['driver_status']);
+      }
+    } else if (event != "DRIVER_LIST") {
+      // Anything else on this socket is a logout.
+      if (payload is Map) _removeDriver(payload['driverId'] ?? payload['id']);
+    }
+  }
+
+  /// driver-busy socket: a driver takes a job, the job moves on, or it ends.
+  void _onBusyMessage(dynamic message) {
+    final data = jsonDecode(message as String);
+    final event = data['event'];
+    final payload = data['data'];
+    if (payload is! Map) return;
+    if (event == "DRIVER_BOOKING_STATUS_WEB_UPDATE") {
+      _setStatus(payload['id'] ?? payload['driver_id'] ?? payload['driverId'],
+          booking: payload['booking_status'],
+          driver: payload['driver_status']);
+    } else if (event == "BUSY_DRIVER_UPDATE") {
+      _upsertDriver(payload);
+    } else {
+      // A busy driver is gone from the busy list: logged out, or free again.
+      // The event doesn't say which, so drop them and re-read the list.
+      _removeDriver(payload['id']);
+      _reconcileSoon();
+    }
+  }
+
+  /// driver-tracking-dashboard socket: a driver's position or job status.
+  void _onLocationMessage(dynamic message) {
+    final data = jsonDecode(message as String);
+    if (data['event'] != 'DRIVER_LOCATION_UPDATE' &&
+        data['event'] != "DRIVER_BOOKING_STATUS_UPDATE") {
+      return;
+    }
+    final payload = data['data'];
+    final list = _list;
+    if (payload is! Map || list == null) return;
+    final id = payload['id']?.toString();
+    final i = list.indexWhere((d) => d.id.toString() == id);
+    if (i == -1) {
+      // A driver this list has not heard of: read the list again.
+      _reconcileSoon();
+      return;
+    }
+    final lat = double.tryParse(payload['latitude']?.toString() ?? "");
+    final lng = double.tryParse(payload['longitude']?.toString() ?? "");
+    if (lat != null) list[i].latitude = lat.toString();
+    if (lng != null) list[i].longitude = lng.toString();
+    if (payload['booking_status'] != null) {
+      list[i].bookingStatus = payload['booking_status'].toString();
+    }
+    _listChanged();
   }
 
   Color _statusColor(String? status) {

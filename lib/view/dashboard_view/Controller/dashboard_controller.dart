@@ -227,10 +227,10 @@ class DashboardController extends GetxController {
   /// With nothing listening there it reaches the zone as an uncaught
   /// "WebSocketChannelException: Failed to connect WebSocket", which is what
   /// logging out of a dashboard with a dead socket was throwing.
-  void _trackSocket(WebSocketChannel channel, String label) {
+  void _trackSocket(WebSocketChannel channel, String label, Uri url) {
     _openSockets.add(channel);
     channel.ready.catchError((Object e) {
-      print("$label socket connect failed: $e");
+      print("$label socket connect failed - url: $url - error: $e");
     });
   }
 
@@ -290,7 +290,7 @@ class DashboardController extends GetxController {
       final channel = WebSocketChannel.connect(url);
       _cliChannel = channel;
       _channel = channel;
-      _trackSocket(channel, "CLI");
+      _trackSocket(channel, "CLI", url);
 
       channel.stream.listen(
             (message) {
@@ -313,8 +313,8 @@ class DashboardController extends GetxController {
             // });
           }
         },
-        onError: (error) => print("Connection Error: $error"),
-        onDone: () => print("Connection Closed"),
+        onError: (error) => print("CLI socket error - url: $url - $error"),
+        onDone: () => print("CLI socket closed - url: $url"),
       );
     } catch (e) {
       print("Error: $e");
@@ -334,7 +334,7 @@ class DashboardController extends GetxController {
       // entry in _openSockets has to go.
       final channel = WebSocketChannel.connect(url);
       _channel = channel;
-      _trackSocket(channel, "Driver login");
+      _trackSocket(channel, "Driver login", url);
 
       channel.stream.listen(
             (message) {
@@ -412,9 +412,9 @@ class DashboardController extends GetxController {
             _scheduleDriverMarkerRefresh();
           }
         },
-        onError: (error) => print("Connection Error: $error"),
+        onError: (error) => print("Driver login socket error - url: $url - $error"),
         onDone: () {
-          print("🔌 Socket Disconnected");
+          print("🔌 Driver login socket disconnected - url: $url");
           print("Close Code: ${channel.closeCode}");
           print("Close Reason: ${channel.closeReason}");
 
@@ -453,7 +453,7 @@ class DashboardController extends GetxController {
     try {
       final channel = WebSocketChannel.connect(url);
       _channel = channel;
-      _trackSocket(channel, "Driver busy");
+      _trackSocket(channel, "Driver busy", url);
 
       channel.stream.listen(
             (message) {
@@ -553,9 +553,9 @@ class DashboardController extends GetxController {
             _scheduleDriverMarkerRefresh();
           }
         },
-        onError: (error) => print("Connection Error: $error"),
+        onError: (error) => print("Driver busy socket error - url: $url - $error"),
         onDone: () {
-          print("🔌 Socket Disconnected");
+          print("🔌 Driver busy socket disconnected - url: $url");
           print("Close Code: ${channel.closeCode}");
           print("Close Reason: ${channel.closeReason}");
 
