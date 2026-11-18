@@ -59,6 +59,7 @@ class _TopMenuState extends State<_TopMenu> {
   Timer? _closeTimer;
 
   bool _hovered = false;
+  bool _focused = false;
 
   @override
   void dispose() {
@@ -155,23 +156,42 @@ class _TopMenuState extends State<_TopMenu> {
         )),
       ],
       builder: (context, controller, _) {
-        final active = _hovered || controller.isOpen;
+        final active = _hovered || _focused || controller.isOpen;
+
         return MouseRegion(
           onEnter: _mouseEnter,
           onExit: _mouseExit,
           child: InkWell(
+            onFocusChange: (focused) {
+              setState(() => _focused = focused);
+            },
+            overlayColor: const WidgetStatePropertyAll(Colors.transparent),
             onTap: menu.hasChildren ? _toggle : menu.onTap,
-            child: Container(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
               height: MainMenuBarView.height,
               padding: const EdgeInsets.symmetric(horizontal: 15),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: active ? Colors.white : Colors.transparent,
-                    width: 2,
-                  ),
+                color: active
+                    ? DynamicColors.whiteClr.withValues(alpha: 0.09)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: active
+                      ? Colors.grey.withValues(alpha: 0.8)
+                      : Colors.transparent,
+                  width: 1.5,
                 ),
+                boxShadow: active
+                    ? [
+                        BoxShadow(
+                          color: DynamicColors.primaryClr.withValues(alpha: 0.09),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                        ),
+                      ]
+                    : null,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -182,7 +202,11 @@ class _TopMenuState extends State<_TopMenu> {
                   ],
                   Text(
                     menu.title,
-                    style: const TextStyle(color: Colors.white, fontSize: 14),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: active ? FontWeight.bold : FontWeight.normal,
+                    ),
                   ),
                 ],
               ),
@@ -212,12 +236,12 @@ final ButtonStyle _itemStyle = ButtonStyle(
   minimumSize: const WidgetStatePropertyAll(Size(180, 0)),
   textStyle: const WidgetStatePropertyAll(TextStyle(fontSize: 14)),
   shape: const WidgetStatePropertyAll(
-    RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+    RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
   ),
   backgroundColor: WidgetStateProperty.resolveWith((s) =>
-      _isActive(s) ? Colors.black : Colors.white),
+      _isActive(s) ? DynamicColors.primaryClr : Colors.white),
   foregroundColor: WidgetStateProperty.resolveWith((s) =>
-      _isActive(s) ? Colors.white : Colors.black),
+      _isActive(s) ? Colors.white : DynamicColors.black),
   iconColor: WidgetStateProperty.resolveWith((s) =>
       _isActive(s) ? Colors.white : Colors.black),
   overlayColor: const WidgetStatePropertyAll(Colors.transparent),

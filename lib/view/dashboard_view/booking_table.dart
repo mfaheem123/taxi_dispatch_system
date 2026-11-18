@@ -688,7 +688,7 @@ class _BookingTableState extends State<BookingTable> {
                                                         borderRadius: BorderRadius.circular(4),
                                                         border: Border.all(color: Colors.transparent, width: 0.8),
                                                       ),
-                                                      child:  Icon(Icons.note_sharp, size: 12, color: DynamicColors.primaryClr),
+                                                      child:  Icon(Icons.note_sharp, size: 20, color: DynamicColors.primaryClr),
                                                     ),
                                                   ),
                                                 ],
