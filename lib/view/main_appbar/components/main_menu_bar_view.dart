@@ -198,7 +198,7 @@ class _TopMenuState extends State<_TopMenu> {
                 children: [
                   if (menu.icon != null) ...[
                     Icon(menu.icon, color: Colors.white, size: 16),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 3),
                   ],
                   Text(
                     menu.title,
