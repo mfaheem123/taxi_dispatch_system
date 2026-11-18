@@ -14,6 +14,15 @@ import '../../../component/text_widget.dart';
 import '../Controller/dashboard_controller.dart';
 import '../models/tracking_drivers_model.dart';
 
+/// One car gliding from [from] to [to] over [duration].
+class _Move {
+  _Move(this.from, this.to, this.start, this.duration);
+  final LatLng from;
+  final LatLng to;
+  final DateTime start;
+  final Duration duration;
+}
+
 class ViewDriversMap extends StatefulWidget {
   const ViewDriversMap({super.key});
 
@@ -46,6 +55,7 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
   final Set<String> _up = {};
 
   Timer? _pollTimer;
+  Timer? _statusTimer;
   Timer? _reconcileTimer;
   bool _fetching = false;
   bool _disposed = false;
@@ -61,6 +71,14 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
     _connect("login", "/driver-login?$_companyQuery", _onLoginMessage);
     _connect("busy", "/driver-busy?$_companyQuery", _onBusyMessage);
     _startPolling();
+    // A car that stops stops sending positions, so nothing would ever flip its
+    // tag to "Stopped": re-check every 5 seconds.
+    _statusTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (_disposed || !mounted) return;
+      _rebuildMarkers();
+      dashBoardCntrl.update();
+      setState(() {});
+    });
   }
 
   @override
@@ -68,6 +86,8 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
     _disposed = true;
     _pollTimer?.cancel();
     _reconcileTimer?.cancel();
+    _animTimer?.cancel();
+    _statusTimer?.cancel();
     for (final t in _retryTimers.values) {
       t.cancel();
     }
@@ -215,19 +235,144 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
   /// keep pulling the map back while the user pans or zooms.
   bool _cameraFitted = false;
 
-  /// Shows EVERY driver in the list on the map (as the dashboard's map does),
-  /// not only the one picked in the sidebar. A driver with no position yet has
-  /// no pin; pins of drivers who left the list are dropped.
+  // ---- Smooth movement ----------------------------------------------------
+  //
+  // A driver's position arrives every few seconds. Putting the pin straight on
+  // the new position makes the car jump; instead the pin glides from where it
+  // is shown to the new position over about as long as the gap between the two
+  // updates, so it keeps moving until the next one arrives.
+
+  final Map<String, LatLng> _shown = {}; // where each car is drawn right now
+  final Map<String, _Move> _moves = {};
+  final Map<String, DateTime> _lastMoveAt = {};
+
+  /// When each car's position last actually changed; "moving" is judged from it.
+  final Map<String, DateTime> _movedAt = {};
+  Timer? _animTimer;
+
+  /// Every car to draw: the drivers in the list.
+  List<TrackingDriverObject> get _allCars =>
+      _list ?? const <TrackingDriverObject>[];
+
+  /// Reads each driver's latest position and starts a glide for any that moved.
   void _syncMarkers() {
-    final list = _list ?? const <TrackingDriverObject>[];
-    final markers = <CustomMarker>[];
-    final points = <LatLng>[];
-    for (final d in list) {
+    final targets = <String, LatLng>{};
+    for (final d in _allCars) {
       final lat = double.tryParse(d.latitude ?? "");
       final lng = double.tryParse(d.longitude ?? "");
       if (lat == null || lng == null) continue;
-      final point = LatLng(lat, lng);
-      points.add(point);
+      targets[d.id.toString()] = LatLng(lat, lng);
+    }
+
+    // Cars that left the list.
+    _shown.removeWhere((k, _) => !targets.containsKey(k));
+    _moves.removeWhere((k, _) => !targets.containsKey(k));
+    _lastMoveAt.removeWhere((k, _) => !targets.containsKey(k));
+    _movedAt.removeWhere((k, _) => !targets.containsKey(k));
+
+    final now = DateTime.now();
+    targets.forEach((key, target) {
+      final shown = _shown[key];
+      if (shown == null) {
+        _shown[key] = target; // first time seen: no glide, just appear
+        _lastMoveAt[key] = now;
+        return;
+      }
+      final moving = _moves[key];
+      final goal = moving?.to ?? shown;
+      if ((goal.latitude - target.latitude).abs() < 1e-7 &&
+          (goal.longitude - target.longitude).abs() < 1e-7) {
+        return; // not moved
+      }
+      // A far jump (a stale position corrected, a driver re-appearing) is
+      // not a drive: snap instead of sliding across the city.
+      if ((shown.latitude - target.latitude).abs() > 0.5 ||
+          (shown.longitude - target.longitude).abs() > 0.5) {
+        _shown[key] = target;
+        _moves.remove(key);
+        _lastMoveAt[key] = now;
+        _movedAt[key] = now;
+        return;
+      }
+      final gap = now.difference(_lastMoveAt[key] ?? now);
+      final ms = gap.inMilliseconds.clamp(600, 4000);
+      _lastMoveAt[key] = now;
+      _movedAt[key] = now;
+      _moves[key] = _Move(shown, target, now, Duration(milliseconds: ms));
+    });
+
+    _rebuildMarkers();
+    if (_moves.isNotEmpty) {
+      _animTimer ??=
+          Timer.periodic(const Duration(milliseconds: 33), (_) => _tick());
+    }
+
+    // Frame all the drivers once, on the first list that has positions. The
+    // map may not be built yet, so this is retried on the next update.
+    if (!_cameraFitted && targets.isNotEmpty) {
+      // Framed once and then left alone: the camera never follows a car.
+      final points = targets.values.toList();
+      try {
+        if (points.length == 1) {
+          mapController.move(points.first, 17);
+        } else {
+          mapController.fitCamera(CameraFit.coordinates(
+            coordinates: points,
+            padding: const EdgeInsets.fromLTRB(60, 60, 310, 60),
+            maxZoom: 17, // street level when the cars are close together
+          ));
+        }
+        _cameraFitted = true;
+      } catch (_) {}
+    }
+  }
+
+  /// One animation frame: moves every gliding car a little further.
+  void _tick() {
+    if (_disposed || !mounted) return;
+    final now = DateTime.now();
+    final done = <String>[];
+    _moves.forEach((key, m) {
+      final t = (now.difference(m.start).inMilliseconds /
+              m.duration.inMilliseconds)
+          .clamp(0.0, 1.0);
+      _shown[key] = LatLng(
+        m.from.latitude + (m.to.latitude - m.from.latitude) * t,
+        m.from.longitude + (m.to.longitude - m.from.longitude) * t,
+      );
+      if (t >= 1.0) done.add(key);
+    });
+    done.forEach(_moves.remove);
+    _rebuildMarkers();
+    setState(() {});
+    if (_moves.isEmpty) {
+      _animTimer?.cancel();
+      _animTimer = null;
+    }
+  }
+
+  /// A car counts as moving if its position changed in the last 15 seconds.
+  bool _isMoving(TrackingDriverObject d) {
+    final t = _movedAt[d.id.toString()];
+    return t != null && DateTime.now().difference(t) < const Duration(seconds: 15);
+  }
+
+  /// The status to show: the job status while there is one (Accepted, Arrived,
+  /// On Route, STC), otherwise the driver's own (Available, Break, Sin Bin...).
+  String _statusLabel(TrackingDriverObject d) {
+    final booking = (d.bookingStatus ?? "").trim();
+    final driver = (d.driverStatus ?? "").trim();
+    if (booking.isNotEmpty && booking != "Available") return booking;
+    if (driver.isNotEmpty) return driver;
+    return "Available";
+  }
+
+  /// Builds the pins from where each car is drawn right now.
+  void _rebuildMarkers() {
+    final markers = <CustomMarker>[];
+    for (final d in _allCars) {
+      final point = _shown[d.id.toString()];
+      if (point == null) continue;
       markers.add(CustomMarker(
         withReturnType: "driverMarker",
         type: "driverMarker",
@@ -237,6 +382,7 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
         id: d.id,
         child: Stack(
           alignment: Alignment.center,
+          clipBehavior: Clip.none,
           children: [
             Image.asset(_statusImage(d.bookingStatus ?? ""),
                 width: 70, height: 70, fit: BoxFit.contain),
@@ -245,28 +391,17 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
               child: Text(d.username ?? "",
                   style: const TextStyle(fontSize: 9, color: Colors.white)),
             ),
+            // Status under the car, outside the pin's own box so the car
+            // stays exactly on the driver's position.
+            Positioned(
+              bottom: -14,
+              child: _statusPill(_statusLabel(d), _isMoving(d)),
+            ),
           ],
         ),
       ));
     }
     trackingMarkers.assignAll(markers);
-
-    // Frame all the drivers once, on the first list that has positions. The
-    // map may not be built yet, so this is retried on the next update.
-    if (!_cameraFitted && points.isNotEmpty) {
-      try {
-        if (points.length == 1) {
-          mapController.move(points.first, 14);
-        } else {
-          mapController.fitCamera(CameraFit.coordinates(
-            coordinates: points,
-            padding: const EdgeInsets.fromLTRB(60, 60, 310, 60),
-            maxZoom: 15,
-          ));
-        }
-        _cameraFitted = true;
-      } catch (_) {}
-    }
   }
 
   void _upsertDriver(Map data) {
@@ -386,12 +521,45 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
     _listChanged();
   }
 
+  /// "On Route - Moving" style tag shown under a car on the map.
+  Widget _statusPill(String status, bool moving) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+      decoration: BoxDecoration(
+        color: _statusColor(status),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.white, width: 1),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: moving ? Colors.lightGreenAccent : Colors.white38,
+            ),
+          ),
+          const SizedBox(width: 3),
+          Text(
+            "$status \u00b7 ${moving ? 'Moving' : 'Stopped'}",
+            maxLines: 1,
+            softWrap: false,
+            style: const TextStyle(
+                fontSize: 8, color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+
   Color _statusColor(String? status) {
     switch (status) {
       case "Accepted":
         return Colors.orange;
       case "Arrived":
-        return Colors.yellow;
+        return Colors.amber.shade800;
       case "On Route":
         return Colors.red;
       case "STC":
@@ -580,59 +748,12 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
 
                             return GestureDetector(
                               onTap: () {
-                                final lat = double.parse(driver.latitude!);
-                                final lng = double.parse(driver.longitude!);
+                                final lat = double.tryParse(driver.latitude ?? "");
+                                final lng = double.tryParse(driver.longitude ?? "");
+                                // No position yet: nothing to zoom to.
+                                if (lat == null || lng == null) return;
                                 final target = LatLng(lat, lng);
 
-                                /// Remove old marker for this driver
-                                trackingMarkers.removeWhere((marker) =>
-                                marker.id.toString() ==
-                                    controller.onlineBusyDriversList!
-                                        .trackingDrivers![index].id
-                                        .toString());
-
-                                /// Add updated marker
-                                trackingMarkers.add(
-                                  CustomMarker(
-                                    withReturnType: "driverMarker",
-                                    type: "driverMarker",
-                                    point: target,
-                                    width: 70,
-                                    height: 70,
-                                    id: driver.id,
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        Image.asset(
-                                          _statusImage(driver.bookingStatus ?? ""),
-                                          width: 70,
-                                          height: 70,
-                                          fit: BoxFit.contain,
-                                        ),
-                                        // Icon(
-                                        //   Icons.directions_car, ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-                                        //   size: 70,
-                                        //    color: _statusColor(
-                                        //        driver.bookingStatus),
-                                        // ),
-                                        Container(
-                                          // color: _statusColor(
-                                          //     driver.bookingStatus),
-                                          padding: const EdgeInsets.only(
-                                              bottom: 10.0,
-                                              left: 4,
-                                              right: 4),
-                                          child: Text(
-                                            driver.username ?? "",
-                                            style: const TextStyle(
-                                                fontSize: 9,
-                                                color: Colors.white),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
                                 selectTrackingCarId = driver.id;
 
                                 /// Move map
@@ -645,7 +766,9 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
                               },
                               child: _driverTile(
                                 driver.username ?? "",
-                                driver.bookingStatus ?? "",
+                                _statusLabel(driver),
+                                color: _statusColor(_statusLabel(driver)),
+                                moving: _isMoving(driver),
                               ),
                             );
                           },
@@ -662,7 +785,8 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
     );
   }
 
-  Widget _driverTile(String name, String status) {
+  Widget _driverTile(String name, String status,
+      {Color color = const Color(0xff424899), bool moving = false}) {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -681,7 +805,7 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: const Color(0xff424899),
+              color: color,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
@@ -690,6 +814,18 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
                   color: Colors.white,
                   fontSize: 9,
                   fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(width: 5),
+          Tooltip(
+            message: moving ? "Moving" : "Stopped",
+            child: Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: moving ? Colors.green : Colors.grey,
+              ),
             ),
           ),
           const SizedBox(width: 5),
