@@ -1468,7 +1468,7 @@ class _BookingTableState extends State<BookingTable> {
                       if (tabIndex == 4) {'title': 'DECLINE', 'icon':Icons.thumb_down},
                       if(tabIndex != 3) {'title': 'COMPLETE', 'icon': Icons.task_alt},
                       {'title': 'COPY', 'icon': Icons.copy},
-                      {'title': 'AUDIT', 'icon': Icons.description},
+                      {'title': 'AUDIT REPORT', 'icon': Icons.description},
                       {'title': 'UPDATE', 'icon': Icons.update},
                       if (tabIndex != 2) {'title': 'CANCEL', 'icon': Icons.block},
                       if (tabIndex != 2) {'title': 'ALLOCATE', 'icon': Icons.manage_accounts},
@@ -1656,9 +1656,11 @@ class _BookingTableState extends State<BookingTable> {
     }
     else if(title == "RECOVER"){
       controller.recoverBooking(item.id);
-    } else if (title == "AUDIT" || title == "AUDIT REPORT") {
+    }
+
+    else if (title == "AUDIT REPORT" || title == "AUDIT REPORT") {
       print("Audit work");
-      // _openAuditReport(context, item);
+      _openAuditReport(context, item);
     }
   }
 

@@ -142,7 +142,9 @@ class AuditUpdate {
     // 1. Employee
     String? empName = '-';
     if (json['employee'] is Map) {
+
       empName = json['employee']['username']?.toString() ?? json['employee']['name']?.toString() ?? '-';
+
     } else if (json['employee'] != null) {
       empName = json['employee'].toString();
     }

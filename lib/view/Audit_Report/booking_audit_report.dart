@@ -348,8 +348,10 @@ class _BookingAuditReportScreenState extends State<BookingAuditReportScreen> {
 
     // Driver specific fields
     final isDriverAssigned = driver != null || (booking?.driverId != null && booking!.driverId! > 0);
+
     final phcD = isDriverAssigned
         ? (driver?.phcDriverNumber ?? booking?.phcD ?? '-')
+
         : '-';
     final phcV = isDriverAssigned
         ? (driver?.phcVehicleNumber ?? booking?.phcV ?? '-')
@@ -363,6 +365,7 @@ class _BookingAuditReportScreenState extends State<BookingAuditReportScreen> {
         horizontalInside: BorderSide(color: Colors.grey.shade200, width: 1),
         verticalInside: BorderSide(color: Colors.grey.shade200, width: 1),
         top: BorderSide(color: Colors.grey.shade300, width: 1),
+
         left: BorderSide(color: Colors.grey.shade300, width: 1),
         right: BorderSide(color: Colors.grey.shade300, width: 1),
         bottom: BorderSide(color: Colors.grey.shade200, width: 1),
