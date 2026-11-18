@@ -273,9 +273,8 @@ class _UpdateCustomerInvoiceState extends State<UpdateCustomerInvoiceScreen> {
                                                 fontWeight: FontWeight.bold),
                                             children: [
                                               TextSpan(
-                                                  text: controller.customerInvoiceByIdModel?.customerInvoice?.invoiceNumber.toString() ?? "-",
-                                                  style: mozillaTextRegularText(
-                                                      color: DynamicColors.redClr)
+                                                  text: (controller.customerInvoiceByIdModel?.customerInvoice?.invoiceNumber.toString() ?? "").toUpperCase(),
+                                                  style: mozillaTextSemiBoldText(color: DynamicColors.redClr)
                                               )
                                             ]))),
                               ])),

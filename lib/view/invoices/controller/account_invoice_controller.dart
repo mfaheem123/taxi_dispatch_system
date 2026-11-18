@@ -32,7 +32,7 @@ class InvoiceController extends GetxController {
   // DateTime? fromDate = DateTime.now();
   // DateTime? toDate = DateTime.now();
 
-  /// account pre invoice dates
+  /// account invoice dates
   String fromDate = "";
   String toDate = "";
 
@@ -123,10 +123,17 @@ class InvoiceController extends GetxController {
   RxString searchTotal = ''.obs;
 
   getPreInvoiceFilter() async {
-    if (subsidiaries == null || fromDate == null || toDate == null) {
+    if (subsidiaries == null) {
       BotToast.showText(text: 'PLEASE FILL ALL REQUIRED FIELDS!');
       return;
     }
+
+    String tomorrowDate = DateTime.now().add(Duration(days: 1)).toIso8601String().split("T").first;
+    String sevenDaysAhead = DateTime.now().add(const Duration(days: 7)).toIso8601String().split("T").first;
+
+    String effectiveFromDate = (fromDate.isEmpty) ? tomorrowDate : fromDate;
+    String effectiveToDate = (toDate.isEmpty) ? sevenDaysAhead : toDate;
+
     isLoadingPreInv = true;
 
     var response = await Api().get("account_invoice/pre-bookings",
@@ -134,8 +141,8 @@ class InvoiceController extends GetxController {
         "subsidiary_id": subsidiaries?.id,
         "account_id": selectAccountValue?.id,
         "department": selectDepartmentData?.id,
-        "from_date": fromDate,
-        "to_date": toDate,
+        "from_date": effectiveFromDate,
+        "to_date": effectiveToDate,
         "order_number": orderNumber.text,
         "ref_number": searchRef.value.toLowerCase(),
         "datetime": searchDateTime.value.toLowerCase(),
@@ -202,6 +209,14 @@ class InvoiceController extends GetxController {
       BotToast.showText(text: 'PLEASE FILL ALL REQUIRED FIELDS!');
       return;
     }
+
+    String previousDate = DateTime.now().subtract(const Duration(days: 7)).toIso8601String().split("T").first;
+    String currentDate = DateTime.now().toIso8601String().split("T").first;
+
+    String effectiveFromDate = (fromDate.isEmpty) ? previousDate : fromDate;
+    String effectiveToDate = (toDate.isEmpty) ? currentDate : toDate;
+
+
     isLoadingInvoice = true;
     var response = await Api().get(
       "account_invoice/bookings",
@@ -209,8 +224,8 @@ class InvoiceController extends GetxController {
         "subsidiary_id": subsidiaries!.id,
         "account_id": selectAccountValue!.id,
         "department": selectDepartmentData?.id,
-        "from_date": fromDate,
-        "to_date": toDate,
+        "from_date": effectiveFromDate,
+        "to_date": effectiveToDate,
         "order_number": orderNumber.text,
         "ref_number": searchInvRef.value.toLowerCase(),
         "datetime": searchInvDateTime.value.toLowerCase(),
@@ -513,14 +528,13 @@ class InvoiceController extends GetxController {
   }
 
   // Delete
-  accountInvoiceDelete(int? id) async {
+  accountInvoiceDelete(int? id, {String? invoiceType}) async {
     var response = await Api().delete("account_invoice/delete/$id");
     if (response.statusCode == 200) {
-      listAccountInvoice(isFirstTime: true);
+      listAccountInvoice(isFirstTime: true, invoiceType: invoiceType);
       BotToast.showText(text: "ACCOUNT INVOICE DELETED SUCCESSFULLY!");
     }
   }
-
 
   void clearData() {
     invoiceNumber.value = "";

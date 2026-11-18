@@ -503,11 +503,19 @@ class CustomerInvoiceController extends GetxController {
     update();
   }
 
-  void onSearchCustomerInvoice() {
-    getCustomerInvoice();
+  void onSearchCustomerInvoice({String? invoiceType}) {
+    getCustomerInvoice(invoiceType: invoiceType);
   }
 
-
+  void clearInvoiceData() {
+    searchInvoiceNumber.value = "";
+    searchCustomer.value = "";
+    searchDate.value = "";
+    searchDueDate.value = "";
+    searchStatus.value = "";
+    searchAmount.value = "";
+    paid.value = false;
+  }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo LIST OF CUSTOMER INVOICE functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo UPDATE CUSTOMER INVOICE functionality
 
@@ -891,10 +899,10 @@ CC: CONGESTION CHARGES
   }
 
   /// Delete
-  customerInvoiceDelete(int? id) async {
+  customerInvoiceDelete(int? id, {String? invoiceType}) async {
     var response = await Api().delete("customer-invoice/delete/$id");
     if (response.statusCode == 200) {
-      getCustomerInvoice();
+      getCustomerInvoice(invoiceType: invoiceType);
       BotToast.showText(text: "CUSTOMER INVOICE DELETED SUCCESSFULLY!");
     }
   }

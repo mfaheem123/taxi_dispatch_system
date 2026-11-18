@@ -350,7 +350,7 @@ class _ListOfAccountInvoiceScreenState extends State<ListOfAccountInvoiceScreen>
                                       ), // border color & thickness
                                     ),
                                     onPressed: () {
-                                      controller.accountInvoiceDelete(item.id);
+                                      controller.accountInvoiceDelete(item.id, invoiceType: "POST");
                                     },
                                     child: Icon(
                                       Icons.delete_forever,

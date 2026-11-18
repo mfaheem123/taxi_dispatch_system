@@ -39,6 +39,7 @@ class _InvoiceListState extends State<InvoiceList> {
     return PageScrollWrapper(
       child: GetBuilder<CustomerInvoiceController>(
         initState: (state) {
+          controller.clearInvoiceData();
           controller.getCustomerInvoice(invoiceType: "post");
         },
         builder: (controller) {
@@ -81,7 +82,7 @@ class _InvoiceListState extends State<InvoiceList> {
                         KeyboardCheckbox(
                           onChanged: (v) {
                             controller.paid.value = v;
-                            controller.getCustomerInvoice();
+                            controller.getCustomerInvoice(invoiceType: "post");
                             controller.update();
                           },
                           label: AppText.paid,
@@ -95,8 +96,14 @@ class _InvoiceListState extends State<InvoiceList> {
                           width: 80,
                           verticalPadding: 0.0,
                           borderRadius: 4,
-                          onTap: () {
-                            controller.getCustomerInvoice();
+                          onTap: () async {
+                            controller.isLoadingList.value = true;
+                            controller.update();
+
+                            await controller.getCustomerInvoice(invoiceType: "post");
+
+                            controller.isLoadingList.value = false;
+                            controller.update();
                           },
                           widget: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
@@ -136,32 +143,32 @@ class _InvoiceListState extends State<InvoiceList> {
                           buildHeaderWithSearch(title: "INVOICE #",
                               onChanged: (value) {
                                 controller.searchInvoiceNumber.value = value;
-                                controller.onSearchCustomerInvoice();
+                                controller.onSearchCustomerInvoice(invoiceType: "post");
                               }),
                           buildHeaderWithSearch(title: "CUSTOMER",
                               onChanged: (value) {
                                 controller.searchCustomer.value = value;
-                                controller.onSearchCustomerInvoice();
+                                controller.onSearchCustomerInvoice(invoiceType: "post");
                               }),
                           buildHeaderWithSearch(title: "DATE",
                               onChanged: (value) {
                                 controller.searchDate.value = value;
-                                controller.onSearchCustomerInvoice();
+                                controller.onSearchCustomerInvoice(invoiceType: "post");
                               }),
                           buildHeaderWithSearch(title: "DUE DATE",
                               onChanged: (value) {
                                 controller.searchDueDate.value = value;
-                                controller.onSearchCustomerInvoice();
+                                controller.onSearchCustomerInvoice(invoiceType: "post");
                               }),
                           buildHeaderWithSearch(title: "STATUS",
                               onChanged: (value) {
                                 controller.searchStatus.value = value;
-                                controller.onSearchCustomerInvoice();
+                                controller.onSearchCustomerInvoice(invoiceType: "post");
                               }),
                           buildHeaderWithSearch(title: "AMOUNT",
                               onChanged: (value) {
                                 controller.searchAmount.value = value;
-                                controller.onSearchCustomerInvoice();
+                                controller.onSearchCustomerInvoice(invoiceType: "post");
                               }),
                           buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
                         ],
@@ -182,30 +189,19 @@ class _InvoiceListState extends State<InvoiceList> {
                                       ActionIconButton(
                                         onPressed: () {
                                           Get.back();
-                                          controller
-                                              .getUpdateCustomerInvoice(
-                                              selectedId: invoice.id);
-                                          int index = _controller
-                                              .selectedMenuItems
-                                              .indexWhere((element) =>
-                                          element.title ==
-                                              "UPDATE CUSTOMER INVOICE");
+                                          controller.getUpdateCustomerInvoice(selectedId: invoice.id);
+                                          int index = _controller.selectedMenuItems.indexWhere((element) =>
+                                          element.title == "UPDATE CUSTOMER INVOICE");
                                           if (index != -1) {
-                                            _controller
-                                                .selectedMenuItems[index]
-                                                .selectedItem = true;
-                                            _controller.currentPage
-                                                .value =
+                                            _controller.selectedMenuItems[index].selectedItem = true;
+                                            _controller.currentPage.value =
                                                 UpdateCustomerInvoiceScreen();
                                           } else {
-                                            _controller.currentPage
-                                                .value =
+                                            _controller.currentPage.value =
                                                 UpdateCustomerInvoiceScreen();
                                             _controller.menuBarRefresh(
-                                                title:
-                                                "UPDATE CUSTOMER INVOICE",
-                                                pageName:
-                                                UpdateCustomerInvoiceScreen());
+                                                title: "UPDATE CUSTOMER INVOICE",
+                                                pageName: UpdateCustomerInvoiceScreen());
                                           }
                                           controller.update();
                                         },
@@ -213,22 +209,19 @@ class _InvoiceListState extends State<InvoiceList> {
                                       ),
                                       Text("|"),
                                         ActionIconButton(
-                                            icon: Icons.delete,
-                                            color: Colors.red,
+                                            icon: Icons.delete, color: Colors.red,
                                           onPressed: () {
-                                            controller.customerInvoiceDelete(invoice.id);
+                                            controller.customerInvoiceDelete(invoice.id, invoiceType: "post");
                                           }),
                                       Text("|"),
                                       ActionIconButton(
-                                          icon: Icons.picture_as_pdf,
-                                          color: Colors.black,
+                                          icon: Icons.picture_as_pdf, color: Colors.black,
                                           onPressed: () {
                                             controller.downloadPdfFile();
                                           }),
                                       Text("|"),
                                       ActionIconButton(
-                                          icon: Icons.mail,
-                                          color: Colors.black,
+                                          icon: Icons.mail, color: Colors.black,
                                           onPressed: () {
                                             EmailCustomerInvoiceAlert.show();
                                           }),

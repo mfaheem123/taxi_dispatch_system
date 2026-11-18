@@ -4,6 +4,8 @@ import 'package:dashboard_new1/view/invoices/customer_invoices/update_customer_i
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../alert/update_customer_invoice_email.dart';
+import '../../../component/action_icon_button.dart';
 import '../../../component/color.dart';
 import '../../../component/datatable_widget.dart';
 import '../../../component/textStyle.dart';
@@ -37,8 +39,16 @@ class _CustomerPreInvoiceListState extends State<CustomerPreInvoiceList> {
     return PageScrollWrapper(
       child: GetBuilder<CustomerInvoiceController>(
         initState: (state) {
+          controller.clearInvoiceData();
+          controller.getCustomerInvoice(invoiceType: "pre");
         },
         builder: (controller) {
+
+          final listToShow = controller.filteredCustomerInvoice.isNotEmpty
+              ? controller.filteredCustomerInvoice
+              : controller.customerInvoiceListAll;
+          // final invoices = controller.filteredInvoices;
+          // final totalRows = invoices.length;
 
           return LayoutBuilder(builder: (context, constraints) {
             final double maxWidth = constraints.maxWidth;
@@ -65,13 +75,14 @@ class _CustomerPreInvoiceListState extends State<CustomerPreInvoiceList> {
                     child: Row(
                       children: [
                         Text(
-                            AppText.customerPreInvoices,
+                            "${AppText.customerInvoices} (${controller.listOfCustomerInvoiceModel?.count ?? "0"})",
                             style: titleDesign()
                         ),
                         const SizedBox(width: 120),
                         KeyboardCheckbox(
                           onChanged: (v) {
                             controller.paid.value = v;
+                            controller.getCustomerInvoice(invoiceType: "pre");
                             controller.update();
                           },
                           label: AppText.paid,
@@ -85,7 +96,14 @@ class _CustomerPreInvoiceListState extends State<CustomerPreInvoiceList> {
                           width: 80,
                           verticalPadding: 0.0,
                           borderRadius: 4,
-                          onTap: () {
+                          onTap: () async {
+                            controller.isLoadingList.value = true;
+                            controller.update();
+
+                            await controller.getCustomerInvoice(invoiceType: "pre");
+
+                            controller.isLoadingList.value = false;
+                            controller.update();
                           },
                           widget: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
@@ -101,94 +119,118 @@ class _CustomerPreInvoiceListState extends State<CustomerPreInvoiceList> {
                   ),
                   const SizedBox(height: 8),
 
+                  controller.isLoadingList.value
+                      ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(40.0),
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                      :
+                  // invoices.isEmpty
+                  //     ? const Center(
+                  //   child: Padding(
+                  //     padding: EdgeInsets.all(40.0),
+                  //     child: Text("No Invoices Found"),
+                  //   ),
+                  // )
+                  //     :
                   SingleChildScrollView(
                     child: SizedBox(
                       width: constraints.maxWidth,
                       child: DatatableWidget(
                         columns: [
-                          buildHeaderWithSearch(title: "INVOICE #", onChanged: (value) {}),
-                          buildHeaderWithSearch(title: "CUSTOMER", onChanged: (value) {}),
-                          buildHeaderWithSearch(title: "DATE", onChanged: (value) {}),
-                          buildHeaderWithSearch(title: "DUE DATE", onChanged: (value) {}),
-                          buildHeaderWithSearch(title: "STATUS", onChanged: (value) {}),
-                          buildHeaderWithSearch(title: "AMOUNT", onChanged: (value) {}),
+                          buildHeaderWithSearch(title: "INVOICE #",
+                              onChanged: (value) {
+                                controller.searchInvoiceNumber.value = value;
+                                controller.onSearchCustomerInvoice(invoiceType: "pre");
+                              }),
+                          buildHeaderWithSearch(title: "CUSTOMER",
+                              onChanged: (value) {
+                                controller.searchCustomer.value = value;
+                                controller.onSearchCustomerInvoice(invoiceType: "pre");
+                              }),
+                          buildHeaderWithSearch(title: "DATE",
+                              onChanged: (value) {
+                                controller.searchDate.value = value;
+                                controller.onSearchCustomerInvoice(invoiceType: "pre");
+                              }),
+                          buildHeaderWithSearch(title: "DUE DATE",
+                              onChanged: (value) {
+                                controller.searchDueDate.value = value;
+                                controller.onSearchCustomerInvoice(invoiceType: "pre");
+                              }),
+                          buildHeaderWithSearch(title: "STATUS",
+                              onChanged: (value) {
+                                controller.searchStatus.value = value;
+                                controller.onSearchCustomerInvoice(invoiceType: "pre");
+                              }),
+                          buildHeaderWithSearch(title: "AMOUNT",
+                              onChanged: (value) {
+                                controller.searchAmount.value = value;
+                                controller.onSearchCustomerInvoice(invoiceType: "pre");
+                              }),
                           buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
                         ],
-                        totalRow: 2, // Static total rows count
-                        rows: [
-                          // Static Row 1
-                          DataRow(
+                        totalRow: listToShow.length ?? 0,
+                        rows: (listToShow).map((invoice) {
+                          return DataRow(
                             cells: [
-                              const DataCell(Center(child: Text("CINV635168"))),
-                              const DataCell(Center(child: Text("CUSTOMER TESTTT"))),
-                              const DataCell(Center(child: Text("2026-04-01"))),
-                              const DataCell(Center(child: Text("2026-04-08"))),
-                              const DataCell(Center(child: Text("PAID"))),
-                              const DataCell(Center(child: Text("£ 65.00"))),
+                              DataCell(Center(child: Text((invoice.invoiceNumber ?? "-").toUpperCase()))),
+                              DataCell(Center(child: Text((invoice.customer?.name ?? "-").toUpperCase()))),
+                              DataCell(Center(child: Text(invoice.invoiceDate != null ? invoice.invoiceDate!.toIso8601String().split('T').first : "-"))),
+                              DataCell(Center(child: Text(invoice.invoiceDueDate != null ? invoice.invoiceDueDate!.toIso8601String().split('T').first : "-"))),
+                              DataCell(Center(child: Text(invoice.status?.toUpperCase() ?? "-"))),
+                              DataCell(Center(child: Text("£ ${invoice.amount ?? "0"}"))),
                               DataCell(
-                                Center(
-                                  child: Row(
+                                  Center(child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          side: const BorderSide(color: Colors.transparent),
-                                          padding: EdgeInsets.zero,
-                                        ),
-                                        onPressed: () {},
-                                        child: Icon(Icons.edit_calendar, size: 28, color: DynamicColors.primaryClr),
+                                      ActionIconButton(
+                                        onPressed: () {
+                                          Get.back();
+                                          controller.getUpdateCustomerInvoice(selectedId: invoice.id);
+                                          int index = _controller.selectedMenuItems.indexWhere((element) =>
+                                          element.title == "UPDATE CUSTOMER INVOICE");
+                                          if (index != -1) {
+                                            _controller.selectedMenuItems[index].selectedItem = true;
+                                            _controller.currentPage.value =
+                                                UpdateCustomerInvoiceScreen();
+                                          } else {
+                                            _controller.currentPage.value =
+                                                UpdateCustomerInvoiceScreen();
+                                            _controller.menuBarRefresh(
+                                                title: "UPDATE CUSTOMER INVOICE",
+                                                pageName: UpdateCustomerInvoiceScreen());
+                                          }
+                                          controller.update();
+                                        },
+                                        icon: Icons.edit_calendar, color: DynamicColors.primaryClr,
                                       ),
-                                      OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          side: const BorderSide(color: Colors.transparent),
-                                          padding: EdgeInsets.zero,
-                                        ),
-                                        onPressed: () {},
-                                        child: Icon(Icons.delete_forever, size: 28, color: DynamicColors.redClr),
-                                      ),
+                                      Text("|"),
+                                      ActionIconButton(
+                                          icon: Icons.delete, color: Colors.red,
+                                          onPressed: () {
+                                            controller.customerInvoiceDelete(invoice.id, invoiceType: "pre");
+                                          }),
+                                      Text("|"),
+                                      ActionIconButton(
+                                          icon: Icons.picture_as_pdf, color: Colors.black,
+                                          onPressed: () {
+                                            controller.downloadPdfFile();
+                                          }),
+                                      Text("|"),
+                                      ActionIconButton(
+                                          icon: Icons.mail, color: Colors.black,
+                                          onPressed: () {
+                                            EmailCustomerInvoiceAlert.show();
+                                          }),
                                     ],
                                   ),
-                                ),
-                              ),
+                                  )),
                             ],
-                          ),
-                          // Static Row 2
-                          DataRow(
-                            cells: [
-                              const DataCell(Center(child: Text("CINV194852"))),
-                              const DataCell(Center(child: Text("JOHN DOE"))),
-                              const DataCell(Center(child: Text("2026-04-02"))),
-                              const DataCell(Center(child: Text("2026-04-09"))),
-                              const DataCell(Center(child: Text("PENDING"))),
-                              const DataCell(Center(child: Text("£ 120.00"))),
-                              DataCell(
-                                Center(
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          side: const BorderSide(color: Colors.transparent),
-                                          padding: EdgeInsets.zero,
-                                        ),
-                                        onPressed: () {},
-                                        child: Icon(Icons.edit_calendar, size: 28, color: DynamicColors.primaryClr),
-                                      ),
-                                      OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          side: const BorderSide(color: Colors.transparent),
-                                          padding: EdgeInsets.zero,
-                                        ),
-                                        onPressed: () {},
-                                        child: Icon(Icons.delete_forever, size: 28, color: DynamicColors.redClr),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                          );
+                        }).toList(),
                       ),
                     ),
                   ),
