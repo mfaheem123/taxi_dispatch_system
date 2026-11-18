@@ -703,7 +703,7 @@ class _BookingTableState extends State<BookingTable> {
                                                     ),
                                                     waitDuration: const Duration(milliseconds: 200),
                                                     child: Container(
-                                                      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                                                      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
                                                       decoration: BoxDecoration(
                                                         color: DynamicColors.primaryClr,
                                                         borderRadius: BorderRadius.circular(4),
@@ -712,7 +712,7 @@ class _BookingTableState extends State<BookingTable> {
                                                       child: Row(
                                                         mainAxisSize: MainAxisSize.min,
                                                         children: [
-                                                          Icon(Icons.flight, size: 20, color: Colors.white),
+                                                          Icon(Icons.flight, size: 15, color: Colors.white),
                                                           const SizedBox(width: 2),
                                                           Text(
                                                             ( item.flightNumber ?? "AIR").toUpperCase(),
