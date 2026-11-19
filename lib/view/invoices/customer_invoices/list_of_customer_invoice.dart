@@ -217,7 +217,7 @@ class _InvoiceListState extends State<InvoiceList> {
                                       ActionIconButton(
                                           icon: Icons.picture_as_pdf, color: Colors.black,
                                           onPressed: () {
-                                            controller.downloadPdfFile();
+                                            controller.downloadPdfFile(invoiceId: invoice.id);
                                           }),
                                       Text("|"),
                                       ActionIconButton(

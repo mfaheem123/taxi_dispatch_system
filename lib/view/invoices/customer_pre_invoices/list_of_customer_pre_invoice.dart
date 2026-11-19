@@ -75,7 +75,7 @@ class _CustomerPreInvoiceListState extends State<CustomerPreInvoiceList> {
                     child: Row(
                       children: [
                         Text(
-                            "${AppText.customerInvoices} (${controller.listOfCustomerInvoiceModel?.count ?? "0"})",
+                            "${AppText.customerPreInvoice} (${controller.listOfCustomerInvoiceModel?.count ?? "0"})",
                             style: titleDesign()
                         ),
                         const SizedBox(width: 120),
@@ -217,7 +217,7 @@ class _CustomerPreInvoiceListState extends State<CustomerPreInvoiceList> {
                                       ActionIconButton(
                                           icon: Icons.picture_as_pdf, color: Colors.black,
                                           onPressed: () {
-                                            controller.downloadPdfFile();
+                                            controller.downloadPdfFile(invoiceId: invoice.id);
                                           }),
                                       Text("|"),
                                       ActionIconButton(

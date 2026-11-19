@@ -40,7 +40,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "CreateCustomerInvoice";
-    controller.setDefaultDates();
+    // controller.setDefaultDates();
   }
 
   List permissions = [];
@@ -448,7 +448,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                               key: ValueKey("from_date_${controller.datePickerKey}"),
                               initialDate: controller.filterFromDate.isNotEmpty
                                   ? DateTime.parse(controller.filterFromDate)
-                                  : DateTime(DateTime.now().year, DateTime.now().month, 1),
+                                  : DateTime.now().subtract(Duration(days: 7)),
                               allowFutureDates: false,
                               onChanged: (date) {
                                 controller.filterFromDate = date.toIso8601String().split("T").first;
@@ -508,6 +508,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                           ...?controller.paymentTypeModel?.paymentTypes
                               ?.map((payment) {
                             return InkWell(
+                              canRequestFocus: false,
                               onTap: () {
                                 if (controller.selectedPaymentTypeIds
                                     .contains(payment.id)) {
@@ -565,6 +566,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                           style: mozillaTextRegularText(
                               fontSize: 10, color: DynamicColors.whiteClr),
                           onTap: () {
+                            controller.getInvoiceNumber();
                             controller.getCustomerInvoiceByFilter();
                           },
                         ),

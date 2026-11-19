@@ -42,6 +42,9 @@ class _EditableCellWidgetState extends State<EditableCellWidget> {
         width: 50,
         child: TextFormField(
           controller: _controller,
+          autofillHints: const [],
+          enableSuggestions: false,
+          autocorrect: false,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           textAlign: TextAlign.center,
           inputFormatters: [
