@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
@@ -14,13 +16,35 @@ import '../../../component/text_widget.dart';
 import '../Controller/dashboard_controller.dart';
 import '../models/tracking_drivers_model.dart';
 
-/// One car gliding from [from] to [to] over [duration].
-class _Move {
-  _Move(this.from, this.to, this.start, this.duration);
-  final LatLng from;
-  final LatLng to;
-  final DateTime start;
-  final Duration duration;
+/// One position report for a car, with the time it arrived.
+class _Sample {
+  _Sample(this.t, this.p);
+  final DateTime t;
+  final LatLng p;
+}
+
+/// Everything the map keeps to draw one car smoothly.
+class _Track {
+  _Track(DateTime now, LatLng p) : shown = p {
+    samples.add(_Sample(now, p));
+    movedAt = null;
+  }
+
+  /// Recent position reports, oldest first.
+  final List<_Sample> samples = [];
+
+  /// Average time between this car's reports, in ms.
+  double gapMs = 2000;
+
+  /// Where the car is drawn right now.
+  LatLng shown;
+
+  /// Which way the car is drawn facing (degrees clockwise from north); null
+  /// until the car has moved and there is a direction to show.
+  double? heading;
+
+  /// When the car's position last really changed.
+  DateTime? movedAt;
 }
 
 class ViewDriversMap extends StatefulWidget {
@@ -30,7 +54,8 @@ class ViewDriversMap extends StatefulWidget {
   State<ViewDriversMap> createState() => _ViewDriversMapState();
 }
 
-class _ViewDriversMapState extends State<ViewDriversMap> {
+class _ViewDriversMapState extends State<ViewDriversMap>
+    with SingleTickerProviderStateMixin {
   // final dashBoardCntrl = Get.find<DashboardController>();
   final dashBoardCntrl = Get.put(DashboardController());
 
@@ -56,6 +81,7 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
 
   Timer? _pollTimer;
   Timer? _statusTimer;
+  late final Ticker _ticker;
   Timer? _reconcileTimer;
   bool _fetching = false;
   bool _disposed = false;
@@ -66,6 +92,7 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
   void initState() {
     super.initState();
     mapController = MapController();
+    _ticker = createTicker((_) => _frame());
     _loadDrivers();
     _connect("location", "/driver-tracking-dashboard", _onLocationMessage);
     _connect("login", "/driver-login?$_companyQuery", _onLoginMessage);
@@ -86,7 +113,7 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
     _disposed = true;
     _pollTimer?.cancel();
     _reconcileTimer?.cancel();
-    _animTimer?.cancel();
+    _ticker.dispose();
     _statusTimer?.cancel();
     for (final t in _retryTimers.values) {
       t.cancel();
@@ -237,24 +264,31 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
 
   // ---- Smooth movement ----------------------------------------------------
   //
-  // A driver's position arrives every few seconds. Putting the pin straight on
-  // the new position makes the car jump; instead the pin glides from where it
-  // is shown to the new position over about as long as the gap between the two
-  // updates, so it keeps moving until the next one arrives.
+  // A driver's position arrives every second or few. Drawing a car straight on
+  // each new position makes it jump; gliding to each one and then waiting for
+  // the next makes it stop and start. Instead every report is kept with its
+  // arrival time, and the car is drawn a little BEHIND real time - about one
+  // report interval - walking through those reports at the pace they arrived.
+  // There is always a next point to walk to, so the car never waits, and one
+  // car or ten, each follows its own track.
+  //
+  // The same walk gives the direction of travel: the car faces along the
+  // segment it is on.
 
-  final Map<String, LatLng> _shown = {}; // where each car is drawn right now
-  final Map<String, _Move> _moves = {};
-  final Map<String, DateTime> _lastMoveAt = {};
+  final Map<String, _Track> _tracks = {};
 
-  /// When each car's position last actually changed; "moving" is judged from it.
-  final Map<String, DateTime> _movedAt = {};
-  Timer? _animTimer;
+  /// A heading the driver app itself sent (heading / bearing / course), which
+  /// is used in place of the one worked out from the track.
+  final Map<String, double> _serverHeading = {};
 
   /// Every car to draw: the drivers in the list.
   List<TrackingDriverObject> get _allCars =>
       _list ?? const <TrackingDriverObject>[];
 
-  /// Reads each driver's latest position and starts a glide for any that moved.
+  /// How far behind real time a car is drawn, in ms.
+  double _delayMs(_Track t) => (t.gapMs * 1.15 + 120).clamp(700.0, 6000.0);
+
+  /// Reads each driver's latest position into its track.
   void _syncMarkers() {
     final targets = <String, LatLng>{};
     for (final d in _allCars) {
@@ -265,47 +299,52 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
     }
 
     // Cars that left the list.
-    _shown.removeWhere((k, _) => !targets.containsKey(k));
-    _moves.removeWhere((k, _) => !targets.containsKey(k));
-    _lastMoveAt.removeWhere((k, _) => !targets.containsKey(k));
-    _movedAt.removeWhere((k, _) => !targets.containsKey(k));
+    _tracks.removeWhere((k, _) => !targets.containsKey(k));
+    _serverHeading.removeWhere((k, _) => !targets.containsKey(k));
 
     final now = DateTime.now();
     targets.forEach((key, target) {
-      final shown = _shown[key];
-      if (shown == null) {
-        _shown[key] = target; // first time seen: no glide, just appear
-        _lastMoveAt[key] = now;
+      final track = _tracks[key];
+      if (track == null) {
+        _tracks[key] = _Track(now, target); // first time seen: just appear
         return;
       }
-      final moving = _moves[key];
-      final goal = moving?.to ?? shown;
-      if ((goal.latitude - target.latitude).abs() < 1e-7 &&
-          (goal.longitude - target.longitude).abs() < 1e-7) {
-        return; // not moved
+      final last = track.samples.last;
+      if ((last.p.latitude - target.latitude).abs() < 1e-7 &&
+          (last.p.longitude - target.longitude).abs() < 1e-7) {
+        return; // same position again
       }
       // A far jump (a stale position corrected, a driver re-appearing) is
-      // not a drive: snap instead of sliding across the city.
-      if ((shown.latitude - target.latitude).abs() > 0.5 ||
-          (shown.longitude - target.longitude).abs() > 0.5) {
-        _shown[key] = target;
-        _moves.remove(key);
-        _lastMoveAt[key] = now;
-        _movedAt[key] = now;
+      // not a drive: put the car there instead of sliding across the city.
+      if ((last.p.latitude - target.latitude).abs() > 0.5 ||
+          (last.p.longitude - target.longitude).abs() > 0.5) {
+        track.samples
+          ..clear()
+          ..add(_Sample(now, target));
+        track.shown = target;
+        track.movedAt = now;
         return;
       }
-      final gap = now.difference(_lastMoveAt[key] ?? now);
-      final ms = gap.inMilliseconds.clamp(600, 4000);
-      _lastMoveAt[key] = now;
-      _movedAt[key] = now;
-      _moves[key] = _Move(shown, target, now, Duration(milliseconds: ms));
+      final gap = now.difference(last.t).inMilliseconds.toDouble();
+      // Smoothed interval between reports while the car is on the move.
+      if (gap < 15000) {
+        track.gapMs = track.gapMs * 0.7 + gap.clamp(300.0, 8000.0) * 0.3;
+      }
+      // After a long stop, hold the car where it was until just before this
+      // report, so it drives the last stretch instead of jumping to its end.
+      if (gap > track.gapMs * 2 + 500) {
+        track.samples
+            .add(_Sample(now.subtract(Duration(milliseconds: track.gapMs.round())), last.p));
+      }
+      track.samples.add(_Sample(now, target));
+      if (track.samples.length > 12) {
+        track.samples.removeRange(0, track.samples.length - 12);
+      }
+      track.movedAt = now;
     });
 
-    _rebuildMarkers();
-    if (_moves.isNotEmpty) {
-      _animTimer ??=
-          Timer.periodic(const Duration(milliseconds: 33), (_) => _tick());
-    }
+    _frame();
+    _wakeTicker();
 
     // Frame all the drivers once, on the first list that has positions. The
     // map may not be built yet, so this is retried on the next update.
@@ -327,33 +366,113 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
     }
   }
 
-  /// One animation frame: moves every gliding car a little further.
-  void _tick() {
+  /// Runs the per-frame loop while any car still has somewhere to go.
+  void _wakeTicker() {
+    if (_disposed || _ticker.isActive) return;
+    if (_anyCarActive(DateTime.now())) _ticker.start();
+  }
+
+  bool _anyCarActive(DateTime now) {
+    for (final t in _tracks.values) {
+      final age = now.difference(t.samples.last.t).inMilliseconds;
+      if (age < _delayMs(t) + 2500) return true;
+    }
+    return false;
+  }
+
+  /// One frame: works out where each car is, and which way it faces, at this
+  /// moment; redraws the pins.
+  DateTime _lastFrame = DateTime.now();
+  void _frame() {
     if (_disposed || !mounted) return;
     final now = DateTime.now();
-    final done = <String>[];
-    _moves.forEach((key, m) {
-      final t = (now.difference(m.start).inMilliseconds /
-              m.duration.inMilliseconds)
-          .clamp(0.0, 1.0);
-      _shown[key] = LatLng(
-        m.from.latitude + (m.to.latitude - m.from.latitude) * t,
-        m.from.longitude + (m.to.longitude - m.from.longitude) * t,
-      );
-      if (t >= 1.0) done.add(key);
+    final dtMs = now.difference(_lastFrame).inMilliseconds.clamp(1, 100);
+    _lastFrame = now;
+
+    _tracks.forEach((key, t) {
+      final renderAt = now.subtract(Duration(milliseconds: _delayMs(t).round()));
+      final samples = t.samples;
+      LatLng pos = samples.first.p;
+      double? segBearing;
+
+      if (samples.length > 1) {
+        if (!renderAt.isAfter(samples.first.t)) {
+          pos = samples.first.p;
+        } else if (renderAt.isBefore(samples.last.t)) {
+          // Between two reports: walk along that segment.
+          for (var i = 0; i < samples.length - 1; i++) {
+            final a = samples[i], b = samples[i + 1];
+            if (!renderAt.isBefore(a.t) && renderAt.isBefore(b.t)) {
+              final span = b.t.difference(a.t).inMilliseconds;
+              final f = span <= 0
+                  ? 1.0
+                  : renderAt.difference(a.t).inMilliseconds / span;
+              pos = LatLng(
+                a.p.latitude + (b.p.latitude - a.p.latitude) * f,
+                a.p.longitude + (b.p.longitude - a.p.longitude) * f,
+              );
+              if (_meters(a.p, b.p) > 2) segBearing = _bearing(a.p, b.p);
+              break;
+            }
+          }
+        } else {
+          // The next report is late: keep going the same way, slowing down,
+          // for up to 1.5s, rather than stopping dead.
+          final a = samples[samples.length - 2], b = samples.last;
+          final span = b.t.difference(a.t).inMilliseconds;
+          final over = renderAt.difference(b.t).inMilliseconds.clamp(0, 1500);
+          pos = b.p;
+          if (span > 0 && span < 8000) {
+            final k = (over - over * over / 3000) / span;
+            pos = LatLng(
+              b.p.latitude + (b.p.latitude - a.p.latitude) * k,
+              b.p.longitude + (b.p.longitude - a.p.longitude) * k,
+            );
+            if (_meters(a.p, b.p) > 2) segBearing = _bearing(a.p, b.p);
+          }
+        }
+      }
+      t.shown = pos;
+
+      // Direction: what the driver app says, else the way the car is going.
+      final wanted = _serverHeading[key] ?? segBearing;
+      if (wanted != null) {
+        if (t.heading == null) {
+          t.heading = wanted;
+        } else {
+          var diff = ((wanted - t.heading! + 540) % 360) - 180; // shortest turn
+          t.heading = (t.heading! + diff * (1 - math.exp(-dtMs / 220)) + 360) % 360;
+        }
+      }
     });
-    done.forEach(_moves.remove);
+
     _rebuildMarkers();
     setState(() {});
-    if (_moves.isEmpty) {
-      _animTimer?.cancel();
-      _animTimer = null;
-    }
+    if (_ticker.isActive && !_anyCarActive(now)) _ticker.stop();
   }
+
+  double _meters(LatLng a, LatLng b) {
+    final dy = (b.latitude - a.latitude) * 110540;
+    final dx = (b.longitude - a.longitude) *
+        111320 *
+        math.cos(a.latitude * math.pi / 180);
+    return math.sqrt(dx * dx + dy * dy);
+  }
+
+  /// Compass bearing from [a] to [b], degrees clockwise from north.
+  double _bearing(LatLng a, LatLng b) {
+    final dy = b.latitude - a.latitude;
+    final dx = (b.longitude - a.longitude) * math.cos(a.latitude * math.pi / 180);
+    return (math.atan2(dx, dy) * 180 / math.pi + 360) % 360;
+  }
+
+  /// Which way the car in each image faces, as a compass bearing. The four
+  /// coloured cars face south-west; the red On Route car faces north-west.
+  double _frontBearing(String asset) => asset.contains("tracking_car") ? 325 : 221;
 
   /// A car counts as moving if its position changed in the last 15 seconds.
   bool _isMoving(TrackingDriverObject d) {
-    final t = _movedAt[d.id.toString()];
+    final t = _tracks[d.id.toString()]?.movedAt;
     return t != null && DateTime.now().difference(t) < const Duration(seconds: 15);
   }
 
@@ -371,8 +490,13 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
   void _rebuildMarkers() {
     final markers = <CustomMarker>[];
     for (final d in _allCars) {
-      final point = _shown[d.id.toString()];
-      if (point == null) continue;
+      final track = _tracks[d.id.toString()];
+      if (track == null) continue;
+      final point = track.shown;
+      final asset = _statusImage(d.bookingStatus ?? "");
+      final angle = track.heading == null
+          ? 0.0
+          : (track.heading! - _frontBearing(asset)) * math.pi / 180;
       markers.add(CustomMarker(
         withReturnType: "driverMarker",
         type: "driverMarker",
@@ -384,8 +508,12 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
           alignment: Alignment.center,
           clipBehavior: Clip.none,
           children: [
-            Image.asset(_statusImage(d.bookingStatus ?? ""),
-                width: 70, height: 70, fit: BoxFit.contain),
+            // Only the car turns; its name and status stay upright.
+            Transform.rotate(
+              angle: angle,
+              child: Image.asset(asset,
+                  width: 70, height: 70, fit: BoxFit.contain),
+            ),
             Container(
               padding: const EdgeInsets.only(bottom: 10.0, left: 4, right: 4),
               child: Text(d.username ?? "",
@@ -513,6 +641,13 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
     }
     final lat = double.tryParse(payload['latitude']?.toString() ?? "");
     final lng = double.tryParse(payload['longitude']?.toString() ?? "");
+    final heading = double.tryParse((payload['heading'] ??
+                payload['bearing'] ??
+                payload['course'] ??
+                payload['direction'])
+            ?.toString() ??
+        "");
+    if (heading != null && id != null) _serverHeading[id] = heading % 360;
     if (lat != null) list[i].latitude = lat.toString();
     if (lng != null) list[i].longitude = lng.toString();
     if (payload['booking_status'] != null) {
@@ -571,7 +706,6 @@ class _ViewDriversMapState extends State<ViewDriversMap> {
 
 
   String _statusImage(String status) {
-    print("statusstatusstatus $status");
     switch (status) {
       case "Accepted":
         return "assets/c.png";   // Orange Car
