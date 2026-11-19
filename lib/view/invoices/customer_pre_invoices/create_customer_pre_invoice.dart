@@ -480,6 +480,7 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
                           ...?controller.paymentTypeModel?.paymentTypes
                               ?.map((payment) {
                             return InkWell(
+                              canRequestFocus: false,
                               onTap: () {
                                 if (controller.selectedPaymentTypeIds
                                     .contains(payment.id)) {
@@ -537,6 +538,7 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
                           style: mozillaTextRegularText(
                               fontSize: 10, color: DynamicColors.whiteClr),
                           onTap: () {
+                            controller.getInvoiceNumber();
                             controller.getCustomersPreInvoiceFilter();
                           },
                         ),

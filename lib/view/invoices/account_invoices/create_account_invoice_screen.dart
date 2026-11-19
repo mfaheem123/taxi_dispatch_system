@@ -518,14 +518,14 @@ class _CreateAccountInvoiceScreenState
                             final totalData = item['data'];
                             return [
                               "", "", "", "", "", "", "", "",
-                              Center(child: Text("TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900, fontSize: 12))),
-                              Center(child: Text("£${totalData.fareTotal ?? "0.00"}")),
-                              Center(child: Text("£${totalData.parkingChargesTotal ?? "0.00"}")),
-                              Center(child: Text("£${totalData.waitingChargesTotal ?? "0.00"}")),
-                              Center(child: Text("£${totalData.extraDropChargesTotal ?? "0.00"}")),
-                              Center(child: Text("£${totalData.meetAndGreetTotal ?? "0.00"}")),
-                              Center(child:Text("£${totalData.congestionChargesTotal ?? "0.00"}")),
-                              Center(child: Text("£${totalData.total ?? "0.00"}", style: mozillaTextSemiBoldText(color: Colors.blue, fontSize: 12))),
+                              Center(child: Text("TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900, fontSize: 14))),
+                              Center(child: Text("£${totalData.fareTotal ?? "0.00"}", style: mozillaTextSemiBoldText(fontSize: 14, fontWeight: FontWeight.bold))),
+                              Center(child: Text("£${totalData.parkingChargesTotal ?? "0.00"}", style: mozillaTextSemiBoldText(fontSize: 14, fontWeight: FontWeight.bold))),
+                              Center(child: Text("£${totalData.waitingChargesTotal ?? "0.00"}", style: mozillaTextSemiBoldText(fontSize: 14, fontWeight: FontWeight.bold))),
+                              Center(child: Text("£${totalData.extraDropChargesTotal ?? "0.00"}", style: mozillaTextSemiBoldText(fontSize: 14, fontWeight: FontWeight.bold))),
+                              Center(child: Text("£${totalData.meetAndGreetTotal ?? "0.00"}", style: mozillaTextSemiBoldText(fontSize: 14, fontWeight: FontWeight.bold))),
+                              Center(child:Text("£${totalData.congestionChargesTotal ?? "0.00"}", style: mozillaTextSemiBoldText(fontSize: 14, fontWeight: FontWeight.bold))),
+                              Center(child: Text("£${totalData.total ?? "0.00"}", style: mozillaTextSemiBoldText(color: Colors.blue, fontSize: 14))),
                               "",
                             ];
                           }
@@ -534,9 +534,9 @@ class _CreateAccountInvoiceScreenState
                             final totalData = item['data'];
                             return [
                               "", "", "", "", "", "", "", "",
-                              Center(child: Text("GRAND\nTOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900, fontSize: 12))),
+                              Center(child: Text("GRAND\nTOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900, fontSize: 14))),
                               "", "", "", "", "", "",
-                              Center(child: Text("£${totalData.grandTotal ?? "0.00"}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12))),
+                              Center(child: Text("£${totalData.grandTotal ?? "0.00"}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 14))),
                               "",
                             ];
                           }
@@ -615,7 +615,7 @@ class _CreateAccountInvoiceScreenState
                             Center(
                               child: Text(
                                 "£${booking.totalCharges ?? '0.0'}",
-                                style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 12),
+                                style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold, fontSize: 14),
                               ),
                             ),
 

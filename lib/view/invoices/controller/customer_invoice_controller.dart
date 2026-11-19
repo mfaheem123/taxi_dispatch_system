@@ -11,7 +11,6 @@ import '../../customer/model/search_customer_by_mobile.dart';
 import '../../drivers_view/model/driver_commission_payment_model.dart';
 import '../../setting/model/get_document_number_model.dart';
 import '../model/customer_invoice_filter_model.dart';
-import '../model/customer_invoice_number_model.dart';
 import '../model/customer_pre_inv_filter_model.dart';
 import '../model/list_of_customer_invoice_model.dart';
 import '../model/update_customer_invoice_model.dart';
@@ -85,21 +84,27 @@ class CustomerInvoiceController extends GetxController {
     update();
   }
 
+  /// todo customer invoice dates
+  String filterFromDate = "";
+  String filterToDate = "";
 
-  /// todo invoice number
-  // CustomerInvoiceModel? customerInvoiceModel;
-  // bool isCustomerInvoiceNumber = false;
-  //
-  // getCustomerInvoiceNumber() async {
-  //   isCustomerInvoiceNumber = true;
-  //   update();
-  //   var response = await Api().get("customer-invoice/invoice-number");
-  //   if (response.statusCode == 200) {
-  //     customerInvoiceModel = CustomerInvoiceModel.fromJson(response.data);
-  //     isCustomerInvoiceNumber = false;
-  //     update();
-  //   }
-  // }
+  void resolveDefaultDates({required bool isPreInvoice}) {
+    final now = DateTime.now();
+
+    if (filterFromDate.isEmpty) {
+      final defaultFrom = isPreInvoice
+          ? now.add(const Duration(days: 1))
+          : now.subtract(const Duration(days: 7));
+      filterFromDate = defaultFrom.toIso8601String().split("T").first;
+    }
+
+    if (filterToDate.isEmpty) {
+      final defaultTo = isPreInvoice
+          ? now.add(const Duration(days: 7))
+          : now;
+      filterToDate = defaultTo.toIso8601String().split("T").first;
+    }
+  }
 
   /// todo Customer Pre Invoice filter Api
 
@@ -130,6 +135,9 @@ class CustomerInvoiceController extends GetxController {
       BotToast.showText(text: "PLEASE SELECT A CUSTOMER FIRST");
       return;
     }
+
+    resolveDefaultDates(isPreInvoice: true);
+
     isLoadingPreInv = true;
     // update();
 
@@ -183,14 +191,12 @@ class CustomerInvoiceController extends GetxController {
   /// todo filter Api
   int? selectedCustomerId;
   Set<String> selectedIds = {};
-  String filterFromDate = "";
-  String filterToDate = "";
 
-  void setDefaultDates() {
-    DateTime now = DateTime.now();
-    filterFromDate = DateTime(now.year, now.month, 1).toIso8601String().split("T").first;
-    filterToDate = now.toIso8601String().split("T").first;
-  }
+  // void setDefaultDates() {
+  //   DateTime now = DateTime.now();
+  //   filterFromDate = DateTime(now.year, now.month, 1).toIso8601String().split("T").first;
+  //   filterToDate = now.toIso8601String().split("T").first;
+  // }
 
   RxList<InvBooking> invoiceAll = <InvBooking>[].obs;
   RxList<InvBooking> filteredInvoice = <InvBooking>[].obs;
@@ -218,6 +224,8 @@ class CustomerInvoiceController extends GetxController {
       BotToast.showText(text: "PLEASE SELECT A CUSTOMER FIRST");
       return;
     }
+
+    resolveDefaultDates(isPreInvoice: false);
     isFilteredLoading = true;
     // update();
 
@@ -438,36 +446,6 @@ class CustomerInvoiceController extends GetxController {
   ListOfCustomerInvoiceModel? listOfCustomerInvoiceModel;
   RxBool isLoadingList = false.obs;
 
-  // RxString searchQuery = "".obs;
-  // List<CustomerInvoice> get filteredInvoices {
-  //   final allInvoices = listOfCustomerInvoiceModel?.customerInvoices ?? [];
-  //   if (searchQuery.isEmpty) {
-  //     return allInvoices;
-  //   }
-  //   final query = searchQuery.value.toLowerCase();
-  //
-  //   return allInvoices.where((invoice) {
-  //     final invNumber = (invoice.invoiceNumber ?? "").toLowerCase();
-  //     final custName = (invoice.customer?.name ?? "").toLowerCase();
-  //     final status = (invoice.status ?? "").toLowerCase();
-  //     // final date = (invoice.invoiceDate ?? "").toLowerCase();
-  //     final amount = (invoice.amount ?? "").toLowerCase();
-  //
-  //     String dateStr = "";
-  //     if (invoice.invoiceDate != null) {
-  //       dateStr =
-  //           DateFormat("yyyy-MM-dd").format(invoice.invoiceDate!).toLowerCase();
-  //     }
-  //
-  //     return invNumber.contains(query) ||
-  //         custName.contains(query) ||
-  //         status.contains(query) ||
-  //         dateStr.contains(query) ||
-  //         amount.contains(query);
-  //   }).toList();
-  // }
-
-
   RxList<CustomerInvoice> customerInvoiceListAll = <CustomerInvoice>[].obs;
   RxList<CustomerInvoice> filteredCustomerInvoice = <CustomerInvoice>[].obs;
 
@@ -503,11 +481,24 @@ class CustomerInvoiceController extends GetxController {
     update();
   }
 
-  void onSearchCustomerInvoice() {
-    getCustomerInvoice();
+  void onSearchCustomerInvoice({String? invoiceType}) {
+    getCustomerInvoice(invoiceType: invoiceType);
   }
 
+  void clearInvoiceData() {
+    searchInvoiceNumber.value = "";
+    searchCustomer.value = "";
+    searchDate.value = "";
+    searchDueDate.value = "";
+    searchStatus.value = "";
+    searchAmount.value = "";
+    paid.value = false;
 
+    listOfCustomerInvoiceModel = null;
+    customerInvoiceListAll.clear();
+    filteredCustomerInvoice.clear();
+    update();
+  }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo LIST OF CUSTOMER INVOICE functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo UPDATE CUSTOMER INVOICE functionality
 
@@ -623,13 +614,27 @@ class CustomerInvoiceController extends GetxController {
   }
 
   /// Download PDF
-  Future<void> downloadPdfFile() async {
-    if (customerInvoiceByIdModel?.customerInvoice == null) {
+  // Future<void> downloadPdfFile() async {
+  //   if (customerInvoiceByIdModel?.customerInvoice == null) {
+  //     Get.snackbar("ERROR", "NO INVOICE DATA FOUND TO EXPORT.");
+  //     return;
+  //   }
+  //
+  //   final mainData = customerInvoiceByIdModel!.customerInvoice!;
+  Future<void> downloadPdfFile({int? invoiceId}) async {
+    var mainData = customerInvoiceByIdModel?.customerInvoice;
+
+    if (mainData == null && invoiceId != null) {
+      var response = await Api().get("customer-invoice/getbyid/$invoiceId");
+      if (response.statusCode == 200) {
+        mainData = CustomerInvoiceByIdModel.fromJson(response.data).customerInvoice;
+      }
+    }
+
+    if (mainData == null) {
       Get.snackbar("ERROR", "NO INVOICE DATA FOUND TO EXPORT.");
       return;
     }
-
-    final mainData = customerInvoiceByIdModel!.customerInvoice!;
     final accountData = mainData.customer;
     final List lineItems = mainData.customerInvoiceLineitems ?? [];
 
@@ -891,10 +896,10 @@ CC: CONGESTION CHARGES
   }
 
   /// Delete
-  customerInvoiceDelete(int? id) async {
+  customerInvoiceDelete(int? id, {String? invoiceType}) async {
     var response = await Api().delete("customer-invoice/delete/$id");
     if (response.statusCode == 200) {
-      getCustomerInvoice();
+      getCustomerInvoice(invoiceType: invoiceType);
       BotToast.showText(text: "CUSTOMER INVOICE DELETED SUCCESSFULLY!");
     }
   }

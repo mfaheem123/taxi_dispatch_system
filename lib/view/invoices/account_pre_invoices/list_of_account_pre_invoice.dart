@@ -6,11 +6,11 @@ import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/time_picker_widget.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/user_info_widget.dart';
-import 'package:dashboard_new1/view/invoices/account_pre_invoices/update_acc_pre_inv.dart';
 import 'package:dashboard_new1/view/page_scroller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 
 import '../../../alert/search_booking.dart';
@@ -305,18 +305,18 @@ class _ListOfAccountPreInvoiceScreenState extends State<ListOfAccountPreInvoiceS
 
                                     int index = _controller.selectedMenuItems
                                         .indexWhere((element) => element.title ==
-                                        "UPDATE ACCOUNT PRE INVOICE");
+                                        "UPDATE ACCOUNT INVOICE");
                                     if (index != -1) {
                                       _controller.selectedMenuItems[index]
                                           .selectedItem = true;
                                       _controller.currentPage.value =
-                                          UpdateAccountPreInvoice();
+                                          UpdateAccountInvoiceScreen();
                                     } else {
                                       _controller.currentPage.value =
-                                          UpdateAccountPreInvoice();
+                                          UpdateAccountInvoiceScreen();
                                       _controller.menuBarRefresh(
-                                          title: "UPDATE ACCOUNT PRE INVOICE",
-                                          pageName: UpdateAccountPreInvoice());
+                                          title: "UPDATE ACCOUNT INVOICE",
+                                          pageName: UpdateAccountInvoiceScreen());
                                     }
                                     controller.update();
                                     // Get.to();
@@ -335,7 +335,18 @@ class _ListOfAccountPreInvoiceScreenState extends State<ListOfAccountPreInvoiceS
                                     ),
                                   ),
                                   onPressed: () {
-                                    controller.accountInvoiceDelete(item.id);
+                                    Get.defaultDialog(
+                                      title: "CONFIRM DELETE",
+                                      middleText: "Are you sure you want to delete this invoice?",
+                                      textCancel: "NO",
+                                      textConfirm: "YES",
+                                      confirmTextColor: DynamicColors.whiteClr,
+                                      buttonColor: Colors.red,
+                                      onConfirm: () async {
+                                        Get.back();
+                                        await controller.accountInvoiceDelete(item.id, invoiceType: "PRE");
+                                        },
+                                    );
                                   },
                                   child: Icon(
                                     Icons.delete_forever,

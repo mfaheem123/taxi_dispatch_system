@@ -92,6 +92,7 @@ class BookingAuditController extends GetxController {
       }
 
       if (response != null && response.statusCode == 200) {
+
         final data = response.data;
         if (data is Map<String, dynamic>) {
           bookingDetail = BookingDetailModel.fromJson(data);

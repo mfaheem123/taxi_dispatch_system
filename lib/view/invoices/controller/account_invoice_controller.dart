@@ -10,11 +10,9 @@ import '../../administration/model/list_subsDiary.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
 import '../../setting/model/get_document_number_model.dart';
 import '../model/account_invoice_booking_model.dart';
-// import '../model/account_invoice_number_model.dart' hide Subsidiary;
 import '../model/account_pre_inv_filter_model.dart';
 import '../model/list_of_account_invoice_model.dart';
-import '../model/update_account_invoice_model.dart'
-    hide Account, Subsidiary, Booking;
+import '../model/update_account_invoice_model.dart' hide Account, Subsidiary, Booking;
 
 class InvoiceController extends GetxController {
   /// ==============================================Create Account Invoice ====================================================
@@ -29,14 +27,8 @@ class InvoiceController extends GetxController {
   bool isAllSelected = false;
 
   final orderNumber = TextEditingController();
-  // DateTime? fromDate = DateTime.now();
-  // DateTime? toDate = DateTime.now();
 
-  /// account pre invoice dates
-  String fromDate = "";
-  String toDate = "";
-
-
+  // Invoice Number
   GetDocumentNumberModel? documentNumberModel;
   bool isDocumentNumber = false;
 
@@ -53,20 +45,6 @@ class InvoiceController extends GetxController {
     isDocumentNumber = false;
     update();
   }
-
-  // InvoiceNumberModel? invoiceNumberModel;
-  // bool isInvoiceNumber = false;
-  //
-  // getInvoiceNumber() async {
-  //   isInvoiceNumber = true;
-  //   update();
-  //   var response = await Api().get("document/document_numbers/3");
-  //   if (response.statusCode == 200) {
-  //     invoiceNumberModel = InvoiceNumberModel.fromJson(response.data);
-  //     isInvoiceNumber = false;
-  //     update();
-  //   }
-  // }
 
   // ============ Subsidiary
   SubsDiaryModel? subsDiaryModel;
@@ -98,6 +76,28 @@ class InvoiceController extends GetxController {
     }
   }
 
+  /// account invoice dates
+  String fromDate = "";
+  String toDate = "";
+
+  void resolveDefaultDates({required bool isPreInvoice}) {
+    final now = DateTime.now();
+
+    if (fromDate.isEmpty) {
+      final defaultFrom = isPreInvoice
+          ? now.add(const Duration(days: 1))
+          : now.subtract(const Duration(days: 7));
+      fromDate = defaultFrom.toIso8601String().split("T").first;
+    }
+
+    if (toDate.isEmpty) {
+      final defaultTo = isPreInvoice
+          ? now.add(const Duration(days: 7))
+          : now;
+      toDate = defaultTo.toIso8601String().split("T").first;
+    }
+  }
+
   // ================ Pre Invoice Filter Button ====================
 
   AccPreInvFilterModel? accPreInvFilterModel;
@@ -123,10 +123,13 @@ class InvoiceController extends GetxController {
   RxString searchTotal = ''.obs;
 
   getPreInvoiceFilter() async {
-    if (subsidiaries == null || fromDate == null || toDate == null) {
+    if (subsidiaries == null) {
       BotToast.showText(text: 'PLEASE FILL ALL REQUIRED FIELDS!');
       return;
     }
+
+    resolveDefaultDates(isPreInvoice: true);
+
     isLoadingPreInv = true;
 
     var response = await Api().get("account_invoice/pre-bookings",
@@ -202,7 +205,10 @@ class InvoiceController extends GetxController {
       BotToast.showText(text: 'PLEASE FILL ALL REQUIRED FIELDS!');
       return;
     }
+
+    resolveDefaultDates(isPreInvoice: false);
     isLoadingInvoice = true;
+
     var response = await Api().get(
       "account_invoice/bookings",
       queryParameters: {
@@ -256,6 +262,8 @@ class InvoiceController extends GetxController {
       // BotToast.showText(text: 'Please select at least one booking to create an invoice');
       return;
     }
+
+    resolveDefaultDates(isPreInvoice: documentTableType == 'account_pre_invoice');
     addAccountInvoiceLoad(true);
 
     List bookingsList = [];
@@ -290,14 +298,6 @@ class InvoiceController extends GetxController {
     String invoiceNo = "${targetDoc?.prefix ?? ''}${targetDoc?.endNumber ?? ''}";
     String invoiceType = documentTableType == 'account_pre_invoice' ? 'pre' : 'post';
 
-    // List<Map<String, dynamic>> lineItems = accountInvoiceBookingModel!.bookings!
-    //     .where((booking) => selectedCreateBookingIds.contains(booking.id))
-    //     .map((booking) {
-    //     return {
-    //       "booking_id": booking.id,
-    //       "total_charges": booking.totalCharges ?? "0",
-    //     };
-    //   }).toList();
       var formData = {
         'account_id': selectAccountValue?.id,
         'subsidiary_id': subsidiaries?.id,
@@ -307,11 +307,9 @@ class InvoiceController extends GetxController {
         'from_date': fromDate,
         'to_date': toDate,
         'invoice_number': invoiceNo,
-        // "${invoiceNumberModel?.documentNumber?.prefix ?? ''}${invoiceNumberModel?.documentNumber?.endNumber ?? ''}",
         'invoice_date': invoiceDateController,
         'invoice_due_date': invoiceDueDateController,
         'invoice_type': invoiceType,
-        // 'post',
         'order_number': orderNumber.text.isEmpty ? "" : orderNumber.text,
       };
       print("Payload: $formData");
@@ -454,24 +452,6 @@ class InvoiceController extends GetxController {
       statusParam = status!.toUpperCase();
     }
 
-    // var response = await Api().get("account_invoice/get", queryParameters: {
-    //   "page": currentPage.value,
-    //   "limit": limit,
-    //   "invoice_type": invoiceType,
-    //   "invoice_number": activeFilter == "invoice" ? invoiceNumber.value.toLowerCase() : null,
-    //   "account_name": activeFilter == "account" ? searchAccount.value.toLowerCase() : null,
-    //   "department_name": activeFilter == "department" ? searchDepartment.value.toLowerCase() : null,
-    //   "order_number": activeFilter == "order" ? searchOrder.value.toLowerCase() : null,
-    //   "amount": activeFilter == "amount" ? searchAmount.value.toLowerCase() : null,
-    //   "subsidiary_name": activeFilter == "subsidiary" ? searchSubsidiary.value.toLowerCase() : null,
-    //   "invoice_date": activeFilter == "invoicedate" ? searchDate.value : null,
-    //   "invoice_due_date": activeFilter == "duedate" ? searchDueDate.value : null,
-    //   "status": statusParam,
-    //   "from_date": fromDateStr,
-    //   "to_date": toDateStr,
-    // }, sendCompanyId: true);
-    //
-    // if (response.statusCode == 200) {
     var response = await Api().get("account_invoice/get", queryParameters: {
       "page": currentPage.value,
       "limit": limit,
@@ -513,14 +493,13 @@ class InvoiceController extends GetxController {
   }
 
   // Delete
-  accountInvoiceDelete(int? id) async {
+  accountInvoiceDelete(int? id, {String? invoiceType}) async {
     var response = await Api().delete("account_invoice/delete/$id");
     if (response.statusCode == 200) {
-      listAccountInvoice(isFirstTime: true);
+      listAccountInvoice(isFirstTime: true, invoiceType: invoiceType);
       BotToast.showText(text: "ACCOUNT INVOICE DELETED SUCCESSFULLY!");
     }
   }
-
 
   void clearData() {
     invoiceNumber.value = "";
@@ -532,6 +511,10 @@ class InvoiceController extends GetxController {
     status = "ALL";
     invoiceListFromDate = DateTime.now();
     invoiceListToDate = DateTime.now();
+    listOfAccountInvoice = null;
+    accountInvoiceListAll.clear();
+    filteredAccountInvoice.clear();
+    update();
   }
 
   ///================================================ list of Account Invoice END
@@ -541,7 +524,6 @@ class InvoiceController extends GetxController {
 
   var isPaid = false.obs;
 
-// 1. togglePaidStatus ko update karein taaki ye Invoice aur naya status accept kare
   void togglePaidStatus(AccountInvoiceAccountInvoice invoice) {
     isPaid.value = !isPaid.value;
     invoice.status = isPaid.value ? "PAID" : "UNPAID";
@@ -900,66 +882,6 @@ CC: CONGESTION CHARGES
       totalCC = 0,
       subTotal = 0;
   double adminFees = 0.0;
-
-  // void recalculateRowTotal(dynamic lineItem) {
-  //   final booking = lineItem.booking;
-  //   if (booking != null) {
-  //     // 1. Row Total Calculation
-  //     booking
-  //         .totalCharges = ((double.tryParse(booking.fares?.toString() ?? "0") ??
-  //             0.0) +
-  //         (double.tryParse(booking.parkingCharges?.toString() ?? "0") ?? 0.0) +
-  //         (double.tryParse(booking.waitingCharges?.toString() ?? "0") ?? 0.0) +
-  //         (double.tryParse(booking.extraDropCharges?.toString() ?? "0") ??
-  //             0.0) +
-  //         (double.tryParse(booking.meetAndGreet?.toString() ?? "0") ?? 0.0) +
-  //         (double.tryParse(booking.congestionCharges?.toString() ?? "0") ??
-  //             0.0));
-  //
-  //     // 2. Reset Totals before loop
-  //     totalFare = 0;
-  //     totalPC = 0;
-  //     totalWC = 0;
-  //     totalEDC = 0;
-  //     totalMG = 0;
-  //     totalCC = 0;
-  //     subTotal = 0;
-  //
-  //     var lineItems = updateInvoiceByIdModel
-  //             ?.accountInvoice?.accountInvoice?.accountInvoiceLineitems ??
-  //         [];
-  //
-  //     for (var item in lineItems) {
-  //       var b = item.booking;
-  //       totalFare += (b?.fares ?? 0.0);
-  //       totalPC += (b?.parkingCharges ?? 0.0);
-  //       totalWC += (b?.waitingCharges ?? 0.0);
-  //       totalEDC += (b?.extraDropCharges ?? 0.0);
-  //       totalMG += (b?.meetAndGreet ?? 0.0);
-  //       totalCC += (b?.congestionCharges ?? 0.0);
-  //       subTotal += (b?.totalCharges ?? 0.0);
-  //     }
-  //
-  //     var accountData = updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.account;
-  //
-  //
-  //     double rawAdminFees = double.tryParse(accountData?.adminFees?.toString() ?? "0") ?? 0.0;
-  //     if (accountData?.adminFeesType == "AMOUNT") {
-  //       adminFees = rawAdminFees;
-  //     } else if (accountData?.adminFeesType == "PERCENTAGE") {
-  //       adminFees = (subTotal * rawAdminFees) / 100;
-  //     }
-  //     // double adminFees = double.tryParse(updateInvoiceByIdModel
-  //     //             ?.accountInvoice?.accountInvoice?.account?.adminFees
-  //     //             ?.toString() ??
-  //     //         "0") ??
-  //     //     0.0;
-  //     updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.amount =
-  //         (subTotal + adminFees).toStringAsFixed(2);
-  //
-  //     update();
-  //   }
-  // }
 
   void recalculateRowTotal(dynamic input) {
     dynamic booking;

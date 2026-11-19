@@ -688,7 +688,7 @@ class _BookingTableState extends State<BookingTable> {
                                                         borderRadius: BorderRadius.circular(4),
                                                         border: Border.all(color: Colors.transparent, width: 0.8),
                                                       ),
-                                                      child:  Icon(Icons.note_sharp, size: 12, color: DynamicColors.primaryClr),
+                                                      child:  Icon(Icons.note_sharp, size: 20, color: DynamicColors.primaryClr),
                                                     ),
                                                   ),
                                                 ],
@@ -703,7 +703,7 @@ class _BookingTableState extends State<BookingTable> {
                                                     ),
                                                     waitDuration: const Duration(milliseconds: 200),
                                                     child: Container(
-                                                      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                                                      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
                                                       decoration: BoxDecoration(
                                                         color: DynamicColors.primaryClr,
                                                         borderRadius: BorderRadius.circular(4),
@@ -712,7 +712,7 @@ class _BookingTableState extends State<BookingTable> {
                                                       child: Row(
                                                         mainAxisSize: MainAxisSize.min,
                                                         children: [
-                                                          Icon(Icons.flight, size: 12, color: Colors.white),
+                                                          Icon(Icons.flight, size: 15, color: Colors.white),
                                                           const SizedBox(width: 2),
                                                           Text(
                                                             ( item.flightNumber ?? "AIR").toUpperCase(),
@@ -790,7 +790,7 @@ class _BookingTableState extends State<BookingTable> {
                                                         borderRadius: BorderRadius.circular(4),
                                                         border: Border.all(color: Colors.transparent, width: 0.8),
                                                       ),
-                                                      child: Icon(Icons.note_sharp, size: 12, color: DynamicColors.primaryClr),
+                                                      child: Icon(Icons.note_sharp, size: 20, color: DynamicColors.primaryClr),
                                                     ),
                                                   ),
                                                 ],
@@ -949,154 +949,159 @@ class _BookingTableState extends State<BookingTable> {
                                     // },
                                     child: SizedBox(
                                       width: widthss/20.5,
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          if (item.childSeat != null && item.childSeat!.isNotEmpty) ...[
-                                            SizedBox(
-                                              height: 20,
-                                              width: 20,
-                                              child: PopupMenuButton<String>(
-                                                padding: EdgeInsets.zero,
-                                                constraints: const BoxConstraints(),
-                                                tooltip: "CHILD SEATS",
-                                                icon: Container(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.transparent,
-                                                    borderRadius: BorderRadius.circular(4),
-                                                    border: Border.all(color: Colors.transparent, width: 0.8),
-                                                  ),
-                                                  child:  Icon(Icons.child_friendly_sharp, size: 12, color: DynamicColors.primaryClr),
-                                                ),
-                                                itemBuilder: (context) => [
-                                                  PopupMenuItem<String>(
-                                                    enabled: false,
-                                                    child: Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      mainAxisSize: MainAxisSize.min,
-                                                      children: [
-                                                         Text("CHILD SEATS", style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12)),
-                                                        const Divider(height: 8),
-                                                        ...item.childSeat!.map((cs) => Padding(
-                                                          padding: const EdgeInsets.symmetric(vertical: 2.0),
-                                                          child: Text(
-                                                            "NO OF CHILD: ${cs.child ?? "-"}\nAGE: ${cs.age ?? "-"}".toUpperCase(),
-                                                            style: mozillaTextRegularText(fontSize: 11),
-                                                          ),
-                                                        )),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
+                                          Tooltip(
+                                            message: item.notes!.isEmpty ? "" : item.notes![0].note?.toUpperCase() ?? "-",
+                                            child: Text(
+                                              item.notes!.isEmpty ? "".toUpperCase() : item.notes![0].note?.toUpperCase() ?? "-",
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontSize: widthss/140,
                                               ),
                                             ),
-                                            const SizedBox(width: 2),
-                                          ],
-                                          // if (item.specialInstructions != null && item.specialInstructions!.trim().isNotEmpty) ...[
-                                          //   SizedBox(
-                                          //     height: 20,
-                                          //     width: 20,
-                                          //     child: PopupMenuButton<String>(
-                                          //       padding: EdgeInsets.zero,
-                                          //       constraints: const BoxConstraints(),
-                                          //       tooltip: "SPECIAL INSTRUCTIONS",
-                                          //       icon: Container(
-                                          //         padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
-                                          //         decoration: BoxDecoration(
-                                          //           color: DynamicColors.primaryClr,
-                                          //           borderRadius: BorderRadius.circular(4),
-                                          //           border: Border.all(color: Colors.blue.shade300, width: 0.8),
-                                          //         ),
-                                          //         child: const Icon(Icons.info, size: 10, color: Colors.white),
-                                          //       ),
-                                          //       itemBuilder: (context) => [
-                                          //         PopupMenuItem<String>(
-                                          //           enabled: false,
-                                          //           child: Column(
-                                          //             crossAxisAlignment: CrossAxisAlignment.start,
-                                          //             mainAxisSize: MainAxisSize.min,
-                                          //             children: [
-                                          //               const Text("SPECIAL INSTRUCTIONS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                                          //               const Divider(height: 8),
-                                          //               Padding(
-                                          //                 padding: const EdgeInsets.symmetric(vertical: 2.0),
-                                          //                 child: Text(
-                                          //                   item.specialInstructions!.toUpperCase(),
-                                          //                   style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
-                                          //                 ),
-                                          //               ),
-                                          //             ],
-                                          //           ),
-                                          //         ),
-                                          //       ],
-                                          //     ),
-                                          //   ),
-                                          //   const SizedBox(width: 4),
-                                          // ],
-                                            if (item.notes != null && item.notes!.isNotEmpty) ...[
-                                            SizedBox(
-                                              height: 20,
-                                              width: 20,
-                                              child: PopupMenuButton<String>(
-                                                padding: EdgeInsets.zero,
-                                                constraints: const BoxConstraints(),
-                                                tooltip: "NOTES",
-                                                icon: Container(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.transparent,
-                                                    borderRadius: BorderRadius.circular(4),
-                                                    border: Border.all(color: Colors.transparent, width: 0.8),
-                                                  ),
-                                                  child:  Icon(Icons.note_sharp, size: 12, color: DynamicColors.primaryClr),
-                                                ),
-                                                itemBuilder: (context) => [
-                                                  PopupMenuItem<String>(
-                                                    enabled: false,
-                                                    child: Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      mainAxisSize: MainAxisSize.min,
-                                                      children: [
-                                                         Text("NOTES", style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12)),
-                                                        const Divider(height: 8),
-                                                        ...item.notes!.map((e) => Padding(
-                                                          padding: const EdgeInsets.symmetric(vertical: 2.0),
-                                                          child: Column(
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                            children: [
-                                                              Text(
-                                                                (e.note ?? "").toUpperCase(),
-                                                                style: mozillaTextRegularText(fontSize: 11, fontWeight: FontWeight.w600),
+                                          ),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              if (item.childSeat != null && item.childSeat!.isNotEmpty) ...[
+                                                SizedBox(
+                                                  height: 20,
+                                                  width: 20,
+                                                  child: PopupMenuButton<String>(
+                                                    padding: EdgeInsets.zero,
+                                                    constraints: const BoxConstraints(),
+                                                    tooltip: "CHILD SEATS",
+                                                    icon: Container(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.transparent,
+                                                        borderRadius: BorderRadius.circular(4),
+                                                        border: Border.all(color: Colors.transparent, width: 0.8),
+                                                      ),
+                                                      child:  Icon(Icons.child_friendly_sharp, size: 20, color: DynamicColors.primaryClr),
+                                                    ),
+                                                    itemBuilder: (context) => [
+                                                      PopupMenuItem<String>(
+                                                        enabled: false,
+                                                        child: Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          children: [
+                                                             Text("CHILD SEATS", style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12)),
+                                                            const Divider(height: 8),
+                                                            ...item.childSeat!.map((cs) => Padding(
+                                                              padding: const EdgeInsets.symmetric(vertical: 2.0),
+                                                              child: Text(
+                                                                "NO OF CHILD: ${cs.child ?? "-"}\nAGE: ${cs.age ?? "-"}".toUpperCase(),
+                                                                style: mozillaTextRegularText(fontSize: 11),
                                                               ),
-                                                              if ((e.createdBy != null && e.createdBy!.isNotEmpty) || (e.createdAt != null && e.createdAt!.isNotEmpty))
-                                                                Text(
-                                                                  "${e.createdBy ?? ""} ${e.createdAt ?? ""}".trim().toUpperCase(),
-                                                                  style: mozillaTextRegularText(fontSize: 10, color: Colors.grey),
-                                                                ),
-                                                            ],
-                                                          ),
-                                                        )),
-                                                      ],
-                                                    ),
+                                                            )),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                ],
-                                              ),
-                                            ),
-                                            const SizedBox(width: 2),
-                                          ],
-                                          Expanded(
-                                            child: Tooltip(
-                                              message: item.notes!.isEmpty ? "" : item.notes![0].note?.toUpperCase() ?? "-",
-                                              child: Text(
-                                                item.notes!.isEmpty ? "".toUpperCase() : item.notes![0].note?.toUpperCase() ?? "-",
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  fontSize: widthss/140,
                                                 ),
-                                              ),
-                                            ),
+                                                const SizedBox(width: 2),
+                                              ],
+                                              // if (item.specialInstructions != null && item.specialInstructions!.trim().isNotEmpty) ...[
+                                              //   SizedBox(
+                                              //     height: 20,
+                                              //     width: 20,
+                                              //     child: PopupMenuButton<String>(
+                                              //       padding: EdgeInsets.zero,
+                                              //       constraints: const BoxConstraints(),
+                                              //       tooltip: "SPECIAL INSTRUCTIONS",
+                                              //       icon: Container(
+                                              //         padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                                              //         decoration: BoxDecoration(
+                                              //           color: DynamicColors.primaryClr,
+                                              //           borderRadius: BorderRadius.circular(4),
+                                              //           border: Border.all(color: Colors.blue.shade300, width: 0.8),
+                                              //         ),
+                                              //         child: const Icon(Icons.info, size: 10, color: Colors.white),
+                                              //       ),
+                                              //       itemBuilder: (context) => [
+                                              //         PopupMenuItem<String>(
+                                              //           enabled: false,
+                                              //           child: Column(
+                                              //             crossAxisAlignment: CrossAxisAlignment.start,
+                                              //             mainAxisSize: MainAxisSize.min,
+                                              //             children: [
+                                              //               const Text("SPECIAL INSTRUCTIONS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                                              //               const Divider(height: 8),
+                                              //               Padding(
+                                              //                 padding: const EdgeInsets.symmetric(vertical: 2.0),
+                                              //                 child: Text(
+                                              //                   item.specialInstructions!.toUpperCase(),
+                                              //                   style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                                              //                 ),
+                                              //               ),
+                                              //             ],
+                                              //           ),
+                                              //         ),
+                                              //       ],
+                                              //     ),
+                                              //   ),
+                                              //   const SizedBox(width: 4),
+                                              // ],
+                                                if (item.notes != null && item.notes!.isNotEmpty) ...[
+                                                SizedBox(
+                                                  height: 20,
+                                                  width: 20,
+                                                  child: PopupMenuButton<String>(
+                                                    padding: EdgeInsets.zero,
+                                                    constraints: const BoxConstraints(),
+                                                    tooltip: "NOTES",
+                                                    icon: Container(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.transparent,
+                                                        borderRadius: BorderRadius.circular(4),
+                                                        border: Border.all(color: Colors.transparent, width: 0.8),
+                                                      ),
+                                                      child:  Icon(Icons.note_sharp, size: 20, color: DynamicColors.primaryClr),
+                                                    ),
+                                                    itemBuilder: (context) => [
+                                                      PopupMenuItem<String>(
+                                                        enabled: false,
+                                                        child: Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          children: [
+                                                             Text("NOTES", style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12)),
+                                                            const Divider(height: 8),
+                                                            ...item.notes!.map((e) => Padding(
+                                                              padding: const EdgeInsets.symmetric(vertical: 2.0),
+                                                              child: Column(
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                children: [
+                                                                  Text(
+                                                                    (e.note ?? "").toUpperCase(),
+                                                                    style: mozillaTextRegularText(fontSize: 11, fontWeight: FontWeight.w600),
+                                                                  ),
+                                                                  if ((e.createdBy != null && e.createdBy!.isNotEmpty) || (e.createdAt != null && e.createdAt!.isNotEmpty))
+                                                                    Text(
+                                                                      "${e.createdBy ?? ""} ${e.createdAt ?? ""}".trim().toUpperCase(),
+                                                                      style: mozillaTextRegularText(fontSize: 10, color: Colors.grey),
+                                                                    ),
+                                                                ],
+                                                              ),
+                                                            )),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 2),
+                                              ],
+
+                                            ],
                                           ),
                                         ],
                                       ),
@@ -1268,9 +1273,37 @@ class _BookingTableState extends State<BookingTable> {
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   mainAxisSize: MainAxisSize.min,
                                                   children: [
-                                                    Text(
-                                                      "${"REF#:"} ${item.referenceNumber ?? ""}".trim().toUpperCase(),
-                                                      style: mozillaTextRegularText(fontWeight: FontWeight.bold, fontSize: 12),
+                                                    Container(
+                                                      padding: EdgeInsets.zero,
+                                                      child: Row(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        children: [
+                                                          Text(
+                                                            "${"REF#:"} ${item.referenceNumber ?? ""}".trim().toUpperCase(),
+                                                            style: mozillaTextRegularText(
+                                                              fontWeight: FontWeight.bold,
+                                                              fontSize: 12,
+                                                            ),
+                                                          ),
+                                                          Spacer(),
+                                                          IconButton(
+                                                            onPressed: () {
+                                                              Get.back();
+                                                            },
+                                                            icon: Icon(
+                                                              Icons.close,
+                                                              size: 15,
+                                                              color: Colors.red,
+                                                            ),
+                                                            padding: EdgeInsets.zero,
+                                                            constraints: BoxConstraints(
+                                                              minWidth: 25,
+                                                              minHeight: 25,
+                                                            ),
+                                                            visualDensity: VisualDensity.compact,
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
                                                     const Divider(height: 8),
                                                      Padding(
@@ -1468,7 +1501,7 @@ class _BookingTableState extends State<BookingTable> {
                       if (tabIndex == 4) {'title': 'DECLINE', 'icon':Icons.thumb_down},
                       if(tabIndex != 3) {'title': 'COMPLETE', 'icon': Icons.task_alt},
                       {'title': 'COPY', 'icon': Icons.copy},
-                      {'title': 'AUDIT', 'icon': Icons.description},
+                      {'title': 'AUDIT REPORT', 'icon': Icons.description},
                       {'title': 'UPDATE', 'icon': Icons.update},
                       if (tabIndex != 2) {'title': 'CANCEL', 'icon': Icons.block},
                       if (tabIndex != 2) {'title': 'ALLOCATE', 'icon': Icons.manage_accounts},
@@ -1656,9 +1689,11 @@ class _BookingTableState extends State<BookingTable> {
     }
     else if(title == "RECOVER"){
       controller.recoverBooking(item.id);
-    } else if (title == "AUDIT" || title == "AUDIT REPORT") {
+    }
+
+    else if (title == "AUDIT REPORT" || title == "AUDIT REPORT") {
       print("Audit work");
-      // _openAuditReport(context, item);
+      _openAuditReport(context, item);
     }
   }
 

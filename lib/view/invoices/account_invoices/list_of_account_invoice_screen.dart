@@ -350,7 +350,18 @@ class _ListOfAccountInvoiceScreenState extends State<ListOfAccountInvoiceScreen>
                                       ), // border color & thickness
                                     ),
                                     onPressed: () {
-                                      controller.accountInvoiceDelete(item.id);
+                                      Get.defaultDialog(
+                                        title: "CONFIRM DELETE",
+                                        middleText: "Are you sure you want to delete this invoice?",
+                                        textCancel: "NO",
+                                        textConfirm: "YES",
+                                        confirmTextColor: DynamicColors.whiteClr,
+                                        buttonColor: Colors.red,
+                                        onConfirm: () async {
+                                          Get.back();
+                                          await controller.accountInvoiceDelete(item.id, invoiceType: "POST");
+                                          },
+                                      );
                                     },
                                     child: Icon(
                                       Icons.delete_forever,
