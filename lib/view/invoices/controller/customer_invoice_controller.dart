@@ -624,7 +624,6 @@ class CustomerInvoiceController extends GetxController {
   Future<void> downloadPdfFile({int? invoiceId}) async {
     var mainData = customerInvoiceByIdModel?.customerInvoice;
 
-    // Agar list screen se click kiya hai (jahan model null hota hai), to ID se data fetch kar lo
     if (mainData == null && invoiceId != null) {
       var response = await Api().get("customer-invoice/getbyid/$invoiceId");
       if (response.statusCode == 200) {

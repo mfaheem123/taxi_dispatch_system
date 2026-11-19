@@ -208,11 +208,27 @@ class _InvoiceListState extends State<InvoiceList> {
                                        icon: Icons.edit_calendar, color: DynamicColors.primaryClr,
                                       ),
                                       Text("|"),
-                                        ActionIconButton(
-                                            icon: Icons.delete, color: Colors.red,
-                                          onPressed: () {
-                                            controller.customerInvoiceDelete(invoice.id, invoiceType: "post");
-                                          }),
+                                      ActionIconButton(
+                                        icon: Icons.delete,
+                                        color: Colors.red,
+                                        onPressed: () {
+                                          Get.defaultDialog(
+                                            title: "CONFIRM DELETE",
+                                            middleText: "Are you sure you want to delete this invoice?",
+                                            textCancel: "NO",
+                                            textConfirm: "YES",
+                                            confirmTextColor: DynamicColors.whiteClr,
+                                            buttonColor: Colors.red,
+                                            onConfirm: () async {
+                                              Get.back();
+                                              await controller.customerInvoiceDelete(
+                                                invoice.id,
+                                                invoiceType: "post",
+                                              );
+                                            },
+                                          );
+                                        },
+                                      ),
                                       Text("|"),
                                       ActionIconButton(
                                           icon: Icons.picture_as_pdf, color: Colors.black,

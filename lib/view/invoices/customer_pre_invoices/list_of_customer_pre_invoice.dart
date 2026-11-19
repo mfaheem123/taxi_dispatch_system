@@ -209,10 +209,31 @@ class _CustomerPreInvoiceListState extends State<CustomerPreInvoiceList> {
                                       ),
                                       Text("|"),
                                       ActionIconButton(
-                                          icon: Icons.delete, color: Colors.red,
-                                          onPressed: () {
-                                            controller.customerInvoiceDelete(invoice.id, invoiceType: "pre");
-                                          }),
+                                        icon: Icons.delete,
+                                        color: Colors.red,
+                                        onPressed: () {
+                                          Get.defaultDialog(
+                                            title: "CONFIRM DELETE",
+                                            middleText: "Are you sure you want to delete this invoice?",
+                                            textCancel: "NO",
+                                            textConfirm: "YES",
+                                            confirmTextColor: DynamicColors.whiteClr,
+                                            buttonColor: Colors.red,
+                                            onConfirm: () async {
+                                              Get.back();
+                                              await controller.customerInvoiceDelete(
+                                                invoice.id,
+                                                invoiceType: "pre",
+                                              );
+                                            },
+                                          );
+                                        },
+                                      ),
+                                      // ActionIconButton(
+                                      //     icon: Icons.delete, color: Colors.red,
+                                      //     onPressed: () {
+                                      //       controller.customerInvoiceDelete(invoice.id, invoiceType: "pre");
+                                      //     }),
                                       Text("|"),
                                       ActionIconButton(
                                           icon: Icons.picture_as_pdf, color: Colors.black,
