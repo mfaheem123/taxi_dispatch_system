@@ -29,11 +29,12 @@ const int kMaxOpenTabs = 20;
 /// ```dart
 /// setState(() => openEditBookingTab(item.id));
 /// ```
-bool openEditBookingTab(String? id) {
+bool openEditBookingTab(String? id, {bool isViewJob = false}) {
   final DashboardController dashboardController = Get.find();
+  final title = isViewJob ? 'VIEW JOB' : kEditBookingTabTitle;
 
   final alreadyOpen = dashboardController.selectedMenuItems
-      .any((tab) => tab.title == kEditBookingTabTitle);
+      .any((tab) => tab.title == title);
   if (!alreadyOpen &&
       dashboardController.selectedMenuItems.length >= kMaxOpenTabs) {
     BotToast.showText(
@@ -49,7 +50,7 @@ bool openEditBookingTab(String? id) {
   final page = EditJobsWidget(booking: EditJobDetails(id: int.tryParse(id ?? '')));
   dashboardController.currentPage.value = page;
   dashboardController.menuBarRefresh(
-      title: kEditBookingTabTitle, pageName: page);
+      title: title, pageName: page);
   return true;
 }
 
@@ -67,7 +68,7 @@ void closeEditBookingTab() {
   final DashboardController dashboardController = Get.find();
 
   dashboardController.selectedMenuItems
-      .removeWhere((tab) => tab.title == kEditBookingTabTitle);
+      .removeWhere((tab) => tab.title == kEditBookingTabTitle || tab.title == 'VIEW JOB');
   // Whatever chip stays behind must not be left marked selected, or the strip
   // paints two highlighted chips once a later one is picked.
   for (final tab in dashboardController.selectedMenuItems) {

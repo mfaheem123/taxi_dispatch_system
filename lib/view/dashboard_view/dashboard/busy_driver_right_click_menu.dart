@@ -135,7 +135,7 @@ void showContextMenuOnBusyDriver(
       if (driver?.id != null) {
         final bookingId = await controller.getActiveBookingId(driver!.id);
         if (bookingId != null) {
-          openEditBookingTab(bookingId.toString());
+          openEditBookingTab(bookingId.toString(), isViewJob: true);
         } else {
           BotToast.showText(text: "No active booking found for this driver");
         }

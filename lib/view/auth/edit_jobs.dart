@@ -703,6 +703,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                         onCurrentLocation: () {
                                           controller.swapeToChangeLocation();
                                         },
+                                        enabled: _isPickupEditable,
                                       ),
                                       Visibility(
                                         visible: controller.isAirportResponse
@@ -896,6 +897,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                         },
                                         actionIcon: LucideIcons.route,
                                         actionTooltip: 'Via locations',
+                                        enabled: _isDropOffEditable,
                                       ),
                                       const Divider(height: 14),
                                       _sectionHeader(Icons.person,
@@ -996,6 +998,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                         _dateField('Date',
                                             tab: 11,
                                             value: controller.pickUpDate,
+                                            enabled: _isDateEditable,
                                             onChanged: (d) =>
                                                 setState(() {
                                                   controller.pickUpDate = d;
@@ -1006,6 +1009,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                             tab: 12,
                                             controller:
                                             controller.pickUpTimeController,
+                                            enabled: _isTimeEditable,
                                             onPicked: () =>
                                             controller.pickUpTimePicked = true),
                                         if (_isReturnJourney) _rDateField(),
@@ -1115,6 +1119,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                           23,
                                           itemLabel: (p) => p.name!,
                                           allowUnselect: false,
+                                          enabled: _isVehicleEditable,
                                         ),
                                         if (_isReturnJourney) _rVehicleDropdown(),
                                       ]),
@@ -1601,7 +1606,8 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
             onCurrentLocation: () async {
               controller.swapeToChangeReturnLocation();
             },
-            notesController: controller.returnPickUpNoteController
+            notesController: controller.returnPickUpNoteController,
+            enabled: _isPickupEditable,
         ),
         Visibility(
           visible: controller.isAirportResponseReturn.value,
@@ -1726,7 +1732,8 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
               controller.swapeToChangeReturnLocation();
             },
             actionIcon: LucideIcons.route,
-            notesController: controller.returnDropUpNoteController
+            notesController: controller.returnDropUpNoteController,
+            enabled: _isDropOffEditable,
         ),
       ],
     );
@@ -1743,6 +1750,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       _dateField('R/Date',
           tab: 13,
           value: controller.pickUpDateReturn,
+          enabled: _isDateEditable,
           onChanged: (d) =>
               setState(() {
                 controller.pickUpDateReturn = d;
@@ -1753,6 +1761,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       _timeField('R/Time',
           tab: 14,
           controller: controller.pickUpTimeControllerReturn,
+          enabled: _isTimeEditable,
           onPicked: () => controller.pickUpTimeReturnPicked = true);
 
   Widget _rLeadField() =>
@@ -1786,6 +1795,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
         24,
         itemLabel: (p) => p.name!,
         allowUnselect: false,
+        enabled: _isVehicleEditable,
       );
 
   Widget _rDriverDropdown() =>
@@ -1796,6 +1806,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
             (v) => setState(() => controller.selectDriverValueReturn = v),
         43,
         itemLabel: (p) => p.name ?? '',
+        enabled: _isDriverEditable,
       );
 
   Widget _addReturnFareCheckbox() =>
@@ -2066,6 +2077,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
         // [onCurrentLocation].
         IconData actionIcon = LucideIcons.arrowDownUp,
         String actionTooltip = 'Use current location',
+        bool enabled = true,
       }) {
     final tag = Row(mainAxisSize: MainAxisSize.min, children: [
       Icon(Icons.circle, size: 9, color: dot),
@@ -2084,6 +2096,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
         onPickIndex: onPickIndex,
         focusNode: addressFocusNode,
         fallbackFocusNode: _shortcutFocusNode,
+        enabled: enabled,
         decoration: _inputDecoration().copyWith(
           contentPadding:
           const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
@@ -2097,7 +2110,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
               // the address field's own order (tabBase + 1) and be tie-broken by
               // geometry. Explicit fractional orders pin them deterministically
               // between the address field and the zone dropdown (tabBase + 2).
-              controller.text.isNotEmpty
+              enabled && controller.text.isNotEmpty
                   ? FocusTraversalOrder(
                 order: NumericFocusOrder(tabBase + 1.3),
                 child: GlowFocus(
@@ -2117,7 +2130,8 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                 ),
               )
                   : const SizedBox.shrink(),
-              FocusTraversalOrder(
+              enabled
+                  ? FocusTraversalOrder(
                 order: NumericFocusOrder(tabBase + 1.6),
                 child: GlowFocus(
                   radius: 4,
@@ -2127,7 +2141,8 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                     onPressed: onCurrentLocation,
                   ),
                 ),
-              ),
+              )
+                  : const SizedBox.shrink(),
               const SizedBox(width: 4),
             ],
           ),
@@ -2142,6 +2157,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       tabBase + 2,
       itemLabel: zoneLabel,
       hint: 'SELECT ZONE',
+      enabled: enabled,
     );
     // Notes is now an editable text field instead of a button.
     final noteHint =
@@ -2151,6 +2167,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       child: GlowFocus(
         child: TextField(
           controller: notesController,
+          enabled: enabled,
           textCapitalization: TextCapitalization.characters,
           inputFormatters: [
             UpperCaseTextFormatter(),
@@ -2441,6 +2458,52 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
           .trim()
           .toUpperCase();
 
+  String get _currentBookingStatus {
+    if (widget.booking.id == null && controller.jobDetails == null) return 'WAITING';
+    if (controller.jobDetails?.trash == true) return 'DELETE';
+    return _bookingStatusText.isEmpty ? 'WAITING' : _bookingStatusText;
+  }
+
+  bool get _isDriverEditable {
+    final s = _currentBookingStatus;
+    if (s.startsWith('WAIT') || s.startsWith('PEND')) return true;
+    return false;
+  }
+
+  bool get _isVehicleEditable {
+    final s = _currentBookingStatus;
+    if (s.startsWith('WAIT') || s.startsWith('PEND')) return true;
+    return false;
+  }
+
+  bool get _isDateEditable {
+    final s = _currentBookingStatus;
+    if (s.startsWith('WAIT') || s.startsWith('PEND')) return true;
+    return false;
+  }
+
+  bool get _isTimeEditable {
+    final s = _currentBookingStatus;
+    if (s.startsWith('WAIT') || s.startsWith('PEND')) return true;
+    return false;
+  }
+
+  bool get _isPickupEditable {
+    final s = _currentBookingStatus;
+    if (s.startsWith('WAIT') || s.startsWith('PEND') || s.startsWith('ACCEPT') || s.startsWith('ARRIV')) {
+      return true;
+    }
+    return false;
+  }
+
+  bool get _isDropOffEditable {
+    final s = _currentBookingStatus;
+    if (s.startsWith('COMPLET') || s.startsWith('CANCEL') || s.startsWith('DELETE') || s.startsWith('MISS') || s.startsWith('DECLIN')) {
+      return false;
+    }
+    return true;
+  }
+
   /// Which of the status-gated actions the bottom row shows:
   ///
   ///   WAITING            CLEAR · RECEIPT · AUDIT REPORT · SAVE
@@ -2576,6 +2639,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       42,
       itemLabel: (p) => p.name ?? '',
       hint: 'Select Driver',
+      enabled: _isDriverEditable,
     );
     final clear = FocusTraversalOrder(
       order: const NumericFocusOrder(44),
@@ -2879,17 +2943,25 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   Widget _timeField(String label,
       {required num tab,
         required TextEditingController controller,
-        VoidCallback? onPicked}) {
+        VoidCallback? onPicked,
+        bool enabled = true,
+      }) {
     return _labelled(
       label,
       FocusTraversalOrder(
         order: NumericFocusOrder(tab.toDouble()),
         child: GlowFocus(
-          child: TimePickerField(
-            controller: controller,
-            onChanged: onPicked == null ? null : (_) => onPicked(),
-            textStyle: _kValueTextStyle,
-            decoration: _inputDecoration(),
+          child: AbsorbPointer(
+            absorbing: !enabled,
+            child: Opacity(
+              opacity: enabled ? 1.0 : 0.7,
+              child: TimePickerField(
+                controller: controller,
+                onChanged: onPicked == null ? null : (_) => onPicked(),
+                textStyle: _kValueTextStyle,
+                decoration: _inputDecoration(),
+              ),
+            ),
           ),
         ),
       ),
@@ -2902,7 +2974,9 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
   Widget _dateField(String label,
       {required num tab,
         required DateTime? value,
-        required ValueChanged<DateTime> onChanged}) {
+        required ValueChanged<DateTime> onChanged,
+        bool enabled = true,
+      }) {
     final now = DateTime.now();
     return _labelled(
       label,
@@ -2912,6 +2986,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
           child: CalendarDropdownField(
             label: null,
             value: value,
+            enabled: enabled,
             onChanged: onChanged,
             // No job can be booked into the past: every day before today is
             // greyed out and unselectable. A job already saved with an older
@@ -3276,6 +3351,7 @@ class _AddressModelAutocomplete extends StatefulWidget {
     this.onPickIndex,
     this.focusNode,
     this.fallbackFocusNode,
+    this.enabled = true,
   });
   final TextEditingController controller;
   final List<AllAddressesModel> items;
@@ -3289,6 +3365,7 @@ class _AddressModelAutocomplete extends StatefulWidget {
   // Focus is redirected here instead of being dropped, so the CallbackShortcuts
   // (F7/F8/F9) ancestor stays in the focused chain after a pick / tap-outside.
   final FocusNode? fallbackFocusNode;
+  final bool enabled;
 
   @override
   State<_AddressModelAutocomplete> createState() =>
@@ -3338,7 +3415,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     // for: the panel stayed on whatever the previous query had produced.
     // Re-filter on every parent rebuild while the panel is live instead; the
     // list is a page of search hits and the pass is O(n).
-    if (!_userTyped || _refilterScheduled) return;
+    if (!widget.enabled || !_userTyped || _refilterScheduled) return;
     _refilterScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _refilterScheduled = false;
@@ -3359,10 +3436,10 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     super.dispose();
   }
   void _onFocus() {
-    if (!_focusNode.hasFocus) _hide();
+    if (!widget.enabled || !_focusNode.hasFocus) _hide();
   }
   void _onText() {
-    if (_picking || !_focusNode.hasFocus) return;
+    if (!widget.enabled || _picking || !_focusNode.hasFocus) return;
     final text = widget.controller.text.trim();
     if (text.isEmpty) {
       _userTyped = false;
@@ -3617,6 +3694,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
             focusNode: _focusNode,
             style: _kValueTextStyle,
             decoration: widget.decoration,
+            enabled: widget.enabled,
           ),
         ),
       ),
