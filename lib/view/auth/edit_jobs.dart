@@ -703,7 +703,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                         onCurrentLocation: () {
                                           controller.swapeToChangeLocation();
                                         },
-                                        enabled: _isPickupEditable,
+                                        // enabled: _isPickupEditable,
                                       ),
                                       Visibility(
                                         visible: controller.isAirportResponse
@@ -897,7 +897,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                         },
                                         actionIcon: LucideIcons.route,
                                         actionTooltip: 'Via locations',
-                                        enabled: _isDropOffEditable,
+                                        // enabled: _isDropOffEditable,
                                       ),
                                       const Divider(height: 14),
                                       _sectionHeader(Icons.person,
@@ -998,7 +998,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                         _dateField('Date',
                                             tab: 11,
                                             value: controller.pickUpDate,
-                                            enabled: _isDateEditable,
+                                            // enabled: _isDateEditable,
                                             onChanged: (d) =>
                                                 setState(() {
                                                   controller.pickUpDate = d;
@@ -1009,7 +1009,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                             tab: 12,
                                             controller:
                                             controller.pickUpTimeController,
-                                            enabled: _isTimeEditable,
+                                            // enabled: _isTimeEditable,
                                             onPicked: () =>
                                             controller.pickUpTimePicked = true),
                                         if (_isReturnJourney) _rDateField(),
@@ -1119,7 +1119,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
                                           23,
                                           itemLabel: (p) => p.name!,
                                           allowUnselect: false,
-                                          enabled: _isVehicleEditable,
+                                          // enabled: _isVehicleEditable,
                                         ),
                                         if (_isReturnJourney) _rVehicleDropdown(),
                                       ]),
@@ -1607,7 +1607,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
               controller.swapeToChangeReturnLocation();
             },
             notesController: controller.returnPickUpNoteController,
-            enabled: _isPickupEditable,
+            // enabled: _isPickupEditable,
         ),
         Visibility(
           visible: controller.isAirportResponseReturn.value,
@@ -1733,7 +1733,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
             },
             actionIcon: LucideIcons.route,
             notesController: controller.returnDropUpNoteController,
-            enabled: _isDropOffEditable,
+            // enabled: _isDropOffEditable,
         ),
       ],
     );
@@ -1750,7 +1750,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       _dateField('R/Date',
           tab: 13,
           value: controller.pickUpDateReturn,
-          enabled: _isDateEditable,
+          // enabled: _isDateEditable,
           onChanged: (d) =>
               setState(() {
                 controller.pickUpDateReturn = d;
@@ -1761,7 +1761,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
       _timeField('R/Time',
           tab: 14,
           controller: controller.pickUpTimeControllerReturn,
-          enabled: _isTimeEditable,
+          // enabled: _isTimeEditable,
           onPicked: () => controller.pickUpTimeReturnPicked = true);
 
   Widget _rLeadField() =>
@@ -1795,7 +1795,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
         24,
         itemLabel: (p) => p.name!,
         allowUnselect: false,
-        enabled: _isVehicleEditable,
+        // enabled: _isVehicleEditable,
       );
 
   Widget _rDriverDropdown() =>
@@ -1806,7 +1806,7 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
             (v) => setState(() => controller.selectDriverValueReturn = v),
         43,
         itemLabel: (p) => p.name ?? '',
-        enabled: _isDriverEditable,
+        // enabled: _isDriverEditable,
       );
 
   Widget _addReturnFareCheckbox() =>
