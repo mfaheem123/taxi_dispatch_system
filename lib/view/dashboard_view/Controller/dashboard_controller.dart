@@ -2837,7 +2837,7 @@ class DashboardController extends GetxController {
 
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get Fare API
-  getFaresCalculation() async {
+  getFaresCalculation({bool extraFare = false}) async {
 
 
 
@@ -2939,7 +2939,9 @@ class DashboardController extends GetxController {
     // fixedFare.value = oneWayFare;
     returnFareValue = returnFare;
     slugControllerReturn.text = returnFare;
-    slugController.text = oneWayFare;
+    if(extraFare == false){
+      slugController.text = oneWayFare;
+    }
     print("Fixed fare Value-- ${fixedFare.value}");
     print("returnFareValue-- ${returnFareValue}");
     print("slugControllerReturn-- ${slugControllerReturn.text}");

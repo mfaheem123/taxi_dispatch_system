@@ -1,3 +1,4 @@
+import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
@@ -166,7 +167,7 @@ class _ViewDriversMapState extends State<ViewDriversMap>
     });
 
     _subs[name] = channel.stream.listen(
-      (message) {
+          (message) {
         if (_disposed || !mounted) return;
         try {
           onMessage(message);
@@ -208,7 +209,7 @@ class _ViewDriversMapState extends State<ViewDriversMap>
     _fetching = true;
     try {
       final response =
-          await Api().get("drivers/tracking-drivers", sendCompanyId: true);
+      await Api().get("drivers/tracking-drivers", sendCompanyId: true);
       if (_disposed) return false;
       if (response == null || response.statusCode != 200) return false;
       dashBoardCntrl.onlineBusyDriversList =
@@ -468,7 +469,10 @@ class _ViewDriversMapState extends State<ViewDriversMap>
 
   /// Which way the car in each image faces, as a compass bearing. The four
   /// coloured cars face south-west; the red On Route car faces north-west.
-  double _frontBearing(String asset) => asset.contains("tracking_car") ? 325 : 221;
+  double _frontBearing(String asset) {
+    if (asset.endsWith(".svg")) return 0; // bg-green.svg faces up (north)
+    return asset.contains("tracking_car") ? 325 : 221;
+  }
 
   /// A car counts as moving if its position changed in the last 15 seconds.
   bool _isMoving(TrackingDriverObject d) {
@@ -511,7 +515,10 @@ class _ViewDriversMapState extends State<ViewDriversMap>
             // Only the car turns; its name and status stay upright.
             Transform.rotate(
               angle: angle,
-              child: Image.asset(asset,
+              child: asset.endsWith(".svg")
+                  ? SvgPicture.asset(asset,
+                  width: 70, height: 70, fit: BoxFit.contain)
+                  : Image.asset(asset,
                   width: 70, height: 70, fit: BoxFit.contain),
             ),
             Container(
@@ -521,10 +528,11 @@ class _ViewDriversMapState extends State<ViewDriversMap>
             ),
             // Status under the car, outside the pin's own box so the car
             // stays exactly on the driver's position.
-            Positioned(
-              bottom: -14,
-              child: _statusPill(_statusLabel(d), _isMoving(d)),
-            ),
+            if (_statusLabel(d) != "Available") // Available cars carry no tag
+              Positioned(
+                bottom: -14,
+                child: _statusPill(_statusLabel(d), _isMoving(d)),
+              ),
           ],
         ),
       ));
@@ -642,10 +650,10 @@ class _ViewDriversMapState extends State<ViewDriversMap>
     final lat = double.tryParse(payload['latitude']?.toString() ?? "");
     final lng = double.tryParse(payload['longitude']?.toString() ?? "");
     final heading = double.tryParse((payload['heading'] ??
-                payload['bearing'] ??
-                payload['course'] ??
-                payload['direction'])
-            ?.toString() ??
+        payload['bearing'] ??
+        payload['course'] ??
+        payload['direction'])
+        ?.toString() ??
         "");
     if (heading != null && id != null) _serverHeading[id] = heading % 360;
     if (lat != null) list[i].latitude = lat.toString();
@@ -678,7 +686,7 @@ class _ViewDriversMapState extends State<ViewDriversMap>
           ),
           const SizedBox(width: 3),
           Text(
-            "$status \u00b7 ${moving ? 'Moving' : 'Stopped'}",
+            moving ? "$status \u00b7 Moving" : status,
             maxLines: 1,
             softWrap: false,
             style: const TextStyle(
@@ -711,7 +719,7 @@ class _ViewDriversMapState extends State<ViewDriversMap>
         return "assets/c.png";   // Orange Car
 
       case "Arrived":
-        return "assets/d.png";   // Yellow Car
+        return "assets/yellow.svg";   // Yellow Car
 
       case "On Route":
         return "assets/tracking_car.png";    // Black Car
@@ -720,7 +728,7 @@ class _ViewDriversMapState extends State<ViewDriversMap>
         return "assets/a.png";        // Blue Car
 
       default:
-        return "assets/green.jpeg";
+        return "assets/bg-green.svg";
     }
   }
 

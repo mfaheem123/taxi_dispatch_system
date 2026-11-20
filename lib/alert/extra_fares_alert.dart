@@ -78,7 +78,7 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
     if (_busy) return;
     setState(() => _busy = true);
     try {
-      if (_canCalculate) await dashBoardCntrl.getFaresCalculation();
+      if (_canCalculate) await dashBoardCntrl.getFaresCalculation(extraFare: true);
     } finally {
       if (mounted) {
         setState(() => _busy = false);

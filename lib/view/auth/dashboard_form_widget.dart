@@ -624,7 +624,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   // both its glyph and its handler here.
                                   onCurrentLocation: () {
                                     if (controller
-                                        .pickupController.text.isEmpty) {
+                                        .pickupController.text.isEmpty && controller
+                                        .dropOffController.text.isEmpty) {
                                       BotToast.showText(
                                           text:
                                           "Please write pickup and dropoff location");
@@ -1558,16 +1559,27 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 children: [
                   tab('BOOKING', order: 0.1, active: true, onTap: () {}),
                   tab('+ Multi Reservation (F8)', order: 0.2, onTap: () {
-                    if (controller.pickupController.text.isNotEmpty &&
-                        controller.dropOffController.text.isNotEmpty) {
-                      DashboardF8Alert.show();
+
+                    if (controller
+                        .pickupController.text.isEmpty && controller
+                        .dropOffController.text.isEmpty) {
+                      BotToast.showText(
+                          text:
+                          "Please write pickup and dropoff location");
+                      return;
                     }
+                    DashboardF8Alert.show();
                   }),
                   tab('+ Vehicles (F9)', order: 0.3, onTap: () {
-                    if (controller.pickupController.text.isNotEmpty &&
-                        controller.dropOffController.text.isNotEmpty) {
-                      DashboardF9Alert.show();
+                    if (controller
+                        .pickupController.text.isEmpty && controller
+                        .dropOffController.text.isEmpty) {
+                      BotToast.showText(
+                          text:
+                          "Please write pickup and dropoff location");
+                      return;
                     }
+                    DashboardF9Alert.show();
                   }),
                   tab('Via (${controller.viaPoints.length})', order: 0.4,
                       onTap: () {
