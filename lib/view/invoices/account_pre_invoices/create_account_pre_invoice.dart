@@ -175,6 +175,7 @@ class _CreateAccountPreInvoiceState extends State<CreateAccountPreInvoice> {
                         controller.selectAccountValue = null;
                         controller.selectDepartmentData = null;
                         controller.dashboardAccountData = null;
+                        controller.selectOrderNumber = null;
                         controller.getAccountData(subsidiariesId: val!.id);
                       },
                     ),
@@ -190,6 +191,7 @@ class _CreateAccountPreInvoiceState extends State<CreateAccountPreInvoice> {
                       onChanged: (val) {
                         controller.selectAccountValue = val;
                         controller.selectDepartmentData = null;
+                        controller.selectOrderNumber = null;
                         controller.update();
                       },
                     ),
@@ -208,15 +210,22 @@ class _CreateAccountPreInvoiceState extends State<CreateAccountPreInvoice> {
                       },
                     ),
                     Padding(
-                      padding: EdgeInsetsGeometry.only(left: 10),
-                      child: CustomTextField(
-                        borderRadius: 4,
-                        controller: controller.orderNumber,
-                        width: fieldWidth,
-                        hintText: AppText.order,
-                        columnText: true,
+                      padding: EdgeInsets.only(left: 10),
+                      child: CustomDropdownField<String>(
                         height: 35,
-                        inputFormatters: [UpperCaseTextFormatter()],
+                        text: AppText.order,
+                        width: fieldWidth / 1.5,
+                        label: AppText.order,
+                        items: (controller.selectAccountValue?.orderNumbers ?? [])
+                            .map((e) => e["order_number"]?.toString() ?? "")
+                            .toList(),
+                        value: controller.selectOrderNumber,
+                        itemLabel: (item) => item,
+                        onChanged: (val) {
+                          controller.selectOrderNumber = val;
+                          controller.orderNumber.text = val ?? "";
+                          controller.update();
+                        },
                       ),
                     ),
                     labeledField(

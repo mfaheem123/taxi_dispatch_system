@@ -10,6 +10,7 @@ import '../../alert/account_details_alert.dart';
 import '../../alert/child_seats_alert.dart';
 import '../../alert/extra_fares_alert.dart';
 import '../../alert/extra_info_alert.dart';
+import '../../alert/payment_alert.dart';
 import '../../alert/search_booking.dart';
 import '../../alert/setting_dialog.dart';
 import '../../component/marker_class.dart';
@@ -1946,7 +1947,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (controller.selectPaymentTypeValue?.name?.toUpperCase().contains('CREDIT') == true)
-              iconBtn(Icons.credit_card, tab: _isReturnJourney ? 38.8 : 26.8, onPressed: () {}),
+              iconBtn(Icons.credit_card, tab: _isReturnJourney ? 38.8 : 26.8, onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (_) => PaymentLinkAlert(),
+                );
+              }),
             iconBtn(Icons.settings_suggest, tab: _isReturnJourney ? 39 : 27,
                 onPressed: () {
                   showDialog(

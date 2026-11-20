@@ -65,6 +65,7 @@ class InvoiceController extends GetxController {
   DashboardAccountModel? dashboardAccountData;
   DashboardAccountObject? selectAccountValue;
   DepartmentObject? selectDepartmentData;
+  String? selectOrderNumber;
 
   getAccountData({subsidiariesId}) async {
     var response = await Api().get("accounts/subsidiary/$subsidiariesId", sendCompanyId: true,);
