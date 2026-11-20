@@ -123,7 +123,7 @@ class InvoiceController extends GetxController {
   RxString searchCc = ''.obs;
   RxString searchTotal = ''.obs;
 
-  getPreInvoiceFilter() async {
+  getPreInvoiceFilter({bool showToastOnEmpty = true}) async {
     if (subsidiaries == null) {
       BotToast.showText(text: 'PLEASE FILL ALL REQUIRED FIELDS!');
       return;
@@ -174,7 +174,7 @@ class InvoiceController extends GetxController {
   }
 
   void onSearchPreInvoice() {
-    getPreInvoiceFilter();
+    getPreInvoiceFilter(showToastOnEmpty: false);
   }
 
   // ================ Filter Button ====================
@@ -201,7 +201,7 @@ class InvoiceController extends GetxController {
   RxString searchInvCc = ''.obs;
   RxString searchInvTotal = ''.obs;
 
-  getAccountInvoiceByFilter() async {
+  getAccountInvoiceByFilter({bool showToastOnEmpty = true}) async {
     if (subsidiaries == null || selectAccountValue == null|| fromDate == null || toDate == null) {
       BotToast.showText(text: 'PLEASE FILL ALL REQUIRED FIELDS!');
       return;
@@ -251,7 +251,7 @@ class InvoiceController extends GetxController {
     update();
   }
   void onSearchInvoice() {
-    getAccountInvoiceByFilter();
+    getAccountInvoiceByFilter(showToastOnEmpty: false);
   }
 
 // ============================ Invoice Add

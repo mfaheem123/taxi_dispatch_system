@@ -307,15 +307,21 @@ class _CreateAccountInvoiceScreenState
                     //   ],
                     // ),
                     Padding(padding: EdgeInsetsGeometry.only(left: 10),
-                    child: CustomTextField(
-                      borderRadius: 4,
-                      controller: controller.orderNumber,
-                      width: fieldWidth,
-                      hintText: AppText.order,
-                      columnText: true,
+                    child: CustomDropdownField<String>(
                       height: 35,
-                      inputFormatters: [UpperCaseTextFormatter()
-                      ],
+                      text: AppText.order,
+                      width: fieldWidth / 1.5,
+                      label: AppText.order,
+                      items: (controller.selectAccountValue?.orderNumbers ?? [])
+                          .map((e) => e["order_number"]?.toString() ?? "")
+                          .toList(),
+                      value: controller.selectOrderNumber,
+                      itemLabel: (item) => item,
+                      onChanged: (val) {
+                        controller.selectOrderNumber = val;
+                        controller.orderNumber.text = val ?? "";
+                        controller.update();
+                      },
                     ),
                     ),
                     labeledField(

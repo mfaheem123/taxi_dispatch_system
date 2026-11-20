@@ -220,7 +220,7 @@ class CustomerInvoiceController extends GetxController {
 
   bool isFilteredLoading = false;
   CustomerInvoiceFilterModel? customerInvoiceFilterModel;
-  getCustomerInvoiceByFilter() async {
+  getCustomerInvoiceByFilter({bool showToastOnEmpty = true}) async {
     if (selectedCustomerId == null) {
       BotToast.showText(text: "PLEASE SELECT A CUSTOMER FIRST");
       return;
@@ -272,7 +272,7 @@ class CustomerInvoiceController extends GetxController {
   }
 
   void onSearchInvoice() {
-    getCustomerInvoiceByFilter();
+    getCustomerInvoiceByFilter(showToastOnEmpty: false);
   }
 
   /// editable cell

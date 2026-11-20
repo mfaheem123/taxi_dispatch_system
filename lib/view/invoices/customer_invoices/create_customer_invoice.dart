@@ -24,11 +24,13 @@ class CreateCustomerInvoice extends StatefulWidget {
   State<CreateCustomerInvoice> createState() => _CreateCustomerInvoiceState();
 }
 
-/// ye screen Customer invoice ki hai   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
 class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
   int selectedRowIndex = 0;
   final int totalRows = 5;
+
+  bool _suppressAutocompleteOnFocus = false;
+  final FocusNode _mobileFocusNode = FocusNode();
+  final TextEditingController _mobileTextController = TextEditingController();
   final ScrollController _autocompleteScrollController = ScrollController();
 
   CustomerInvoiceController controller = Get.isRegistered<CustomerInvoiceController>()
@@ -41,6 +43,14 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
     super.initState();
     shortCutKeyValue.value = "CreateCustomerInvoice";
     // controller.setDefaultDates();
+  }
+
+  @override
+  void dispose() {
+    _autocompleteScrollController.dispose();
+    _mobileFocusNode.dispose();
+    _mobileTextController.dispose();
+    super.dispose();
   }
 
   List permissions = [];
@@ -81,15 +91,12 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                     padding: const EdgeInsets.all(16.0),
                     child: Container(
                       width: Get.width,
-                      padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                       color: DynamicColors.gryClr.withOpacity(0.5),
                       child: Text(AppText.customerInvoice, style: titleDesign()),
                     ),
                   ),
-                  SizedBox(
-                    height: 8,
-                  ),
+                  SizedBox(height: 8),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
                     child: Wrap(
@@ -190,8 +197,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                             hintText: AppText.name,
                             columnText: true,
                             height: 30,
-                            inputFormatters: [UpperCaseTextFormatter(),
-                            ],
+                            inputFormatters: [UpperCaseTextFormatter()],
                           ),
                         ),
                         SizedBox(width: 10),
@@ -203,9 +209,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                             hintText: AppText.email,
                             columnText: true,
                             height: 30,
-                            inputFormatters: [
-                              UpperCaseTextFormatter(),
-                            ],
+                            inputFormatters: [UpperCaseTextFormatter()],
                           ),
                         ),
                         SizedBox(width: 10),
@@ -217,28 +221,25 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                                 children: [
                                   Text(AppText.mobile,
                                       style: mozillaTextSemiBoldText(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w800,
-                                          color: Colors.black)),
+                                          fontSize: 12, fontWeight: FontWeight.w800, color: Colors.black)),
                                   const SizedBox(height: 4),
                                   SizedBox(
                                     height: 30,
                                     child: RawAutocomplete<SearchCustomer>(
-                                      optionsBuilder:
-                                          (TextEditingValue textEditingValue) async {
-                                        if (textEditingValue.text.length < 2) {
-                                          return const Iterable<
-                                              SearchCustomer>.empty();
+                                      focusNode: _mobileFocusNode,
+                                      textEditingController: _mobileTextController,
+                                      optionsBuilder: (TextEditingValue textEditingValue) async {
+                                        if (_suppressAutocompleteOnFocus) {
+                                          return const Iterable<SearchCustomer>.empty();
                                         }
-                                        await controller
-                                            .getCustomer(textEditingValue.text);
-                                        return controller.searchCustomerByMobileModel
-                                            ?.customer ??
+                                        if (textEditingValue.text.length < 2) {
+                                          return const Iterable<SearchCustomer>.empty();
+                                        }
+                                        await controller.getCustomer(textEditingValue.text);
+                                        return controller.searchCustomerByMobileModel?.customer ??
                                             const Iterable<SearchCustomer>.empty();
                                       },
-                                      displayStringForOption:
-                                          (SearchCustomer option) =>
-                                      option.mobile ?? '',
+                                      displayStringForOption: (SearchCustomer option) => option.mobile ?? '',
 
                                       //  INPUT FIELD VIEW
                                       fieldViewBuilder: (context,
@@ -246,17 +247,15 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                                           focusNode,
                                           onFieldSubmitted) {
                                         if (controller.customerMobileController.text.isEmpty) {
-                                          textEditingController.clear();
-                                        } else if (textEditingController.text.isEmpty &&
-                                            controller.customerMobileController.text
-                                                .isNotEmpty) {
-                                          textEditingController.text = controller
-                                              .customerMobileController.text;
+                                          _mobileTextController.clear();
+                                        } else if (_mobileTextController.text.isEmpty &&
+                                            controller.customerMobileController.text.isNotEmpty) {
+                                          _mobileTextController.text = controller.customerMobileController.text;
                                         }
 
                                         return TextField(
-                                          controller: textEditingController,
-                                          focusNode: focusNode,
+                                          controller: _mobileTextController,
+                                          focusNode: _mobileFocusNode,
                                           onSubmitted: (value) => onFieldSubmitted(),
                                           keyboardType: TextInputType.number,
                                           inputFormatters: [
@@ -264,50 +263,42 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                                           ],
                                           decoration: InputDecoration(
                                             // isDense: true,
-                                            contentPadding:
-                                            const EdgeInsets.symmetric(
-                                                horizontal: 8, vertical: 8),
+                                            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                                             hintText: AppText.mobile,
                                             hintStyle: mozillaTextSemiBoldText(
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black),
+                                                fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black),
                                             border: OutlineInputBorder(
-                                                borderRadius:
-                                                BorderRadius.circular(4)),
+                                                borderRadius: BorderRadius.circular(4)),
                                             enabledBorder: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(4),
-                                              borderSide: BorderSide(
-                                                  color: DynamicColors.primaryClr),
+                                              borderSide: BorderSide(color: DynamicColors.primaryClr),
                                             ),
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(4),
-                                              borderSide: BorderSide(
-                                                  color: DynamicColors.primaryClr),
+                                              borderSide: BorderSide(color: DynamicColors.primaryClr),
                                             ),
                                             suffixIcon: controller.isSearchingCustomer
                                                 ? const Padding(
                                               padding: EdgeInsets.all(6.0),
                                               child: SizedBox(
-                                                  width: 12,
-                                                  height: 12,
-                                                  child:
-                                                  CircularProgressIndicator(
-                                                      strokeWidth: 1.5)),
+                                                  width: 12, height: 12,
+                                                  child: CircularProgressIndicator(strokeWidth: 1.5)),
                                             )
                                                 : null,
                                           ),
                                           style: mozillaTextSemiBoldText(
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.w800),
+                                              fontSize: 10, fontWeight: FontWeight.w800),
                                           onChanged: (val) {
-                                            controller.customerMobileController.text =
-                                                val;
+                                            _suppressAutocompleteOnFocus = false;
+                                            controller.customerMobileController.text = val;
                                           },
                                         );
                                       },
 
                                       optionsViewBuilder: (context, onSelected, options) {
+                                        if (_suppressAutocompleteOnFocus) {
+                                          return const SizedBox.shrink();
+                                        }
                                         return Align(
                                           alignment: Alignment.topLeft,
                                           child: Material(
@@ -369,9 +360,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                                                               Text(
                                                                 (option.name ?? '').toUpperCase(),
                                                                 style: const TextStyle(
-                                                                    fontWeight: FontWeight.bold,
-                                                                    fontSize: 13,
-                                                                    color: Colors.black),
+                                                                    fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black),
                                                               ),
                                                               const SizedBox(width: 10),
                                                               Text(
@@ -393,6 +382,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
 
                                       // ACTION ON SELECTION
                                       onSelected: (SearchCustomer selection) {
+                                        _suppressAutocompleteOnFocus = true;
                                         controller.selectedCustomerId = selection.id;
                                         controller.customerMobileController.text =
                                             selection.mobile ?? '';
@@ -403,6 +393,12 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                                         controller.customerTelephoneController.text =
                                             selection.telephone ?? '';
                                         controller.update();
+
+                                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                                          if (mounted) {
+                                            _mobileFocusNode.requestFocus();
+                                          }
+                                        });
                                       },
                                     ),
                                   ),
@@ -420,17 +416,13 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                             columnText: true,
                             height: 30,
                             keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 8,
-                  ),
+                  SizedBox(height: 8),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
                     child: Wrap(
@@ -492,16 +484,15 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                               child: Text(AppText.pt,
                                   style: mozillaTextSemiBoldText(
                                       context: context,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      color: DynamicColors.primaryClr))),
+                                      fontSize: 15, fontWeight: FontWeight.bold, color: DynamicColors.primaryClr)
+                              )
+                          ),
                         ),
                         if (controller.isLoadingPayments)
                           const Padding(
                             padding: EdgeInsets.symmetric(horizontal: 20),
                             child: SizedBox(
-                                width: 20,
-                                height: 20,
+                                width: 20, height: 20,
                                 child: CircularProgressIndicator(strokeWidth: 2)),
                           )
                         else
@@ -510,10 +501,8 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                             return InkWell(
                               canRequestFocus: false,
                               onTap: () {
-                                if (controller.selectedPaymentTypeIds
-                                    .contains(payment.id)) {
-                                  controller.selectedPaymentTypeIds
-                                      .remove(payment.id);
+                                if (controller.selectedPaymentTypeIds.contains(payment.id)) {
+                                  controller.selectedPaymentTypeIds.remove(payment.id);
                                 } else {
                                   controller.selectedPaymentTypeIds.add(payment.id!);
                                 }
@@ -526,15 +515,12 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                                   children: [
                                     Checkbox(
                                       visualDensity: VisualDensity.compact,
-                                      value: controller.selectedPaymentTypeIds
-                                          .contains(payment.id),
+                                      value: controller.selectedPaymentTypeIds.contains(payment.id),
                                       onChanged: (v) {
                                         if (v == true) {
-                                          controller.selectedPaymentTypeIds
-                                              .add(payment.id!);
+                                          controller.selectedPaymentTypeIds.add(payment.id!);
                                         } else {
-                                          controller.selectedPaymentTypeIds
-                                              .remove(payment.id);
+                                          controller.selectedPaymentTypeIds.remove(payment.id);
                                         }
                                         controller.update();
                                       },
@@ -598,8 +584,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                             customHeader: Checkbox(
                               value: controller.selectedIds.isNotEmpty &&
                                   controller.selectedIds.length ==
-                                      controller.customerInvoiceFilterModel?.bookings
-                                          ?.length,
+                                      controller.customerInvoiceFilterModel?.bookings?.length,
                               onChanged: (bool? val) {
                                 if (val == true) {
                                   controller.selectedIds = controller
@@ -693,13 +678,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                       rowBuilder: (item, widths) {
                         if (item == "TOTAL_ROW") {
                           return [
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
+                            "", "", "", "", "", "", "",
                             Center(
                               child: Text("TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900, fontSize: 12)),
                             ),
@@ -722,8 +701,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                         }
 
                         final booking = item;
-                        final isRowSelected =
-                        controller.selectedIds.contains(booking.id.toString());
+                        final isRowSelected = controller.selectedIds.contains(booking.id.toString());
 
                         return [
                           Center(
@@ -733,8 +711,7 @@ class _CreateCustomerInvoiceState extends State<CreateCustomerInvoice> {
                                 if (val == true) {
                                   controller.selectedIds.add(booking.id.toString());
                                 } else {
-                                  controller.selectedIds
-                                      .remove(booking.id.toString());
+                                  controller.selectedIds.remove(booking.id.toString());
                                 }
                                 controller.update();
                               },
