@@ -195,8 +195,9 @@ Widget _withFormFont(BuildContext context, Widget child) {
 /// is already holding — an empty booking on a fresh session.
 class EditJobDetails {
   final int? id;
+  final bool isViewJob;
 
-  const EditJobDetails({this.id});
+  const EditJobDetails({this.id, this.isViewJob = false});
 }
 
 class EditJobsWidget extends StatefulWidget {
@@ -1961,85 +1962,105 @@ class _EditJobsWidgetState extends State<EditJobsWidget> {
         );
 
     final associated = associatedRef();
+    final titleText = widget.booking.isViewJob ? 'VIEW JOB' : 'UPDATE BOOKING';
+
+    final metadataWrap = Wrap(
+      spacing: 3,
+      runSpacing: 5,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        Text(
+          titleText,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.3,
+            color: Colors.black,
+          ),
+        ),
+        outlinePill(null, orDash(job?.referenceNumber), _purple, order: 0.1),
+        metaPill('User', orDash(job?.employee?.username ?? job?.bookedBy)),
+        metaPill('Booked', bookedStamp()),
+        metaPill(
+          'Status',
+          orDash(job?.trash == true ? "DELETE" : job?.bookingStatus?.bookingStatus),
+          background: _purpleSoft,
+          valueColor: _purple,
+        ),
+        SizedBox(
+          width: 200,
+          child: _dropdown<DashboardSubsidiaryObject>(
+            null,
+            hint: "SUBSIDIARY",
+            controller.selectSubsidiariesValue,
+            controller.dashboardAllData?.subsidiaries ?? const [],
+            (v) {
+              if (v == null) return;
+              setState(() {
+                controller.selectSubsidiariesValue = v;
+                controller.getAccountData(subsidiariesId: v.id);
+              });
+            },
+            0.2,
+            itemLabel: (p) => p.name ?? '',
+            allowUnselect: false,
+            enabled: false,
+          ),
+        ),
+      ],
+    );
+
+    final actionsWrap = Wrap(
+      spacing: 3,
+      runSpacing: 6,
+      alignment: isMobile ? WrapAlignment.start : WrapAlignment.end,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        if (associated != null)
+          outlinePill(Icons.link, 'Associated: $associated', _purple,
+              order: 0.2,
+              onTap: () => _headerAction('Associated booking')),
+        iconBtn(Icons.play_arrow, 'Dispatch', order: 0.3, onTap: () {}),
+        iconBtn(Icons.chat_bubble_outline, 'Messages', order: 0.4, onTap: () {
+          _headerAction('Messages');
+          Get.dialog(ResendSms(bookingItem: controller.jobDetails));
+        }),
+        iconBtn(Icons.send, 'Send details', order: 0.5, onTap: () {
+          _headerAction('Send details');
+          Get.dialog(ResendEmailAlert());
+        }),
+        outlinePill(Icons.warning_amber_rounded, 'Complaint', _red,
+            order: 0.6,
+            onTap: () => openBookingInNewWindow(Routes.createComplaint, controller.jobDetails)),
+        outlinePill(Icons.inventory_2_outlined, 'Lost property', _purple,
+            order: 0.7,
+            onTap: () => openBookingInNewWindow(Routes.lostProperty, controller.jobDetails)),
+      ],
+    );
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: isMobile ? 8 : 12, vertical: 8),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Two Wraps rather than one horizontally scrolling Row: the bar
-              // is information, so on a narrow window it should fold onto a
-              // second line instead of hiding half of itself off-screen.
-              Expanded(
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 6,
-                  crossAxisAlignment: WrapCrossAlignment.center,
+          isMobile
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'UPDATE BOOKING',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.3,
-                        color: Colors.black,
-                      ),
-                    ),
-                    outlinePill(null, orDash(job?.referenceNumber), _purple,
-                        order: 0.1),
-                    metaPill(
-                        'User',
-                        orDash(job?.employee?.username ?? job?.bookedBy)),
-                    metaPill('Booked', bookedStamp()),
-                    metaPill('Status',
-                        orDash(
-                            job?.trash == true ? "DELETE" : job?.bookingStatus
-                                ?.bookingStatus),
-                        background: _purpleSoft, valueColor: _purple),
+                    metadataWrap,
+                    const SizedBox(height: 8),
+                    actionsWrap,
+                  ],
+                )
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(child: metadataWrap),
+                    const SizedBox(width: 4),
+                    actionsWrap,
                   ],
                 ),
-              ),
-              const SizedBox(width: 8),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                alignment: WrapAlignment.end,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  if (associated != null)
-                    outlinePill(Icons.link, 'Associated: $associated', _purple,
-                        order: 0.2,
-                        onTap: () => _headerAction('Associated booking')),
-                  iconBtn(Icons.play_arrow, 'Dispatch',
-                      order: 0.3, onTap: () {
-                        // _headerAction('Dispatch');
-                      }),
-                  iconBtn(Icons.chat_bubble_outline, 'Messages',
-                      order: 0.4, onTap: () { _headerAction('Messages');
-                    Get.dialog(ResendSms(bookingItem: controller.jobDetails,));
-                  }),
-                  iconBtn(Icons.send, 'Send details',
-                      order: 0.5, onTap: () {
-                        _headerAction('Send details');
-                        Get.dialog(ResendEmailAlert());
-                      }),
-                  outlinePill(
-                      Icons.warning_amber_rounded, 'Complaint', _red,
-                      order: 0.6, onTap: () => openBookingInNewWindow(
-                          Routes.createComplaint, controller.jobDetails)
-                      ),
-                  outlinePill(
-                      Icons.inventory_2_outlined, 'Lost property', _purple,
-                      order: 0.7, onTap: () => openBookingInNewWindow(
-                          Routes.lostProperty, controller.jobDetails)
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const Divider(height: 10),
+          const Divider(height: 14),
         ],
       ),
     );
