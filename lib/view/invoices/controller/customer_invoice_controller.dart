@@ -130,7 +130,7 @@ class CustomerInvoiceController extends GetxController {
   CustomerPreInvFilterModel? customerPreInvFilterModel;
   bool isLoadingPreInv = false;
 
-  getCustomersPreInvoiceFilter() async {
+  getCustomersPreInvoiceFilter({bool showToastOnEmpty = true}) async {
     if (selectedCustomerId == null) {
       BotToast.showText(text: "PLEASE SELECT A CUSTOMER FIRST");
       return;
@@ -175,7 +175,8 @@ class CustomerInvoiceController extends GetxController {
 
       // recalculateTotalRow(null);
 
-      if (customerPreInvFilterModel?.bookings == null || customerPreInvFilterModel!.bookings!.isEmpty) {
+      if (showToastOnEmpty &&
+          (customerPreInvFilterModel?.bookings == null || customerPreInvFilterModel!.bookings!.isEmpty)) {
         BotToast.showText(text: "NO BOOKING FOUND!");
       }
       print("API Response: ${response.data}");
@@ -185,7 +186,7 @@ class CustomerInvoiceController extends GetxController {
   }
 
   void onSearchPreInvoice() {
-    getCustomersPreInvoiceFilter();
+    getCustomersPreInvoiceFilter(showToastOnEmpty: false);
   }
 
   /// todo filter Api

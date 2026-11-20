@@ -26,6 +26,10 @@ class CreateCustomerPreInvoice extends StatefulWidget {
 class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
   int selectedRowIndex = 0;
   final int totalRows = 5;
+
+  bool _suppressAutocompleteOnFocus = false;
+  final FocusNode _mobileFocusNode = FocusNode();
+  final TextEditingController _mobileTextController = TextEditingController();
   final ScrollController _autocompleteScrollController = ScrollController();
 
   CustomerInvoiceController controller = Get.isRegistered<CustomerInvoiceController>()
@@ -38,6 +42,14 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
     super.initState();
     shortCutKeyValue.value = "CreateCustomerPreInvoice";
     // controller.setDefaultDates();
+  }
+
+  @override
+  void dispose() {
+    _autocompleteScrollController.dispose();
+    _mobileFocusNode.dispose();
+    _mobileTextController.dispose();
+    super.dispose();
   }
 
   @override
@@ -216,11 +228,15 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
                                 SizedBox(
                                   height: 30,
                                   child: RawAutocomplete<SearchCustomer>(
-                                    optionsBuilder:
-                                        (TextEditingValue textEditingValue) async {
+                                    focusNode: _mobileFocusNode,
+                                    textEditingController: _mobileTextController,
+                                    optionsBuilder: (TextEditingValue textEditingValue) async {
+                                      if (_suppressAutocompleteOnFocus) {
+                                        return const Iterable<SearchCustomer>.empty();
+                                      }
+
                                       if (textEditingValue.text.length < 2) {
-                                        return const Iterable<
-                                            SearchCustomer>.empty();
+                                        return const Iterable<SearchCustomer>.empty();
                                       }
                                       await controller.getCustomer(textEditingValue.text);
                                       return controller.searchCustomerByMobileModel?.customer ??
@@ -234,15 +250,15 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
                                         focusNode,
                                         onFieldSubmitted) {
                                       if (controller.customerMobileController.text.isEmpty) {
-                                        textEditingController.clear();
-                                      } else if (textEditingController.text.isEmpty &&
+                                        _mobileTextController.clear();
+                                      } else if (_mobileTextController.text.isEmpty &&
                                           controller.customerMobileController.text.isNotEmpty) {
-                                        textEditingController.text = controller.customerMobileController.text;
+                                        _mobileTextController.text = controller.customerMobileController.text;
                                       }
 
                                       return TextField(
-                                        controller: textEditingController,
-                                        focusNode: focusNode,
+                                        controller: _mobileTextController,
+                                        focusNode: _mobileFocusNode,
                                         onSubmitted: (value) => onFieldSubmitted(),
                                         keyboardType: TextInputType.number,
                                         inputFormatters: [
@@ -277,12 +293,16 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
                                         style: mozillaTextSemiBoldText(
                                             fontSize: 10, fontWeight: FontWeight.w800),
                                         onChanged: (val) {
+                                          _suppressAutocompleteOnFocus = false;
                                           controller.customerMobileController.text = val;
                                         },
                                       );
                                     },
 
                                     optionsViewBuilder: (context, onSelected, options) {
+                                      if (_suppressAutocompleteOnFocus) {
+                                        return const SizedBox.shrink();
+                                      }
                                       return Align(
                                         alignment: Alignment.topLeft,
                                         child: Material(
@@ -368,6 +388,7 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
 
                                     // ACTION ON SELECTION
                                     onSelected: (SearchCustomer selection) {
+                                      _suppressAutocompleteOnFocus = true;
                                       controller.selectedCustomerId = selection.id;
                                       controller.customerMobileController.text =
                                           selection.mobile ?? '';
@@ -378,6 +399,12 @@ class _CreateCustomerPreInvoiceState extends State<CreateCustomerPreInvoice> {
                                       controller.customerTelephoneController.text =
                                           selection.telephone ?? '';
                                       controller.update();
+
+                                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                                        if (mounted) {
+                                          _mobileFocusNode.requestFocus();
+                                        }
+                                      });
                                     },
                                   ),
                                 ),
