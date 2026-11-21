@@ -21,6 +21,7 @@ import '../driver_reports_view/models/list_driver_report_login_model.dart';
 import '../employee_reports_view/activity_model.dart';
 import '../income_report_view/model/company_income_model.dart';
 import '../income_report_view/model/income_model.dart';
+import '../pco_view/model/pco_vehicle_model.dart';
 
 class ReportController extends GetxController {
 
@@ -1199,6 +1200,76 @@ void clearBookingReportData() {
 
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report company income functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo PCO functionality
+
+// Import your PCO vehicle model file, e.g.:
+// import '../pco_report_view/model/pco_vehicle_model.dart';
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo vehicle PCO functionality
+  PcoVehicleModel? pcoVehicleModel;
+  bool isLoadingVehiclePco = false;
+  bool showVehicleTable = false;
+
+  var pcoFromDate = Rxn<DateTime>(DateTime(DateTime.now().year, DateTime.now().month, 1));
+  var pcoToDate = Rxn<DateTime>(DateTime.now());
+  Subsidiaries? selectedSubsidiary;
+  int selectedJobStatusIndex = 0; // 0: All, 1: Completed, 2: Cancelled
+
+  String get pcoBookingStatusIds {
+    switch (selectedJobStatusIndex) {
+      case 1:
+        return "[11]"; // Completed
+      case 2:
+        return "[12]"; // Cancelled
+      case 0:
+      default:
+        return "[11,12]"; // All
+    }
+  }
+
+ getVehiclePco() async {
+    showVehicleTable = true;
+    isLoadingVehiclePco = true;
+    update();
+
+    try {
+      String formattedFromDate = pcoFromDate.value != null
+          ? DateFormat('yyyy-MM-dd').format(pcoFromDate.value!)
+          : DateFormat('yyyy-MM-dd').format(DateTime(DateTime.now().year, DateTime.now().month, 1));
+
+      String formattedToDate = pcoToDate.value != null
+          ? DateFormat('yyyy-MM-dd').format(pcoToDate.value!)
+          : DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+      var response = await Api().get(
+        "bookings/vehicle-pco",
+        sendCompanyId: true,
+        queryParameters: {
+          "from_date": formattedFromDate,
+          "to_date": formattedToDate,
+          if (selectedSubsidiary?.id != null) "subsidiary_id": selectedSubsidiary!.id.toString(),
+          "booking_status_id": pcoBookingStatusIds,
+        },
+      );
+
+      if (response.statusCode == 200) {
+          pcoVehicleModel = PcoVehicleModel.fromJson(response.data);
+        }
+
+        if (pcoVehicleModel?.bookings == null || pcoVehicleModel!.bookings!.isEmpty) {
+          BotToast.showText(text: "No Data Found!");
+        }
+    } catch (e, stackTrace) {
+      debugPrint("Error fetching vehicle PCO: $e");
+      debugPrint("StackTrace: $stackTrace");
+      pcoVehicleModel = null;
+    } finally {
+      isLoadingVehiclePco = false;
+      update();
+    }
+  }
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo vehicle PCO functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo PCO functionality
 
   RxBool creditCardPaidValue = false.obs;
   /// booking in reports
