@@ -716,19 +716,25 @@ class _ViewDriversMapState extends State<ViewDriversMap>
   String _statusImage(String status) {
     switch (status) {
       case "Accepted":
-        return "assets/yellow.svg";   // Orange Car
+        return "assets/orange.svg";   // Orange Car
 
       case "Arrived":
         return "assets/bg-secondary.svg";   // Yellow Car
 
       case "On Route":
-        return "assets/tracking_car.png";    // Black Car
+        return "assets/bg-danger.svg";    // Black Car
 
       case "STC":
-        return "assets/bg-primary.svg";        // Blue Car
+        return "assets/stc_icon.svg";        // Blue Car
 
       case "POB":
-        return "assets/bg-danger.svg";        // Blue Car
+        return "assets/yellow.svg";
+
+      case "On Break":
+        return "assets/amber.svg";        // Blue Car
+
+      case "SinBin":
+        return "assets/bg-dark.svg";        // Blue Car
 
       default:
         return "assets/bg-green.svg";
