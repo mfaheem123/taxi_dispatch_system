@@ -276,7 +276,44 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                 Padding(
                   padding:
                   const EdgeInsets.only(right: 6.0),
-                  child: CustomButton(
+                  child: Focus(
+                    // Key handling only: the CustomButton owns the Tab stop.
+                    canRequestFocus: false,
+                    onKeyEvent: (node, event) {
+                      if (event is! KeyDownEvent) {
+                        return KeyEventResult.ignored;
+                      }
+                      final key = event.logicalKey;
+                      if (key == LogicalKeyboardKey.space) {
+                        setState(() {
+                          controller.hideDashBoard.value =
+                          !controller.hideDashBoard.value;
+                        });
+                        return KeyEventResult.handled;
+                      }
+                      if (key != LogicalKeyboardKey.tab) {
+                        return KeyEventResult.ignored;
+                      }
+                      if (HardwareKeyboard.instance.isShiftPressed) {
+                        // Back to the last map button of the driver panel.
+                        if (controller.driverPanelFocusNode.context == null) {
+                          return KeyEventResult.ignored;
+                        }
+                        controller.selectedMapButtonIndex = 3;
+                        controller.driverPanelFocusNode.requestFocus();
+                        controller.update();
+                        return KeyEventResult.handled;
+                      }
+                      // Forward: into the booking table, else back to the form.
+                      final moved =
+                          controller.focusFirstTableRow?.call() ?? false;
+                      if (!moved) {
+                        controller.focusBookingFormFirstField?.call();
+                      }
+                      return KeyEventResult.handled;
+                    },
+                    child: CustomButton(
+                    focusNode: controller.hideDashboardFocusNode,
                     width: 135,
                     height: 35,
                     borderRadius: 6,
@@ -294,6 +331,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                     controller.hideDashBoard.value
                         ? "HIDE DASHBOARD[F12]"
                         : "SHOW DASHBOARD[F12]",
+                  ),
                   ),
                 ),
               ],

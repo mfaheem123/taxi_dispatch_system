@@ -211,7 +211,16 @@ class _DriversViewState extends State<DriversView> {
                     // (its first row's checkbox). If the table isn't present
                     // (iPad / mobile layout hides it) fall back to the old
                     // behaviour of wrapping back to the header icons.
-                    final moved = controller.focusFirstTableRow?.call() ?? false;
+                    // Next stop is the HIDE / SHOW DASHBOARD header button;
+                    // it hands on to the table itself.
+                    final hideBtn = controller.hideDashboardFocusNode;
+                    final bool moved;
+                    if (hideBtn.context != null) {
+                      hideBtn.requestFocus();
+                      moved = true;
+                    } else {
+                      moved = controller.focusFirstTableRow?.call() ?? false;
+                    }
                     controller.selectedMapButtonIndex = -1;
                     controller.update();
                     if (!moved) {

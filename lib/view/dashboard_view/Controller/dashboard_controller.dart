@@ -255,6 +255,11 @@ class DashboardController extends GetxController {
   int selectedMapButtonIndex = -1;
   bool Function()? focusFirstTableRow;
 
+  /// Focus node of the HIDE / SHOW DASHBOARD header button, so the Tab chain
+  /// (form -> drivers -> map -> this button -> booking table) can land on it.
+  final FocusNode hideDashboardFocusNode =
+      FocusNode(debugLabel: 'HideDashboardButton');
+
   // Helper method jo URL me company_id attach karega agar sendCompanyId true ho
   String _buildSocketUrl(String endpoint, {bool sendCompanyId = false}) {
     String finalUrl = "$socketUrl$endpoint";
@@ -2853,6 +2858,15 @@ class DashboardController extends GetxController {
       dropoffPlotId:
           dashboardDZoneValue != null ? dashboardDZoneValue!.id : null,
       pickUpPlotId: dashboardZoneValue != null ? dashboardZoneValue!.id : null,
+      // Return-journey zones — without these the fare API never sees them.
+      returnpickUpPlotId: pickupTwoWayController.text.isNotEmpty &&
+              dashboardRNZoneValue != null
+          ? dashboardRNZoneValue!.id
+          : null,
+      returndropoffPlotId: dropOffTwoWayController.text.isNotEmpty &&
+              dashboardRN1ZoneValue != null
+          ? dashboardRN1ZoneValue!.id
+          : null,
 
       pickupDate: "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
       pickupTime: pickUpTimeController.text,

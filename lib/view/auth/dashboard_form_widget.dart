@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_date_picker/flutter_web_date_picker.dart';
 import 'package:get/get.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:timepickerfield/timepickerfield.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../alert/account_details_alert.dart';
@@ -640,7 +639,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       builder: (_) => ViaLocation(),
                                     );
                                   },
-                                  actionIcon: LucideIcons.route,
+                                  actionIcon: Icons.route,
                                   actionTooltip: 'Via locations',
                                 ),
                                 const Divider(height: 14),
@@ -1117,6 +1116,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 (v) => setState(() {
               controller.dashboardRNZoneValue = v;
               _controller.RNzoneValue = v;
+              controller.getFaresCalculation();
             }),
             isMobile,
                 (value) {
@@ -1251,6 +1251,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 (v) => setState(() {
               controller.dashboardRN1ZoneValue = v;
               _controller.RN1zoneValue = v;
+              controller.getFaresCalculation();
             }),
             isMobile,
                 (value) {
@@ -1323,7 +1324,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 builder: (_) => ViaLocation(),
               );
             },
-            actionIcon: LucideIcons.route,
+            actionIcon: Icons.route,
             actionTooltip: 'Via locations',
             notesController: controller.returnDropUpNoteController),
         const SizedBox(height: 8),
@@ -1650,10 +1651,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         VoidCallback? onPressed,
         FocusNode? addressFocusNode, // ← lets F2 focus the PICKUP field
         // The glyph on the button at the end of the field. PICK carries the
-        // swap arrows; DROP carries LucideIcons.route — the two pins joined by
+        // swap arrows; DROP carries Icons.route — the two pins joined by
         // a winding path. Both still run [onCurrentLocation], so each row picks
         // its glyph and its handler together at the call site.
-        IconData actionIcon = LucideIcons.arrowDownUp,
+        IconData actionIcon = Icons.swap_vert,
         String actionTooltip = 'Use current location',
       }) {
     final tag = Row(mainAxisSize: MainAxisSize.min, children: [
