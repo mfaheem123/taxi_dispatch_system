@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:bot_toast/bot_toast.dart';
+import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
-
+import 'dart:html' as html;
 import '../../../component/networks/api.dart';
 import '../../administration/model/list_subsDiary.dart';
 import '../../administration/model/user_model.dart';
@@ -1247,6 +1248,7 @@ void clearBookingReportData() {
   }
 
  getVehiclePco() async {
+   resetPcoGenerateButton();
    resolvePcoDefaultDates();
     showVehicleTable = true;
    showDriverTable = false;
@@ -1289,6 +1291,7 @@ void clearBookingReportData() {
   bool showDriverTable = false;
 
   getDriverPco() async {
+    resetPcoGenerateButton();
     resolvePcoDefaultDates();
     showDriverTable = true;
     showVehicleTable = false;
@@ -1345,6 +1348,131 @@ void clearBookingReportData() {
     resolvePcoDefaultDates();
     update();
   }
+
+  ///>>>>>>>>>>>> todo excel
+
+  Future<void> downloadPcoExcel({bool? isDriver}) async {
+    final bool driverMode = isDriver ?? showDriverTable;
+
+    if (driverMode) {
+      await _exportDriverPcoExcel();
+    } else {
+      await _exportVehiclePcoExcel();
+    }
+  }
+
+  Future<void> _exportDriverPcoExcel() async {
+    final list = pcoDriverModel?.bookings ?? [];
+    if (list.isEmpty) {
+      BotToast.showText(text: "NO DRIVER PCO DATA FOUND TO EXPORT");
+      return;
+    }
+
+    var excel = Excel.createExcel();
+    const String sheetName = 'Driver_PCO';
+    Sheet sheetObject = excel[sheetName];
+    if (excel.tables.containsKey('Sheet1')) {
+      excel.delete('Sheet1');
+    }
+
+    const List<String> headers = [
+      "PRIVATE HIRE DRIVER LICENCE NUMBER",
+      "FIRST NAME",
+      "LAST NAME",
+    ];
+
+    sheetObject.appendRow(
+      headers.map((e) => TextCellValue(e.toUpperCase())).toList(),
+    );
+
+    for (var b in list) {
+      sheetObject.appendRow([
+        TextCellValue((b.phcDriverNumber ?? "").toUpperCase()),
+        TextCellValue((b.firstName ?? "").toUpperCase()),
+        TextCellValue((b.lastName ?? "").toUpperCase()),
+      ]);
+    }
+
+    _saveExcelToBrowser(excel, "Driver_pco.xlsx");
+  }
+
+  Future<void> _exportVehiclePcoExcel() async {
+    final list = pcoVehicleModel?.bookings ?? [];
+    if (list.isEmpty) {
+      BotToast.showText(text: "NO VEHICLE PCO DATA FOUND TO EXPORT");
+      return;
+    }
+
+    var excel = Excel.createExcel();
+    const String sheetName = 'Vehicle_PCO';
+    Sheet sheetObject = excel[sheetName];
+    if (excel.tables.containsKey('Sheet1')) {
+      excel.delete('Sheet1');
+    }
+
+    // Vehicle PCO
+    const List<String> headers = [
+      "VRM",
+      "VEHICLE MAKE",
+      "VEHICLE LICENCE NUMBER",
+    ];
+
+    sheetObject.appendRow(
+      headers.map((e) => TextCellValue(e.toUpperCase())).toList(),
+    );
+
+    for (var b in list) {
+      sheetObject.appendRow([
+        TextCellValue((b.vehicleNumber ?? "").toUpperCase()),
+        TextCellValue((b.vehicleMake ?? "").toUpperCase()),
+        TextCellValue((b.phcVehicleNumber ?? "").toUpperCase()),
+      ]);
+    }
+
+    _saveExcelToBrowser(excel, "Vehicle_pco.xlsx");
+  }
+
+  void _saveExcelToBrowser(Excel excel, String fileName) {
+    try {
+      var fileBytes = excel.encode();
+      if (fileBytes != null) {
+        final content = base64Encode(fileBytes);
+        final anchor = html.AnchorElement(
+          href: "data:application/octet-stream;charset=utf-16le;base64,$content",
+        )
+          ..setAttribute("download", fileName)
+          ..click();
+      }
+    } catch (e) {
+      print("Excel Error: $e");
+    }
+  }
+
+  // Generate button functionality
+  final RxBool isPcoDownloadReady = false.obs;
+
+  void resetPcoGenerateButton() {
+    isPcoDownloadReady.value = false;
+  }
+
+  Future<void> onPcoGenerateOrDownloadTap() async {
+    if (!isPcoDownloadReady.value) {
+      final bool hasData = showDriverTable
+          ? (pcoDriverModel?.bookings?.isNotEmpty ?? false)
+          : (pcoVehicleModel?.bookings?.isNotEmpty ?? false);
+
+      if (!hasData) {
+        BotToast.showText(text: "NO PCO DATA FOUND TO GENERATE");
+        return;
+      }
+
+      isPcoDownloadReady.value = true;
+      return;
+    }
+
+    await downloadPcoExcel();
+  }
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo PCO functionality
 
   RxBool creditCardPaidValue = false.obs;

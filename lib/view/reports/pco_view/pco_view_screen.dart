@@ -78,7 +78,7 @@ class PcoViewScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Logo + PCO Heading
+            // Logo + PCO
             Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -129,7 +129,7 @@ class PcoViewScreen extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // Main Table: 7 Columns for Driver, 4 Columns for Vehicle
+            // Table
             if (showDriver)
               _buildDriverTable(bookings)
             else

@@ -198,7 +198,6 @@ class _PcoScreenState extends State<PcoScreen> {
                             BotToast.showText(text: "NO PCO DATA FOUND");
                             return;
                           }
-
                           openScreenInNewWindow(
                             Routes.pcoView,
                             data: PcoViewData(
@@ -209,13 +208,16 @@ class _PcoScreenState extends State<PcoScreen> {
                           );
                         },
                       ),
-                      CustomButton(
-                        width: 80,
-                        height: 30,
-                        borderRadius: 4,
-                        verticalPadding: 0.0,
-                        btnText: AppText.generate,
-                        fontSize: 12,
+                      Obx(
+                            () => CustomButton(
+                          width: 95,
+                          height: 30,
+                          borderRadius: 4,
+                          verticalPadding: 0.0,
+                          btnText: controller.isPcoDownloadReady.value ? "DOWNLOAD" : "GENERATE",
+                          fontSize: 12,
+                          onTap: () => controller.onPcoGenerateOrDownloadTap(),
+                        ),
                       ),
                     ],
                   ),
