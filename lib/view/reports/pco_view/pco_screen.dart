@@ -24,7 +24,6 @@ class PcoScreen extends StatefulWidget {
 }
 
 class _PcoScreenState extends State<PcoScreen> {
-
   int selectedRowIndex = 0;
   final int totalRows = 50;
 
@@ -32,15 +31,31 @@ class _PcoScreenState extends State<PcoScreen> {
       ? Get.find<ReportController>()
       : Get.put(ReportController());
 
+  final FocusNode _firstFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _firstFocusNode.requestFocus();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _firstFocusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return PageScrollWrapper(
-      child: GetBuilder<ReportController>(
-        initState: (state){
-          controller.clearPcoData();
-          controller.getSubsidiary();
-        }, builder: (controller) {
-
+      child: GetBuilder<ReportController>(initState: (state) {
+        controller.clearPcoData();
+        controller.getSubsidiary();
+      }, builder: (controller) {
         return LayoutBuilder(builder: (context, constraints) {
           final double maxWidth = constraints.maxWidth;
           final bool isMobile = maxWidth < 600;
@@ -50,289 +65,306 @@ class _PcoScreenState extends State<PcoScreen> {
           final double fieldWidth = isMobile
               ? maxWidth // full width
               : isTablet
-              ? maxWidth / 2
-              : maxWidth / 4;
+                  ? maxWidth / 2
+                  : maxWidth / 4;
 
-              return Column(
-                children: [
-                  SizedBox(height: 10),
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.end,
-                    runAlignment: WrapAlignment.start,
-                    spacing: 10,
-                    runSpacing: 16,
-                    children: [
-                      labeledField(
-                        context: context,
-                        isMobile: isMobile,
-                        label: AppText.from,
-                        width: fieldWidth/2,
-                        column: true,
-                        child: SizedBox(height: 30, child: KeyboardDatePicker(
-                          initialDate: controller.pcoFromDate.isNotEmpty
-                              ? DateTime.parse(controller.pcoFromDate)
-                              : DateTime(DateTime.now().year, DateTime.now().month, 1),
-                          onChanged: (date) {
-                            controller.pcoFromDate = date.toIso8601String().split("T").first;
-                            controller.update();
-                          },
-                          onSubmitted: (date) {
-                            controller.pcoFromDate = date.toIso8601String().split("T").first;
+          return Column(
+            children: [
+              SizedBox(height: 10),
+              FocusTraversalGroup(
+                policy: OrderedTraversalPolicy(),
+                child: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.end,
+                  runAlignment: WrapAlignment.start,
+                  spacing: 10,
+                  runSpacing: 16,
+                  children: [
+                    FocusTraversalOrder(
+                        order: const NumericFocusOrder(1),
+                        child: Focus(
+                            focusNode: _firstFocusNode,
+                            autofocus: true,
+                            child: labeledField(
+                              context: context,
+                              isMobile: isMobile,
+                              label: AppText.from,
+                              width: fieldWidth / 2,
+                              column: true,
+                              child: SizedBox(
+                                  height: 30,
+                                  child: KeyboardDatePicker(
+                                    initialDate: controller.pcoFromDate.isNotEmpty
+                                        ? DateTime.parse(controller.pcoFromDate)
+                                        : DateTime(DateTime.now().year, DateTime.now().month, 1),
+                                    onChanged: (date) {
+                                      controller.pcoFromDate = date.toIso8601String().split("T").first;
+                                      controller.update();
+                                    },
+                                    onSubmitted: (date) {
+                                      controller.pcoFromDate = date.toIso8601String().split("T").first;
+                                      controller.update();
+                                    },
+                                  )),
+                            ))),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    FocusTraversalOrder(
+                        order: const NumericFocusOrder(2),
+                        child: labeledField(
+                          context: context,
+                          isMobile: isMobile,
+                          column: true,
+                          label: AppText.to,
+                          width: fieldWidth / 2,
+                          child: SizedBox(
+                              height: 30,
+                              child: KeyboardDatePicker(
+                                initialDate: controller.pcoToDate.isNotEmpty
+                                    ? DateTime.parse(controller.pcoToDate)
+                                    : DateTime.now(),
+                                onChanged: (date) {
+                                  controller.pcoToDate = date.toIso8601String().split("T").first;
+                                  controller.update();
+                                },
+                                onSubmitted: (date) {
+                                  controller.pcoToDate = date.toIso8601String().split("T").first;
+                                  controller.update();
+                                },
+                              )),
+                        )),
+                    FocusTraversalOrder(
+                        order: const NumericFocusOrder(3),
+                        child: CustomDropdownField<Subsidiaries>(
+                          width: fieldWidth / 2,
+                          label: AppText.selectSubsidiary,
+                          items: controller.subsDiaryModel?.subsidiaries ?? [],
+                          value: controller.selectedSubsidiary,
+                          itemLabel: (item) => item.name ?? "",
+                          onChanged: (val) {
+                            controller.selectedSubsidiary = val;
                             controller.update();
                           },
                         )),
-                      ),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      labeledField(
-                        context: context,
-                        isMobile: isMobile,
-                        column: true,
-                        label: AppText.to,
-                        width: fieldWidth/2,
-                        child: SizedBox(height: 30, child: KeyboardDatePicker(
-                          initialDate: controller.pcoToDate.isNotEmpty
-                              ? DateTime.parse(controller.pcoToDate)
-                              : DateTime.now(),
-                          onChanged: (date) {
-                            controller.pcoToDate = date.toIso8601String().split("T").first;
-                            controller.update();
-                          },
-                          onSubmitted: (date) {
-                            controller.pcoToDate = date.toIso8601String().split("T").first;
+                    FocusTraversalOrder(
+                        order: const NumericFocusOrder(4),
+                        child: CustomDropdownField<String>(
+                          width: fieldWidth / 3.5,
+                          items: [
+                            "ACTIVE ONLY",
+                            "SHOW INACTIVE",
+                          ],
+                          value: controller.selectActive,
+                          itemLabel: (val) => val,
+                          onChanged: (val) {
+                            controller.selectActive = val!;
                             controller.update();
                           },
                         )),
-                      ),
-
-                      CustomDropdownField<Subsidiaries>(
-                        width: fieldWidth / 2,
-                        label: AppText.selectSubsidiary,
-                        items: controller.subsDiaryModel?.subsidiaries ?? [],
-                        value: controller.selectedSubsidiary,
-                        itemLabel: (item) => item.name ?? "",
-                        onChanged: (val) {
-                          controller.selectedSubsidiary = val;
-                          controller.update();
-                        },
-                      ),
-
-                      CustomDropdownField<String>(
-                        width: fieldWidth / 3.5,
-                        items: [
-                          "ACTIVE ONLY",
-                          "SHOW INACTIVE",
-                        ],
-                        value: controller.selectActive,
-                        itemLabel: (val) => val,
-                        onChanged: (val) {
-                          controller.selectActive = val!;
-                          controller.update();
-                        },
-                      ),
-
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Text(
-                            "JOBS",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                    FocusTraversalOrder(
+                        order: const NumericFocusOrder(5),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "JOBS",
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 6),
-                          StatusRadioGroup(
-                            options: const [
-                              "All",
-                              "Completed",
-                              "Cancelled",
-                            ],
-                            onChanged: (index, value) {
-                              debugPrint("Selected index: $index, value: $value");
-                              controller.selectedJobStatusIndex = index;
-                              controller.update();
-                            },
-                          ),
-                        ],
-                      ),
-                      SizedBox(width: 20,),
-                      CustomButton(
-                        width: 80,
-                        height: 30,
-                        borderRadius: 4,
-                        verticalPadding: 0.0,
-                        btnText: AppText.driver,
-                        fontSize: 12,
-                        onTap: () {
-                          controller.getDriverPco();
-                        },
-                      ),
-                      CustomButton(
-                        width: 80,
-                        height: 30,
-                        borderRadius: 4,
-                        verticalPadding: 0.0,
-                        btnText: "VEHICLE",
-                        fontSize: 12,
-                        onTap: () {
-                          controller.getVehiclePco();
-                        },
-                      ),
-                      CustomButton(
-                        width: 80,
-                        height: 30,
-                        borderRadius: 4,
-                        verticalPadding: 0.0,
-                        btnText: AppText.view,
-                        fontSize: 12,
-                        onTap: () {
-                          final bool isDriver = controller.showDriverTable;
-                          final List bookings = isDriver
-                              ? (controller.pcoDriverModel?.bookings ?? [])
-                              : (controller.pcoVehicleModel?.bookings ?? []);
-
-                          if (bookings.isEmpty) {
-                            BotToast.showText(text: "NO PCO DATA FOUND");
-                            return;
-                          }
-                          openScreenInNewWindow(
-                            Routes.pcoView,
-                            data: PcoViewData(
-                              isDriver: isDriver,
-                              subsidiary: controller.selectedSubsidiary,
-                              bookings: bookings,
+                            const SizedBox(height: 6),
+                            StatusRadioGroup(
+                              options: const [
+                                "All",
+                                "Completed",
+                                "Cancelled",
+                              ],
+                              onChanged: (index, value) {
+                                debugPrint("Selected index: $index, value: $value");
+                                controller.selectedJobStatusIndex = index;
+                                controller.update();
+                              },
                             ),
-                          );
-                        },
-                      ),
-                      Obx(
-                            () => CustomButton(
-                          width: 95,
+                          ],
+                        )),
+                    SizedBox(width: 20),
+                    FocusTraversalOrder(
+                        order: const NumericFocusOrder(6),
+                        child: CustomButton(
+                          width: 80,
                           height: 30,
                           borderRadius: 4,
                           verticalPadding: 0.0,
-                          btnText: controller.isPcoDownloadReady.value ? "DOWNLOAD" : "GENERATE",
+                          btnText: AppText.driver,
                           fontSize: 12,
-                          onTap: () => controller.onPcoGenerateOrDownloadTap(),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 50),
-                  if (controller.showDriverTable) ...[
-                    if (controller.isLoadingDriverPco)
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 30),
-                        child: Center(child: CircularProgressIndicator()),
-                      )
-                    else ...[
-                      Center(
-                        child: SizedBox(
-                          width: Get.width / 2,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                "TOTAL DRIVERS: ${controller.pcoDriverModel?.bookings?.length ?? 0}",
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                          onTap: () {
+                            controller.getDriverPco();
+                          },
+                        )),
+                    FocusTraversalOrder(
+                        order: const NumericFocusOrder(7),
+                        child: CustomButton(
+                          width: 80,
+                          height: 30,
+                          borderRadius: 4,
+                          verticalPadding: 0.0,
+                          btnText: "VEHICLE",
+                          fontSize: 12,
+                          onTap: () {
+                            controller.getVehiclePco();
+                          },
+                        )),
+                    FocusTraversalOrder(
+                        order: const NumericFocusOrder(8),
+                        child: CustomButton(
+                          width: 80,
+                          height: 30,
+                          borderRadius: 4,
+                          verticalPadding: 0.0,
+                          btnText: AppText.view,
+                          fontSize: 12,
+                          onTap: () {
+                            final bool isDriver = controller.showDriverTable;
+                            final List bookings = isDriver
+                                ? (controller.pcoDriverModel?.bookings ?? [])
+                                : (controller.pcoVehicleModel?.bookings ?? []);
+
+                            if (bookings.isEmpty) {
+                              BotToast.showText(text: "NO PCO DATA FOUND");
+                              return;
+                            }
+                            openScreenInNewWindow(
+                              Routes.pcoView,
+                              data: PcoViewData(
+                                isDriver: isDriver,
+                                subsidiary: controller.selectedSubsidiary,
+                                bookings: bookings,
                               ),
-                              const SizedBox(height: 8),
-                              SingleChildScrollView(
-                                child: SizedBox(
-                                  width: Get.width / 2,
-                                  child: DatatableWidget(
-                                    columns: [
-                                      buildHeaderWithSearch(
-                                          title: "PRIVATE HIRE DRIVER LICENCE NUMBER",
-                                          removeSearching: true),
-                                      buildHeaderWithSearch(
-                                          title: "FIRST NAME", removeSearching: true),
-                                      buildHeaderWithSearch(
-                                          title: "LAST NAME", removeSearching: true),
+                            );
+                          },
+                        )),
+                    FocusTraversalOrder(
+                        order: const NumericFocusOrder(9),
+                        child: Obx(
+                          () => CustomButton(
+                            width: 95,
+                            height: 30,
+                            borderRadius: 4,
+                            verticalPadding: 0.0,
+                            btnText: controller.isPcoDownloadReady.value
+                                ? "DOWNLOAD"
+                                : "GENERATE",
+                            fontSize: 12,
+                            onTap: () => controller.onPcoGenerateOrDownloadTap(),
+                          ),
+                        )),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 50),
+              if (controller.showDriverTable) ...[
+                if (controller.isLoadingDriverPco)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 30),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else ...[
+                  Center(
+                    child: SizedBox(
+                      width: Get.width / 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            "TOTAL DRIVERS: ${controller.pcoDriverModel?.bookings?.length ?? 0}",
+                            style: const TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          SingleChildScrollView(
+                            child: SizedBox(
+                              width: Get.width / 2,
+                              child: DatatableWidget(
+                                columns: [
+                                  buildHeaderWithSearch(title: "PRIVATE HIRE DRIVER LICENCE NUMBER", removeSearching: true),
+                                  buildHeaderWithSearch(title: "FIRST NAME", removeSearching: true),
+                                  buildHeaderWithSearch(title: "LAST NAME", removeSearching: true),
+                                ],
+                                totalRow: controller.pcoDriverModel?.bookings?.length ?? 0,
+                                rows: controller.pcoDriverModel?.bookings?.map((booking) {
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(Center(child: Text((booking.phcDriverNumber ?? "").toUpperCase()))),
+                                      DataCell(Center(child: Text((booking.firstName ?? "").toUpperCase()))),
+                                      DataCell(Center(child: Text((booking.lastName ?? "").toUpperCase()))),
                                     ],
-                                    totalRow: controller.pcoDriverModel?.bookings?.length ?? 0,
-                                    rows: controller.pcoDriverModel?.bookings?.map((booking) {
-                                      return DataRow(
-                                        cells: [
-                                          DataCell(Center(
-                                              child: Text((booking.phcDriverNumber ?? "").toUpperCase()))),
-                                          DataCell(Center(
-                                              child: Text((booking.firstName ?? "").toUpperCase()))),
-                                          DataCell(Center(
-                                              child: Text((booking.lastName ?? "").toUpperCase()))),
-                                        ],
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
+                                  );
+                                }).toList(),
                               ),
-                            ],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
-                  ],
-                  if (controller.showVehicleTable) ...[
-                    if (controller.isLoadingVehiclePco)
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 30),
-                        child: Center(child: CircularProgressIndicator()),
-                      )
-                    else ...[
-                      Center(
-                        child: SizedBox(
-                          width: Get.width / 2,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                "TOTAL VEHICLES: ${controller.pcoVehicleModel?.bookings?.length ?? 0}",
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              SingleChildScrollView(
-                                child: SizedBox(
-                                  width: Get.width /2,
-                                child: DatatableWidget(
-                                  columns: [
-                                    buildHeaderWithSearch(title: "VRM", removeSearching: true),
-                                    buildHeaderWithSearch(title: "VEHICLE MAKE", removeSearching: true),
-                                    buildHeaderWithSearch(title: "VEHICLE LICENCE NUMBER", removeSearching: true),
-                                  ],
-                                  totalRow: controller.pcoVehicleModel?.bookings?.length ?? 0,
-                                  rows: controller.pcoVehicleModel?.bookings?.map((booking) {
-                                    return DataRow(
-                                      cells: [
-                                        DataCell(Center(child: Text((booking.vehicleNumber ?? "").toUpperCase()))),
-                                        DataCell(Center(child: Text((booking.vehicleMake ?? "").toUpperCase()))),
-                                        DataCell(Center(child: Text((booking.phcVehicleNumber ?? "").toUpperCase()))),
-                                      ],
-                                    );
-                                  }).toList(),
-                                ),
-                              )),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                  const SizedBox(height: 10),
+                    ),
+                  ),
                 ],
-              );
-            }
+              ],
+              if (controller.showVehicleTable) ...[
+                if (controller.isLoadingVehiclePco)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 30),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else ...[
+                  Center(
+                    child: SizedBox(
+                      width: Get.width / 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            "TOTAL VEHICLES: ${controller.pcoVehicleModel?.bookings?.length ?? 0}",
+                            style: const TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          SingleChildScrollView(
+                              child: SizedBox(
+                            width: Get.width / 2,
+                            child: DatatableWidget(
+                              columns: [
+                                buildHeaderWithSearch(title: "VRM", removeSearching: true),
+                                buildHeaderWithSearch(title: "VEHICLE MAKE", removeSearching: true),
+                                buildHeaderWithSearch(title: "VEHICLE LICENCE NUMBER", removeSearching: true),
+                              ],
+                              totalRow: controller.pcoVehicleModel?.bookings?.length ?? 0,
+                              rows: controller.pcoVehicleModel?.bookings
+                                  ?.map((booking) {
+                                return DataRow(
+                                  cells: [
+                                    DataCell(Center(child: Text((booking.vehicleNumber ?? "").toUpperCase()))),
+                                    DataCell(Center(child: Text((booking.vehicleMake ?? "").toUpperCase()))),
+                                    DataCell(Center(child: Text((booking.phcVehicleNumber ?? "").toUpperCase()))),
+                                  ],
+                                );
+                              }).toList(),
+                            ),
+                          )),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+              const SizedBox(height: 10),
+            ],
           );
-        }
-      ),
+        });
+      }),
     );
   }
 }

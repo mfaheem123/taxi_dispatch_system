@@ -1340,6 +1340,7 @@ void clearBookingReportData() {
     isLoadingVehiclePco = false;
     isLoadingDriverPco = false;
 
+    selectActive = "ACTIVE ONLY";
     pcoFromDate = "";
     pcoToDate = "";
     selectedSubsidiary = null;
