@@ -25,6 +25,7 @@ import '../view/invoices/model/update_customer_invoice_model.dart'
     show CustomerInvoiceByIdModel;
 import '../view/Audit_Report/booking_audit_report.dart';
 import '../view/main_appbar/main_appbar.dart';
+import '../view/reports/pco_view/pco_view_screen.dart';
 import '../view/setting/wallboard_screen.dart';
 part 'app_routes.dart';
 
@@ -147,6 +148,15 @@ class AppPages {
         final id = int.tryParse(Get.parameters['booking_id'] ?? '') ?? 0;
         return BookingAuditReportScreen(bookingId: id);
       },
+    ),
+
+    GetPage(
+      name: _Paths.pcoView,
+      page: () => NewWindowScreen<PcoViewData>(
+        fromJson: PcoViewData.fromJson,
+        builder: (context, data) =>
+            PcoViewScreen(pcoData: data),
+      ),
     ),
   ];
 }
