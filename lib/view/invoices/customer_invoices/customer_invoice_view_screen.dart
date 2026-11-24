@@ -1,11 +1,13 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 
 import '../../../component/color.dart';
+import '../../../component/networks/api.dart';
+import '../../administration/model/list_subsDiary.dart';
 import '../controller/customer_invoice_controller.dart';
-import '../controller/account_invoice_controller.dart';
 import '../model/update_customer_invoice_model.dart' show UpdateCustomerInvoice;
 
 class InvoiceViewWindowWrapper extends StatefulWidget {
@@ -83,17 +85,83 @@ class _InvoiceViewWindowWrapperState
   }
 }
 
-class CustomerInvoiceViewScreen extends StatelessWidget {
+class CustomerInvoiceViewScreen extends StatefulWidget {
   /// The invoice to show. Passed in when the screen is opened in its own
   /// window (see utils/new_window.dart), where no CustomerInvoiceController
   /// exists; otherwise read from the controller as before.
   final UpdateCustomerInvoice? invoice;
+  final Subsidiaries? subsidiary;
 
-  const CustomerInvoiceViewScreen({super.key, this.invoice});
+  const CustomerInvoiceViewScreen({super.key, this.invoice, this.subsidiary});
+
+  @override
+  State<CustomerInvoiceViewScreen> createState() =>
+      _CustomerInvoiceViewScreenState();
+}
+
+class _CustomerInvoiceViewScreenState extends State<CustomerInvoiceViewScreen> {
+  Subsidiaries? _subsidiary;
+
+  @override
+  void initState() {
+    super.initState();
+    _subsidiary = widget.subsidiary;
+    _fetchSubsidiary();
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomerInvoiceViewScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.subsidiary != null && widget.subsidiary != _subsidiary) {
+      setState(() {
+        _subsidiary = widget.subsidiary;
+      });
+    }
+  }
+
+  Future<void> _fetchSubsidiary() async {
+    if (_subsidiary != null) return;
+
+    if (Get.isRegistered<CustomerInvoiceController>()) {
+      final ctrl = Get.find<CustomerInvoiceController>();
+      if (ctrl.selectedSubsidiary != null) {
+        if (mounted) {
+          setState(() {
+            _subsidiary = ctrl.selectedSubsidiary;
+          });
+        }
+        return;
+      }
+    }
+
+    try {
+      final response = await Api().get('subsidiaries/get', sendCompanyId: true);
+      if (response.statusCode == 200) {
+        final model = SubsDiaryModel.fromJson(response.data);
+        if (model.subsidiaries != null && model.subsidiaries!.isNotEmpty) {
+          final matched = model.subsidiaries!.first;
+
+          if (mounted) {
+            setState(() {
+              _subsidiary = matched;
+            });
+          }
+
+          if (Get.isRegistered<CustomerInvoiceController>()) {
+            final ctrl = Get.find<CustomerInvoiceController>();
+            ctrl.selectedSubsidiary = matched;
+            ctrl.subsDiaryModel = model;
+          }
+        }
+      }
+    } catch (e) {
+      print("Error fetching subsidiary in CustomerInvoiceViewScreen: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final mainData = invoice ??
+    final mainData = widget.invoice ??
         (Get.isRegistered<CustomerInvoiceController>()
             ? Get.find<CustomerInvoiceController>()
                 .customerInvoiceByIdModel
@@ -104,7 +172,10 @@ class CustomerInvoiceViewScreen extends StatelessWidget {
       return const Center(child: Text("NO INVOICE DATA FOUND"));
     }
 
-    final accountData = mainData.customer;
+    final subsidiaryData = _subsidiary ??
+        (Get.isRegistered<CustomerInvoiceController>()
+            ? Get.find<CustomerInvoiceController>().selectedSubsidiary
+            : null);
     final List lineItems = mainData.customerInvoiceLineitems ?? [];
 
     // Variables for calculations
@@ -153,9 +224,9 @@ class CustomerInvoiceViewScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _infoColumn([
-                    {"EMAIL": (accountData?.email ?? "").toUpperCase()},
-                    {"MOBILE": accountData?.mobile ?? ""},
-                    {"TELEPHONE": accountData?.telephone ?? ""},
+                    {"EMAIL": (subsidiaryData?.email ?? "").toUpperCase()},
+                    {"MOBILE": subsidiaryData?.emergencyContactNumber ?? ""},
+                    {"TELEPHONE": subsidiaryData?.telephoneNumber ?? ""},
                     {
                       "PERIOD":
                           "(${mainData.fromDate.toString().split(' ').first} TO ${mainData.toDate.toString().split(' ').first})"

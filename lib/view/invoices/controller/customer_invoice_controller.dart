@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'dart:html' as html;
 import '../../../component/networks/api.dart';
+import '../../administration/model/list_subsDiary.dart';
 import '../../customer/model/search_customer_by_mobile.dart';
 import '../../drivers_view/model/driver_commission_payment_model.dart';
 import '../../setting/model/get_document_number_model.dart';
@@ -511,10 +512,37 @@ class CustomerInvoiceController extends GetxController {
 
   CustomerInvoiceByIdModel? customerInvoiceByIdModel;
   bool isLoadingUpdate = false;
+  SubsDiaryModel? subsDiaryModel;
+  Subsidiaries? selectedSubsidiary;
+  bool isSubsidiaryLoading = false;
+
+  Future<void> getSubsidiary() async {
+    isSubsidiaryLoading = true;
+    update();
+    try {
+      var response = await Api().get("subsidiaries/get", sendCompanyId: true);
+      if (response.statusCode == 200) {
+        subsDiaryModel = SubsDiaryModel.fromJson(response.data);
+        if (subsDiaryModel?.subsidiaries != null &&
+            subsDiaryModel!.subsidiaries!.isNotEmpty) {
+          selectedSubsidiary = subsDiaryModel!.subsidiaries!.first;
+        }
+      }
+    } catch (e) {
+      print("Error fetching subsidiary in CustomerInvoiceController: $e");
+    }
+    isSubsidiaryLoading = false;
+    update();
+  }
 
   getUpdateCustomerInvoice({selectedId}) async {
     isLoadingUpdate = true;
     update();
+
+    if (subsDiaryModel?.subsidiaries == null ||
+        subsDiaryModel!.subsidiaries!.isEmpty) {
+      await getSubsidiary();
+    }
 
     var response = await Api().get("customer-invoice/getbyid/$selectedId");
 
@@ -522,6 +550,12 @@ class CustomerInvoiceController extends GetxController {
       customerInvoiceByIdModel =
           CustomerInvoiceByIdModel.fromJson(response.data);
       var data = customerInvoiceByIdModel?.customerInvoice;
+
+      if (subsDiaryModel?.subsidiaries != null &&
+          subsDiaryModel!.subsidiaries!.isNotEmpty) {
+        selectedSubsidiary = subsDiaryModel!.subsidiaries!.first;
+      }
+
       isPaid.value = (data?.status?.toLowerCase() == "paid");
       if (data?.customerInvoiceLineitems != null) {
         for (var item in data!.customerInvoiceLineitems!) {
@@ -604,6 +638,7 @@ class CustomerInvoiceController extends GetxController {
 
   void clearUpdateData() {
     customerInvoiceByIdModel = null;
+    selectedSubsidiary = null;
     customerInvoiceDateController = "";
     customerInvoiceDueDateController =
     "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
@@ -636,6 +671,14 @@ class CustomerInvoiceController extends GetxController {
       Get.snackbar("ERROR", "NO INVOICE DATA FOUND TO EXPORT.");
       return;
     }
+
+    if (selectedSubsidiary == null) {
+      await getSubsidiary();
+    }
+    final subsidiaryData = selectedSubsidiary ??
+        (subsDiaryModel?.subsidiaries?.isNotEmpty ?? false
+            ? subsDiaryModel!.subsidiaries!.first
+            : null);
     final accountData = mainData.customer;
     final List lineItems = mainData.customerInvoiceLineitems ?? [];
 
@@ -733,9 +776,9 @@ th { background-color: #f2f2f2; }
 
 <div class="header">
   <div>
-    <b>EMAIL:</b> ${accountData?.email ?? ""}<br>
-    <b>MOBILE:</b> ${accountData?.mobile ?? ""}<br>
-    <b>TELEPHONE:</b> ${accountData?.telephone ?? ""}
+    <b>EMAIL:</b> ${(subsidiaryData?.email ?? "").toUpperCase()}<br>
+    <b>MOBILE:</b> ${subsidiaryData?.emergencyContactNumber ?? ""}<br>
+    <b>TELEPHONE:</b> ${subsidiaryData?.telephoneNumber ?? ""}
   </div>
 
   <div>
