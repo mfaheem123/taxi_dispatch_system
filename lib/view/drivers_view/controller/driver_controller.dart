@@ -1765,7 +1765,7 @@ class DriverController extends GetxController {
 
     double total = f + pc + wc + edc + cc;
 
-    booking.totalCharges = total.toStringAsFixed(2);
+    booking.totalCharges = calculateBookingTotalCharges(booking);
     // calculateAllTotals();
     update();
   }
@@ -1781,6 +1781,21 @@ class DriverController extends GetxController {
     double totalWithoutComm = f + wc + edc;
     return totalWithoutComm.toStringAsFixed(2);
   }
+
+  String calculateBookingTotalCharges(dynamic booking) {
+    double parse(dynamic value) =>
+        double.tryParse(value?.toString() ?? "0") ?? 0.0;
+
+    double f = parse(booking.fares);
+    double pc = parse(booking.parkingCharges);
+    double wc = parse(booking.waitingCharges);
+    double edc = parse(booking.extraDropCharges);
+    double cc = parse(booking.congestionCharges);
+
+    double total = f + pc + wc + edc + cc;
+    return total.toStringAsFixed(2);
+  }
+
 
   updateBookingCharges(dynamic booking) async {
     var formData = {
@@ -1836,7 +1851,7 @@ class DriverController extends GetxController {
             'wc': item.waitingCharges,
             'edc': item.extraDropCharges,
             'cc': item.congestionCharges,
-            'total': item.totalCharges,
+            'total': calculateBookingTotalCharges(item),
             'wcomm': calculateWithoutCommission(item),
             'finalcomm': calculateFinalDriverComm(item),
           }[field]);
@@ -2429,7 +2444,8 @@ class DriverController extends GetxController {
                   "£${b?.congestionCharges ?? '0'}",
                   "£${calculateWithoutCommission(b)}",
                   "£${calculateFinalDriverComm(b)}",
-                  "£${b?.totalCharges ?? '0'}",
+                  "£${calculateBookingTotalCharges(b)}",
+                  // "£${b?.totalCharges ?? '0'}",
                 ];
               }).toList(),
             ),
@@ -2560,7 +2576,8 @@ class DriverController extends GetxController {
         DoubleCellValue(double.tryParse(b.congestionCharges?.toString() ?? '0') ?? 0.0),
         DoubleCellValue(double.tryParse(calculateWithoutCommission(b).toString()) ?? 0.0),
         DoubleCellValue(double.tryParse(calculateFinalDriverComm(b).toString()) ?? 0.0),
-        DoubleCellValue(double.tryParse(b.totalCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(double.tryParse(calculateBookingTotalCharges(b).toString()) ?? 0.0),
+        // DoubleCellValue(double.tryParse(b.totalCharges?.toString() ?? '0') ?? 0.0),
       ]);
     }
 
@@ -2825,7 +2842,7 @@ class DriverController extends GetxController {
         'wc': data.waitingCharges,
         'edc': data.extraDropCharges,
         'cc': data.congestionCharges,
-        'total': data.totalCharges,
+        'total': calculateBookingTotalCharges(data),
       };
 
       return sum + doubleParse(mapping[field]);
@@ -2912,7 +2929,8 @@ class DriverController extends GetxController {
       var b = item.booking;
       if (b == null) continue;
 
-      double rowTotal = parseD(b.totalCharges);
+      // double rowTotal = parseD(b.totalCharges);
+      double rowTotal = parseD(calculateBookingTotalCharges(b));
       double rowPC = parseD(b.parkingCharges);
       double rowCC = parseD(b.congestionCharges);
 
@@ -3330,7 +3348,8 @@ class DriverController extends GetxController {
                   "£${b?.waitingCharges ?? '0'}",
                   "£${b?.extraDropCharges ?? '0'}",
                   "£${b?.congestionCharges ?? '0'}",
-                  "£${b?.totalCharges ?? '0'}",
+                  "£${calculateBookingTotalCharges(b)}",
+                  // "£${b?.totalCharges ?? '0'}",
                 ];
               }).toList(),
             ),
@@ -3449,7 +3468,9 @@ class DriverController extends GetxController {
         DoubleCellValue(double.tryParse(b.waitingCharges?.toString() ?? '0') ?? 0.0),
         DoubleCellValue(double.tryParse(b.extraDropCharges?.toString() ?? '0') ?? 0.0),
         DoubleCellValue(double.tryParse(b.congestionCharges?.toString() ?? '0') ?? 0.0),
-        DoubleCellValue(double.tryParse(b.totalCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(double.tryParse(b.congestionCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(double.tryParse(calculateBookingTotalCharges(b).toString()) ?? 0.0),
+        // DoubleCellValue(double.tryParse(b.totalCharges?.toString() ?? '0') ?? 0.0),
       ]);
     }
 

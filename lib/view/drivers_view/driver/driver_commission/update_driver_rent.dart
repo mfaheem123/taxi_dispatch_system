@@ -489,8 +489,8 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                           controller.recalculateDriverCommissionRow(booking);
                                         },
                                       ),
-                                      Center(
-                                          child: Text("${booking.totalCharges ?? "0"}")),
+                                      Center(child: Text(controller.calculateBookingTotalCharges(booking))),
+                                      // Center(child: Text("${booking.totalCharges ?? "0"}")),
                                       Center(
                                         child: CustomButton(
                                           verticalPadding: 0.0,

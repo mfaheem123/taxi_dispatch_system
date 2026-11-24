@@ -530,7 +530,8 @@ class _UpdateDriverCommissionScreenState
                               ),
                               Center(child: Text(controller.calculateWithoutCommission(booking))),
                               Center(child: Text(controller.calculateFinalDriverComm(booking))),
-                              Center(child: Text("${booking.totalCharges ?? "0"}")),
+                              Center(child: Text(controller.calculateBookingTotalCharges(booking))),
+                              // Center(child: Text("${booking.totalCharges ?? "0"}")),
                               Center(
                                 child: CustomButton(
                                   verticalPadding: 0.0,

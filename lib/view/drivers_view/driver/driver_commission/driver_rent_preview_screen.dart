@@ -274,7 +274,13 @@ class _DriverRentViewScreenState extends State<DriverRentViewScreen> {
                       _buildTableCell("£${b?.waitingCharges ?? '0'}"),
                       _buildTableCell("£${b?.extraDropCharges ?? '0'}"),
                       _buildTableCell("£${b?.congestionCharges ?? '0'}"),
-                      _buildTableCell("£${b?.totalCharges ?? '0'}", isBold: true),
+                      _buildTableCell(
+                          controller != null
+                              ? "£${controller.calculateBookingTotalCharges(b)}"
+                              : "£${(double.tryParse(b?.fares ?? '0') ?? 0) + (double.tryParse(b?.parkingCharges ?? '0') ?? 0) + (double.tryParse(b?.waitingCharges ?? '0') ?? 0) +
+                              (double.tryParse(b?.extraDropCharges ?? '0') ?? 0) + (double.tryParse(b?.congestionCharges ?? '0') ?? 0)}", isBold: true
+                      ),
+                      // _buildTableCell("£${b?.totalCharges ?? '0'}", isBold: true),
                     ],
                   );
                 }).toList(),

@@ -45,8 +45,7 @@ class _DriverCommissionViewScreenState extends State<DriverCommissionViewScreen>
         ? Get.find<DriverController>()
         : null;
 
-    final data = widget.commission ??
-        controller?.updateDriverCommissionByIdModel?.driverCommission;
+    final data = widget.commission ?? controller?.updateDriverCommissionByIdModel?.driverCommission;
     final subId = data?.driver?.subsidiaryId;
 
     if (controller != null) {
@@ -76,8 +75,7 @@ class _DriverCommissionViewScreenState extends State<DriverCommissionViewScreen>
         if (model.subsidiaries != null && model.subsidiaries!.isNotEmpty) {
           Subsidiaries? matched;
           if (subId != null) {
-            matched = model.subsidiaries!
-                .firstWhereOrNull((s) => s.id == subId);
+            matched = model.subsidiaries!.firstWhereOrNull((s) => s.id == subId);
           }
           matched ??= model.subsidiaries!.first;
 
@@ -102,16 +100,13 @@ class _DriverCommissionViewScreenState extends State<DriverCommissionViewScreen>
     final controller = Get.isRegistered<DriverController>()
         ? Get.find<DriverController>()
         : null;
-    final data = widget.commission ??
-        controller?.updateDriverCommissionByIdModel?.driverCommission;
+    final data = widget.commission ?? controller?.updateDriverCommissionByIdModel?.driverCommission;
     final items = data?.driverCommissionLineitems ?? [];
 
     final subsidiaryData = _subsidiary ??
-        (controller != null
-            ? (controller.selectedSubsidiary ??
+        (controller != null ? (controller.selectedSubsidiary ??
                 (data?.driver?.subsidiaryId != null
-                    ? controller.subsDiaryModel?.subsidiaries
-                        ?.firstWhereOrNull((s) => s.id == data!.driver!.subsidiaryId)
+                    ? controller.subsDiaryModel?.subsidiaries?.firstWhereOrNull((s) => s.id == data!.driver!.subsidiaryId)
                     : null) ??
                 controller.subsDiaryModel?.subsidiaries?.firstOrNull)
             : null);
@@ -281,7 +276,13 @@ class _DriverCommissionViewScreenState extends State<DriverCommissionViewScreen>
                                   * ((double.tryParse(data?.driver?.driverCommission?.toString() ?? '0') ?? 0) / 100)
                           ).toStringAsFixed(2)}"
                       ),
-                      _buildTableCell("£${b?.totalCharges ?? '0'}", isBold: true),
+                      _buildTableCell(
+                          controller != null
+                              ? "£${controller.calculateBookingTotalCharges(b)}"
+                              : "£${(double.tryParse(b?.fares ?? '0') ?? 0) + (double.tryParse(b?.parkingCharges ?? '0') ?? 0) + (double.tryParse(b?.waitingCharges ?? '0') ?? 0) +
+                              (double.tryParse(b?.extraDropCharges ?? '0') ?? 0) + (double.tryParse(b?.congestionCharges ?? '0') ?? 0)}", isBold: true
+                      ),
+                      // _buildTableCell("£${b?.totalCharges ?? '0'}", isBold: true),
                     ],
                   );
                 }).toList(),
